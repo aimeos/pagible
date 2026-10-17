@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: nl\n"
+
+#. config.profile
+#: schema.json
+msgctxt "st"
+msgid "folio::profile"
+msgstr "Profiel"
+
+#. config.profile.name
+#: schema.json
+msgctxt "fh"
+msgid "Your full name, shown as logo and author of the posts"
+msgstr "Je volledige naam, getoond als logo en auteur van de berichten"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fn"
+msgid "Job title"
+msgstr "Functietitel"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fh"
+msgid "Your role used for search engines, e.g. Staff Engineer"
+msgstr "Je rol voor zoekmachines, bijv. Staff Engineer"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fn"
+msgid "Company"
+msgstr "Bedrijf"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fh"
+msgid "Company or organization you work for, e.g. Northwind Labs"
+msgstr "Bedrijf of organisatie waar je werkt, bijv. Northwind Labs"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Locatie"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fh"
+msgid "City or region you live in, e.g. Berlin, Germany"
+msgstr "Stad of regio waar je woont, bijv. Berlijn, Duitsland"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fn"
+msgid "Photo"
+msgstr "Foto"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fh"
+msgid "Square photo or avatar of you shown below the posts"
+msgstr "Vierkante foto of avatar van jou onder de berichten"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fn"
+msgid "Short bio"
+msgstr "Korte bio"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fh"
+msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
+msgstr "Eén zin over jou onder elk bericht, bijv. Ik bouw Laravel-apps en schrijf over databases"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fn"
+msgid "E-mail"
+msgstr "E-mail"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address shown in the footer with a copy button"
+msgstr "E-mailadres in de footer met een kopieerknop"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fn"
+msgid "Profiles"
+msgstr "Profielen"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fh"
+msgid "Links to your profiles shown in the footer, e.g. GitHub, Mastodon or LinkedIn"
+msgstr "Links naar je profielen in de footer, bijv. GitHub, Mastodon of LinkedIn"
+
+#. config.profile.links.label
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website, e.g. GitHub"
+msgstr "Naam van de website, bijv. GitHub"
+
+#. config.profile.links.url
+#: schema.json
+msgctxt "fh"
+msgid "Link to your profile, e.g. https://github.com/lena"
+msgstr "Link naar je profiel, bijv. https://github.com/lena"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "folio::theme"
+msgstr "Thema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Afwerking van hoeken als CSS-lengte, bijv. 0.5rem of 0 voor scherpe hoeken"

@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: lt\n"
+
+#. config.firm
+#: schema.json
+msgctxt "st"
+msgid "counsel::firm"
+msgstr "kontora"
+
+#. config.firm.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the law firm"
+msgstr "Advokatų kontoros pavadinimas"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Firm type"
+msgstr "Kontoros tipas"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of legal practice shown to search engines"
+msgstr "Paieškos sistemoms rodomas teisinės veiklos tipas"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Law firm"
+msgstr "Advokatų kontora"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Attorney"
+msgstr "Advokatas"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Notary"
+msgstr "Notaras"
+
+#. config.firm.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other legal service"
+msgstr "Kita teisinė paslauga"
+
+#. config.firm.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adresas"
+
+#. config.firm.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Gatvė ir namo numeris"
+
+#. config.firm.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Pašto kodas"
+
+#. config.firm.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the office"
+msgstr "Kontoros pašto kodas"
+
+#. config.firm.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Miestas"
+
+#. config.firm.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the office is located in"
+msgstr "Miestas, kuriame yra kontora"
+
+#. config.firm.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Šalies kodas"
+
+#. config.firm.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dviejų raidžių ISO šalies kodas, pvz., DE arba US"
+
+#. config.firm.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefonas"
+
+#. config.firm.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefono numeris tarptautiniu formatu, naudojamas ir skambinimo mygtukui"
+
+#. config.firm.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "El. paštas"
+
+#. config.firm.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for consultation requests"
+msgstr "El. pašto adresas konsultacijų užklausoms"
+
+#. config.firm.hotline
+#: schema.json
+msgctxt "fn"
+msgid "Hotline"
+msgstr "Skubi linija"
+
+#. config.firm.hotline
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for urgent legal matters, e.g. arrests or searches, shown at the top of every page"
+msgstr "Telefono numeris skubiems teisiniams klausimams, pvz., sulaikymams ar kratoms, rodomas kiekvieno puslapio viršuje"
+
+#. config.firm.consultation
+#: schema.json
+msgctxt "fn"
+msgid "Consultation link"
+msgstr "Konsultacijos nuoroda"
+
+#. config.firm.consultation
+#: schema.json
+msgctxt "fh"
+msgid "Link to the contact page or online scheduling, shown as a button in the header"
+msgstr "Nuoroda į kontaktų puslapį arba internetinę registraciją, rodoma kaip mygtukas antraštėje"
+
+#. config.firm.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "Kalbos"
+
+#. config.firm.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken by the attorneys, e.g. English, German, French"
+msgstr "Kableliais atskirtas advokatų kalbamų kalbų sąrašas, pvz., anglų, vokiečių, prancūzų"
+
+#. config.firm.practice-areas
+#: schema.json
+msgctxt "fn"
+msgid "Practice areas"
+msgstr "Teisės sritys"
+
+#. config.firm.practice-areas
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the practice areas, e.g. Employment law, Family law, Real estate law"
+msgstr "Kableliais atskirtas teisės sričių sąrašas, pvz., Darbo teisė, Šeimos teisė, Nekilnojamojo turto teisė"
+
+#. config.firm.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Kainų kategorija"
+
+#. config.firm.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Fee level of the firm, e.g. $$ or €€"
+msgstr "Kontoros honorarų lygis, pvz., $$ arba €€"
+
+#. config.firm.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Veiksmų juosta"
+
+#. config.firm.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show call and consultation buttons at the bottom of the screen on phones"
+msgstr "Rodyti skambinimo ir konsultacijos mygtukus ekrano apačioje telefonuose"
+
+#. config.firm.disclaimer
+#: schema.json
+msgctxt "fn"
+msgid "Disclaimer"
+msgstr "Atsakomybės apribojimas"
+
+#. config.firm.disclaimer
+#: schema.json
+msgctxt "fh"
+msgid "Legal notice shown at the bottom of every page, e.g. that the website is no legal advice"
+msgstr "Teisinė pastaba kiekvieno puslapio apačioje, pvz., kad svetainė nėra teisinė konsultacija"
+
+#. config.firm.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "Darbo laikas"
+
+#. config.firm.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week"
+msgstr "Kontoros darbo laikas kiekvienai savaitės dienai"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Diena"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Savaitės diena"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pirmadienis"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Antradienis"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Trečiadienis"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Ketvirtadienis"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Penktadienis"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Šeštadienis"
+
+#. config.firm.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Sekmadienis"
+
+#. config.firm.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Atidarymo laikas"
+
+#. config.firm.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Atidarymo laikas 24 valandų formatu, pvz., 07:30"
+
+#. config.firm.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Uždarymo laikas"
+
+#. config.firm.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Uždarymo laikas 24 valandų formatu, pvz., 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "counsel::theme"
+msgstr "Tema"

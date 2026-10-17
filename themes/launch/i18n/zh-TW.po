@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-TW\n"
+
+#. config.product
+#: schema.json
+msgctxt "st"
+msgid "launch::product"
+msgstr "產品"
+
+#. config.product.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software product or app"
+msgstr "軟體產品或應用程式的名稱"
+
+#. config.product.category
+#: schema.json
+msgctxt "fn"
+msgid "Category"
+msgstr "類別"
+
+#. config.product.category
+#: schema.json
+msgctxt "fh"
+msgid "Kind of software shown to search engines"
+msgstr "向搜尋引擎顯示的軟體類型"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Business software"
+msgstr "企業軟體"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Developer tool"
+msgstr "開發者工具"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Design tool"
+msgstr "設計工具"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Finance software"
+msgstr "財務軟體"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Security software"
+msgstr "資安軟體"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Learning software"
+msgstr "學習軟體"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Consumer app"
+msgstr "消費型應用程式"
+
+#. config.product.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the product does, used for search engines"
+msgstr "一句話描述產品的功能，供搜尋引擎使用"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "公告"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+msgstr "顯示在每個頁面頂端的簡短新聞，例如：新功能：可自訂網域的狀態頁面"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fn"
+msgid "Announcement link"
+msgstr "公告連結"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fh"
+msgid "Page the announcement links to, e.g. the changelog entry"
+msgstr "該公告所連結的頁面，例如：變更紀錄條目"
+
+#. config.product.status
+#: schema.json
+msgctxt "fn"
+msgid "Status page link"
+msgstr "狀態頁面連結"
+
+#. config.product.status
+#: schema.json
+msgctxt "fh"
+msgid "Link to the public status page, shown in the footer"
+msgstr "公開狀態頁面的連結，顯示於頁尾"
+
+#. config.product.price
+#: schema.json
+msgctxt "fn"
+msgid "Starting price"
+msgstr "起價"
+
+#. config.product.price
+#: schema.json
+msgctxt "fh"
+msgid "Lowest price for search engines, e.g. 0 for a free plan or 19.00"
+msgstr "搜尋引擎的最低價格，例如：免費方案為 0，或 19.00"
+
+#. config.product.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. USD or EUR"
+msgstr "三字母的 ISO 貨幣代碼，例如 USD 或 EUR"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fn"
+msgid "Rating"
+msgstr "評分"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fh"
+msgid "Average review rating from 1 to 5, e.g. 4.8"
+msgstr "1 至 5 分的平均評分，例如 4.8"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fn"
+msgid "Number of reviews"
+msgstr "評論數"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fh"
+msgid "Number of reviews the rating is based on"
+msgstr "該評分所依據的評論數"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "提示"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+msgstr "頁尾顯示的簡短說明，例如：已通過 SOC 2 Type II 認證，資料託管於歐盟"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "launch::theme"
+msgstr "主題"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "將邊角圓角化作為 CSS 長度，例如 1rem 或 0 代表銳角"

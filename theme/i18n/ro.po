@@ -1,0 +1,2212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ro\n"
+
+#. content.heading
+#: schema.json
+msgctxt "st"
+msgid "heading"
+msgstr "titlu"
+
+#. content.heading
+#: schema.json
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "Titlu de secțiune de la H1 la H6"
+
+#. content.heading.title
+#. content.table.title
+#. content.map.title
+#. content.slideshow.title
+#. content.before-after.title
+#. content.hero.title
+#. content.cta.title
+#. content.cards.title
+#. content.cards.cards.title
+#. content.testimonial.title
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#. content.pricing.title
+#. content.questions.title
+#. content.questions.items.title
+#. content.timeline.title
+#. content.timeline.items.title
+#. content.toc.title
+#. content.contact.title
+#. meta.social-media.title
+#. config.website.title
+#: schema.json
+msgctxt "fn"
+msgid "title"
+msgstr "titlu"
+
+#. content.heading.title
+#: schema.json
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "Textul titlului"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fn"
+msgid "level"
+msgstr "nivel"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fh"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "Nivelul 1 este titlul principal al paginii, nivelurile superioare structurează secțiunile de mai jos"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H1"
+msgstr "H1"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H2"
+msgstr "H2"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H3"
+msgstr "H3"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H4"
+msgstr "H4"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H5"
+msgstr "H5"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H6"
+msgstr "H6"
+
+#. content.text
+#: schema.json
+msgctxt "st"
+msgid "text"
+msgstr "text"
+
+#. content.text
+#: schema.json
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Text formatat cu paragrafe, liste și linkuri"
+
+#. content.text.text
+#. content.image-text.text
+#. content.map.text
+#. content.hero.text
+#. content.cta.text
+#. content.cards.cards.text
+#. content.testimonial.items.text
+#. content.questions.items.text
+#. content.timeline.items.text
+#. config.robots-txt.text
+#. config.styles.text
+#. config.javascript.text
+#: schema.json
+msgctxt "fn"
+msgid "text"
+msgstr "text"
+
+#. content.text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Text formatat cu paragrafe, liste și linkuri"
+
+#. content.image-text
+#: schema.json
+msgctxt "st"
+msgid "image-text"
+msgstr "imagine-text"
+
+#. content.image-text
+#: schema.json
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "Imagine lângă text formatat"
+
+#. content.image-text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "Text formatat afișat lângă imagine"
+
+#. content.image-text.file
+#. content.cards.cards.file
+#. content.testimonial.items.file
+#. content.pricing.items.file
+#. meta.social-media.file
+#: schema.json
+msgctxt "fn"
+msgid "image"
+msgstr "imagine"
+
+#. content.image-text.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "Imagine afișată lângă text"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fn"
+msgid "position"
+msgstr "poziție"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "Poziția imaginii față de text"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Start"
+msgstr "Început"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "End"
+msgstr "Sfârșit"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid start"
+msgstr "Începutul grilei"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid end"
+msgstr "Sfârșitul grilei"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fn"
+msgid "ratio"
+msgstr "Raport"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "Raportul de lățime dintre imagine și text"
+
+#. content.code
+#: schema.json
+msgctxt "st"
+msgid "code"
+msgstr "cod"
+
+#. content.code
+#: schema.json
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "Cod sursă cu evidențierea sintaxei"
+
+#. content.code.language
+#: schema.json
+msgctxt "fn"
+msgid "Language"
+msgstr "Limba"
+
+#. content.code.language
+#: schema.json
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "Limbajul de programare utilizat pentru evidențierea sintaxei"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "CSS"
+msgstr "CSS"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "GraphQL"
+msgstr "GraphQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "HTML"
+msgstr "HTML"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Java"
+msgstr "Java"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JSON"
+msgstr "JSON"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Markdown"
+msgstr "Markdown"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "PHP"
+msgstr "PHP"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Python"
+msgstr "Python"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Ruby"
+msgstr "Ruby"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "SQL"
+msgstr "SQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "TypeScript"
+msgstr "TypeScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "XML"
+msgstr "XML"
+
+#. content.code.text
+#. content.html.text
+#: schema.json
+msgctxt "fn"
+msgid "source code"
+msgstr "cod sursă"
+
+#. content.code.text
+#: schema.json
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "Cod sursă afișat cu evidențierea sintaxei"
+
+#. content.table
+#: schema.json
+msgctxt "st"
+msgid "table"
+msgstr "tabel"
+
+#. content.table
+#: schema.json
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "Tabel de date cu rând sau coloană de antet opțională"
+
+#. content.table.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "Legendă opțională afișată deasupra tabelului"
+
+#. content.table.header
+#: schema.json
+msgctxt "fn"
+msgid "header"
+msgstr "antet"
+
+#. content.table.header
+#: schema.json
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "Utilizează primul rând, prima coloană sau ambele ca antet de tabel"
+
+#. content.table.header
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "None"
+msgstr "Niciuna"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row"
+msgstr "Primul rând"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First column"
+msgstr "Prima coloană"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row and column"
+msgstr "Primul rând și coloană"
+
+#. content.table.table
+#: schema.json
+msgctxt "fn"
+msgid "table"
+msgstr "tabel"
+
+#. content.table.table
+#: schema.json
+msgctxt "fh"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgstr "Introduceți date în celule; adăugați sau eliminați rânduri și coloane după cum este necesar"
+
+#. content.map
+#: schema.json
+msgctxt "st"
+msgid "map"
+msgstr "hartă"
+
+#. content.map
+#: schema.json
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "Hartă interactivă cu locație, text și link"
+
+#. content.map.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "Titlu opțional afișat deasupra hărții"
+
+#. content.map.text
+#: schema.json
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "Descriere afișată lângă hartă, de ex. adresă sau indicații"
+
+#. content.map.location
+#: schema.json
+msgctxt "fn"
+msgid "location"
+msgstr "locație"
+
+#. content.map.location
+#: schema.json
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "Căutați un loc sau faceți clic pe hartă pentru a seta locația"
+
+#. content.map.button
+#: schema.json
+msgctxt "fn"
+msgid "Link label"
+msgstr "Text link"
+
+#. content.map.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "Textul linkului care deschide locația într-un serviciu de hărți"
+
+#. content.html
+#: schema.json
+msgctxt "st"
+msgid "html"
+msgstr "html"
+
+#. content.html
+#: schema.json
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "HTML personalizat pentru încorporări și widgeturi"
+
+#. content.html.text
+#: schema.json
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "Cod HTML inserat în pagină ca atare, de ex. pentru încorporări și widgeturi"
+
+#. content.image
+#: schema.json
+msgctxt "st"
+msgid "image"
+msgstr "imagine"
+
+#. content.image
+#: schema.json
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "O singură imagine responsivă"
+
+#. content.image.file
+#. content.video.file
+#. content.audio.file
+#. content.file.file
+#. config.logo.file
+#. config.logo-alternative.file
+#. config.icon.file
+#: schema.json
+msgctxt "fn"
+msgid "file"
+msgstr "fișier"
+
+#. content.image.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "Imagine afișată pe toată lățimea zonei de conținut"
+
+#. content.image.main
+#. content.slideshow.main
+#. content.before-after.main
+#: schema.json
+msgctxt "fn"
+msgid "load immediately"
+msgstr "încărcare imediată"
+
+#. content.image.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "Încarcă imaginea fără întârziere dacă este vizibilă în partea de sus a paginii"
+
+#. content.slideshow
+#: schema.json
+msgctxt "st"
+msgid "slideshow"
+msgstr "diaporamă"
+
+#. content.slideshow
+#: schema.json
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "Diapozitive alternante cu mai multe imagini"
+
+#. content.slideshow.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "Titlu opțional afișat deasupra diaporamei"
+
+#. content.slideshow.files
+#. content.hero.files
+#: schema.json
+msgctxt "fn"
+msgid "images"
+msgstr "imagini"
+
+#. content.slideshow.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "Imagini afișate una după alta, trageți pentru a schimba ordinea"
+
+#. content.slideshow.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the first image without delay if it is visible at the top of the page"
+msgstr "Încarcă prima imagine fără întârziere dacă este vizibilă în partea de sus a paginii"
+
+#. content.before-after
+#: schema.json
+msgctxt "st"
+msgid "before-after"
+msgstr "înainte-după"
+
+#. content.before-after
+#: schema.json
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Glisor care compară două imagini înainte și după o schimbare"
+
+#. content.before-after.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Titlu opțional afișat deasupra comparației"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fn"
+msgid "before image"
+msgstr "imagine înainte"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "Imagine care arată starea dinaintea schimbării"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fn"
+msgid "after image"
+msgstr "imagine după"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "Imagine care arată rezultatul, ambele imagini ar trebui să aibă aceeași dimensiune"
+
+#. content.before-after.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the images without delay if they are visible at the top of the page"
+msgstr "Încarcă imaginile fără întârziere dacă sunt vizibile în partea de sus a paginii"
+
+#. content.video
+#: schema.json
+msgctxt "st"
+msgid "video"
+msgstr "video"
+
+#. content.video
+#: schema.json
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "Video încorporat cu comenzi de redare"
+
+#. content.video.file
+#: schema.json
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "Fișier video redat în pagină"
+
+#. content.audio
+#: schema.json
+msgctxt "st"
+msgid "audio"
+msgstr "audio"
+
+#. content.audio
+#: schema.json
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "Audio încorporat cu comenzi de redare"
+
+#. content.audio.file
+#: schema.json
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "Fișier audio redat în pagină"
+
+#. content.file
+#: schema.json
+msgctxt "st"
+msgid "file"
+msgstr "fișier"
+
+#. content.file
+#: schema.json
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "Fișier descărcabil, de exemplu un document PDF"
+
+#. content.file.file
+#: schema.json
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "Fișier oferit spre descărcare"
+
+#. content.hero
+#: schema.json
+msgctxt "st"
+msgid "hero"
+msgstr "Hero"
+
+#. content.hero
+#: schema.json
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "Introducere amplă cu titlu, text, butoane și fundal"
+
+#. content.hero.title
+#: schema.json
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "Titlul principal al paginii"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fn"
+msgid "subtitle"
+msgstr "Subtitlu"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "Linie scurtă afișată deasupra titlului"
+
+#. content.hero.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "Introducere afișată sub titlu"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fn"
+msgid "buttons"
+msgstr "butoane"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "Butoane care ghidează vizitatorii spre pasul următor"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fn"
+msgid "label"
+msgstr "etichetă"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "Textul butonului"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.cards.cards.url
+#. content.article.author-url
+#. meta.canonical.url
+#: schema.json
+msgctxt "fn"
+msgid "url"
+msgstr "URL"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "Pagina sau linkul către care duce butonul"
+
+#. content.hero.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "Imagini afișate lângă text"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fn"
+msgid "background"
+msgstr "Fundal"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "Imagine afișată în spatele textului"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fn"
+msgid "background animation"
+msgstr "Animație fundal"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "Efect de animație al imaginii de fundal"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "Zoom"
+msgstr "Zoom"
+
+#. content.cta
+#: schema.json
+msgctxt "st"
+msgid "CTA"
+msgstr "CTA"
+
+#. content.cta
+#: schema.json
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "Îndemn la acțiune cu text și butoane"
+
+#. content.cta.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "Titlu care atrage atenția vizitatorilor"
+
+#. content.cta.text
+#: schema.json
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "Text care motivează vizitatorii să acționeze"
+
+#. content.cards
+#: schema.json
+msgctxt "st"
+msgid "cards"
+msgstr "Carduri"
+
+#. content.cards
+#: schema.json
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "Grilă de carduri cu imagine, titlu și text"
+
+#. content.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "Titlu opțional afișat deasupra cardurilor"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#. content.timeline.layout
+#: schema.json
+msgctxt "fn"
+msgid "layout"
+msgstr "Aspect"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show cards, small badges like certificates or large figures like key numbers"
+msgstr "Afișează carduri, insigne mici precum certificate sau cifre mari precum indicatori cheie"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Cards"
+msgstr "Carduri"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Badges"
+msgstr "Insigne"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Figures"
+msgstr "Cifre"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fn"
+msgid "columns"
+msgstr "Coloane"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "Numărul de carduri pe rând, \"auto\" se adaptează la lățimea ecranului"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "op"
+msgid "Auto"
+msgstr "Automat"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fn"
+msgid "cards"
+msgstr "Carduri"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "Carduri afișate în grilă"
+
+#. content.cards.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "Titlul cardului"
+
+#. content.cards.cards.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "Imagine afișată în partea de sus a cardului"
+
+#. content.cards.cards.text
+#: schema.json
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "Textul cardului"
+
+#. content.cards.cards.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "Pagina sau linkul către care duce cardul"
+
+#. content.testimonial
+#: schema.json
+msgctxt "st"
+msgid "testimonial"
+msgstr "Testimoniale"
+
+#. content.testimonial
+#: schema.json
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "Citate de la clienți cu nume, funcție și fotografie"
+
+#. content.testimonial.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "Titlu opțional afișat deasupra citatelor"
+
+#. content.testimonial.items
+#. content.pricing.items
+#. content.questions.items
+#. content.timeline.items
+#: schema.json
+msgctxt "fn"
+msgid "items"
+msgstr "intrări"
+
+#. content.testimonial.items
+#: schema.json
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "Citate de la clienți sau parteneri"
+
+#. content.testimonial.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "Citatul persoanei"
+
+#. content.testimonial.items.name
+#. content.article.author-name
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fn"
+msgid "name"
+msgstr "Nume"
+
+#. content.testimonial.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "Numele persoanei"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fn"
+msgid "role"
+msgstr "Funcție"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "Funcția sau compania persoanei"
+
+#. content.testimonial.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "Fotografia persoanei"
+
+#. content.article
+#: schema.json
+msgctxt "st"
+msgid "article"
+msgstr "Articol"
+
+#. content.article
+#: schema.json
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "Introducerea articolului cu galerie de imagini și autor"
+
+#. content.article.text
+#: schema.json
+msgctxt "fn"
+msgid "introduction"
+msgstr "introducere"
+
+#. content.article.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "Introducerea articolului afișată sub titlul paginii"
+
+#. content.article.files
+#: schema.json
+msgctxt "fn"
+msgid "Gallery"
+msgstr "Galerie"
+
+#. content.article.files
+#: schema.json
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "Imaginile articolului, prima este folosită ca imagine de previzualizare"
+
+#. content.article.author-name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "Numele autorului articolului"
+
+#. content.article.author-url
+#: schema.json
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "Link către pagina de profil a autorului"
+
+#. content.blog
+#: schema.json
+msgctxt "st"
+msgid "blog"
+msgstr "Blog"
+
+#. content.blog
+#: schema.json
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "Listă de articole de blog dintr-o pagină părinte"
+
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "Titlu opțional afișat deasupra listei"
+
+#. content.blog.layout
+#. content.news.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "Afișează paginile ca carduri sau ca listă compactă"
+
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "List"
+msgstr "Listă"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fn"
+msgid "parent-page"
+msgstr "Pagină părinte"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "Pagina ale cărei subpagini sunt listate"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fn"
+msgid "order"
+msgstr "ordine"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "Ordinea de sortare a paginilor listate"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Position"
+msgstr "Poziție"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Latest"
+msgstr "Cele mai noi"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Oldest"
+msgstr "Cele mai vechi"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fn"
+msgid "limit"
+msgstr "limită"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "Numărul maxim de pagini afișate simultan"
+
+#. content.blog.action
+#. content.news.action
+#. content.heros.action
+#. content.toc.action
+#: schema.json
+msgctxt "fn"
+msgid "action"
+msgstr "acțiune"
+
+#. content.news
+#: schema.json
+msgctxt "st"
+msgid "news"
+msgstr "Știri"
+
+#. content.news
+#: schema.json
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "Listă de știri dintr-o pagină părinte"
+
+#. content.heros
+#: schema.json
+msgctxt "st"
+msgid "heros"
+msgstr "Heros"
+
+#. content.heros
+#: schema.json
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "Subpagină evidențiată urmată de alte subpagini"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "Afișează subpaginile suplimentare ca carduri sau ca listă compactă"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Default"
+msgstr "Implicit"
+
+#. content.pricing
+#: schema.json
+msgctxt "st"
+msgid "pricing"
+msgstr "Prețuri"
+
+#. content.pricing
+#: schema.json
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "Planuri de prețuri cu abonamente sau plăți unice"
+
+#. content.pricing.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "Titlu opțional afișat deasupra planurilor de preț"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "Subtitlu"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "Text scurt afișat sub titlu"
+
+#. content.pricing.items
+#: schema.json
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "Planuri de preț afișate unul lângă altul"
+
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "Numele planului de preț"
+
+#. content.pricing.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the price plan"
+msgstr "Imagine afișată în partea de sus a planului de preț"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fn"
+msgid "Frontend access role"
+msgstr "Rol de acces frontend"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "Rolul acordat clienților după plată pentru accesul la paginile protejate"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fn"
+msgid "Payment prices"
+msgstr "Prețuri de plată"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "Prețurile planului, de ex. lunar și anual"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fn"
+msgid "Payment type"
+msgstr "Tip de plată"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "Abonament recurent sau plată unică"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "Subscription"
+msgstr "Abonament"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "One-time payment"
+msgstr "Plată unică"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fn"
+msgid "Billing interval"
+msgstr "Interval de facturare"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "Numărul de zile dintre două plăți, de ex. 30 pentru lunar"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fn"
+msgid "Currency"
+msgstr "Monedă"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "Codul valutar ISO din trei litere, de ex. EUR sau USD"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fn"
+msgid "Payment reference"
+msgstr "Referință plată"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "ID-ul prețului sau suma utilizată de furnizorul de plăți"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "Preț afișat"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "Prețul formatat afișat vizitatorilor, de ex. 9,99 €"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fn"
+msgid "amount"
+msgstr "Sumă"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "Prețul numeric afișat dacă nu este setat un preț formatat"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fn"
+msgid "Price unit"
+msgstr "Unitate de preț"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "Text afișat după preț, de ex. pe lună"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fn"
+msgid "Description"
+msgstr "Descriere"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "Descriere scurtă a planului de preț"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fn"
+msgid "features"
+msgstr "Caracteristici"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "Lista funcțiilor incluse în plan"
+
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fn"
+msgid "Target page or link"
+msgstr "Pagina țintă sau link"
+
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fn"
+msgid "button"
+msgstr "buton"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "Evidențiat"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "Evidențiază acest plan față de celelalte"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "Text evidențiat"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "Etichetă scurtă afișată pe planul evidențiat, de ex. Popular"
+
+#. content.questions
+#: schema.json
+msgctxt "st"
+msgid "questions"
+msgstr "FAQ"
+
+#. content.questions
+#: schema.json
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "Întrebări frecvente cu răspunsuri"
+
+#. content.questions.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "Titlu opțional afișat deasupra întrebărilor"
+
+#. content.questions.items
+#: schema.json
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "Întrebări și răspunsuri afișate ca listă extensibilă"
+
+#. content.questions.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "Întrebare adresată de vizitatori"
+
+#. content.questions.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "Răspunsul la întrebare"
+
+#. content.timeline
+#: schema.json
+msgctxt "st"
+msgid "timeline"
+msgstr "Cronologie"
+
+#. content.timeline
+#: schema.json
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Pași sau evenimente numerotate în ordine cronologică"
+
+#. content.timeline.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Titlu opțional afișat deasupra cronologiei"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show the steps one below the other or side by side, side by side suits up to five steps"
+msgstr "Afișează pașii unul sub altul sau unul lângă altul, unul lângă altul se potrivește pentru cel mult cinci pași"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Vertical"
+msgstr "Vertical"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Orizontal"
+
+#. content.timeline.items
+#: schema.json
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Pași sau evenimente în ordinea în care au loc"
+
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fh"
+msgid "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "Dată, perioadă sau etapă opțională afișată deasupra titlului, de ex. 2024 sau Săptămâna 1"
+
+#. content.timeline.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "Numele pasului sau evenimentului"
+
+#. content.timeline.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "Descrierea pasului sau evenimentului"
+
+#. content.toc
+#: schema.json
+msgctxt "st"
+msgid "toc"
+msgstr "cuprins"
+
+#. content.toc
+#: schema.json
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "Cuprins cu linkuri către titlurile paginii"
+
+#. content.toc.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "Titlu opțional afișat deasupra cuprinsului"
+
+#. content.contact
+#: schema.json
+msgctxt "st"
+msgid "contact"
+msgstr "contact"
+
+#. content.contact
+#: schema.json
+msgctxt "sd"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "Formular de contact cu câmpuri configurabile și atașamente opționale"
+
+#. content.contact.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "Titlu opțional afișat deasupra formularului de contact"
+
+#. content.contact.description
+#. meta.meta-tags.description
+#. meta.social-media.description
+#: schema.json
+msgctxt "fn"
+msgid "description"
+msgstr "descriere"
+
+#. content.contact.description
+#: schema.json
+msgctxt "fh"
+msgid "Optional text shown between headline and contact form"
+msgstr "Text opțional afișat între titlu și formularul de contact"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fn"
+msgid "Form fields"
+msgstr "Câmpurile formularului"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fh"
+msgid "Form fields shown to visitors in this order"
+msgstr "Câmpurile formularului afișate vizitatorilor în această ordine"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fn"
+msgid "Field"
+msgstr "Câmp"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Selectați un câmp al formularului sau introduceți propriul nume"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Name"
+msgstr "Nume"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Company"
+msgstr "Companie"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Telephone"
+msgstr "Telefon"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "E-Mail"
+msgstr "E-mail"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Subject"
+msgstr "Subiect"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fn"
+msgid "Required"
+msgstr "Obligatoriu"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Vizitatorii trebuie să completeze acest câmp"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fn"
+msgid "Input type"
+msgstr "Tip de câmp"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "Tipul câmpului afișat vizitatorilor"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text"
+msgstr "Text"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text area"
+msgstr "Zonă de text"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Selection"
+msgstr "Listă de selecție"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fn"
+msgid "Choices"
+msgstr "Opțiuni"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "Opțiuni pentru câmpurile de selecție, câte una pe rând"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fn"
+msgid "Attachments"
+msgstr "Atașamente"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr "Numărul maxim de imagini sau fișiere PDF pe care le pot atașa vizitatorii, 0 dezactivează încărcarea"
+
+#. meta.meta-tags
+#: schema.json
+msgctxt "st"
+msgid "meta-tags"
+msgstr "Metaetichete"
+
+#. meta.meta-tags.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgstr "Rezumatul paginii afișat în rezultatele căutării, recomandat 150–160 de caractere"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fn"
+msgid "keywords"
+msgstr "cuvinte-cheie"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "Listă de cuvinte-cheie separate prin virgulă care descriu pagina"
+
+#. meta.social-media
+#: schema.json
+msgctxt "st"
+msgid "social-media"
+msgstr "Rețele sociale"
+
+#. meta.social-media.title
+#: schema.json
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "Titlul afișat la distribuirea paginii pe rețelele sociale"
+
+#. meta.social-media.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "Rezumatul afișat la distribuirea paginii pe rețelele sociale"
+
+#. meta.social-media.file
+#: schema.json
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "Imaginea de previzualizare afișată la distribuirea paginii pe rețelele sociale"
+
+#. meta.canonical
+#: schema.json
+msgctxt "st"
+msgid "canonical"
+msgstr "URL canonic"
+
+#. meta.canonical.url
+#: schema.json
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "URL-ul original dacă același conținut este disponibil la mai multe adrese"
+
+#. meta.robots
+#: schema.json
+msgctxt "st"
+msgid "robots"
+msgstr "Motoare de căutare"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fn"
+msgid "index"
+msgstr "Indexare"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "Permite sau blochează indexarea acestei pagini de către motoarele de căutare"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "Index"
+msgstr "Indexare"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "No index"
+msgstr "Fără indexare"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fn"
+msgid "follow"
+msgstr "Urmărire linkuri"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "Permite sau blochează urmărirea linkurilor de pe această pagină de către motoarele de căutare"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "Follow"
+msgstr "Urmărire linkuri"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "No follow"
+msgstr "Fără urmărire linkuri"
+
+#. config.website
+#: schema.json
+msgctxt "st"
+msgid "website"
+msgstr "site web"
+
+#. config.website.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "Numele site-ului afișat în fila browserului și în rezultatele căutării"
+
+#. config.logo
+#: schema.json
+msgctxt "st"
+msgid "logo"
+msgstr "Siglă"
+
+#. config.logo.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "Logo afișat în antetul paginii"
+
+#. config.logo-alternative
+#: schema.json
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Siglă alternativă"
+
+#. config.logo-alternative.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "Varianta de logo utilizată pentru fundaluri închise"
+
+#. config.icon
+#: schema.json
+msgctxt "st"
+msgid "icon"
+msgstr "Pictogramă"
+
+#. config.icon.file
+#: schema.json
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "Imagine mică pătrată afișată în filele browserului și la favorite"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "theme"
+msgstr "Temă"
+
+#. config.theme
+#: schema.json
+msgctxt "sg"
+msgid "theme"
+msgstr "Temă"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "Font text"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "Listă de fonturi separate prin virgulă utilizate pentru text"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "Culoare text"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fh"
+msgid "Default text color"
+msgstr "Culoarea implicită a textului"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "Culoare fundal"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "Culoarea de fundal a paginilor"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "Culoare selecție"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "Culoarea de fundal a textului selectat"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "Culoare contrast"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "Culoarea elementelor cu contrast puternic față de fundal"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "Culoare contrast la survolare"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "Culoarea de contrast la trecerea cu mouse-ul sau la focalizarea unui element"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "Culoare text contrastant"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "Culoarea textului pe elementele care utilizează culoarea de contrast"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "Culoare principală"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "Culoarea principală a mărcii utilizată pentru linkuri și butoane"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "Fundal principal"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "Culoarea de fundal a butoanelor primare și a evidențierilor"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "Culoare principală la survolare"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "Culoarea primară la trecerea cu mouse-ul sau la focalizarea unui element"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "Fundal principal la survolare"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "Culoarea de fundal primară la trecerea cu mouse-ul sau la focalizarea unui element"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "Culoare secundară"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "Culoare suplimentară utilizată pentru linkuri și butoane mai puțin importante"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "Fundal secundar"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "Culoarea de fundal a butoanelor secundare"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "Culoare secundară la survolare"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "Culoarea secundară la trecerea cu mouse-ul sau la focalizarea unui element"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "Fundal secundar la survolare"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "Culoarea de fundal secundară la trecerea cu mouse-ul sau la focalizarea unui element"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "Rotunjire colțuri"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "Rotunjirea colțurilor ca lungime CSS, de ex. 0.25rem sau 0 pentru colțuri ascuțite"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "Separator breadcrumb"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "Caracterul afișat între linkurile de tip breadcrumb"
+
+#. config.security
+#: schema.json
+msgctxt "st"
+msgid "security"
+msgstr "Securitate"
+
+#. config.security
+#. config.robots-txt
+#. config.styles
+#. config.javascript
+#: schema.json
+msgctxt "sg"
+msgid "expert"
+msgstr "Avansat"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "URL de contact"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "Link HTTPS pentru a contacta echipa de securitate, de ex. un formular"
+
+#. config.security.email
+#: schema.json
+msgctxt "fn"
+msgid "Contact email"
+msgstr "E-mail de contact"
+
+#. config.security.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "Adresă de e-mail pentru raportarea problemelor de securitate"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fn"
+msgid "expires"
+msgstr "Expiră"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "Data după care informațiile de securitate sunt considerate depășite"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fn"
+msgid "encryption"
+msgstr "Criptare"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "Link HTTPS către cheia publică pentru mesaje criptate"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "Mulțumiri"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "Link HTTPS către pagina de mulțumire pentru cercetătorii de securitate"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "Limbi preferate"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "Coduri de limbă separate prin virgulă pentru rapoartele de securitate, de ex. en, de"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fn"
+msgid "canonical"
+msgstr "URL canonic"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "URL HTTPS unde este publicat fișierul security.txt"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fn"
+msgid "policy"
+msgstr "Politică"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "Link HTTPS către politica de securitate și divulgare"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fn"
+msgid "hiring"
+msgstr "Angajări"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "Link HTTPS către joburile deschise legate de securitate"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "Link HTTPS către metadatele furnizorului CSAF"
+
+#. config.robots-txt
+#: schema.json
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#. config.robots-txt.text
+#: schema.json
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "Reguli suplimentare adăugate în fișierul robots.txt pentru roboții web"
+
+#. config.styles
+#: schema.json
+msgctxt "st"
+msgid "styles"
+msgstr "stiluri"
+
+#. config.styles.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "Cod CSS personalizat adăugat pe toate paginile"
+
+#. config.javascript
+#: schema.json
+msgctxt "st"
+msgid "javascript"
+msgstr "javascript"
+
+#. config.javascript.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "Cod JavaScript personalizat adăugat pe toate paginile"

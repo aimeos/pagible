@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: lt\n"
+
+#. config.salon
+#: schema.json
+msgctxt "st"
+msgid "mane::salon"
+msgstr "Salonas"
+
+#. config.salon.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the salon, studio or barbershop"
+msgstr "Salono, studijos ar barberių pavadinimas"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Veiklos rūšis"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Veiklos rūšis, rodoma paieškos sistemoms"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Hair salon"
+msgstr "Kirpykla"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Barbershop"
+msgstr "Barberių kirpykla"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Beauty salon"
+msgstr "Grožio salonas"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Day spa"
+msgstr "Dienos SPA"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Kita veikla"
+
+#. config.salon.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adresas"
+
+#. config.salon.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Gatvė ir namo numeris"
+
+#. config.salon.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Pašto kodas"
+
+#. config.salon.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the salon"
+msgstr "Salono pašto kodas"
+
+#. config.salon.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Miestas"
+
+#. config.salon.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the salon is located in"
+msgstr "Miestas, kuriame yra salonas"
+
+#. config.salon.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Šalies kodas"
+
+#. config.salon.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dviejų raidžių ISO šalies kodas, pvz., DE arba US"
+
+#. config.salon.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefonas"
+
+#. config.salon.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefono numeris tarptautiniu formatu, naudojamas ir skambinimo mygtukui"
+
+#. config.salon.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "El. paštas"
+
+#. config.salon.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, gift cards and press"
+msgstr "El. pašto adresas vizitams, dovanų kortelėms ir spaudai"
+
+#. config.salon.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Pranešimas"
+
+#. config.salon.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. New clients get a free consultation"
+msgstr "Trumpas pranešimas kiekvieno puslapio viršuje, pvz., Naujiems klientams nemokama konsultacija"
+
+#. config.salon.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Rezervacijos nuoroda"
+
+#. config.salon.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment booking page, shown as a button in the header"
+msgstr "Nuoroda į vizito rezervacijos puslapį, rodoma kaip mygtukas antraštėje"
+
+#. config.salon.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Kainoraščio nuoroda"
+
+#. config.salon.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Nuoroda į paslaugų ir kainų puslapį"
+
+#. config.salon.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Kainų kategorija"
+
+#. config.salon.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the salon, e.g. $$ or €€"
+msgstr "Salono kainų lygis, pvz., $$ arba €€"
+
+#. config.salon.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Pastaba"
+
+#. config.salon.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Please cancel at least 24 hours before your appointment."
+msgstr "Trumpas pranešimas poraštėje, pvz., Vizitą atšaukite ne vėliau kaip prieš 24 valandas."
+
+#. config.salon.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Veiksmų juosta"
+
+#. config.salon.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Telefonuose rodyti skambinimo ir rezervacijos mygtukus ekrano apačioje"
+
+#. config.salon.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Darbo laikas"
+
+#. config.salon.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Darbo laikas kiekvienai savaitės dienai, rodomas poraštėje"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Diena"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Savaitės diena"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pirmadienis"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Antradienis"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Trečiadienis"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Ketvirtadienis"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Penktadienis"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Šeštadienis"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Sekmadienis"
+
+#. config.salon.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Atidarymo laikas"
+
+#. config.salon.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 09:00"
+msgstr "Atidarymo laikas 24 valandų formatu, pvz., 09:00"
+
+#. config.salon.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Uždarymo laikas"
+
+#. config.salon.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 19:00"
+msgstr "Uždarymo laikas 24 valandų formatu, pvz., 19:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "mane::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Kampų suapvalinimas, nurodytas kaip CSS ilgio vienetas, pvz., 1rem arba 0 – jei norima aštrių kampų"

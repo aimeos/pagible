@@ -2,6 +2,7 @@
 
 <script>
 import { useDrawerStore, useSideStore } from '../stores'
+import { typeLabel } from '../i18n'
 
 export default {
   data: () => ({
@@ -23,6 +24,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     isActive(key, code) {
       return !!this.active[key]?.[code]
     },
@@ -57,7 +62,7 @@ export default {
           @click="toggle(key, code)"
           rounded="lg"
         >
-          <span class="name">{{ $pgettext('st', code).replace('::', ' ') }}</span>
+          <span class="name">{{ typeLabel(code) }}</span>
           <span class="value">{{ value }}</span>
         </v-list-item>
       </v-list-group>

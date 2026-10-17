@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: bg\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "Проект"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "Име на софтуерния проект"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "Версия"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "Текуща версия до логото, напр. v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "Едно изречение какво прави софтуерът, за търсачки"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "Хранилище"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "Връзка към хранилището с изходния код, напр. https://github.com/acme/project, показва се като икона в заглавието"
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "Език за програмиране"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "Основен език за програмиране на проекта за търсачки, напр. PHP или TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "Лиценз"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "Лиценз на софтуера в долния колонтитул, напр. MIT"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "Тема"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Закръгляване на ъглите като дължина в CSS, например 0.5rem или 0 за остри ъгли"

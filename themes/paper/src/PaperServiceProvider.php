@@ -14,6 +14,10 @@ class PaperServiceProvider extends Provider
         Schema::register( $basedir, 'paper' );
         View::addNamespace( 'paper', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'paper', '/vendor/cms/paper/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/paper' )], 'cms-theme' );
     }
 }

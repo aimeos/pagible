@@ -1,0 +1,539 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: id\n"
+
+#. content.property
+#: schema.json
+msgctxt "st"
+msgid "Property"
+msgstr "Properti"
+
+#. content.property
+#: schema.json
+msgctxt "sd"
+msgid "Real estate listing with details, map and documents"
+msgstr "Iklan properti dengan detail, peta, dan dokumen"
+
+#. content.property
+#. content.properties
+#: schema.json
+msgctxt "sg"
+msgid "estate"
+msgstr "Estate"
+
+#. content.property.text
+#: schema.json
+msgctxt "fh"
+msgid "Detailed description of the property"
+msgstr "Deskripsi rinci properti"
+
+#. content.property.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Lokasi"
+
+#. content.property.location
+#: schema.json
+msgctxt "fh"
+msgid "Description of the neighborhood and surroundings"
+msgstr "Deskripsi lingkungan dan sekitarnya"
+
+#. content.property.map
+#: schema.json
+msgctxt "fn"
+msgid "map"
+msgstr "Peta"
+
+#. content.property.map
+#: schema.json
+msgctxt "fh"
+msgid "Search for the address or click on the map to set the location"
+msgstr "Cari alamat atau klik pada peta untuk menetapkan lokasi"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fn"
+msgid "Reference"
+msgstr "Referensi"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fh"
+msgid "Internal reference number of the property"
+msgstr "Nomor referensi internal properti"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fn"
+msgid "Type"
+msgstr "Jenis"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of property"
+msgstr "Jenis properti"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Apartment"
+msgstr "Apartemen"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Penthouse"
+msgstr "Penthouse"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Loft"
+msgstr "Loft"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "House"
+msgstr "Rumah"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Villa"
+msgstr "Vila"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Land"
+msgstr "Tanah"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Office"
+msgstr "Kantor"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Retail"
+msgstr "Ruang ritel"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Warehouse"
+msgstr "Gudang"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Industrial"
+msgstr "Industri"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Other"
+msgstr "Lainnya"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fn"
+msgid "Offer type"
+msgstr "Jenis penawaran"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fh"
+msgid "Property offered for sale or for rent"
+msgstr "Properti yang ditawarkan untuk dijual atau disewa"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Sale"
+msgstr "Dijual"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Rent"
+msgstr "Disewakan"
+
+#. content.property.address
+#: schema.json
+msgctxt "fn"
+msgid "Address"
+msgstr "Alamat"
+
+#. content.property.address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Nama jalan dan nomor rumah"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fn"
+msgid "Post code"
+msgstr "Kode pos"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the property"
+msgstr "Kode pos properti"
+
+#. content.property.price
+#: schema.json
+msgctxt "fn"
+msgid "Price"
+msgstr "Harga"
+
+#. content.property.price
+#: schema.json
+msgctxt "fh"
+msgid "Purchase price or rent of the property"
+msgstr "Harga pembelian atau sewa properti"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fn"
+msgid "Price period (rent only)"
+msgstr "Periode harga (khusus sewa)"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fh"
+msgid "Time period the rent is charged for"
+msgstr "Periode waktu sewa dikenakan"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Month"
+msgstr "Bulan"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Week"
+msgstr "Minggu"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Year"
+msgstr "Tahun"
+
+#. content.property.status
+#: schema.json
+msgctxt "fn"
+msgid "Status"
+msgstr "Status"
+
+#. content.property.status
+#: schema.json
+msgctxt "fh"
+msgid "Current availability of the property"
+msgstr "Ketersediaan properti saat ini"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Available"
+msgstr "Tersedia"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Under offer"
+msgstr "Dalam penawaran"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Sold"
+msgstr "Terjual"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Rented"
+msgstr "Tersewa"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fn"
+msgid "Available from"
+msgstr "Tersedia mulai"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fh"
+msgid "Date from which the property is available"
+msgstr "Tanggal mulai properti tersedia"
+
+#. content.property.district
+#: schema.json
+msgctxt "fn"
+msgid "District"
+msgstr "Distrik"
+
+#. content.property.district
+#: schema.json
+msgctxt "fh"
+msgid "District or neighborhood of the city"
+msgstr "Distrik atau lingkungan kota"
+
+#. content.property.city
+#: schema.json
+msgctxt "fn"
+msgid "city"
+msgstr "Kota"
+
+#. content.property.city
+#: schema.json
+msgctxt "fh"
+msgid "City the property is located in"
+msgstr "Kota tempat properti berada"
+
+#. content.property.country
+#: schema.json
+msgctxt "fn"
+msgid "Country"
+msgstr "Negara"
+
+#. content.property.country
+#: schema.json
+msgctxt "fh"
+msgid "Country the property is located in"
+msgstr "Negara tempat properti berada"
+
+#. content.property.area
+#: schema.json
+msgctxt "fn"
+msgid "Area"
+msgstr "Luas"
+
+#. content.property.area
+#: schema.json
+msgctxt "fh"
+msgid "Total area of the property"
+msgstr "Total luas properti"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fn"
+msgid "Area unit"
+msgstr "Satuan luas"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fh"
+msgid "Unit of all area values, e.g. m² or sq ft"
+msgstr "Satuan untuk semua nilai luas, misalnya m² atau sq ft"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fn"
+msgid "Living area"
+msgstr "Luas bangunan"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fh"
+msgid "Usable living space"
+msgstr "Luas ruang tinggal yang dapat digunakan"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fn"
+msgid "Plot area"
+msgstr "Luas tanah"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fh"
+msgid "Size of the land"
+msgstr "Luas tanah"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fn"
+msgid "Rooms"
+msgstr "Ruangan"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fh"
+msgid "Total number of rooms"
+msgstr "Jumlah total ruangan"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fn"
+msgid "bedrooms"
+msgstr "Kamar tidur"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bedrooms"
+msgstr "Jumlah kamar tidur"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fn"
+msgid "bathrooms"
+msgstr "Kamar mandi"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bathrooms"
+msgstr "Jumlah kamar mandi"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fn"
+msgid "Year built"
+msgstr "Tahun dibangun"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fh"
+msgid "Year of construction"
+msgstr "Tahun pembangunan"
+
+#. content.property.values
+#: schema.json
+msgctxt "fn"
+msgid "Optional values"
+msgstr "Detail tambahan"
+
+#. content.property.values
+#: schema.json
+msgctxt "fh"
+msgid "Additional details as name and value pairs"
+msgstr "Detail tambahan sebagai pasangan nama dan nilai"
+
+#. content.property.features
+#: schema.json
+msgctxt "fn"
+msgid "Features"
+msgstr "Fasilitas"
+
+#. content.property.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features and equipment"
+msgstr "Daftar fitur dan perlengkapan"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fn"
+msgid "Documents"
+msgstr "Dokumen"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fh"
+msgid "Downloadable documents like floor plans or energy certificates"
+msgstr "Dokumen yang dapat diunduh seperti denah lantai atau sertifikat energi"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fn"
+msgid "Document title"
+msgstr "Judul dokumen"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the document shown to visitors"
+msgstr "Nama dokumen yang ditampilkan kepada pengunjung"
+
+#. content.property.documents.file
+#: schema.json
+msgctxt "fn"
+msgid "Document"
+msgstr "Dokumen"
+
+#. content.property.files
+#: schema.json
+msgctxt "fh"
+msgid "Photos of the property, the first one is used as preview image"
+msgstr "Foto properti, yang pertama digunakan sebagai gambar pratinjau"
+
+#. content.properties
+#: schema.json
+msgctxt "st"
+msgid "Properties"
+msgstr "Daftar properti"
+
+#. content.properties
+#: schema.json
+msgctxt "sd"
+msgid "List of real estate listings with filters"
+msgstr "Daftar iklan properti dengan filter"
+
+#. content.properties.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the properties as cards or as a compact list"
+msgstr "Tampilkan properti sebagai kartu atau sebagai daftar ringkas"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fn"
+msgid "Show filters"
+msgstr "Tampilkan filter"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fh"
+msgid "Allow visitors to filter the properties"
+msgstr "Izinkan pengunjung memfilter properti"
+
+#. content.properties.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose property subpages are listed"
+msgstr "Halaman yang subhalaman propertinya didaftar"
+
+#. content.properties.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed properties"
+msgstr "Urutan pengurutan properti yang ditampilkan"
+
+#. content.properties.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of properties shown at once"
+msgstr "Jumlah maksimum properti yang ditampilkan sekaligus"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "estate::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "Font judul"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "Daftar font yang dipisahkan koma yang digunakan untuk judul"

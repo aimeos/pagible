@@ -1,0 +1,539 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-TW\n"
+
+#. content.property
+#: schema.json
+msgctxt "st"
+msgid "Property"
+msgstr "房產"
+
+#. content.property
+#: schema.json
+msgctxt "sd"
+msgid "Real estate listing with details, map and documents"
+msgstr "附有詳細資訊、地圖及文件的房產刊登資訊"
+
+#. content.property
+#. content.properties
+#: schema.json
+msgctxt "sg"
+msgid "estate"
+msgstr "Estate"
+
+#. content.property.text
+#: schema.json
+msgctxt "fh"
+msgid "Detailed description of the property"
+msgstr "該物業的詳細說明"
+
+#. content.property.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "地點"
+
+#. content.property.location
+#: schema.json
+msgctxt "fh"
+msgid "Description of the neighborhood and surroundings"
+msgstr "社區及周邊環境的描述"
+
+#. content.property.map
+#: schema.json
+msgctxt "fn"
+msgid "map"
+msgstr "地圖"
+
+#. content.property.map
+#: schema.json
+msgctxt "fh"
+msgid "Search for the address or click on the map to set the location"
+msgstr "搜尋地址或點擊地圖以設定位置"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fn"
+msgid "Reference"
+msgstr "物件編號"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fh"
+msgid "Internal reference number of the property"
+msgstr "該物業的內部參考編號"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fn"
+msgid "Type"
+msgstr "類型"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of property"
+msgstr "物業類型"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Apartment"
+msgstr "公寓"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Penthouse"
+msgstr "頂層公寓"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Loft"
+msgstr "Loft"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "House"
+msgstr "房屋"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Villa"
+msgstr "別墅"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Land"
+msgstr "土地"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Office"
+msgstr "辦公室"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Retail"
+msgstr "店面"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Warehouse"
+msgstr "倉庫"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Industrial"
+msgstr "工業"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Other"
+msgstr "其他"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fn"
+msgid "Offer type"
+msgstr "交易類型"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fh"
+msgid "Property offered for sale or for rent"
+msgstr "待售或待租物業"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Sale"
+msgstr "出售"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Rent"
+msgstr "出租"
+
+#. content.property.address
+#: schema.json
+msgctxt "fn"
+msgid "Address"
+msgstr "地址"
+
+#. content.property.address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "街道名稱與門牌號碼"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fn"
+msgid "Post code"
+msgstr "郵遞區號"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the property"
+msgstr "該物業的郵遞區號"
+
+#. content.property.price
+#: schema.json
+msgctxt "fn"
+msgid "Price"
+msgstr "價格"
+
+#. content.property.price
+#: schema.json
+msgctxt "fh"
+msgid "Purchase price or rent of the property"
+msgstr "該物業的購買價格或租金"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fn"
+msgid "Price period (rent only)"
+msgstr "計價週期（僅限出租）"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fh"
+msgid "Time period the rent is charged for"
+msgstr "租金所涵蓋的期間"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Month"
+msgstr "月"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Week"
+msgstr "週"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Year"
+msgstr "年"
+
+#. content.property.status
+#: schema.json
+msgctxt "fn"
+msgid "Status"
+msgstr "狀態"
+
+#. content.property.status
+#: schema.json
+msgctxt "fh"
+msgid "Current availability of the property"
+msgstr "該物業目前的空房狀況"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Available"
+msgstr "可租售"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Under offer"
+msgstr "洽談中"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Sold"
+msgstr "已售出"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Rented"
+msgstr "已租出"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fn"
+msgid "Available from"
+msgstr "可入住日期"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fh"
+msgid "Date from which the property is available"
+msgstr "該物業可供租用的起始日期"
+
+#. content.property.district
+#: schema.json
+msgctxt "fn"
+msgid "District"
+msgstr "區"
+
+#. content.property.district
+#: schema.json
+msgctxt "fh"
+msgid "District or neighborhood of the city"
+msgstr "該城市的行政區或社區"
+
+#. content.property.city
+#: schema.json
+msgctxt "fn"
+msgid "city"
+msgstr "城市"
+
+#. content.property.city
+#: schema.json
+msgctxt "fh"
+msgid "City the property is located in"
+msgstr "該物業所在的城市"
+
+#. content.property.country
+#: schema.json
+msgctxt "fn"
+msgid "Country"
+msgstr "國家"
+
+#. content.property.country
+#: schema.json
+msgctxt "fh"
+msgid "Country the property is located in"
+msgstr "物業所在國家"
+
+#. content.property.area
+#: schema.json
+msgctxt "fn"
+msgid "Area"
+msgstr "面積"
+
+#. content.property.area
+#: schema.json
+msgctxt "fh"
+msgid "Total area of the property"
+msgstr "該物業的總面積"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fn"
+msgid "Area unit"
+msgstr "面積單位"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fh"
+msgid "Unit of all area values, e.g. m² or sq ft"
+msgstr "所有面積值的單位，例如 m² 或平方英尺"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fn"
+msgid "Living area"
+msgstr "居住面積"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fh"
+msgid "Usable living space"
+msgstr "可用居住面積"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fn"
+msgid "Plot area"
+msgstr "土地面積"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fh"
+msgid "Size of the land"
+msgstr "土地面積"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fn"
+msgid "Rooms"
+msgstr "房間"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fh"
+msgid "Total number of rooms"
+msgstr "總房數"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fn"
+msgid "bedrooms"
+msgstr "臥室"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bedrooms"
+msgstr "臥室數量"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fn"
+msgid "bathrooms"
+msgstr "浴室"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bathrooms"
+msgstr "浴室數量"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fn"
+msgid "Year built"
+msgstr "建造年份"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fh"
+msgid "Year of construction"
+msgstr "建造年份"
+
+#. content.property.values
+#: schema.json
+msgctxt "fn"
+msgid "Optional values"
+msgstr "可選值"
+
+#. content.property.values
+#: schema.json
+msgctxt "fh"
+msgid "Additional details as name and value pairs"
+msgstr "以名稱-值對形式呈現的額外詳細資訊"
+
+#. content.property.features
+#: schema.json
+msgctxt "fn"
+msgid "Features"
+msgstr "特色"
+
+#. content.property.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features and equipment"
+msgstr "功能與配備一覽表"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fn"
+msgid "Documents"
+msgstr "文件"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fh"
+msgid "Downloadable documents like floor plans or energy certificates"
+msgstr "可下載的文件，例如平面圖或能源證書"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fn"
+msgid "Document title"
+msgstr "文件標題"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the document shown to visitors"
+msgstr "向訪客顯示的文件名稱"
+
+#. content.property.documents.file
+#: schema.json
+msgctxt "fn"
+msgid "Document"
+msgstr "文件"
+
+#. content.property.files
+#: schema.json
+msgctxt "fh"
+msgid "Photos of the property, the first one is used as preview image"
+msgstr "該房產的照片，第一張用作預覽圖片"
+
+#. content.properties
+#: schema.json
+msgctxt "st"
+msgid "Properties"
+msgstr "房產列表"
+
+#. content.properties
+#: schema.json
+msgctxt "sd"
+msgid "List of real estate listings with filters"
+msgstr "附有篩選條件的房產列表"
+
+#. content.properties.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the properties as cards or as a compact list"
+msgstr "以卡片或簡潔清單的形式顯示屬性"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fn"
+msgid "Show filters"
+msgstr "顯示篩選條件"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fh"
+msgid "Allow visitors to filter the properties"
+msgstr "允許訪客篩選房源"
+
+#. content.properties.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose property subpages are listed"
+msgstr "列出其子頁面清單的頁面"
+
+#. content.properties.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed properties"
+msgstr "所列屬性的排序順序"
+
+#. content.properties.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of properties shown at once"
+msgstr "一次最多顯示的房源數量"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "estate::theme"
+msgstr "主題"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "標題字型"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "以逗號分隔、用於標題的字型清單"

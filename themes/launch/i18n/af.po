@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: af\n"
+
+#. config.product
+#: schema.json
+msgctxt "st"
+msgid "launch::product"
+msgstr "Produk"
+
+#. config.product.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software product or app"
+msgstr "Naam van die sagtewareproduk of -app"
+
+#. config.product.category
+#: schema.json
+msgctxt "fn"
+msgid "Category"
+msgstr "Kategorie"
+
+#. config.product.category
+#: schema.json
+msgctxt "fh"
+msgid "Kind of software shown to search engines"
+msgstr "Soort sagteware wat aan soekenjins gewys word"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Business software"
+msgstr "Sakesagteware"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Developer tool"
+msgstr "Ontwikkelaarsgereedskap"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Design tool"
+msgstr "Ontwerpgereedskap"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Finance software"
+msgstr "Finansiële sagteware"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Security software"
+msgstr "Sekuriteitsagteware"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Learning software"
+msgstr "Leersagteware"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Consumer app"
+msgstr "Verbruikersprogram"
+
+#. config.product.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the product does, used for search engines"
+msgstr "Een sin wat beskryf wat die produk doen, gebruik vir soekenjins"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Aankondiging"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+msgstr "Kort nuus wat bo-aan elke bladsy vertoon word, bv. Nuut: statusbladsye met pasgemaakte domeine"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fn"
+msgid "Announcement link"
+msgstr "Aankondigingskakel"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fh"
+msgid "Page the announcement links to, e.g. the changelog entry"
+msgstr "Die bladsy waarna die aankondigingskakels verwys, bv. die inskrywing in die veranderingslogboek."
+
+#. config.product.status
+#: schema.json
+msgctxt "fn"
+msgid "Status page link"
+msgstr "Skakel na statusbladsy"
+
+#. config.product.status
+#: schema.json
+msgctxt "fh"
+msgid "Link to the public status page, shown in the footer"
+msgstr "Skakel na die openbare statusbladsy, vertoon in die voetskrif"
+
+#. config.product.price
+#: schema.json
+msgctxt "fn"
+msgid "Starting price"
+msgstr "Beginprys"
+
+#. config.product.price
+#: schema.json
+msgctxt "fh"
+msgid "Lowest price for search engines, e.g. 0 for a free plan or 19.00"
+msgstr "Laagste prys vir soekenjins, bv. 0 vir 'n gratis plan of 19.00"
+
+#. config.product.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. USD or EUR"
+msgstr "Drie-letter ISO-geldeenheidkode, bv. USD of EUR"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fn"
+msgid "Rating"
+msgstr "Beoordeling"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fh"
+msgid "Average review rating from 1 to 5, e.g. 4.8"
+msgstr "Gemiddelde beoordelingsgradering van 1 tot 5, bv. 4.8"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fn"
+msgid "Number of reviews"
+msgstr "Aantal resensies"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fh"
+msgid "Number of reviews the rating is based on"
+msgstr "Aantal resensies waarop die beoordeling gebaseer is"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Kennisgewing"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+msgstr "Kort nota wat in die voetskrif vertoon word, bv. SOC 2 Tipe II-gesertifiseer, data gehos in die EU"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "launch::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Afgeronde hoeke as CSS-lengte, bv. 1rem of 0 vir skerp hoeke"

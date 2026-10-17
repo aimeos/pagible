@@ -1,0 +1,274 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: pt\n"
+
+#. config.business
+#: schema.json
+msgctxt "st"
+msgid "volt::business"
+msgstr "Empresa"
+
+#. config.business.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "Nome da empresa"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Tipo de negócio"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Tipo de negócio mostrado aos motores de busca"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Electrician"
+msgstr "Eletricista"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "Aquecimento e ar condicionado"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "Empresa de construção e remodelação"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Rua e número de porta"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Rua e número de porta"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Código postal"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the company"
+msgstr "Código postal da empresa"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Cidade"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the company is located in"
+msgstr "Cidade onde a empresa se encontra"
+
+#. config.business.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Código do país"
+
+#. config.business.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Código de país ISO de duas letras, por exemplo, DE ou US"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefone"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Número de telefone em formato internacional, também usado pelo botão de chamada"
+
+#. config.business.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Número de emergência"
+
+#. config.business.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "Número de telefone para emergências, mostrado no topo de cada página"
+
+#. config.business.emergency
+#: schema.json
+msgctxt "fn"
+msgid "24/7 service"
+msgstr "Serviço 24/7"
+
+#. config.business.emergency
+#: schema.json
+msgctxt "fh"
+msgid "Emergency service is available around the clock"
+msgstr "O serviço de emergência está disponível 24 horas por dia"
+
+#. config.business.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. config.business.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "Endereço de email para pedidos"
+
+#. config.business.area
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "Zonas servidas"
+
+#. config.business.area
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "Lista separada por vírgulas das cidades e regiões onde trabalha, p. ex. Leeds, Bradford, York"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Faixa de preço"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the company, e.g. $$ or €€"
+msgstr "Nível de preços da empresa, p. ex. $$ ou €€"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Botão de chamada"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Mostrar um botão de chamada na parte inferior do ecrã nos telemóveis"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Horário de funcionamento"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Horário de funcionamento para cada dia da semana"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Dia"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Dia da semana"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Segunda-feira"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Terça-feira"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Quarta-feira"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Quinta-feira"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Sexta-feira"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sábado"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Domingo"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Abertura"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Hora de abertura em formato de 24 horas, por exemplo, 07:30"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Fecho"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Hora de encerramento em formato de 24 horas, por exemplo, 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "volt::theme"
+msgstr "Tema"

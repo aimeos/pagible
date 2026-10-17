@@ -1,0 +1,365 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: km\n"
+
+#. config.practice
+#: schema.json
+msgctxt "st"
+msgid "medical::practice"
+msgstr "គ្លីនិក"
+
+#. config.practice.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the practice"
+msgstr "ឈ្មោះគ្លីនិក"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Practice type"
+msgstr "ប្រភេទគ្លីនិក"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of practice shown to search engines"
+msgstr "ប្រភេទគ្លីនិកដែលបង្ហាញដល់ម៉ាស៊ីនស្វែងរក"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Dentist"
+msgstr "ទន្តពេទ្យ"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Physician"
+msgstr "វេជ្ជបណ្ឌិត"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Medical clinic"
+msgstr "គ្លីនិកវេជ្ជសាស្ត្រ"
+
+#. config.practice.business-type
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Physiotherapy"
+msgstr "ការព្យាបាលដោយចលនា"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other medical practice"
+msgstr "គ្លីនិកវេជ្ជសាស្ត្រផ្សេងទៀត"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "fn"
+msgid "Medical specialty"
+msgstr "ជំនាញវេជ្ជសាស្ត្រ"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "fh"
+msgid "Main medical specialty of the practice"
+msgstr "ជំនាញវេជ្ជសាស្ត្រចម្បងរបស់គ្លីនិក"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Dentistry"
+msgstr "ទន្តសាស្ត្រ"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "General practice"
+msgstr "វេជ្ជសាស្ត្រទូទៅ"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Pediatrics"
+msgstr "កុមារវេជ្ជសាស្ត្រ"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Dermatology"
+msgstr "រោគសើស្បែក"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Gynecology"
+msgstr "រោគស្ត្រី"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Cardiology"
+msgstr "រោគបេះដូង"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Ear, nose and throat"
+msgstr "ត្រចៀក ច្រមុះ និងបំពង់ក"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Optometry"
+msgstr "ការពិនិត្យភ្នែក"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Psychiatry"
+msgstr "វិកលចរិតសាស្ត្រ"
+
+#. config.practice.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "អាសយដ្ឋានផ្លូវ"
+
+#. config.practice.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "ផ្លូវ និងលេខផ្ទះ"
+
+#. config.practice.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "លេខកូដប្រៃសណីយ៍"
+
+#. config.practice.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the practice"
+msgstr "លេខកូដប្រៃសណីយ៍របស់គ្លីនិក"
+
+#. config.practice.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "ទីក្រុង"
+
+#. config.practice.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the practice is located in"
+msgstr "ទីក្រុងដែលគ្លីនិកស្ថិតនៅ"
+
+#. config.practice.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "លេខកូដប្រទេស"
+
+#. config.practice.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "លេខកូដប្រទេស ISO ពីរតួអក្សរ ឧ. DE ឬ US"
+
+#. config.practice.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "ទូរស័ព្ទ"
+
+#. config.practice.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "លេខទូរស័ព្ទជាទម្រង់អន្តរជាតិ ដែលប្រើសម្រាប់ប៊ូតុងហៅទូរស័ព្ទផងដែរ"
+
+#. config.practice.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "អ៊ីមែល"
+
+#. config.practice.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointment requests"
+msgstr "អាសយដ្ឋានអ៊ីមែលសម្រាប់សំណើណាត់ជួប"
+
+#. config.practice.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "លេខបន្ទាន់"
+
+#. config.practice.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "លេខទូរស័ព្ទសម្រាប់ករណីបន្ទាន់ ដែលបង្ហាញនៅផ្នែកខាងលើនៃទំព័រនីមួយៗ"
+
+#. config.practice.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "តំណកក់"
+
+#. config.practice.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment page or online booking, shown as a button in the header"
+msgstr "តំណទៅទំព័រណាត់ជួប ឬការកក់អនឡាញ ដែលបង្ហាញជាប៊ូតុងនៅក្បាលទំព័រ"
+
+#. config.practice.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "ភាសា"
+
+#. config.practice.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken in the practice, e.g. English, German, French"
+msgstr "បញ្ជីភាសាដែលនិយាយនៅគ្លីនិក ដោយបំបែកដោយសញ្ញាក្បៀស ឧ. English, German, French"
+
+#. config.practice.new-patients
+#: schema.json
+msgctxt "fn"
+msgid "New patients"
+msgstr "អ្នកជំងឺថ្មី"
+
+#. config.practice.new-patients
+#: schema.json
+msgctxt "fh"
+msgid "Tell search engines that the practice accepts new patients"
+msgstr "ប្រាប់ម៉ាស៊ីនស្វែងរកថាគ្លីនិកទទួលអ្នកជំងឺថ្មី"
+
+#. config.practice.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "កម្រិតតម្លៃ"
+
+#. config.practice.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the practice, e.g. $$ or €€"
+msgstr "កម្រិតតម្លៃរបស់គ្លីនិក ឧ. $$ ឬ €€"
+
+#. config.practice.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "ប៊ូតុងហៅទូរស័ព្ទ"
+
+#. config.practice.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "បង្ហាញប៊ូតុងហៅទូរស័ព្ទនៅផ្នែកខាងក្រោមនៃអេក្រង់លើទូរស័ព្ទ"
+
+#. config.practice.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "ម៉ោងបើក"
+
+#. config.practice.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "ម៉ោងបើកសម្រាប់ថ្ងៃនីមួយៗក្នុងសប្តាហ៍"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "ថ្ងៃ"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "ថ្ងៃនៃសប្តាហ៍"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "ថ្ងៃច័ន្ទ"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "ថ្ងៃអង្គារ"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "ថ្ងៃពុធ"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "ថ្ងៃព្រហស្បតិ៍"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "ថ្ងៃសុក្រ"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "ថ្ងៃសៅរ៍"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "ថ្ងៃអាទិត្យ"
+
+#. config.practice.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "ចាប់ពីម៉ោង"
+
+#. config.practice.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "ម៉ោងបើកជាទម្រង់ 24 ម៉ោង ឧ. 07:30"
+
+#. config.practice.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "ដល់ម៉ោង"
+
+#. config.practice.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "ម៉ោងបិទជាទម្រង់ 24 ម៉ោង ឧ. 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "medical::theme"
+msgstr "រចនាប័ទ្ម"

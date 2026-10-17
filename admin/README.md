@@ -265,7 +265,18 @@ Extensions keep their translations in their own package:
 2. Use its key as the panel's `i18n` value.
 3. Use the same key as gettext context for all extension strings, e.g. `$pgettext('commerce', 'Products')`.
 
-The admin loads the catalog of the active locale into its shared gettext instance without overwriting the core or other package contexts. All labels and messages of extensions must be translated.
+The admin loads the catalog of the active locale into its shared gettext instance without overwriting the core or other package contexts. Regional locales like `pt-BR` and `zh-TW` use the messages of their base language (`pt`, `zh`) if they are missing in the regional catalogs. All labels and messages of extensions must be translated.
+
+Themes translate the names, descriptions, groups, fields, hints and options of their `schema.json` elements the same way, using the contexts of the element editor (`st`, `sd`, `sg`, `fn`, `fh` and `op`) instead of their own key. The catalogs are created from the schema file by the generator in the repository root:
+
+```bash
+php bin/schema-i18n extract themes/example   # updates i18n/messages.pot and i18n/<locale>.po
+php bin/schema-i18n compile themes/example   # writes public/i18n/<locale>.json
+```
+
+Then register them in the theme's service provider with `Plugin::i18n( 'example', '/vendor/cms/example/i18n/{locale}.json' )`. The base theme catalog (`cms`) is merged right after the admin catalog and wins over the other themes for the same string. Therefore, strings of the admin and the base theme catalogs are skipped, and new entries are filled with existing translations of the theme, the admin and the base theme. Elements without `label` are named by their prefixed type, e.g. `example::theme`; if it isn't translated, the admin uses the translation of the unprefixed name.
+
+`composer build` updates and compiles all theme catalogs, `composer translate` additionally translates new entries with DeepL.
 
 ## License
 

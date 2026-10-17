@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: no\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "Prosjekt"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "Navnet på programvareprosjektet"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "Versjon"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "Gjeldende versjon ved siden av logoen, f.eks. v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "Én setning om hva programvaren gjør, for søkemotorer"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "Repository"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "Lenke til kildekodens repository, f.eks. https://github.com/acme/project, vist som ikon i toppfeltet"
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "Programmeringsspråk"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "Prosjektets viktigste programmeringsspråk for søkemotorer, f.eks. PHP eller TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "Lisens"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "Programvarens lisens i bunnteksten, f.eks. MIT"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Avrunding av hjørner som CSS-lengde, f.eks. 0.5rem eller 0 for skarpe hjørner"

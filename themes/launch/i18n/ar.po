@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ar\n"
+
+#. config.product
+#: schema.json
+msgctxt "st"
+msgid "launch::product"
+msgstr "المنتج"
+
+#. config.product.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software product or app"
+msgstr "اسم المنتج البرمجي أو التطبيق"
+
+#. config.product.category
+#: schema.json
+msgctxt "fn"
+msgid "Category"
+msgstr "الفئة"
+
+#. config.product.category
+#: schema.json
+msgctxt "fh"
+msgid "Kind of software shown to search engines"
+msgstr "نوع البرنامج الذي يُعرض لمحركات البحث"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Business software"
+msgstr "برنامج أعمال"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Developer tool"
+msgstr "أداة للمطورين"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Design tool"
+msgstr "أداة تصميم"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Finance software"
+msgstr "برنامج مالي"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Security software"
+msgstr "برنامج أمني"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Learning software"
+msgstr "برنامج تعليمي"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Consumer app"
+msgstr "تطبيق استهلاكي"
+
+#. config.product.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the product does, used for search engines"
+msgstr "جملة واحدة تصف ما يقوم به المنتج، تُستخدم لمحركات البحث"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "الإعلان"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+msgstr "خبر قصير يظهر في أعلى كل صفحة، مثل: جديد: صفحات حالة بنطاقات مخصصة"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fn"
+msgid "Announcement link"
+msgstr "رابط الإعلان"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fh"
+msgid "Page the announcement links to, e.g. the changelog entry"
+msgstr "الصفحة التي يرتبط بها الإعلان، مثل إدخال سجل التغييرات"
+
+#. config.product.status
+#: schema.json
+msgctxt "fn"
+msgid "Status page link"
+msgstr "رابط صفحة الحالة"
+
+#. config.product.status
+#: schema.json
+msgctxt "fh"
+msgid "Link to the public status page, shown in the footer"
+msgstr "رابط لصفحة الحالة العامة، يظهر في التذييل"
+
+#. config.product.price
+#: schema.json
+msgctxt "fn"
+msgid "Starting price"
+msgstr "السعر الأساسي"
+
+#. config.product.price
+#: schema.json
+msgctxt "fh"
+msgid "Lowest price for search engines, e.g. 0 for a free plan or 19.00"
+msgstr "أدنى سعر لمحركات البحث، مثل 0 للخطة المجانية أو 19.00"
+
+#. config.product.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. USD or EUR"
+msgstr "رمز العملة من ثلاثة أحرف حسب ISO، مثل USD أو EUR"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fn"
+msgid "Rating"
+msgstr "التقييم"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fh"
+msgid "Average review rating from 1 to 5, e.g. 4.8"
+msgstr "متوسط تقييم المراجعات من 1 إلى 5، مثل 4.8"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fn"
+msgid "Number of reviews"
+msgstr "عدد المراجعات"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fh"
+msgid "Number of reviews the rating is based on"
+msgstr "عدد التقييمات التي يعتمد عليها التقييم"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "ملاحظة"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+msgstr "ملاحظة قصيرة تظهر في التذييل، مثل معتمد SOC 2 Type II، البيانات مستضافة في الاتحاد الأوروبي"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "launch::theme"
+msgstr "المظهر"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "تقريب الزوايا كطول في CSS، على سبيل المثال 1rem أو 0 للحصول على زوايا حادة"

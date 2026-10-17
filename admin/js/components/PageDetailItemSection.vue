@@ -6,6 +6,7 @@ import SchemaDialog from './SchemaDialog.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
 import { hasProp, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
+import { typeLabel } from '../i18n'
 
 export default {
   components: {
@@ -51,6 +52,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     add(item) {
       if (!this.item[this.section]) {
         this.item[this.section] = {}
@@ -152,7 +157,7 @@ export default {
     },
 
     title(el) {
-      return itemTitle(el.data) || this.$pgettext('st', el.type).replace('::', ' ') || ''
+      return itemTitle(el.data) || this.typeLabel(el.type) || ''
     },
 
     update(el) {
@@ -196,7 +201,7 @@ export default {
               variant="text"
             />
             <div class="element-title">{{ title(el) }}</div>
-            <div class="element-type">{{ $pgettext('st', el.type).replace('::', ' ') }}</div>
+            <div class="element-type">{{ typeLabel(el.type) }}</div>
           </v-expansion-panel-title>
           <v-expansion-panel-text eager>
             <Fields

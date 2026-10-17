@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ko\n"
+
+#. config.profile
+#: schema.json
+msgctxt "st"
+msgid "folio::profile"
+msgstr "프로필"
+
+#. config.profile.name
+#: schema.json
+msgctxt "fh"
+msgid "Your full name, shown as logo and author of the posts"
+msgstr "로고와 글쓴이로 표시되는 전체 이름"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fn"
+msgid "Job title"
+msgstr "직함"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fh"
+msgid "Your role used for search engines, e.g. Staff Engineer"
+msgstr "검색 엔진용 역할, 예: Staff Engineer"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fn"
+msgid "Company"
+msgstr "회사"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fh"
+msgid "Company or organization you work for, e.g. Northwind Labs"
+msgstr "근무하는 회사 또는 조직, 예: Northwind Labs"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "위치"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fh"
+msgid "City or region you live in, e.g. Berlin, Germany"
+msgstr "거주하는 도시 또는 지역, 예: 독일 베를린"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fn"
+msgid "Photo"
+msgstr "사진"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fh"
+msgid "Square photo or avatar of you shown below the posts"
+msgstr "글 아래에 표시되는 정사각형 사진 또는 아바타"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fn"
+msgid "Short bio"
+msgstr "짧은 소개"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fh"
+msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
+msgstr "모든 글 아래에 표시되는 한 문장 소개, 예: Laravel 앱을 만들고 데이터베이스에 대해 씁니다"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fn"
+msgid "E-mail"
+msgstr "이메일"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address shown in the footer with a copy button"
+msgstr "복사 버튼과 함께 푸터에 표시되는 이메일 주소"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fn"
+msgid "Profiles"
+msgstr "프로필 링크"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fh"
+msgid "Links to your profiles shown in the footer, e.g. GitHub, Mastodon or LinkedIn"
+msgstr "푸터에 표시되는 프로필 링크, 예: GitHub, Mastodon 또는 LinkedIn"
+
+#. config.profile.links.label
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website, e.g. GitHub"
+msgstr "웹사이트 이름, 예: GitHub"
+
+#. config.profile.links.url
+#: schema.json
+msgctxt "fh"
+msgid "Link to your profile, e.g. https://github.com/lena"
+msgstr "프로필 링크, 예: https://github.com/lena"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "folio::theme"
+msgstr "테마"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "CSS 길이 단위로 모서리 반경 지정: 예: 0.5rem 또는 날카로운 모서리를 원할 경우 0"

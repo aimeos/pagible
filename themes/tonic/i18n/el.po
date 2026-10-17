@@ -1,0 +1,310 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: el\n"
+
+#. config.bar
+#: schema.json
+msgctxt "st"
+msgid "tonic::bar"
+msgstr "Μπαρ"
+
+#. config.bar.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the bar, pub or club"
+msgstr "Όνομα του μπαρ, της παμπ ή του κλαμπ"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Είδος επιχείρησης"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Είδος επιχείρησης που εμφανίζεται στις μηχανές αναζήτησης"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bar or pub"
+msgstr "Μπαρ ή παμπ"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Night club"
+msgstr "Νυχτερινό κέντρο"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Brewery or taproom"
+msgstr "Ζυθοποιείο ή μπυραρία"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Εστιατόριο"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Άλλη επιχείρηση"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Διεύθυνση"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Οδός και αριθμός"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Ταχυδρομικός κώδικας"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the bar"
+msgstr "Ταχυδρομικός κώδικας του μπαρ"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Πόλη"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the bar is located in"
+msgstr "Πόλη όπου βρίσκεται το μπαρ"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Κωδικός χώρας"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Διγράμματος κωδικός χώρας ISO, π.χ. DE ή US"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Τηλέφωνο"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Αριθμός τηλεφώνου σε διεθνή μορφή, χρησιμοποιείται και για το κουμπί κλήσης"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for reservations, private events and press"
+msgstr "Διεύθυνση email για κρατήσεις, ιδιωτικές εκδηλώσεις και τύπο"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Ανακοίνωση"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
+msgstr "Σύντομο μήνυμα στο πάνω μέρος κάθε σελίδας, π.χ. Χωρίς κράτηση έως τις 23:00"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Σύνδεσμος κράτησης"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the table reservation page, shown as a button in the header"
+msgstr "Σύνδεσμος προς τη σελίδα κράτησης τραπεζιού, εμφανίζεται ως κουμπί στην κεφαλίδα"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Σύνδεσμος καταλόγου"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the drinks menu"
+msgstr "Σύνδεσμος προς τη σελίδα με τον κατάλογο ποτών"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Προσφερόμενα είδη"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
+msgstr "Λίστα με όσα σερβίρετε, χωρισμένη με κόμματα, π.χ. Κοκτέιλ, Κρασί, Μεζέδες"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Επίπεδο τιμών"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the bar, e.g. $$ or €€"
+msgstr "Επίπεδο τιμών του μπαρ, π.χ. $$ ή €€"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Σημείωση"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
+msgstr "Σύντομο μήνυμα στο υποσέλιδο, π.χ. Μόνο για άτομα άνω των 18. Πίνετε υπεύθυνα."
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Γραμμή ενεργειών"
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Εμφάνιση κουμπιών κλήσης και κράτησης στο κάτω μέρος της οθόνης σε κινητά"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Ώρες λειτουργίας"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Ώρες λειτουργίας για κάθε ημέρα της εβδομάδας, εμφανίζονται στο υποσέλιδο"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Ημέρα"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Ημέρα της εβδομάδας"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Δευτέρα"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Τρίτη"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Τετάρτη"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Πέμπτη"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Παρασκευή"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Σάββατο"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Κυριακή"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Ώρα ανοίγματος"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 18:00"
+msgstr "Ώρα έναρξης σε μορφή 24 ωρών, π.χ. 18:00"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Ώρα κλεισίματος"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, also after midnight, e.g. 02:00"
+msgstr "Ώρα κλεισίματος σε μορφή 24 ωρών, και μετά τα μεσάνυχτα, π.χ. 02:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "tonic::theme"
+msgstr "Θέμα"

@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: vi\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "Dự án"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "Tên dự án phần mềm"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "Phiên bản"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "Phiên bản hiện tại hiển thị cạnh logo, ví dụ v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "Một câu mô tả phần mềm làm gì, dành cho công cụ tìm kiếm"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "Kho mã"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "Liên kết đến kho mã nguồn, ví dụ https://github.com/acme/project, hiển thị dưới dạng biểu tượng ở đầu trang"
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "Ngôn ngữ lập trình"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "Ngôn ngữ lập trình chính của dự án cho công cụ tìm kiếm, ví dụ PHP hoặc TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "Giấy phép"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "Giấy phép phần mềm hiển thị ở chân trang, ví dụ MIT"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "Giao diện"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Làm tròn góc dưới dạng đơn vị độ dài CSS, ví dụ: 0.5rem hoặc 0 để có các góc nhọn"

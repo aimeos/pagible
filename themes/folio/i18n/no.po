@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: no\n"
+
+#. config.profile
+#: schema.json
+msgctxt "st"
+msgid "folio::profile"
+msgstr "Profil"
+
+#. config.profile.name
+#: schema.json
+msgctxt "fh"
+msgid "Your full name, shown as logo and author of the posts"
+msgstr "Ditt fulle navn, vist som logo og forfatter av innleggene"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fn"
+msgid "Job title"
+msgstr "Stillingstittel"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fh"
+msgid "Your role used for search engines, e.g. Staff Engineer"
+msgstr "Din rolle for søkemotorer, f.eks. Staff Engineer"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fn"
+msgid "Company"
+msgstr "Selskap"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fh"
+msgid "Company or organization you work for, e.g. Northwind Labs"
+msgstr "Selskap eller organisasjon du jobber for, f.eks. Northwind Labs"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Sted"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fh"
+msgid "City or region you live in, e.g. Berlin, Germany"
+msgstr "By eller region du bor i, f.eks. Berlin, Tyskland"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fn"
+msgid "Photo"
+msgstr "Bilde"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fh"
+msgid "Square photo or avatar of you shown below the posts"
+msgstr "Kvadratisk bilde eller avatar av deg under innleggene"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fn"
+msgid "Short bio"
+msgstr "Kort bio"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fh"
+msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
+msgstr "Én setning om deg under hvert innlegg, f.eks. Jeg bygger Laravel-apper og skriver om databaser"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fn"
+msgid "E-mail"
+msgstr "E-post"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address shown in the footer with a copy button"
+msgstr "E-postadresse i bunnteksten med en kopieringsknapp"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fn"
+msgid "Profiles"
+msgstr "Profiler"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fh"
+msgid "Links to your profiles shown in the footer, e.g. GitHub, Mastodon or LinkedIn"
+msgstr "Lenker til profilene dine i bunnteksten, f.eks. GitHub, Mastodon eller LinkedIn"
+
+#. config.profile.links.label
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website, e.g. GitHub"
+msgstr "Navn på nettstedet, f.eks. GitHub"
+
+#. config.profile.links.url
+#: schema.json
+msgctxt "fh"
+msgid "Link to your profile, e.g. https://github.com/lena"
+msgstr "Lenke til profilen din, f.eks. https://github.com/lena"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "folio::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "Avrunding av hjørner som CSS-lengde, f.eks. 0.5rem eller 0 for skarpe hjørner"

@@ -1,0 +1,292 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: uk\n"
+
+#. config.cafe
+#: schema.json
+msgctxt "st"
+msgid "brew::cafe"
+msgstr "Кав'ярня"
+
+#. config.cafe.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the café, roastery or bakery"
+msgstr "Назва кав'ярні, обсмажувальні або пекарні"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Вид діяльності"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Вид діяльності, що показується пошуковим системам"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Café or coffee shop"
+msgstr "Кав'ярня"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bakery"
+msgstr "Пекарня"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Ресторан"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business, e.g. roastery"
+msgstr "Інший бізнес, наприклад обсмажувальня"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Адреса"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Вулиця і номер будинку"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Поштовий індекс"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the café"
+msgstr "Поштовий індекс кав'ярні"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Місто"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the café is located in"
+msgstr "Місто, в якому розташована кав'ярня"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Код країни"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Дволітерний ISO-код країни, наприклад DE або US"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Телефон"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Номер телефону в міжнародному форматі, також використовується кнопкою дзвінка"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Ел. пошта"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for questions, catering and wholesale requests"
+msgstr "Адреса електронної пошти для запитань, кейтерингу та оптових запитів"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Оголошення"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Freshly roasted every Tuesday"
+msgstr "Коротке оголошення вгорі кожної сторінки, наприклад Свіже обсмаження щовівторка"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fn"
+msgid "Order link"
+msgstr "Посилання на замовлення"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fh"
+msgid "Link to the online shop or order ahead page, shown as a button in the header"
+msgstr "Посилання на інтернет-магазин або сторінку попереднього замовлення, показується як кнопка в шапці"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Посилання на меню"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the food and drinks menu"
+msgstr "Посилання на сторінку з меню страв і напоїв"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Кухня"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
+msgstr "Список через кому того, що ви пропонуєте, наприклад Спешелті-кава, Випічка, Сніданки"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Ціновий рівень"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the café, e.g. $ or €€"
+msgstr "Ціновий рівень кав'ярні, наприклад $ або €€"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Панель дій"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and order buttons at the bottom of the screen on phones"
+msgstr "Показувати кнопки дзвінка та замовлення внизу екрана на телефонах"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Години роботи"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Години роботи для кожного дня тижня, показуються в нижньому колонтитулі"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "День"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "День тижня"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Понеділок"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Вівторок"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Середа"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Четвер"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "П'ятниця"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Субота"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Неділя"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Відкриття"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Час відкриття у 24-годинному форматі, наприклад 07:30"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Закриття"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Час закриття у 24-годинному форматі, наприклад 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "brew::theme"
+msgstr "Тема оформлення"

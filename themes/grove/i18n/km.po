@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: km\n"
+
+#. config.garden
+#: schema.json
+msgctxt "st"
+msgid "grove::garden"
+msgstr "សួនច្បារ"
+
+#. config.garden.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the gardening, landscaping or garden design business"
+msgstr "ឈ្មោះអាជីវកម្មថែសួន រៀបចំទេសភាព ឬរចនាសួនច្បារ"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "ប្រភេទអាជីវកម្ម"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "ប្រភេទអាជីវកម្មដែលបង្ហាញដល់ម៉ាស៊ីនស្វែងរក"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Gardener and landscaper"
+msgstr "អ្នកថែសួន និងរៀបចំទេសភាព"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Landscape contractor"
+msgstr "អ្នកម៉ៅការទេសភាព"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden design studio"
+msgstr "ស្ទូឌីយោរចនាសួនច្បារ"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden centre or nursery"
+msgstr "មជ្ឈមណ្ឌលសួនច្បារ ឬថ្នាលកូនឈើ"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other garden business"
+msgstr "អាជីវកម្មសួនច្បារផ្សេងទៀត"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "អាសយដ្ឋានផ្លូវ"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "ផ្លូវ និងលេខផ្ទះ"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "លេខកូដប្រៃសណីយ៍"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "លេខកូដប្រៃសណីយ៍របស់អាជីវកម្ម"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "ទីក្រុង"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "ទីក្រុងដែលអាជីវកម្មស្ថិតនៅ"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "លេខកូដប្រទេស"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "លេខកូដប្រទេស ISO ពីរតួអក្សរ ឧ. DE ឬ US"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "ទូរស័ព្ទ"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "លេខទូរស័ព្ទជាទម្រង់អន្តរជាតិ ដែលប្រើសម្រាប់ប៊ូតុងហៅទូរស័ព្ទផងដែរ"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fn"
+msgid "Service area"
+msgstr "តំបន់សេវាកម្ម"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fh"
+msgid "Towns and areas you work in, separated by commas, shown in the top bar and the footer"
+msgstr "ទីក្រុង និងតំបន់ដែលអ្នកធ្វើការ ដោយបំបែកដោយសញ្ញាក្បៀស ដែលបង្ហាញនៅរបារខាងលើ និងបាតទំព័រ"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "អ៊ីមែល"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for quotes, site visits and garden care enquiries"
+msgstr "អាសយដ្ឋានអ៊ីមែលសម្រាប់សំណើតម្លៃ ការចុះមើលទីតាំង និងការថែទាំសួន"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "សេចក្តីប្រកាស"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Autumn tidy-ups: book your slot before November"
+msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញនៅផ្នែកខាងលើនៃទំព័រនីមួយៗ ឧ. ការសម្អាតរដូវស្លឹកឈើជ្រុះ៖ កក់ពេលវេលារបស់អ្នកមុនខែវិច្ឆិកា"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fn"
+msgid "Quote link"
+msgstr "តំណសំណើតម្លៃ"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fh"
+msgid "Link to the quote or site visit request page, shown as a button in the header"
+msgstr "តំណទៅទំព័រស្នើសុំតម្លៃ ឬការចុះមើលទីតាំង ដែលបង្ហាញជាប៊ូតុងនៅក្បាលទំព័រ"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fn"
+msgid "Care plans link"
+msgstr "តំណគម្រោងថែទាំ"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with garden care plans and prices"
+msgstr "តំណទៅទំព័រគម្រោងថែទាំសួន និងតម្លៃ"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "កម្រិតតម្លៃ"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. ££ or €€"
+msgstr "កម្រិតតម្លៃរបស់អាជីវកម្ម ឧ. ££ ឬ €€"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "សេចក្តីជូនដំណឹង"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Fully insured, all planting comes with a 12 month guarantee."
+msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញនៅបាតទំព័រ ឧ. មានការធានារ៉ាប់រងពេញលេញ ការដាំដុះទាំងអស់មានការធានា 12 ខែ។"
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "របារសកម្មភាព"
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and quote buttons at the bottom of the screen on phones"
+msgstr "បង្ហាញប៊ូតុងហៅទូរស័ព្ទ និងស្នើតម្លៃនៅផ្នែកខាងក្រោមនៃអេក្រង់លើទូរស័ព្ទ"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "ម៉ោងធ្វើការ"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week, shown in the footer"
+msgstr "ម៉ោងធ្វើការសម្រាប់ថ្ងៃនីមួយៗក្នុងសប្តាហ៍ ដែលបង្ហាញនៅបាតទំព័រ"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "ថ្ងៃ"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "ថ្ងៃនៃសប្តាហ៍"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "ថ្ងៃច័ន្ទ"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "ថ្ងៃអង្គារ"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "ថ្ងៃពុធ"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "ថ្ងៃព្រហស្បតិ៍"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "ថ្ងៃសុក្រ"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "ថ្ងៃសៅរ៍"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "ថ្ងៃអាទិត្យ"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "ចាប់ពីម៉ោង"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "ម៉ោងបើកជាទម្រង់ 24 ម៉ោង ឧ. 07:30"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "ដល់ម៉ោង"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "ម៉ោងបិទជាទម្រង់ 24 ម៉ោង ឧ. 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "grove::theme"
+msgstr "រចនាប័ទ្ម"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "ភាពមូលនៃជ្រុងជាប្រវែង CSS ឧ. 1rem ឬ 0 សម្រាប់ជ្រុងស្រួច"

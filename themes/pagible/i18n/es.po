@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: es\n"
+
+#. content.text-trio
+#: schema.json
+msgctxt "st"
+msgid "Text Trio"
+msgstr "Trío de textos"
+
+#. content.text-trio
+#: schema.json
+msgctxt "sd"
+msgid "Three texts arranged around a central title"
+msgstr "Tres textos dispuestos en torno a un título central"
+
+#. content.text-trio
+#: schema.json
+msgctxt "sg"
+msgid "pagible"
+msgstr "Pagible"
+
+#. content.text-trio.leading
+#: schema.json
+msgctxt "fn"
+msgid "Leading text"
+msgstr "Texto introductorio"
+
+#. content.text-trio.leading
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown before the central text"
+msgstr "Texto breve mostrado antes del texto central"
+
+#. content.text-trio.title
+#: schema.json
+msgctxt "fn"
+msgid "Central text"
+msgstr "Texto central"
+
+#. content.text-trio.title
+#: schema.json
+msgctxt "fh"
+msgid "Prominent text in the middle"
+msgstr "Texto destacado en el centro"
+
+#. content.text-trio.supporting
+#: schema.json
+msgctxt "fn"
+msgid "Supporting text"
+msgstr "Texto complementario"
+
+#. content.text-trio.supporting
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown after the central text"
+msgstr "Texto breve mostrado después del texto central"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "pagible::theme"
+msgstr "Tema"

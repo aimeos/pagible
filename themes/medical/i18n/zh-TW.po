@@ -1,0 +1,365 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-TW\n"
+
+#. config.practice
+#: schema.json
+msgctxt "st"
+msgid "medical::practice"
+msgstr "診所"
+
+#. config.practice.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the practice"
+msgstr "實務名稱"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Practice type"
+msgstr "診所類型"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of practice shown to search engines"
+msgstr "向搜尋引擎展示的某種做法"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Dentist"
+msgstr "牙醫"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Physician"
+msgstr "醫師"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Medical clinic"
+msgstr "醫療診所"
+
+#. config.practice.business-type
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Physiotherapy"
+msgstr "物理治療"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other medical practice"
+msgstr "其他醫療院所"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "fn"
+msgid "Medical specialty"
+msgstr "醫學專科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "fh"
+msgid "Main medical specialty of the practice"
+msgstr "本診所的主要醫療專科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Dentistry"
+msgstr "牙科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "General practice"
+msgstr "家庭醫學科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Pediatrics"
+msgstr "小兒科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Dermatology"
+msgstr "皮膚科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Gynecology"
+msgstr "婦科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Cardiology"
+msgstr "心臟內科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Ear, nose and throat"
+msgstr "耳鼻喉科"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Optometry"
+msgstr "視光學"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Psychiatry"
+msgstr "精神科"
+
+#. config.practice.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "街道地址"
+
+#. config.practice.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "街道名稱與門牌號碼"
+
+#. config.practice.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "郵遞區號"
+
+#. config.practice.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the practice"
+msgstr "該診所的郵遞區號"
+
+#. config.practice.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "城市"
+
+#. config.practice.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the practice is located in"
+msgstr "該診所所在的城市"
+
+#. config.practice.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "國家代碼"
+
+#. config.practice.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "由兩個字母組成的 ISO 國家代碼，例如 DE 或 US"
+
+#. config.practice.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "電話"
+
+#. config.practice.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "以國際格式顯示的電話號碼，亦用於撥號按鈕"
+
+#. config.practice.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "電子郵件"
+
+#. config.practice.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointment requests"
+msgstr "預約申請的電子郵件地址"
+
+#. config.practice.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "緊急電話號碼"
+
+#. config.practice.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "緊急聯絡電話號碼，顯示於每頁頂端"
+
+#. config.practice.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "預訂連結"
+
+#. config.practice.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment page or online booking, shown as a button in the header"
+msgstr "預約頁面或線上預約的連結，以頁首按鈕的形式呈現"
+
+#. config.practice.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "語言"
+
+#. config.practice.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken in the practice, e.g. English, German, French"
+msgstr "該診所所使用的語言清單（以逗號分隔），例如：英語、德語、法語"
+
+#. config.practice.new-patients
+#: schema.json
+msgctxt "fn"
+msgid "New patients"
+msgstr "新患者"
+
+#. config.practice.new-patients
+#: schema.json
+msgctxt "fh"
+msgid "Tell search engines that the practice accepts new patients"
+msgstr "告知搜尋引擎，本診所接受新病患"
+
+#. config.practice.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "價格範圍"
+
+#. config.practice.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the practice, e.g. $$ or €€"
+msgstr "該診所的價格水準，例如 $$ 或 €€"
+
+#. config.practice.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "呼叫按鈕"
+
+#. config.practice.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "在手機螢幕底部顯示「撥號」按鈕"
+
+#. config.practice.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "營業時間"
+
+#. config.practice.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "每週各天的營業時間"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "星期"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "星期幾"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "星期一"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "星期二"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "星期三"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "星期四"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "星期五"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "星期六"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "星期日"
+
+#. config.practice.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "開門時間"
+
+#. config.practice.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "營業時間以 24 小時制表示，例如 07:30"
+
+#. config.practice.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "打烊時間"
+
+#. config.practice.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "以 24 小時制表示的打烊時間，例如 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "medical::theme"
+msgstr "主題"

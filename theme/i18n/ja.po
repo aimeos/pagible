@@ -1,0 +1,2212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ja\n"
+
+#. content.heading
+#: schema.json
+msgctxt "st"
+msgid "heading"
+msgstr "見出し"
+
+#. content.heading
+#: schema.json
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "H1〜H6のセクション見出し"
+
+#. content.heading.title
+#. content.table.title
+#. content.map.title
+#. content.slideshow.title
+#. content.before-after.title
+#. content.hero.title
+#. content.cta.title
+#. content.cards.title
+#. content.cards.cards.title
+#. content.testimonial.title
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#. content.pricing.title
+#. content.questions.title
+#. content.questions.items.title
+#. content.timeline.title
+#. content.timeline.items.title
+#. content.toc.title
+#. content.contact.title
+#. meta.social-media.title
+#. config.website.title
+#: schema.json
+msgctxt "fn"
+msgid "title"
+msgstr "タイトル"
+
+#. content.heading.title
+#: schema.json
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "見出しのテキスト"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fn"
+msgid "level"
+msgstr "レベル"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fh"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "レベル1はページのメイン見出し、それ以降のレベルで下位セクションを構成"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H1"
+msgstr "H1"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H2"
+msgstr "H2"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H3"
+msgstr "H3"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H4"
+msgstr "H4"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H5"
+msgstr "H5"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H6"
+msgstr "H6"
+
+#. content.text
+#: schema.json
+msgctxt "st"
+msgid "text"
+msgstr "テキスト"
+
+#. content.text
+#: schema.json
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "段落、リスト、リンクを含む書式付きテキスト"
+
+#. content.text.text
+#. content.image-text.text
+#. content.map.text
+#. content.hero.text
+#. content.cta.text
+#. content.cards.cards.text
+#. content.testimonial.items.text
+#. content.questions.items.text
+#. content.timeline.items.text
+#. config.robots-txt.text
+#. config.styles.text
+#. config.javascript.text
+#: schema.json
+msgctxt "fn"
+msgid "text"
+msgstr "テキスト"
+
+#. content.text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "段落、リスト、リンクを含む書式付きテキスト"
+
+#. content.image-text
+#: schema.json
+msgctxt "st"
+msgid "image-text"
+msgstr "画像テキスト"
+
+#. content.image-text
+#: schema.json
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "書式付きテキストの横に配置する画像"
+
+#. content.image-text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "画像の横に表示される書式付きテキスト"
+
+#. content.image-text.file
+#. content.cards.cards.file
+#. content.testimonial.items.file
+#. content.pricing.items.file
+#. meta.social-media.file
+#: schema.json
+msgctxt "fn"
+msgid "image"
+msgstr "画像"
+
+#. content.image-text.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "テキストの横に表示される画像"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fn"
+msgid "position"
+msgstr "位置"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "テキストに対する画像の位置"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Start"
+msgstr "先頭"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "End"
+msgstr "末尾"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid start"
+msgstr "グリッド先頭"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid end"
+msgstr "グリッド末尾"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fn"
+msgid "ratio"
+msgstr "比率"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "画像とテキストの幅の比率"
+
+#. content.code
+#: schema.json
+msgctxt "st"
+msgid "code"
+msgstr "コード"
+
+#. content.code
+#: schema.json
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "シンタックスハイライト付きのソースコード"
+
+#. content.code.language
+#: schema.json
+msgctxt "fn"
+msgid "Language"
+msgstr "言語"
+
+#. content.code.language
+#: schema.json
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "シンタックスハイライトに使用するプログラミング言語"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "CSS"
+msgstr "CSS"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "GraphQL"
+msgstr "GraphQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "HTML"
+msgstr "HTML"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Java"
+msgstr "Java"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JSON"
+msgstr "JSON"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Markdown"
+msgstr "Markdown"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "PHP"
+msgstr "PHP"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Python"
+msgstr "Python"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Ruby"
+msgstr "Ruby"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "SQL"
+msgstr "SQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "TypeScript"
+msgstr "TypeScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "XML"
+msgstr "XML"
+
+#. content.code.text
+#. content.html.text
+#: schema.json
+msgctxt "fn"
+msgid "source code"
+msgstr "ソースコード"
+
+#. content.code.text
+#: schema.json
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "シンタックスハイライト付きで表示されるソースコード"
+
+#. content.table
+#: schema.json
+msgctxt "st"
+msgid "table"
+msgstr "テーブル"
+
+#. content.table
+#: schema.json
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "任意の見出し行または列を持つデータテーブル"
+
+#. content.table.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "テーブルの上に表示される任意のキャプション"
+
+#. content.table.header
+#: schema.json
+msgctxt "fn"
+msgid "header"
+msgstr "ヘッダー"
+
+#. content.table.header
+#: schema.json
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "最初の行、最初の列、またはその両方をテーブルヘッダーとして使用"
+
+#. content.table.header
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "None"
+msgstr "なし"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row"
+msgstr "最初の行"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First column"
+msgstr "最初の列"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row and column"
+msgstr "最初の行と列"
+
+#. content.table.table
+#: schema.json
+msgctxt "fn"
+msgid "table"
+msgstr "テーブル"
+
+#. content.table.table
+#: schema.json
+msgctxt "fh"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgstr "セルにデータを入力し、必要に応じて行や列を追加・削除してください"
+
+#. content.map
+#: schema.json
+msgctxt "st"
+msgid "map"
+msgstr "地図"
+
+#. content.map
+#: schema.json
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "場所、テキスト、リンク付きのインタラクティブマップ"
+
+#. content.map.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "地図の上に表示される任意の見出し"
+
+#. content.map.text
+#: schema.json
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "地図の横に表示される説明（住所や道順など）"
+
+#. content.map.location
+#: schema.json
+msgctxt "fn"
+msgid "location"
+msgstr "位置"
+
+#. content.map.location
+#: schema.json
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "場所を検索するか、地図をクリックして位置を設定"
+
+#. content.map.button
+#: schema.json
+msgctxt "fn"
+msgid "Link label"
+msgstr "リンクラベル"
+
+#. content.map.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "地図サービスで位置を開くリンクのテキスト"
+
+#. content.html
+#: schema.json
+msgctxt "st"
+msgid "html"
+msgstr "HTML"
+
+#. content.html
+#: schema.json
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "埋め込みやウィジェット用のカスタムHTML"
+
+#. content.html.text
+#: schema.json
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "ページにそのまま挿入されるHTMLコード（埋め込みやウィジェット用など）"
+
+#. content.image
+#: schema.json
+msgctxt "st"
+msgid "image"
+msgstr "画像"
+
+#. content.image
+#: schema.json
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "単一のレスポンシブ画像"
+
+#. content.image.file
+#. content.video.file
+#. content.audio.file
+#. content.file.file
+#. config.logo.file
+#. config.logo-alternative.file
+#. config.icon.file
+#: schema.json
+msgctxt "fn"
+msgid "file"
+msgstr "ファイル"
+
+#. content.image.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "コンテンツ領域の全幅で表示される画像"
+
+#. content.image.main
+#. content.slideshow.main
+#. content.before-after.main
+#: schema.json
+msgctxt "fn"
+msgid "load immediately"
+msgstr "即時ロード"
+
+#. content.image.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "ページ上部に表示される場合、画像を遅延なく読み込む"
+
+#. content.slideshow
+#: schema.json
+msgctxt "st"
+msgid "slideshow"
+msgstr "スライドショー"
+
+#. content.slideshow
+#: schema.json
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "複数の画像を切り替えるスライドショー"
+
+#. content.slideshow.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "スライドショーの上に表示される任意の見出し"
+
+#. content.slideshow.files
+#. content.hero.files
+#: schema.json
+msgctxt "fn"
+msgid "images"
+msgstr "画像"
+
+#. content.slideshow.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "順番に表示される画像、ドラッグで順序を変更"
+
+#. content.slideshow.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the first image without delay if it is visible at the top of the page"
+msgstr "ページ上部に表示される場合、最初の画像を遅延なく読み込む"
+
+#. content.before-after
+#: schema.json
+msgctxt "st"
+msgid "before-after"
+msgstr "ビフォーアフター"
+
+#. content.before-after
+#: schema.json
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "変更前と変更後の2枚の画像を比較するスライダー"
+
+#. content.before-after.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "比較の上に表示される任意の見出し"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fn"
+msgid "before image"
+msgstr "変更前の画像"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "変更前の状態を示す画像"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fn"
+msgid "after image"
+msgstr "変更後の画像"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "結果を示す画像（両方の画像は同じサイズにしてください）"
+
+#. content.before-after.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the images without delay if they are visible at the top of the page"
+msgstr "ページ上部に表示される場合、画像を遅延なく読み込みます"
+
+#. content.video
+#: schema.json
+msgctxt "st"
+msgid "video"
+msgstr "ビデオ"
+
+#. content.video
+#: schema.json
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "再生コントロール付きの埋め込み動画"
+
+#. content.video.file
+#: schema.json
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "ページ内で再生される動画ファイル"
+
+#. content.audio
+#: schema.json
+msgctxt "st"
+msgid "audio"
+msgstr "オーディオ"
+
+#. content.audio
+#: schema.json
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "再生コントロール付きの埋め込み音声"
+
+#. content.audio.file
+#: schema.json
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "ページ内で再生される音声ファイル"
+
+#. content.file
+#: schema.json
+msgctxt "st"
+msgid "file"
+msgstr "ファイル"
+
+#. content.file
+#: schema.json
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "PDF文書などのダウンロード可能なファイル"
+
+#. content.file.file
+#: schema.json
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "ダウンロード用に提供されるファイル"
+
+#. content.hero
+#: schema.json
+msgctxt "st"
+msgid "hero"
+msgstr "ヒーロー"
+
+#. content.hero
+#: schema.json
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "タイトル、テキスト、ボタン、背景を備えた大きな導入部"
+
+#. content.hero.title
+#: schema.json
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "ページのメイン見出し"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fn"
+msgid "subtitle"
+msgstr "サブタイトル"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "見出しの上に表示される短い一文"
+
+#. content.hero.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "見出しの下に表示される導入文"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fn"
+msgid "buttons"
+msgstr "ボタン"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "訪問者を次のステップへ導くボタン"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fn"
+msgid "label"
+msgstr "ラベル"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "ボタンのテキスト"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.cards.cards.url
+#. content.article.author-url
+#. meta.canonical.url
+#: schema.json
+msgctxt "fn"
+msgid "url"
+msgstr "URL"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "ボタンのリンク先のページまたはリンク"
+
+#. content.hero.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "テキストの横に表示される画像"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fn"
+msgid "background"
+msgstr "背景"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "テキストの背後に表示される画像"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fn"
+msgid "background animation"
+msgstr "背景アニメーション"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "背景画像のアニメーション効果"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "Zoom"
+msgstr "ズーム"
+
+#. content.cta
+#: schema.json
+msgctxt "st"
+msgid "CTA"
+msgstr "CTA"
+
+#. content.cta
+#: schema.json
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "テキストとボタンによる行動喚起"
+
+#. content.cta.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "訪問者の注意を引く見出し"
+
+#. content.cta.text
+#: schema.json
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "訪問者に行動を促すテキスト"
+
+#. content.cards
+#: schema.json
+msgctxt "st"
+msgid "cards"
+msgstr "カード"
+
+#. content.cards
+#: schema.json
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "画像、タイトル、テキストを含むカードのグリッド"
+
+#. content.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "カードの上に表示される任意の見出し"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#. content.timeline.layout
+#: schema.json
+msgctxt "fn"
+msgid "layout"
+msgstr "レイアウト"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show cards, small badges like certificates or large figures like key numbers"
+msgstr "カード、認定証などの小さなバッジ、または主要な数値などの大きな数字を表示します"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Cards"
+msgstr "カード"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Badges"
+msgstr "バッジ"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Figures"
+msgstr "数字"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fn"
+msgid "columns"
+msgstr "列数"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "1行あたりのカード数、「auto」で画面幅に応じて自動調整"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "op"
+msgid "Auto"
+msgstr "自動"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fn"
+msgid "cards"
+msgstr "カード"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "グリッドに表示されるカード"
+
+#. content.cards.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "カードの見出し"
+
+#. content.cards.cards.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "カードの上部に表示される画像"
+
+#. content.cards.cards.text
+#: schema.json
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "カードのテキスト"
+
+#. content.cards.cards.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "カードのリンク先のページまたはリンク"
+
+#. content.testimonial
+#: schema.json
+msgctxt "st"
+msgid "testimonial"
+msgstr "お客様の声"
+
+#. content.testimonial
+#: schema.json
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "名前、役職、写真付きのお客様の声"
+
+#. content.testimonial.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "引用の上に表示される任意の見出し"
+
+#. content.testimonial.items
+#. content.pricing.items
+#. content.questions.items
+#. content.timeline.items
+#: schema.json
+msgctxt "fn"
+msgid "items"
+msgstr "項目"
+
+#. content.testimonial.items
+#: schema.json
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "顧客またはパートナーからの引用"
+
+#. content.testimonial.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "本人による引用"
+
+#. content.testimonial.items.name
+#. content.article.author-name
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fn"
+msgid "name"
+msgstr "名前"
+
+#. content.testimonial.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "本人の名前"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fn"
+msgid "role"
+msgstr "役職"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "本人の役職または所属企業"
+
+#. content.testimonial.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "本人の写真"
+
+#. content.article
+#: schema.json
+msgctxt "st"
+msgid "article"
+msgstr "記事"
+
+#. content.article
+#: schema.json
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "画像ギャラリーと著者付きの記事の導入部"
+
+#. content.article.text
+#: schema.json
+msgctxt "fn"
+msgid "introduction"
+msgstr "イントロダクション"
+
+#. content.article.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "ページタイトルの下に表示される記事の導入文"
+
+#. content.article.files
+#: schema.json
+msgctxt "fn"
+msgid "Gallery"
+msgstr "ギャラリー"
+
+#. content.article.files
+#: schema.json
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "記事の画像、最初の1枚がプレビュー画像として使用される"
+
+#. content.article.author-name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "記事の著者名"
+
+#. content.article.author-url
+#: schema.json
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "著者のプロフィールページへのリンク"
+
+#. content.blog
+#: schema.json
+msgctxt "st"
+msgid "blog"
+msgstr "ブログ"
+
+#. content.blog
+#: schema.json
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "親ページのブログ記事一覧"
+
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "リストの上に表示される任意の見出し"
+
+#. content.blog.layout
+#. content.news.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "ページをカードまたはコンパクトなリストとして表示"
+
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "List"
+msgstr "リスト"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fn"
+msgid "parent-page"
+msgstr "親ページ"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "サブページの一覧を表示する親ページ"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fn"
+msgid "order"
+msgstr "順序"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "表示するページの並び順"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Position"
+msgstr "位置"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Latest"
+msgstr "新しい順"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Oldest"
+msgstr "古い順"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fn"
+msgid "limit"
+msgstr "制限"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "一度に表示するページの最大数"
+
+#. content.blog.action
+#. content.news.action
+#. content.heros.action
+#. content.toc.action
+#: schema.json
+msgctxt "fn"
+msgid "action"
+msgstr "アクション"
+
+#. content.news
+#: schema.json
+msgctxt "st"
+msgid "news"
+msgstr "ニュース"
+
+#. content.news
+#: schema.json
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "親ページのニュース一覧"
+
+#. content.heros
+#: schema.json
+msgctxt "st"
+msgid "heros"
+msgstr "ヒーロー一覧"
+
+#. content.heros
+#: schema.json
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "注目のサブページとそれに続くサブページ"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "さらに続くサブページをカードまたはコンパクトなリストとして表示"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Default"
+msgstr "デフォルト"
+
+#. content.pricing
+#: schema.json
+msgctxt "st"
+msgid "pricing"
+msgstr "料金プラン"
+
+#. content.pricing
+#: schema.json
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "サブスクリプションまたは一回払いの料金プラン"
+
+#. content.pricing.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "料金プランの上に表示される任意の見出し"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "サブタイトル"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "見出しの下に表示される短いテキスト"
+
+#. content.pricing.items
+#: schema.json
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "並べて表示される料金プラン"
+
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "料金プランの名前"
+
+#. content.pricing.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the price plan"
+msgstr "料金プランの上部に表示される画像"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fn"
+msgid "Frontend access role"
+msgstr "フロントエンドアクセスロール"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "支払い後に顧客へ付与される、保護ページへのアクセス権を持つロール"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fn"
+msgid "Payment prices"
+msgstr "支払い価格"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "プランの価格（例：月額と年額）"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fn"
+msgid "Payment type"
+msgstr "支払いタイプ"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "定期購読または一回払い"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "Subscription"
+msgstr "サブスクリプション"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "One-time payment"
+msgstr "1回払い"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fn"
+msgid "Billing interval"
+msgstr "請求間隔"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "2回の支払いの間隔日数（例：月額なら30）"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fn"
+msgid "Currency"
+msgstr "通貨"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "3文字のISO通貨コード（例：EURまたはUSD）"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fn"
+msgid "Payment reference"
+msgstr "支払い参照"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "決済プロバイダーが使用する価格IDまたは金額"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "表示価格"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "訪問者に表示される書式付き価格（例：€9.99）"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fn"
+msgid "amount"
+msgstr "金額"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "書式付き価格が未設定の場合に表示される数値価格"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fn"
+msgid "Price unit"
+msgstr "価格単位"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "価格の後に表示されるテキスト（例：per month）"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fn"
+msgid "Description"
+msgstr "説明"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "料金プランの短い説明"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fn"
+msgid "features"
+msgstr "機能"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "プランに含まれる機能のリスト"
+
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fn"
+msgid "Target page or link"
+msgstr "対象のページまたはリンク"
+
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fn"
+msgid "button"
+msgstr "ボタン"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "強調表示"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "このプランを他のプランより強調表示"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "強調テキスト"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "強調表示されたプランに表示される短いラベル（例：Popular）"
+
+#. content.questions
+#: schema.json
+msgctxt "st"
+msgid "questions"
+msgstr "FAQ"
+
+#. content.questions
+#: schema.json
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "よくある質問と回答"
+
+#. content.questions.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "質問の上に表示される任意の見出し"
+
+#. content.questions.items
+#: schema.json
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "開閉式リストとして表示される質問と回答"
+
+#. content.questions.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "訪問者からの質問"
+
+#. content.questions.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "質問への回答"
+
+#. content.timeline
+#: schema.json
+msgctxt "st"
+msgid "timeline"
+msgstr "タイムライン"
+
+#. content.timeline
+#: schema.json
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "番号付きのステップや出来事を時系列で表示"
+
+#. content.timeline.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "タイムラインの上に表示される任意の見出し"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show the steps one below the other or side by side, side by side suits up to five steps"
+msgstr "ステップを縦に並べるか横に並べて表示します。横並びは最大5ステップまでに適しています"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Vertical"
+msgstr "縦"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Horizontal"
+msgstr "横"
+
+#. content.timeline.items
+#: schema.json
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "発生順に並べたステップや出来事"
+
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fh"
+msgid "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "タイトルの上に表示される任意の日付、期間、フェーズ（例: 2024、第1週）"
+
+#. content.timeline.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "ステップまたは出来事の名前"
+
+#. content.timeline.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "ステップまたは出来事の説明"
+
+#. content.toc
+#: schema.json
+msgctxt "st"
+msgid "toc"
+msgstr "目次"
+
+#. content.toc
+#: schema.json
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "ページ見出しへのリンク付き目次"
+
+#. content.toc.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "目次の上に表示される任意の見出し"
+
+#. content.contact
+#: schema.json
+msgctxt "st"
+msgid "contact"
+msgstr "お問い合わせ"
+
+#. content.contact
+#: schema.json
+msgctxt "sd"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "設定可能な項目と任意のファイル添付を備えたお問い合わせフォーム"
+
+#. content.contact.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "お問い合わせフォームの上に表示される任意の見出し"
+
+#. content.contact.description
+#. meta.meta-tags.description
+#. meta.social-media.description
+#: schema.json
+msgctxt "fn"
+msgid "description"
+msgstr "説明"
+
+#. content.contact.description
+#: schema.json
+msgctxt "fh"
+msgid "Optional text shown between headline and contact form"
+msgstr "見出しとお問い合わせフォームの間に表示される任意のテキスト"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fn"
+msgid "Form fields"
+msgstr "フォーム項目"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fh"
+msgid "Form fields shown to visitors in this order"
+msgstr "この順序で訪問者に表示されるフォーム項目"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fn"
+msgid "Field"
+msgstr "項目"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "フォーム項目を選択するか、独自の名前を入力してください"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Name"
+msgstr "名前"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Company"
+msgstr "会社"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Telephone"
+msgstr "電話"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "E-Mail"
+msgstr "Eメール"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Subject"
+msgstr "件名"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fn"
+msgid "Required"
+msgstr "必須"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "訪問者はこの項目を入力する必要があります"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fn"
+msgid "Input type"
+msgstr "入力タイプ"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "訪問者に表示する入力の種類"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text"
+msgstr "テキスト"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text area"
+msgstr "テキストエリア"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Selection"
+msgstr "選択リスト"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fn"
+msgid "Choices"
+msgstr "選択肢"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "選択入力の選択肢（1行に1つ）"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fn"
+msgid "Attachments"
+msgstr "添付ファイル"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr "訪問者が添付できる画像またはPDFファイルの最大数（0でアップロードを無効化）"
+
+#. meta.meta-tags
+#: schema.json
+msgctxt "st"
+msgid "meta-tags"
+msgstr "メタタグ"
+
+#. meta.meta-tags.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgstr "検索結果に表示されるページの概要（150〜160文字を推奨）"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fn"
+msgid "keywords"
+msgstr "キーワード"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "ページを説明するカンマ区切りのキーワードリスト"
+
+#. meta.social-media
+#: schema.json
+msgctxt "st"
+msgid "social-media"
+msgstr "ソーシャルメディア"
+
+#. meta.social-media.title
+#: schema.json
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "ソーシャルメディアで共有される際に表示されるタイトル"
+
+#. meta.social-media.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "ソーシャルメディアで共有される際に表示される概要"
+
+#. meta.social-media.file
+#: schema.json
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "ソーシャルメディアで共有される際に表示されるプレビュー画像"
+
+#. meta.canonical
+#: schema.json
+msgctxt "st"
+msgid "canonical"
+msgstr "正規 URL"
+
+#. meta.canonical.url
+#: schema.json
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "同じコンテンツが複数のアドレスで利用できる場合の元のURL"
+
+#. meta.robots
+#: schema.json
+msgctxt "st"
+msgid "robots"
+msgstr "検索エンジン"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fn"
+msgid "index"
+msgstr "インデックス"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "検索エンジンによるこのページのインデックス登録を許可または禁止"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "Index"
+msgstr "インデックスする"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "No index"
+msgstr "インデックスしない"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fn"
+msgid "follow"
+msgstr "リンクの追跡"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "検索エンジンによるこのページ内リンクの追跡を許可または禁止"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "Follow"
+msgstr "リンクをたどる"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "No follow"
+msgstr "リンクをたどらない"
+
+#. config.website
+#: schema.json
+msgctxt "st"
+msgid "website"
+msgstr "ウェブサイト"
+
+#. config.website.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "ブラウザのタブと検索結果に表示されるウェブサイト名"
+
+#. config.logo
+#: schema.json
+msgctxt "st"
+msgid "logo"
+msgstr "ロゴ"
+
+#. config.logo.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "ページヘッダーに表示されるロゴ"
+
+#. config.logo-alternative
+#: schema.json
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "代替ロゴ"
+
+#. config.logo-alternative.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "暗い背景用のロゴバリエーション"
+
+#. config.icon
+#: schema.json
+msgctxt "st"
+msgid "icon"
+msgstr "アイコン"
+
+#. config.icon.file
+#: schema.json
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "ブラウザのタブとブックマークに表示される小さな正方形の画像"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "theme"
+msgstr "テーマ"
+
+#. config.theme
+#: schema.json
+msgctxt "sg"
+msgid "theme"
+msgstr "テーマ"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "テキストフォント"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "テキストに使用するカンマ区切りのフォントリスト"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "文字色"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fh"
+msgid "Default text color"
+msgstr "デフォルトのテキスト色"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "背景色"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "ページの背景色"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "選択色"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "選択したテキストの背景色"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "コントラストカラー"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "背景とのコントラストが強い要素の色"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "コントラストホバーカラー"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のコントラスト色"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "コントラスト文字色"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "コントラスト色を使用する要素のテキスト色"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "プライマリカラー"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "リンクとボタンに使用するメインのブランドカラー"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "プライマリ背景"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "プライマリボタンとハイライトの背景色"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "プライマリホバーカラー"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のプライマリカラー"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "プライマリホバー背景"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のプライマリ背景色"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "セカンダリカラー"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "重要度の低いリンクとボタンに使用する追加カラー"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "セカンダリ背景"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "セカンダリボタンの背景色"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "セカンダリホバーカラー"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のセカンダリカラー"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "セカンダリホバー背景"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "要素にホバーまたはフォーカスした際のセカンダリ背景色"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "角丸の半径"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "CSSの長さで指定する角の丸み（例：0.25rem、直角の場合は0）"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "パンくず区切り文字"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "パンくずリンクの間に表示される文字"
+
+#. config.security
+#: schema.json
+msgctxt "st"
+msgid "security"
+msgstr "セキュリティ"
+
+#. config.security
+#. config.robots-txt
+#. config.styles
+#. config.javascript
+#: schema.json
+msgctxt "sg"
+msgid "expert"
+msgstr "上級者向け"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "連絡先URL"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "セキュリティチームへの連絡用HTTPSリンク（フォームなど）"
+
+#. config.security.email
+#: schema.json
+msgctxt "fn"
+msgid "Contact email"
+msgstr "連絡先メール"
+
+#. config.security.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "セキュリティ問題を報告するためのメールアドレス"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fn"
+msgid "expires"
+msgstr "有効期限"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "セキュリティ情報が古いとみなされる日付"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fn"
+msgid "encryption"
+msgstr "暗号化"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "暗号化メッセージ用の公開鍵へのHTTPSリンク"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "謝辞"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "セキュリティ研究者に感謝するページへのHTTPSリンク"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "優先言語"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "セキュリティ報告に使用するカンマ区切りの言語コード（例：en, de）"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fn"
+msgid "canonical"
+msgstr "正規URL"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "security.txtファイルが公開されているHTTPS URL"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fn"
+msgid "policy"
+msgstr "ポリシー"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "セキュリティおよび情報開示ポリシーへのHTTPSリンク"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fn"
+msgid "hiring"
+msgstr "採用情報"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "セキュリティ関連の求人ページへのHTTPSリンク"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "CSAFプロバイダーメタデータへのHTTPSリンク"
+
+#. config.robots-txt
+#: schema.json
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#. config.robots-txt.text
+#: schema.json
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "ウェブクローラー向けにrobots.txtファイルへ追加するルール"
+
+#. config.styles
+#: schema.json
+msgctxt "st"
+msgid "styles"
+msgstr "スタイル"
+
+#. config.styles.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "すべてのページに追加するカスタムCSSコード"
+
+#. config.javascript
+#: schema.json
+msgctxt "st"
+msgid "javascript"
+msgstr "JavaScript"
+
+#. config.javascript.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "すべてのページに追加するカスタムJavaScriptコード"

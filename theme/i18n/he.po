@@ -1,0 +1,2212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: he\n"
+
+#. content.heading
+#: schema.json
+msgctxt "st"
+msgid "heading"
+msgstr "כותרת"
+
+#. content.heading
+#: schema.json
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "כותרת מקטע מ-H1 עד H6"
+
+#. content.heading.title
+#. content.table.title
+#. content.map.title
+#. content.slideshow.title
+#. content.before-after.title
+#. content.hero.title
+#. content.cta.title
+#. content.cards.title
+#. content.cards.cards.title
+#. content.testimonial.title
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#. content.pricing.title
+#. content.questions.title
+#. content.questions.items.title
+#. content.timeline.title
+#. content.timeline.items.title
+#. content.toc.title
+#. content.contact.title
+#. meta.social-media.title
+#. config.website.title
+#: schema.json
+msgctxt "fn"
+msgid "title"
+msgstr "כותרת"
+
+#. content.heading.title
+#: schema.json
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "טקסט הכותרת"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fn"
+msgid "level"
+msgstr "רמה"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fh"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "רמה 1 היא הכותרת הראשית של הדף, רמות גבוהות יותר מארגנות את הקטעים שלהלן"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H1"
+msgstr "H1"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H2"
+msgstr "H2"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H3"
+msgstr "H3"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H4"
+msgstr "H4"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H5"
+msgstr "H5"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H6"
+msgstr "H6"
+
+#. content.text
+#: schema.json
+msgctxt "st"
+msgid "text"
+msgstr "טקסט"
+
+#. content.text
+#: schema.json
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "טקסט מעוצב עם פסקאות, רשימות וקישורים"
+
+#. content.text.text
+#. content.image-text.text
+#. content.map.text
+#. content.hero.text
+#. content.cta.text
+#. content.cards.cards.text
+#. content.testimonial.items.text
+#. content.questions.items.text
+#. content.timeline.items.text
+#. config.robots-txt.text
+#. config.styles.text
+#. config.javascript.text
+#: schema.json
+msgctxt "fn"
+msgid "text"
+msgstr "טקסט"
+
+#. content.text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "טקסט מעוצב עם פסקאות, רשימות וקישורים"
+
+#. content.image-text
+#: schema.json
+msgctxt "st"
+msgid "image-text"
+msgstr "תמונה וטקסט"
+
+#. content.image-text
+#: schema.json
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "תמונה לצד טקסט מעוצב"
+
+#. content.image-text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "טקסט מעוצב המוצג לצד התמונה"
+
+#. content.image-text.file
+#. content.cards.cards.file
+#. content.testimonial.items.file
+#. content.pricing.items.file
+#. meta.social-media.file
+#: schema.json
+msgctxt "fn"
+msgid "image"
+msgstr "תמונה"
+
+#. content.image-text.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "תמונה המוצגת לצד הטקסט"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fn"
+msgid "position"
+msgstr "מיקום"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "מיקום התמונה ביחס לטקסט"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Start"
+msgstr "התחלה"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "End"
+msgstr "סוף"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid start"
+msgstr "תחילת הרשת"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid end"
+msgstr "סוף הרשת"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fn"
+msgid "ratio"
+msgstr "יחס"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "יחס הרוחב בין התמונה לטקסט"
+
+#. content.code
+#: schema.json
+msgctxt "st"
+msgid "code"
+msgstr "קוד"
+
+#. content.code
+#: schema.json
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "קוד מקור עם הדגשת תחביר"
+
+#. content.code.language
+#: schema.json
+msgctxt "fn"
+msgid "Language"
+msgstr "שפה"
+
+#. content.code.language
+#: schema.json
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "שפת התכנות המשמשת להדגשת התחביר"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "CSS"
+msgstr "CSS"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "GraphQL"
+msgstr "GraphQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "HTML"
+msgstr "HTML"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Java"
+msgstr "Java"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JSON"
+msgstr "JSON"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Markdown"
+msgstr "Markdown"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "PHP"
+msgstr "PHP"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Python"
+msgstr "Python"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Ruby"
+msgstr "Ruby"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "SQL"
+msgstr "SQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "TypeScript"
+msgstr "TypeScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "XML"
+msgstr "XML"
+
+#. content.code.text
+#. content.html.text
+#: schema.json
+msgctxt "fn"
+msgid "source code"
+msgstr "קוד מקור"
+
+#. content.code.text
+#: schema.json
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "קוד מקור המוצג עם הדגשת תחביר"
+
+#. content.table
+#: schema.json
+msgctxt "st"
+msgid "table"
+msgstr "טבלה"
+
+#. content.table
+#: schema.json
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "טבלת נתונים עם שורת או עמודת כותרת אופציונלית"
+
+#. content.table.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "כיתוב אופציונלי המוצג מעל הטבלה"
+
+#. content.table.header
+#: schema.json
+msgctxt "fn"
+msgid "header"
+msgstr "כותרת"
+
+#. content.table.header
+#: schema.json
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "השתמש בשורה הראשונה, בעמודה הראשונה או בשתיהן ככותרות הטבלה"
+
+#. content.table.header
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "None"
+msgstr "אין"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row"
+msgstr "השורה הראשונה"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First column"
+msgstr "העמודה הראשונה"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row and column"
+msgstr "השורה והעמודה הראשונה"
+
+#. content.table.table
+#: schema.json
+msgctxt "fn"
+msgid "table"
+msgstr "טבלה"
+
+#. content.table.table
+#: schema.json
+msgctxt "fh"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgstr "הזן נתונים בתאים; הוסף או הסר שורות ועמודות לפי הצורך"
+
+#. content.map
+#: schema.json
+msgctxt "st"
+msgid "map"
+msgstr "מפה"
+
+#. content.map
+#: schema.json
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "מפה אינטראקטיבית עם מיקום, טקסט וקישור"
+
+#. content.map.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "כותרת אופציונלית המוצגת מעל המפה"
+
+#. content.map.text
+#: schema.json
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "תיאור המוצג לצד המפה, למשל כתובת או הנחיות הגעה"
+
+#. content.map.location
+#: schema.json
+msgctxt "fn"
+msgid "location"
+msgstr "מיקום"
+
+#. content.map.location
+#: schema.json
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "חפש מקום או לחץ על המפה כדי להגדיר את המיקום"
+
+#. content.map.button
+#: schema.json
+msgctxt "fn"
+msgid "Link label"
+msgstr "טקסט הקישור"
+
+#. content.map.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "טקסט הקישור שפותח את המיקום בשירות מפות"
+
+#. content.html
+#: schema.json
+msgctxt "st"
+msgid "html"
+msgstr "HTML"
+
+#. content.html
+#: schema.json
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "HTML מותאם אישית להטמעות ווידג'טים"
+
+#. content.html.text
+#: schema.json
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "קוד HTML המוכנס לדף כפי שהוא, למשל להטמעות ווידג'טים"
+
+#. content.image
+#: schema.json
+msgctxt "st"
+msgid "image"
+msgstr "תמונה"
+
+#. content.image
+#: schema.json
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "תמונה רספונסיבית יחידה"
+
+#. content.image.file
+#. content.video.file
+#. content.audio.file
+#. content.file.file
+#. config.logo.file
+#. config.logo-alternative.file
+#. config.icon.file
+#: schema.json
+msgctxt "fn"
+msgid "file"
+msgstr "קובץ"
+
+#. content.image.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "תמונה המוצגת ברוחב המלא של אזור התוכן"
+
+#. content.image.main
+#. content.slideshow.main
+#. content.before-after.main
+#: schema.json
+msgctxt "fn"
+msgid "load immediately"
+msgstr "טעינה מיידית"
+
+#. content.image.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "טען את התמונה ללא עיכוב אם היא גלויה בראש הדף"
+
+#. content.slideshow
+#: schema.json
+msgctxt "st"
+msgid "slideshow"
+msgstr "מצגת"
+
+#. content.slideshow
+#: schema.json
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "שקופיות מתחלפות עם מספר תמונות"
+
+#. content.slideshow.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "כותרת אופציונלית המוצגת מעל מצגת השקופיות"
+
+#. content.slideshow.files
+#. content.hero.files
+#: schema.json
+msgctxt "fn"
+msgid "images"
+msgstr "תמונות"
+
+#. content.slideshow.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "תמונות המוצגות זו אחרי זו, גרור כדי לשנות את הסדר"
+
+#. content.slideshow.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the first image without delay if it is visible at the top of the page"
+msgstr "טען את התמונה הראשונה ללא עיכוב אם היא גלויה בראש הדף"
+
+#. content.before-after
+#: schema.json
+msgctxt "st"
+msgid "before-after"
+msgstr "לפני-אחרי"
+
+#. content.before-after
+#: schema.json
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "מחוון המשווה בין שתי תמונות לפני שינוי ואחריו"
+
+#. content.before-after.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "כותרת אופציונלית המוצגת מעל ההשוואה"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fn"
+msgid "before image"
+msgstr "תמונת לפני"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "תמונה המציגה את המצב לפני השינוי"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fn"
+msgid "after image"
+msgstr "תמונת אחרי"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "תמונה המציגה את התוצאה, שתי התמונות צריכות להיות באותו גודל"
+
+#. content.before-after.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the images without delay if they are visible at the top of the page"
+msgstr "טעינת התמונות ללא השהיה אם הן גלויות בראש הדף"
+
+#. content.video
+#: schema.json
+msgctxt "st"
+msgid "video"
+msgstr "וידאו"
+
+#. content.video
+#: schema.json
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "וידאו מוטמע עם פקדי הפעלה"
+
+#. content.video.file
+#: schema.json
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "קובץ וידאו המתנגן בדף"
+
+#. content.audio
+#: schema.json
+msgctxt "st"
+msgid "audio"
+msgstr "אודיו"
+
+#. content.audio
+#: schema.json
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "אודיו מוטמע עם פקדי הפעלה"
+
+#. content.audio.file
+#: schema.json
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "קובץ אודיו המתנגן בדף"
+
+#. content.file
+#: schema.json
+msgctxt "st"
+msgid "file"
+msgstr "קובץ"
+
+#. content.file
+#: schema.json
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "קובץ להורדה, למשל מסמך PDF"
+
+#. content.file.file
+#: schema.json
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "קובץ המוצע להורדה"
+
+#. content.hero
+#: schema.json
+msgctxt "st"
+msgid "hero"
+msgstr "הירו"
+
+#. content.hero
+#: schema.json
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "פתיח גדול עם כותרת, טקסט, כפתורים ורקע"
+
+#. content.hero.title
+#: schema.json
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "הכותרת הראשית של הדף"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fn"
+msgid "subtitle"
+msgstr "כותרת משנה"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "שורה קצרה המוצגת מעל הכותרת"
+
+#. content.hero.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "מבוא המוצג מתחת לכותרת"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fn"
+msgid "buttons"
+msgstr "כפתורים"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "כפתורים המובילים מבקרים לשלב הבא"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fn"
+msgid "label"
+msgstr "תווית"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "טקסט הכפתור"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.cards.cards.url
+#. content.article.author-url
+#. meta.canonical.url
+#: schema.json
+msgctxt "fn"
+msgid "url"
+msgstr "כתובת URL"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "הדף או הקישור שאליו מוביל הכפתור"
+
+#. content.hero.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "תמונות המוצגות לצד הטקסט"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fn"
+msgid "background"
+msgstr "רקע"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "תמונה המוצגת מאחורי הטקסט"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fn"
+msgid "background animation"
+msgstr "אנימציית רקע"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "אפקט האנימציה של תמונת הרקע"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "Zoom"
+msgstr "זום"
+
+#. content.cta
+#: schema.json
+msgctxt "st"
+msgid "CTA"
+msgstr "CTA"
+
+#. content.cta
+#: schema.json
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "קריאה לפעולה עם טקסט וכפתורים"
+
+#. content.cta.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "כותרת המושכת את תשומת לב המבקרים"
+
+#. content.cta.text
+#: schema.json
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "טקסט המניע מבקרים לפעולה"
+
+#. content.cards
+#: schema.json
+msgctxt "st"
+msgid "cards"
+msgstr "כרטיסים"
+
+#. content.cards
+#: schema.json
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "רשת כרטיסים עם תמונה, כותרת וטקסט"
+
+#. content.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "כותרת אופציונלית המוצגת מעל הכרטיסים"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#. content.timeline.layout
+#: schema.json
+msgctxt "fn"
+msgid "layout"
+msgstr "פריסה"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show cards, small badges like certificates or large figures like key numbers"
+msgstr "הצגת כרטיסים, תגים קטנים כמו תעודות או מספרים גדולים כמו נתוני מפתח"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Cards"
+msgstr "כרטיסים"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Badges"
+msgstr "תגים"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Figures"
+msgstr "מספרים"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fn"
+msgid "columns"
+msgstr "עמודות"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "מספר הכרטיסים בכל שורה, \"auto\" מתאים את עצמו לרוחב המסך"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "op"
+msgid "Auto"
+msgstr "אוטומטי"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fn"
+msgid "cards"
+msgstr "כרטיסים"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "כרטיסים המוצגים ברשת"
+
+#. content.cards.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "כותרת הכרטיס"
+
+#. content.cards.cards.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "תמונה המוצגת בראש הכרטיס"
+
+#. content.cards.cards.text
+#: schema.json
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "טקסט הכרטיס"
+
+#. content.cards.cards.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "הדף או הקישור שאליו מוביל הכרטיס"
+
+#. content.testimonial
+#: schema.json
+msgctxt "st"
+msgid "testimonial"
+msgstr "המלצות"
+
+#. content.testimonial
+#: schema.json
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "ציטוטי לקוחות עם שם, תפקיד ותמונה"
+
+#. content.testimonial.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "כותרת אופציונלית המוצגת מעל הציטוטים"
+
+#. content.testimonial.items
+#. content.pricing.items
+#. content.questions.items
+#. content.timeline.items
+#: schema.json
+msgctxt "fn"
+msgid "items"
+msgstr "פריטים"
+
+#. content.testimonial.items
+#: schema.json
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "ציטוטים של לקוחות או שותפים"
+
+#. content.testimonial.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "הציטוט של האדם"
+
+#. content.testimonial.items.name
+#. content.article.author-name
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fn"
+msgid "name"
+msgstr "שם"
+
+#. content.testimonial.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "שם האדם"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fn"
+msgid "role"
+msgstr "תפקיד"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "התפקיד או החברה של האדם"
+
+#. content.testimonial.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "תמונה של האדם"
+
+#. content.article
+#: schema.json
+msgctxt "st"
+msgid "article"
+msgstr "מאמר"
+
+#. content.article
+#: schema.json
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "פתיח מאמר עם גלריית תמונות וכותב"
+
+#. content.article.text
+#: schema.json
+msgctxt "fn"
+msgid "introduction"
+msgstr "מבוא"
+
+#. content.article.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "מבוא המאמר המוצג מתחת לכותרת הדף"
+
+#. content.article.files
+#: schema.json
+msgctxt "fn"
+msgid "Gallery"
+msgstr "גלריה"
+
+#. content.article.files
+#: schema.json
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "תמונות המאמר, הראשונה משמשת כתמונת תצוגה מקדימה"
+
+#. content.article.author-name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "שם הכותב של המאמר"
+
+#. content.article.author-url
+#: schema.json
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "קישור לדף הפרופיל של הכותב"
+
+#. content.blog
+#: schema.json
+msgctxt "st"
+msgid "blog"
+msgstr "בלוג"
+
+#. content.blog
+#: schema.json
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "רשימת מאמרי בלוג מדף אב"
+
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "כותרת אופציונלית המוצגת מעל הרשימה"
+
+#. content.blog.layout
+#. content.news.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "הצג את הדפים ככרטיסים או כרשימה קומפקטית"
+
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "List"
+msgstr "רשימה"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fn"
+msgid "parent-page"
+msgstr "דף אב"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "הדף שדפי המשנה שלו מוצגים"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fn"
+msgid "order"
+msgstr "סדר"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "סדר המיון של הדפים המוצגים"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Position"
+msgstr "מיקום"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Latest"
+msgstr "החדש ביותר"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Oldest"
+msgstr "הישן ביותר"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fn"
+msgid "limit"
+msgstr "מגבלה"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "המספר המרבי של דפים המוצגים בבת אחת"
+
+#. content.blog.action
+#. content.news.action
+#. content.heros.action
+#. content.toc.action
+#: schema.json
+msgctxt "fn"
+msgid "action"
+msgstr "פעולה"
+
+#. content.news
+#: schema.json
+msgctxt "st"
+msgid "news"
+msgstr "חדשות"
+
+#. content.news
+#: schema.json
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "רשימת חדשות מדף אב"
+
+#. content.heros
+#: schema.json
+msgctxt "st"
+msgid "heros"
+msgstr "דפי הירו"
+
+#. content.heros
+#: schema.json
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "דף משנה מודגש ואחריו דפי משנה נוספים"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "הצג את דפי המשנה הנוספים ככרטיסים או כרשימה קומפקטית"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Default"
+msgstr "ברירת מחדל"
+
+#. content.pricing
+#: schema.json
+msgctxt "st"
+msgid "pricing"
+msgstr "תמחור"
+
+#. content.pricing
+#: schema.json
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "תוכניות מחיר עם מנויים או תשלומים חד-פעמיים"
+
+#. content.pricing.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "כותרת אופציונלית המוצגת מעל תוכניות המחיר"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "כותרת משנה"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "טקסט קצר המוצג מתחת לכותרת"
+
+#. content.pricing.items
+#: schema.json
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "תוכניות מחיר המוצגות זו לצד זו"
+
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "שם תוכנית המחיר"
+
+#. content.pricing.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the price plan"
+msgstr "תמונה המוצגת בראש תוכנית המחיר"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fn"
+msgid "Frontend access role"
+msgstr "תפקיד גישה לאתר"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "התפקיד המוענק ללקוחות לאחר התשלום לגישה לדפים מוגנים"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fn"
+msgid "Payment prices"
+msgstr "מחירי תשלום"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "מחירי התוכנית, למשל חודשי ושנתי"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fn"
+msgid "Payment type"
+msgstr "סוג התשלום"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "מנוי מתחדש או תשלום חד-פעמי"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "Subscription"
+msgstr "מנוי"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "One-time payment"
+msgstr "תשלום חד-פעמי"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fn"
+msgid "Billing interval"
+msgstr "מרווח חיוב"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "מספר הימים בין שני תשלומים, למשל 30 עבור חודשי"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fn"
+msgid "Currency"
+msgstr "מטבע"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "קוד מטבע ISO בן שלוש אותיות, למשל EUR או USD"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fn"
+msgid "Payment reference"
+msgstr "אסמכתת תשלום"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "מזהה המחיר או הסכום המשמש את ספק התשלומים"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "המחיר המוצג"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "מחיר מעוצב המוצג למבקרים, למשל €9.99"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fn"
+msgid "amount"
+msgstr "הסכום"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "מחיר מספרי המוצג אם לא הוגדר מחיר מעוצב"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fn"
+msgid "Price unit"
+msgstr "יחידת מחיר"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "טקסט המוצג אחרי המחיר, למשל לחודש"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fn"
+msgid "Description"
+msgstr "תיאור"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "תיאור קצר של תוכנית המחיר"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fn"
+msgid "features"
+msgstr "תכונות"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "רשימת התכונות הכלולות בתוכנית"
+
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fn"
+msgid "Target page or link"
+msgstr "דף יעד או קישור"
+
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fn"
+msgid "button"
+msgstr "כפתור"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "מודגש"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "הדגש תוכנית זו בהשוואה לאחרות"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "טקסט ההדגשה"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "תווית קצרה המוצגת על התוכנית המודגשת, למשל פופולרי"
+
+#. content.questions
+#: schema.json
+msgctxt "st"
+msgid "questions"
+msgstr "שאלות נפוצות"
+
+#. content.questions
+#: schema.json
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "שאלות נפוצות עם תשובות"
+
+#. content.questions.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "כותרת אופציונלית המוצגת מעל השאלות"
+
+#. content.questions.items
+#: schema.json
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "שאלות ותשובות המוצגות כרשימה הניתנת להרחבה"
+
+#. content.questions.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "שאלה שנשאלת על ידי המבקרים"
+
+#. content.questions.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "תשובה לשאלה"
+
+#. content.timeline
+#: schema.json
+msgctxt "st"
+msgid "timeline"
+msgstr "ציר זמן"
+
+#. content.timeline
+#: schema.json
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "שלבים או אירועים ממוספרים בסדר כרונולוגי"
+
+#. content.timeline.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "כותרת אופציונלית המוצגת מעל ציר הזמן"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show the steps one below the other or side by side, side by side suits up to five steps"
+msgstr "הצגת השלבים זה מתחת לזה או זה לצד זה, תצוגה זה לצד זה מתאימה לעד חמישה שלבים"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Vertical"
+msgstr "אנכי"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Horizontal"
+msgstr "אופקי"
+
+#. content.timeline.items
+#: schema.json
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "שלבים או אירועים לפי סדר התרחשותם"
+
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fh"
+msgid "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "תאריך, תקופה או שלב אופציונליים המוצגים מעל הכותרת, למשל 2024 או שבוע 1"
+
+#. content.timeline.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "שם השלב או האירוע"
+
+#. content.timeline.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "תיאור השלב או האירוע"
+
+#. content.toc
+#: schema.json
+msgctxt "st"
+msgid "toc"
+msgstr "תוכן העניינים"
+
+#. content.toc
+#: schema.json
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "תוכן עניינים עם קישורים לכותרות הדף"
+
+#. content.toc.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "כותרת אופציונלית המוצגת מעל תוכן העניינים"
+
+#. content.contact
+#: schema.json
+msgctxt "st"
+msgid "contact"
+msgstr "צור קשר"
+
+#. content.contact
+#: schema.json
+msgctxt "sd"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "טופס יצירת קשר עם שדות הניתנים להגדרה וקבצים מצורפים אופציונליים"
+
+#. content.contact.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "כותרת אופציונלית המוצגת מעל טופס יצירת הקשר"
+
+#. content.contact.description
+#. meta.meta-tags.description
+#. meta.social-media.description
+#: schema.json
+msgctxt "fn"
+msgid "description"
+msgstr "תיאור"
+
+#. content.contact.description
+#: schema.json
+msgctxt "fh"
+msgid "Optional text shown between headline and contact form"
+msgstr "טקסט אופציונלי המוצג בין הכותרת לטופס יצירת הקשר"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fn"
+msgid "Form fields"
+msgstr "שדות הטופס"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fh"
+msgid "Form fields shown to visitors in this order"
+msgstr "שדות הטופס המוצגים למבקרים בסדר זה"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fn"
+msgid "Field"
+msgstr "שדה"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "בחר שדה טופס או הזן שם משלך"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Name"
+msgstr "שם"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Company"
+msgstr "חברה"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Telephone"
+msgstr "טלפון"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "E-Mail"
+msgstr "דואר אלקטרוני"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Subject"
+msgstr "נושא"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fn"
+msgid "Required"
+msgstr "חובה"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "המבקרים חייבים למלא שדה זה"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fn"
+msgid "Input type"
+msgstr "סוג קלט"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "סוג הקלט המוצג למבקרים"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text"
+msgstr "טקסט"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text area"
+msgstr "אזור טקסט"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Selection"
+msgstr "רשימת בחירה"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fn"
+msgid "Choices"
+msgstr "אפשרויות"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "אפשרויות לשדות בחירה, אחת בכל שורה"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fn"
+msgid "Attachments"
+msgstr "קבצים מצורפים"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr "המספר המרבי של תמונות או קובצי PDF שמבקרים יכולים לצרף, 0 משבית העלאות"
+
+#. meta.meta-tags
+#: schema.json
+msgctxt "st"
+msgid "meta-tags"
+msgstr "תגי מטא"
+
+#. meta.meta-tags.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgstr "תקציר הדף המוצג בתוצאות החיפוש, מומלצים 150 עד 160 תווים"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fn"
+msgid "keywords"
+msgstr "מילות מפתח"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "רשימת מילות מפתח מופרדות בפסיקים המתארות את הדף"
+
+#. meta.social-media
+#: schema.json
+msgctxt "st"
+msgid "social-media"
+msgstr "רשתות חברתיות"
+
+#. meta.social-media.title
+#: schema.json
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "כותרת המוצגת כאשר הדף משותף ברשתות חברתיות"
+
+#. meta.social-media.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "תקציר המוצג כאשר הדף משותף ברשתות חברתיות"
+
+#. meta.social-media.file
+#: schema.json
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "תמונת תצוגה מקדימה המוצגת כאשר הדף משותף ברשתות חברתיות"
+
+#. meta.canonical
+#: schema.json
+msgctxt "st"
+msgid "canonical"
+msgstr "כתובת URL קנונית"
+
+#. meta.canonical.url
+#: schema.json
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "הכתובת המקורית אם אותו תוכן זמין במספר כתובות"
+
+#. meta.robots
+#: schema.json
+msgctxt "st"
+msgid "robots"
+msgstr "מנועי חיפוש"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fn"
+msgid "index"
+msgstr "הוספה לאינדקס"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "אפשר או מנע ממנועי חיפוש להציג דף זה ברשימת התוצאות"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "Index"
+msgstr "הוספה לאינדקס"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "No index"
+msgstr "ללא הוספה לאינדקס"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fn"
+msgid "follow"
+msgstr "מעקב אחר קישורים"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "אפשר או מנע ממנועי חיפוש לעקוב אחר הקישורים בדף זה"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "Follow"
+msgstr "מעקב אחר קישורים"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "No follow"
+msgstr "ללא מעקב אחר קישורים"
+
+#. config.website
+#: schema.json
+msgctxt "st"
+msgid "website"
+msgstr "אתר אינטרנט"
+
+#. config.website.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "שם האתר המוצג בכרטיסיית הדפדפן ובתוצאות החיפוש"
+
+#. config.logo
+#: schema.json
+msgctxt "st"
+msgid "logo"
+msgstr "לוגו"
+
+#. config.logo.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "לוגו המוצג בכותרת הדף"
+
+#. config.logo-alternative
+#: schema.json
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "לוגו חלופי"
+
+#. config.logo-alternative.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "גרסת הלוגו המשמשת לרקעים כהים"
+
+#. config.icon
+#: schema.json
+msgctxt "st"
+msgid "icon"
+msgstr "סמל"
+
+#. config.icon.file
+#: schema.json
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "תמונה מרובעת קטנה המוצגת בכרטיסיות הדפדפן ובסימניות"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "theme"
+msgstr "ערכת נושא"
+
+#. config.theme
+#: schema.json
+msgctxt "sg"
+msgid "theme"
+msgstr "ערכת נושא"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "גופן הטקסט"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "רשימת גופנים מופרדים בפסיקים המשמשים לטקסט"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "צבע הטקסט"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fh"
+msgid "Default text color"
+msgstr "צבע הטקסט המוגדר כברירת מחדל"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "צבע הרקע"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "צבע הרקע של הדפים"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "צבע הבחירה"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "צבע הרקע של טקסט מסומן"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "צבע ניגודיות"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "צבע האלמנטים בעלי ניגודיות חזקה מול הרקע"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "צבע ניגודיות בריחוף"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "צבע הניגודיות בעת מעבר עכבר או פוקוס על אלמנט"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "צבע טקסט הניגודיות"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "צבע הטקסט על אלמנטים המשתמשים בצבע הניגודיות"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "צבע ראשי"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "צבע המותג הראשי המשמש לקישורים ולכפתורים"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "רקע ראשי"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "צבע הרקע של הכפתורים הראשיים וההדגשות"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "צבע ריחוף ראשי"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "הצבע הראשי בעת מעבר עכבר או פוקוס על אלמנט"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "רקע ריחוף ראשי"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "צבע הרקע הראשי בעת מעבר עכבר או פוקוס על אלמנט"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "צבע משני"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "צבע נוסף המשמש לקישורים וכפתורים פחות חשובים"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "רקע משני"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "צבע הרקע של הכפתורים המשניים"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "צבע ריחוף משני"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "הצבע המשני בעת מעבר עכבר או פוקוס על אלמנט"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "רקע ריחוף משני"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "צבע הרקע המשני בעת מעבר עכבר או פוקוס על אלמנט"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "עיגול פינות"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "עיגול הפינות כאורך CSS, למשל 0.25rem או 0 לפינות חדות"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "מפריד נתיב ניווט"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "תו המוצג בין קישורי פירורי הלחם"
+
+#. config.security
+#: schema.json
+msgctxt "st"
+msgid "security"
+msgstr "אבטחה"
+
+#. config.security
+#. config.robots-txt
+#. config.styles
+#. config.javascript
+#: schema.json
+msgctxt "sg"
+msgid "expert"
+msgstr "מתקדם"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "כתובת URL ליצירת קשר"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "קישור HTTPS ליצירת קשר עם צוות האבטחה, למשל טופס"
+
+#. config.security.email
+#: schema.json
+msgctxt "fn"
+msgid "Contact email"
+msgstr "דוא״ל ליצירת קשר"
+
+#. config.security.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "כתובת דוא״ל לדיווח על בעיות אבטחה"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fn"
+msgid "expires"
+msgstr "תאריך תפוגה"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "התאריך שאחריו נחשב מידע האבטחה כמיושן"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fn"
+msgid "encryption"
+msgstr "הצפנה"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "קישור HTTPS למפתח הציבורי להודעות מוצפנות"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "תודות"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "קישור HTTPS לדף התודה לחוקרי האבטחה"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "שפות מועדפות"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "קודי שפה מופרדים בפסיקים לדוחות אבטחה, למשל en, de"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fn"
+msgid "canonical"
+msgstr "כתובת URL קנונית"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "כתובת URL בפרוטוקול HTTPS שבה מפורסם קובץ ה-security.txt"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fn"
+msgid "policy"
+msgstr "מדיניות"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "קישור HTTPS למדיניות האבטחה והגילוי"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fn"
+msgid "hiring"
+msgstr "גיוס"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "קישור HTTPS למשרות פנויות הקשורות לאבטחה"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "קישור HTTPS למטא-נתונים של ספק CSAF"
+
+#. config.robots-txt
+#: schema.json
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#. config.robots-txt.text
+#: schema.json
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "כללים נוספים המתווספים לקובץ robots.txt עבור סורקי אינטרנט"
+
+#. config.styles
+#: schema.json
+msgctxt "st"
+msgid "styles"
+msgstr "סגנונות"
+
+#. config.styles.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "קוד CSS מותאם אישית המתווסף לכל הדפים"
+
+#. config.javascript
+#: schema.json
+msgctxt "st"
+msgid "javascript"
+msgstr "JavaScript"
+
+#. config.javascript.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "קוד JavaScript מותאם אישית המתווסף לכל הדפים"

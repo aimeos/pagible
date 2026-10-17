@@ -1,0 +1,292 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: km\n"
+
+#. config.cafe
+#: schema.json
+msgctxt "st"
+msgid "brew::cafe"
+msgstr "ហាងកាហ្វេ"
+
+#. config.cafe.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the café, roastery or bakery"
+msgstr "ឈ្មោះហាងកាហ្វេ រោងលីងកាហ្វេ ឬហាងនំប៉័ង"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "ប្រភេទអាជីវកម្ម"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "ប្រភេទអាជីវកម្មដែលបង្ហាញដល់ម៉ាស៊ីនស្វែងរក"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Café or coffee shop"
+msgstr "ហាងកាហ្វេ"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bakery"
+msgstr "ហាងនំប៉័ង"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "ភោជនីយដ្ឋាន"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business, e.g. roastery"
+msgstr "អាជីវកម្មផ្សេងទៀត ឧ. រោងលីងកាហ្វេ"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "អាសយដ្ឋានផ្លូវ"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "ផ្លូវ និងលេខផ្ទះ"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "លេខកូដប្រៃសណីយ៍"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the café"
+msgstr "លេខកូដប្រៃសណីយ៍របស់ហាងកាហ្វេ"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "ទីក្រុង"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the café is located in"
+msgstr "ទីក្រុងដែលហាងកាហ្វេស្ថិតនៅ"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "លេខកូដប្រទេស"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "លេខកូដប្រទេស ISO ពីរតួអក្សរ ឧ. DE ឬ US"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "ទូរស័ព្ទ"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "លេខទូរស័ព្ទជាទម្រង់អន្តរជាតិ ដែលប្រើសម្រាប់ប៊ូតុងហៅទូរស័ព្ទផងដែរ"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "អ៊ីមែល"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for questions, catering and wholesale requests"
+msgstr "អាសយដ្ឋានអ៊ីមែលសម្រាប់សំណួរ ការកម្មង់អាហារ និងការលក់ដុំ"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "សេចក្តីប្រកាស"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Freshly roasted every Tuesday"
+msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញនៅផ្នែកខាងលើនៃទំព័រនីមួយៗ ឧ. លីងថ្មីៗរៀងរាល់ថ្ងៃអង្គារ"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fn"
+msgid "Order link"
+msgstr "តំណកម្មង់"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fh"
+msgid "Link to the online shop or order ahead page, shown as a button in the header"
+msgstr "តំណទៅហាងអនឡាញ ឬទំព័រកម្មង់ជាមុន ដែលបង្ហាញជាប៊ូតុងនៅក្បាលទំព័រ"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "តំណម៉ឺនុយ"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the food and drinks menu"
+msgstr "តំណទៅទំព័រម៉ឺនុយអាហារ និងភេសជ្ជៈ"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "មុខម្ហូប និងភេសជ្ជៈ"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
+msgstr "បញ្ជីអ្វីដែលអ្នកលក់ ដោយបំបែកដោយសញ្ញាក្បៀស ឧ. Specialty coffee, Bakery, Breakfast"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "កម្រិតតម្លៃ"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the café, e.g. $ or €€"
+msgstr "កម្រិតតម្លៃរបស់ហាងកាហ្វេ ឧ. $ ឬ €€"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "របារសកម្មភាព"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and order buttons at the bottom of the screen on phones"
+msgstr "បង្ហាញប៊ូតុងហៅទូរស័ព្ទ និងកម្មង់នៅផ្នែកខាងក្រោមនៃអេក្រង់លើទូរស័ព្ទ"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "ម៉ោងបើក"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "ម៉ោងបើកសម្រាប់ថ្ងៃនីមួយៗក្នុងសប្តាហ៍ ដែលបង្ហាញនៅបាតទំព័រ"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "ថ្ងៃ"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "ថ្ងៃនៃសប្តាហ៍"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "ថ្ងៃច័ន្ទ"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "ថ្ងៃអង្គារ"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "ថ្ងៃពុធ"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "ថ្ងៃព្រហស្បតិ៍"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "ថ្ងៃសុក្រ"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "ថ្ងៃសៅរ៍"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "ថ្ងៃអាទិត្យ"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "ចាប់ពីម៉ោង"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "ម៉ោងបើកជាទម្រង់ 24 ម៉ោង ឧ. 07:30"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "ដល់ម៉ោង"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "ម៉ោងបិទជាទម្រង់ 24 ម៉ោង ឧ. 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "brew::theme"
+msgstr "រចនាប័ទ្ម"

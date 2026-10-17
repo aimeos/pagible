@@ -1,0 +1,2212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: th\n"
+
+#. content.heading
+#: schema.json
+msgctxt "st"
+msgid "heading"
+msgstr "หัวข้อ"
+
+#. content.heading
+#: schema.json
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "หัวข้อส่วนตั้งแต่ H1 ถึง H6"
+
+#. content.heading.title
+#. content.table.title
+#. content.map.title
+#. content.slideshow.title
+#. content.before-after.title
+#. content.hero.title
+#. content.cta.title
+#. content.cards.title
+#. content.cards.cards.title
+#. content.testimonial.title
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#. content.pricing.title
+#. content.questions.title
+#. content.questions.items.title
+#. content.timeline.title
+#. content.timeline.items.title
+#. content.toc.title
+#. content.contact.title
+#. meta.social-media.title
+#. config.website.title
+#: schema.json
+msgctxt "fn"
+msgid "title"
+msgstr "ชื่อเรื่อง"
+
+#. content.heading.title
+#: schema.json
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "ข้อความของหัวข้อ"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fn"
+msgid "level"
+msgstr "ระดับ"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fh"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "ระดับ 1 คือหัวข้อหลักของหน้า ระดับที่สูงกว่าใช้จัดโครงสร้างส่วนย่อยด้านล่าง"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H1"
+msgstr "H1"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H2"
+msgstr "H2"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H3"
+msgstr "H3"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H4"
+msgstr "H4"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H5"
+msgstr "H5"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H6"
+msgstr "H6"
+
+#. content.text
+#: schema.json
+msgctxt "st"
+msgid "text"
+msgstr "ข้อความ"
+
+#. content.text
+#: schema.json
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "ข้อความจัดรูปแบบพร้อมย่อหน้า รายการ และลิงก์"
+
+#. content.text.text
+#. content.image-text.text
+#. content.map.text
+#. content.hero.text
+#. content.cta.text
+#. content.cards.cards.text
+#. content.testimonial.items.text
+#. content.questions.items.text
+#. content.timeline.items.text
+#. config.robots-txt.text
+#. config.styles.text
+#. config.javascript.text
+#: schema.json
+msgctxt "fn"
+msgid "text"
+msgstr "ข้อความ"
+
+#. content.text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "ข้อความจัดรูปแบบพร้อมย่อหน้า รายการ และลิงก์"
+
+#. content.image-text
+#: schema.json
+msgctxt "st"
+msgid "image-text"
+msgstr "รูปภาพและข้อความ"
+
+#. content.image-text
+#: schema.json
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "รูปภาพข้างข้อความจัดรูปแบบ"
+
+#. content.image-text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "ข้อความจัดรูปแบบที่แสดงข้างรูปภาพ"
+
+#. content.image-text.file
+#. content.cards.cards.file
+#. content.testimonial.items.file
+#. content.pricing.items.file
+#. meta.social-media.file
+#: schema.json
+msgctxt "fn"
+msgid "image"
+msgstr "รูปภาพ"
+
+#. content.image-text.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "รูปภาพที่แสดงข้างข้อความ"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fn"
+msgid "position"
+msgstr "ตำแหน่ง"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "ตำแหน่งของรูปภาพเทียบกับข้อความ"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Start"
+msgstr "เริ่มต้น"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "End"
+msgstr "ท้าย"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid start"
+msgstr "เริ่มต้นกริด"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid end"
+msgstr "ท้ายกริด"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fn"
+msgid "ratio"
+msgstr "อัตราส่วน"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "อัตราส่วนความกว้างระหว่างรูปภาพและข้อความ"
+
+#. content.code
+#: schema.json
+msgctxt "st"
+msgid "code"
+msgstr "โค้ด"
+
+#. content.code
+#: schema.json
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "ซอร์สโค้ดพร้อมไฮไลต์ไวยากรณ์"
+
+#. content.code.language
+#: schema.json
+msgctxt "fn"
+msgid "Language"
+msgstr "ภาษา"
+
+#. content.code.language
+#: schema.json
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "ภาษาโปรแกรมที่ใช้สำหรับไฮไลต์ไวยากรณ์"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "CSS"
+msgstr "CSS"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "GraphQL"
+msgstr "GraphQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "HTML"
+msgstr "HTML"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Java"
+msgstr "Java"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JSON"
+msgstr "JSON"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Markdown"
+msgstr "Markdown"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "PHP"
+msgstr "PHP"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Python"
+msgstr "Python"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Ruby"
+msgstr "Ruby"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "SQL"
+msgstr "SQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "TypeScript"
+msgstr "TypeScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "XML"
+msgstr "XML"
+
+#. content.code.text
+#. content.html.text
+#: schema.json
+msgctxt "fn"
+msgid "source code"
+msgstr "ซอร์สโค้ด"
+
+#. content.code.text
+#: schema.json
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "ซอร์สโค้ดที่แสดงพร้อมไฮไลต์ไวยากรณ์"
+
+#. content.table
+#: schema.json
+msgctxt "st"
+msgid "table"
+msgstr "ตาราง"
+
+#. content.table
+#: schema.json
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "ตารางข้อมูลพร้อมแถวหรือคอลัมน์หัวตาราง (ไม่บังคับ)"
+
+#. content.table.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "คำบรรยายที่แสดงเหนือตาราง (ไม่บังคับ)"
+
+#. content.table.header
+#: schema.json
+msgctxt "fn"
+msgid "header"
+msgstr "ส่วนหัว"
+
+#. content.table.header
+#: schema.json
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "ใช้แถวแรก คอลัมน์แรก หรือทั้งสองอย่างเป็นหัวตาราง"
+
+#. content.table.header
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "None"
+msgstr "ไม่มี"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row"
+msgstr "แถวแรก"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First column"
+msgstr "คอลัมน์แรก"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row and column"
+msgstr "แถวและคอลัมน์แรก"
+
+#. content.table.table
+#: schema.json
+msgctxt "fn"
+msgid "table"
+msgstr "ตาราง"
+
+#. content.table.table
+#: schema.json
+msgctxt "fh"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgstr "ป้อนข้อมูลในเซลล์ แล้วเพิ่มหรือลบแถวและคอลัมน์ตามต้องการ"
+
+#. content.map
+#: schema.json
+msgctxt "st"
+msgid "map"
+msgstr "แผนที่"
+
+#. content.map
+#: schema.json
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "แผนที่แบบโต้ตอบพร้อมตำแหน่ง ข้อความ และลิงก์"
+
+#. content.map.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "หัวข้อที่แสดงเหนือแผนที่ (ไม่บังคับ)"
+
+#. content.map.text
+#: schema.json
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "คำอธิบายที่แสดงข้างแผนที่ เช่น ที่อยู่หรือเส้นทาง"
+
+#. content.map.location
+#: schema.json
+msgctxt "fn"
+msgid "location"
+msgstr "ตำแหน่ง"
+
+#. content.map.location
+#: schema.json
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "ค้นหาสถานที่หรือคลิกบนแผนที่เพื่อกำหนดตำแหน่ง"
+
+#. content.map.button
+#: schema.json
+msgctxt "fn"
+msgid "Link label"
+msgstr "ข้อความลิงก์"
+
+#. content.map.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "ข้อความของลิงก์ที่เปิดตำแหน่งในบริการแผนที่"
+
+#. content.html
+#: schema.json
+msgctxt "st"
+msgid "html"
+msgstr "HTML"
+
+#. content.html
+#: schema.json
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "HTML แบบกำหนดเองสำหรับการฝังและวิดเจ็ต"
+
+#. content.html.text
+#: schema.json
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "โค้ด HTML ที่แทรกลงในหน้าตามที่เป็น เช่น สำหรับการฝังเนื้อหาและวิดเจ็ต"
+
+#. content.image
+#: schema.json
+msgctxt "st"
+msgid "image"
+msgstr "รูปภาพ"
+
+#. content.image
+#: schema.json
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "รูปภาพแบบตอบสนองหนึ่งรูป"
+
+#. content.image.file
+#. content.video.file
+#. content.audio.file
+#. content.file.file
+#. config.logo.file
+#. config.logo-alternative.file
+#. config.icon.file
+#: schema.json
+msgctxt "fn"
+msgid "file"
+msgstr "ไฟล์"
+
+#. content.image.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "รูปภาพที่แสดงเต็มความกว้างของพื้นที่เนื้อหา"
+
+#. content.image.main
+#. content.slideshow.main
+#. content.before-after.main
+#: schema.json
+msgctxt "fn"
+msgid "load immediately"
+msgstr "โหลดทันที"
+
+#. content.image.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "โหลดรูปภาพทันทีโดยไม่หน่วงเวลา หากมองเห็นที่ด้านบนของหน้า"
+
+#. content.slideshow
+#: schema.json
+msgctxt "st"
+msgid "slideshow"
+msgstr "สไลด์โชว์"
+
+#. content.slideshow
+#: schema.json
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "สไลด์หมุนเวียนพร้อมรูปภาพหลายรูป"
+
+#. content.slideshow.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "หัวข้อที่แสดงเหนือสไลด์โชว์ (ไม่บังคับ)"
+
+#. content.slideshow.files
+#. content.hero.files
+#: schema.json
+msgctxt "fn"
+msgid "images"
+msgstr "รูปภาพ"
+
+#. content.slideshow.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "รูปภาพที่แสดงต่อเนื่องกัน ลากเพื่อเปลี่ยนลำดับ"
+
+#. content.slideshow.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the first image without delay if it is visible at the top of the page"
+msgstr "โหลดรูปภาพแรกทันทีโดยไม่หน่วงเวลา หากมองเห็นที่ด้านบนของหน้า"
+
+#. content.before-after
+#: schema.json
+msgctxt "st"
+msgid "before-after"
+msgstr "ก่อน-หลัง"
+
+#. content.before-after
+#: schema.json
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "แถบเลื่อนเปรียบเทียบรูปภาพสองภาพก่อนและหลังการเปลี่ยนแปลง"
+
+#. content.before-after.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "หัวข้อที่ไม่บังคับซึ่งแสดงเหนือการเปรียบเทียบ"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fn"
+msgid "before image"
+msgstr "รูปภาพก่อน"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "รูปภาพที่แสดงสภาพก่อนการเปลี่ยนแปลง"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fn"
+msgid "after image"
+msgstr "รูปภาพหลัง"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "รูปภาพที่แสดงผลลัพธ์ ทั้งสองภาพควรมีขนาดเท่ากัน"
+
+#. content.before-after.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the images without delay if they are visible at the top of the page"
+msgstr "โหลดรูปภาพโดยไม่หน่วงเวลาหากมองเห็นได้ที่ด้านบนของหน้า"
+
+#. content.video
+#: schema.json
+msgctxt "st"
+msgid "video"
+msgstr "วิดีโอ"
+
+#. content.video
+#: schema.json
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "วิดีโอแบบฝังพร้อมปุ่มควบคุมการเล่น"
+
+#. content.video.file
+#: schema.json
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "ไฟล์วิดีโอที่เล่นในหน้า"
+
+#. content.audio
+#: schema.json
+msgctxt "st"
+msgid "audio"
+msgstr "เสียง"
+
+#. content.audio
+#: schema.json
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "เสียงแบบฝังพร้อมปุ่มควบคุมการเล่น"
+
+#. content.audio.file
+#: schema.json
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "ไฟล์เสียงที่เล่นในหน้า"
+
+#. content.file
+#: schema.json
+msgctxt "st"
+msgid "file"
+msgstr "ไฟล์"
+
+#. content.file
+#: schema.json
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "ไฟล์สำหรับดาวน์โหลด เช่น เอกสาร PDF"
+
+#. content.file.file
+#: schema.json
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "ไฟล์ที่ให้ดาวน์โหลด"
+
+#. content.hero
+#: schema.json
+msgctxt "st"
+msgid "hero"
+msgstr "ฮีโร่"
+
+#. content.hero
+#: schema.json
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "ส่วนเปิดขนาดใหญ่พร้อมชื่อเรื่อง ข้อความ ปุ่ม และพื้นหลัง"
+
+#. content.hero.title
+#: schema.json
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "หัวข้อหลักของหน้า"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fn"
+msgid "subtitle"
+msgstr "หัวข้อรอง"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "ข้อความสั้น ๆ ที่แสดงเหนือหัวข้อ"
+
+#. content.hero.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "บทนำที่แสดงใต้หัวข้อ"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fn"
+msgid "buttons"
+msgstr "ปุ่ม"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "ปุ่มนำผู้เข้าชมไปสู่ขั้นตอนถัดไป"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fn"
+msgid "label"
+msgstr "ป้ายกำกับ"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "ข้อความของปุ่ม"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.cards.cards.url
+#. content.article.author-url
+#. meta.canonical.url
+#: schema.json
+msgctxt "fn"
+msgid "url"
+msgstr "URL"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "หน้าหรือลิงก์ที่ปุ่มนำไปถึง"
+
+#. content.hero.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "รูปภาพที่แสดงข้างข้อความ"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fn"
+msgid "background"
+msgstr "พื้นหลัง"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "รูปภาพที่แสดงด้านหลังข้อความ"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fn"
+msgid "background animation"
+msgstr "แอนิเมชันพื้นหลัง"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "เอฟเฟกต์เคลื่อนไหวของรูปภาพพื้นหลัง"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "Zoom"
+msgstr "ซูม"
+
+#. content.cta
+#: schema.json
+msgctxt "st"
+msgid "CTA"
+msgstr "CTA"
+
+#. content.cta
+#: schema.json
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "คำกระตุ้นการตัดสินใจพร้อมข้อความและปุ่ม"
+
+#. content.cta.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "หัวข้อที่ดึงดูดความสนใจของผู้เข้าชม"
+
+#. content.cta.text
+#: schema.json
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "ข้อความกระตุ้นให้ผู้เข้าชมลงมือทำ"
+
+#. content.cards
+#: schema.json
+msgctxt "st"
+msgid "cards"
+msgstr "การ์ด"
+
+#. content.cards
+#: schema.json
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "การ์ดแบบกริดพร้อมรูปภาพ ชื่อเรื่อง และข้อความ"
+
+#. content.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "หัวข้อที่แสดงเหนือการ์ด (ไม่บังคับ)"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#. content.timeline.layout
+#: schema.json
+msgctxt "fn"
+msgid "layout"
+msgstr "เลย์เอาต์"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show cards, small badges like certificates or large figures like key numbers"
+msgstr "แสดงการ์ด ตราเล็กๆ เช่น ใบรับรอง หรือตัวเลขขนาดใหญ่ เช่น ตัวเลขสำคัญ"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Cards"
+msgstr "การ์ด"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Badges"
+msgstr "ตรา"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Figures"
+msgstr "ตัวเลข"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fn"
+msgid "columns"
+msgstr "จำนวนคอลัมน์"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "จำนวนการ์ดต่อแถว \"auto\" จะปรับตามความกว้างหน้าจอ"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "op"
+msgid "Auto"
+msgstr "อัตโนมัติ"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fn"
+msgid "cards"
+msgstr "การ์ด"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "การ์ดที่แสดงในกริด"
+
+#. content.cards.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "หัวข้อของการ์ด"
+
+#. content.cards.cards.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "รูปภาพที่แสดงด้านบนของการ์ด"
+
+#. content.cards.cards.text
+#: schema.json
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "ข้อความของการ์ด"
+
+#. content.cards.cards.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "หน้าหรือลิงก์ที่การ์ดนำไปถึง"
+
+#. content.testimonial
+#: schema.json
+msgctxt "st"
+msgid "testimonial"
+msgstr "คำรับรอง"
+
+#. content.testimonial
+#: schema.json
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "คำรับรองจากลูกค้าพร้อมชื่อ ตำแหน่ง และรูปถ่าย"
+
+#. content.testimonial.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "หัวข้อที่แสดงเหนือคำรับรอง (ไม่บังคับ)"
+
+#. content.testimonial.items
+#. content.pricing.items
+#. content.questions.items
+#. content.timeline.items
+#: schema.json
+msgctxt "fn"
+msgid "items"
+msgstr "รายการ"
+
+#. content.testimonial.items
+#: schema.json
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "คำรับรองจากลูกค้าหรือพันธมิตร"
+
+#. content.testimonial.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "คำรับรองของบุคคลนั้น"
+
+#. content.testimonial.items.name
+#. content.article.author-name
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fn"
+msgid "name"
+msgstr "ชื่อ"
+
+#. content.testimonial.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "ชื่อของบุคคลนั้น"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fn"
+msgid "role"
+msgstr "ตำแหน่ง"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "ตำแหน่งหรือบริษัทของบุคคลนั้น"
+
+#. content.testimonial.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "รูปถ่ายของบุคคลนั้น"
+
+#. content.article
+#: schema.json
+msgctxt "st"
+msgid "article"
+msgstr "บทความ"
+
+#. content.article
+#: schema.json
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "บทนำบทความพร้อมแกลเลอรีรูปภาพและผู้เขียน"
+
+#. content.article.text
+#: schema.json
+msgctxt "fn"
+msgid "introduction"
+msgstr "บทนำ"
+
+#. content.article.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "บทนำของบทความที่แสดงใต้ชื่อเรื่องของหน้า"
+
+#. content.article.files
+#: schema.json
+msgctxt "fn"
+msgid "Gallery"
+msgstr "แกลเลอรี"
+
+#. content.article.files
+#: schema.json
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "รูปภาพของบทความ รูปแรกจะใช้เป็นรูปตัวอย่าง"
+
+#. content.article.author-name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "ชื่อผู้เขียนบทความ"
+
+#. content.article.author-url
+#: schema.json
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "ลิงก์ไปยังหน้าโปรไฟล์ของผู้เขียน"
+
+#. content.blog
+#: schema.json
+msgctxt "st"
+msgid "blog"
+msgstr "บล็อก"
+
+#. content.blog
+#: schema.json
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "รายการบทความบล็อกจากหน้าแม่"
+
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "หัวข้อที่แสดงเหนือรายการ (ไม่บังคับ)"
+
+#. content.blog.layout
+#. content.news.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "แสดงหน้าต่าง ๆ เป็นการ์ดหรือเป็นรายการแบบกะทัดรัด"
+
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "List"
+msgstr "รายการ"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fn"
+msgid "parent-page"
+msgstr "หน้าแม่"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "หน้าที่ใช้แสดงรายการหน้าย่อย"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fn"
+msgid "order"
+msgstr "ลำดับ"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "ลำดับการเรียงของหน้าที่แสดง"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Position"
+msgstr "ตำแหน่ง"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Latest"
+msgstr "ล่าสุด"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Oldest"
+msgstr "เก่าที่สุด"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fn"
+msgid "limit"
+msgstr "ขีดจำกัด"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "จำนวนหน้าสูงสุดที่แสดงพร้อมกัน"
+
+#. content.blog.action
+#. content.news.action
+#. content.heros.action
+#. content.toc.action
+#: schema.json
+msgctxt "fn"
+msgid "action"
+msgstr "การดำเนินการ"
+
+#. content.news
+#: schema.json
+msgctxt "st"
+msgid "news"
+msgstr "ข่าวสาร"
+
+#. content.news
+#: schema.json
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "รายการข่าวจากหน้าแม่"
+
+#. content.heros
+#: schema.json
+msgctxt "st"
+msgid "heros"
+msgstr "ฮีโร่หลายรายการ"
+
+#. content.heros
+#: schema.json
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "หน้าย่อยเด่นตามด้วยหน้าย่อยอื่น ๆ"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "แสดงหน้าย่อยเพิ่มเติมเป็นการ์ดหรือเป็นรายการแบบกะทัดรัด"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Default"
+msgstr "ค่าเริ่มต้น"
+
+#. content.pricing
+#: schema.json
+msgctxt "st"
+msgid "pricing"
+msgstr "ราคา"
+
+#. content.pricing
+#: schema.json
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "แผนราคาแบบสมัครสมาชิกหรือชำระครั้งเดียว"
+
+#. content.pricing.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "หัวข้อที่แสดงเหนือแผนราคา (ไม่บังคับ)"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "หัวข้อรอง"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "ข้อความสั้น ๆ ที่แสดงใต้หัวข้อ"
+
+#. content.pricing.items
+#: schema.json
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "แผนราคาที่แสดงเรียงกัน"
+
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "ชื่อของแผนราคา"
+
+#. content.pricing.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the price plan"
+msgstr "รูปภาพที่แสดงด้านบนของแผนราคา"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fn"
+msgid "Frontend access role"
+msgstr "บทบาทการเข้าถึงส่วนหน้า"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "บทบาทที่มอบให้ลูกค้าหลังชำระเงินเพื่อเข้าถึงหน้าที่มีการป้องกัน"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fn"
+msgid "Payment prices"
+msgstr "ราคาการชำระเงิน"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "ราคาของแผน เช่น รายเดือนและรายปี"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fn"
+msgid "Payment type"
+msgstr "ประเภทการชำระเงิน"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "การสมัครสมาชิกแบบต่อเนื่องหรือการชำระเงินครั้งเดียว"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "Subscription"
+msgstr "การสมัครสมาชิก"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "One-time payment"
+msgstr "ชำระเงินครั้งเดียว"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fn"
+msgid "Billing interval"
+msgstr "รอบการเรียกเก็บเงิน"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "จำนวนวันระหว่างการชำระเงินสองครั้ง เช่น 30 สำหรับรายเดือน"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fn"
+msgid "Currency"
+msgstr "สกุลเงิน"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "รหัสสกุลเงิน ISO สามตัวอักษร เช่น EUR หรือ USD"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fn"
+msgid "Payment reference"
+msgstr "ข้อมูลอ้างอิงการชำระเงิน"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "รหัสราคาหรือจำนวนเงินที่ผู้ให้บริการชำระเงินใช้"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "ราคาที่แสดง"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "ราคาที่จัดรูปแบบแสดงให้ผู้เข้าชมเห็น เช่น €9.99"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fn"
+msgid "amount"
+msgstr "จำนวนเงิน"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "ราคาตัวเลขที่แสดงหากไม่ได้ตั้งราคาที่จัดรูปแบบไว้"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fn"
+msgid "Price unit"
+msgstr "หน่วยราคา"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "ข้อความที่แสดงหลังราคา เช่น ต่อเดือน"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fn"
+msgid "Description"
+msgstr "คำอธิบาย"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "คำอธิบายสั้น ๆ ของแผนราคา"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fn"
+msgid "features"
+msgstr "ฟีเจอร์"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "รายการฟีเจอร์ที่รวมอยู่ในแผน"
+
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fn"
+msgid "Target page or link"
+msgstr "หน้าเป้าหมายหรือลิงก์"
+
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fn"
+msgid "button"
+msgstr "ปุ่ม"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "ไฮไลต์"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "เน้นแผนนี้เมื่อเทียบกับแผนอื่น"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "ข้อความไฮไลต์"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "ป้ายกำกับสั้น ๆ ที่แสดงบนแผนที่ไฮไลต์ เช่น ยอดนิยม"
+
+#. content.questions
+#: schema.json
+msgctxt "st"
+msgid "questions"
+msgstr "FAQ"
+
+#. content.questions
+#: schema.json
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "คำถามที่พบบ่อยพร้อมคำตอบ"
+
+#. content.questions.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "หัวข้อที่แสดงเหนือคำถาม (ไม่บังคับ)"
+
+#. content.questions.items
+#: schema.json
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "คำถามและคำตอบที่แสดงเป็นรายการแบบขยายได้"
+
+#. content.questions.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "คำถามที่ผู้เข้าชมถาม"
+
+#. content.questions.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "คำตอบของคำถาม"
+
+#. content.timeline
+#: schema.json
+msgctxt "st"
+msgid "timeline"
+msgstr "ไทม์ไลน์"
+
+#. content.timeline
+#: schema.json
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "ขั้นตอนหรือเหตุการณ์ที่มีหมายเลขตามลำดับเวลา"
+
+#. content.timeline.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "หัวข้อที่ไม่บังคับซึ่งแสดงเหนือไทม์ไลน์"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show the steps one below the other or side by side, side by side suits up to five steps"
+msgstr "แสดงขั้นตอนเรียงลงมาหรือเรียงข้างกัน การเรียงข้างกันเหมาะกับไม่เกินห้าขั้นตอน"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Vertical"
+msgstr "แนวตั้ง"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Horizontal"
+msgstr "แนวนอน"
+
+#. content.timeline.items
+#: schema.json
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "ขั้นตอนหรือเหตุการณ์ตามลำดับที่เกิดขึ้น"
+
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fh"
+msgid "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "วันที่ ช่วงเวลา หรือระยะที่ไม่บังคับซึ่งแสดงเหนือชื่อ เช่น 2024 หรือ สัปดาห์ที่ 1"
+
+#. content.timeline.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "ชื่อของขั้นตอนหรือเหตุการณ์"
+
+#. content.timeline.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "คำอธิบายของขั้นตอนหรือเหตุการณ์"
+
+#. content.toc
+#: schema.json
+msgctxt "st"
+msgid "toc"
+msgstr "สารบัญ"
+
+#. content.toc
+#: schema.json
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "สารบัญพร้อมลิงก์ไปยังหัวข้อของหน้า"
+
+#. content.toc.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "หัวข้อที่แสดงเหนือสารบัญ (ไม่บังคับ)"
+
+#. content.contact
+#: schema.json
+msgctxt "st"
+msgid "contact"
+msgstr "ติดต่อ"
+
+#. content.contact
+#: schema.json
+msgctxt "sd"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "แบบฟอร์มติดต่อพร้อมช่องที่กำหนดค่าได้และไฟล์แนบที่ไม่บังคับ"
+
+#. content.contact.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "หัวข้อที่แสดงเหนือแบบฟอร์มติดต่อ (ไม่บังคับ)"
+
+#. content.contact.description
+#. meta.meta-tags.description
+#. meta.social-media.description
+#: schema.json
+msgctxt "fn"
+msgid "description"
+msgstr "คำอธิบาย"
+
+#. content.contact.description
+#: schema.json
+msgctxt "fh"
+msgid "Optional text shown between headline and contact form"
+msgstr "ข้อความเพิ่มเติมที่แสดงระหว่างหัวข้อและแบบฟอร์มติดต่อ"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fn"
+msgid "Form fields"
+msgstr "ฟิลด์ของแบบฟอร์ม"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fh"
+msgid "Form fields shown to visitors in this order"
+msgstr "ฟิลด์ของแบบฟอร์มที่แสดงต่อผู้เยี่ยมชมตามลำดับนี้"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fn"
+msgid "Field"
+msgstr "ฟิลด์"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "เลือกฟิลด์ของแบบฟอร์มหรือป้อนชื่อของคุณเอง"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Name"
+msgstr "ชื่อ"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Company"
+msgstr "บริษัท"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Telephone"
+msgstr "โทรศัพท์"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "E-Mail"
+msgstr "อีเมล"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Subject"
+msgstr "หัวเรื่อง"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fn"
+msgid "Required"
+msgstr "จำเป็น"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "ผู้เยี่ยมชมต้องกรอกฟิลด์นี้"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fn"
+msgid "Input type"
+msgstr "ประเภทอินพุต"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "ประเภทอินพุตที่แสดงต่อผู้เยี่ยมชม"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text"
+msgstr "ข้อความ"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text area"
+msgstr "พื้นที่ข้อความ"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Selection"
+msgstr "รายการตัวเลือก"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fn"
+msgid "Choices"
+msgstr "ตัวเลือก"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "ตัวเลือกสำหรับช่องเลือก หนึ่งรายการต่อบรรทัด"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fn"
+msgid "Attachments"
+msgstr "ไฟล์แนบ"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr "จำนวนสูงสุดของรูปภาพหรือไฟล์ PDF ที่ผู้เยี่ยมชมแนบได้ 0 คือปิดการอัปโหลด"
+
+#. meta.meta-tags
+#: schema.json
+msgctxt "st"
+msgid "meta-tags"
+msgstr "เมตาแท็ก"
+
+#. meta.meta-tags.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgstr "สรุปหน้าที่แสดงในผลการค้นหา แนะนำ 150 ถึง 160 ตัวอักษร"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fn"
+msgid "keywords"
+msgstr "คำสำคัญ"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "รายการคำสำคัญคั่นด้วยจุลภาคที่อธิบายหน้า"
+
+#. meta.social-media
+#: schema.json
+msgctxt "st"
+msgid "social-media"
+msgstr "โซเชียลมีเดีย"
+
+#. meta.social-media.title
+#: schema.json
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "ชื่อเรื่องที่แสดงเมื่อแชร์หน้าบนโซเชียลมีเดีย"
+
+#. meta.social-media.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "สรุปที่แสดงเมื่อแชร์หน้าบนโซเชียลมีเดีย"
+
+#. meta.social-media.file
+#: schema.json
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "รูปภาพตัวอย่างที่แสดงเมื่อแชร์หน้าบนโซเชียลมีเดีย"
+
+#. meta.canonical
+#: schema.json
+msgctxt "st"
+msgid "canonical"
+msgstr "URL หลัก"
+
+#. meta.canonical.url
+#: schema.json
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "URL ต้นฉบับหากเนื้อหาเดียวกันมีอยู่ที่หลายที่อยู่"
+
+#. meta.robots
+#: schema.json
+msgctxt "st"
+msgid "robots"
+msgstr "เครื่องมือค้นหา"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fn"
+msgid "index"
+msgstr "การจัดทำดัชนี"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "อนุญาตหรือป้องกันไม่ให้เครื่องมือค้นหาจัดทำดัชนีหน้านี้"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "Index"
+msgstr "จัดทำดัชนี"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "No index"
+msgstr "ไม่จัดทำดัชนี"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fn"
+msgid "follow"
+msgstr "การติดตามลิงก์"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "อนุญาตหรือป้องกันไม่ให้เครื่องมือค้นหาติดตามลิงก์บนหน้านี้"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "Follow"
+msgstr "ติดตามลิงก์"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "No follow"
+msgstr "ไม่ติดตามลิงก์"
+
+#. config.website
+#: schema.json
+msgctxt "st"
+msgid "website"
+msgstr "เว็บไซต์"
+
+#. config.website.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "ชื่อเว็บไซต์ที่แสดงในแท็บเบราว์เซอร์และผลการค้นหา"
+
+#. config.logo
+#: schema.json
+msgctxt "st"
+msgid "logo"
+msgstr "โลโก้"
+
+#. config.logo.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "โลโก้ที่แสดงในส่วนหัวของหน้า"
+
+#. config.logo-alternative
+#: schema.json
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "โลโก้สำรอง"
+
+#. config.logo-alternative.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "โลโก้อีกแบบสำหรับพื้นหลังสีเข้ม"
+
+#. config.icon
+#: schema.json
+msgctxt "st"
+msgid "icon"
+msgstr "ไอคอน"
+
+#. config.icon.file
+#: schema.json
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "รูปภาพสี่เหลี่ยมขนาดเล็กที่แสดงในแท็บเบราว์เซอร์และบุ๊กมาร์ก"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "theme"
+msgstr "ธีม"
+
+#. config.theme
+#: schema.json
+msgctxt "sg"
+msgid "theme"
+msgstr "ธีม"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "ฟอนต์ข้อความ"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "รายการฟอนต์คั่นด้วยจุลภาคที่ใช้กับข้อความ"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "สีข้อความ"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fh"
+msgid "Default text color"
+msgstr "สีข้อความเริ่มต้น"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "สีพื้นหลัง"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "สีพื้นหลังของหน้า"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "สีการเลือก"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "สีพื้นหลังของข้อความที่เลือก"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "สีคอนทราสต์"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "สีขององค์ประกอบที่มีความคมชัดสูงกับพื้นหลัง"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "สีคอนทราสต์เมื่อโฮเวอร์"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "สีคอนทราสต์เมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "สีข้อความคอนทราสต์"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "สีข้อความบนองค์ประกอบที่ใช้สีคอนทราสต์"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "สีหลัก"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "สีแบรนด์หลักที่ใช้กับลิงก์และปุ่ม"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "พื้นหลังหลัก"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "สีพื้นหลังของปุ่มหลักและส่วนไฮไลต์"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "สีหลักเมื่อโฮเวอร์"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "สีหลักเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "พื้นหลังหลักเมื่อโฮเวอร์"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "สีพื้นหลังหลักเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "สีรอง"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "สีเพิ่มเติมที่ใช้กับลิงก์และปุ่มที่สำคัญน้อยกว่า"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "พื้นหลังรอง"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "สีพื้นหลังของปุ่มรอง"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "สีรองเมื่อโฮเวอร์"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "สีรองเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "พื้นหลังรองเมื่อโฮเวอร์"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "สีพื้นหลังรองเมื่อชี้เมาส์หรือโฟกัสองค์ประกอบ"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "รัศมีมุม"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "ความโค้งของมุมในหน่วย CSS เช่น 0.25rem หรือ 0 สำหรับมุมฉาก"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "ตัวคั่นเบรดครัมบ์"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "อักขระที่แสดงระหว่างลิงก์เบรดครัมบ์"
+
+#. config.security
+#: schema.json
+msgctxt "st"
+msgid "security"
+msgstr "ความปลอดภัย"
+
+#. config.security
+#. config.robots-txt
+#. config.styles
+#. config.javascript
+#: schema.json
+msgctxt "sg"
+msgid "expert"
+msgstr "ขั้นสูง"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "ลิงก์ติดต่อ"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "ลิงก์ HTTPS สำหรับติดต่อทีมความปลอดภัย เช่น แบบฟอร์ม"
+
+#. config.security.email
+#: schema.json
+msgctxt "fn"
+msgid "Contact email"
+msgstr "อีเมลติดต่อ"
+
+#. config.security.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "อีเมลสำหรับรายงานปัญหาด้านความปลอดภัย"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fn"
+msgid "expires"
+msgstr "วันหมดอายุ"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "วันที่ที่ข้อมูลความปลอดภัยจะถือว่าล้าสมัย"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fn"
+msgid "encryption"
+msgstr "การเข้ารหัส"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "ลิงก์ HTTPS ไปยังกุญแจสาธารณะสำหรับข้อความเข้ารหัส"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "กิตติกรรมประกาศ"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "ลิงก์ HTTPS ไปยังหน้าขอบคุณนักวิจัยด้านความปลอดภัย"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "ภาษาที่ต้องการ"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "รหัสภาษาคั่นด้วยจุลภาคสำหรับรายงานความปลอดภัย เช่น en, de"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fn"
+msgid "canonical"
+msgstr "URL หลัก"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "URL แบบ HTTPS ที่เผยแพร่ไฟล์ security.txt"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fn"
+msgid "policy"
+msgstr "นโยบาย"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "ลิงก์ HTTPS ไปยังนโยบายความปลอดภัยและการเปิดเผยข้อมูล"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fn"
+msgid "hiring"
+msgstr "การรับสมัครงาน"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "ลิงก์ HTTPS ไปยังตำแหน่งงานที่เกี่ยวข้องกับความปลอดภัย"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "ลิงก์ HTTPS ไปยังข้อมูลเมทาดาทาของผู้ให้บริการ CSAF"
+
+#. config.robots-txt
+#: schema.json
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#. config.robots-txt.text
+#: schema.json
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "กฎเพิ่มเติมที่เพิ่มลงในไฟล์ robots.txt สำหรับเว็บครอว์เลอร์"
+
+#. config.styles
+#: schema.json
+msgctxt "st"
+msgid "styles"
+msgstr "สไตล์"
+
+#. config.styles.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "โค้ด CSS กำหนดเองที่เพิ่มในทุกหน้า"
+
+#. config.javascript
+#: schema.json
+msgctxt "st"
+msgid "javascript"
+msgstr "JavaScript"
+
+#. config.javascript.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "โค้ด JavaScript กำหนดเองที่เพิ่มในทุกหน้า"

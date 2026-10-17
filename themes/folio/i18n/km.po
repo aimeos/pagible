@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: km\n"
+
+#. config.profile
+#: schema.json
+msgctxt "st"
+msgid "folio::profile"
+msgstr "ប្រវត្តិរូប"
+
+#. config.profile.name
+#: schema.json
+msgctxt "fh"
+msgid "Your full name, shown as logo and author of the posts"
+msgstr "ឈ្មោះពេញរបស់អ្នក ដែលបង្ហាញជាឡូហ្គោ និងជាអ្នកនិពន្ធអត្ថបទ"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fn"
+msgid "Job title"
+msgstr "មុខតំណែង"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fh"
+msgid "Your role used for search engines, e.g. Staff Engineer"
+msgstr "តួនាទីរបស់អ្នកសម្រាប់ម៉ាស៊ីនស្វែងរក ឧ. Staff Engineer"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fn"
+msgid "Company"
+msgstr "ក្រុមហ៊ុន"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fh"
+msgid "Company or organization you work for, e.g. Northwind Labs"
+msgstr "ក្រុមហ៊ុន ឬអង្គការដែលអ្នកធ្វើការ ឧ. Northwind Labs"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "ទីតាំង"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fh"
+msgid "City or region you live in, e.g. Berlin, Germany"
+msgstr "ទីក្រុង ឬតំបន់ដែលអ្នករស់នៅ ឧ. Berlin, Germany"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fn"
+msgid "Photo"
+msgstr "រូបថត"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fh"
+msgid "Square photo or avatar of you shown below the posts"
+msgstr "រូបថត ឬរូបតំណាងរាងការ៉េរបស់អ្នក ដែលបង្ហាញនៅខាងក្រោមអត្ថបទ"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fn"
+msgid "Short bio"
+msgstr "ជីវប្រវត្តិខ្លី"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fh"
+msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
+msgstr "ប្រយោគមួយអំពីអ្នក ដែលបង្ហាញនៅខាងក្រោមអត្ថបទនីមួយៗ ឧ. ខ្ញុំបង្កើតកម្មវិធី Laravel និងសរសេរអំពីមូលដ្ឋានទិន្នន័យ"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fn"
+msgid "E-mail"
+msgstr "អ៊ីមែល"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address shown in the footer with a copy button"
+msgstr "អាសយដ្ឋានអ៊ីមែលដែលបង្ហាញនៅបាតទំព័រ ជាមួយប៊ូតុងចម្លង"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fn"
+msgid "Profiles"
+msgstr "ប្រវត្តិរូបអនឡាញ"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fh"
+msgid "Links to your profiles shown in the footer, e.g. GitHub, Mastodon or LinkedIn"
+msgstr "តំណទៅប្រវត្តិរូបរបស់អ្នក ដែលបង្ហាញនៅបាតទំព័រ ឧ. GitHub, Mastodon ឬ LinkedIn"
+
+#. config.profile.links.label
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website, e.g. GitHub"
+msgstr "ឈ្មោះគេហទំព័រ ឧ. GitHub"
+
+#. config.profile.links.url
+#: schema.json
+msgctxt "fh"
+msgid "Link to your profile, e.g. https://github.com/lena"
+msgstr "តំណទៅប្រវត្តិរូបរបស់អ្នក ឧ. https://github.com/lena"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "folio::theme"
+msgstr "រចនាប័ទ្ម"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "ភាពមូលនៃជ្រុងជាប្រវែង CSS ឧ. 0.5rem ឬ 0 សម្រាប់ជ្រុងស្រួច"

@@ -1,0 +1,124 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: hu\n"
+
+#. config.profile
+#: schema.json
+msgctxt "st"
+msgid "folio::profile"
+msgstr "Profil"
+
+#. config.profile.name
+#: schema.json
+msgctxt "fh"
+msgid "Your full name, shown as logo and author of the posts"
+msgstr "A teljes neved, logóként és a bejegyzések szerzőjeként jelenik meg"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fn"
+msgid "Job title"
+msgstr "Beosztás"
+
+#. config.profile.job
+#: schema.json
+msgctxt "fh"
+msgid "Your role used for search engines, e.g. Staff Engineer"
+msgstr "A szereped a keresőmotorok számára, pl. Staff Engineer"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fn"
+msgid "Company"
+msgstr "Cég"
+
+#. config.profile.company
+#: schema.json
+msgctxt "fh"
+msgid "Company or organization you work for, e.g. Northwind Labs"
+msgstr "Cég vagy szervezet, ahol dolgozol, pl. Northwind Labs"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Elhelyezkedés"
+
+#. config.profile.location
+#: schema.json
+msgctxt "fh"
+msgid "City or region you live in, e.g. Berlin, Germany"
+msgstr "Város vagy régió, ahol élsz, pl. Berlin, Németország"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fn"
+msgid "Photo"
+msgstr "Fotó"
+
+#. config.profile.avatar
+#: schema.json
+msgctxt "fh"
+msgid "Square photo or avatar of you shown below the posts"
+msgstr "Négyzetes fotó vagy avatar rólad a bejegyzések alatt"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fn"
+msgid "Short bio"
+msgstr "Rövid bemutatkozás"
+
+#. config.profile.bio
+#: schema.json
+msgctxt "fh"
+msgid "One sentence about you shown below every post, e.g. I build Laravel apps and write about databases"
+msgstr "Egy mondat rólad minden bejegyzés alatt, pl. Laravel alkalmazásokat építek és adatbázisokról írok"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fn"
+msgid "E-mail"
+msgstr "E-mail"
+
+#. config.profile.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address shown in the footer with a copy button"
+msgstr "E-mail-cím a láblécben másolás gombbal"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fn"
+msgid "Profiles"
+msgstr "Profilok"
+
+#. config.profile.links
+#: schema.json
+msgctxt "fh"
+msgid "Links to your profiles shown in the footer, e.g. GitHub, Mastodon or LinkedIn"
+msgstr "Linkek a profiljaidra a láblécben, pl. GitHub, Mastodon vagy LinkedIn"
+
+#. config.profile.links.label
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website, e.g. GitHub"
+msgstr "A weboldal neve, pl. GitHub"
+
+#. config.profile.links.url
+#: schema.json
+msgctxt "fh"
+msgid "Link to your profile, e.g. https://github.com/lena"
+msgstr "Link a profilodra, pl. https://github.com/lena"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "folio::theme"
+msgstr "Téma"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "A sarkok lekerekítése CSS-hosszként, pl. 0.5rem vagy 0 az éles sarkok esetén"

@@ -1,0 +1,250 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sk\n"
+
+#. config.business
+#: schema.json
+msgctxt "st"
+msgid "solar::business"
+msgstr "Firma"
+
+#. config.business.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "Názov firmy"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Druh podnikania"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Druh podnikania zobrazovaný vyhľadávačom"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "Stavebná a remeselná firma"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Electrician"
+msgstr "Elektrikár"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "Kúrenie a klimatizácia"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Ulica a číslo domu"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Ulica a číslo domu"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "PSČ"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the company"
+msgstr "PSČ firmy"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Mesto"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the company is located in"
+msgstr "Mesto, v ktorom firma sídli"
+
+#. config.business.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Kód krajiny"
+
+#. config.business.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dvojpísmenový ISO kód krajiny, napr. DE alebo US"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefón"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefónne číslo v medzinárodnom formáte, používa ho aj tlačidlo volania"
+
+#. config.business.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-mail"
+
+#. config.business.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "E-mailová adresa pre otázky"
+
+#. config.business.area
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "Obsluhované oblasti"
+
+#. config.business.area
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "Zoznam miest a regiónov, v ktorých pracujete, oddelený čiarkami, napr. Leeds, Bradford, York"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Cenové rozpätie"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the company, e.g. $$ or €€"
+msgstr "Cenová úroveň firmy, napr. $$ alebo €€"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Tlačidlo volania"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Zobraziť tlačidlo volania v dolnej časti obrazovky na telefónoch"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Otváracie hodiny"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Otváracie hodiny pre každý deň v týždni"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Deň"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Deň v týždni"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pondelok"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Utorok"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Streda"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Štvrtok"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Piatok"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sobota"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Nedeľa"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Čas otvorenia"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Otváracia doba v 24-hodinovom formáte, napr. 07:30"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Čas zatvorenia"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Zatváracia doba v 24-hodinovom formáte, napr. 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "solar::theme"
+msgstr "Téma"

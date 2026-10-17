@@ -1,0 +1,292 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: az\n"
+
+#. config.cafe
+#: schema.json
+msgctxt "st"
+msgid "brew::cafe"
+msgstr "Kafe"
+
+#. config.cafe.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the café, roastery or bakery"
+msgstr "Kafe, qovurma zavodu və ya çörəkxananın adı"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Biznes növü"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Axtarış sistemlərinə göstərilən biznes növü"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Café or coffee shop"
+msgstr "Kafe və ya qəhvə dükanı"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bakery"
+msgstr "Çörək sexi"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Restoran"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business, e.g. roastery"
+msgstr "Digər biznes, məsələn, qəhvə qovurma sexi"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Küçə ünvanı"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Küçə və ev nömrəsi"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Poçt indeksi"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the café"
+msgstr "Kafeyin poçt indeksi"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Şəhər"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the café is located in"
+msgstr "Kafenin yerləşdiyi şəhər"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Ölkə kodu"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "ISO ölkə kodu üçün iki hərfli kod, məsələn DE və ya US"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "telefon"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Beynəlxalq formatda telefon nömrəsi, zəng düyməsi üçün də istifadə olunur"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "e-poçt"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for questions, catering and wholesale requests"
+msgstr "Suallar, katerinq və topdansatış sorğuları üçün e-poçt ünvanı"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Elan"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Freshly roasted every Tuesday"
+msgstr "Hər səhifənin yuxarısında göstərilən qısa qeyd, məsələn: Hər çərşənbə axşamı təzə qovrulur"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fn"
+msgid "Order link"
+msgstr "Sifariş linki"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fh"
+msgid "Link to the online shop or order ahead page, shown as a button in the header"
+msgstr "Onlayn mağaza və ya əvvəlcədən sifariş səhifəsinə keçid, başlıqda düymə şəklində göstərilir"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Menyu linki"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the food and drinks menu"
+msgstr "Yemək və içkilər menyusu olan səhifənin linki"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Mətbəx"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
+msgstr "Nə təqdim etdiyinizin virgullarla ayrılmış siyahısı, məsələn: xüsusi qəhvə, çörək məmulatları, səhər yeməyi"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Qiymət diapazonu"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the café, e.g. $ or €€"
+msgstr "Kafeyin qiymət səviyyəsi, məsələn $ və ya €€"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Fəaliyyət paneli"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and order buttons at the bottom of the screen on phones"
+msgstr "Telefonlarda ekranın aşağı hissəsində zəng və sifariş düymələrini göstərin"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "İş saatları"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Həftənin hər günü üçün açılış saatları, səhifənin alt hissəsində göstərilir."
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "gün"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Həftənin günü"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Bazar ertəsi"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Çərşənbə axşamı"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Çərşənbə"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Cümə axşamı"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Cümə"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Şənbə"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Bazar"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "açılma vaxtı"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Açılış vaxtı 24 saat formatında, məsələn, 07:30"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "bağlanma vaxtı"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "24 saatlıq formatda bağlanma vaxtı, məsələn, 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "brew::theme"
+msgstr "Mövzu"

@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: lt\n"
+
+#. config.garden
+#: schema.json
+msgctxt "st"
+msgid "grove::garden"
+msgstr "Sodas"
+
+#. config.garden.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the gardening, landscaping or garden design business"
+msgstr "Sodininkystės, aplinkos tvarkymo ar sodų dizaino įmonės pavadinimas"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Veiklos rūšis"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Veiklos rūšis, rodoma paieškos sistemoms"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Gardener and landscaper"
+msgstr "Sodininkas ir aplinkos tvarkytojas"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Landscape contractor"
+msgstr "Aplinkos įrengimo rangovas"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden design studio"
+msgstr "Sodų dizaino studija"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden centre or nursery"
+msgstr "Sodo prekių centras ar medelynas"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other garden business"
+msgstr "Kita sodo įmonė"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adresas"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Gatvė ir namo numeris"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Pašto kodas"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "Įmonės pašto kodas"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Miestas"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "Miestas, kuriame įsikūrusi įmonė"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Šalies kodas"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dviejų raidžių ISO šalies kodas, pvz., DE arba US"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefonas"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefono numeris tarptautiniu formatu, naudojamas ir skambinimo mygtukui"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fn"
+msgid "Service area"
+msgstr "Aptarnavimo zona"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fh"
+msgid "Towns and areas you work in, separated by commas, shown in the top bar and the footer"
+msgstr "Gyvenvietės ir rajonai, kuriuose dirbate, atskirti kableliais; rodomi viršutinėje juostoje ir poraštėje"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "El. paštas"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for quotes, site visits and garden care enquiries"
+msgstr "El. pašto adresas pasiūlymų, apžiūrų vietoje ir sodo priežiūros užklausoms"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Pranešimas"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Autumn tidy-ups: book your slot before November"
+msgstr "Trumpas pranešimas kiekvieno puslapio viršuje, pvz., Rudeninis sodo tvarkymas: užsisakykite laiką iki lapkričio"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fn"
+msgid "Quote link"
+msgstr "Pasiūlymo nuoroda"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fh"
+msgid "Link to the quote or site visit request page, shown as a button in the header"
+msgstr "Nuoroda į pasiūlymo ar apžiūros užklausos puslapį, rodoma kaip mygtukas antraštėje"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fn"
+msgid "Care plans link"
+msgstr "Priežiūros planų nuoroda"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with garden care plans and prices"
+msgstr "Nuoroda į puslapį su sodo priežiūros planais ir kainomis"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Kainų kategorija"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. ££ or €€"
+msgstr "Įmonės kainų lygis, pvz., ££ arba €€"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Pastaba"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Fully insured, all planting comes with a 12 month guarantee."
+msgstr "Trumpa pastaba poraštėje, pvz., Visiškai apdrausta, visiems sodinimams suteikiame 12 mėnesių garantiją."
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Veiksmų juosta"
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and quote buttons at the bottom of the screen on phones"
+msgstr "Rodyti skambučio ir pasiūlymo mygtukus telefonų ekrano apačioje"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "Darbo laikas"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week, shown in the footer"
+msgstr "Biuro darbo laikas kiekvienai savaitės dienai, rodomas poraštėje"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Diena"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Savaitės diena"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pirmadienis"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Antradienis"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Trečiadienis"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Ketvirtadienis"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Penktadienis"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Šeštadienis"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Sekmadienis"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Atidarymo laikas"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Atidarymo laikas 24 valandų formatu, pvz., 07:30"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Uždarymo laikas"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "Uždarymo laikas 24 valandų formatu, pvz., 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "grove::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Kampų suapvalinimas, nurodytas kaip CSS ilgio vienetas, pvz., 1rem arba 0 – jei norima aštrių kampų"

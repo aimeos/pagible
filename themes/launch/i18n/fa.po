@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fa\n"
+
+#. config.product
+#: schema.json
+msgctxt "st"
+msgid "launch::product"
+msgstr "محصول"
+
+#. config.product.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software product or app"
+msgstr "نام محصول نرم‌افزاری یا اپلیکیشن"
+
+#. config.product.category
+#: schema.json
+msgctxt "fn"
+msgid "Category"
+msgstr "دسته‌بندی"
+
+#. config.product.category
+#: schema.json
+msgctxt "fh"
+msgid "Kind of software shown to search engines"
+msgstr "نوع نرم‌افزاری که به موتورهای جستجو نشان داده می‌شود"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Business software"
+msgstr "نرم‌افزار کسب‌وکار"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Developer tool"
+msgstr "ابزار توسعه‌دهنده"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Design tool"
+msgstr "ابزار طراحی"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Finance software"
+msgstr "نرم‌افزار مالی"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Security software"
+msgstr "نرم‌افزار امنیتی"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Learning software"
+msgstr "نرم‌افزار آموزشی"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Consumer app"
+msgstr "اپلیکیشن مصرف‌کننده"
+
+#. config.product.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the product does, used for search engines"
+msgstr "یک جمله که عملکرد محصول را توصیف می‌کند و برای موتورهای جستجو استفاده می‌شود."
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "اعلامیه"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+msgstr "اخبار کوتاه که در بالای هر صفحه نمایش داده می‌شوند، مانند: جدید: صفحات وضعیت با دامنه‌های سفارشی"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fn"
+msgid "Announcement link"
+msgstr "لینک اعلامیه"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fh"
+msgid "Page the announcement links to, e.g. the changelog entry"
+msgstr "صفحهٔ پیوندهای اعلان به، مثلاً، ورودی changelog"
+
+#. config.product.status
+#: schema.json
+msgctxt "fn"
+msgid "Status page link"
+msgstr "لینک صفحه وضعیت"
+
+#. config.product.status
+#: schema.json
+msgctxt "fh"
+msgid "Link to the public status page, shown in the footer"
+msgstr "لینک صفحه وضعیت عمومی که در پاورقی نمایش داده می‌شود"
+
+#. config.product.price
+#: schema.json
+msgctxt "fn"
+msgid "Starting price"
+msgstr "قیمت شروع"
+
+#. config.product.price
+#: schema.json
+msgctxt "fh"
+msgid "Lowest price for search engines, e.g. 0 for a free plan or 19.00"
+msgstr "کمترین قیمت برای موتورهای جستجو، مثلاً 0 برای طرح رایگان یا 19.00"
+
+#. config.product.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. USD or EUR"
+msgstr "کد ارز ایزو سه‌حرفه، مانند USD یا EUR"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fn"
+msgid "Rating"
+msgstr "امتیاز"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fh"
+msgid "Average review rating from 1 to 5, e.g. 4.8"
+msgstr "میانگین امتیاز نقد از 1 تا 5، مثلاً 4.8"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fn"
+msgid "Number of reviews"
+msgstr "تعداد نظرات"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fh"
+msgid "Number of reviews the rating is based on"
+msgstr "تعداد نقدهایی که رتبه‌بندی بر اساس آن‌ها محاسبه شده است"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "اطلاعیه"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+msgstr "یادداشت کوتاه نمایش داده شده در پاورقی، مثلاً دارای گواهی SOC 2 نوع II، میزبانی داده‌ها در اتحادیه اروپا"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "launch::theme"
+msgstr "پوسته"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "گرد کردن گوشه‌ها به‌عنوان مقدار طول در CSS، مثلاً 1rem یا 0 برای گوشه‌های تیز"

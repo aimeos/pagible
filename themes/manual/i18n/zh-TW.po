@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-TW\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "專案"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "軟體專案名稱"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "版本"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "標誌旁邊顯示的當前版本，例如 v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "一句話說明該軟體的功能，供搜尋引擎使用"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "儲存庫"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "原始碼儲存庫的連結（例如：https://github.com/acme/project），以圖示形式顯示於頁首"
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "程式語言"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "該專案主要用於搜尋引擎的程式設計語言，例如 PHP 或 TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "授權條款"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "頁尾所示軟體的授權條款，例如 MIT 授權"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "主題"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "將邊角圓角化作為 CSS 長度，例如 0.5rem 或 0 代表尖角"

@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fa\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "پروژه"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "نام پروژه نرم‌افزاری"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "نسخه"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "نسخهٔ فعلی در کنار لوگو نمایش داده می‌شود، مثلاً v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "یک جمله که شرح می‌دهد نرم‌افزار چه کاری انجام می‌دهد و برای موتورهای جستجو استفاده می‌شود."
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "مخزن کد"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "لینک به مخزن کد منبع، مثلاً https://github.com/acme/project، که به‌عنوان آیکون در هدر نمایش داده می‌شود."
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "زبان برنامه‌نویسی"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "زبان برنامه‌نویسی اصلی پروژه برای موتورهای جستجو، مانند PHP یا TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "مجوز"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "مجوز نرم‌افزاری که در پاورقی نمایش داده شده است، مانند MIT"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "پوسته"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "گرد کردن گوشه‌ها به صورت طول در CSS، مثلاً 0.5rem یا 0 برای گوشه‌های تیز"

@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: no\n"
+
+#. config.product
+#: schema.json
+msgctxt "st"
+msgid "launch::product"
+msgstr "Produkt"
+
+#. config.product.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software product or app"
+msgstr "Navn på programvareproduktet eller appen"
+
+#. config.product.category
+#: schema.json
+msgctxt "fn"
+msgid "Category"
+msgstr "Kategori"
+
+#. config.product.category
+#: schema.json
+msgctxt "fh"
+msgid "Kind of software shown to search engines"
+msgstr "Type programvare som vises til søkemotorer"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Business software"
+msgstr "Forretningsprogramvare"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Developer tool"
+msgstr "Utviklerverktøy"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Design tool"
+msgstr "Designverktøy"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Finance software"
+msgstr "Finansprogramvare"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Security software"
+msgstr "Sikkerhetsprogramvare"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Learning software"
+msgstr "Læringsprogramvare"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Consumer app"
+msgstr "Forbrukerapp"
+
+#. config.product.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the product does, used for search engines"
+msgstr "En setning som beskriver hva produktet gjør, til søkemotorer"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Kunngjøring"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+msgstr "Kort nyhet vist øverst på hver side, f.eks. Nytt: statussider med egne domener"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fn"
+msgid "Announcement link"
+msgstr "Lenke til kunngjøring"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fh"
+msgid "Page the announcement links to, e.g. the changelog entry"
+msgstr "Siden kunngjøringen lenker til, f.eks. changelog-oppføringen"
+
+#. config.product.status
+#: schema.json
+msgctxt "fn"
+msgid "Status page link"
+msgstr "Lenke til statusside"
+
+#. config.product.status
+#: schema.json
+msgctxt "fh"
+msgid "Link to the public status page, shown in the footer"
+msgstr "Lenke til den offentlige statussiden, vises i footeren"
+
+#. config.product.price
+#: schema.json
+msgctxt "fn"
+msgid "Starting price"
+msgstr "Startpris"
+
+#. config.product.price
+#: schema.json
+msgctxt "fh"
+msgid "Lowest price for search engines, e.g. 0 for a free plan or 19.00"
+msgstr "Lavest pris for søkemotorer, f.eks. 0 for en gratis plan eller 19.00"
+
+#. config.product.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. USD or EUR"
+msgstr "Tre-bokstavs ISO-valutakode, f.eks. USD eller EUR"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fn"
+msgid "Rating"
+msgstr "Vurdering"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fh"
+msgid "Average review rating from 1 to 5, e.g. 4.8"
+msgstr "Gjennomsnittlig vurdering fra 1 til 5, f.eks. 4.8"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fn"
+msgid "Number of reviews"
+msgstr "Antall anmeldelser"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fh"
+msgid "Number of reviews the rating is based on"
+msgstr "Antall vurderinger karakteren er basert på"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Merknad"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+msgstr "Kort merknad vist i footeren, f.eks. SOC 2 Type II-sertifisert, data hostet i EU"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "launch::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Avrunding av hjørner som CSS-lengde, f.eks. 1rem eller 0 for skarpe hjørner"

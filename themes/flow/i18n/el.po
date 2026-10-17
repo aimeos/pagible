@@ -1,0 +1,274 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: el\n"
+
+#. config.business
+#: schema.json
+msgctxt "st"
+msgid "flow::business"
+msgstr "Επιχείρηση"
+
+#. config.business.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "Όνομα της εταιρείας"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Είδος επιχείρησης"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Είδος επιχείρησης που εμφανίζεται στις μηχανές αναζήτησης"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Plumber"
+msgstr "Υδραυλικός"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "Θέρμανση και κλιματισμός"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "Κατασκευές και ανακαινίσεις"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Διεύθυνση"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Οδός και αριθμός"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Ταχυδρομικός κώδικας"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the company"
+msgstr "Ταχυδρομικός κώδικας της εταιρείας"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Πόλη"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the company is located in"
+msgstr "Πόλη όπου βρίσκεται η εταιρεία"
+
+#. config.business.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Κωδικός χώρας"
+
+#. config.business.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Διγράμματος κωδικός χώρας ISO, π.χ. DE ή US"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Τηλέφωνο"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Αριθμός τηλεφώνου σε διεθνή μορφή, χρησιμοποιείται και για το κουμπί κλήσης"
+
+#. config.business.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Αριθμός έκτακτης ανάγκης"
+
+#. config.business.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "Τηλέφωνο για έκτακτες ανάγκες, εμφανίζεται στο πάνω μέρος κάθε σελίδας"
+
+#. config.business.emergency
+#: schema.json
+msgctxt "fn"
+msgid "24/7 service"
+msgstr "Εξυπηρέτηση 24/7"
+
+#. config.business.emergency
+#: schema.json
+msgctxt "fh"
+msgid "Emergency service is available around the clock"
+msgstr "Η υπηρεσία έκτακτης ανάγκης είναι διαθέσιμη όλο το 24ωρο"
+
+#. config.business.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. config.business.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "Διεύθυνση email για ερωτήματα"
+
+#. config.business.area
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "Περιοχές εξυπηρέτησης"
+
+#. config.business.area
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "Λίστα πόλεων και περιοχών όπου εργάζεστε, χωρισμένη με κόμματα, π.χ. Leeds, Bradford, York"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Επίπεδο τιμών"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the company, e.g. $$ or €€"
+msgstr "Επίπεδο τιμών της εταιρείας, π.χ. $$ ή €€"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Κουμπί κλήσης"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Εμφάνιση κουμπιού κλήσης στο κάτω μέρος της οθόνης στα κινητά"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Ώρες λειτουργίας"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Ώρες λειτουργίας για κάθε ημέρα της εβδομάδας"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Ημέρα"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Ημέρα της εβδομάδας"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Δευτέρα"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Τρίτη"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Τετάρτη"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Πέμπτη"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Παρασκευή"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Σάββατο"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Κυριακή"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Ώρα ανοίγματος"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Ώρα έναρξης σε μορφή 24 ωρών, π.χ. 07:30"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Ώρα κλεισίματος"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Ώρα λήξης σε μορφή 24 ωρών, π.χ. 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "flow::theme"
+msgstr "Θέμα"

@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: az\n"
+
+#. content.text-trio
+#: schema.json
+msgctxt "st"
+msgid "Text Trio"
+msgstr "Mətn üçlüyü"
+
+#. content.text-trio
+#: schema.json
+msgctxt "sd"
+msgid "Three texts arranged around a central title"
+msgstr "Mərkəzi başlıq ətrafında düzülmüş üç mətn"
+
+#. content.text-trio
+#: schema.json
+msgctxt "sg"
+msgid "pagible"
+msgstr "Pagible"
+
+#. content.text-trio.leading
+#: schema.json
+msgctxt "fn"
+msgid "Leading text"
+msgstr "Giriş mətni"
+
+#. content.text-trio.leading
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown before the central text"
+msgstr "Əsas mətndən əvvəl göstərilən qısa mətn"
+
+#. content.text-trio.title
+#: schema.json
+msgctxt "fn"
+msgid "Central text"
+msgstr "Mərkəzi mətn"
+
+#. content.text-trio.title
+#: schema.json
+msgctxt "fh"
+msgid "Prominent text in the middle"
+msgstr "Orta hissədə diqqət çəkən mətn"
+
+#. content.text-trio.supporting
+#: schema.json
+msgctxt "fn"
+msgid "Supporting text"
+msgstr "Tamamlayıcı mətn"
+
+#. content.text-trio.supporting
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown after the central text"
+msgstr "Mərkəzi mətndən sonra göstərilən qısa mətn"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "pagible::theme"
+msgstr "Mövzu"

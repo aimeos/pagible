@@ -14,6 +14,10 @@ class JournalServiceProvider extends Provider
         Schema::register( $basedir, 'journal' );
         View::addNamespace( 'journal', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'journal', '/vendor/cms/journal/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/journal' )], 'cms-theme' );
     }
 }

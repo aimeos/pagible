@@ -1,0 +1,2212 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: hr\n"
+
+#. content.heading
+#: schema.json
+msgctxt "st"
+msgid "heading"
+msgstr "Naslov"
+
+#. content.heading
+#: schema.json
+msgctxt "sd"
+msgid "Section headline from H1 to H6"
+msgstr "Naslov odjeljka od H1 do H6"
+
+#. content.heading.title
+#. content.table.title
+#. content.map.title
+#. content.slideshow.title
+#. content.before-after.title
+#. content.hero.title
+#. content.cta.title
+#. content.cards.title
+#. content.cards.cards.title
+#. content.testimonial.title
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#. content.pricing.title
+#. content.questions.title
+#. content.questions.items.title
+#. content.timeline.title
+#. content.timeline.items.title
+#. content.toc.title
+#. content.contact.title
+#. meta.social-media.title
+#. config.website.title
+#: schema.json
+msgctxt "fn"
+msgid "title"
+msgstr "Naslov"
+
+#. content.heading.title
+#: schema.json
+msgctxt "fh"
+msgid "Text of the headline"
+msgstr "Tekst naslova"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fn"
+msgid "level"
+msgstr "Razina"
+
+#. content.heading.level
+#: schema.json
+msgctxt "fh"
+msgid "Level 1 is the main page headline, higher levels structure the sections below"
+msgstr "Razina 1 je glavni naslov stranice, više razine strukturiraju odjeljke ispod"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H1"
+msgstr "H1"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H2"
+msgstr "H2"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H3"
+msgstr "H3"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H4"
+msgstr "H4"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H5"
+msgstr "H5"
+
+#. content.heading.level
+#: schema.json
+msgctxt "op"
+msgid "H6"
+msgstr "H6"
+
+#. content.text
+#: schema.json
+msgctxt "st"
+msgid "text"
+msgstr "Tekst"
+
+#. content.text
+#: schema.json
+msgctxt "sd"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Oblikovani tekst s odlomcima, popisima i poveznicama"
+
+#. content.text.text
+#. content.image-text.text
+#. content.map.text
+#. content.hero.text
+#. content.cta.text
+#. content.cards.cards.text
+#. content.testimonial.items.text
+#. content.questions.items.text
+#. content.timeline.items.text
+#. config.robots-txt.text
+#. config.styles.text
+#. config.javascript.text
+#: schema.json
+msgctxt "fn"
+msgid "text"
+msgstr "Tekst"
+
+#. content.text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text with paragraphs, lists and links"
+msgstr "Oblikovani tekst s odlomcima, popisima i poveznicama"
+
+#. content.image-text
+#: schema.json
+msgctxt "st"
+msgid "image-text"
+msgstr "Slika i tekst"
+
+#. content.image-text
+#: schema.json
+msgctxt "sd"
+msgid "Image next to formatted text"
+msgstr "Slika uz oblikovani tekst"
+
+#. content.image-text.text
+#: schema.json
+msgctxt "fh"
+msgid "Formatted text shown next to the image"
+msgstr "Oblikovani tekst prikazan uz sliku"
+
+#. content.image-text.file
+#. content.cards.cards.file
+#. content.testimonial.items.file
+#. content.pricing.items.file
+#. meta.social-media.file
+#: schema.json
+msgctxt "fn"
+msgid "image"
+msgstr "Slika"
+
+#. content.image-text.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown next to the text"
+msgstr "Slika prikazana uz tekst"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fn"
+msgid "position"
+msgstr "Položaj"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "fh"
+msgid "Position of the image relative to the text"
+msgstr "Položaj slike u odnosu na tekst"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Start"
+msgstr "Početak"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "End"
+msgstr "Kraj"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid start"
+msgstr "Početak mreže"
+
+#. content.image-text.position
+#: schema.json
+msgctxt "op"
+msgid "Grid end"
+msgstr "Kraj mreže"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fn"
+msgid "ratio"
+msgstr "Omjer"
+
+#. content.image-text.ratio
+#: schema.json
+msgctxt "fh"
+msgid "Width ratio between image and text"
+msgstr "Omjer širine slike i teksta"
+
+#. content.code
+#: schema.json
+msgctxt "st"
+msgid "code"
+msgstr "Kôd"
+
+#. content.code
+#: schema.json
+msgctxt "sd"
+msgid "Source code with syntax highlighting"
+msgstr "Izvorni kôd s isticanjem sintakse"
+
+#. content.code.language
+#: schema.json
+msgctxt "fn"
+msgid "Language"
+msgstr "Jezik"
+
+#. content.code.language
+#: schema.json
+msgctxt "fh"
+msgid "Programming language used for syntax highlighting"
+msgstr "Programski jezik za isticanje sintakse"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "CSS"
+msgstr "CSS"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "GraphQL"
+msgstr "GraphQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "HTML"
+msgstr "HTML"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Java"
+msgstr "Java"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JavaScript"
+msgstr "JavaScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "JSON"
+msgstr "JSON"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Markdown"
+msgstr "Markdown"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "PHP"
+msgstr "PHP"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Python"
+msgstr "Python"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "Ruby"
+msgstr "Ruby"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "SQL"
+msgstr "SQL"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "TypeScript"
+msgstr "TypeScript"
+
+#. content.code.language
+#: schema.json
+msgctxt "op"
+msgid "XML"
+msgstr "XML"
+
+#. content.code.text
+#. content.html.text
+#: schema.json
+msgctxt "fn"
+msgid "source code"
+msgstr "Izvorni kôd"
+
+#. content.code.text
+#: schema.json
+msgctxt "fh"
+msgid "Source code shown with syntax highlighting"
+msgstr "Izvorni kôd prikazan s isticanjem sintakse"
+
+#. content.table
+#: schema.json
+msgctxt "st"
+msgid "table"
+msgstr "Tablica"
+
+#. content.table
+#: schema.json
+msgctxt "sd"
+msgid "Data table with optional header row or column"
+msgstr "Podatkovna tablica s neobaveznim retkom ili stupcem zaglavlja"
+
+#. content.table.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional caption shown above the table"
+msgstr "Neobavezan opis prikazan iznad tablice"
+
+#. content.table.header
+#: schema.json
+msgctxt "fn"
+msgid "header"
+msgstr "Zaglavlje"
+
+#. content.table.header
+#: schema.json
+msgctxt "fh"
+msgid "Use the first row, the first column or both as table headers"
+msgstr "Koristite prvi redak, prvi stupac ili oboje kao zaglavlja tablice"
+
+#. content.table.header
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "None"
+msgstr "Ništa"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row"
+msgstr "Prvi redak"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First column"
+msgstr "Prvi stupac"
+
+#. content.table.header
+#: schema.json
+msgctxt "op"
+msgid "First row and column"
+msgstr "Prvi redak i stupac"
+
+#. content.table.table
+#: schema.json
+msgctxt "fn"
+msgid "table"
+msgstr "Tablica"
+
+#. content.table.table
+#: schema.json
+msgctxt "fh"
+msgid "Enter data in the cells; add or remove rows and columns as needed"
+msgstr "Unesite podatke u ćelije; prema potrebi dodajte ili uklonite retke i stupce"
+
+#. content.map
+#: schema.json
+msgctxt "st"
+msgid "map"
+msgstr "Karta"
+
+#. content.map
+#: schema.json
+msgctxt "sd"
+msgid "Interactive map with location, text and link"
+msgstr "Interaktivna karta s lokacijom, tekstom i poveznicom"
+
+#. content.map.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the map"
+msgstr "Neobavezan naslov prikazan iznad karte"
+
+#. content.map.text
+#: schema.json
+msgctxt "fh"
+msgid "Description shown next to the map, e.g. address or directions"
+msgstr "Opis prikazan uz kartu, npr. adresa ili upute za dolazak"
+
+#. content.map.location
+#: schema.json
+msgctxt "fn"
+msgid "location"
+msgstr "Lokacija"
+
+#. content.map.location
+#: schema.json
+msgctxt "fh"
+msgid "Search for a place or click on the map to set the location"
+msgstr "Potražite mjesto ili kliknite na kartu za postavljanje lokacije"
+
+#. content.map.button
+#: schema.json
+msgctxt "fn"
+msgid "Link label"
+msgstr "Tekst poveznice"
+
+#. content.map.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the link that opens the location in a map service"
+msgstr "Tekst poveznice koja otvara lokaciju u servisu karata"
+
+#. content.html
+#: schema.json
+msgctxt "st"
+msgid "html"
+msgstr "HTML"
+
+#. content.html
+#: schema.json
+msgctxt "sd"
+msgid "Custom HTML markup for embeds and widgets"
+msgstr "Prilagođeni HTML za ugradnje i widgete"
+
+#. content.html.text
+#: schema.json
+msgctxt "fh"
+msgid "HTML code inserted into the page as is, e.g. for embeds and widgets"
+msgstr "HTML kôd koji se umeće u stranicu nepromijenjen, npr. za ugradnje i widgete"
+
+#. content.image
+#: schema.json
+msgctxt "st"
+msgid "image"
+msgstr "Slika"
+
+#. content.image
+#: schema.json
+msgctxt "sd"
+msgid "Single responsive image"
+msgstr "Jedna responzivna slika"
+
+#. content.image.file
+#. content.video.file
+#. content.audio.file
+#. content.file.file
+#. config.logo.file
+#. config.logo-alternative.file
+#. config.icon.file
+#: schema.json
+msgctxt "fn"
+msgid "file"
+msgstr "Datoteka"
+
+#. content.image.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown in full width of the content area"
+msgstr "Slika prikazana preko cijele širine područja sadržaja"
+
+#. content.image.main
+#. content.slideshow.main
+#. content.before-after.main
+#: schema.json
+msgctxt "fn"
+msgid "load immediately"
+msgstr "Učitaj odmah"
+
+#. content.image.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the image without delay if it is visible at the top of the page"
+msgstr "Učitaj sliku bez odgode ako je vidljiva na vrhu stranice"
+
+#. content.slideshow
+#: schema.json
+msgctxt "st"
+msgid "slideshow"
+msgstr "Dijaprojekcija"
+
+#. content.slideshow
+#: schema.json
+msgctxt "sd"
+msgid "Rotating slides with multiple images"
+msgstr "Izmjenjujući slajdovi s više slika"
+
+#. content.slideshow.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the slideshow"
+msgstr "Neobavezan naslov prikazan iznad dijaprojekcije"
+
+#. content.slideshow.files
+#. content.hero.files
+#: schema.json
+msgctxt "fn"
+msgid "images"
+msgstr "Slike"
+
+#. content.slideshow.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown one after another, drag to change the order"
+msgstr "Slike prikazane jedna za drugom, povucite za promjenu redoslijeda"
+
+#. content.slideshow.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the first image without delay if it is visible at the top of the page"
+msgstr "Učitaj prvu sliku bez odgode ako je vidljiva na vrhu stranice"
+
+#. content.before-after
+#: schema.json
+msgctxt "st"
+msgid "before-after"
+msgstr "prije-poslije"
+
+#. content.before-after
+#: schema.json
+msgctxt "sd"
+msgid "Slider comparing two images before and after a change"
+msgstr "Klizač koji uspoređuje dvije slike prije i poslije promjene"
+
+#. content.before-after.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the comparison"
+msgstr "Neobavezan naslov prikazan iznad usporedbe"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fn"
+msgid "before image"
+msgstr "slika prije"
+
+#. content.before-after.before
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the state before the change"
+msgstr "Slika koja prikazuje stanje prije promjene"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fn"
+msgid "after image"
+msgstr "slika poslije"
+
+#. content.before-after.after
+#: schema.json
+msgctxt "fh"
+msgid "Image showing the result, both images should have the same size"
+msgstr "Slika koja prikazuje rezultat, obje slike trebaju biti iste veličine"
+
+#. content.before-after.main
+#: schema.json
+msgctxt "fh"
+msgid "Load the images without delay if they are visible at the top of the page"
+msgstr "Učitaj slike bez odgode ako su vidljive na vrhu stranice"
+
+#. content.video
+#: schema.json
+msgctxt "st"
+msgid "video"
+msgstr "Video"
+
+#. content.video
+#: schema.json
+msgctxt "sd"
+msgid "Embedded video with player controls"
+msgstr "Ugrađeni video s kontrolama reprodukcije"
+
+#. content.video.file
+#: schema.json
+msgctxt "fh"
+msgid "Video file played in the page"
+msgstr "Video datoteka koja se reproducira na stranici"
+
+#. content.audio
+#: schema.json
+msgctxt "st"
+msgid "audio"
+msgstr "Audio"
+
+#. content.audio
+#: schema.json
+msgctxt "sd"
+msgid "Embedded audio with player controls"
+msgstr "Ugrađeni audio s kontrolama reprodukcije"
+
+#. content.audio.file
+#: schema.json
+msgctxt "fh"
+msgid "Audio file played in the page"
+msgstr "Audio datoteka koja se reproducira na stranici"
+
+#. content.file
+#: schema.json
+msgctxt "st"
+msgid "file"
+msgstr "Datoteka"
+
+#. content.file
+#: schema.json
+msgctxt "sd"
+msgid "Downloadable file such as a PDF document"
+msgstr "Datoteka za preuzimanje, npr. PDF dokument"
+
+#. content.file.file
+#: schema.json
+msgctxt "fh"
+msgid "File offered for download"
+msgstr "Datoteka ponuđena za preuzimanje"
+
+#. content.hero
+#: schema.json
+msgctxt "st"
+msgid "hero"
+msgstr "Hero sekcija"
+
+#. content.hero
+#: schema.json
+msgctxt "sd"
+msgid "Large introduction with title, text, buttons and background"
+msgstr "Veliki uvod s naslovom, tekstom, gumbima i pozadinom"
+
+#. content.hero.title
+#: schema.json
+msgctxt "fh"
+msgid "Main headline of the page"
+msgstr "Glavni naslov stranice"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fn"
+msgid "subtitle"
+msgstr "Podnaslov"
+
+#. content.hero.subtitle
+#: schema.json
+msgctxt "fh"
+msgid "Short line shown above the headline"
+msgstr "Kratki redak prikazan iznad naslova"
+
+#. content.hero.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction shown below the headline"
+msgstr "Uvod prikazan ispod naslova"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fn"
+msgid "buttons"
+msgstr "Gumbi"
+
+#. content.hero.buttons
+#. content.cta.buttons
+#: schema.json
+msgctxt "fh"
+msgid "Buttons leading visitors to the next step"
+msgstr "Gumbi koji vode posjetitelje do sljedećeg koraka"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fn"
+msgid "label"
+msgstr "Oznaka"
+
+#. content.hero.buttons.label
+#. content.cta.buttons.label
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fh"
+msgid "Text of the button"
+msgstr "Tekst gumba"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.cards.cards.url
+#. content.article.author-url
+#. meta.canonical.url
+#: schema.json
+msgctxt "fn"
+msgid "url"
+msgstr "URL"
+
+#. content.hero.buttons.url
+#. content.cta.buttons.url
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the button leads to"
+msgstr "Stranica ili poveznica na koju vodi gumb"
+
+#. content.hero.files
+#: schema.json
+msgctxt "fh"
+msgid "Images shown next to the text"
+msgstr "Slike prikazane uz tekst"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fn"
+msgid "background"
+msgstr "Pozadina"
+
+#. content.hero.background
+#: schema.json
+msgctxt "fh"
+msgid "Image shown behind the text"
+msgstr "Slika prikazana iza teksta"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fn"
+msgid "background animation"
+msgstr "Animacija pozadine"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "fh"
+msgid "Animation effect of the background image"
+msgstr "Efekt animacije pozadinske slike"
+
+#. content.hero.background-animation
+#: schema.json
+msgctxt "op"
+msgid "Zoom"
+msgstr "Zumiranje"
+
+#. content.cta
+#: schema.json
+msgctxt "st"
+msgid "CTA"
+msgstr "CTA"
+
+#. content.cta
+#: schema.json
+msgctxt "sd"
+msgid "Call to action with text and buttons"
+msgstr "Poziv na akciju s tekstom i gumbima"
+
+#. content.cta.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline catching the attention of visitors"
+msgstr "Naslov koji privlači pažnju posjetitelja"
+
+#. content.cta.text
+#: schema.json
+msgctxt "fh"
+msgid "Text motivating visitors to take action"
+msgstr "Tekst koji motivira posjetitelje na akciju"
+
+#. content.cards
+#: schema.json
+msgctxt "st"
+msgid "cards"
+msgstr "Kartice"
+
+#. content.cards
+#: schema.json
+msgctxt "sd"
+msgid "Grid of cards with image, title and text"
+msgstr "Mreža kartica sa slikom, naslovom i tekstom"
+
+#. content.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the cards"
+msgstr "Neobavezan naslov prikazan iznad kartica"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#. content.timeline.layout
+#: schema.json
+msgctxt "fn"
+msgid "layout"
+msgstr "Raspored"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show cards, small badges like certificates or large figures like key numbers"
+msgstr "Prikaži kartice, male značke poput certifikata ili velike brojke poput ključnih podataka"
+
+#. content.cards.layout
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Cards"
+msgstr "Kartice"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Badges"
+msgstr "Značke"
+
+#. content.cards.layout
+#: schema.json
+msgctxt "op"
+msgid "Figures"
+msgstr "Brojke"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fn"
+msgid "columns"
+msgstr "Stupci"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "fh"
+msgid "Number of cards per row, \"auto\" adapts to the screen width"
+msgstr "Broj kartica po retku, \"auto\" se prilagođava širini zaslona"
+
+#. content.cards.columns
+#: schema.json
+msgctxt "op"
+msgid "Auto"
+msgstr "Automatski"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fn"
+msgid "cards"
+msgstr "Kartice"
+
+#. content.cards.cards
+#: schema.json
+msgctxt "fh"
+msgid "Cards shown in the grid"
+msgstr "Kartice prikazane u mreži"
+
+#. content.cards.cards.title
+#: schema.json
+msgctxt "fh"
+msgid "Headline of the card"
+msgstr "Naslov kartice"
+
+#. content.cards.cards.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the card"
+msgstr "Slika prikazana na vrhu kartice"
+
+#. content.cards.cards.text
+#: schema.json
+msgctxt "fh"
+msgid "Text of the card"
+msgstr "Tekst kartice"
+
+#. content.cards.cards.url
+#: schema.json
+msgctxt "fh"
+msgid "Page or link the card leads to"
+msgstr "Stranica ili poveznica na koju vodi kartica"
+
+#. content.testimonial
+#: schema.json
+msgctxt "st"
+msgid "testimonial"
+msgstr "Izjave klijenata"
+
+#. content.testimonial
+#: schema.json
+msgctxt "sd"
+msgid "Customer quotes with name, role and photo"
+msgstr "Izjave klijenata s imenom, ulogom i fotografijom"
+
+#. content.testimonial.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the quotes"
+msgstr "Neobavezan naslov prikazan iznad izjava"
+
+#. content.testimonial.items
+#. content.pricing.items
+#. content.questions.items
+#. content.timeline.items
+#: schema.json
+msgctxt "fn"
+msgid "items"
+msgstr "Stavke"
+
+#. content.testimonial.items
+#: schema.json
+msgctxt "fh"
+msgid "Quotes of customers or partners"
+msgstr "Izjave klijenata ili partnera"
+
+#. content.testimonial.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Quote of the person"
+msgstr "Izjava osobe"
+
+#. content.testimonial.items.name
+#. content.article.author-name
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fn"
+msgid "name"
+msgstr "Naziv"
+
+#. content.testimonial.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the person"
+msgstr "Ime osobe"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fn"
+msgid "role"
+msgstr "Uloga"
+
+#. content.testimonial.items.role
+#: schema.json
+msgctxt "fh"
+msgid "Position or company of the person"
+msgstr "Pozicija ili tvrtka osobe"
+
+#. content.testimonial.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Photo of the person"
+msgstr "Fotografija osobe"
+
+#. content.article
+#: schema.json
+msgctxt "st"
+msgid "article"
+msgstr "Članak"
+
+#. content.article
+#: schema.json
+msgctxt "sd"
+msgid "Article introduction with image gallery and author"
+msgstr "Uvod u članak s galerijom slika i autorom"
+
+#. content.article.text
+#: schema.json
+msgctxt "fn"
+msgid "introduction"
+msgstr "Uvod"
+
+#. content.article.text
+#: schema.json
+msgctxt "fh"
+msgid "Introduction of the article shown below the page title"
+msgstr "Uvod članka prikazan ispod naslova stranice"
+
+#. content.article.files
+#: schema.json
+msgctxt "fn"
+msgid "Gallery"
+msgstr "Galerija"
+
+#. content.article.files
+#: schema.json
+msgctxt "fh"
+msgid "Images of the article, the first one is used as preview image"
+msgstr "Slike članka, prva se koristi kao slika pregleda"
+
+#. content.article.author-name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the author of the article"
+msgstr "Ime autora članka"
+
+#. content.article.author-url
+#: schema.json
+msgctxt "fh"
+msgid "Link to the profile page of the author"
+msgstr "Poveznica na profilnu stranicu autora"
+
+#. content.blog
+#: schema.json
+msgctxt "st"
+msgid "blog"
+msgstr "Blog"
+
+#. content.blog
+#: schema.json
+msgctxt "sd"
+msgid "List of blog articles from a parent page"
+msgstr "Popis članaka bloga s nadređene stranice"
+
+#. content.blog.title
+#. content.news.title
+#. content.heros.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the list"
+msgstr "Neobavezan naslov prikazan iznad popisa"
+
+#. content.blog.layout
+#. content.news.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the pages as cards or as a compact list"
+msgstr "Prikaži stranice kao kartice ili kao kompaktan popis"
+
+#. content.blog.layout
+#. content.news.layout
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "List"
+msgstr "Popis"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fn"
+msgid "parent-page"
+msgstr "Nadređena stranica"
+
+#. content.blog.parent-page
+#. content.news.parent-page
+#. content.heros.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose subpages are listed"
+msgstr "Stranica čije se podstranice navode"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fn"
+msgid "order"
+msgstr "Redoslijed"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed pages"
+msgstr "Redoslijed sortiranja navedenih stranica"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Position"
+msgstr "Položaj"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Latest"
+msgstr "Najnovije"
+
+#. content.blog.order
+#. content.news.order
+#. content.heros.order
+#: schema.json
+msgctxt "op"
+msgid "Oldest"
+msgstr "Najstarije"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fn"
+msgid "limit"
+msgstr "Broj"
+
+#. content.blog.limit
+#. content.news.limit
+#. content.heros.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of pages shown at once"
+msgstr "Najveći broj stranica prikazanih odjednom"
+
+#. content.blog.action
+#. content.news.action
+#. content.heros.action
+#. content.toc.action
+#: schema.json
+msgctxt "fn"
+msgid "action"
+msgstr "radnja"
+
+#. content.news
+#: schema.json
+msgctxt "st"
+msgid "news"
+msgstr "Vijesti"
+
+#. content.news
+#: schema.json
+msgctxt "sd"
+msgid "List of news articles from a parent page"
+msgstr "Popis vijesti s nadređene stranice"
+
+#. content.heros
+#: schema.json
+msgctxt "st"
+msgid "heros"
+msgstr "Hero sekcije"
+
+#. content.heros
+#: schema.json
+msgctxt "sd"
+msgid "Featured subpage followed by further subpages"
+msgstr "Istaknuta podstranica, a zatim ostale podstranice"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the further subpages as cards or as a compact list"
+msgstr "Prikaži ostale podstranice kao kartice ili kao kompaktan popis"
+
+#. content.heros.layout
+#: schema.json
+msgctxt "op"
+msgid "Default"
+msgstr "Zadano"
+
+#. content.pricing
+#: schema.json
+msgctxt "st"
+msgid "pricing"
+msgstr "Cijene"
+
+#. content.pricing
+#: schema.json
+msgctxt "sd"
+msgid "Price plans with subscriptions or one-time payments"
+msgstr "Cjenovni planovi s pretplatama ili jednokratnim plaćanjima"
+
+#. content.pricing.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the price plans"
+msgstr "Neobavezan naslov prikazan iznad cjenovnih planova"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fn"
+msgid "Subtitle"
+msgstr "Podnaslov"
+
+#. content.pricing.text
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown below the headline"
+msgstr "Kratki tekst prikazan ispod naslova"
+
+#. content.pricing.items
+#: schema.json
+msgctxt "fh"
+msgid "Price plans shown side by side"
+msgstr "Cjenovni planovi prikazani jedan uz drugi"
+
+#. content.pricing.items.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the price plan"
+msgstr "Naziv cjenovnog plana"
+
+#. content.pricing.items.file
+#: schema.json
+msgctxt "fh"
+msgid "Image shown at the top of the price plan"
+msgstr "Slika prikazana na vrhu cjenovnog plana"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fn"
+msgid "Frontend access role"
+msgstr "Frontend pristupna uloga"
+
+#. content.pricing.items.access
+#: schema.json
+msgctxt "fh"
+msgid "Role granted to customers after the payment to access protected pages"
+msgstr "Uloga koju kupci dobivaju nakon plaćanja za pristup zaštićenim stranicama"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fn"
+msgid "Payment prices"
+msgstr "Cijene plaćanja"
+
+#. content.pricing.items.prices
+#: schema.json
+msgctxt "fh"
+msgid "Prices of the plan, e.g. monthly and yearly"
+msgstr "Cijene plana, npr. mjesečno i godišnje"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fn"
+msgid "Payment type"
+msgstr "Vrsta plaćanja"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "fh"
+msgid "Recurring subscription or one-time payment"
+msgstr "Ponavljajuća pretplata ili jednokratno plaćanje"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "Subscription"
+msgstr "Pretplata"
+
+#. content.pricing.items.prices.kind
+#: schema.json
+msgctxt "op"
+msgid "One-time payment"
+msgstr "Jednokratno plaćanje"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fn"
+msgid "Billing interval"
+msgstr "Interval naplate"
+
+#. content.pricing.items.prices.interval
+#: schema.json
+msgctxt "fh"
+msgid "Number of days between two payments, e.g. 30 for monthly"
+msgstr "Broj dana između dva plaćanja, npr. 30 za mjesečno"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fn"
+msgid "Currency"
+msgstr "Valuta"
+
+#. content.pricing.items.prices.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. EUR or USD"
+msgstr "Troslovni ISO kôd valute, npr. EUR ili USD"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fn"
+msgid "Payment reference"
+msgstr "Referenca plaćanja"
+
+#. content.pricing.items.prices.reference
+#: schema.json
+msgctxt "fh"
+msgid "Price ID or amount used by the payment provider"
+msgstr "ID cijene ili iznos koji koristi pružatelj usluge plaćanja"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fn"
+msgid "Displayed price"
+msgstr "Prikazana cijena"
+
+#. content.pricing.items.prices.label
+#: schema.json
+msgctxt "fh"
+msgid "Formatted price shown to visitors, e.g. €9.99"
+msgstr "Oblikovana cijena prikazana posjetiteljima, npr. 9,99 €"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fn"
+msgid "amount"
+msgstr "Iznos"
+
+#. content.pricing.items.prices.amount
+#: schema.json
+msgctxt "fh"
+msgid "Numeric price shown if no formatted price is set"
+msgstr "Brojčana cijena prikazana ako oblikovana cijena nije postavljena"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fn"
+msgid "Price unit"
+msgstr "Jedinica cijene"
+
+#. content.pricing.items.prices.unit
+#: schema.json
+msgctxt "fh"
+msgid "Text shown after the price, e.g. per month"
+msgstr "Tekst prikazan iza cijene, npr. mjesečno"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fn"
+msgid "Description"
+msgstr "Opis"
+
+#. content.pricing.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Short description of the price plan"
+msgstr "Kratki opis cjenovnog plana"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fn"
+msgid "features"
+msgstr "Značajke"
+
+#. content.pricing.items.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features included in the plan"
+msgstr "Popis značajki uključenih u plan"
+
+#. content.pricing.items.url
+#: schema.json
+msgctxt "fn"
+msgid "Target page or link"
+msgstr "Ciljna stranica ili poveznica"
+
+#. content.pricing.items.button
+#: schema.json
+msgctxt "fn"
+msgid "button"
+msgstr "Gumb"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fn"
+msgid "Highlighted"
+msgstr "Istaknuto"
+
+#. content.pricing.items.highlight
+#: schema.json
+msgctxt "fh"
+msgid "Emphasize this plan compared to the others"
+msgstr "Istakni ovaj plan u odnosu na ostale"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fn"
+msgid "Highlight text"
+msgstr "Tekst isticanja"
+
+#. content.pricing.items.badge
+#: schema.json
+msgctxt "fh"
+msgid "Short label shown on the highlighted plan, e.g. Popular"
+msgstr "Kratka oznaka prikazana na istaknutom planu, npr. Popularno"
+
+#. content.questions
+#: schema.json
+msgctxt "st"
+msgid "questions"
+msgstr "Česta pitanja"
+
+#. content.questions
+#: schema.json
+msgctxt "sd"
+msgid "Frequently asked questions with answers"
+msgstr "Često postavljana pitanja s odgovorima"
+
+#. content.questions.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the questions"
+msgstr "Neobavezan naslov prikazan iznad pitanja"
+
+#. content.questions.items
+#: schema.json
+msgctxt "fh"
+msgid "Questions and answers shown as expandable list"
+msgstr "Pitanja i odgovori prikazani kao proširivi popis"
+
+#. content.questions.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Question asked by visitors"
+msgstr "Pitanje koje postavljaju posjetitelji"
+
+#. content.questions.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Answer to the question"
+msgstr "Odgovor na pitanje"
+
+#. content.timeline
+#: schema.json
+msgctxt "st"
+msgid "timeline"
+msgstr "Vremenska crta"
+
+#. content.timeline
+#: schema.json
+msgctxt "sd"
+msgid "Numbered steps or events in chronological order"
+msgstr "Numerirani koraci ili događaji kronološkim redom"
+
+#. content.timeline.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the timeline"
+msgstr "Neobavezni naslov iznad vremenske crte"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "fh"
+msgid "Show the steps one below the other or side by side, side by side suits up to five steps"
+msgstr "Prikaži korake jedan ispod drugoga ili jedan pokraj drugoga, prikaz jedan pokraj drugoga prikladan je za do pet koraka"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Vertical"
+msgstr "Okomito"
+
+#. content.timeline.layout
+#: schema.json
+msgctxt "op"
+msgid "Horizontal"
+msgstr "Vodoravno"
+
+#. content.timeline.items
+#: schema.json
+msgctxt "fh"
+msgid "Steps or events in the order they happen"
+msgstr "Koraci ili događaji redoslijedom kojim se odvijaju"
+
+#. content.timeline.items.label
+#: schema.json
+msgctxt "fh"
+msgid "Optional date, period or phase shown above the title, e.g. 2024 or Week 1"
+msgstr "Neobavezni datum, razdoblje ili faza iznad naslova, npr. 2024 ili Tjedan 1"
+
+#. content.timeline.items.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the step or event"
+msgstr "Naziv koraka ili događaja"
+
+#. content.timeline.items.text
+#: schema.json
+msgctxt "fh"
+msgid "Description of the step or event"
+msgstr "Opis koraka ili događaja"
+
+#. content.toc
+#: schema.json
+msgctxt "st"
+msgid "toc"
+msgstr "Kazalo sadržaja"
+
+#. content.toc
+#: schema.json
+msgctxt "sd"
+msgid "Table of contents linking to page headings"
+msgstr "Sadržaj s poveznicama na naslove stranice"
+
+#. content.toc.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the table of contents"
+msgstr "Neobavezan naslov prikazan iznad sadržaja"
+
+#. content.contact
+#: schema.json
+msgctxt "st"
+msgid "contact"
+msgstr "Kontakt"
+
+#. content.contact
+#: schema.json
+msgctxt "sd"
+msgid "Contact form with configurable fields and optional file attachments"
+msgstr "Kontaktni obrazac s prilagodljivim poljima i neobaveznim privicima"
+
+#. content.contact.title
+#: schema.json
+msgctxt "fh"
+msgid "Optional headline shown above the contact form"
+msgstr "Neobavezan naslov prikazan iznad kontaktnog obrasca"
+
+#. content.contact.description
+#. meta.meta-tags.description
+#. meta.social-media.description
+#: schema.json
+msgctxt "fn"
+msgid "description"
+msgstr "Opis"
+
+#. content.contact.description
+#: schema.json
+msgctxt "fh"
+msgid "Optional text shown between headline and contact form"
+msgstr "Neobavezan tekst prikazan između naslova i kontaktnog obrasca"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fn"
+msgid "Form fields"
+msgstr "Polja obrasca"
+
+#. content.contact.inputs
+#: schema.json
+msgctxt "fh"
+msgid "Form fields shown to visitors in this order"
+msgstr "Polja obrasca prikazana posjetiteljima ovim redoslijedom"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fn"
+msgid "Field"
+msgstr "Polje"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "fh"
+msgid "Select a form field or enter your own name"
+msgstr "Odaberite polje obrasca ili unesite vlastiti naziv"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Name"
+msgstr "Ime"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Company"
+msgstr "Tvrtka"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Telephone"
+msgstr "Telefon"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "E-Mail"
+msgstr "E-pošta"
+
+#. content.contact.inputs.field
+#: schema.json
+msgctxt "op"
+msgid "Subject"
+msgstr "Predmet"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fn"
+msgid "Required"
+msgstr "Obavezno"
+
+#. content.contact.inputs.required
+#: schema.json
+msgctxt "fh"
+msgid "Visitors must fill out this field"
+msgstr "Posjetitelji moraju ispuniti ovo polje"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fn"
+msgid "Input type"
+msgstr "Vrsta unosa"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "fh"
+msgid "Type of input shown to visitors"
+msgstr "Vrsta unosa koja se prikazuje posjetiteljima"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text"
+msgstr "Tekst"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Text area"
+msgstr "Tekstno područje"
+
+#. content.contact.inputs.input
+#: schema.json
+msgctxt "op"
+msgid "Selection"
+msgstr "Padajući izbornik"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fn"
+msgid "Choices"
+msgstr "Izbori"
+
+#. content.contact.inputs.options
+#: schema.json
+msgctxt "fh"
+msgid "Choices for selection inputs, one per line"
+msgstr "Izbori za polja odabira, jedan po retku"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fn"
+msgid "Attachments"
+msgstr "Privici"
+
+#. content.contact.attachments
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of images or PDF files visitors can attach, 0 disables uploads"
+msgstr "Najveći broj slika ili PDF datoteka koje posjetitelji mogu priložiti, 0 onemogućuje prijenos"
+
+#. meta.meta-tags
+#: schema.json
+msgctxt "st"
+msgid "meta-tags"
+msgstr "Meta oznake"
+
+#. meta.meta-tags.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary of the page shown in search results, 150 to 160 characters recommended"
+msgstr "Sažetak stranice prikazan u rezultatima pretraživanja, preporučuje se 150 do 160 znakova"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fn"
+msgid "keywords"
+msgstr "Ključne riječi"
+
+#. meta.meta-tags.keywords
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of keywords describing the page"
+msgstr "Popis ključnih riječi koje opisuju stranicu, odvojenih zarezom"
+
+#. meta.social-media
+#: schema.json
+msgctxt "st"
+msgid "social-media"
+msgstr "Društvene mreže"
+
+#. meta.social-media.title
+#: schema.json
+msgctxt "fh"
+msgid "Title shown when the page is shared in social media"
+msgstr "Naslov prikazan kada se stranica dijeli na društvenim mrežama"
+
+#. meta.social-media.description
+#: schema.json
+msgctxt "fh"
+msgid "Summary shown when the page is shared in social media"
+msgstr "Sažetak prikazan kada se stranica dijeli na društvenim mrežama"
+
+#. meta.social-media.file
+#: schema.json
+msgctxt "fh"
+msgid "Preview image shown when the page is shared in social media"
+msgstr "Slika pregleda prikazana kada se stranica dijeli na društvenim mrežama"
+
+#. meta.canonical
+#: schema.json
+msgctxt "st"
+msgid "canonical"
+msgstr "Kanonski URL"
+
+#. meta.canonical.url
+#: schema.json
+msgctxt "fh"
+msgid "Original URL if the same content is available at several addresses"
+msgstr "Izvorni URL ako je isti sadržaj dostupan na više adresa"
+
+#. meta.robots
+#: schema.json
+msgctxt "st"
+msgid "robots"
+msgstr "Tražilice"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fn"
+msgid "index"
+msgstr "Indeksiranje"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from listing this page"
+msgstr "Dopusti ili spriječi tražilicama da prikazuju ovu stranicu"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "Index"
+msgstr "Indeksiraj"
+
+#. meta.robots.index
+#: schema.json
+msgctxt "op"
+msgid "No index"
+msgstr "Ne indeksiraj"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fn"
+msgid "follow"
+msgstr "Prati poveznice"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "fh"
+msgid "Allow or prevent search engines from following the links on this page"
+msgstr "Dopusti ili spriječi tražilicama da prate poveznice na ovoj stranici"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "Follow"
+msgstr "Prati poveznice"
+
+#. meta.robots.follow
+#: schema.json
+msgctxt "op"
+msgid "No follow"
+msgstr "Ne prati poveznice"
+
+#. config.website
+#: schema.json
+msgctxt "st"
+msgid "website"
+msgstr "Web-mjesto"
+
+#. config.website.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the website shown in the browser tab and search results"
+msgstr "Naziv web-mjesta prikazan na kartici preglednika i u rezultatima pretraživanja"
+
+#. config.logo
+#: schema.json
+msgctxt "st"
+msgid "logo"
+msgstr "Logotip"
+
+#. config.logo.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo shown in the page header"
+msgstr "Logotip prikazan u zaglavlju stranice"
+
+#. config.logo-alternative
+#: schema.json
+msgctxt "st"
+msgid "logo-alternative"
+msgstr "Alternativni logotip"
+
+#. config.logo-alternative.file
+#: schema.json
+msgctxt "fh"
+msgid "Logo variant used for dark backgrounds"
+msgstr "Varijanta logotipa za tamne pozadine"
+
+#. config.icon
+#: schema.json
+msgctxt "st"
+msgid "icon"
+msgstr "Ikona"
+
+#. config.icon.file
+#: schema.json
+msgctxt "fh"
+msgid "Small square image shown in browser tabs and bookmarks"
+msgstr "Mala kvadratna slika prikazana na karticama preglednika i u oznakama"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "theme"
+msgstr "Tema"
+
+#. config.theme
+#: schema.json
+msgctxt "sg"
+msgid "theme"
+msgstr "Tema"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-sans-serif"
+msgstr "Font teksta"
+
+#. config.theme.--pico-font-family-sans-serif
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for the text"
+msgstr "Popis fontova za tekst, odvojenih zarezom"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-color"
+msgstr "Boja teksta"
+
+#. config.theme.--pico-color
+#: schema.json
+msgctxt "fh"
+msgid "Default text color"
+msgstr "Zadana boja teksta"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-background-color"
+msgstr "Boja pozadine"
+
+#. config.theme.--pico-background-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of the pages"
+msgstr "Boja pozadine stranica"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fn"
+msgid "--pico-text-selection-color"
+msgstr "Boja označenog teksta"
+
+#. config.theme.--pico-text-selection-color
+#: schema.json
+msgctxt "fh"
+msgid "Background color of selected text"
+msgstr "Boja pozadine označenog teksta"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast"
+msgstr "Kontrastna boja"
+
+#. config.theme.--pico-contrast
+#: schema.json
+msgctxt "fh"
+msgid "Color of elements with strong contrast to the background"
+msgstr "Boja elemenata s jakim kontrastom prema pozadini"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-hover"
+msgstr "Kontrastna boja (prelazak)"
+
+#. config.theme.--pico-contrast-hover
+#: schema.json
+msgctxt "fh"
+msgid "Contrast color when hovering or focusing an element"
+msgstr "Kontrastna boja pri prelasku mišem ili fokusiranju elementa"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fn"
+msgid "--pico-contrast-inverse"
+msgstr "Boja kontrastnog teksta"
+
+#. config.theme.--pico-contrast-inverse
+#: schema.json
+msgctxt "fh"
+msgid "Text color on elements using the contrast color"
+msgstr "Boja teksta na elementima koji koriste kontrastnu boju"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary"
+msgstr "Primarna boja"
+
+#. config.theme.--pico-primary
+#: schema.json
+msgctxt "fh"
+msgid "Main brand color used for links and buttons"
+msgstr "Glavna boja brenda za poveznice i gumbe"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-background"
+msgstr "Primarna pozadina"
+
+#. config.theme.--pico-primary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of primary buttons and highlights"
+msgstr "Boja pozadine primarnih gumba i isticanja"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover"
+msgstr "Primarna boja (prelazak)"
+
+#. config.theme.--pico-primary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Primary color when hovering or focusing an element"
+msgstr "Primarna boja pri prelasku mišem ili fokusiranju elementa"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-primary-hover-background"
+msgstr "Primarna pozadina (prelazak)"
+
+#. config.theme.--pico-primary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Primary background color when hovering or focusing an element"
+msgstr "Primarna boja pozadine pri prelasku mišem ili fokusiranju elementa"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary"
+msgstr "Sekundarna boja"
+
+#. config.theme.--pico-secondary
+#: schema.json
+msgctxt "fh"
+msgid "Additional color used for less important links and buttons"
+msgstr "Dodatna boja za manje važne poveznice i gumbe"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-background"
+msgstr "Sekundarna pozadina"
+
+#. config.theme.--pico-secondary-background
+#: schema.json
+msgctxt "fh"
+msgid "Background color of secondary buttons"
+msgstr "Boja pozadine sekundarnih gumba"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover"
+msgstr "Sekundarna boja (prelazak)"
+
+#. config.theme.--pico-secondary-hover
+#: schema.json
+msgctxt "fh"
+msgid "Secondary color when hovering or focusing an element"
+msgstr "Sekundarna boja pri prelasku mišem ili fokusiranju elementa"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fn"
+msgid "--pico-secondary-hover-background"
+msgstr "Sekundarna pozadina (prelazak)"
+
+#. config.theme.--pico-secondary-hover-background
+#: schema.json
+msgctxt "fh"
+msgid "Secondary background color when hovering or focusing an element"
+msgstr "Sekundarna boja pozadine pri prelasku mišem ili fokusiranju elementa"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fn"
+msgid "--pico-border-radius"
+msgstr "Zaobljenost kutova"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.25rem or 0 for sharp corners"
+msgstr "Zaobljenost kutova kao CSS duljina, npr. 0.25rem ili 0 za oštre kutove"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fn"
+msgid "--pico-nav-breadcrumb-divider"
+msgstr "Razdjelnik putanje navigacije"
+
+#. config.theme.--pico-nav-breadcrumb-divider
+#: schema.json
+msgctxt "fh"
+msgid "Character shown between the breadcrumb links"
+msgstr "Znak prikazan između poveznica putanje navigacije"
+
+#. config.security
+#: schema.json
+msgctxt "st"
+msgid "security"
+msgstr "Sigurnost"
+
+#. config.security
+#. config.robots-txt
+#. config.styles
+#. config.javascript
+#: schema.json
+msgctxt "sg"
+msgid "expert"
+msgstr "Napredno"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fn"
+msgid "Contact URL"
+msgstr "URL za kontakt"
+
+#. config.security.contact
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to contact the security team, e.g. a form"
+msgstr "HTTPS poveznica za kontakt sa sigurnosnim timom, npr. obrazac"
+
+#. config.security.email
+#: schema.json
+msgctxt "fn"
+msgid "Contact email"
+msgstr "E-pošta za kontakt"
+
+#. config.security.email
+#: schema.json
+msgctxt "fh"
+msgid "E-mail address for reporting security issues"
+msgstr "Adresa e-pošte za prijavu sigurnosnih problema"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fn"
+msgid "expires"
+msgstr "Istječe"
+
+#. config.security.expires
+#: schema.json
+msgctxt "fh"
+msgid "Date after which the security information is considered outdated"
+msgstr "Datum nakon kojeg se sigurnosne informacije smatraju zastarjelima"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fn"
+msgid "encryption"
+msgstr "Šifriranje"
+
+#. config.security.encryption
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the public key for encrypted messages"
+msgstr "HTTPS poveznica na javni ključ za šifrirane poruke"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fn"
+msgid "acknowledgments"
+msgstr "Zahvale"
+
+#. config.security.acknowledgments
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the page thanking security researchers"
+msgstr "HTTPS poveznica na stranicu sa zahvalama sigurnosnim istraživačima"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fn"
+msgid "Preferred languages"
+msgstr "Željeni jezici"
+
+#. config.security.preferred-languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated language codes for security reports, e.g. en, de"
+msgstr "Kodovi jezika za sigurnosna izvješća odvojeni zarezom, npr. en, de"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fn"
+msgid "canonical"
+msgstr "Kanonski URL"
+
+#. config.security.canonical
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS URL where the security.txt file is published"
+msgstr "HTTPS URL na kojem je objavljena datoteka security.txt"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fn"
+msgid "policy"
+msgstr "Pravila"
+
+#. config.security.policy
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the security and disclosure policy"
+msgstr "HTTPS poveznica na sigurnosna pravila i pravila otkrivanja"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fn"
+msgid "hiring"
+msgstr "Zapošljavanje"
+
+#. config.security.hiring
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to open security related jobs"
+msgstr "HTTPS poveznica na otvorena radna mjesta u području sigurnosti"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fn"
+msgid "csaf"
+msgstr "CSAF poveznica"
+
+#. config.security.csaf
+#: schema.json
+msgctxt "fh"
+msgid "HTTPS link to the CSAF provider metadata"
+msgstr "HTTPS poveznica na metapodatke CSAF pružatelja"
+
+#. config.robots-txt
+#: schema.json
+msgctxt "st"
+msgid "robots.txt"
+msgstr "robots.txt"
+
+#. config.robots-txt.text
+#: schema.json
+msgctxt "fh"
+msgid "Additional rules added to the robots.txt file for web crawlers"
+msgstr "Dodatna pravila za web-pretraživače dodana u datoteku robots.txt"
+
+#. config.styles
+#: schema.json
+msgctxt "st"
+msgid "styles"
+msgstr "Stilovi"
+
+#. config.styles.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom CSS code added to all pages"
+msgstr "Prilagođeni CSS kôd dodan na sve stranice"
+
+#. config.javascript
+#: schema.json
+msgctxt "st"
+msgid "javascript"
+msgstr "JavaScript"
+
+#. config.javascript.text
+#: schema.json
+msgctxt "fh"
+msgid "Custom JavaScript code added to all pages"
+msgstr "Prilagođeni JavaScript kôd dodan na sve stranice"

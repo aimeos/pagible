@@ -1,0 +1,274 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ar\n"
+
+#. config.business
+#: schema.json
+msgctxt "st"
+msgid "volt::business"
+msgstr "النشاط التجاري"
+
+#. config.business.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the company"
+msgstr "اسم الشركة"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "نوع النشاط"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "نوع النشاط التجاري المعروض لمحركات البحث"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Electrician"
+msgstr "كهربائي"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Heating and air conditioning"
+msgstr "التدفئة والتكييف"
+
+#. config.business.business-type
+#: schema.json
+msgctxt "op"
+msgid "Home and construction business"
+msgstr "شركة بناء وصيانة منازل"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "العنوان"
+
+#. config.business.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "الشارع ورقم المنزل"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "الرمز البريدي"
+
+#. config.business.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the company"
+msgstr "الرمز البريدي للشركة"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "المدينة"
+
+#. config.business.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the company is located in"
+msgstr "المدينة التي تقع فيها الشركة"
+
+#. config.business.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "رمز الدولة"
+
+#. config.business.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "رمز دولة ISO من حرفين، مثل DE أو US"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "الهاتف"
+
+#. config.business.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "رقم الهاتف بالتنسيق الدولي، ويُستخدم أيضًا لزر الاتصال"
+
+#. config.business.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "رقم الطوارئ"
+
+#. config.business.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "رقم هاتف الطوارئ، يظهر أعلى كل صفحة"
+
+#. config.business.emergency
+#: schema.json
+msgctxt "fn"
+msgid "24/7 service"
+msgstr "خدمة على مدار الساعة"
+
+#. config.business.emergency
+#: schema.json
+msgctxt "fh"
+msgid "Emergency service is available around the clock"
+msgstr "خدمة الطوارئ متاحة على مدار الساعة"
+
+#. config.business.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "البريد الإلكتروني"
+
+#. config.business.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for enquiries"
+msgstr "عنوان البريد الإلكتروني للاستفسارات"
+
+#. config.business.area
+#: schema.json
+msgctxt "fn"
+msgid "Places served"
+msgstr "المناطق المخدومة"
+
+#. config.business.area
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the towns and regions you work in, e.g. Leeds, Bradford, York"
+msgstr "قائمة مفصولة بفواصل بالمدن والمناطق التي تعمل فيها، مثل Leeds, Bradford, York"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "نطاق السعر"
+
+#. config.business.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the company, e.g. $$ or €€"
+msgstr "مستوى أسعار الشركة، مثل $$ أو €€"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "زر الاتصال"
+
+#. config.business.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "عرض زر الاتصال أسفل الشاشة على الهواتف"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "ساعات العمل"
+
+#. config.business.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "ساعات العمل لكل يوم من أيام الأسبوع"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "اليوم"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "يوم من أيام الأسبوع"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "الاثنين"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "الثلاثاء"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "الأربعاء"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "الخميس"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "الجمعة"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "السبت"
+
+#. config.business.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "الأحد"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "وقت الفتح"
+
+#. config.business.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "وقت الفتح بصيغة 24 ساعة، مثل 07:30"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "وقت الإغلاق"
+
+#. config.business.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "وقت الإغلاق بصيغة 24 ساعة، مثل 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "volt::theme"
+msgstr "المظهر"

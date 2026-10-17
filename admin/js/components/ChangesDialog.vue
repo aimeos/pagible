@@ -6,6 +6,7 @@ import { mdiUndoVariant } from '@mdi/js'
 import CmsDialog from './Dialog.vue'
 import { fields, words } from '../history'
 import { itemTitle, stringify } from '../utils'
+import { typeLabel } from '../i18n'
 
 export default {
   components: {
@@ -129,6 +130,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     // field word diffs for objects, line diffs with word highlights for other values
     diff(a, b, isObj) {
       if (isObj) {
@@ -177,7 +182,7 @@ export default {
       const block = info.current || info.overwritten
 
       return block?.type
-        ? this.$pgettext('st', block.type).replace('::', ' ') + ': ' + this.title(block)
+        ? this.typeLabel(block.type) + ': ' + this.title(block)
         : this.$pgettext('fn', key)
     },
 
@@ -217,7 +222,7 @@ export default {
 
     title(block) {
       if (!block || typeof block !== 'object' || !block.type) return null
-      return itemTitle(block.data) || this.$pgettext('st', block.type).replace('::', ' ') || ''
+      return itemTitle(block.data) || this.typeLabel(block.type) || ''
     },
 
     unresolve(section, key) {

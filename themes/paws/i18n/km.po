@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: km\n"
+
+#. config.clinic
+#: schema.json
+msgctxt "st"
+msgid "paws::clinic"
+msgstr "គ្លីនិកសត្វ"
+
+#. config.clinic.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the veterinary clinic"
+msgstr "ឈ្មោះគ្លីនិកពេទ្យសត្វ"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Clinic type"
+msgstr "ប្រភេទគ្លីនិក"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of clinic shown to search engines"
+msgstr "ប្រភេទគ្លីនិកដែលបង្ហាញដល់ម៉ាស៊ីនស្វែងរក"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Veterinary clinic"
+msgstr "គ្លីនិកពេទ្យសត្វ"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Animal emergency hospital"
+msgstr "មន្ទីរពេទ្យសត្វសង្គ្រោះបន្ទាន់"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Animal shelter"
+msgstr "ជម្រកសត្វ"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other pet service"
+msgstr "សេវាសត្វចិញ្ចឹមផ្សេងទៀត"
+
+#. config.clinic.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "អាសយដ្ឋានផ្លូវ"
+
+#. config.clinic.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "ផ្លូវ និងលេខផ្ទះ"
+
+#. config.clinic.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "លេខកូដប្រៃសណីយ៍"
+
+#. config.clinic.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the clinic"
+msgstr "លេខកូដប្រៃសណីយ៍របស់គ្លីនិក"
+
+#. config.clinic.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "ទីក្រុង"
+
+#. config.clinic.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the clinic is located in"
+msgstr "ទីក្រុងដែលគ្លីនិកស្ថិតនៅ"
+
+#. config.clinic.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "លេខកូដប្រទេស"
+
+#. config.clinic.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "លេខកូដប្រទេស ISO ពីរតួអក្សរ ឧ. DE ឬ US"
+
+#. config.clinic.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "ទូរស័ព្ទ"
+
+#. config.clinic.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "លេខទូរស័ព្ទជាទម្រង់អន្តរជាតិ ដែលប្រើសម្រាប់ប៊ូតុងហៅទូរស័ព្ទផងដែរ"
+
+#. config.clinic.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "អ៊ីមែល"
+
+#. config.clinic.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointment requests"
+msgstr "អាសយដ្ឋានអ៊ីមែលសម្រាប់សំណើណាត់ជួប"
+
+#. config.clinic.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "លេខបន្ទាន់"
+
+#. config.clinic.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for pet emergencies, shown at the top of every page"
+msgstr "លេខទូរស័ព្ទសម្រាប់ករណីបន្ទាន់របស់សត្វចិញ្ចឹម ដែលបង្ហាញនៅផ្នែកខាងលើនៃទំព័រនីមួយៗ"
+
+#. config.clinic.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "តំណកក់"
+
+#. config.clinic.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment page or online booking, shown as a button in the header"
+msgstr "តំណទៅទំព័រណាត់ជួប ឬការកក់អនឡាញ ដែលបង្ហាញជាប៊ូតុងនៅក្បាលទំព័រ"
+
+#. config.clinic.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "ភាសា"
+
+#. config.clinic.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken in the clinic, e.g. English, German, French"
+msgstr "បញ្ជីភាសាដែលនិយាយនៅគ្លីនិក ដោយបំបែកដោយសញ្ញាក្បៀស ឧ. English, German, French"
+
+#. config.clinic.species
+#: schema.json
+msgctxt "fn"
+msgid "Animals treated"
+msgstr "សត្វដែលព្យាបាល"
+
+#. config.clinic.species
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the animals treated, e.g. Dogs, Cats, Rabbits"
+msgstr "បញ្ជីសត្វដែលព្យាបាល ដោយបំបែកដោយសញ្ញាក្បៀស ឧ. ឆ្កែ ឆ្មា ទន្សាយ"
+
+#. config.clinic.new-clients
+#: schema.json
+msgctxt "fn"
+msgid "New clients"
+msgstr "អតិថិជនថ្មី"
+
+#. config.clinic.new-clients
+#: schema.json
+msgctxt "fh"
+msgid "Tell search engines that the clinic welcomes new clients"
+msgstr "ប្រាប់ម៉ាស៊ីនស្វែងរកថាគ្លីនិកស្វាគមន៍អតិថិជនថ្មី"
+
+#. config.clinic.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "កម្រិតតម្លៃ"
+
+#. config.clinic.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the clinic, e.g. $$ or €€"
+msgstr "កម្រិតតម្លៃរបស់គ្លីនិក ឧ. $$ ឬ €€"
+
+#. config.clinic.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "របារសកម្មភាព"
+
+#. config.clinic.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "បង្ហាញប៊ូតុងហៅទូរស័ព្ទ និងកក់នៅផ្នែកខាងក្រោមនៃអេក្រង់លើទូរស័ព្ទ"
+
+#. config.clinic.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "ម៉ោងបើក"
+
+#. config.clinic.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "ម៉ោងបើកសម្រាប់ថ្ងៃនីមួយៗក្នុងសប្តាហ៍"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "ថ្ងៃ"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "ថ្ងៃនៃសប្តាហ៍"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "ថ្ងៃច័ន្ទ"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "ថ្ងៃអង្គារ"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "ថ្ងៃពុធ"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "ថ្ងៃព្រហស្បតិ៍"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "ថ្ងៃសុក្រ"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "ថ្ងៃសៅរ៍"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "ថ្ងៃអាទិត្យ"
+
+#. config.clinic.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "ចាប់ពីម៉ោង"
+
+#. config.clinic.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "ម៉ោងបើកជាទម្រង់ 24 ម៉ោង ឧ. 07:30"
+
+#. config.clinic.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "ដល់ម៉ោង"
+
+#. config.clinic.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "ម៉ោងបិទជាទម្រង់ 24 ម៉ោង ឧ. 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "paws::theme"
+msgstr "រចនាប័ទ្ម"

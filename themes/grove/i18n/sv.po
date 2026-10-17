@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sv\n"
+
+#. config.garden
+#: schema.json
+msgctxt "st"
+msgid "grove::garden"
+msgstr "Trädgård"
+
+#. config.garden.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the gardening, landscaping or garden design business"
+msgstr "Namn på trädgårds-, anläggnings- eller trädgårdsdesignföretaget"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Verksamhetstyp"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Verksamhetstyp som visas för sökmotorer"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Gardener and landscaper"
+msgstr "Trädgårdsmästare och anläggare"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Landscape contractor"
+msgstr "Markanläggningsföretag"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden design studio"
+msgstr "Trädgårdsdesignstudio"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden centre or nursery"
+msgstr "Trädgårdscenter eller plantskola"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other garden business"
+msgstr "Annat trädgårdsföretag"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Gatuadress"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Gata och husnummer"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Postnummer"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "Företagets postnummer"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Stad"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "Ort där företaget finns"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Landskod"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Två bokstävers ISO-landskod, t.ex. DE eller US"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefonnummer i internationellt format, används även av ringknappen"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fn"
+msgid "Service area"
+msgstr "Serviceområde"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fh"
+msgid "Towns and areas you work in, separated by commas, shown in the top bar and the footer"
+msgstr "Orter och områden du arbetar i, separerade med kommatecken, visas i toppfältet och sidfoten"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-post"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for quotes, site visits and garden care enquiries"
+msgstr "E-postadress för offerter, platsbesök och frågor om trädgårdsskötsel"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Meddelande"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Autumn tidy-ups: book your slot before November"
+msgstr "Kort meddelande högst upp på varje sida, t.ex. Höststädning i trädgården: boka din tid före november"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fn"
+msgid "Quote link"
+msgstr "Offertlänk"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fh"
+msgid "Link to the quote or site visit request page, shown as a button in the header"
+msgstr "Länk till sidan för offert- eller platsbesöksförfrågningar, visas som knapp i sidhuvudet"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fn"
+msgid "Care plans link"
+msgstr "Länk till skötselavtal"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with garden care plans and prices"
+msgstr "Länk till sidan med trädgårdsskötselavtal och priser"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Prisnivå"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. ££ or €€"
+msgstr "Företagets prisnivå, t.ex. ££ eller €€"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Anmärkning"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Fully insured, all planting comes with a 12 month guarantee."
+msgstr "Kort text i sidfoten, t.ex. Fullt försäkrade, alla planteringar har 12 månaders garanti."
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Knappfält"
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and quote buttons at the bottom of the screen on phones"
+msgstr "Visa ring- och offertknappar längst ned på skärmen i mobiler"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "Kontorstider"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week, shown in the footer"
+msgstr "Kontorstider för varje veckodag, visas i sidfoten"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Dag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Veckodag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Måndag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Tisdag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Onsdag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Torsdag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Fredag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Lördag"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Söndag"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Öppnar"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Öppningstid i 24-timmarsformat, t.ex. 07:30"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Stänger"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "Stängningstid i 24-timmarsformat, t.ex. 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "grove::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Avrundning av hörn som CSS-längd, t.ex. 1rem eller 0 för skarpa hörn"

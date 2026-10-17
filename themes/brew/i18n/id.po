@@ -1,0 +1,292 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: id\n"
+
+#. config.cafe
+#: schema.json
+msgctxt "st"
+msgid "brew::cafe"
+msgstr "Kafe"
+
+#. config.cafe.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the café, roastery or bakery"
+msgstr "Nama kafe, roastery, atau toko roti"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Jenis usaha"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Jenis usaha yang ditampilkan ke mesin pencari"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Café or coffee shop"
+msgstr "Kafe atau kedai kopi"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bakery"
+msgstr "Toko roti"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Restoran"
+
+#. config.cafe.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business, e.g. roastery"
+msgstr "Usaha lain, mis. roastery"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Alamat"
+
+#. config.cafe.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Nama jalan dan nomor rumah"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Kode pos"
+
+#. config.cafe.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the café"
+msgstr "Kode pos kafe"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Kota"
+
+#. config.cafe.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the café is located in"
+msgstr "Kota tempat kafe berada"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Kode negara"
+
+#. config.cafe.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Kode negara ISO dua huruf, misalnya DE atau US"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telepon"
+
+#. config.cafe.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Nomor telepon dalam format internasional, juga digunakan oleh tombol panggil"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. config.cafe.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for questions, catering and wholesale requests"
+msgstr "Alamat email untuk pertanyaan, katering, dan permintaan grosir"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Pengumuman"
+
+#. config.cafe.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Freshly roasted every Tuesday"
+msgstr "Catatan singkat yang ditampilkan di bagian atas setiap halaman, mis. Disangrai segar setiap Selasa"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fn"
+msgid "Order link"
+msgstr "Tautan pemesanan"
+
+#. config.cafe.order
+#: schema.json
+msgctxt "fh"
+msgid "Link to the online shop or order ahead page, shown as a button in the header"
+msgstr "Tautan ke toko online atau halaman pesan di muka, ditampilkan sebagai tombol di header"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Tautan menu"
+
+#. config.cafe.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the food and drinks menu"
+msgstr "Tautan ke halaman menu makanan dan minuman"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Sajian"
+
+#. config.cafe.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Specialty coffee, Bakery, Breakfast"
+msgstr "Daftar yang dipisahkan koma tentang apa yang Anda sajikan, mis. Kopi spesialti, Roti dan kue, Sarapan"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Kisaran harga"
+
+#. config.cafe.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the café, e.g. $ or €€"
+msgstr "Tingkat harga kafe, mis. $ atau €€"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Bilah tindakan"
+
+#. config.cafe.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and order buttons at the bottom of the screen on phones"
+msgstr "Tampilkan tombol telepon dan pesan di bagian bawah layar pada ponsel"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Jam buka"
+
+#. config.cafe.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Jam buka untuk setiap hari dalam seminggu, ditampilkan di footer"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Hari"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Hari dalam seminggu"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Senin"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Selasa"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Rabu"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Kamis"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Jumat"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sabtu"
+
+#. config.cafe.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Minggu"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Buka"
+
+#. config.cafe.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Waktu buka dalam format 24 jam, misalnya 07:30"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Tutup"
+
+#. config.cafe.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Waktu tutup dalam format 24 jam, misalnya 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "brew::theme"
+msgstr "Tema"

@@ -1,0 +1,82 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: km\n"
+
+#. config.project
+#: schema.json
+msgctxt "st"
+msgid "manual::project"
+msgstr "គម្រោង"
+
+#. config.project.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software project"
+msgstr "ឈ្មោះគម្រោងកម្មវិធី"
+
+#. config.project.version
+#: schema.json
+msgctxt "fn"
+msgid "Version"
+msgstr "កំណែ"
+
+#. config.project.version
+#: schema.json
+msgctxt "fh"
+msgid "Current version shown next to the logo, e.g. v3.2"
+msgstr "កំណែបច្ចុប្បន្នដែលបង្ហាញនៅជាប់ឡូហ្គោ ឧ. v3.2"
+
+#. config.project.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the software does, used for search engines"
+msgstr "ប្រយោគមួយពិពណ៌នាអំពីអ្វីដែលកម្មវិធីធ្វើ ដែលប្រើសម្រាប់ម៉ាស៊ីនស្វែងរក"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fn"
+msgid "Repository"
+msgstr "ឃ្លាំងកូដ"
+
+#. config.project.repository
+#: schema.json
+msgctxt "fh"
+msgid "Link to the source code repository, e.g. https://github.com/acme/project, shown as icon in the header"
+msgstr "តំណទៅឃ្លាំងកូដប្រភព ឧ. https://github.com/acme/project ដែលបង្ហាញជារូបតំណាងនៅក្បាលទំព័រ"
+
+#. config.project.language
+#: schema.json
+msgctxt "fn"
+msgid "Programming language"
+msgstr "ភាសាសរសេរកម្មវិធី"
+
+#. config.project.language
+#: schema.json
+msgctxt "fh"
+msgid "Main programming language of the project for search engines, e.g. PHP or TypeScript"
+msgstr "ភាសាសរសេរកម្មវិធីចម្បងរបស់គម្រោងសម្រាប់ម៉ាស៊ីនស្វែងរក ឧ. PHP ឬ TypeScript"
+
+#. config.project.license
+#: schema.json
+msgctxt "fn"
+msgid "License"
+msgstr "អាជ្ញាប័ណ្ណ"
+
+#. config.project.license
+#: schema.json
+msgctxt "fh"
+msgid "License of the software shown in the footer, e.g. MIT"
+msgstr "អាជ្ញាប័ណ្ណរបស់កម្មវិធីដែលបង្ហាញនៅបាតទំព័រ ឧ. MIT"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "manual::theme"
+msgstr "រចនាប័ទ្ម"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 0.5rem or 0 for sharp corners"
+msgstr "ភាពមូលនៃជ្រុងជាប្រវែង CSS ឧ. 0.5rem ឬ 0 សម្រាប់ជ្រុងស្រួច"

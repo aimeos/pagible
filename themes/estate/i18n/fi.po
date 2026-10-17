@@ -1,0 +1,539 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fi\n"
+
+#. content.property
+#: schema.json
+msgctxt "st"
+msgid "Property"
+msgstr "Kohde"
+
+#. content.property
+#: schema.json
+msgctxt "sd"
+msgid "Real estate listing with details, map and documents"
+msgstr "Kiinteistöilmoitus tiedoilla, kartalla ja asiakirjoilla"
+
+#. content.property
+#. content.properties
+#: schema.json
+msgctxt "sg"
+msgid "estate"
+msgstr "Estate"
+
+#. content.property.text
+#: schema.json
+msgctxt "fh"
+msgid "Detailed description of the property"
+msgstr "Kohteen yksityiskohtainen kuvaus"
+
+#. content.property.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Sijainti"
+
+#. content.property.location
+#: schema.json
+msgctxt "fh"
+msgid "Description of the neighborhood and surroundings"
+msgstr "Kuvaus naapurustosta ja ympäristöstä"
+
+#. content.property.map
+#: schema.json
+msgctxt "fn"
+msgid "map"
+msgstr "Kartta"
+
+#. content.property.map
+#: schema.json
+msgctxt "fh"
+msgid "Search for the address or click on the map to set the location"
+msgstr "Hae osoitetta tai napsauta karttaa asettaaksesi sijainnin"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fn"
+msgid "Reference"
+msgstr "Viite"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fh"
+msgid "Internal reference number of the property"
+msgstr "Kohteen sisäinen viitenumero"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fn"
+msgid "Type"
+msgstr "Tyyppi"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of property"
+msgstr "Kohdetyyppi"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Apartment"
+msgstr "Kerrostaloasunto"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Penthouse"
+msgstr "Kattohuoneisto"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Loft"
+msgstr "Loft"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "House"
+msgstr "Talo"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Villa"
+msgstr "Huvila"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Land"
+msgstr "Tontti"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Office"
+msgstr "Toimisto"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Retail"
+msgstr "Liiketila"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Warehouse"
+msgstr "Varasto"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Industrial"
+msgstr "Teollisuustila"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Other"
+msgstr "Muu"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fn"
+msgid "Offer type"
+msgstr "Tarjouksen tyyppi"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fh"
+msgid "Property offered for sale or for rent"
+msgstr "Myytävä tai vuokrattava kohde"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Sale"
+msgstr "Myynti"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Rent"
+msgstr "Vuokra"
+
+#. content.property.address
+#: schema.json
+msgctxt "fn"
+msgid "Address"
+msgstr "Osoite"
+
+#. content.property.address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Katu ja talon numero"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fn"
+msgid "Post code"
+msgstr "Postinumero"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the property"
+msgstr "Kohteen postinumero"
+
+#. content.property.price
+#: schema.json
+msgctxt "fn"
+msgid "Price"
+msgstr "Hinta"
+
+#. content.property.price
+#: schema.json
+msgctxt "fh"
+msgid "Purchase price or rent of the property"
+msgstr "Kohteen myyntihinta tai vuokra"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fn"
+msgid "Price period (rent only)"
+msgstr "Hintajakso (vain vuokra)"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fh"
+msgid "Time period the rent is charged for"
+msgstr "Ajanjakso, jolta vuokra veloitetaan"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Month"
+msgstr "Kuukausi"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Week"
+msgstr "Viikko"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Year"
+msgstr "Vuosi"
+
+#. content.property.status
+#: schema.json
+msgctxt "fn"
+msgid "Status"
+msgstr "Tila"
+
+#. content.property.status
+#: schema.json
+msgctxt "fh"
+msgid "Current availability of the property"
+msgstr "Kohteen nykyinen saatavuus"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Available"
+msgstr "Vapaa"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Under offer"
+msgstr "Varattu"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Sold"
+msgstr "Myyty"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Rented"
+msgstr "Vuokrattu"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fn"
+msgid "Available from"
+msgstr "Vapautuu"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fh"
+msgid "Date from which the property is available"
+msgstr "Päivämäärä, josta alkaen kohde on saatavilla"
+
+#. content.property.district
+#: schema.json
+msgctxt "fn"
+msgid "District"
+msgstr "Kaupunginosa"
+
+#. content.property.district
+#: schema.json
+msgctxt "fh"
+msgid "District or neighborhood of the city"
+msgstr "Kaupunginosa tai alue"
+
+#. content.property.city
+#: schema.json
+msgctxt "fn"
+msgid "city"
+msgstr "Kaupunki"
+
+#. content.property.city
+#: schema.json
+msgctxt "fh"
+msgid "City the property is located in"
+msgstr "Kaupunki, jossa kohde sijaitsee"
+
+#. content.property.country
+#: schema.json
+msgctxt "fn"
+msgid "Country"
+msgstr "Maa"
+
+#. content.property.country
+#: schema.json
+msgctxt "fh"
+msgid "Country the property is located in"
+msgstr "Maa, jossa kohde sijaitsee"
+
+#. content.property.area
+#: schema.json
+msgctxt "fn"
+msgid "Area"
+msgstr "Pinta-ala"
+
+#. content.property.area
+#: schema.json
+msgctxt "fh"
+msgid "Total area of the property"
+msgstr "Kohteen kokonaispinta-ala"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fn"
+msgid "Area unit"
+msgstr "Pinta-alan yksikkö"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fh"
+msgid "Unit of all area values, e.g. m² or sq ft"
+msgstr "Kaikkien pinta-ala-arvojen yksikkö, esim. m² tai sq ft"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fn"
+msgid "Living area"
+msgstr "Asuinpinta-ala"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fh"
+msgid "Usable living space"
+msgstr "Käytettävissä oleva asuinpinta-ala"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fn"
+msgid "Plot area"
+msgstr "Tontin pinta-ala"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fh"
+msgid "Size of the land"
+msgstr "Tontin koko"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fn"
+msgid "Rooms"
+msgstr "Huoneet"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fh"
+msgid "Total number of rooms"
+msgstr "Huoneiden kokonaismäärä"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fn"
+msgid "bedrooms"
+msgstr "Makuuhuoneet"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bedrooms"
+msgstr "Makuuhuoneiden määrä"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fn"
+msgid "bathrooms"
+msgstr "Kylpyhuoneet"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bathrooms"
+msgstr "Kylpyhuoneiden määrä"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fn"
+msgid "Year built"
+msgstr "Rakennusvuosi"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fh"
+msgid "Year of construction"
+msgstr "Rakennusvuosi"
+
+#. content.property.values
+#: schema.json
+msgctxt "fn"
+msgid "Optional values"
+msgstr "Valinnaiset arvot"
+
+#. content.property.values
+#: schema.json
+msgctxt "fh"
+msgid "Additional details as name and value pairs"
+msgstr "Lisätiedot nimi-arvo-pareina"
+
+#. content.property.features
+#: schema.json
+msgctxt "fn"
+msgid "Features"
+msgstr "Ominaisuudet"
+
+#. content.property.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features and equipment"
+msgstr "Luettelo ominaisuuksista ja varusteista"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fn"
+msgid "Documents"
+msgstr "Asiakirjat"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fh"
+msgid "Downloadable documents like floor plans or energy certificates"
+msgstr "Ladattavat asiakirjat, kuten pohjapiirustukset tai energiatodistukset"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fn"
+msgid "Document title"
+msgstr "Asiakirjan otsikko"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the document shown to visitors"
+msgstr "Kävijöille näytettävän asiakirjan nimi"
+
+#. content.property.documents.file
+#: schema.json
+msgctxt "fn"
+msgid "Document"
+msgstr "Asiakirja"
+
+#. content.property.files
+#: schema.json
+msgctxt "fh"
+msgid "Photos of the property, the first one is used as preview image"
+msgstr "Kohteen valokuvat, ensimmäistä käytetään esikatselukuvana"
+
+#. content.properties
+#: schema.json
+msgctxt "st"
+msgid "Properties"
+msgstr "Kohteet"
+
+#. content.properties
+#: schema.json
+msgctxt "sd"
+msgid "List of real estate listings with filters"
+msgstr "Luettelo kiinteistöilmoituksista suodattimilla"
+
+#. content.properties.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the properties as cards or as a compact list"
+msgstr "Näytä kohteet kortteina tai tiiviinä listana"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fn"
+msgid "Show filters"
+msgstr "Näytä suodattimet"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fh"
+msgid "Allow visitors to filter the properties"
+msgstr "Salli kävijöiden suodattaa kohteita"
+
+#. content.properties.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose property subpages are listed"
+msgstr "Sivu, jonka kohdealasivut listataan"
+
+#. content.properties.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed properties"
+msgstr "Listattujen kohteiden järjestys"
+
+#. content.properties.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of properties shown at once"
+msgstr "Kerralla näytettävien kohteiden enimmäismäärä"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "estate::theme"
+msgstr "Teema"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "Otsikkofontti"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "Pilkuin eroteltu luettelo otsikoissa käytettävistä fonteista"

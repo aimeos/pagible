@@ -1,0 +1,310 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: sk\n"
+
+#. config.bar
+#: schema.json
+msgctxt "st"
+msgid "tonic::bar"
+msgstr "Bar"
+
+#. config.bar.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the bar, pub or club"
+msgstr "Názov baru, krčmy alebo klubu"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Druh podnikania"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Druh podnikania zobrazený vyhľadávačom"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bar or pub"
+msgstr "Bar alebo krčma"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Night club"
+msgstr "Nočný klub"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Brewery or taproom"
+msgstr "Pivovar alebo výčap"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Reštaurácia"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Iná činnosť"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Ulica a číslo domu"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Ulica a číslo domu"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "PSČ"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the bar"
+msgstr "PSČ baru"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Mesto"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the bar is located in"
+msgstr "Mesto, v ktorom sa bar nachádza"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Kód krajiny"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dvojpísmenový ISO kód krajiny, napr. DE alebo US"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefón"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefónne číslo v medzinárodnom formáte, používa ho aj tlačidlo volania"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-mail"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for reservations, private events and press"
+msgstr "E-mailová adresa pre rezervácie, súkromné podujatia a tlač"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Oznámenie"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
+msgstr "Krátka poznámka zobrazená v hornej časti každej stránky, napr. Bez rezervácie vítaní do 23:00"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Odkaz na rezerváciu"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the table reservation page, shown as a button in the header"
+msgstr "Odkaz na stránku s rezerváciou stola, zobrazený ako tlačidlo v hlavičke"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Odkaz na menu"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the drinks menu"
+msgstr "Odkaz na stránku s nápojovým lístkom"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Kuchyňa"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
+msgstr "Zoznam toho, čo podávate, oddelený čiarkami, napr. Kokteily, Víno, Občerstvenie"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Cenové rozpätie"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the bar, e.g. $$ or €€"
+msgstr "Cenová úroveň baru, napr. $$ alebo €€"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Upozornenie"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
+msgstr "Krátka poznámka zobrazená v pätičke, napr. Iba od 18 rokov. Pite zodpovedne."
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Lišta tlačidiel"
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Zobraziť na telefónoch tlačidlá na volanie a rezerváciu v dolnej časti obrazovky"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Otváracie hodiny"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Otváracie hodiny pre každý deň v týždni, zobrazené v päte"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Deň"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Deň v týždni"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pondelok"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Utorok"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Streda"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Štvrtok"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Piatok"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sobota"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Nedeľa"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Čas otvorenia"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 18:00"
+msgstr "Otváracia doba v 24-hodinovom formáte, napr. 18:00"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Čas zatvorenia"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, also after midnight, e.g. 02:00"
+msgstr "Čas zatvorenia v 24-hodinovom formáte, aj po polnoci, napr. 02:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "tonic::theme"
+msgstr "Téma"

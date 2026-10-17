@@ -14,6 +14,10 @@ class PremiumServiceProvider extends Provider
         Schema::register( $basedir, 'premium' );
         View::addNamespace( 'premium', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'premium', '/vendor/cms/premium/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/premium' )], 'cms-theme' );
     }
 }

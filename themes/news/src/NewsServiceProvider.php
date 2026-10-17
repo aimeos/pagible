@@ -14,6 +14,10 @@ class NewsServiceProvider extends Provider
         Schema::register( $basedir, 'news' );
         View::addNamespace( 'news', $basedir . '/views' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'news', '/vendor/cms/news/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/news' )], 'cms-theme' );
     }
 }

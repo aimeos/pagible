@@ -1,0 +1,310 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ca\n"
+
+#. config.bar
+#: schema.json
+msgctxt "st"
+msgid "tonic::bar"
+msgstr "Bar"
+
+#. config.bar.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the bar, pub or club"
+msgstr "Nom del bar, pub o club"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Tipus de negoci"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Tipus de negoci que es mostra als motors de cerca"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Bar or pub"
+msgstr "Bar o pub"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Night club"
+msgstr "Discoteca"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Brewery or taproom"
+msgstr "Cerveseria o sala de tast"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Restaurant"
+msgstr "Restaurant"
+
+#. config.bar.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Altres negocis"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adreça del carrer"
+
+#. config.bar.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Número de carrer i de casa"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Codi postal"
+
+#. config.bar.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the bar"
+msgstr "Codi postal del bar"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Ciutat"
+
+#. config.bar.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the bar is located in"
+msgstr "Ciutat on es troba el bar"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Codi de país"
+
+#. config.bar.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Codi de país ISO de dues lletres, p. ex. DE o US"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "telèfon"
+
+#. config.bar.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Número de telèfon en format internacional, també utilitzat pel botó de trucada."
+
+#. config.bar.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "correu electrònic"
+
+#. config.bar.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for reservations, private events and press"
+msgstr "Adreça de correu electrònic per a reserves, esdeveniments privats i premsa"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Anunci"
+
+#. config.bar.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Walk-ins welcome until 23:00"
+msgstr "Nota breu que apareix a la part superior de cada pàgina, p. ex. S'admeten visites sense cita prèvia fins a les 23:00"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Enllaç de reserva"
+
+#. config.bar.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the table reservation page, shown as a button in the header"
+msgstr "Enllaç a la pàgina de reserva de taula, mostrat com un botó a l'encapçalament"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu link"
+msgstr "Enllaç del menú"
+
+#. config.bar.menu
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with the drinks menu"
+msgstr "Enllaç a la pàgina amb el menú de begudes"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisine"
+msgstr "Cuina"
+
+#. config.bar.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of what you serve, e.g. Cocktails, Wine, Bar snacks"
+msgstr "Llista separada per comes del que serveixes, p. ex. còctels, vi, aperitius de bar"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Gama de preus"
+
+#. config.bar.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the bar, e.g. $$ or €€"
+msgstr "Nivell de preus del bar, p. ex. $$ o €€"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Avís"
+
+#. config.bar.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Over 18 only. Please drink responsibly."
+msgstr "Nota breu que apareix al peu de pàgina, p. ex. Per a majors de 18 anys. Si us plau, begueu amb responsabilitat."
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Barra d'accions"
+
+#. config.bar.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Mostra els botons de trucada i de reserva a la part inferior de la pantalla dels telèfons"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Horari"
+
+#. config.bar.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Horaris d'obertura de cada dia de la setmana, mostrats al peu de pàgina."
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "dia"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Dia de la setmana"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Dilluns"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Dimarts"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Dimecres"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Dijous"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Divendres"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Dissabte"
+
+#. config.bar.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Diumenge"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "obertura"
+
+#. config.bar.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 18:00"
+msgstr "Horari d'obertura en format de 24 hores, p. ex. 18:00"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "tancament"
+
+#. config.bar.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, also after midnight, e.g. 02:00"
+msgstr "Hora de tancament en format de 24 hores, també després de la mitjanit, p. ex. 02:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "tonic::theme"
+msgstr "Tema"

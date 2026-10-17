@@ -1,0 +1,208 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ro\n"
+
+#. config.restaurant
+#: schema.json
+msgctxt "st"
+msgid "taste::restaurant"
+msgstr "Restaurant"
+
+#. config.restaurant.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the restaurant"
+msgstr "Numele restaurantului"
+
+#. config.restaurant.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Strada și numărul"
+
+#. config.restaurant.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Strada și numărul"
+
+#. config.restaurant.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Cod poștal"
+
+#. config.restaurant.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the restaurant"
+msgstr "Codul poștal al restaurantului"
+
+#. config.restaurant.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Oraș"
+
+#. config.restaurant.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the restaurant is located in"
+msgstr "Orașul în care este situat restaurantul"
+
+#. config.restaurant.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Cod țară"
+
+#. config.restaurant.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Codul de țară ISO din două litere, de ex. DE sau US"
+
+#. config.restaurant.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisines"
+msgstr "Bucătării"
+
+#. config.restaurant.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the cuisines served, e.g. Italian, Vegan"
+msgstr "Listă de bucătării servite separate prin virgulă, de ex. italiană, vegană"
+
+#. config.restaurant.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu page"
+msgstr "Pagina meniului"
+
+#. config.restaurant.menu
+#: schema.json
+msgctxt "fh"
+msgid "Page or link to the menu"
+msgstr "Pagina sau linkul către meniu"
+
+#. config.restaurant.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Nivel de preț"
+
+#. config.restaurant.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the restaurant, e.g. $$ or €€"
+msgstr "Nivelul de preț al restaurantului, de ex. $$ sau €€"
+
+#. config.restaurant.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. config.restaurant.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for reservations in international format"
+msgstr "Număr de telefon pentru rezervări în format internațional"
+
+#. config.restaurant.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Program de funcționare"
+
+#. config.restaurant.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Program de funcționare pentru fiecare zi a săptămânii"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Zi"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Ziua săptămânii"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Luni"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Marți"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Miercuri"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Joi"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Vineri"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sâmbătă"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Duminică"
+
+#. config.restaurant.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Deschidere"
+
+#. config.restaurant.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 11:30"
+msgstr "Ora de deschidere în format de 24 de ore, de ex. 11:30"
+
+#. config.restaurant.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Închidere"
+
+#. config.restaurant.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 22:00"
+msgstr "Ora de închidere în format de 24 de ore, de ex. 22:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "taste::theme"
+msgstr "Temă"

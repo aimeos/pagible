@@ -1,0 +1,539 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: pt\n"
+
+#. content.property
+#: schema.json
+msgctxt "st"
+msgid "Property"
+msgstr "Imóvel"
+
+#. content.property
+#: schema.json
+msgctxt "sd"
+msgid "Real estate listing with details, map and documents"
+msgstr "Anúncio imobiliário com detalhes, mapa e documentos"
+
+#. content.property
+#. content.properties
+#: schema.json
+msgctxt "sg"
+msgid "estate"
+msgstr "Estate"
+
+#. content.property.text
+#: schema.json
+msgctxt "fh"
+msgid "Detailed description of the property"
+msgstr "Descrição detalhada do imóvel"
+
+#. content.property.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "Localização"
+
+#. content.property.location
+#: schema.json
+msgctxt "fh"
+msgid "Description of the neighborhood and surroundings"
+msgstr "Descrição do bairro e arredores"
+
+#. content.property.map
+#: schema.json
+msgctxt "fn"
+msgid "map"
+msgstr "Mapa"
+
+#. content.property.map
+#: schema.json
+msgctxt "fh"
+msgid "Search for the address or click on the map to set the location"
+msgstr "Procure a morada ou clique no mapa para definir a localização"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fn"
+msgid "Reference"
+msgstr "Referência"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fh"
+msgid "Internal reference number of the property"
+msgstr "Número de referência interno do imóvel"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fn"
+msgid "Type"
+msgstr "Tipo"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of property"
+msgstr "Tipo de imóvel"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Apartment"
+msgstr "Apartamento"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Penthouse"
+msgstr "Penthouse"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Loft"
+msgstr "Loft"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "House"
+msgstr "Moradia"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Villa"
+msgstr "Vivenda"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Land"
+msgstr "Terreno"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Office"
+msgstr "Escritório"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Retail"
+msgstr "Loja"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Warehouse"
+msgstr "Armazém"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Industrial"
+msgstr "Industrial"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Other"
+msgstr "Outro"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fn"
+msgid "Offer type"
+msgstr "Tipo de oferta"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fh"
+msgid "Property offered for sale or for rent"
+msgstr "Imóvel para venda ou para arrendamento"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Sale"
+msgstr "Venda"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Rent"
+msgstr "Arrendamento"
+
+#. content.property.address
+#: schema.json
+msgctxt "fn"
+msgid "Address"
+msgstr "Endereço"
+
+#. content.property.address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Rua e número de porta"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fn"
+msgid "Post code"
+msgstr "Código postal"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the property"
+msgstr "Código postal do imóvel"
+
+#. content.property.price
+#: schema.json
+msgctxt "fn"
+msgid "Price"
+msgstr "Preço"
+
+#. content.property.price
+#: schema.json
+msgctxt "fh"
+msgid "Purchase price or rent of the property"
+msgstr "Preço de compra ou renda do imóvel"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fn"
+msgid "Price period (rent only)"
+msgstr "Período do preço (apenas arrendamento)"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fh"
+msgid "Time period the rent is charged for"
+msgstr "Período de tempo a que se refere a renda"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Month"
+msgstr "Mês"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Week"
+msgstr "Semana"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Year"
+msgstr "Ano"
+
+#. content.property.status
+#: schema.json
+msgctxt "fn"
+msgid "Status"
+msgstr "Estado"
+
+#. content.property.status
+#: schema.json
+msgctxt "fh"
+msgid "Current availability of the property"
+msgstr "Disponibilidade atual do imóvel"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Available"
+msgstr "Disponível"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Under offer"
+msgstr "Em negociação"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Sold"
+msgstr "Vendido"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Rented"
+msgstr "Arrendado"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fn"
+msgid "Available from"
+msgstr "Disponível a partir de"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fh"
+msgid "Date from which the property is available"
+msgstr "Data a partir da qual o imóvel está disponível"
+
+#. content.property.district
+#: schema.json
+msgctxt "fn"
+msgid "District"
+msgstr "Bairro"
+
+#. content.property.district
+#: schema.json
+msgctxt "fh"
+msgid "District or neighborhood of the city"
+msgstr "Distrito ou bairro da cidade"
+
+#. content.property.city
+#: schema.json
+msgctxt "fn"
+msgid "city"
+msgstr "Cidade"
+
+#. content.property.city
+#: schema.json
+msgctxt "fh"
+msgid "City the property is located in"
+msgstr "Cidade onde o imóvel está localizado"
+
+#. content.property.country
+#: schema.json
+msgctxt "fn"
+msgid "Country"
+msgstr "País"
+
+#. content.property.country
+#: schema.json
+msgctxt "fh"
+msgid "Country the property is located in"
+msgstr "País onde o imóvel está localizado"
+
+#. content.property.area
+#: schema.json
+msgctxt "fn"
+msgid "Area"
+msgstr "Área"
+
+#. content.property.area
+#: schema.json
+msgctxt "fh"
+msgid "Total area of the property"
+msgstr "Área total do imóvel"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fn"
+msgid "Area unit"
+msgstr "Unidade de área"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fh"
+msgid "Unit of all area values, e.g. m² or sq ft"
+msgstr "Unidade de todos os valores de área, por exemplo, m² ou sq ft"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fn"
+msgid "Living area"
+msgstr "Área útil"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fh"
+msgid "Usable living space"
+msgstr "Área útil habitável"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fn"
+msgid "Plot area"
+msgstr "Área do terreno"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fh"
+msgid "Size of the land"
+msgstr "Área do terreno"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fn"
+msgid "Rooms"
+msgstr "Divisões"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fh"
+msgid "Total number of rooms"
+msgstr "Número total de divisões"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fn"
+msgid "bedrooms"
+msgstr "Quartos"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bedrooms"
+msgstr "Número de quartos"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fn"
+msgid "bathrooms"
+msgstr "Casas de banho"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bathrooms"
+msgstr "Número de casas de banho"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fn"
+msgid "Year built"
+msgstr "Ano de construção"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fh"
+msgid "Year of construction"
+msgstr "Ano de construção"
+
+#. content.property.values
+#: schema.json
+msgctxt "fn"
+msgid "Optional values"
+msgstr "Detalhes adicionais"
+
+#. content.property.values
+#: schema.json
+msgctxt "fh"
+msgid "Additional details as name and value pairs"
+msgstr "Detalhes adicionais como pares de nome e valor"
+
+#. content.property.features
+#: schema.json
+msgctxt "fn"
+msgid "Features"
+msgstr "Características"
+
+#. content.property.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features and equipment"
+msgstr "Lista de características e equipamento"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fn"
+msgid "Documents"
+msgstr "Documentos"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fh"
+msgid "Downloadable documents like floor plans or energy certificates"
+msgstr "Documentos transferíveis como plantas ou certificados energéticos"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fn"
+msgid "Document title"
+msgstr "Título do documento"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the document shown to visitors"
+msgstr "Nome do documento apresentado aos visitantes"
+
+#. content.property.documents.file
+#: schema.json
+msgctxt "fn"
+msgid "Document"
+msgstr "Documento"
+
+#. content.property.files
+#: schema.json
+msgctxt "fh"
+msgid "Photos of the property, the first one is used as preview image"
+msgstr "Fotografias do imóvel, a primeira é utilizada como imagem de pré-visualização"
+
+#. content.properties
+#: schema.json
+msgctxt "st"
+msgid "Properties"
+msgstr "Imóveis"
+
+#. content.properties
+#: schema.json
+msgctxt "sd"
+msgid "List of real estate listings with filters"
+msgstr "Lista de anúncios imobiliários com filtros"
+
+#. content.properties.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the properties as cards or as a compact list"
+msgstr "Apresentar os imóveis como cartões ou como lista compacta"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fn"
+msgid "Show filters"
+msgstr "Mostrar filtros"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fh"
+msgid "Allow visitors to filter the properties"
+msgstr "Permitir que os visitantes filtrem os imóveis"
+
+#. content.properties.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose property subpages are listed"
+msgstr "Página cujas subpáginas de imóveis são listadas"
+
+#. content.properties.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed properties"
+msgstr "Ordem de classificação dos imóveis listados"
+
+#. content.properties.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of properties shown at once"
+msgstr "Número máximo de imóveis apresentados de uma vez"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "estate::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "Tipo de letra do título"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "Lista de tipos de letra separados por vírgulas utilizados para os títulos"

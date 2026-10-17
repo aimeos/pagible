@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: el\n"
+
+#. config.garden
+#: schema.json
+msgctxt "st"
+msgid "grove::garden"
+msgstr "Κήπος"
+
+#. config.garden.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the gardening, landscaping or garden design business"
+msgstr "Όνομα της επιχείρησης κηπουρικής, διαμόρφωσης τοπίου ή σχεδιασμού κήπων"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Είδος επιχείρησης"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Είδος επιχείρησης που εμφανίζεται στις μηχανές αναζήτησης"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Gardener and landscaper"
+msgstr "Κηπουρός και αρχιτέκτονας τοπίου"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Landscape contractor"
+msgstr "Εργολάβος διαμόρφωσης τοπίου"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden design studio"
+msgstr "Στούντιο σχεδιασμού κήπων"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden centre or nursery"
+msgstr "Κέντρο κηπουρικής ή φυτώριο"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other garden business"
+msgstr "Άλλη επιχείρηση κήπου"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Διεύθυνση"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Οδός και αριθμός"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Ταχυδρομικός κώδικας"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "Ταχυδρομικός κώδικας της επιχείρησης"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Πόλη"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "Πόλη όπου βρίσκεται η επιχείρηση"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Κωδικός χώρας"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Διγράμματος κωδικός χώρας ISO, π.χ. DE ή US"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Τηλέφωνο"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Αριθμός τηλεφώνου σε διεθνή μορφή, χρησιμοποιείται και για το κουμπί κλήσης"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fn"
+msgid "Service area"
+msgstr "Περιοχή εξυπηρέτησης"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fh"
+msgid "Towns and areas you work in, separated by commas, shown in the top bar and the footer"
+msgstr "Πόλεις και περιοχές όπου εργάζεστε, χωρισμένες με κόμμα· εμφανίζονται στην επάνω μπάρα και στο υποσέλιδο"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Email"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for quotes, site visits and garden care enquiries"
+msgstr "Διεύθυνση email για προσφορές, αυτοψίες και αιτήματα φροντίδας κήπου"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Ανακοίνωση"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Autumn tidy-ups: book your slot before November"
+msgstr "Σύντομη ανακοίνωση στην κορυφή κάθε σελίδας, π.χ. Φθινοπωρινός καθαρισμός κήπου: κλείστε ραντεβού πριν από τον Νοέμβριο"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fn"
+msgid "Quote link"
+msgstr "Σύνδεσμος αίτησης προσφοράς"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fh"
+msgid "Link to the quote or site visit request page, shown as a button in the header"
+msgstr "Σύνδεσμος προς τη σελίδα αιτήματος προσφοράς ή αυτοψίας, εμφανίζεται ως κουμπί στην κεφαλίδα"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fn"
+msgid "Care plans link"
+msgstr "Σύνδεσμος προγραμμάτων φροντίδας"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with garden care plans and prices"
+msgstr "Σύνδεσμος προς τη σελίδα με τα προγράμματα φροντίδας κήπου και τις τιμές"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Επίπεδο τιμών"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. ££ or €€"
+msgstr "Επίπεδο τιμών της επιχείρησης, π.χ. ££ ή €€"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Σημείωση"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Fully insured, all planting comes with a 12 month guarantee."
+msgstr "Σύντομο σημείωμα στο υποσέλιδο, π.χ. Πλήρως ασφαλισμένοι, όλες οι φυτεύσεις έχουν εγγύηση 12 μηνών."
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Γραμμή ενεργειών"
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and quote buttons at the bottom of the screen on phones"
+msgstr "Εμφάνιση κουμπιών κλήσης και προσφοράς στο κάτω μέρος της οθόνης σε κινητά"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "Ώρες γραφείου"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week, shown in the footer"
+msgstr "Ώρες γραφείου για κάθε ημέρα της εβδομάδας, εμφανίζονται στο υποσέλιδο"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Ημέρα"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Ημέρα της εβδομάδας"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Δευτέρα"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Τρίτη"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Τετάρτη"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Πέμπτη"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Παρασκευή"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Σάββατο"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Κυριακή"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Ώρα ανοίγματος"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Ώρα ανοίγματος σε 24ωρη μορφή, π.χ. 07:30"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Ώρα κλεισίματος"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "Ώρα κλεισίματος σε 24ωρη μορφή, π.χ. 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "grove::theme"
+msgstr "Θέμα"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Στρογγυλοποίηση γωνιών ως μήκος CSS, π.χ. 1rem ή 0 για αιχμηρές γωνίες"

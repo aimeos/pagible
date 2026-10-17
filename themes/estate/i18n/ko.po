@@ -1,0 +1,539 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: ko\n"
+
+#. content.property
+#: schema.json
+msgctxt "st"
+msgid "Property"
+msgstr "매물"
+
+#. content.property
+#: schema.json
+msgctxt "sd"
+msgid "Real estate listing with details, map and documents"
+msgstr "상세 정보, 지도, 문서가 있는 부동산 매물"
+
+#. content.property
+#. content.properties
+#: schema.json
+msgctxt "sg"
+msgid "estate"
+msgstr "Estate"
+
+#. content.property.text
+#: schema.json
+msgctxt "fh"
+msgid "Detailed description of the property"
+msgstr "매물의 상세 설명"
+
+#. content.property.location
+#: schema.json
+msgctxt "fn"
+msgid "Location"
+msgstr "위치"
+
+#. content.property.location
+#: schema.json
+msgctxt "fh"
+msgid "Description of the neighborhood and surroundings"
+msgstr "주변 지역 및 환경 설명"
+
+#. content.property.map
+#: schema.json
+msgctxt "fn"
+msgid "map"
+msgstr "지도"
+
+#. content.property.map
+#: schema.json
+msgctxt "fh"
+msgid "Search for the address or click on the map to set the location"
+msgstr "주소를 검색하거나 지도를 클릭해 위치 설정"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fn"
+msgid "Reference"
+msgstr "매물 번호"
+
+#. content.property.reference
+#: schema.json
+msgctxt "fh"
+msgid "Internal reference number of the property"
+msgstr "매물의 내부 관리 번호"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fn"
+msgid "Type"
+msgstr "유형"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of property"
+msgstr "매물 종류"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Apartment"
+msgstr "아파트"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Penthouse"
+msgstr "펜트하우스"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Loft"
+msgstr "로프트"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "House"
+msgstr "주택"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Villa"
+msgstr "고급 단독주택"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Land"
+msgstr "토지"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Office"
+msgstr "사무실"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Retail"
+msgstr "상가"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Warehouse"
+msgstr "창고"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Industrial"
+msgstr "산업용"
+
+#. content.property.property_type
+#: schema.json
+msgctxt "op"
+msgid "Other"
+msgstr "기타"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fn"
+msgid "Offer type"
+msgstr "거래 유형"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "fh"
+msgid "Property offered for sale or for rent"
+msgstr "매매 또는 임대로 제공되는 매물"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Sale"
+msgstr "매매"
+
+#. content.property.offer_type
+#: schema.json
+msgctxt "op"
+msgid "Rent"
+msgstr "임대"
+
+#. content.property.address
+#: schema.json
+msgctxt "fn"
+msgid "Address"
+msgstr "주소"
+
+#. content.property.address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "도로명과 건물 번호"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fn"
+msgid "Post code"
+msgstr "우편번호"
+
+#. content.property.zip_code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the property"
+msgstr "매물의 우편번호"
+
+#. content.property.price
+#: schema.json
+msgctxt "fn"
+msgid "Price"
+msgstr "가격"
+
+#. content.property.price
+#: schema.json
+msgctxt "fh"
+msgid "Purchase price or rent of the property"
+msgstr "매물의 매매가 또는 임대료"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fn"
+msgid "Price period (rent only)"
+msgstr "가격 기간(임대만 해당)"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "fh"
+msgid "Time period the rent is charged for"
+msgstr "임대료가 부과되는 기간"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Month"
+msgstr "월"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Week"
+msgstr "주"
+
+#. content.property.price_period
+#: schema.json
+msgctxt "op"
+msgid "Year"
+msgstr "연"
+
+#. content.property.status
+#: schema.json
+msgctxt "fn"
+msgid "Status"
+msgstr "상태"
+
+#. content.property.status
+#: schema.json
+msgctxt "fh"
+msgid "Current availability of the property"
+msgstr "매물의 현재 이용 가능 여부"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Available"
+msgstr "거래 가능"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Under offer"
+msgstr "협의 중"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Sold"
+msgstr "매매 완료"
+
+#. content.property.status
+#: schema.json
+msgctxt "op"
+msgid "Rented"
+msgstr "임대 완료"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fn"
+msgid "Available from"
+msgstr "입주 가능일"
+
+#. content.property.available_from
+#: schema.json
+msgctxt "fh"
+msgid "Date from which the property is available"
+msgstr "매물 입주 가능일"
+
+#. content.property.district
+#: schema.json
+msgctxt "fn"
+msgid "District"
+msgstr "지구"
+
+#. content.property.district
+#: schema.json
+msgctxt "fh"
+msgid "District or neighborhood of the city"
+msgstr "도시 내 지역 또는 동네"
+
+#. content.property.city
+#: schema.json
+msgctxt "fn"
+msgid "city"
+msgstr "도시"
+
+#. content.property.city
+#: schema.json
+msgctxt "fh"
+msgid "City the property is located in"
+msgstr "매물이 위치한 도시"
+
+#. content.property.country
+#: schema.json
+msgctxt "fn"
+msgid "Country"
+msgstr "국가"
+
+#. content.property.country
+#: schema.json
+msgctxt "fh"
+msgid "Country the property is located in"
+msgstr "매물이 위치한 국가"
+
+#. content.property.area
+#: schema.json
+msgctxt "fn"
+msgid "Area"
+msgstr "면적"
+
+#. content.property.area
+#: schema.json
+msgctxt "fh"
+msgid "Total area of the property"
+msgstr "매물의 총 면적"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fn"
+msgid "Area unit"
+msgstr "면적 단위"
+
+#. content.property.area_unit
+#: schema.json
+msgctxt "fh"
+msgid "Unit of all area values, e.g. m² or sq ft"
+msgstr "모든 면적 값의 단위(예: m² 또는 sq ft)"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fn"
+msgid "Living area"
+msgstr "전용 면적"
+
+#. content.property.living_area
+#: schema.json
+msgctxt "fh"
+msgid "Usable living space"
+msgstr "사용 가능한 거주 공간"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fn"
+msgid "Plot area"
+msgstr "대지 면적"
+
+#. content.property.plot_area
+#: schema.json
+msgctxt "fh"
+msgid "Size of the land"
+msgstr "대지 면적"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fn"
+msgid "Rooms"
+msgstr "방"
+
+#. content.property.rooms
+#: schema.json
+msgctxt "fh"
+msgid "Total number of rooms"
+msgstr "총 방 개수"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fn"
+msgid "bedrooms"
+msgstr "침실"
+
+#. content.property.bedrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bedrooms"
+msgstr "침실 개수"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fn"
+msgid "bathrooms"
+msgstr "욕실"
+
+#. content.property.bathrooms
+#: schema.json
+msgctxt "fh"
+msgid "Number of bathrooms"
+msgstr "욕실 개수"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fn"
+msgid "Year built"
+msgstr "준공 연도"
+
+#. content.property.year_built
+#: schema.json
+msgctxt "fh"
+msgid "Year of construction"
+msgstr "건축 연도"
+
+#. content.property.values
+#: schema.json
+msgctxt "fn"
+msgid "Optional values"
+msgstr "추가 정보"
+
+#. content.property.values
+#: schema.json
+msgctxt "fh"
+msgid "Additional details as name and value pairs"
+msgstr "이름과 값 쌍으로 된 추가 정보"
+
+#. content.property.features
+#: schema.json
+msgctxt "fn"
+msgid "Features"
+msgstr "특징"
+
+#. content.property.features
+#: schema.json
+msgctxt "fh"
+msgid "List of the features and equipment"
+msgstr "특징 및 설비 목록"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fn"
+msgid "Documents"
+msgstr "문서"
+
+#. content.property.documents
+#: schema.json
+msgctxt "fh"
+msgid "Downloadable documents like floor plans or energy certificates"
+msgstr "평면도나 에너지 인증서 등 다운로드 가능한 문서"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fn"
+msgid "Document title"
+msgstr "문서 제목"
+
+#. content.property.documents.title
+#: schema.json
+msgctxt "fh"
+msgid "Name of the document shown to visitors"
+msgstr "방문자에게 표시되는 문서 이름"
+
+#. content.property.documents.file
+#: schema.json
+msgctxt "fn"
+msgid "Document"
+msgstr "문서"
+
+#. content.property.files
+#: schema.json
+msgctxt "fh"
+msgid "Photos of the property, the first one is used as preview image"
+msgstr "매물 사진, 첫 번째 사진이 미리보기 이미지로 사용됨"
+
+#. content.properties
+#: schema.json
+msgctxt "st"
+msgid "Properties"
+msgstr "매물 목록"
+
+#. content.properties
+#: schema.json
+msgctxt "sd"
+msgid "List of real estate listings with filters"
+msgstr "필터가 있는 부동산 매물 목록"
+
+#. content.properties.layout
+#: schema.json
+msgctxt "fh"
+msgid "Display the properties as cards or as a compact list"
+msgstr "매물을 카드 또는 간결한 목록으로 표시"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fn"
+msgid "Show filters"
+msgstr "필터 표시"
+
+#. content.properties.filters
+#: schema.json
+msgctxt "fh"
+msgid "Allow visitors to filter the properties"
+msgstr "방문자가 매물을 필터링할 수 있도록 허용"
+
+#. content.properties.parent-page
+#: schema.json
+msgctxt "fh"
+msgid "Page whose property subpages are listed"
+msgstr "매물 하위 페이지 목록을 표시할 상위 페이지"
+
+#. content.properties.order
+#: schema.json
+msgctxt "fh"
+msgid "Sort order of the listed properties"
+msgstr "표시되는 매물의 정렬 순서"
+
+#. content.properties.limit
+#: schema.json
+msgctxt "fh"
+msgid "Maximum number of properties shown at once"
+msgstr "한 번에 표시할 매물의 최대 수"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "estate::theme"
+msgstr "테마"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fn"
+msgid "--pico-font-family-display"
+msgstr "제목 글꼴"
+
+#. config.theme.--pico-font-family-display
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of fonts used for headlines"
+msgstr "제목에 사용할 쉼표로 구분된 글꼴 목록"

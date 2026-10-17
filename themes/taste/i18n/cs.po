@@ -1,0 +1,208 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: cs\n"
+
+#. config.restaurant
+#: schema.json
+msgctxt "st"
+msgid "taste::restaurant"
+msgstr "Restaurace"
+
+#. config.restaurant.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the restaurant"
+msgstr "Název restaurace"
+
+#. config.restaurant.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Ulice a číslo popisné"
+
+#. config.restaurant.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Ulice a číslo popisné"
+
+#. config.restaurant.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "PSČ"
+
+#. config.restaurant.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the restaurant"
+msgstr "PSČ restaurace"
+
+#. config.restaurant.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Město"
+
+#. config.restaurant.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the restaurant is located in"
+msgstr "Město, ve kterém se restaurace nachází"
+
+#. config.restaurant.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Kód země"
+
+#. config.restaurant.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Dvoupísmenný kód země ISO, např. DE nebo US"
+
+#. config.restaurant.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisines"
+msgstr "Kuchyně"
+
+#. config.restaurant.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the cuisines served, e.g. Italian, Vegan"
+msgstr "Seznam nabízených kuchyní oddělených čárkou, např. Italská, Veganská"
+
+#. config.restaurant.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu page"
+msgstr "Stránka menu"
+
+#. config.restaurant.menu
+#: schema.json
+msgctxt "fh"
+msgid "Page or link to the menu"
+msgstr "Stránka nebo odkaz na menu"
+
+#. config.restaurant.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Cenové rozpětí"
+
+#. config.restaurant.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the restaurant, e.g. $$ or €€"
+msgstr "Cenová úroveň restaurace, např. $$ nebo €€"
+
+#. config.restaurant.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. config.restaurant.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for reservations in international format"
+msgstr "Telefonní číslo pro rezervace v mezinárodním formátu"
+
+#. config.restaurant.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Otevírací doba"
+
+#. config.restaurant.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Otevírací doba pro každý den v týdnu"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Den"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Den v týdnu"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pondělí"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Úterý"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Středa"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Čtvrtek"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Pátek"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Sobota"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Neděle"
+
+#. config.restaurant.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Čas otevření"
+
+#. config.restaurant.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 11:30"
+msgstr "Otevírací doba ve 24hodinovém formátu, např. 11:30"
+
+#. config.restaurant.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Čas zavření"
+
+#. config.restaurant.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 22:00"
+msgstr "Zavírací doba ve 24hodinovém formátu, např. 22:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "taste::theme"
+msgstr "Vzhled"

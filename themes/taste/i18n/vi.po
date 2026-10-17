@@ -1,0 +1,208 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: vi\n"
+
+#. config.restaurant
+#: schema.json
+msgctxt "st"
+msgid "taste::restaurant"
+msgstr "Nhà hàng"
+
+#. config.restaurant.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the restaurant"
+msgstr "Tên nhà hàng"
+
+#. config.restaurant.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Địa chỉ"
+
+#. config.restaurant.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Tên đường và số nhà"
+
+#. config.restaurant.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Mã bưu chính"
+
+#. config.restaurant.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the restaurant"
+msgstr "Mã bưu điện của nhà hàng"
+
+#. config.restaurant.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Thành phố"
+
+#. config.restaurant.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the restaurant is located in"
+msgstr "Thành phố nơi nhà hàng tọa lạc"
+
+#. config.restaurant.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Mã quốc gia"
+
+#. config.restaurant.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Mã quốc gia ISO gồm hai chữ cái, ví dụ DE hoặc US"
+
+#. config.restaurant.cuisine
+#: schema.json
+msgctxt "fn"
+msgid "Cuisines"
+msgstr "Loại ẩm thực"
+
+#. config.restaurant.cuisine
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the cuisines served, e.g. Italian, Vegan"
+msgstr "Danh sách các loại ẩm thực được phục vụ, phân tách bằng dấu phẩy, ví dụ Ý, thuần chay"
+
+#. config.restaurant.menu
+#: schema.json
+msgctxt "fn"
+msgid "Menu page"
+msgstr "Trang thực đơn"
+
+#. config.restaurant.menu
+#: schema.json
+msgctxt "fh"
+msgid "Page or link to the menu"
+msgstr "Trang hoặc liên kết đến thực đơn"
+
+#. config.restaurant.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Mức giá"
+
+#. config.restaurant.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the restaurant, e.g. $$ or €€"
+msgstr "Mức giá của nhà hàng, ví dụ $$ hoặc €€"
+
+#. config.restaurant.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Điện thoại"
+
+#. config.restaurant.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for reservations in international format"
+msgstr "Số điện thoại đặt chỗ theo định dạng quốc tế"
+
+#. config.restaurant.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Giờ mở cửa"
+
+#. config.restaurant.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Giờ mở cửa cho mỗi ngày trong tuần"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Ngày trong tuần"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Ngày trong tuần"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Thứ Hai"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Thứ Ba"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Thứ Tư"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Thứ Năm"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Thứ Sáu"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Thứ Bảy"
+
+#. config.restaurant.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Chủ Nhật"
+
+#. config.restaurant.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Mở cửa"
+
+#. config.restaurant.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 11:30"
+msgstr "Giờ mở cửa theo định dạng 24 giờ, ví dụ 11:30"
+
+#. config.restaurant.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Đóng cửa"
+
+#. config.restaurant.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 22:00"
+msgstr "Giờ đóng cửa theo định dạng 24 giờ, ví dụ 22:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "taste::theme"
+msgstr "Giao diện"

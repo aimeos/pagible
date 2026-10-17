@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fa\n"
+
+#. config.clinic
+#: schema.json
+msgctxt "st"
+msgid "paws::clinic"
+msgstr "کلینیک"
+
+#. config.clinic.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the veterinary clinic"
+msgstr "نام کلینیک دامپزشکی"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Clinic type"
+msgstr "نوع کلینیک"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of clinic shown to search engines"
+msgstr "نوع کلینیک نمایش داده شده به موتورهای جستجو"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Veterinary clinic"
+msgstr "کلینیک دامپزشکی"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Animal emergency hospital"
+msgstr "بیمارستان اورژانس حیوانات"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Animal shelter"
+msgstr "پناهگاه حیوانات"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other pet service"
+msgstr "سایر خدمات حیوانات خانگی"
+
+#. config.clinic.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "آدرس خیابان"
+
+#. config.clinic.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "شماره خیابان و خانه"
+
+#. config.clinic.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "کد پستی"
+
+#. config.clinic.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the clinic"
+msgstr "کد پستی کلینیک"
+
+#. config.clinic.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "شهر"
+
+#. config.clinic.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the clinic is located in"
+msgstr "شهری که کلینیک در آن واقع شده است"
+
+#. config.clinic.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "کد کشور"
+
+#. config.clinic.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "کد کشور ایزو دو حرفی، مانند DE یا US"
+
+#. config.clinic.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "تلفن"
+
+#. config.clinic.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "شماره تلفن به فرمت بین‌المللی، که همچنین توسط دکمه تماس استفاده می‌شود"
+
+#. config.clinic.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "ایمیل"
+
+#. config.clinic.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointment requests"
+msgstr "آدرس ایمیل برای درخواست‌های تعیین وقت ملاقات"
+
+#. config.clinic.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "شماره اضطراری"
+
+#. config.clinic.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for pet emergencies, shown at the top of every page"
+msgstr "شماره تلفن برای موارد اضطراری حیوانات خانگی، که در بالای هر صفحه نمایش داده می‌شود."
+
+#. config.clinic.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "لینک رزرو"
+
+#. config.clinic.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment page or online booking, shown as a button in the header"
+msgstr "لینک به صفحهٔ تعیین وقت یا رزرو آنلاین که به صورت یک دکمه در هدر نمایش داده می‌شود"
+
+#. config.clinic.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "زبان‌ها"
+
+#. config.clinic.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken in the clinic, e.g. English, German, French"
+msgstr "فهرست زبان‌های مورد استفاده در کلینیک که با ویرگول از هم جدا شده‌اند، مانند انگلیسی، آلمانی، فرانسوی"
+
+#. config.clinic.species
+#: schema.json
+msgctxt "fn"
+msgid "Animals treated"
+msgstr "حیوانات تحت درمان"
+
+#. config.clinic.species
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the animals treated, e.g. Dogs, Cats, Rabbits"
+msgstr "فهرست سه‌نقطه‌ای حیوانات تحت درمان، مثلاً سگ‌ها، گربه‌ها، خرگوش‌ها"
+
+#. config.clinic.new-clients
+#: schema.json
+msgctxt "fn"
+msgid "New clients"
+msgstr "مشتریان جدید"
+
+#. config.clinic.new-clients
+#: schema.json
+msgctxt "fh"
+msgid "Tell search engines that the clinic welcomes new clients"
+msgstr "به موتورهای جستجو بگویید که کلینیک از پذیرش مشتریان جدید استقبال می‌کند."
+
+#. config.clinic.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "محدوده قیمت"
+
+#. config.clinic.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the clinic, e.g. $$ or €€"
+msgstr "سطح قیمت کلینیک، مثلاً $$ یا €€"
+
+#. config.clinic.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "نوار دکمه‌های سریع"
+
+#. config.clinic.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "در گوشی‌ها، دکمه‌های تماس و رزرو را در پایین صفحه نمایش دهید."
+
+#. config.clinic.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "ساعات کاری"
+
+#. config.clinic.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "ساعات کاری برای هر روز هفته"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "روز"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "روز هفته"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "دوشنبه"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "سه‌شنبه"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "چهارشنبه"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "پنجشنبه"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "جمعه"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "شنبه"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "یکشنبه"
+
+#. config.clinic.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "ساعت باز شدن"
+
+#. config.clinic.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "زمان باز شدن به فرمت 24 ساعته، مثلاً 07:30"
+
+#. config.clinic.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "ساعت بسته شدن"
+
+#. config.clinic.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "زمان پایان به فرمت 24 ساعته، مثلاً 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "paws::theme"
+msgstr "پوسته"

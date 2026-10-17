@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: et\n"
+
+#. config.garage
+#: schema.json
+msgctxt "st"
+msgid "torque::garage"
+msgstr "Autoremonditöökoda"
+
+#. config.garage.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the garage, workshop or dealership"
+msgstr "Autoremonditöökoja, töökoja või autokaupluse nimi"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Tegevusala"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Tegevusala, mida näidatakse otsingumootoritele"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car repair shop"
+msgstr "Autoremonditöökoda"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car dealer"
+msgstr "Autokauplus"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Body shop"
+msgstr "Kereremonditöökoda"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Tyre shop"
+msgstr "Rehvikeskus"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Motorcycle repair"
+msgstr "Mootorrattaremont"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other automotive business"
+msgstr "Muu autondusega seotud ettevõte"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Aadress"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Tänav ja maja number"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Postiindeks"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the garage"
+msgstr "Töökoja postiindeks"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Linn"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the garage is located in"
+msgstr "Linn, kus töökoda asub"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Riigikood"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Kahetäheline ISO riigikood, nt DE või US"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefoninumber rahvusvahelises vormingus, kasutatakse ka helistamisnupu jaoks"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fn"
+msgid "Breakdown service"
+msgstr "Autoabi"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fh"
+msgid "Phone number of the breakdown and towing service, shown in the top bar"
+msgstr "Autoabi ja puksiirteenuse telefoninumber, kuvatakse ülemisel ribal"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-post"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, quotes and vehicle enquiries"
+msgstr "E-posti aadress broneeringute, hinnapakkumiste ja sõidukipäringute jaoks"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Teadaanne"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Winter tyre season: book your tyre change now"
+msgstr "Lühike teade iga lehe ülaosas, nt Talverehvide hooaeg: broneeri rehvivahetus kohe"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Broneerimislink"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the service booking page, shown as a button in the header"
+msgstr "Link hoolduse broneerimise lehele, kuvatakse päises nupuna"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Hinnakirja link"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Link teenuste ja hindade lehele"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Hinnaklass"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the garage, e.g. $$ or €€"
+msgstr "Töökoja hinnatase, nt $$ või €€"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Märkus"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
+msgstr "Lühike märkus jaluses, nt Kõikidele remonditöödele kehtib 24-kuuline garantii nii varuosadele kui ka tööle."
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Tegevusriba"
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Näita telefonides ekraani allosas helistamise ja broneerimise nuppe"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Lahtiolekuajad"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Lahtiolekuajad iga nädalapäeva kohta, kuvatakse jaluses"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Päev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Nädalapäev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Esmaspäev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Teisipäev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Kolmapäev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Neljapäev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Reede"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Laupäev"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Pühapäev"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Avamisaeg"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Avamisaeg 24-tunnises vormingus, nt 07:30"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Sulgemisaeg"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "Sulgemisaeg 24-tunnises vormingus, nt 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "torque::theme"
+msgstr "Teema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Nurgade ümardamine CSS-pikkusena, nt 1rem või 0 teravate nurkade puhul"

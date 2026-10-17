@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: zh-TW\n"
+
+#. content.text-trio
+#: schema.json
+msgctxt "st"
+msgid "Text Trio"
+msgstr "文字三聯"
+
+#. content.text-trio
+#: schema.json
+msgctxt "sd"
+msgid "Three texts arranged around a central title"
+msgstr "圍繞中央標題排列的三段文字"
+
+#. content.text-trio
+#: schema.json
+msgctxt "sg"
+msgid "pagible"
+msgstr "Pagible"
+
+#. content.text-trio.leading
+#: schema.json
+msgctxt "fn"
+msgid "Leading text"
+msgstr "引言"
+
+#. content.text-trio.leading
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown before the central text"
+msgstr "在主文本之前顯示的簡短文字"
+
+#. content.text-trio.title
+#: schema.json
+msgctxt "fn"
+msgid "Central text"
+msgstr "中央文字"
+
+#. content.text-trio.title
+#: schema.json
+msgctxt "fh"
+msgid "Prominent text in the middle"
+msgstr "中央的醒目文字"
+
+#. content.text-trio.supporting
+#: schema.json
+msgctxt "fn"
+msgid "Supporting text"
+msgstr "輔助文字"
+
+#. content.text-trio.supporting
+#: schema.json
+msgctxt "fh"
+msgid "Short text shown after the central text"
+msgstr "中央文字後方顯示的簡短文字"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "pagible::theme"
+msgstr "主題"

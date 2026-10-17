@@ -1,0 +1,316 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: tr\n"
+
+#. config.garden
+#: schema.json
+msgctxt "st"
+msgid "grove::garden"
+msgstr "Bahçe"
+
+#. config.garden.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the gardening, landscaping or garden design business"
+msgstr "Bahçıvanlık, peyzaj veya bahçe tasarımı işletmesinin adı"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "İşletme türü"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Arama motorlarına gösterilen işletme türü"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Gardener and landscaper"
+msgstr "Bahçıvan ve peyzajcı"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Landscape contractor"
+msgstr "Peyzaj müteahhidi"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden design studio"
+msgstr "Bahçe tasarım stüdyosu"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Garden centre or nursery"
+msgstr "Bahçe merkezi veya fidanlık"
+
+#. config.garden.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other garden business"
+msgstr "Diğer bahçe işletmesi"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Adres"
+
+#. config.garden.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Sokak ve kapı numarası"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Posta kodu"
+
+#. config.garden.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the business"
+msgstr "İşletmenin posta kodu"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Şehir"
+
+#. config.garden.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the business is located in"
+msgstr "İşletmenin bulunduğu şehir"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Ülke kodu"
+
+#. config.garden.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "İki harfli ISO ülke kodu, örn. DE veya US"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Telefon"
+
+#. config.garden.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Uluslararası formatta telefon numarası, arama düğmesi için de kullanılır"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fn"
+msgid "Service area"
+msgstr "Hizmet bölgesi"
+
+#. config.garden.areas
+#: schema.json
+msgctxt "fh"
+msgid "Towns and areas you work in, separated by commas, shown in the top bar and the footer"
+msgstr "Çalıştığınız yerleşim yerleri ve bölgeler, virgülle ayrılmış; üst çubukta ve alt bilgide gösterilir"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "E-posta"
+
+#. config.garden.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for quotes, site visits and garden care enquiries"
+msgstr "Teklif, yerinde keşif ve bahçe bakımı talepleri için e-posta adresi"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Duyuru"
+
+#. config.garden.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Autumn tidy-ups: book your slot before November"
+msgstr "Her sayfanın üstünde gösterilen kısa duyuru, ör. Sonbahar bahçe temizliği: Kasım'dan önce yerinizi ayırtın"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fn"
+msgid "Quote link"
+msgstr "Teklif bağlantısı"
+
+#. config.garden.quote
+#: schema.json
+msgctxt "fh"
+msgid "Link to the quote or site visit request page, shown as a button in the header"
+msgstr "Teklif veya yerinde keşif talep sayfasının bağlantısı, üst bilgide düğme olarak gösterilir"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fn"
+msgid "Care plans link"
+msgstr "Bakım paketleri bağlantısı"
+
+#. config.garden.plans
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with garden care plans and prices"
+msgstr "Bahçe bakım paketlerinin ve fiyatlarının yer aldığı sayfanın bağlantısı"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Fiyat aralığı"
+
+#. config.garden.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the business, e.g. ££ or €€"
+msgstr "İşletmenin fiyat seviyesi, ör. ££ veya €€"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Not"
+
+#. config.garden.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Fully insured, all planting comes with a 12 month guarantee."
+msgstr "Alt bilgide gösterilen kısa not, ör. Tam sigortalıyız, tüm dikimlerde 12 ay garanti veriyoruz."
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Eylem çubuğu"
+
+#. config.garden.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and quote buttons at the bottom of the screen on phones"
+msgstr "Telefonlarda ekranın altında arama ve teklif düğmelerini göster"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fn"
+msgid "Office hours"
+msgstr "Çalışma saatleri"
+
+#. config.garden.hours
+#: schema.json
+msgctxt "fh"
+msgid "Office hours for each day of the week, shown in the footer"
+msgstr "Haftanın her günü için çalışma saatleri, alt bilgide gösterilir"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Gün"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Haftanın günü"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Pazartesi"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Salı"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Çarşamba"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Perşembe"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Cuma"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Cumartesi"
+
+#. config.garden.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Pazar"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Açılış"
+
+#. config.garden.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "24 saat biçiminde açılış saati, ör. 07:30"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Kapanış"
+
+#. config.garden.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "24 saat biçiminde kapanış saati, ör. 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "grove::theme"
+msgstr "Tema"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Köşelerin yuvarlanması CSS uzunluk birimi olarak, örneğin keskin köşeler için 1rem veya 0"

@@ -1,0 +1,365 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: az\n"
+
+#. config.practice
+#: schema.json
+msgctxt "st"
+msgid "medical::practice"
+msgstr "Tibbi praktika"
+
+#. config.practice.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the practice"
+msgstr "Təcrübənin adı"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Practice type"
+msgstr "Praktika növü"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of practice shown to search engines"
+msgstr "Axtarış sistemlərinə göstərilən məşq növü"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Dentist"
+msgstr "Diş həkimi"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Physician"
+msgstr "Həkim"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Medical clinic"
+msgstr "Tibb klinikası"
+
+#. config.practice.business-type
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Physiotherapy"
+msgstr "Fizioterapiya"
+
+#. config.practice.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other medical practice"
+msgstr "Digər tibbi fəaliyyət"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "fn"
+msgid "Medical specialty"
+msgstr "Tibbi ixtisas"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "fh"
+msgid "Main medical specialty of the practice"
+msgstr "Təcrübənin əsas tibbi ixtisası"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Dentistry"
+msgstr "Stomatologiya"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "General practice"
+msgstr "Ümumi təbabət"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Pediatrics"
+msgstr "Pediatriya"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Dermatology"
+msgstr "Dəri xəstəlikləri"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Gynecology"
+msgstr "Ginekologiya"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Cardiology"
+msgstr "Kardiologiya"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Ear, nose and throat"
+msgstr "Qulaq, burun və boğaz"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Optometry"
+msgstr "Optometriya"
+
+#. config.practice.specialty
+#: schema.json
+msgctxt "op"
+msgid "Psychiatry"
+msgstr "Psixiatriya"
+
+#. config.practice.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Küçə ünvanı"
+
+#. config.practice.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Küçə və ev nömrəsi"
+
+#. config.practice.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Poçt indeksi"
+
+#. config.practice.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the practice"
+msgstr "Təcrübənin poçt indeksi"
+
+#. config.practice.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Şəhər"
+
+#. config.practice.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the practice is located in"
+msgstr "Mərkəzin yerləşdiyi şəhər"
+
+#. config.practice.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Ölkə kodu"
+
+#. config.practice.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "ISO ölkə kodu üçün iki hərfli kod, məsələn DE və ya US"
+
+#. config.practice.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "telefon"
+
+#. config.practice.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefon nömrəsi beynəlxalq formatda, həmçinin zəng düyməsi tərəfindən istifadə olunur"
+
+#. config.practice.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "e-poçt"
+
+#. config.practice.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointment requests"
+msgstr "Görüş sorğuları üçün e-poçt ünvanı"
+
+#. config.practice.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Təcili yardım nömrəsi"
+
+#. config.practice.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for emergencies, shown at the top of every page"
+msgstr "Fövqəladə hallar üçün telefon nömrəsi, hər səhifənin yuxarısında göstərilir"
+
+#. config.practice.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Rezervasiya linki"
+
+#. config.practice.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment page or online booking, shown as a button in the header"
+msgstr "Görüş səhifəsinə və ya onlayn rezervasiyaya keçid başlıqdakı düymə şəklində göstərilir"
+
+#. config.practice.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "Dillər"
+
+#. config.practice.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken in the practice, e.g. English, German, French"
+msgstr "Praktikada danışılan dillərin virgulla ayrılmış siyahısı, məsələn: İngilis, Alman, Fransız"
+
+#. config.practice.new-patients
+#: schema.json
+msgctxt "fn"
+msgid "New patients"
+msgstr "Yeni xəstələr"
+
+#. config.practice.new-patients
+#: schema.json
+msgctxt "fh"
+msgid "Tell search engines that the practice accepts new patients"
+msgstr "Axtarış sistemlərinə bildirin ki, klinika yeni xəstələri qəbul edir."
+
+#. config.practice.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Qiymət diapazonu"
+
+#. config.practice.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the practice, e.g. $$ or €€"
+msgstr "Müəssisənin qiymət səviyyəsi, məsələn $$ və ya €€"
+
+#. config.practice.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Call button"
+msgstr "Zəng düyməsi"
+
+#. config.practice.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show a call button at the bottom of the screen on phones"
+msgstr "Telefonlarda ekranın aşağı hissəsində zəng düyməsini göstərin"
+
+#. config.practice.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "İş saatları"
+
+#. config.practice.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Həftənin hər günü üçün açılış saatları"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "gün"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Həftənin günü"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Bazar ertəsi"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Çərşənbə axşamı"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Çərşənbə"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Cümə axşamı"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Cümə"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Şənbə"
+
+#. config.practice.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Bazar"
+
+#. config.practice.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "açılma vaxtı"
+
+#. config.practice.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Açılış vaxtı 24 saatlıq formatda, məsələn, 07:30"
+
+#. config.practice.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "bağlanma vaxtı"
+
+#. config.practice.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "24 saatlıq formatda bağlanma vaxtı, məsələn, 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "medical::theme"
+msgstr "Mövzu"

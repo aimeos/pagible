@@ -20,6 +20,7 @@ import { invalidateList } from '../graphql'
 import { editable } from '../shortcuts'
 import { clone, debounce, dictate, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import { reveal, scrollParent } from '../virtual'
+import { typeLabel } from '../i18n'
 import {
   mdiMenuDown,
   mdiContentCopy,
@@ -160,6 +161,10 @@ export default {
   },
 
   methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    },
+
     add(item, idx) {
       const entry = item.id
         ? this.entry('reference', { refid: item.id })
@@ -588,7 +593,7 @@ export default {
     },
 
     title(el) {
-      return itemTitle(el.data) || this.$pgettext('st', el.type).replace('::', ' ') || ''
+      return itemTitle(el.data) || this.typeLabel(el.type) || ''
     },
 
     toggle() {
@@ -885,7 +890,7 @@ export default {
             <div class="element-title">
               {{ el.type === 'reference' ? elements[el.refid]?.name : title(el) }}
             </div>
-            <div class="element-type">{{ $pgettext('st', el.type).replace('::', ' ') }}</div>
+            <div class="element-type">{{ typeLabel(el.type) }}</div>
           </v-expansion-panel-title>
           <v-expansion-panel-text>
             <Fields

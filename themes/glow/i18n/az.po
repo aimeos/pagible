@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: az\n"
+
+#. config.salon
+#: schema.json
+msgctxt "st"
+msgid "glow::salon"
+msgstr "Salon"
+
+#. config.salon.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the salon, studio or spa"
+msgstr "Salon, studiya və ya spa adını yazın"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "Biznes növü"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "Axtarış sistemlərinə göstərilən biznes növü"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Beauty salon"
+msgstr "Gözəllik salonu"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Day spa"
+msgstr "Gündüz spa"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Nail salon"
+msgstr "Dırnaq salonu"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Hair salon"
+msgstr "Saç salonu"
+
+#. config.salon.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other business"
+msgstr "Digər biznes"
+
+#. config.salon.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Küçə ünvanı"
+
+#. config.salon.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Küçə və ev nömrəsi"
+
+#. config.salon.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Poçt indeksi"
+
+#. config.salon.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the salon"
+msgstr "Salonun poçt indeksi"
+
+#. config.salon.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Şəhər"
+
+#. config.salon.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the salon is located in"
+msgstr "Şəhər, salonun yerləşdiyi"
+
+#. config.salon.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Ölkə kodu"
+
+#. config.salon.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "ISO ölkə kodu üçün iki hərf, məsələn DE və ya US"
+
+#. config.salon.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "telefon"
+
+#. config.salon.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Telefon nömrəsi beynəlxalq formatda, həmçinin zəng düyməsi tərəfindən istifadə olunur"
+
+#. config.salon.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "e-poçt"
+
+#. config.salon.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, gift cards and press"
+msgstr "Görüşlər, hədiyyə kartları və mətbuat üçün e-poçt ünvanı"
+
+#. config.salon.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "Elan"
+
+#. config.salon.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. New clients get a free consultation"
+msgstr "Hər səhifənin yuxarısında göstərilən qısa qeyd, məsələn: Yeni müştərilər pulsuz məsləhət alırlar"
+
+#. config.salon.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Rezervasiya linki"
+
+#. config.salon.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment booking page, shown as a button in the header"
+msgstr "Başlıqda düymə şəklində göstərilən görüş rezervasiyası səhifəsinə keçid"
+
+#. config.salon.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "Qiymət siyahısı linki"
+
+#. config.salon.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "Xidmətlər və qiymətlər səhifəsinə keçid"
+
+#. config.salon.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Qiymət diapazonu"
+
+#. config.salon.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the salon, e.g. $$ or €€"
+msgstr "Salonun qiymət səviyyəsi, məsələn $$ və ya €€"
+
+#. config.salon.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "Bildiriş"
+
+#. config.salon.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. Please cancel at least 24 hours before your appointment."
+msgstr "Ayaqnotda göstərilən qısa qeyd, məsələn: Zəhmət olmasa görüşünüzdən ən azı 24 saat əvvəl ləğv edin."
+
+#. config.salon.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Fəaliyyət paneli"
+
+#. config.salon.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Telefonlarda ekranın aşağı hissəsində zəng və rezervasiya düymələrini göstərin"
+
+#. config.salon.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "İş saatları"
+
+#. config.salon.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "Həftənin hər günü üçün açılış saatları, səhifənin alt hissəsində göstərilir."
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "gün"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Həftənin günü"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Bazar ertəsi"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Çərşənbə axşamı"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Çərşənbə"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Cümə axşamı"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Cümə"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Şənbə"
+
+#. config.salon.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Bazar"
+
+#. config.salon.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "açılma vaxtı"
+
+#. config.salon.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 09:00"
+msgstr "Açılış vaxtı 24 saat formatında, məsələn, 09:00"
+
+#. config.salon.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "bağlanma vaxtı"
+
+#. config.salon.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 19:00"
+msgstr "24 saatlıq formatda bağlanma vaxtı, məsələn, 19:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "glow::theme"
+msgstr "Mövzu"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "Künclərin yuvarlaşdırılması CSS uzunluğu kimi, məsələn, kəskin künclər üçün 1rem və ya 0"

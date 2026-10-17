@@ -1,0 +1,322 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: th\n"
+
+#. config.garage
+#: schema.json
+msgctxt "st"
+msgid "torque::garage"
+msgstr "อู่ซ่อมรถ"
+
+#. config.garage.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the garage, workshop or dealership"
+msgstr "ชื่ออู่ซ่อมรถ ศูนย์บริการ หรือโชว์รูมรถยนต์"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Business type"
+msgstr "ประเภทธุรกิจ"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of business shown to search engines"
+msgstr "ประเภทธุรกิจที่แสดงต่อเครื่องมือค้นหา"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car repair shop"
+msgstr "อู่ซ่อมรถยนต์"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Car dealer"
+msgstr "ตัวแทนจำหน่ายรถยนต์"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Body shop"
+msgstr "อู่ซ่อมสีและตัวถัง"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Tyre shop"
+msgstr "ร้านยางรถยนต์"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Motorcycle repair"
+msgstr "ร้านซ่อมรถจักรยานยนต์"
+
+#. config.garage.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other automotive business"
+msgstr "ธุรกิจยานยนต์อื่น ๆ"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "ที่อยู่"
+
+#. config.garage.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "ชื่อถนนและเลขที่บ้าน"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "รหัสไปรษณีย์"
+
+#. config.garage.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the garage"
+msgstr "รหัสไปรษณีย์ของอู่ซ่อมรถ"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "เมือง"
+
+#. config.garage.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the garage is located in"
+msgstr "เมืองที่อู่ซ่อมรถตั้งอยู่"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "รหัสประเทศ"
+
+#. config.garage.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "รหัสประเทศ ISO สองตัวอักษร เช่น DE หรือ US"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "โทรศัพท์"
+
+#. config.garage.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "หมายเลขโทรศัพท์ในรูปแบบสากล ใช้สำหรับปุ่มโทรด้วย"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fn"
+msgid "Breakdown service"
+msgstr "บริการช่วยเหลือฉุกเฉิน"
+
+#. config.garage.breakdown
+#: schema.json
+msgctxt "fh"
+msgid "Phone number of the breakdown and towing service, shown in the top bar"
+msgstr "หมายเลขโทรศัพท์บริการช่วยเหลือฉุกเฉินและรถลาก แสดงในแถบด้านบน"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "อีเมล"
+
+#. config.garage.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointments, quotes and vehicle enquiries"
+msgstr "อีเมลสำหรับนัดหมาย ขอใบเสนอราคา และสอบถามเกี่ยวกับรถ"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "ประกาศ"
+
+#. config.garage.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown at the top of every page, e.g. Winter tyre season: book your tyre change now"
+msgstr "ข้อความสั้นที่แสดงด้านบนของทุกหน้า เช่น ฤดูยางฤดูหนาว: จองคิวเปลี่ยนยางได้แล้ววันนี้"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "ลิงก์การจอง"
+
+#. config.garage.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the service booking page, shown as a button in the header"
+msgstr "ลิงก์ไปยังหน้าจองคิวเข้ารับบริการ แสดงเป็นปุ่มในส่วนหัว"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fn"
+msgid "Price list link"
+msgstr "ลิงก์รายการราคา"
+
+#. config.garage.prices
+#: schema.json
+msgctxt "fh"
+msgid "Link to the page with services and prices"
+msgstr "ลิงก์ไปยังหน้าบริการและราคา"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "ช่วงราคา"
+
+#. config.garage.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the garage, e.g. $$ or €€"
+msgstr "ระดับราคาของอู่ซ่อมรถ เช่น $$ หรือ €€"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "หมายเหตุ"
+
+#. config.garage.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. All repairs come with a 24 month warranty on parts and labour."
+msgstr "ข้อความสั้นที่แสดงในส่วนท้าย เช่น งานซ่อมทุกรายการรับประกันอะไหล่และค่าแรง 24 เดือน"
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "แถบปุ่มลัด"
+
+#. config.garage.action-bar
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "แสดงปุ่มโทรและปุ่มจองคิวที่ด้านล่างของหน้าจอบนโทรศัพท์"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "เวลาทำการ"
+
+#. config.garage.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week, shown in the footer"
+msgstr "เวลาทำการของแต่ละวันในสัปดาห์ แสดงในส่วนท้าย"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "วัน"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "วันในสัปดาห์"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "วันจันทร์"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "วันอังคาร"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "วันพุธ"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "วันพฤหัสบดี"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "วันศุกร์"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "วันเสาร์"
+
+#. config.garage.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "วันอาทิตย์"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "เวลาเปิด"
+
+#. config.garage.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "เวลาเปิดในรูปแบบ 24 ชั่วโมง เช่น 07:30"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "เวลาปิด"
+
+#. config.garage.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 18:00"
+msgstr "เวลาปิดในรูปแบบ 24 ชั่วโมง เช่น 18:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "torque::theme"
+msgstr "ธีม"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "การปัดมุมให้เป็นค่าความยาวใน CSS เช่น 1rem หรือ 0 สำหรับมุมที่คม"

@@ -1,0 +1,304 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: fi\n"
+
+#. config.clinic
+#: schema.json
+msgctxt "st"
+msgid "paws::clinic"
+msgstr "Klinikka"
+
+#. config.clinic.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the veterinary clinic"
+msgstr "Eläinlääkäriaseman nimi"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "fn"
+msgid "Clinic type"
+msgstr "Klinikan tyyppi"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "fh"
+msgid "Kind of clinic shown to search engines"
+msgstr "Hakukoneille näytettävä klinikan tyyppi"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Veterinary clinic"
+msgstr "Eläinlääkäriasema"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Animal emergency hospital"
+msgstr "Eläinten päivystyssairaala"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Animal shelter"
+msgstr "Eläinsuoja"
+
+#. config.clinic.business-type
+#: schema.json
+msgctxt "op"
+msgid "Other pet service"
+msgstr "Muu lemmikkipalvelu"
+
+#. config.clinic.street-address
+#: schema.json
+msgctxt "fn"
+msgid "Street address"
+msgstr "Katuosoite"
+
+#. config.clinic.street-address
+#: schema.json
+msgctxt "fh"
+msgid "Street and house number"
+msgstr "Katu ja talon numero"
+
+#. config.clinic.postal-code
+#: schema.json
+msgctxt "fn"
+msgid "Postal code"
+msgstr "Postinumero"
+
+#. config.clinic.postal-code
+#: schema.json
+msgctxt "fh"
+msgid "Postal code of the clinic"
+msgstr "Klinikan postinumero"
+
+#. config.clinic.locality
+#: schema.json
+msgctxt "fn"
+msgid "City"
+msgstr "Kaupunki"
+
+#. config.clinic.locality
+#: schema.json
+msgctxt "fh"
+msgid "City the clinic is located in"
+msgstr "Kaupunki, jossa klinikka sijaitsee"
+
+#. config.clinic.country
+#: schema.json
+msgctxt "fn"
+msgid "Country code"
+msgstr "Maakoodi"
+
+#. config.clinic.country
+#: schema.json
+msgctxt "fh"
+msgid "Two letter ISO country code, e.g. DE or US"
+msgstr "Kaksikirjaiminen ISO-maakoodi, esim. DE tai US"
+
+#. config.clinic.telephone
+#: schema.json
+msgctxt "fn"
+msgid "telephone"
+msgstr "Puhelin"
+
+#. config.clinic.telephone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number in international format, also used by the call button"
+msgstr "Puhelinnumero kansainvälisessä muodossa, käytetään myös soittopainikkeessa"
+
+#. config.clinic.email
+#: schema.json
+msgctxt "fn"
+msgid "email"
+msgstr "Sähköposti"
+
+#. config.clinic.email
+#: schema.json
+msgctxt "fh"
+msgid "Email address for appointment requests"
+msgstr "Sähköpostiosoite ajanvarauspyyntöjä varten"
+
+#. config.clinic.emergency-phone
+#: schema.json
+msgctxt "fn"
+msgid "Emergency number"
+msgstr "Hätänumero"
+
+#. config.clinic.emergency-phone
+#: schema.json
+msgctxt "fh"
+msgid "Phone number for pet emergencies, shown at the top of every page"
+msgstr "Lemmikkien päivystysnumero, näytetään jokaisen sivun yläosassa"
+
+#. config.clinic.booking
+#: schema.json
+msgctxt "fn"
+msgid "Booking link"
+msgstr "Varauslinkki"
+
+#. config.clinic.booking
+#: schema.json
+msgctxt "fh"
+msgid "Link to the appointment page or online booking, shown as a button in the header"
+msgstr "Linkki ajanvaraussivulle tai verkkoajanvaraukseen, näytetään painikkeena ylätunnisteessa"
+
+#. config.clinic.languages
+#: schema.json
+msgctxt "fn"
+msgid "Languages"
+msgstr "Kielet"
+
+#. config.clinic.languages
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the languages spoken in the clinic, e.g. English, German, French"
+msgstr "Pilkuilla eroteltu luettelo klinikalla puhutuista kielistä, esim. englanti, saksa, ranska"
+
+#. config.clinic.species
+#: schema.json
+msgctxt "fn"
+msgid "Animals treated"
+msgstr "Hoidettavat eläimet"
+
+#. config.clinic.species
+#: schema.json
+msgctxt "fh"
+msgid "Comma separated list of the animals treated, e.g. Dogs, Cats, Rabbits"
+msgstr "Pilkuilla eroteltu luettelo hoidettavista eläimistä, esim. koirat, kissat, kanit"
+
+#. config.clinic.new-clients
+#: schema.json
+msgctxt "fn"
+msgid "New clients"
+msgstr "Uudet asiakkaat"
+
+#. config.clinic.new-clients
+#: schema.json
+msgctxt "fh"
+msgid "Tell search engines that the clinic welcomes new clients"
+msgstr "Kerro hakukoneille, että klinikka ottaa vastaan uusia asiakkaita"
+
+#. config.clinic.price-range
+#: schema.json
+msgctxt "fn"
+msgid "Price range"
+msgstr "Hintataso"
+
+#. config.clinic.price-range
+#: schema.json
+msgctxt "fh"
+msgid "Price level of the clinic, e.g. $$ or €€"
+msgstr "Klinikan hintataso, esim. $$ tai €€"
+
+#. config.clinic.call-button
+#: schema.json
+msgctxt "fn"
+msgid "Action bar"
+msgstr "Toimintopalkki"
+
+#. config.clinic.call-button
+#: schema.json
+msgctxt "fh"
+msgid "Show call and booking buttons at the bottom of the screen on phones"
+msgstr "Näytä soitto- ja ajanvarauspainikkeet näytön alareunassa puhelimissa"
+
+#. config.clinic.hours
+#: schema.json
+msgctxt "fn"
+msgid "Opening hours"
+msgstr "Aukioloajat"
+
+#. config.clinic.hours
+#: schema.json
+msgctxt "fh"
+msgid "Opening hours for each day of the week"
+msgstr "Aukioloajat jokaiselle viikonpäivälle"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "fn"
+msgid "day"
+msgstr "Päivä"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "fh"
+msgid "Day of the week"
+msgstr "Viikonpäivä"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Monday"
+msgstr "Maanantai"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Tuesday"
+msgstr "Tiistai"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Wednesday"
+msgstr "Keskiviikko"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Thursday"
+msgstr "Torstai"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Friday"
+msgstr "Perjantai"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Saturday"
+msgstr "Lauantai"
+
+#. config.clinic.hours.day
+#: schema.json
+msgctxt "op"
+msgid "Sunday"
+msgstr "Sunnuntai"
+
+#. config.clinic.hours.opens
+#: schema.json
+msgctxt "fn"
+msgid "opens"
+msgstr "Avausaika"
+
+#. config.clinic.hours.opens
+#: schema.json
+msgctxt "fh"
+msgid "Opening time in 24 hour format, e.g. 07:30"
+msgstr "Avautumisaika 24 tunnin muodossa, esim. 07:30"
+
+#. config.clinic.hours.closes
+#: schema.json
+msgctxt "fn"
+msgid "closes"
+msgstr "Sulkemisaika"
+
+#. config.clinic.hours.closes
+#: schema.json
+msgctxt "fh"
+msgid "Closing time in 24 hour format, e.g. 17:00"
+msgstr "Sulkemisaika 24 tunnin muodossa, esim. 17:00"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "paws::theme"
+msgstr "Teema"

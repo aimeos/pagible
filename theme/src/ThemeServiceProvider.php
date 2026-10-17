@@ -31,6 +31,10 @@ class ThemeServiceProvider extends Provider
         $this->loadMigrationsFrom( $basedir . '/database/migrations' );
         $this->loadJsonTranslationsFrom( $basedir . '/lang' );
 
+        if( class_exists( Plugin::class ) ) {
+            Plugin::i18n( 'cms', '/vendor/cms/theme/i18n/{locale}.json' );
+        }
+
         $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/theme' )], 'cms-theme' );
         $this->publishes( [$basedir . '/config/cms/theme.php' => config_path( 'cms/theme.php' )], 'cms-config' );
 

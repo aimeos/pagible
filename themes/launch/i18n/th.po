@@ -1,0 +1,178 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: th\n"
+
+#. config.product
+#: schema.json
+msgctxt "st"
+msgid "launch::product"
+msgstr "ผลิตภัณฑ์"
+
+#. config.product.name
+#: schema.json
+msgctxt "fh"
+msgid "Name of the software product or app"
+msgstr "ชื่อผลิตภัณฑ์ซอฟต์แวร์หรือแอป"
+
+#. config.product.category
+#: schema.json
+msgctxt "fn"
+msgid "Category"
+msgstr "หมวดหมู่"
+
+#. config.product.category
+#: schema.json
+msgctxt "fh"
+msgid "Kind of software shown to search engines"
+msgstr "ประเภทของซอฟต์แวร์ที่แสดงต่อเครื่องมือค้นหา"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Business software"
+msgstr "ซอฟต์แวร์ธุรกิจ"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Developer tool"
+msgstr "เครื่องมือสำหรับนักพัฒนา"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Design tool"
+msgstr "เครื่องมือออกแบบ"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Finance software"
+msgstr "ซอฟต์แวร์การเงิน"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Security software"
+msgstr "ซอฟต์แวร์ความปลอดภัย"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Learning software"
+msgstr "ซอฟต์แวร์การเรียนรู้"
+
+#. config.product.category
+#: schema.json
+msgctxt "op"
+msgid "Consumer app"
+msgstr "แอปสำหรับผู้บริโภค"
+
+#. config.product.description
+#: schema.json
+msgctxt "fh"
+msgid "One sentence describing what the product does, used for search engines"
+msgstr "ประโยคเดียวที่อธิบายว่าผลิตภัณฑ์ทำอะไร สำหรับเครื่องมือค้นหา"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fn"
+msgid "Announcement"
+msgstr "ประกาศ"
+
+#. config.product.announcement
+#: schema.json
+msgctxt "fh"
+msgid "Short news shown at the top of every page, e.g. New: status pages with custom domains"
+msgstr "ข่าวสั้นที่แสดงด้านบนของทุกหน้า เช่น ใหม่: หน้าสถานะพร้อมโดเมนที่กำหนดเอง"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fn"
+msgid "Announcement link"
+msgstr "ลิงก์ประกาศ"
+
+#. config.product.announcement-link
+#: schema.json
+msgctxt "fh"
+msgid "Page the announcement links to, e.g. the changelog entry"
+msgstr "หน้าที่ประกาศเชื่อมโยงไปถึง เช่น รายการในบันทึกการเปลี่ยนแปลง"
+
+#. config.product.status
+#: schema.json
+msgctxt "fn"
+msgid "Status page link"
+msgstr "ลิงก์หน้าสถานะ"
+
+#. config.product.status
+#: schema.json
+msgctxt "fh"
+msgid "Link to the public status page, shown in the footer"
+msgstr "ลิงก์ไปยังหน้าสถานะสาธารณะ แสดงในส่วนท้าย"
+
+#. config.product.price
+#: schema.json
+msgctxt "fn"
+msgid "Starting price"
+msgstr "ราคาเริ่มต้น"
+
+#. config.product.price
+#: schema.json
+msgctxt "fh"
+msgid "Lowest price for search engines, e.g. 0 for a free plan or 19.00"
+msgstr "ราคาต่ำสุดสำหรับเครื่องมือค้นหา เช่น 0 สำหรับแพ็กเกจฟรี หรือ 19.00"
+
+#. config.product.currency
+#: schema.json
+msgctxt "fh"
+msgid "Three letter ISO currency code, e.g. USD or EUR"
+msgstr "รหัสสกุลเงิน ISO สามตัวอักษร เช่น USD หรือ EUR"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fn"
+msgid "Rating"
+msgstr "คะแนน"
+
+#. config.product.rating
+#: schema.json
+msgctxt "fh"
+msgid "Average review rating from 1 to 5, e.g. 4.8"
+msgstr "คะแนนรีวิวเฉลี่ยตั้งแต่ 1 ถึง 5 เช่น 4.8"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fn"
+msgid "Number of reviews"
+msgstr "จำนวนรีวิว"
+
+#. config.product.reviews
+#: schema.json
+msgctxt "fh"
+msgid "Number of reviews the rating is based on"
+msgstr "จำนวนรีวิวที่ใช้ในการคำนวณคะแนน"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fn"
+msgid "Notice"
+msgstr "หมายเหตุ"
+
+#. config.product.notice
+#: schema.json
+msgctxt "fh"
+msgid "Short note shown in the footer, e.g. SOC 2 Type II certified, data hosted in the EU"
+msgstr "ข้อสังเกตสั้น ๆ ที่แสดงในส่วนท้าย เช่น ได้รับการรับรอง SOC 2 Type II ข้อมูลจัดเก็บในสหภาพยุโรป"
+
+#. config.theme
+#: schema.json
+msgctxt "st"
+msgid "launch::theme"
+msgstr "ธีม"
+
+#. config.theme.--pico-border-radius
+#: schema.json
+msgctxt "fh"
+msgid "Rounding of corners as CSS length, e.g. 1rem or 0 for sharp corners"
+msgstr "การปัดมุมให้เป็นค่าความยาวใน CSS เช่น 1rem หรือ 0 สำหรับมุมที่คม"
