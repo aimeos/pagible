@@ -451,6 +451,8 @@ jobs:
           DB_PASSWORD: pagible
           DB_DATABASE: cms
       - image: mysql:latest
+        # index dives misestimate rows after the rolled back bulk deletes of the benchmarks
+        command: --eq-range-index-dive-limit=1
         environment:
           MYSQL_ROOT_PASSWORD: rootpw
           MYSQL_USER: pagible
