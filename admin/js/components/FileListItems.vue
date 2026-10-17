@@ -617,10 +617,6 @@ a.item-usage {
   align-items: center;
 }
 
-.items.list .v-selection-control {
-  flex-grow: unset;
-}
-
 .items.list .item-usage {
   width: 2rem;
 }

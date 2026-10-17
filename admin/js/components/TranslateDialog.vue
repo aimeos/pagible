@@ -14,7 +14,9 @@ export default {
     // number of selected pages
     count: { type: Number, default: 0 },
     // languages checked when the dialog opens
-    langs: { type: Array, default: () => [] }
+    langs: { type: Array, default: () => [] },
+    // source languages of all selected pages, which can't be translated into
+    sources: { type: Array, default: () => [] }
   },
 
   emits: ['apply', 'update:modelValue'],
@@ -32,7 +34,9 @@ export default {
 
   computed: {
     items() {
-      return this.languages.available.map((code) => ({ code, name: this.languages.translate(code) }))
+      return this.languages.available
+        .filter((code) => !this.sources.includes(code))
+        .map((code) => ({ code, name: this.languages.translate(code) }))
     }
   },
 
@@ -52,7 +56,7 @@ export default {
       immediate: true,
       handler(open) {
         if (open) {
-          this.checked = this.langs.filter((code) => this.languages.available.includes(code))
+          this.checked = this.langs.filter((code) => this.items.some((item) => item.code === code))
         }
       }
     }

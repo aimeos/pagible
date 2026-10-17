@@ -1049,6 +1049,8 @@ describe('PageListItems', () => {
         expect(vm.translateDialog).to.equal(true)
         expect(vm.translateItems).to.have.length(2)
         expect(vm.translateLangs).to.deep.equal(['de'])
+        // pages with different source languages can be translated into all languages
+        expect(vm.translateSources).to.deep.equal([])
       })
     })
 
@@ -1061,6 +1063,7 @@ describe('PageListItems', () => {
 
         expect(vm.translateDialog).to.equal(true)
         expect(vm.translateLangs).to.deep.equal([])
+        expect(vm.translateSources).to.deep.equal(['de'])
       })
     })
 

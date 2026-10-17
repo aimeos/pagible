@@ -199,6 +199,12 @@ export const pageVariants = {
     // languages checked in the translate dialog, the current one unless it's the source of all pages
     translateLangs() {
       return this.translateItems.some((stat) => stat.data?.source !== this.lang) ? [this.lang] : []
+    },
+
+    // languages hidden in the translate dialog because they are the source of all pages
+    translateSources() {
+      const sources = new Set(this.translateItems.map((stat) => stat.data?.source))
+      return sources.size === 1 ? [...sources].filter(Boolean) : []
     }
   },
 

@@ -417,10 +417,6 @@ export default {
   margin-inline-end: 8px;
 }
 
-.items .v-selection-control {
-  flex-grow: unset;
-}
-
 .items .item-aux {
   text-align: end;
   width: 100%;

@@ -1961,6 +1961,7 @@ export default {
     v-model="translateDialog"
     :count="translateItems.length"
     :langs="translateLangs"
+    :sources="translateSources"
     @apply="translateApply"
   />
 

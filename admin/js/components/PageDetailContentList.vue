@@ -959,10 +959,6 @@ export default {
   border-inline-start: 3px solid transparent;
 }
 
-.v-expansion-panel-title .v-selection-control {
-  flex: none;
-}
-
 .item-handle {
   cursor: move;
 }

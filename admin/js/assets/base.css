@@ -201,8 +201,9 @@ input:-webkit-autofill:focus {
   }
 }
 
+/* no growing but sized by the content, flex-grow alone keeps Vuetify's 0% basis and wraps the labels after every character */
 .v-selection-control {
-  flex-grow: unset;
+  flex: 0 1 auto;
 }
 
 .v-selection-control--density-default {

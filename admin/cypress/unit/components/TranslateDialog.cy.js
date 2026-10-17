@@ -28,6 +28,15 @@ describe('TranslateDialog', () => {
     cy.get('@apply').should('have.been.calledOnceWith', { langs: ['de', 'fr'] })
   })
 
+  it('hides the source languages of the pages', () => {
+    mountDialog({ langs: ['en', 'de'], sources: ['en'] })
+
+    cy.get('.translate-lang[data-lang="en"]').should('not.exist')
+    cy.get('.translate-lang[data-lang="fr"]').should('exist')
+    cy.get('.btn-translate').click()
+    cy.get('@apply').should('have.been.calledOnceWith', { langs: ['de'] })
+  })
+
   it('disables translating without a language', () => {
     mountDialog({ langs: [] })
 
