@@ -26,12 +26,7 @@ class PurgeCdn extends Command
     {
         $all = (bool) $this->option( 'all' );
         $names = (array) $this->option( 'client' );
-        $base = Cdn::base();
-
-        $urls = array_values( array_map(
-            fn( $url ) => str_contains( $url = (string) $url, '://' ) ? $url : $base . '/' . ltrim( $url, '/' ),
-            (array) $this->argument( 'urls' ),
-        ) );
+        $urls = array_values( array_map( fn( $url ) => Cdn::absolute( (string) $url ), (array) $this->argument( 'urls' ) ) );
 
         if( !$all && !$urls ) {
             $this->error( 'Pass the URLs to purge or use --all' );
@@ -39,10 +34,16 @@ class PurgeCdn extends Command
         }
 
         $failed = false;
-        // Clients are purged in the configured order, so inner caches should be listed first
-        foreach( Cdn::clients() as $name => $config )
+        $clients = Cdn::clients();
+
+        // Inner caches are purged before the clients configured to be purged "after" them
+        foreach( array_keys( Cdn::stacks( $clients ) ) as $name )
         {
-            if( $names && !in_array( $name, $names, true ) || !( $list = $all ? [Cdn::ALL] : Cdn::urls( $config, $urls ) ) ) {
+            if( $names && !in_array( $name, $names, true ) ) {
+                continue;
+            }
+
+            if( !$list = $all ? [Cdn::ALL] : Cdn::urls( $clients[$name], $urls ) ) {
                 continue;
             }
 

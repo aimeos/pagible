@@ -10,9 +10,12 @@ namespace Tests;
 use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Cdn;
+use Aimeos\Cms\CdnBatch;
+use Aimeos\Cms\Jobs\FlushCdn;
 use Aimeos\Cms\Jobs\PurgeCdn;
 use Aimeos\Cms\Listeners\CdnListener;
 use FOS\HttpCache\Exception\ExceptionCollection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Route;
@@ -51,8 +54,8 @@ class CdnListenerTest extends CdnTestCase
     public function testPagesHosts() : void
     {
         config( ['cms.multidomain' => true, 'cms.cdn.clients' => [
-            'one' => ['driver' => 'cloudflare', 'token' => 'a', 'zone' => 'z1', 'hosts' => ['one.test']],
-            'two' => ['driver' => 'cloudflare', 'token' => 'b', 'zone' => 'z2', 'hosts' => ['two.test']],
+            'one' => ['driver' => 'cloudflare', 'servers' => ['https://api.cloudflare.com'], 'options' => ['authentication_token' => 'a', 'zone_identifier' => 'z1'], 'hosts' => ['one.test']],
+            'two' => ['driver' => 'cloudflare', 'servers' => ['https://api.cloudflare.com'], 'options' => ['authentication_token' => 'b', 'zone_identifier' => 'z2'], 'hosts' => ['two.test']],
         ]] );
         Route::domain( '{domain}' )->where( ['domain' => '.+'] )->group( fn() => $this->route() );
         Queue::fake();
@@ -170,32 +173,25 @@ class CdnListenerTest extends CdnTestCase
 
         PageInvalidated::dispatch( '', ['a', 'b'] );
 
-        Queue::assertPushed( PurgeCdn::class, fn( PurgeCdn $job ) =>
-            $job->delay === 10 && $job->urls === ['https://example.com/a', 'https://example.com/b']
-        );
+        Queue::assertPushed( FlushCdn::class, fn( FlushCdn $job ) => $job->delay === 10 );
+        $this->assertSame( ['https://example.com/a', 'https://example.com/b'], Cache::get( CdnBatch::KEY )['urls'] );
     }
 
 
     public function testPagesSyncAfterResponse() : void
     {
         config( ['queue.default' => 'sync'] );
-        $history = [];
-        $stack = \GuzzleHttp\HandlerStack::create( new \GuzzleHttp\Handler\MockHandler( [new \GuzzleHttp\Psr7\Response( 200 )] ) );
-        $stack->push( \GuzzleHttp\Middleware::history( $history ) );
-        $this->app->instance( 'cms.cdn.http', new \Http\Client\Common\PluginClient(
-            new \Http\Adapter\Guzzle7\Client( new \GuzzleHttp\Client( ['handler' => $stack, 'http_errors' => false] ) ),
-            [new \Http\Client\Common\Plugin\ErrorPlugin()]
-        ) );
+        $this->http( new \GuzzleHttp\Psr7\Response( 200 ) );
         $this->route();
 
         PageInvalidated::dispatch( '', ['a', 'b'] );
 
-        $this->assertCount( 0, $history );
+        $this->assertCount( 0, $this->history );
 
         $this->app->terminate();
 
-        $this->assertCount( 1, $history );
-        $this->assertSame( '{"files":["https://example.com/a","https://example.com/b"]}', (string) $history[0]['request']->getBody() );
+        $this->assertCount( 1, $this->history );
+        $this->assertSame( '{"files":["https://example.com/a","https://example.com/b"]}', (string) $this->history[0]['request']->getBody() );
     }
 
 

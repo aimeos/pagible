@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\FilesRemoved;
 use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Listeners\CdnHeaders;
 use Aimeos\Cms\Listeners\CdnListener;
 use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Support\Facades\Event;
@@ -25,11 +26,12 @@ class CdnServiceProvider extends Provider
 
         Event::listen( PageInvalidated::class, [CdnListener::class, 'pages'] );
         Event::listen( FilesRemoved::class, [CdnListener::class, 'files'] );
-        Event::listen( RequestHandled::class, [CdnListener::class, 'headers'] );
+        Event::listen( RequestHandled::class, CdnHeaders::class );
 
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\CheckCdn::class,
                 \Aimeos\Cms\Commands\PurgeCdn::class,
             ] );
         }

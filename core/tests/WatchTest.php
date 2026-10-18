@@ -20,6 +20,7 @@ use Aimeos\Cms\Watch;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -219,6 +220,25 @@ class WatchTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'watch-' . Utils::uid(),
             'content' => [],
         ], $this->user, parent: $this->id( $this->root() ) );
+    }
+
+
+    public function testWarnOnce() : void
+    {
+        Log::spy();
+
+        Watch::warnOnce( 'cms.test', ['reason' => 'a'] );
+        Watch::warnOnce( 'cms.test', ['reason' => 'a'] );
+        Watch::warnOnce( 'cms.test', ['reason' => 'b'] );
+
+        // Values may contain invalid UTF-8 which isn't JSON encodable
+        Watch::warnOnce( 'cms.test', ['reason' => "first\xB1"] );
+        Watch::warnOnce( 'cms.test', ['reason' => "second\xB1"] );
+
+        $this->travel( 601 )->seconds();
+        Watch::warnOnce( 'cms.test', ['reason' => 'a'] );
+
+        Log::shouldHaveReceived( 'warning' )->times( 5 );
     }
 
 
