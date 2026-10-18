@@ -134,6 +134,27 @@ from your server again. If shared elements or files like the footer are used by 
 `limit`, each of their changes does this, so raise the limit or use `0` for large sites with frequent
 changes of shared content.
 
+## Other CDNs and URLs
+
+The supported clients are fixed. For another CDN, e.g. Amazon CloudFront, listen to the same events of the core package which this package uses, after the database transaction is committed:
+
+```php
+use Aimeos\Cms\Events\FilesRemoved;
+use Aimeos\Cms\Events\PageInvalidated;
+use Illuminate\Support\Facades\Event;
+
+Event::listen( function( PageInvalidated $event ) {
+    // $event->paths: page paths of the $event->domain (empty for pages without domain) and $event->tenant
+    // URL::route( 'cms.page', ['path' => $path], false ) returns the relative URL of each path
+} );
+
+Event::listen( function( FilesRemoved $event ) {
+    // $event->paths: paths of the files on the public disk
+} );
+```
+
+Queue a job in the listeners, so slow CDN APIs don't delay the editors. To purge URLs of your own routes from the configured clients, e.g. product pages showing CMS content, pass the absolute URLs to `Aimeos\Cms\Cdn::purge()`, which queues the same jobs as the CMS. Bind your own `Http\Client\HttpAsyncClient` as `cms.cdn.http` in the container to send the purge requests through it, e.g. with a proxy or a mock client in tests.
+
 ## Protected content
 
 Pages which get access rules and files moved to the private disk are only removed from the CDN by

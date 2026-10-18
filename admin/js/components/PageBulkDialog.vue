@@ -78,6 +78,11 @@ export default {
       return this.count + this.descendants > PAGE_BULK_LIMIT
     },
 
+    // schemas without page types only add elements and aren't selectable as themes
+    themeItems() {
+      return Object.keys(this.schemas.themes).filter((name) => this.schemas.themes[name].types)
+    },
+
     typeItems() {
       return Object.keys(this.schemas.themes[this.values.theme || 'cms']?.types || {})
     }
@@ -191,7 +196,7 @@ export default {
       <div class="prop" :class="{ on: enabled.theme }">
         <v-checkbox-btn v-model="enabled.theme" :aria-label="$gettext('Change theme')" />
         <v-select
-          :items="Object.keys(schemas.themes)"
+          :items="themeItems"
           :modelValue="values.theme"
           @update:modelValue="set('theme', $event)"
           :label="$gettext('Theme') + ' ‒ ' + $gettext('Design used to display the page')"

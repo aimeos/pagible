@@ -38,6 +38,40 @@ The admin access route and navigation require `access:view`. Within its Users ta
 
 All user-specific operations resolve users through the configured authentication provider and apply `Tenancy::allows()` before disclosure or change. Missing and foreign-tenant users are indistinguishable. `CmsUserData` exposes only an opaque ID, the email, and independently protected authorization assignments; clients must treat the ID as opaque and use it instead of the mutable email for assignment writes. `CmsUser` remains the authenticated-user projection returned by `me`, and the application's standard `User` GraphQL type is not extended. The generated password is never returned, so applications need a password-reset or invitation flow before password login. Successful creation and assignment replacement emit the structured `UserChanged` audit event; the built-in watch listener records it as `cms.user` with actor, target, tenant, and resulting assignments.
 
+## Extending the schema
+
+`cms:install:graphql` imports the CMS schema into your `graphql/schema.graphql`, so you can add your own queries and mutations there and use the CMS types like `Page`:
+
+```graphql
+extend type Mutation {
+  "Publish all subpages of the page"
+  publishChildren(id: ID! @rules(apply: ["uuid"])): [Page]!
+    @guard @cmsPermission(action: "page:publish") @throttle(name: "cms-graphql")
+}
+```
+
+Lighthouse resolves the mutation by the `App\GraphQL\Mutations\PublishChildren` class. Pass the authenticated user to the facades, so the CMS permissions and versioning apply like in the built-in mutations:
+
+```php
+namespace App\GraphQL\Mutations;
+
+use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Models\Page;
+use Illuminate\Support\Facades\Auth;
+
+final class PublishChildren
+{
+    public function __invoke( $rootValue, array $args ) : array
+    {
+        $ids = Page::where( 'parent_id', $args['id'] )->pluck( 'id' )->all();
+
+        return Pages::publishMany( $ids, Auth::user() )->all();
+    }
+}
+```
+
+`@cmsPermission(action: [...], any: true)` requires all listed CMS permissions, or one of them with `any: true`. As CMS permissions are Laravel Gate abilities, Lighthouse directives like `@canRoot(ability: "page:publish")` work too. `Aimeos\Cms\Exception` errors thrown in any resolver are returned as client-safe GraphQL errors with their message.
+
 ## Commands
 
 ### cms:install:graphql

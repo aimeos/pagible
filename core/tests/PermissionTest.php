@@ -11,6 +11,7 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\GenericUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 
 
 class PermissionTest extends CoreTestAbstract
@@ -517,6 +518,31 @@ class PermissionTest extends CoreTestAbstract
         $this->assertFalse( Permission::can( 'element:publish', $user ) );
         $this->assertFalse( Permission::can( 'element:purge', $user ) );
         $this->assertTrue( Permission::can( 'element:view', $user ) );
+    }
+
+
+    public function testGate()
+    {
+        Gate::define( 'app:report', fn() => true );
+        $user = new \App\Models\User( ['cmsperms' => ['editor']] );
+
+        $this->assertTrue( $user->can( 'page:save' ) );
+        $this->assertFalse( $user->can( 'page:publish' ) );
+        $this->assertTrue( $user->can( 'app:report' ) );
+        $this->assertFalse( Gate::forUser( null )->allows( 'page:view' ) );
+    }
+
+
+    public function testGateAfterRegister()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['test:run']] );
+        $this->assertFalse( $user->can( 'test:run' ) );
+
+        Permission::register( 'test:run' );
+        $this->assertTrue( $user->can( 'test:run' ) );
+
+        Permission::unregister( 'test:run' );
+        $this->assertFalse( $user->can( 'test:run' ) );
     }
 
 
