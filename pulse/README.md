@@ -77,6 +77,7 @@ High-volume page, search, and JSON:API observations use `cms.watch.sample`; audi
 | JSON:API | Read and search activity by domain, including latency |
 | GraphQL | Operations by domain, latency and success rate |
 | MCP | Tool calls by domain, latency and success rate |
+| CDN purges | Purges and full clears per CDN client, latency and success rate |
 
 Metrics are collected from the time the package is installed; existing activity is not backfilled.
 

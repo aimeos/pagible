@@ -66,6 +66,14 @@ return [
             'requires' => ['Aimeos\\Cms\\McpServiceProvider'],
         ],
 
+        'cdn' => [
+            'title' => 'CDN purges',
+            'group' => 'client',
+            'details' => ['action'],
+            'success' => true,
+            'requires' => ['Aimeos\\Cms\\CdnServiceProvider'],
+        ],
+
     ],
 
 ];

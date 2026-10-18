@@ -237,6 +237,15 @@ class Utils
 
 
     /**
+     * Returns the name of the queue connection used by the CMS jobs.
+     */
+    public static function queue() : string
+    {
+        return (string) ( config( 'cms.queue.connection' ) ?: config( 'queue.default' ) );
+    }
+
+
+    /**
      * Generates a slug from the given title.
      *
      * @param string $title The title to generate a slug from

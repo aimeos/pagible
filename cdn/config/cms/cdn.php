@@ -19,7 +19,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Seconds to wait before changed URLs are purged, e.g. until replicas of
-    | the database are up to date. Use 0 to purge each change immediately.
+    | the database are up to date. The URLs changed meanwhile are collected
+    | and purged together, which requires a shared cache store with locks.
+    | Use 0 to purge each change immediately.
     | The sync queue purges the URLs after the response is sent and doesn't
     | retry failed purges.
     |
@@ -32,9 +34,10 @@ return [
     |--------------------------------------------------------------------------
     |
     | Cloudflare, Fastly and Symfony HttpCache remove all content with one
-    | request instead if more URLs are purged at once, which is faster and saves API requests.
-    | This also removes the cached files and assets, which are then fetched
-    | from the server again. Use 0 to always purge the URLs.
+    | request instead if more URLs are purged at once, which is faster and
+    | saves API requests. This also removes the cached files and assets,
+    | which are then fetched from the server again. Use 0 to always purge
+    | the URLs.
     |
     */
     'limit' => (int) env( 'CMS_CDN_LIMIT', 500 ),
@@ -92,6 +95,11 @@ return [
     |
     | The optional "delay" replaces the global delay for the client.
     |
+    | The optional "clear" setting allows removing all content if more URLs
+    | than the limit are purged. It's disabled in multi-tenant setups because
+    | it removes the content of all tenants sharing the zone or service, so
+    | enable it for clients serving only one tenant, e.g. limited by "hosts".
+    |
     */
     'clients' => [
         'cloudflare' => env( 'CMS_CDN_CLOUDFLARE_TOKEN' ) ? [
@@ -113,7 +121,7 @@ return [
         ] : null,
         'varnish' => env( 'CMS_CDN_VARNISH_SERVERS' ) ? [
             'driver' => 'varnish',
-            'servers' => explode( ',', (string) env( 'CMS_CDN_VARNISH_SERVERS' ) ), // e.g. "10.0.0.1:6081,10.0.0.2:6081"
+            'servers' => preg_split( '/\s*,\s*/', trim( (string) env( 'CMS_CDN_VARNISH_SERVERS' ) ), -1, PREG_SPLIT_NO_EMPTY ), // e.g. "10.0.0.1:6081,10.0.0.2:6081"
         ] : null,
     ],
 ];

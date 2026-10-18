@@ -8,15 +8,21 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Cdn;
-use FOS\HttpCache\CacheInvalidator;
 use Illuminate\Console\Command;
 
 
 class CheckCdn extends Command
 {
-    protected $signature = 'cms:cdn:check';
+    /** Warnings for enabled options the driver doesn't support */
+    private const WARNINGS = [
+        'queries' => '"queries" requires a driver supporting bans, only the URLs are purged',
+        'refresh' => '"refresh" requires a driver supporting refreshes, the URLs are purged',
+    ];
 
-    protected $description = 'Check the configuration of the CDN clients without sending requests';
+    protected $signature = 'cms:cdn:check
+        {--send : Purge a test URL to check the credentials and servers too}';
+
+    protected $description = 'Check the configuration of the CDN clients';
 
 
     public function handle() : int
@@ -35,16 +41,20 @@ class CheckCdn extends Command
                 $invalidator = Cdn::invalidator( $config );
                 $warnings = [];
 
-                if( !empty( $config['queries'] ) && !$invalidator->supports( CacheInvalidator::INVALIDATE ) ) {
-                    $warnings[] = '"queries" requires a driver supporting bans, only the URLs are purged';
+                foreach( Cdn::supports( $config, $invalidator ) as $option => $supported )
+                {
+                    if( !$supported ) {
+                        $warnings[] = self::WARNINGS[$option];
+                    }
                 }
 
-                if( !empty( $config['refresh'] ) && !$invalidator->supports( CacheInvalidator::REFRESH ) ) {
-                    $warnings[] = '"refresh" requires a driver supporting refreshes, the URLs are purged';
-                }
-
-                if( is_string( $after = $config['after'] ?? null ) && !isset( $clients[$after] ) ) {
+                if( is_string( $after = $config['after'] ?? null ) && Cdn::inner( $config, $clients ) === null ) {
                     $warnings[] = sprintf( '"after" uses the unknown client "%s", it is purged independently', $after );
+                }
+
+                // Only the purge requests show if the credentials and servers work
+                if( $this->option( 'send' ) ) {
+                    $invalidator->invalidatePath( $this->url( $config ) )->flush();
                 }
 
                 foreach( $warnings as $warning ) {
@@ -63,5 +73,22 @@ class CheckCdn extends Command
         }
 
         return $failed ? self::FAILURE : self::SUCCESS;
+    }
+
+
+    /**
+     * Returns the test URL purged from the client, using the first host the client is limited to.
+     *
+     * @param array<string, mixed> $config Client configuration
+     */
+    private function url( array $config ) : string
+    {
+        $base = Cdn::base();
+
+        if( $hosts = (array) ( $config['hosts'] ?? [] ) ) {
+            $base = ( parse_url( $base, PHP_URL_SCHEME ) ?: 'https' ) . '://' . (string) reset( $hosts );
+        }
+
+        return $base . '/cms-cdn-check';
     }
 }

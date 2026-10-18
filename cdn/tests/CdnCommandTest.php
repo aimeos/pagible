@@ -7,23 +7,11 @@
 
 namespace Tests;
 
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
-use Http\Adapter\Guzzle7\Client;
-use Http\Client\Common\Plugin\ErrorPlugin;
-use Http\Client\Common\PluginClient;
-use Psr\Http\Message\RequestInterface;
 
 
 class CdnCommandTest extends CdnTestCase
 {
-    /** @var array<int, array{request: RequestInterface}> */
-    private array $history = [];
-
-
     public function testCheck() : void
     {
         $this->artisan( 'cms:cdn:check' )->expectsOutput( 'cloudflare: OK' )->assertSuccessful();
@@ -51,6 +39,26 @@ class CdnCommandTest extends CdnTestCase
         $this->artisan( 'cms:cdn:check' )
             ->expectsOutput( 'nginx: "queries" requires a driver supporting bans, only the URLs are purged' )
             ->assertSuccessful();
+    }
+
+
+    public function testCheckSend() : void
+    {
+        config( ['cms.cdn.clients.cloudflare.hosts' => ['www.example.com']] );
+        $this->http( new Response( 200 ) );
+
+        $this->artisan( 'cms:cdn:check', ['--send' => true] )->expectsOutput( 'cloudflare: OK' )->assertSuccessful();
+
+        $this->assertCount( 1, $this->history );
+        $this->assertSame( '{"files":["https://www.example.com/cms-cdn-check"]}', (string) $this->history[0]['request']->getBody() );
+    }
+
+
+    public function testCheckSendError() : void
+    {
+        $this->http( new Response( 403 ) );
+
+        $this->artisan( 'cms:cdn:check', ['--send' => true] )->expectsOutputToContain( 'cloudflare: 403' )->assertFailed();
     }
 
 
@@ -147,16 +155,5 @@ class CdnCommandTest extends CdnTestCase
     public function testPurgeWithoutUrls() : void
     {
         $this->artisan( 'cms:cdn:purge' )->expectsOutput( 'Pass the URLs to purge or use --all' )->assertFailed();
-    }
-
-
-    private function http( Response ...$responses ) : void
-    {
-        $stack = HandlerStack::create( new MockHandler( $responses ) );
-        $stack->push( Middleware::history( $this->history ) );
-
-        $this->app->instance( 'cms.cdn.http', new PluginClient(
-            new Client( new GuzzleClient( ['handler' => $stack, 'http_errors' => false] ) ), [new ErrorPlugin()]
-        ) );
     }
 }

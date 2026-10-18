@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Listeners\LogListener;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -133,6 +134,27 @@ class Watch
                 : Log::warning( $message, $fields );
         } catch( \Throwable $e ) {
             self::failed( 'warning', $e );
+        }
+    }
+
+
+    /**
+     * Writes the warning at most once per interval, e.g. for problems repeated by each event or job.
+     *
+     * @param array<string, mixed> $fields Structured entry fields which identify the problem
+     * @param int $interval Seconds until an equal warning is written again
+     */
+    public static function warnOnce( string $message, array $fields, int $interval = 600 ) : void
+    {
+        try {
+            // Values from the configuration may contain invalid UTF-8 which json_encode() can't distinguish
+            $new = Cache::add( 'cms-warn:' . hash( 'sha256', $message . serialize( $fields ) ), true, $interval );
+        } catch( \Throwable ) {
+            $new = true;
+        }
+
+        if( $new ) {
+            self::warn( $message, $fields );
         }
     }
 

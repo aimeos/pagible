@@ -9,7 +9,6 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\BaseDelivery;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Illuminate\Support\Facades\Cache;
 
 
 /**
@@ -36,9 +35,6 @@ class WebhookConfig
 
     /** @var list<string> */
     private const KEYS = ['url', 'secret', 'events'];
-
-    /** Seconds until the same configuration problem is logged again */
-    private const LOG_INTERVAL = 600;
 
 
     public function __construct( private WebhookClient $client )
@@ -173,17 +169,7 @@ class WebhookConfig
      */
     public function warn( string $message, array $fields ) : void
     {
-        try {
-            // Values from the configuration may contain invalid UTF-8 which json_encode() can't distinguish
-            $key = hash( 'sha256', $message . serialize( $fields ) );
-            $new = Cache::add( 'cms-webhooks-warn:' . $key, true, self::LOG_INTERVAL );
-        } catch( \Throwable ) {
-            $new = true;
-        }
-
-        if( $new ) {
-            Watch::warn( $message, $fields );
-        }
+        Watch::warnOnce( $message, $fields );
     }
 
 
