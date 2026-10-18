@@ -38,7 +38,7 @@ export default {
     type: { type: String, default: 'content' }
   },
 
-  emits: ['add-after', 'add-before', 'change', 'remove', 'update:previewSize'],
+  emits: ['add-after', 'add-before', 'add-assets', 'change', 'patch-entry', 'remove', 'update:previewSize'],
 
   setup() {
     const drawer = useDrawerStore()
@@ -86,9 +86,10 @@ export default {
       return typeLabel(type, this)
     },
 
-    change() {
+    // the owner applies the values to the element synchronously, so the changes are visible afterwards
+    change(values) {
+      this.$emit('patch-entry', this.element, { ...values, _changed: true })
       this.modified = this.differs()
-      this.element._changed = true
       this.$emit('change', this.element)
     },
 
@@ -97,9 +98,7 @@ export default {
 
       if (this.readonly || !item?.type || item.type === this.element.type) return
 
-      this.element.type = item.type
-      delete this.element._error
-      this.change()
+      this.change({ type: item.type, _error: undefined })
     },
 
     close() {
@@ -132,10 +131,10 @@ export default {
     revert() {
       if (this.readonly || !this.original) return
 
-      const restored = clone(this.original)
+      // keys added after the snapshot are cleared as well
+      const cleared = Object.fromEntries(Object.keys(this.element).map((key) => [key, undefined]))
 
-      for (const key of Object.keys(this.element)) delete this.element[key]
-      Object.assign(this.element, restored)
+      this.$emit('patch-entry', this.element, { ...cleared, ...clone(this.original) })
 
       this.modified = false
       this.$nextTick(() => this.$refs.fields?.resetDirty?.())
@@ -147,11 +146,6 @@ export default {
       this.modified = false
       this.vschemas = false
       this.$nextTick(() => this.$refs.fields?.resetDirty?.())
-    },
-
-    updateFiles(files) {
-      this.element.files = files
-      this.change()
     }
   },
 
@@ -261,15 +255,16 @@ export default {
       <Fields
         :key="`${element.id || ''}-${element.type}`"
         ref="fields"
-        v-model:data="element.data"
+        :data="element.data"
         :files="element.files"
         :fields="fields(element.type)"
         :readonly="readonly"
         :type="element.type"
         :assets="assets"
-        @error="element._error = $event"
-        @change="change"
-        @update:files="updateFiles"
+        @error="$emit('patch-entry', element, { _error: $event })"
+        @update:data="change({ data: $event })"
+        @update:files="change({ files: $event })"
+        @add-assets="$emit('add-assets', $event)"
       />
     </div>
     <SchemaDialog v-model="vschemas" :elements="false" @add="changeTo" />

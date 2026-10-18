@@ -39,7 +39,7 @@ const stubs = {
   },
   PageDetailContent: {
     template: '<div class="page-detail-content-stub" />',
-    methods: { flush() {}, reset() {} },
+    methods: { reset() {} },
   },
   PageDetailMetrics: { template: '<div class="page-detail-metrics-stub" />' },
 }
@@ -65,7 +65,7 @@ const baseItem = {
 
 function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(PageDetail, {
-    props: { item: reactive({ ...baseItem, ...item }) },
+    props: { initial: reactive({ ...baseItem, ...item }) },
     global: {
       stubs,
       mocks: {
@@ -243,21 +243,30 @@ describe('PageDetail', () => {
     cy.then(() => expect(Cypress.vueWrapper.findComponent(PageDetail).vm.previewSize).to.equal('tablet'))
   })
 
-  it('waits for pending content updates before flushing on save', () => {
+  it('applies the content changes sent by the content list', () => {
     mountDetail()
     cy.contains('.v-tab', 'Content').click()
-    cy.contains('.v-tab', 'Editor').click()
 
     cy.then(() => {
       const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
-      const flush = cy.spy(vm.$refs.content, 'flush')
-      const saving = vm.save()
+      const file = { id: 'file-1', path: 'a.jpg' }
+      const entry = { id: 'e1', type: 'text', group: 'main', data: { text: 'Old' } }
+      const assets = vm.assets
 
-      expect(flush).not.to.have.been.called
+      vm.$refs.content.$emit('update:content', [entry])
+      expect(vm.item.content).to.have.length(1)
+      expect(vm.dirty.content).to.equal(true)
 
-      return saving.then(() => {
-        expect(flush).to.have.been.calledOnce
-      })
+      vm.$refs.content.$emit('patch-entry', vm.item.content[0], { data: { text: 'New' }, _changed: true })
+      expect(vm.item.content[0].data.text).to.equal('New')
+      expect(vm.item.content[0]._changed).to.equal(true)
+
+      vm.$refs.content.$emit('add-assets', { [file.id]: file })
+      expect(vm.assets).not.to.equal(assets)
+      expect(vm.assets[file.id]).to.equal(file)
+
+      vm.reset()
+      expect(vm.item.content[0]._changed).to.equal(undefined)
     })
   })
 

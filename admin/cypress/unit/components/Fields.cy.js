@@ -112,6 +112,7 @@ describe('Fields', () => {
       '2': { id: '2', disk: 'public' },
     }
     const onUpdate = cy.spy()
+    const onAssets = cy.spy()
 
     mountFields({
       fields: { gallery: { type: 'images', label: 'Gallery' } },
@@ -121,6 +122,7 @@ describe('Fields', () => {
       files: ['1', '2'],
       assets,
       'onUpdate:files': onUpdate,
+      onAddAssets: onAssets,
     }).then(({ wrapper }) => {
       wrapper.findComponent(Fields).vm.addFile([
         { id: '1', disk: 'private' },
@@ -128,8 +130,13 @@ describe('Fields', () => {
       ])
 
       expect(onUpdate).to.have.been.calledOnceWith(['1', '2'])
-      expect(assets['1'].disk).to.equal('private')
-      expect(assets['2'].disk).to.equal('private')
+      expect(onAssets).to.have.been.calledOnceWith({
+        '1': { id: '1', disk: 'private' },
+        '2': { id: '2', disk: 'private' },
+      })
+      // the assets prop is left to the owner
+      expect(assets['1'].disk).to.equal('public')
+      expect(assets['2'].disk).to.equal('public')
     })
   })
 

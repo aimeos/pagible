@@ -2,20 +2,14 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { reactive, watch } from 'vue'
+import { watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
 import { urladmin } from './config'
 import gettext, { pluginLabel } from './i18n'
 
 function itemProps() {
-  let item
-  return route => {
-    if (!item || item.id !== route.params.id) {
-      item = reactive({ id: route.params.id })
-    }
-    return { item }
-  }
+  return route => ({ initial: { id: route.params.id } })
 }
 
 const router = createRouter({

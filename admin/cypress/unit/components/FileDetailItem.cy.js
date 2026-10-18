@@ -121,17 +121,21 @@ describe('FileDetailItem', () => {
         expect(result).to.equal(true)
         expect(mutate).to.have.been.calledOnce
         expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['1'], disk: 'private' })
-        expect(wrapper.props('item').disk).to.equal('private')
-        expect(wrapper.props('item').previews).to.equal(previews)
-        expect(wrapper.emitted('update:item')).to.be.undefined
+        expect(wrapper.emitted('sync')[0][0]).to.include({ disk: 'private' })
+        expect(wrapper.emitted('sync')[0][0]).not.to.have.property('previews')
+        expect(wrapper.emitted('patch')).to.be.undefined
+        expect(wrapper.props('item').disk).to.equal('public')
         expect(wrapper.vm.loading.protect).to.equal(false)
+
+        // the test acts as owner and applies the synced changes
+        Object.assign(wrapper.props('item'), wrapper.emitted('sync')[0][0])
 
         return wrapper.vm.setProtect(false)
       }).then((result) => {
         expect(result).to.equal(true)
         expect(mutate).to.have.been.calledTwice
         expect(mutate.secondCall.args[0].variables).to.deep.equal({ id: ['1'], disk: 'public' })
-        expect(wrapper.props('item').disk).to.equal('public')
+        expect(wrapper.emitted('sync')[1][0]).to.include({ disk: 'public' })
         expect(wrapper.props('item').previews).to.equal(previews)
       })
     })
@@ -183,8 +187,42 @@ describe('FileDetailItem', () => {
 
       wrapper.vm.descriptionUpdated('en', 'Updated description')
 
-      expect(wrapper.props('item').description).to.deep.equal({ en: 'Updated description' })
-      expect(wrapper.emitted('update:item')).to.have.length(1)
+      expect(wrapper.emitted('patch')).to.deep.equal([[{ description: { en: 'Updated description' } }]])
+      expect(wrapper.props('item').description).to.equal(description)
+    })
+  })
+
+  it('emits transcription updates without changing the item', () => {
+    const transcription = { en: 'old' }
+
+    mountDetail({ item: { mime: 'audio/mpeg', transcription } }, { 'file:save': true }).then(() => {
+      const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
+
+      wrapper.vm.transcriptionUpdated('de', 'neu')
+
+      expect(wrapper.emitted('patch')).to.deep.equal([[{ transcription: { en: 'old', de: 'neu' } }]])
+      expect(transcription).to.deep.equal({ en: 'old' })
+    })
+  })
+
+  it('emits the new path and mime when a file version is used', () => {
+    mountDetail({}, { 'file:save': true }).then(() => {
+      const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
+
+      wrapper.vm.use([{ path: 'files/new.png', mime: 'image/png' }])
+
+      expect(wrapper.emitted('patch')).to.deep.equal([[{ path: 'files/new.png', mime: 'image/png' }]])
+      expect(wrapper.props('item').path).to.equal('/files/photo.jpg')
+      expect(wrapper.emitted('update:file')).to.deep.equal([[null]])
+    })
+  })
+
+  it('skips translation when all texts are empty', () => {
+    mountDetail({}, { 'file:save': true, 'text:translate': true }).then(() => {
+      const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
+
+      expect(() => wrapper.vm.translateText({ en: '', de: null })).not.to.throw()
+      expect(wrapper.vm.loading.translate).not.to.equal(true)
     })
   })
 

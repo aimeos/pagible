@@ -173,11 +173,14 @@ describe('PageDetailEditor', () => {
       editor.vm.addAfter()
       editor.vm.add({ type: 'heading' })
 
-      expect(editor.vm.item.content).to.have.length(1)
-      expect(editor.vm.item.content[0]).to.include({ type: 'heading', group: 'footer' })
+      const [list] = editor.emitted('update:content')[0]
+
+      expect(editor.vm.item.content).to.have.length(0)
+      expect(list).to.have.length(1)
+      expect(list[0]).to.include({ type: 'heading', group: 'footer' })
       expect(editor.vm.index).to.equal(0)
       expect(editor.emitted('change')).to.deep.equal([['content']])
-      expect(editor.emitted('edit').at(-1)).to.deep.equal([editor.vm.item.content[0], true])
+      expect(editor.emitted('edit').at(-1)).to.deep.equal([list[0], true])
       expect(save).not.to.have.been.called
     })
   })
@@ -200,7 +203,8 @@ describe('PageDetailEditor', () => {
       editor.vm.element = content[0]
       editor.vm.remove()
 
-      expect(editor.vm.item.content).to.deep.equal([])
+      expect(editor.vm.item.content).to.have.length(1)
+      expect(editor.emitted('update:content')).to.deep.equal([[[]]])
       expect(editor.emitted('edit')).to.deep.equal([[null]])
       expect(editor.emitted('change')).to.deep.equal([['content']])
       expect(save).to.have.been.calledOnceWith(true)

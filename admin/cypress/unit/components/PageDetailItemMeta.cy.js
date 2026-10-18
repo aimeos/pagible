@@ -110,10 +110,13 @@ describe('PageDetailItemSection (meta)', () => {
   it('adds canonical meta items without a group', () => {
     const page = { id: '1', meta: {} }
 
-    mountMeta({ item: page }, { 'page:save': true }).then(({ wrapper }) => {
+    const onPatch = cy.spy()
+
+    mountMeta({ item: page, onPatch }, { 'page:save': true }).then(({ wrapper }) => {
       wrapper.findComponent(PageDetailItemSection).vm.add({ type: 'seo' })
 
-      expect(page.meta.seo).to.deep.equal({
+      expect(page.meta).to.deep.equal({})
+      expect(onPatch.lastCall.args[0].meta.seo).to.deep.equal({
         type: 'seo',
         data: {},
         files: [],

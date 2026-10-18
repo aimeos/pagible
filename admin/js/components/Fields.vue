@@ -28,7 +28,7 @@ export default {
     type: { type: String, default: '' }
   },
 
-  emits: ['change', 'error', 'update:data', 'update:files'],
+  emits: ['add-assets', 'change', 'error', 'update:data', 'update:files'],
 
   inject: ['write', 'translate'],
 
@@ -78,7 +78,7 @@ export default {
     addFile(value) {
       const files = new Set(this.files)
       const items = Array.isArray(value) ? value : [value]
-      let valid = false
+      const assets = {}
 
       for (const item of items) {
         if (!item?.id) {
@@ -87,11 +87,11 @@ export default {
         }
 
         files.add(item.id)
-        this.assets[item.id] = item
-        valid = true
+        assets[item.id] = item
       }
 
-      if (valid) {
+      if (Object.keys(assets).length) {
+        this.$emit('add-assets', assets)
         this.$emit('update:files', [...files])
       }
     },

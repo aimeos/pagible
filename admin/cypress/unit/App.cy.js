@@ -129,13 +129,14 @@ describe('viewStack', () => {
     expect(viewStack.stack).to.have.length(before)
   })
 
-  it('keeps mutable detail items reactive in stacked views', () => {
+  it('passes the props to stacked views unchanged', () => {
     const viewStack = useViewStack()
-    const item = { id: 'page-1', content: [] }
+    const initial = { id: 'page-1', content: [] }
 
-    viewStack.openView({ render() { return 'test' } }, { item, stacked: true })
+    viewStack.openView({ render() { return 'test' } }, { initial, stacked: true })
 
-    expect(isReactive(viewStack.stack[0].props.item)).to.be.true
+    expect(viewStack.stack[0].props.initial).to.equal(initial)
+    expect(isReactive(viewStack.stack[0].props.initial)).to.be.false
   })
 
   it('closeView() pops the last view', () => {

@@ -78,7 +78,7 @@ export default {
 
   data: () => ({
     file: null,
-    initial: null
+    savedPreviews: null
   }),
 
   setup() {
@@ -86,7 +86,7 @@ export default {
   },
 
   created() {
-    this.initial = this.previewsJson()
+    this.savedPreviews = this.previewsJson()
   },
 
   beforeUnmount() {
@@ -94,6 +94,10 @@ export default {
   },
 
   computed: {
+    changeTargets() {
+      return markRaw({ data: this.item, aux: this.item })
+    },
+
     hasConflict() {
       return hasUnresolved(this.changed, ['data', 'aux'])
     },
@@ -129,7 +133,7 @@ export default {
         this.item.published = latest?.published
         this.item.updated_at = latest?.created_at
         this.item.editor = latest?.editor
-        this.initial = this.previewsJson()
+        this.savedPreviews = this.previewsJson()
       }, () => !this.dirty)
     },
 
@@ -137,6 +141,11 @@ export default {
       Object.assign(this.item, changes)
       this.dirty = true
       this.vhistory = false
+    },
+
+    // applies changes that are already saved without making the item dirty
+    itemSynced(patch) {
+      Object.assign(this.item, patch)
     },
 
     fileUpdated(event) {
@@ -186,7 +195,7 @@ export default {
               transcription: JSON.stringify(this.item.transcription || {}),
               description: JSON.stringify(this.item.description || {}),
               // keep previews updated in the meantime (e.g. by cms:previews) if unchanged
-              ...(previews !== this.initial ? { previews } : {}),
+              ...(previews !== this.savedPreviews ? { previews } : {}),
               path: this.item.path,
               name: this.item.name,
               lang: this.item.lang
@@ -205,7 +214,7 @@ export default {
 
           Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
           this.item.latestId = latest?.id
-          this.initial = this.previewsJson()
+          this.savedPreviews = this.previewsJson()
 
           applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
 
@@ -261,7 +270,8 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="file">
           <FileDetailItem
-            @update:item="itemUpdated"
+            @patch="itemUpdated"
+            @sync="itemSynced"
             @update:file="fileUpdated"
             @error="error = $event"
             :item="item"
@@ -292,8 +302,8 @@ export default {
       @use="use"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="{ data: item, aux: item }"
-      @resolve="dirty = true"
+      @resolve="resolveChange($event); dirty = true"
+      @unresolve="unresolveChange"
     />
   </Teleport>
 </template>

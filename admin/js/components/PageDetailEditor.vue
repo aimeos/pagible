@@ -27,7 +27,7 @@ export default {
     }
   },
 
-  emits: ['change', 'edit'],
+  emits: ['change', 'edit', 'add-elements', 'update:content'],
 
   provide() {
     return {
@@ -131,7 +131,7 @@ export default {
       this.vschemas = false
 
       if (item.id) {
-        this.elements[item.id] = item
+        this.$emit('add-elements', { [item.id]: item })
         this.element = { id: uid(), group: group, type: 'reference', refid: item.id }
       } else {
         this.element = { id: uid(), group: group, type: item.type, data: {} }
@@ -159,7 +159,10 @@ export default {
       if (!this.element || this.pos === null) return
 
       const index = Math.max(0, (this.index ?? -1) + this.pos)
-      this.item.content.splice(index, 0, this.element)
+      const content = [...(this.item.content || [])]
+
+      content.splice(index, 0, this.element)
+      this.$emit('update:content', content)
       this.index = index
       this.pos = null
 
@@ -236,7 +239,7 @@ export default {
     remove() {
       if (this.index === null || this.index < 0) return
 
-      this.item.content.splice(this.index, 1)
+      this.$emit('update:content', this.item.content.filter((entry, idx) => idx !== this.index))
       this.element = null
       this.index = null
 

@@ -114,6 +114,11 @@ export default {
   },
 
   methods: {
+    // the assets map is raw, so replace it to make the added files visible
+    addAssets(map) {
+      this.assets = markRaw({ ...this.assets, ...map })
+    },
+
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
@@ -235,7 +240,8 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="element">
           <ElementDetailItem
-            @update:item="itemUpdated"
+            @patch="itemUpdated"
+            @add-assets="addAssets"
             @error="error = $event"
             :assets="assets"
             :item="item"
@@ -266,8 +272,8 @@ export default {
       @use="use"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="changeTargets"
-      @resolve="dirty = true"
+      @resolve="resolveChange($event); dirty = true"
+      @unresolve="unresolveChange"
     />
   </Teleport>
 </template>

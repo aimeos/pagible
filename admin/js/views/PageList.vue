@@ -349,6 +349,7 @@ export default {
           @select="open($event)"
           @changed="changed($event)"
           :filter="filter"
+          @update:filter="Object.assign(filter, $event)"
           :defaults="defaults"
         />
       </v-sheet>
@@ -357,6 +358,7 @@ export default {
 
   <AsideList
     :filter="filter"
+    @update:filter="Object.assign(filter, $event)"
     :defaults="defaults"
     :content="asideContent"
   />

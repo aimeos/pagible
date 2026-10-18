@@ -15,7 +15,7 @@ export default {
     assets: { type: Object, default: () => {} }
   },
 
-  emits: ['update:item', 'error'],
+  emits: ['patch', 'add-assets', 'error'],
 
   setup() {
     const schemas = useSchemaStore()
@@ -45,8 +45,7 @@ export default {
     },
 
     update(what, value) {
-      this.item[what] = value
-      this.$emit('update:item', this.item)
+      this.$emit('patch', { [what]: value })
     }
   }
 }
@@ -84,14 +83,16 @@ export default {
         <v-col cols="12">
           <Fields
             ref="field"
-            v-model:data="item.data"
-            v-model:files="item.files"
+            :data="item.data"
+            :files="item.files"
             :fields="fields(item.type)"
             :readonly="readonly"
             :assets="assets"
             :type="item.type"
+            @update:data="update('data', $event)"
+            @update:files="update('files', $event)"
+            @add-assets="$emit('add-assets', $event)"
             @error="$emit('error', $event)"
-            @change="$emit('update:item', item)"
           />
         </v-col>
       </v-row>

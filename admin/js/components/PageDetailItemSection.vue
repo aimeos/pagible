@@ -4,7 +4,7 @@
 import Fields from './Fields.vue'
 import SchemaDialog from './SchemaDialog.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
-import { hasProp, itemTitle } from '../utils'
+import { hasTrue, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
 import { typeLabel } from '../i18n'
 
@@ -21,9 +21,10 @@ export default {
     section: { type: String, required: true }
   },
 
-  emits: ['change', 'error'],
+  emits: ['patch', 'add-assets', 'error'],
 
   data: () => ({
+    errors: {},
     vschemas: false,
     panel: []
   }),
@@ -57,30 +58,19 @@ export default {
     },
 
     add(item) {
-      if (!this.item[this.section]) {
-        this.item[this.section] = {}
-      }
-
-      if (this.item[this.section][item.type]) {
+      if (this.entries[item.type]) {
         this.messages.add(this.$gettext('The element has already been added'), 'error')
         return
       }
 
-      this.item[this.section][item.type] = {
-        type: item.type,
-        data: {},
-        files: []
-      }
-      this.panel.push(Object.keys(this.item[this.section]).length - 1)
+      this.patch({ ...this.entries, [item.type]: { type: item.type, data: {}, files: [] } })
+      this.panel.push(Object.keys(this.entries).length - 1)
       this.vschemas = false
     },
 
-    error(el, value) {
-      el._error = value
-      this.$emit(
-        'error',
-        hasProp(this.entries, '_error')
-      )
+    error(code, value) {
+      this.errors[code] = value
+      this.$emit('error', hasTrue(this.errors))
       this.store()
     },
 
@@ -93,9 +83,16 @@ export default {
       return this.schemas[this.section][type].fields
     },
 
+    // sends the new entries of the section to the owner of the item
+    patch(entries) {
+      this.$emit('patch', { [this.section]: entries })
+    },
+
     remove(code) {
-      delete this.item[this.section][code]
-      this.$emit('change', true)
+      const { [code]: removed, ...entries } = this.entries
+
+      delete this.errors[code]
+      this.patch(entries)
 
       this.$nextTick(() => {
         this.validate().then((valid) => {
@@ -105,28 +102,26 @@ export default {
     },
 
     reset() {
-      for (const k in this.entries) {
-        delete this.entries[k]._changed
-        delete this.entries[k]._error
-      }
+      this.errors = {}
     },
 
     showError() {
-      const idx = Object.values(this.entries).findIndex((el) => el._error)
+      const idx = Object.keys(this.entries).findIndex((code) => this.errors[code])
 
       if (idx >= 0 && !this.panel.includes(idx)) {
         this.panel.push(idx)
       }
     },
 
-    shown(el) {
+    shown(el, code) {
       const valid = this.side.shown('state', 'valid')
       const error = this.side.shown('state', 'error')
       const changed = this.side.shown('state', 'changed')
+      const failed = this.errors[code]
 
       return (
         this.side.shown('type', el.type) &&
-        ((error && el._error) || (changed && el._changed) || (valid && !el._error && !el._changed))
+        ((error && failed) || (changed && el._changed) || (valid && !failed && !el._changed))
       )
     },
 
@@ -138,17 +133,17 @@ export default {
       const types = {}
       const state = {}
 
-      for (const el of Object.values(this.entries)) {
+      for (const [code, el] of Object.entries(this.entries)) {
         if (el.type) {
           types[el.type] = (types[el.type] || 0) + 1
         }
-        if (!el._changed && !el._error) {
+        if (!el._changed && !this.errors[code]) {
           state['valid'] = (state['valid'] || 0) + 1
         }
         if (el._changed) {
           state['changed'] = (state['changed'] || 0) + 1
         }
-        if (el._error) {
+        if (this.errors[code]) {
           state['error'] = (state['error'] || 0) + 1
         }
       }
@@ -160,9 +155,8 @@ export default {
       return itemTitle(el.data) || this.typeLabel(el.type) || ''
     },
 
-    update(el) {
-      el._changed = true
-      this.$emit('change', true)
+    update(code, values) {
+      this.patch({ ...this.entries, [code]: { ...this.entries[code], ...values, _changed: true } })
       this.store()
     },
 
@@ -188,8 +182,8 @@ export default {
         <v-expansion-panel
           v-for="(el, code) in entries"
           :key="code"
-          :class="{ changed: el._changed, error: el._error }"
-          v-show="shown(el)"
+          :class="{ changed: el._changed, error: errors[code] }"
+          v-show="shown(el, code)"
         >
           <v-expansion-panel-title :expand-icon="mdiPencil">
             <v-btn
@@ -206,10 +200,12 @@ export default {
           <v-expansion-panel-text eager>
             <Fields
               ref="field"
-              v-model:data="el.data"
-              v-model:files="el.files"
-              @error="error(el, $event)"
-              @change="update(el)"
+              :data="el.data"
+              :files="el.files"
+              @update:data="update(code, { data: $event })"
+              @update:files="update(code, { files: $event })"
+              @add-assets="$emit('add-assets', $event)"
+              @error="error(code, $event)"
               :readonly="!canEdit"
               :fields="fields(el.type)"
               :assets="assets"

@@ -23,7 +23,7 @@ export default {
     item: { type: Object, required: true }
   },
 
-  emits: ['change', 'error'],
+  emits: ['patch', 'error'],
 
   data: () => ({
     errors: {},
@@ -122,13 +122,12 @@ export default {
       const types = this.schemas.themes[event || 'cms']?.types || { page: '' }
 
       if (!types[this.item.type]) {
-        this.item.type = ''
+        this.update('type', '')
       }
     },
 
     update(what, value) {
-      this.item[what] = typeof value === 'string' ? value.trim() : value
-      this.$emit('change', true)
+      this.$emit('patch', { [what]: typeof value === 'string' ? value.trim() : value })
     },
 
     updatePath(value) {

@@ -87,7 +87,7 @@ describe('useUserStore', () => {
         expect(user.tokenTimer).to.be.null
         expect(app.urlproxy).to.include('url=')
         expect(app.urlproxy).not.to.include('token=old')
-        expect(clip.$state).to.deep.equal({})
+        expect(clip.get('page')).to.be.null
         expect(changes.changed).to.deep.equal({})
         expect(dirty.dirty).to.be.false
         expect(dirty.saveFn).to.be.null
@@ -466,6 +466,19 @@ describe('useClipboardStore', () => {
     clip.set('key', 'first')
     clip.set('key', 'second')
     expect(clip.get('key')).to.equal('second')
+  })
+
+  it('removes all entries on reset', () => {
+    const clip = useClipboardStore()
+    clip.set('page-content', [{ id: 'a' }])
+    clip.$reset()
+    expect(clip.get('page-content')).to.be.null
+  })
+
+  it('does not overwrite store methods', () => {
+    const clip = useClipboardStore()
+    clip.set('get', 'value')
+    expect(clip.get('get')).to.equal('value')
   })
 })
 

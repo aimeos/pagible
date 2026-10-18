@@ -397,7 +397,9 @@ describe('FileListItems', () => {
     const defaults = { trashed: 'WITHOUT', publish: null, editor: null, lang: null }
     const filter = reactive({ ...defaults, publish: 'DRAFT' })
 
-    mountList({ defaults, filter }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
+    const onUpdate = (patch) => Object.assign(filter, patch)
+
+    mountList({ defaults, filter, 'onUpdate:filter': onUpdate }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
     cy.get('.notfound').should('contain', 'No entries found')
     cy.get('.notfound .btn-reset-filter').click()
     cy.get('.notfound').should('contain', 'No entries yet').then(() => {
@@ -446,6 +448,7 @@ describe('FileListItems', () => {
           expect(vm.items[0].description).to.deep.equal({ en: 'A cat', de: 'Eine Katze' })
           expect(vm.items[0].published).to.equal(false)
           expect(add).to.have.been.calledWithMatch(/1 file translated/, 'success')
+          expect(add).not.to.have.been.calledWithMatch(/No missing descriptions/)
         })
       })
     })

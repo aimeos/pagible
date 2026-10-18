@@ -48,7 +48,8 @@ export default {
     return {
       columns: this.header(),
       lastError: null,
-      table: this.modelValue
+      // own working copy of the rows, the modelValue prop is never changed in place
+      table: this.copy(this.modelValue)
     }
   },
 
@@ -57,7 +58,7 @@ export default {
     this.updated = this.debounce(this.update, 500)
 
     if (!this.table.length) {
-      this.$emit('update:modelValue', this.config.default ?? [['']])
+      this.$emit('update:modelValue', this.copy(this.config.default ?? [['']]))
     }
   },
 
@@ -78,7 +79,7 @@ export default {
     addCol(index) {
       this.columns.splice(index + 1, 0, true)
       this.table.forEach((row) => row.splice(index, 0, ''))
-      this.$emit('update:modelValue', this.table)
+      this.update()
     },
 
     addRow(index) {
@@ -87,7 +88,11 @@ export default {
         0,
         this.cols.map(() => '')
       )
-      this.$emit('update:modelValue', this.table)
+      this.update()
+    },
+
+    copy(table) {
+      return (table || []).map((row) => [...row])
     },
 
     header() {
@@ -107,7 +112,7 @@ export default {
         row.splice(ev.newIndex - 1, 0, row.splice(ev.oldIndex - 1, 1)[0])
       })
 
-      this.$emit('update:modelValue', this.table)
+      this.update()
     },
 
     rmCol(index) {
@@ -116,18 +121,20 @@ export default {
       this.columns.splice(index, 1)
       this.table.forEach((row) => row.splice(index, 1))
 
-      this.$emit('update:modelValue', this.table)
+      this.update()
     },
 
     rmRow(index) {
       if (this.table.length <= 1) return
 
       this.table.splice(index, 1)
-      this.$emit('update:modelValue', this.table)
+      this.update()
     },
 
+    // emits a copy so the parent's value and the working copy never share rows
     update() {
-      this.$emit('update:modelValue', this.table)
+      this.emitted = this.copy(this.table)
+      this.$emit('update:modelValue', this.emitted)
     },
 
     validate(val) {
@@ -142,7 +149,9 @@ export default {
   watch: {
     modelValue: {
       handler(val) {
-        this.table = val
+        if (val !== this.emitted) {
+          this.table = this.copy(val)
+        }
         this.validated(val)
         this.columns = this.header()
       }

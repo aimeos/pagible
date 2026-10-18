@@ -501,11 +501,13 @@ export const useUserStore = defineStore('user', {
 })
 
 export const useClipboardStore = defineStore('clipboard', {
-  state: () => ({}),
+  state: () => ({
+    entries: {}
+  }),
 
   actions: {
     get(key, defval = null) {
-      return this[key] ?? defval
+      return this.entries[key] ?? defval
     },
 
     set(key, value) {
@@ -521,7 +523,7 @@ export const useClipboardStore = defineStore('clipboard', {
         }
       }
 
-      this[key] = value
+      this.entries[key] = value
     }
   }
 })
@@ -1142,15 +1144,10 @@ export const useViewStack = defineStore('viewStack', {
         this.stack.splice(0, this.stack.length - 2)
       }
 
-      // Detail views mutate their item and replace nested state such as page content. Keep that
-      // item reactive while leaving the surrounding props bag raw for callbacks and other data.
-      const viewProps = props?.item
-        ? { ...props, item: reactive(props.item) }
-        : props || {}
-
+      // detail views copy their initial item, so the props bag can stay raw
       this.stack.push({
         component: markRaw(component),
-        props: markRaw(viewProps)
+        props: markRaw(props || {})
       })
     }
   }

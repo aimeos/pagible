@@ -298,8 +298,8 @@ export default {
 
     apply(changes, version) {
       if (version) {
-        this.elements = { ...this.elems(version.elements || []), ...this.elements }
-        this.assets = { ...version.files, ...this.assets }
+        this.elements = markRaw({ ...this.elems(version.elements || []), ...this.elements })
+        this.assets = markRaw({ ...version.files, ...this.assets })
       }
 
       if (changes.content) {
@@ -452,12 +452,49 @@ export default {
       return content
     },
 
+    accessUpdated(access) {
+      this.item.access = access
+      this.item.restricted = access !== null
+    },
+
+    // the maps are raw for performance, so they are replaced to update the views
+    addAssets(map) {
+      if (Object.keys(map).length) this.assets = markRaw({ ...this.assets, ...map })
+    },
+
+    addElements(map) {
+      if (Object.keys(map).length) this.elements = markRaw({ ...this.elements, ...map })
+    },
+
+    contentUpdated(list) {
+      this.item.content = list
+      this.dirty.content = true
+    },
+
     pageUpdated(event) {
       Object.assign(this.item, event)
       this.dirty.page = true
     },
 
+    // child components send the changes of content elements, the page owns them
+    patchEntry(entry, values) {
+      Object.assign(entry, values)
+    },
+
     reset() {
+      const entries = [
+        ...(this.item.content || []),
+        ...Object.values(this.item.meta || {}),
+        ...Object.values(this.item.config || {})
+      ]
+
+      for (const entry of entries) {
+        if (entry?._changed || entry?._error) {
+          delete entry._changed
+          delete entry._error
+        }
+      }
+
       this.$refs.page?.reset()
       this.$refs.content?.reset()
 
@@ -506,7 +543,6 @@ export default {
 
     async save(quiet = false) {
       await this.$nextTick()
-      this.$refs.content?.flush()
 
       if (!this.saveable()) {
         return false
@@ -846,6 +882,8 @@ export default {
             :preview-size="previewSize"
             @change="dirty.content = true"
             @edit="editElement"
+            @add-elements="addElements"
+            @update:content="contentUpdated"
           />
         </v-window-item>
 
@@ -858,6 +896,10 @@ export default {
             :elements="elements"
             @error="errors.content = $event"
             @change="dirty.content = true"
+            @patch-entry="patchEntry"
+            @add-assets="addAssets"
+            @add-elements="addElements"
+            @update:content="contentUpdated"
           />
         </v-window-item>
 
@@ -866,7 +908,9 @@ export default {
             ref="page"
             :item="item"
             :assets="assets"
-            @update:item="pageUpdated"
+            @patch="pageUpdated"
+            @add-assets="addAssets"
+            @update:access="accessUpdated"
             @update:aside="asidePage = $event"
             @error="errors.page = $event"
           />
@@ -896,6 +940,8 @@ export default {
     @add-after="editorAction('addAfter')"
     @add-before="editorAction('addBefore')"
     @change="dirty.content = true"
+    @patch-entry="patchEntry"
+    @add-assets="addAssets"
     @remove="editorAction('remove')"
     @update:preview-size="previewSize = $event"
   />
@@ -912,8 +958,8 @@ export default {
       @use="use"
     />
     <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="changeTargets"
-      @resolve="dirty.page = true"
+      @resolve="resolveChange($event); dirty.page = true"
+      @unresolve="unresolveChange"
     />
   </Teleport>
 </template>

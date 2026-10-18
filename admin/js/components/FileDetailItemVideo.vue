@@ -38,6 +38,9 @@ export default {
     readonly: { type: Boolean, default: false }
   },
 
+  // the cover is saved immediately, so the changes don't make the item dirty
+  emits: ['sync'],
+
   data() {
     return {
       loading: {}
@@ -110,8 +113,7 @@ export default {
           const latest = response.data?.saveFile?.latest
 
           if (latest) {
-            this.item.previews = safeParse(latest.data)?.previews || {}
-            this.item.updated_at = latest.created_at
+            this.$emit('sync', { previews: safeParse(latest.data)?.previews || {}, updated_at: latest.created_at })
           }
         })
         .catch((err) => this.messages.error(error, err))
@@ -123,7 +125,7 @@ export default {
     removeCover() {
       if (this.readonly) return this.messages.denied()
 
-      this.item.previews = {}
+      this.$emit('sync', { previews: {} })
       this.cover(false, this.$gettext('Error removing video cover'))
     },
 

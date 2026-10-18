@@ -1,5 +1,4 @@
 import DetailRefs from '../../../js/components/DetailRefs.vue'
-import { isReactive } from 'vue'
 import { useUserStore, useViewStack } from '../../../js/stores'
 
 const stubs = {
@@ -87,7 +86,7 @@ for (const type of ['element', 'file']) {
       })
     })
 
-    it('opens referenced pages with a reactive stacked item', () => {
+    it('opens referenced pages as stacked view', () => {
       mountRefs(type).then(async ({ wrapper }) => {
         const viewStack = useViewStack()
 
@@ -95,8 +94,7 @@ for (const type of ['element', 'file']) {
 
         expect(viewStack.stack).to.have.length(1)
         expect(viewStack.stack[0].props.stacked).to.be.true
-        expect(viewStack.stack[0].props.item.id).to.equal('page-1')
-        expect(isReactive(viewStack.stack[0].props.item)).to.be.true
+        expect(viewStack.stack[0].props.initial.id).to.equal('page-1')
       })
     })
 

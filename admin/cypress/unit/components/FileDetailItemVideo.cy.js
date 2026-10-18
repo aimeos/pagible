@@ -71,4 +71,38 @@ describe('FileDetailItemVideo', () => {
     cy.get('.cover-input').should('exist')
     cy.get('.cover-input').should('not.be.visible')
   })
+
+  it('emits the saved cover previews without changing the item', () => {
+    const previews = {}
+    const mutate = cy.stub().resolves({
+      data: { saveFile: { latest: { data: JSON.stringify({ previews: { 500: 'files/clip.png' } }), created_at: '2026-01-02' } } }
+    })
+
+    cy.mount(FileDetailItemVideo, {
+      props: { item: { ...item, previews } },
+      global: { mocks: { $apollo: { mutate } }, provide: { url: (path) => path } }
+    }).then(({ wrapper }) => {
+      wrapper = wrapper.findComponent(FileDetailItemVideo)
+
+      return wrapper.vm.cover(new File([''], 'clip.png'), 'error').then(() => {
+        expect(wrapper.emitted('sync')).to.deep.equal([[{ previews: { 500: 'files/clip.png' }, updated_at: '2026-01-02' }]])
+        expect(previews).to.deep.equal({})
+      })
+    })
+  })
+
+  it('emits empty previews when removing the cover', () => {
+    const mutate = cy.stub().resolves({ data: { saveFile: { latest: null } } })
+
+    cy.mount(FileDetailItemVideo, {
+      props: { item: { ...item, previews: { 500: 'files/clip.png' } } },
+      global: { mocks: { $apollo: { mutate } }, provide: { url: (path) => path } }
+    }).then(({ wrapper }) => {
+      wrapper = wrapper.findComponent(FileDetailItemVideo)
+      wrapper.vm.removeCover()
+
+      expect(wrapper.emitted('sync')[0]).to.deep.equal([{ previews: {} }])
+      expect(wrapper.props('item').previews).to.deep.equal({ 500: 'files/clip.png' })
+    })
+  })
 })

@@ -77,7 +77,7 @@ export default {
     // opens the detail view of the referenced element, file or page
     async open(type, item) {
       const { default: view } = await views[type]()
-      this.viewStack.openView(view, { item: { ...item }, stacked: true })
+      this.viewStack.openView(view, { initial: item, stacked: true })
     }
   },
 

@@ -11,6 +11,8 @@ export default {
     filter: { type: Object, required: true }
   },
 
+  emits: ['update:filter'],
+
   setup() {
     const drawer = useDrawerStore()
     return { drawer, mdiCloseCircleOutline }
@@ -53,13 +55,11 @@ export default {
     },
 
     reset() {
-      Object.assign(this.filter, this.initial)
+      this.$emit('update:filter', { ...this.initial })
     },
 
     toggle(item) {
-      for (const key in item.value) {
-        this.filter[key] = item.value[key]
-      }
+      this.$emit('update:filter', { ...item.value })
     }
   }
 }

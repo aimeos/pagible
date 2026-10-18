@@ -33,7 +33,7 @@ export default {
     item: { type: Object, required: true }
   },
 
-  emits: ['update:item', 'update:file', 'error'],
+  emits: ['patch', 'sync', 'update:file', 'error'],
 
   data() {
     return {
@@ -117,10 +117,7 @@ export default {
           }
         })
         .then((response) => {
-          this.update(
-            'description',
-            Object.assign(this.item.description || {}, { [lang]: response.data?.describe })
-          )
+          this.update('description', { ...this.item.description, [lang]: response.data?.describe })
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error describing file'), error)
@@ -138,7 +135,7 @@ export default {
       if (this.readonly) return this.messages.denied()
 
       this.audio = dictate(this.audio, (busy) => (this.loading.dictate = busy), (text) => {
-        this.update('description', Object.assign(this.item.description || {}, { [this.lang]: text }))
+        this.update('description', { ...this.item.description, [this.lang]: text })
       })
     },
 
@@ -167,7 +164,8 @@ export default {
             throw new Error('No file relocated')
           }
 
-          Object.assign(this.item, items[0])
+          // the file is already moved, so the changes don't make the item dirty
+          this.$emit('sync', items[0])
           return true
         })
         .catch((error) => {
@@ -194,10 +192,10 @@ export default {
       import('../ai')
         .then((mod) => mod.transcribe(this.item.path))
         .then((transcription) => {
-          this.update(
-            'transcription',
-            Object.assign(this.item.transcription || {}, { [this.lang]: transcription.asText() })
-          )
+          this.update('transcription', { ...this.item.transcription, [this.lang]: transcription.asText() })
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error transcribing file'), error)
         })
         .finally(() => {
           this.loading.transcribe = false
@@ -205,10 +203,16 @@ export default {
     },
 
     transcriptionUpdated(lang, event) {
-      this.item.transcription[lang] = event
-      this.$emit('update:item', this.item)
+      this.update('transcription', { ...this.item.transcription, [lang]: event })
     },
 
+    translateDescription() {
+      this.translateText(this.item.description)?.then?.((texts) => {
+        this.update('description', { ...this.item.description, ...texts })
+      })
+    },
+
+    // resolves to the translations of the first non-empty text, keyed by language
     translateText(map) {
       if (this.readonly || !this.user.can('text:translate')) return this.messages.denied()
 
@@ -217,14 +221,15 @@ export default {
         return
       }
 
-      const [lang, text] = Object.entries(map || {}).find(([lang, text]) => {
-        return text ? true : false
-      })
+      const [lang, text] = Object.entries(map).find(([lang, text]) => text) || []
+
+      if (!text) return
 
       this.loading.translate = true
 
       return import('../ai').then((ai) => {
         const promises = []
+        const texts = {}
 
         this.txlocales(lang)
           .map((lang) => lang.code)
@@ -232,7 +237,7 @@ export default {
             promises.push(
               ai.translate(text, lang).then((result) => {
                 if (result[0]) {
-                  map[lang] = result[0]
+                  texts[lang] = result[0]
                 }
               })
               .catch((error) => {
@@ -242,10 +247,9 @@ export default {
           })
 
         return Promise.all(promises).then(() => {
-          this.$emit('update:item', this.item)
           this.loading.translate = false
 
-          return map
+          return texts
         })
       })
     },
@@ -270,17 +274,19 @@ export default {
         }
       }
 
-      this.translateText(texts).then((texts) => {
+      this.translateText(texts)?.then?.((texts) => {
+        const transcription = { ...this.item.transcription }
+
         for (const [lang, text] of Object.entries(texts)) {
-          if (texts[lang]) {
-            map[lang] = texts[lang]
+          if (text) {
+            transcription[lang] = text
               .replaceAll(/\<x\>/g, '\n\n')
               .replaceAll(/\<\/x\>/g, '\n')
               .trim()
           }
         }
 
-        this.$emit('update:item', this.item)
+        this.update('transcription', transcription)
       })
       .catch((error) => {
         this.$log(`FileDetailItem::translateVTT(): Error translating VTT`, error)
@@ -288,8 +294,7 @@ export default {
     },
 
     update(what, value) {
-      this.item[what] = value
-      this.$emit('update:item', this.item)
+      this.$emit('patch', { [what]: value })
     },
 
     use(items) {
@@ -297,9 +302,7 @@ export default {
         return
       }
 
-      this.item.path = items[0].path
-      this.item.mime = items[0].mime
-
+      this.$emit('patch', { path: items[0].path, mime: items[0].mime })
       this.$emit('update:file', null)
     }
   }
@@ -365,6 +368,7 @@ export default {
             v-else-if="item.mime?.startsWith('video/')"
             :item="item"
             :readonly="readonly"
+            @sync="$emit('sync', $event)"
           />
           <FileDetailItemAudio v-else-if="item.mime?.startsWith('audio/')" :item="item" />
           <svg
@@ -394,7 +398,7 @@ export default {
                   user.can('text:translate') &&
                   Object.values(item.description || {}).find((v) => !!v)
                 "
-                @click="translateText(item.description)"
+                @click="translateDescription()"
                 :title="$gettext('Translate text')"
                 :loading="loading.translate"
                 :icon="mdiTranslate"

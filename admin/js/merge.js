@@ -57,3 +57,59 @@ export function hasUnresolved(changed, sections = ['data']) {
     Object.values(changed?.[s] || {}).some((v) => v.overwritten && !v.resolved)
   )
 }
+
+
+/**
+ * Applies the chosen value of a conflict to the target and remembers the replaced value
+ *
+ * @param {Object} changed Conflict info object
+ * @param {Object} targets Lists or objects of the sections the values are written to
+ * @param {string} section Section name of the conflict
+ * @param {string} key Key or element ID of the conflict
+ * @param {*} value Chosen value
+ */
+export function resolveChange(changed, targets, section, key, value) {
+  const info = changed[section][key]
+  const [target, idx] = changeTarget(targets, section, key)
+
+  if (target) {
+    info.snapshot = target[idx]
+    target[idx] = value
+  }
+
+  info.resolved = value
+}
+
+
+/**
+ * Restores the value replaced by resolveChange() and marks the conflict as unresolved again
+ *
+ * @param {Object} changed Conflict info object
+ * @param {Object} targets Lists or objects of the sections the values are written to
+ * @param {string} section Section name of the conflict
+ * @param {string} key Key or element ID of the conflict
+ */
+export function unresolveChange(changed, targets, section, key) {
+  const info = changed[section][key]
+  const [target, idx] = changeTarget(targets, section, key)
+
+  if (target && 'snapshot' in info) {
+    target[idx] = info.snapshot
+  }
+
+  delete info.snapshot
+  delete info.resolved
+}
+
+
+// target list or object of the section and the index or key of the entry, no target if not found
+function changeTarget(targets, section, key) {
+  const target = targets?.[section]
+
+  if (Array.isArray(target)) {
+    const idx = target.findIndex((b) => (b.id || b.refid) === key)
+    return idx >= 0 ? [target, idx] : [null, -1]
+  }
+
+  return [target, key]
+}

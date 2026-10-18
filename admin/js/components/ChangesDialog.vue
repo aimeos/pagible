@@ -15,11 +15,10 @@ export default {
 
   props: {
     modelValue: { type: Boolean, default: false },
-    changed: { type: Object, default: null },
-    targets: { type: Object, default: () => ({}) }
+    changed: { type: Object, default: null }
   },
 
-  emits: ['update:modelValue', 'resolve'],
+  emits: ['update:modelValue', 'resolve', 'unresolve'],
 
   setup() {
     return { mdiUndoVariant, stringify }
@@ -194,30 +193,10 @@ export default {
       this.resolve(section, key, merged)
     },
 
+    // the owner applies the value to its item and marks the conflict as resolved
     resolve(section, key, value) {
-      const info = this.changed[section][key]
-      const [target, idx] = this.target(section, key)
-
-      if (target) {
-        info.snapshot = target[idx]
-        target[idx] = value
-      }
-
-      info.resolved = value
+      this.$emit('resolve', { section, key, value })
       this.resolved.add(`${section}.${key}`)
-      this.$emit('resolve')
-    },
-
-    // target list or object of the section and the index or key of the entry, no target if not found
-    target(section, key) {
-      const target = this.targets[section]
-
-      if (Array.isArray(target)) {
-        const idx = target.findIndex((b) => (b.id || b.refid) === key)
-        return idx >= 0 ? [target, idx] : [null, -1]
-      }
-
-      return [target, key]
     },
 
     title(block) {
@@ -226,16 +205,7 @@ export default {
     },
 
     unresolve(section, key) {
-      const info = this.changed[section][key]
-      const [target, idx] = this.target(section, key)
-
-      if (target && 'snapshot' in info) {
-        target[idx] = info.snapshot
-      }
-
-      delete info.snapshot
-
-      delete info.resolved
+      this.$emit('unresolve', { section, key })
       this.resolved.delete(`${section}.${key}`)
     },
 

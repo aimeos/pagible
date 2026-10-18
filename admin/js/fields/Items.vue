@@ -125,9 +125,11 @@ export default {
       this.insert(this.items.length, 'bottom')
     },
 
+    // emits a new array, so the parent's value and the working copy are never the same array
     change(items = this.items) {
       this.items = items
-      this.$emit('update:modelValue', this.items)
+      this.emitted = [...this.items]
+      this.$emit('update:modelValue', this.emitted)
     },
 
     copy(idx) {
@@ -142,6 +144,7 @@ export default {
 
     /**
      * Ensures configured identities exist recursively, optionally renewing them.
+     * Returns a shallow copy if an identity was added, the passed item is never changed.
      */
     identity(item, config, renew = false) {
       if (!item || typeof item !== 'object' || Array.isArray(item)) {
@@ -149,24 +152,29 @@ export default {
       }
 
       const key = typeof config?.identity === 'string' ? config.identity : ''
+      let result = item
 
       if (key && (renew || typeof item[key] !== 'string' || !item[key])) {
-        item[key] = uid()
+        result = { ...item, [key]: uid() }
       }
 
       for (const [name, field] of Object.entries(config?.item || {})) {
         if (field?.type === 'items' && Array.isArray(item[name])) {
-          item[name].forEach((child) => this.identity(child, field, renew))
+          const list = item[name].map((child) => this.identity(child, field, renew))
+
+          if (list.some((child, idx) => child !== item[name][idx])) {
+            result = result === item ? { ...item } : result
+            result[name] = list
+          }
         }
       }
 
-      return item
+      return result
     },
 
     init(val) {
       const items = Array.isArray(val) ? val : clone(this.config.default ?? [])
-      items.forEach((item) => this.identity(item, this.config))
-      return items
+      return items.map((item) => this.identity(item, this.config))
     },
 
     insert(idx, align = 'auto') {
@@ -222,13 +230,10 @@ export default {
         })
     },
 
+    // replaces the changed item, the item objects are shared with the parent's value
     update(idx, code, value) {
-      if (!this.items[idx]) {
-        this.items[idx] = {}
-      }
-
-      this.items[idx][code] = value
-      this.$emit('update:modelValue', this.items)
+      this.items[idx] = { ...this.items[idx], [code]: value }
+      this.change()
     },
 
     writeText(idx, code) {
@@ -253,7 +258,9 @@ export default {
 
   watch: {
     modelValue(val) {
-      this.items = this.init(val)
+      if (val !== this.emitted) {
+        this.items = this.init(val)
+      }
     }
   }
 }

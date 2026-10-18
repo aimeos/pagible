@@ -89,7 +89,7 @@ export default {
     section: { type: String, default: 'main' }
   },
 
-  emits: ['error', 'update:content'],
+  emits: ['change', 'error', 'update:content', 'patch-entry', 'add-assets', 'add-elements'],
 
   data: () => ({
     chat: '',
@@ -102,6 +102,9 @@ export default {
     index: null,
     scroller: null,
     checked: false,
+    hidden: new Set(),
+    selected: new Set(),
+    term: '',
     vchange: false,
     vschemas: false
   }),
@@ -146,7 +149,7 @@ export default {
 
   computed: {
     checkedCount() {
-      return this.content.filter((el) => el._checked).length
+      return this.content.filter((el) => this.selected.has(el)).length
     },
 
     clipCount() {
@@ -171,22 +174,16 @@ export default {
         : this.entry(item.type, { data: {} })
 
       if (item.id) {
-        for (const file of item.files || []) {
-          this.assets[file.id] = file
-        }
-
-        this.elements[item.id] = item
+        this.$emit('add-assets', Object.fromEntries((item.files || []).map((file) => [file.id, file])))
+        this.$emit('add-elements', { [item.id]: item })
       }
 
-      if (idx !== null) {
-        this.content.splice(idx, 0, entry)
-      } else {
-        this.content.push(entry)
-      }
+      const list = [...this.content]
+      list.splice(idx !== null ? idx : list.length, 0, entry)
+      this.$emit('update:content', list)
 
       this.panel.push(entry.id)
       this.vschemas = false
-      this.flush()
       reveal(this.$refs.list, entry.id, idx === null ? 'bottom' : 'auto')
     },
 
@@ -207,12 +204,12 @@ export default {
       }
 
       this.vchange = false
-      this.content[idx].type = item.type
-      this.flush()
+      this.$emit('patch-entry', this.content[idx], { type: item.type })
+      this.$emit('change')
     },
 
     copy(idx) {
-      const list = this.selection(idx).map((el) => ({ ...clone(el), id: null, _checked: false }))
+      const list = this.selection(idx).map((el) => ({ ...clone(el), id: null }))
       this.clipboard.set('page-content', list)
     },
 
@@ -230,14 +227,13 @@ export default {
     cut(idx) {
       const list = this.selection(idx)
 
-      list.forEach((el) => this.take(this.content.indexOf(el)))
-      this.clipboard.set('page-content', list.map((el) => ({ ...el, id: null, _checked: false })))
-      this.flush()
+      this.$emit('update:content', this.without(list))
+      this.clipboard.set('page-content', list.map((el) => ({ ...el, id: null })))
     },
 
     error(el, value) {
       if (el) {
-        el._error = value
+        this.$emit('patch-entry', el, { _error: value })
       }
 
       const has = this.content.some((el) => el._error)
@@ -261,10 +257,6 @@ export default {
       return this.schemas.content[type]?.fields
     },
 
-    flush() {
-      this.$emit('update:content', this.content)
-    },
-
     insert(idx) {
       this.index = idx
       this.vschemas = true
@@ -278,12 +270,13 @@ export default {
         return
       }
 
+      // the first merged entry is the topmost one, so its index is the same without the entries
       const idx = this.content.indexOf(entries[0])
       const text = entries.map((el) => this.createMarkdown(el) + '\n\n').join('')
+      const list = this.without(entries)
 
-      entries.forEach((el) => this.take(this.content.indexOf(el)))
-      this.content.splice(idx, 0, this.entry('text', { data: { text }, _changed: true }))
-      this.flush()
+      list.splice(idx, 0, this.entry('text', { data: { text }, _changed: true }))
+      this.$emit('update:content', list)
     },
 
     move(ev, el) {
@@ -316,8 +309,9 @@ export default {
         return
       }
 
-      this.content.splice(pos, 0, this.content.splice(idx, 1)[0])
-      this.flush()
+      const list = [...this.content]
+      list.splice(pos, 0, list.splice(idx, 1)[0])
+      this.$emit('update:content', list)
 
       this.$nextTick(() => {
         const key = CSS.escape(String(el.id))
@@ -342,15 +336,13 @@ export default {
         return { ...el, group: this.section, id: uid(), _changed: true }
       })
 
-      this.content.splice(idx, 0, ...entries)
-      this.flush()
+      const list = [...this.content]
+      list.splice(idx, 0, ...entries)
+      this.$emit('update:content', list)
     },
 
     purge() {
-      this.selection().forEach((el) => this.take(this.content.indexOf(el)))
-
-      this.error()
-      this.flush()
+      this.$emit('update:content', this.without(this.selection()))
     },
 
     record() {
@@ -412,22 +404,19 @@ export default {
     },
 
     remove(idx) {
-      this.take(idx)
-      this.error()
-      this.flush()
+      this.$emit('update:content', this.without([this.content[idx]]))
     },
 
+    // the owner clears the state flags of the entries, only the local state needs an update
     reset() {
-      this.content.forEach((el) => {
-        delete el._changed
-        delete el._error
-      })
-
+      this.lastError = false
       this.store()
     },
 
     search(term) {
-      term = term?.toLocaleLowerCase().trim()
+      this.term = term?.toLocaleLowerCase().trim() || ''
+
+      const hidden = new Set()
 
       this.content.forEach((el) => {
         const data = (el.type === 'reference' ? this.elements[el.refid] : el)?.data || {}
@@ -435,16 +424,24 @@ export default {
           value &&
           typeof value !== 'object' &&
           typeof value !== 'boolean' &&
-          String(value).toLocaleLowerCase().includes(term)
+          String(value).toLocaleLowerCase().includes(this.term)
         )
 
-        el._hide = Boolean(term) && !found
+        if (this.term && !found) {
+          hidden.add(el)
+        }
       })
+
+      this.hidden = hidden
+    },
+
+    select(el) {
+      this.selected.has(el) ? this.selected.delete(el) : this.selected.add(el)
     },
 
     selection(idx) {
-      return idx === undefined || this.content[idx]?._checked
-        ? this.content.filter((el) => el._checked)
+      return idx === undefined || this.selected.has(this.content[idx])
+        ? this.content.filter((el) => this.selected.has(el))
         : [this.content[idx]]
     },
 
@@ -480,17 +477,18 @@ export default {
 
           const files = (element.files || []).map(normalizeFile)
 
-          for (const file of files) {
-            this.assets[file.id] = file
-          }
-
           element.data = frozenParse(element.data)
           element.files = Object.freeze(files)
 
-          this.elements[element.id] = element
-          this.content[idx] = this.entry('reference', { refid: element.id })
+          this.$emit('add-assets', Object.fromEntries(files.map((file) => [file.id, file])))
+          this.$emit('add-elements', { [element.id]: element })
           invalidateList('elements')
-          this.flush()
+
+          // the content may have changed while waiting for the response
+          if (this.content.includes(entry)) {
+            const ref = this.entry('reference', { refid: element.id })
+            this.$emit('update:content', this.content.map((el) => (el === entry ? ref : el)))
+          }
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Unable to make element shared'), error, idx)
@@ -518,7 +516,7 @@ export default {
       const changed = this.side.shown('state', 'changed')
 
       return (
-        !el._hide &&
+        !this.hidden.has(el) &&
         this.side.shown('type', el.type) &&
         ((error && el._error) || (changed && el._changed) || (valid && !el._error && !el._changed))
       )
@@ -563,8 +561,9 @@ export default {
         }
       }
 
-      this.content.splice(idx, 1, ...list)
-      this.flush()
+      const content = [...this.content]
+      content.splice(idx, 1, ...list)
+      this.$emit('update:content', content)
     },
 
     store(isVisible = true) {
@@ -586,12 +585,6 @@ export default {
       return (this.side.store = Object.freeze({ type: Object.freeze(types), state: Object.freeze(state) }))
     },
 
-    take(idx) {
-      const [entry] = this.content.splice(idx, 1)
-      this.panel = this.panel.filter((value) => value !== entry.id)
-      return entry
-    },
-
     title(el) {
       return itemTitle(el.data) || this.typeLabel(el.type) || ''
     },
@@ -599,7 +592,7 @@ export default {
     toggle() {
       this.content.forEach((el) => {
         if (this.shown(el)) {
-          el._checked = !el._checked
+          this.select(el)
         }
       })
     },
@@ -617,35 +610,37 @@ export default {
         return
       }
 
-      for (const file of this.elements[entry.refid].files || []) {
-        this.assets[file.id] = file
-      }
-
-      this.content[idx] = {
-        ...this.content[idx],
-        type: this.elements[entry.refid].type || null,
-        data: { ...(this.elements[entry.refid].data || {}) },
+      const element = this.elements[entry.refid]
+      const copy = {
+        ...entry,
+        type: element.type || null,
+        data: { ...(element.data || {}) },
         refid: undefined
       }
 
-      this.flush()
+      this.$emit('add-assets', Object.fromEntries((element.files || []).map((file) => [file.id, file])))
+      this.$emit('update:content', this.content.map((el, i) => (i === idx ? copy : el)))
     },
 
-    update(el) {
-      el._changed = true
-      el.group = this.section
+    update(el, values) {
+      this.$emit('patch-entry', el, { ...values, _changed: true, group: this.section, ...(el.id ? {} : { id: uid() }) })
+      this.$emit('change')
+      this.stored()
+    },
 
-      if (!el.id) {
-        el.id = uid()
-      }
+    // returns the list without the entries and closes their panels
+    without(entries) {
+      const removed = new Set(entries)
 
-      this.emitContent()
+      this.panel = this.panel.filter((id) => !entries.some((el) => el.id === id))
+      entries.forEach((el) => this.selected.delete(el))
+
+      return this.content.filter((el) => !removed.has(el))
     }
   },
 
   created() {
     this.stored = debounce(() => this.store(), 200)
-    this.emitContent = debounce(this.flush, 150)
   },
 
   mounted() {
@@ -662,9 +657,20 @@ export default {
   watch: {
     content: {
       immediate: true,
-      handler() {
+      handler(list) {
+        const current = new Set(list)
+
         this.checked = false
-        this.stored?.()
+        this.selected.forEach((el) => !current.has(el) && this.selected.delete(el))
+
+        if (this.term) {
+          this.search(this.term)
+        }
+
+        // updates the error state and the counts after entries have been added or removed
+        if (this.stored) {
+          this.error()
+        }
       }
     },
 
@@ -822,8 +828,8 @@ export default {
 
             <v-checkbox-btn
               v-if="user.can('page:save')"
-              :model-value="el._checked"
-              @click.stop="el._checked = !el._checked"
+              :model-value="selected.has(el)"
+              @click.stop="select(el)"
             />
 
             <span class="btn-actions">
@@ -833,10 +839,10 @@ export default {
                 </template>
 
                 <ActionItem v-if="!el._error" :prepend-icon="mdiContentCopy" @click="copy(idx)">
-                  {{ $pgettext('clipboard', 'Copy') }}{{ el._checked ? ` (${checkedCount})` : '' }}
+                  {{ $pgettext('clipboard', 'Copy') }}{{ selected.has(el) ? ` (${checkedCount})` : '' }}
                 </ActionItem>
                 <ActionItem v-if="!el._error" :prepend-icon="mdiContentCut" @click="cut(idx)">
-                  {{ $pgettext('clipboard', 'Cut') }}{{ el._checked ? ` (${checkedCount})` : '' }}
+                  {{ $pgettext('clipboard', 'Cut') }}{{ selected.has(el) ? ` (${checkedCount})` : '' }}
                 </ActionItem>
                 <ActionItem :prepend-icon="mdiDelete" @click="remove(idx)">
                   {{ $gettext('Remove') }}
@@ -903,14 +909,16 @@ export default {
             />
             <Fields
               v-else
-              v-model:data="el.data"
-              v-model:files="el.files"
+              :data="el.data"
+              :files="el.files"
               :readonly="!user.can('page:save')"
               :fields="fields(el.type)"
               :assets="assets"
               :type="el.type"
+              @update:data="update(el, { data: $event })"
+              @update:files="update(el, { files: $event })"
+              @add-assets="$emit('add-assets', $event)"
               @error="error(el, $event)"
-              @change="update(el)"
             />
           </v-expansion-panel-text>
           </v-expansion-panel>

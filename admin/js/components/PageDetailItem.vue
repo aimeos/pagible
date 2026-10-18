@@ -19,7 +19,7 @@ export default {
     assets: { type: Object, default: () => {} }
   },
 
-  emits: ['update:item', 'update:aside', 'error'],
+  emits: ['patch', 'add-assets', 'update:access', 'update:aside', 'error'],
 
   data: () => ({
     changed: {},
@@ -34,11 +34,6 @@ export default {
   },
 
   methods: {
-    accessApplied(access) {
-      this.item.access = access
-      this.item.restricted = access !== null
-    },
-
     error(what, value) {
       this.errors[what] = value
       this.$emit('error', hasTrue(this.errors))
@@ -67,9 +62,9 @@ export default {
       await this.$refs[tab]?.showError?.()
     },
 
-    update(what) {
+    update(what, patch) {
       this.changed[what] = true
-      this.$emit('update:item', this.item)
+      this.$emit('patch', patch)
     }
   }
 }
@@ -114,7 +109,7 @@ export default {
           <PageDetailItemProps
             ref="props"
             :item="item"
-            @change="update('details')"
+            @patch="update('details', $event)"
             @error="error('details', $event)"
           />
         </v-window-item>
@@ -125,7 +120,8 @@ export default {
             section="meta"
             :item="item"
             :assets="assets"
-            @change="update('meta')"
+            @patch="update('meta', $event)"
+            @add-assets="$emit('add-assets', $event)"
             @error="error('meta', $event)"
           />
         </v-window-item>
@@ -137,7 +133,8 @@ export default {
             permission="page:config"
             :item="item"
             :assets="assets"
-            @change="update('config')"
+            @patch="update('config', $event)"
+            @add-assets="$emit('add-assets', $event)"
             @error="error('config', $event)"
           />
         </v-window-item>
@@ -150,7 +147,7 @@ export default {
             :ids="[item.id]"
             :access="item.access"
             :descendants="item.has || 0"
-            @applied="accessApplied"
+            @applied="$emit('update:access', $event)"
           />
         </v-window-item>
       </v-window>

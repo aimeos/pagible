@@ -188,18 +188,21 @@ export default {
       }
     },
 
+    // replaces the changed files by updated copies, the file objects are shared with the assets
     sync(files, entries) {
-      const map = new Map(files.map((item) => [item.id, item]))
+      const ids = new Set(files.map((item) => item.id))
+      const map = new Map((entries || []).filter((data) => ids.has(data.id)).map((data) => [data.id, data]))
       const updated = []
 
-      for (const data of entries || []) {
-        const item = map.get(data.id)
-
-        if (item) {
-          Object.assign(item, data)
-          updated.push(item)
+      this.images = this.images.map((item) => {
+        if (!map.has(item.id)) {
+          return item
         }
-      }
+
+        const copy = { ...item, ...map.get(item.id) }
+        updated.push(copy)
+        return copy
+      })
 
       if (updated.length) {
         this.$emit('addFile', updated)

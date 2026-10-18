@@ -96,6 +96,7 @@ export default {
   <AsideList
     v-if="aside"
     :filter="aside.filter"
+    @update:filter="Object.assign(aside.filter, $event)"
     :defaults="aside.defaults"
     :content="aside.content()"
   />

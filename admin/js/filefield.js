@@ -97,7 +97,7 @@ export default {
       const { default: FileDetail } = await import('./views/FileDetail.vue')
 
       this.viewStack.openView(FileDetail, {
-        item: item,
+        initial: item,
         stacked: true,
         onSaved: () => this.update?.()
       })

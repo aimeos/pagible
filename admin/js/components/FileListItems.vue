@@ -254,7 +254,7 @@ export default {
           failure,
           ids.slice(done)
         )
-      } else if (!files.length) {
+      } else if (!files.size) {
         this.messages.add(this.$gettext('No missing descriptions to translate'), 'info')
       }
     }

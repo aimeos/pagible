@@ -1404,6 +1404,8 @@ export default {
         })
     },
 
+    resetFilter: listBase.methods.resetFilter,
+
     sync: listBase.methods.sync,
 
     // returns the parent, the position and the reference page for adding before (0), into (null) or after (1) the page

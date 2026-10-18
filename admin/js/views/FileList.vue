@@ -118,13 +118,14 @@ export default {
           </ul>
         </div>
 
-        <FileListItems ref="filelist" @select="open($event)" :filter="filter" :defaults="defaults" />
+        <FileListItems ref="filelist" @select="open($event)" :filter="filter" @update:filter="Object.assign(filter, $event)" :defaults="defaults" />
       </v-sheet>
     </v-container>
   </v-main>
 
   <AsideList
     :filter="filter"
+    @update:filter="Object.assign(filter, $event)"
     :defaults="defaults"
     :content="asideContent"
   />

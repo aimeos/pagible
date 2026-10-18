@@ -156,7 +156,7 @@ export const listBase = {
     filter: { type: Object, default: () => ({}) }
   },
 
-  emits: ['select'],
+  emits: ['select', 'update:filter'],
 
   data() {
     return {
@@ -372,7 +372,7 @@ export const listBase = {
           }
         }
 
-        Object.assign(this.filter, filter)
+        this.$emit('update:filter', filter)
       }
     },
 

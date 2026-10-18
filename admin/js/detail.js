@@ -9,8 +9,8 @@ import DetailAppBar from './components/DetailAppBar.vue'
 import { setupReload } from './echo'
 import { invalidateList } from './graphql'
 import { pluginLabel } from './i18n'
-import { hasUnresolved } from './merge'
-import { focusInvalid } from './utils'
+import { hasUnresolved, resolveChange, unresolveChange } from './merge'
+import { clone, focusInvalid } from './utils'
 import {
   useChangeStore,
   useDirtyStore,
@@ -90,8 +90,9 @@ export const detailBase = {
     HistoryDialog: defineAsyncComponent(() => import('./components/HistoryDialog.vue'))
   },
 
+  // the view edits its own copy of the initial item, so the opener's object stays untouched
   props: {
-    item: { type: Object, required: true },
+    initial: { type: Object, required: true },
     stacked: { type: Boolean, default: false }
   },
 
@@ -104,6 +105,7 @@ export const detailBase = {
 
   data() {
     return {
+      item: clone(this.initial),
       changed: null,
       destroyed: false,
       dirty: false,
@@ -194,9 +196,19 @@ export const detailBase = {
       invalidateList(this.type + 's')
     },
 
-    itemUpdated() {
-      this.$emit('update:item', this.item)
+    // applies the changed fields sent by the child components to the own item
+    itemUpdated(patch) {
+      Object.assign(this.item, patch)
       this.dirty = true
+    },
+
+    // applies a conflict resolution chosen in the changes dialog to the item
+    resolveChange({ section, key, value }) {
+      resolveChange(this.changed, this.changeTargets, section, key, value)
+    },
+
+    unresolveChange({ section, key }) {
+      unresolveChange(this.changed, this.changeTargets, section, key)
     },
 
     label(panel) {

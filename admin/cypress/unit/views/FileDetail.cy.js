@@ -25,7 +25,7 @@ const baseItem = {
 
 function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(FileDetail, {
-    props: { item: { ...baseItem, ...item } },
+    props: { initial: { ...baseItem, ...item } },
     global: {
       stubs,
       provide: {
@@ -181,6 +181,34 @@ describe('FileDetail', () => {
         expect(vm.item.name).to.equal('updated.jpg')
         expect(vm.dirty).to.be.true
         expect(vm.vhistory).to.be.false
+      })
+    })
+  })
+
+  describe('item events', () => {
+    it('applies patches to the own copy and marks it dirty', () => {
+      const initial = { ...baseItem }
+
+      cy.mount(FileDetail, {
+        props: { initial },
+        global: { stubs, mocks: { $apollo: { query: () => Promise.resolve({ data: {} }) } } },
+      }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(FileDetail).vm
+        vm.itemUpdated({ name: 'renamed.jpg' })
+
+        expect(vm.item.name).to.equal('renamed.jpg')
+        expect(vm.dirty).to.be.true
+        expect(initial.name).to.equal('photo.jpg')
+      })
+    })
+
+    it('applies synced changes without marking the item dirty', () => {
+      mountDetail().then(({ wrapper }) => {
+        const vm = wrapper.findComponent(FileDetail).vm
+        vm.itemSynced({ disk: 'private' })
+
+        expect(vm.item.disk).to.equal('private')
+        expect(vm.dirty).to.be.false
       })
     })
   })

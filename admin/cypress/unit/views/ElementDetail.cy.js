@@ -25,7 +25,7 @@ let schemaLoad
 
 function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(ElementDetail, {
-    props: { item: { ...baseItem, ...item } },
+    props: { initial: { ...baseItem, ...item } },
     global: {
       stubs,
       mocks: {
