@@ -13,6 +13,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\Filter;
+use Aimeos\Cms\Query\SearchQuery;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Facades\Elements;
 use Aimeos\Cms\Facades\Files;
@@ -344,6 +345,39 @@ class CmsEngineTest extends SearchTestAbstract
 
         $result = File::search( 'zphraseunique' )->searchFields( 'draft' )->take( 25 )->get();
         $this->assertTrue( $result->contains( 'id', $file->id ) );
+    }
+
+
+    public function testPaginateFallbackCountsOnlyIfCheap(): void
+    {
+        $conn = ( new PageView() )->getConnection();
+        $total = PageView::fallback( 'en' )->where( 'status', 1 )->count();
+        $this->assertGreaterThan( 2, $total );
+
+        $search = fn() => SearchQuery::prefer( PageView::search( '' ), 'en' )->orderBy( 'id' );
+        $conn->enableQueryLog();
+
+        // variant columns require the joins of the language fallback, so only the next page is included
+        $result = $search()->query( fn( $q ) => $q->where( 'status', 1 ) )->paginate( 2 );
+        $this->assertSame( [2, 3, 2], [$result->lastPage(), $result->total(), $result->count()] );
+
+        $result = $search()->query( fn( $q ) => $q->where( 'status', 1 ) )->paginate( 2, 'page', (int) ceil( $total / 2 ) );
+        $this->assertSame( [(int) ceil( $total / 2 ), $total], [$result->lastPage(), $result->total()] );
+        $this->assertStringNotContainsString( 'count(', implode( "\n", array_column( $conn->getQueryLog(), 'query' ) ) );
+
+        // the page is taken from the request if none is passed
+        request()->query->set( 'page', 2 );
+        $result = $search()->query( fn( $q ) => $q->where( 'status', 1 ) )->paginate( 2 );
+        $this->assertSame( 2, $result->currentPage() );
+        $this->assertEquals( $search()->query( fn( $q ) => $q->where( 'status', 1 ) )->paginate( 2, 'page', 2 )->pluck( 'id' ), $result->pluck( 'id' ) );
+        request()->query->remove( 'page' );
+
+        // page columns are counted without the joins
+        $conn->flushQueryLog();
+        $result = $search()->paginate( 2 );
+
+        $this->assertSame( PageView::fallback( 'en' )->count(), $result->total() );
+        $this->assertStringContainsString( 'count(', implode( "\n", array_column( $conn->getQueryLog(), 'query' ) ) );
     }
 
 

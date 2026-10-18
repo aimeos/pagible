@@ -192,6 +192,40 @@ class Utils
 
 
     /**
+     * Returns the languages whose variants are shown for the given language, most preferred first.
+     *
+     * Regional languages fall back to their parent languages (e.g. "de-CH" to "de") unless
+     * "cms.translate.chains" lists the fallback languages. Fallback languages not in "cms.locales"
+     * (if configured) are skipped because they can't have variants. The source language of each
+     * page is used last by the page queries and isn't part of the list.
+     *
+     * @param string $lang Language code
+     * @return list<string> Language code followed by its fallback languages
+     */
+    public static function chain( string $lang ) : array
+    {
+        $chains = (array) config( 'cms.translate.chains', [] );
+        $list = [];
+
+        if( isset( $chains[$lang] ) ) {
+            $list = array_map( 'strval', (array) $chains[$lang] );
+        } else {
+            for( $code = $lang; ( $pos = strrpos( $code, '-' ) ) !== false; ) {
+                $list[] = $code = substr( $code, 0, $pos );
+            }
+        }
+
+        // each fallback language adds a join to the page queries
+        if( $locales = self::locales() ) {
+            $list = array_intersect( $list, $locales );
+        }
+
+        // the codes are added to the page queries as escaped literals
+        return array_values( array_unique( array_filter( [$lang, ...$list], fn( $code ) => self::isValidLang( $code ) ) ) );
+    }
+
+
+    /**
      * Returns the configured language codes.
      *
      * @return array<int, string> Language codes from "cms.locales"

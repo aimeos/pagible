@@ -222,9 +222,17 @@ return [
     | their sub-pages, "source" shows them with the name and URL of their
     | source language variant.
     |
+    | In "source" mode and for editors, regional languages show the variant
+    | of their parent language before the source variant, e.g. "de-CH" uses
+    | "de". The "chains" setting replaces these fallback languages, e.g.
+    | ['de-CH' => ['de'], 'lb' => ['de', 'fr']]. Languages not listed in
+    | "locales" are skipped. Each fallback language adds a join to the page
+    | queries, so keep the chains short.
+    |
     */
     'translate' => [
         'fallback' => env( 'CMS_TRANSLATE_FALLBACK', 'hide' ),
+        'chains' => [],
     ],
 
     /*

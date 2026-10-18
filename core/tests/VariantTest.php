@@ -24,6 +24,7 @@ use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 use Database\Seeders\TestSeeder;
+use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -244,6 +245,17 @@ class VariantTest extends CoreTestAbstract
     public function testSetSourceWithoutVariant()
     {
         $page = $this->page();
+
+        $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
+        Variants::setSource( $page->id, 'de', $this->user );
+    }
+
+
+    public function testSetSourceTrashedVariant()
+    {
+        $page = $this->page();
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::drop( $page->id, 'de', $this->user );
 
         $this->expectException( \Illuminate\Database\Eloquent\ModelNotFoundException::class );
         Variants::setSource( $page->id, 'de', $this->user );
@@ -1189,6 +1201,161 @@ class VariantTest extends CoreTestAbstract
 
         $this->assertEquals( [$page->id => 'en', $other->id => 'en'], $langs() );
         $this->assertEquals( [$page->id => 'de', $other->id => 'en'], $langs( true ) );
+    }
+
+
+    public function testFallbackChain()
+    {
+        config( ['cms.locales' => ['en', 'de', 'de-CH', 'fr']] );
+
+        $page = $this->page();
+        $parent = $this->page();
+        $other = $this->page();
+
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::add( $page->id, 'de-CH', $this->user );
+        Variants::add( $parent->id, 'de', $this->user );
+
+        $ids = [$page->id, $parent->id, $other->id];
+        $langs = fn( $query ) => $query->whereIn( 'id', $ids )->get()->pluck( 'lang', 'id' )->all();
+
+        // regional languages use their parent language before the source language
+        $this->assertEquals( [$page->id => 'de-CH', $parent->id => 'de', $other->id => 'en'], $langs( PageView::fallback( 'de-CH' ) ) );
+        $this->assertEquals( 3, PageView::fallback( 'de-CH' )->whereIn( 'id', $ids )->count() );
+
+        // visitors only see enabled variants
+        PageVariant::where( 'lang', 'de-CH' )->update( ['status' => 1] );
+        PageVariant::where( 'page_id', $parent->id )->where( 'lang', 'de' )->update( ['status' => 1] );
+        $this->assertEquals( [$page->id => 'de-CH', $parent->id => 'de', $other->id => 'en'], $langs( PageView::visible( 'de-CH' ) ) );
+
+        PageVariant::where( 'lang', 'de-CH' )->update( ['status' => 0] );
+        $this->assertEquals( [$page->id => 'en', $parent->id => 'de', $other->id => 'en'], $langs( PageView::visible( 'de-CH' ) ) );
+
+        // trashed variants are skipped unless trashed ones are requested
+        Variants::drop( $page->id, 'de-CH', $this->user );
+        $this->assertEquals( [$page->id => 'de', $parent->id => 'de', $other->id => 'en'], $langs( PageView::fallback( 'de-CH' ) ) );
+        $this->assertEquals( [$page->id => 'de-CH', $parent->id => 'de', $other->id => 'en'], $langs( PageView::fallback( 'de-CH', true )->withTrashed() ) );
+
+        // configured chains replace the derived ones
+        config( ['cms.translate.chains' => ['de-CH' => ['fr']]] );
+        $this->assertEquals( [$page->id => 'en', $parent->id => 'en', $other->id => 'en'], $langs( PageView::fallback( 'de-CH' ) ) );
+    }
+
+
+    public function testFallbackHintSqlServer()
+    {
+        config( ['cms.locales' => ['en', 'de', 'de-CH']] );
+
+        $sql = function( $query ) {
+            $conn = $query->getConnection();
+            $query->getQuery()->grammar = new SqlServerGrammar( $conn );
+
+            return $conn->pretend( fn() => $query->get() )[0]['query'];
+        };
+
+        // paginated fallback queries fetch the first rows with nested loops
+        $this->assertStringEndsWith( ' option (fast 30, loop join)', $sql( PageView::fallback( 'de-CH' )->orderBy( 'id' )->skip( 20 )->take( 10 ) ) );
+
+        // queries without limit or fallback stay unchanged
+        $this->assertStringNotContainsString( 'option (', $sql( PageView::fallback( 'de-CH' )->orderBy( 'id' ) ) );
+        $this->assertStringNotContainsString( 'option (', $sql( PageView::language( 'de-CH' )->orderBy( 'id' )->take( 10 ) ) );
+
+        // nested loops are slower for many rows and the hint would apply to other joins too
+        $this->assertStringNotContainsString( 'option (', $sql( PageView::fallback( 'de-CH' )->orderBy( 'id' )->skip( 1000 )->take( 10 ) ) );
+        $this->assertStringNotContainsString( 'option (', $sql( PageView::fallback( 'de-CH' )->join( 'cms_page_access', 'cms_page_access.page_id', '=', 'cms_page_view.id' )->orderBy( 'id' )->take( 10 ) ) );
+    }
+
+
+    public function testFallbackCount()
+    {
+        config( ['cms.locales' => ['en', 'de', 'de-CH']] );
+
+        $pages = [$this->page(), $this->page(), $this->page(), $this->page(), $this->page()];
+        $ids = array_map( fn( $page ) => $page->id, $pages );
+
+        Variants::add( $ids[0], 'de', $this->user );
+        Variants::add( $ids[0], 'de-CH', $this->user );
+        Variants::add( $ids[1], 'de', $this->user );
+        Variants::add( $ids[3], 'de-CH', $this->user );
+        Variants::drop( $ids[1], 'de', $this->user );
+        PageVariant::where( 'page_id', $ids[0] )->where( 'lang', 'de-CH' )->update( ['status' => 1] );
+
+        // disabled source variants are used for "visible" too
+        PageVariant::whereIn( 'page_id', [$ids[3], $ids[4]] )->where( 'lang', 'en' )->update( ['status' => 0] );
+
+        $queries = [
+            fn() => PageView::fallback( 'de-CH' ),
+            fn() => PageView::fallback( 'de-CH', true )->withTrashed(),
+            fn() => PageView::visible( 'de-CH' ),
+            fn() => PageView::fallback( 'xx-YY' ),
+        ];
+
+        foreach( $queries as $query )
+        {
+            // nested conditions on page columns are counted without the chain joins too
+            $nested = $query()->where( fn( $q ) => $q->whereIn( 'id', $ids )->orWhereNull( 'parent_id' ) )->whereNotNull( 'parent_id' );
+            $this->assertEquals( $query()->whereIn( 'id', $ids )->get()->count(), $nested->paginate( 2 )->total() );
+        }
+
+        // only page columns are filtered by the pagination count query without the chain joins
+        $conn = PageView::query()->getConnection();
+        $sql = fn( $query ) => $conn->pretend( fn() => $query->paginate( 2 ) )[0]['query'];
+        $join = $conn->getQueryGrammar()->wrap( 'f0' );
+
+        $this->assertStringNotContainsString( $join, $sql( PageView::fallback( 'de-CH' )->whereIn( 'id', $ids ) ) );
+        $this->assertStringContainsString( $join, $sql( PageView::fallback( 'de-CH' )->whereIn( 'id', $ids )->where( 'status', 1 ) ) );
+        $this->assertEquals( 1, PageView::fallback( 'de-CH' )->whereIn( 'id', $ids )->where( 'status', 1 )->count() );
+    }
+
+
+    public function testFallbackCountRandom()
+    {
+        config( ['cms.locales' => ['en', 'de', 'de-CH']] );
+        mt_srand( 1234 );
+
+        $variants = [];
+        $ids = [];
+
+        for( $i = 0; $i < 6; $i++ )
+        {
+            $ids[] = $id = $this->page()->id;
+            Variants::add( $id, 'de', $this->user );
+            Variants::add( $id, 'de-CH', $this->user );
+            $variants += PageVariant::where( 'page_id', $id )->pluck( 'lang', 'id' )->all();
+        }
+
+        $queries = [
+            fn() => PageView::fallback( 'de-CH' ),
+            fn() => PageView::fallback( 'de-CH', true )->withTrashed(),
+            fn() => PageView::visible( 'de-CH' ),
+            fn() => PageView::visible( 'de-CH', true ),
+        ];
+
+        // the derived table of the fallback and the pagination count query must select the same pages
+        for( $round = 0; $round < 10; $round++ )
+        {
+            foreach( $variants as $vid => $lang )
+            {
+                // source variants can't be renamed or trashed
+                $state = $lang === 'en' ? mt_rand( 0, 1 ) * 3 + 1 : mt_rand( 0, 3 );
+
+                PageVariant::where( 'id', $vid )->update( [
+                    'lang' => $state === 0 ? 'x' . strtolower( substr( $lang, -2 ) ) : $lang,
+                    'status' => $state === 1 ? 0 : 1,
+                    'deleted_at' => $state === 2 ? now() : null,
+                ] );
+            }
+
+            foreach( $queries as $idx => $query )
+            {
+                $msg = sprintf( 'Round %1$d, query %2$d', $round, $idx );
+                $expected = $query()->whereIn( 'id', $ids )->get()->count();
+
+                $this->assertEquals( $expected, $query()->whereIn( 'id', $ids )->paginate( 2 )->total(), $msg );
+            }
+        }
+
+        mt_srand();
     }
 
 

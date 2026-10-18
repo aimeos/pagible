@@ -186,6 +186,11 @@ class PageVariant extends Model
             if( $variant->wasChanged( 'lang' ) ) {
                 Page::withTrashed()->whereKey( $variant->page_id )->where( 'source', $variant->getOriginal( 'lang' ) )
                     ->toBase()->update( ['source' => $variant->lang] );
+
+                // the other variants are listed for the languages of the old and new fallback chains
+                if( Scout::syncs( PageView::class ) ) {
+                    Scout::variants( [(string) $variant->page_id], [(string) $variant->getOriginal( 'lang' ), (string) $variant->lang] );
+                }
             }
         } );
 
@@ -280,16 +285,16 @@ class PageVariant extends Model
     {
         $total = 0;
 
-        $this->prunable()->withoutGlobalScope( SoftDeletingScope::class )->select( 'id', 'page_id', 'tenant_id' )->chunkById( $chunkSize, function( Collection $models ) use ( &$total ) {
+        $this->prunable()->withoutGlobalScope( SoftDeletingScope::class )->select( 'id', 'page_id', 'tenant_id', 'lang' )->chunkById( $chunkSize, function( Collection $models ) use ( &$total ) {
 
             $count = static::purge( array_map( strval( ... ), $models->modelKeys() ) );
             $total += $count;
 
-            // source variants are listed for the languages of the pruned variants afterwards
+            // other variants are listed for the languages of the pruned variants afterwards
             foreach( $models->groupBy( 'tenant_id' ) as $tenant => $list ) {
                 Tenancy::run( (string) $tenant, function() use ( $list ) {
                     Scout::unindex( PageView::class, array_map( strval( ... ), $list->modelKeys() ) );
-                    Scout::sources( $list->pluck( 'page_id' )->map( strval( ... ) )->all() );
+                    Scout::variants( $list->pluck( 'page_id' )->map( strval( ... ) )->all(), $list->pluck( 'lang' )->map( strval( ... ) )->unique()->all() );
                 } );
             }
 

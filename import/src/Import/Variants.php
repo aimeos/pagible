@@ -160,8 +160,8 @@ class Variants
         $aux = ['content' => $linked ?? $content['elements']];
         Pages::publish( $variant, $data, $aux, $content['fileIds'] ?? [], $content['elementIds'] ?? [], $lang, $editor );
 
-        // the source variant isn't listed for the language of the new variant any more
-        Scout::sources( [(string) $page->id] );
+        // the other variants aren't listed for the language of the new variant any more
+        Scout::variants( [(string) $page->id], [$lang] );
 
         return $variant;
     }

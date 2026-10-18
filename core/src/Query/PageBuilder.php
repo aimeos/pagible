@@ -10,10 +10,12 @@ namespace Aimeos\Cms\Query;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Utils;
+use Illuminate\Contracts\Database\Query\Expression as ExpressionContract;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Database\Connection;
-use Illuminate\Database\Query\Grammars\MySqlGrammar;
+use Illuminate\Database\Query\Grammars\SqlServerGrammar;
 
 
 /**
@@ -22,7 +24,8 @@ use Illuminate\Database\Query\Grammars\MySqlGrammar;
  * Pages are stored in two tables: cms_pages contains the tree structure and
  * cms_page_variants one row per page and language. The builder reads from the
  * cms_page_view view joining both tables and a condition added by the Variant
- * scope selects the variant of each page. The view is read-only, the Page
+ * scope selects the variant of each page. Language fallbacks replace the view
+ * by a derived table of the same name. The view is read-only, the Page
  * model writes the tree columns to cms_pages and the PageVariant model the
  * language specific ones to cms_page_variants.
  */
@@ -30,6 +33,9 @@ class PageBuilder extends Builder
 {
     /** @var string Name of the view joining the pages and their variants */
     public const VIEW = 'cms_page_view';
+
+    /** @var int Maximum number of rows read by queries with the SQL Server join hint */
+    private const HINT_ROWS = 1000;
 
     /** @var array<string, string> Page view columns of the variant columns which are also stored in cms_pages, and their real names */
     private const ALIAS_FIELDS = ['variant_id' => 'id', 'variant_deleted_at' => 'deleted_at'];
@@ -39,6 +45,12 @@ class PageBuilder extends Builder
 
     /** @var array{0: string, 1: string|null, 2: bool}|null Mode, value and trashed flag of the variant condition */
     private ?array $variant = null;
+
+    /** @var bool TRUE if the page view is replaced by the derived table of a language fallback */
+    private bool $derived = false;
+
+    /** @var bool TRUE while a paginated query of the language fallback is executed on SQL Server */
+    private bool $hint = false;
 
 
     /**
@@ -126,6 +138,8 @@ class PageBuilder extends Builder
             $this->variant = null;
         }
 
+        $this->derived = false;
+
         return parent::from( $table, $as );
     }
 
@@ -181,6 +195,12 @@ class PageBuilder extends Builder
         // an already applied condition is replaced
         $this->wheres = self::withoutVariant( $this->wheres );
 
+        if( $this->derived )
+        {
+            $this->from = self::VIEW;
+            $this->derived = false;
+        }
+
         [$mode, $value, $trashed] = $this->variant;
         $col = fn( string $name ) => self::VIEW . '.' . $name;
         $cond = $this->forNestedWhere();
@@ -199,7 +219,7 @@ class PageBuilder extends Builder
             case 'visible':
                 // "visible" only uses published and enabled variants of the language
                 $trashed = $trashed && $mode !== 'visible';
-                $this->whereFallback( $cond, $literal, $mode === 'visible', $trashed );
+                $this->fromFallback( (string) $value, $mode === 'visible', $trashed );
                 break;
             case 'variant':
                 $cond->where( $col( 'variant_id' ), '=', $literal );
@@ -221,6 +241,20 @@ class PageBuilder extends Builder
         }
 
         return $this;
+    }
+
+
+    /**
+     * Tests if the rows can be counted without joining the variants of the language fallback.
+     *
+     * Paginators can fetch one more row instead of counting all rows otherwise (see runPaginationCountQuery()).
+     *
+     * @return bool TRUE if counting is cheap, FALSE if it requires the joins of the language fallback
+     */
+    public function countable() : bool
+    {
+        return !$this->derived || ( !$this->groups && !$this->havings && !$this->unions && !$this->joins
+            && !$this->distinct && self::pageColumns( $this->wheres ) );
     }
 
 
@@ -262,6 +296,18 @@ class PageBuilder extends Builder
 
 
     /**
+     * Returns the SQL of the query including the query hints added by runSelect().
+     *
+     * @return string SQL statement
+     */
+    public function toSql()
+    {
+        $sql = parent::toSql();
+        return $this->hint ? $sql . ' option (fast ' . ( (int) $this->offset + (int) $this->limit ) . ', loop join)' : $sql;
+    }
+
+
+    /**
      * The page view is read-only, write pages using the Page and PageVariant models.
      *
      * @param array<string, mixed> $values
@@ -274,44 +320,51 @@ class PageBuilder extends Builder
 
 
     /**
-     * Adds the condition selecting the variant of the language or the source variant if there is none.
+     * Uses the variant of the first language of the fallback chain or the source variant if there is none.
      *
-     * @param Builder $cond Nested condition the variant condition is added to
-     * @param Literal $literal Quoted language code
-     * @param bool $visible TRUE to use published and enabled variants of the language only
-     * @param bool $trashed TRUE to use trashed variants of the language too
+     * The page view is replaced by a derived table of the same name which joins the variants of the
+     * chain languages by the unique page/language index, so the columns used by the query stay
+     * unambiguous and the databases merge the derived table into the query.
+     *
+     * The databases only merge the derived table as long as it contains plain joins and conditions.
+     * Adding DISTINCT, GROUP BY, aggregates, LIMIT or UNION to it makes MySQL and MariaDB materialize
+     * the joins for all pages before the conditions of the outer query are applied.
+     *
+     * @param string $lang Language code
+     * @param bool $visible TRUE to use published and enabled variants of the languages only
+     * @param bool $trashed TRUE to use trashed variants of the languages too
      */
-    protected function whereFallback( Builder $cond, Literal $literal, bool $visible, bool $trashed ) : void
+    protected function fromFallback( string $lang, bool $visible, bool $trashed ) : void
     {
-        $col = fn( string $name ) => self::VIEW . '.' . $name;
+        $grammar = $this->getGrammar();
+        $query = $this->newQuery()->select( 'pv.*' )->from( self::VIEW . ' as pv' );
+        $cols = [];
 
-        // variant of the language, for "visible" only if published and enabled
-        $exists = fn( $q ) => $q->selectRaw( '1' )->from( 'cms_page_variants as w' )
-            ->whereColumn( 'w.page_id', '=', $col( 'id' ) )
-            ->where( 'w.lang', '=', $literal )
-            ->when( $visible, fn( $q ) => $q->where( 'w.status', '<>', new Expression( '0' ) ) )
-            ->when( !$trashed, fn( $q ) => $q->whereNull( 'w.deleted_at' ) );
-
-        // MariaDB uses a subclass of the MySQL grammar
-        if( ( $grammar = $this->getGrammar() ) instanceof MySqlGrammar )
+        foreach( Utils::chain( $lang ) as $idx => $code )
         {
-            // MySQL reads all variants of each page for the OR condition below, the language
-            // computed per page lets it look up the single variant by the unique index instead
-            $sql = 'CASE WHEN EXISTS (' . $exists( $this->newQuery() )->toSql() . ') THEN ' . $literal->getValue( $grammar )
-                . ' ELSE ' . $grammar->wrap( $col( 'source' ) ) . ' END';
+            $alias = 'f' . $idx;
+            $cols[] = $grammar->wrap( $alias . '.lang' );
 
-            $cond->where( $col( 'lang' ), '=', new Literal( $sql ) );
-            return;
+            $query->leftJoin( 'cms_page_variants as ' . $alias, function( $join ) use ( $alias, $code, $visible, $trashed ) {
+                $join->on( $alias . '.page_id', '=', 'pv.id' )->on( $alias . '.tenant_id', '=', 'pv.tenant_id' );
+                $join->where( $alias . '.lang', '=', $this->literal( $code ) )
+                    // for "visible" only published and enabled variants
+                    ->when( $visible, fn( $q ) => $q->where( $alias . '.status', '<>', new Expression( '0' ) ) )
+                    ->when( !$trashed, fn( $q ) => $q->whereNull( $alias . '.deleted_at' ) );
+            } );
         }
 
-        $cond->where( function( $q ) use ( $col, $literal, $visible, $exists ) {
-            $q->where( function( $q ) use ( $col, $literal, $visible ) {
-                $q->where( $col( 'lang' ), '=', $literal )
-                    ->when( $visible, fn( $q ) => $q->where( $col( 'status' ), '<>', new Expression( '0' ) ) );
-            } )->orWhere( function( $q ) use ( $col, $exists ) {
-                $q->whereColumn( $col( 'lang' ), '=', $col( 'source' ) )->whereNotExists( $exists );
-            } );
-        } );
+        // invalid language codes have no chain and use the source variants
+        $cols
+            ? $query->where( 'pv.lang', '=', new Literal( 'COALESCE(' . implode( ', ', $cols ) . ', ' . $grammar->wrap( 'pv.source' ) . ')' ) )
+            : $query->whereColumn( 'pv.lang', '=', 'pv.source' );
+
+        if( !empty( $query->getBindings() ) ) {
+            throw new \LogicException( 'The page variant condition must not use bindings' );
+        }
+
+        parent::fromSub( $query, self::VIEW );
+        $this->derived = true;
     }
 
 
@@ -345,11 +398,94 @@ class PageBuilder extends Builder
 
 
     /**
+     * Counts the rows for the paginator, counting the pages of the language fallback without joining the chain variants.
+     *
+     * The source variant of a page can't be trashed (see Variants::drop() and Variants::setSource()),
+     * so each page has exactly one row in the derived table of the fallback. If the query only filters
+     * by page columns, the pages are counted instead of joining the variants of all chain languages.
+     *
+     * @param array<int, string|\Illuminate\Contracts\Database\Query\Expression> $columns Columns
+     * @return array<int, mixed> Rows with the count
+     */
+    protected function runPaginationCountQuery( $columns = ['*'] )
+    {
+        if( $columns === ['*'] && $this->derived && $this->countable() )
+        {
+            // the page columns of the view keep their names if the pages table is aliased by the view name
+            return $this->cloneWithout( ['columns', 'orders', 'limit', 'offset'] )->cloneWithoutBindings( ['select', 'order'] )
+                ->from( 'cms_pages', self::VIEW )->runPaginationCountQuery( $columns );
+        }
+
+        return parent::runPaginationCountQuery( $columns );
+    }
+
+
+    /**
+     * Runs the query, using nested loops for pages of the language fallback on SQL Server.
+     *
+     * SQL Server joins the variants of all pages by hash and sorts them afterwards to return
+     * one page of a list, which is several times slower than reading only the rows of the
+     * page by nested loops. The hint is added to executed queries only because subqueries
+     * can't contain query hints. Nested loops are slower for many rows and the hint applies to all
+     * joins of the query, so it's only used for the first rows of queries without additional joins.
+     *
+     * @return array<int, mixed> Rows of the result
+     */
+    protected function runSelect()
+    {
+        $this->hint = $this->derived && $this->limit && !$this->unions && !$this->joins
+            && (int) $this->offset + (int) $this->limit <= self::HINT_ROWS && $this->grammar instanceof SqlServerGrammar;
+
+        try {
+            return parent::runSelect();
+        } finally {
+            $this->hint = false;
+        }
+    }
+
+
+    /**
      * Tests if the builder reads from the page view.
      */
     protected function viewed() : bool
     {
-        return is_string( $this->from ) && ( $this->from === self::VIEW || str_starts_with( $this->from, self::VIEW . ' ' ) );
+        return $this->derived || is_string( $this->from ) && ( $this->from === self::VIEW || str_starts_with( $this->from, self::VIEW . ' ' ) );
+    }
+
+
+    /**
+     * Tests if the where clauses only use page columns stored in the cms_pages table.
+     *
+     * The variant condition is skipped, unknown clause types and expressions are treated as variant columns.
+     *
+     * @param array<int, array<string, mixed>> $wheres Where clauses
+     * @return bool TRUE if only page columns are used
+     */
+    protected static function pageColumns( array $wheres ) : bool
+    {
+        $page = fn( mixed $col ) => is_string( $col )
+            && in_array( str_starts_with( $col, self::VIEW . '.' ) ? substr( $col, strlen( self::VIEW ) + 1 ) : $col, Page::FIELDS, true );
+
+        foreach( $wheres as $where )
+        {
+            if( !empty( $where['variant'] ) ) {
+                continue;
+            }
+
+            $ok = match( $where['type'] ?? null ) {
+                'Basic' => $page( $where['column'] ) && !$where['value'] instanceof ExpressionContract,
+                'In', 'NotIn', 'InRaw', 'NotInRaw', 'Null', 'NotNull', 'between' => $page( $where['column'] ),
+                'Column' => $page( $where['first'] ) && $page( $where['second'] ),
+                'Nested' => ( $where['query'] ?? null ) instanceof Builder && self::pageColumns( $where['query']->wheres ),
+                default => false,
+            };
+
+            if( !$ok ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
