@@ -51,8 +51,8 @@ class CdnListenerTest extends CdnTestCase
     public function testPagesHosts() : void
     {
         config( ['cms.multidomain' => true, 'cms.cdn.clients' => [
-            'one' => ['driver' => 'cloudflare', 'token' => 'a', 'zone' => 'z1', 'hosts' => ['one.test']],
-            'two' => ['driver' => 'cloudflare', 'token' => 'b', 'zone' => 'z2', 'hosts' => ['two.test']],
+            'one' => ['driver' => 'cloudflare', 'servers' => ['https://api.cloudflare.com'], 'options' => ['authentication_token' => 'a', 'zone_identifier' => 'z1'], 'hosts' => ['one.test']],
+            'two' => ['driver' => 'cloudflare', 'servers' => ['https://api.cloudflare.com'], 'options' => ['authentication_token' => 'b', 'zone_identifier' => 'z2'], 'hosts' => ['two.test']],
         ]] );
         Route::domain( '{domain}' )->where( ['domain' => '.+'] )->group( fn() => $this->route() );
         Queue::fake();

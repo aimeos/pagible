@@ -8,6 +8,8 @@
 namespace Aimeos\Cms\Jobs;
 
 use Aimeos\Cms\Cdn;
+use Aimeos\Cms\Watch;
+use FOS\HttpCache\CacheInvalidator;
 use FOS\HttpCache\Exception\ExceptionCollection;
 use FOS\HttpCache\Exception\UnsupportedProxyOperationException;
 use Illuminate\Bus\Queueable;
@@ -15,6 +17,7 @@ use Illuminate\Contracts\Queue\ShouldBeUniqueUntilProcessing;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Cache;
 
 
 /**
@@ -29,6 +32,9 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
     use Queueable;
     use RoutesQueue;
 
+    /** Seconds between equal log entries of failed purges */
+    public const LOG_INTERVAL = 600;
+
     public int $tries = 5;
 
     /** Seconds until the lock expires if the queued job is lost */
@@ -38,8 +44,9 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
     /**
      * @param string $client Name of the configured CDN client
      * @param list<string> $urls Absolute URLs or only Cdn::ALL to remove all content
+     * @param string|null $server Address of the one server to purge, NULL for all servers of the client
      */
-    public function __construct( public string $client, public array $urls )
+    public function __construct( public string $client, public array $urls, public ?string $server = null )
     {
         $this->routeQueue();
     }
@@ -67,15 +74,50 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
             return;
         }
 
-        $invalidator = Cdn::invalidator( $config );
+        if( $this->server !== null )
+        {
+            // Removed servers don't receive queued purges any more
+            if( !in_array( $this->server, array_map( strval( ... ), (array) ( $config['servers'] ?? [] ) ), true ) ) {
+                return;
+            }
+
+            $config['servers'] = [$this->server];
+        }
+
+        try {
+            $invalidator = Cdn::invalidator( $config );
+        }
+        catch( \Throwable $e )
+        {
+            // Configuration errors aren't fixed by retrying, so queued jobs fail at once
+            if( !$this->job ) {
+                throw $e;
+            }
+
+            $this->fail( $e );
+            return;
+        }
 
         if( in_array( Cdn::ALL, $this->urls, true ) ) {
             $invalidator->clearCache();
         }
         else
         {
-            foreach( $this->urls as $url ) {
-                $invalidator->invalidatePath( $url );
+            $queries = !empty( $config['queries'] ) && $invalidator->supports( CacheInvalidator::INVALIDATE );
+            $refresh = !empty( $config['refresh'] ) && $invalidator->supports( CacheInvalidator::REFRESH );
+
+            foreach( $this->urls as $url )
+            {
+                if( $queries ) {
+                    $this->ban( $invalidator, $url );
+                }
+
+                // Refreshing fetches the new content at once, so the next visitors don't all miss the cache
+                if( $refresh ) {
+                    $invalidator->refreshPath( $url );
+                } elseif( !$queries ) {
+                    $invalidator->invalidatePath( $url );
+                }
             }
         }
 
@@ -84,11 +126,47 @@ class PurgeCdn implements ShouldBeUniqueUntilProcessing, ShouldQueue
 
 
     /**
+     * Logs purges which failed after the last retry, throttled per client and error.
+     *
+     * The message isn't logged because it differs for each URL, the failed job contains all details.
+     */
+    public function failed( ?\Throwable $e ) : void
+    {
+        $fields = ['client' => $this->client, 'server' => $this->server, 'error' => $e ? $e::class : null];
+
+        try {
+            $new = Cache::add( 'cms-cdn-warn:' . hash( 'sha256', serialize( $fields ) ), true, self::LOG_INTERVAL );
+        } catch( \Throwable ) {
+            $new = true;
+        }
+
+        if( $new ) {
+            Watch::warn( 'cms.cdn.purge_failed', array_filter( $fields, fn( $value ) => $value !== null ) );
+        }
+    }
+
+
+    /**
      * Returns the ID of equal purges.
      */
     public function uniqueId() : string
     {
-        return $this->client . ':' . md5( implode( "\n", $this->urls ) );
+        return $this->client . ':' . $this->server . ':' . md5( implode( "\n", $this->urls ) );
     }
 
+
+    /**
+     * Bans the URL including all its query strings, URLs with query strings are only purged themselves.
+     */
+    private function ban( CacheInvalidator $invalidator, string $url ) : void
+    {
+        $parts = parse_url( $url );
+
+        if( isset( $parts['query'] ) || !isset( $parts['host'] ) ) {
+            $invalidator->invalidatePath( $url );
+            return;
+        }
+
+        $invalidator->invalidateRegex( '^' . preg_quote( $parts['path'] ?? '/' ) . '(\\?|$)', null, [$parts['host']] );
+    }
 }

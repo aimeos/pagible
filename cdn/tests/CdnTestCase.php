@@ -20,7 +20,7 @@ abstract class CdnTestCase extends TestCase
         $app['config']->set( 'queue.default', 'database' );
         $app['config']->set( 'cms.cdn.delay', 0 );
         $app['config']->set( 'cms.cdn.clients', [
-            'cloudflare' => ['driver' => 'cloudflare', 'token' => 'secret', 'zone' => 'zone1'],
+            'cloudflare' => ['driver' => 'cloudflare', 'servers' => ['https://api.cloudflare.com'], 'options' => ['authentication_token' => 'secret', 'zone_identifier' => 'zone1']],
         ] );
     }
 

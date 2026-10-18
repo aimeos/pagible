@@ -9,14 +9,15 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Jobs\PurgeCdn;
 use FOS\HttpCache\CacheInvalidator;
-use FOS\HttpCache\ProxyClient\Cloudflare;
-use FOS\HttpCache\ProxyClient\Fastly;
 use FOS\HttpCache\ProxyClient\HttpDispatcher;
-use FOS\HttpCache\ProxyClient\Varnish;
+use FOS\HttpCache\ProxyClient\HttpProxyClient;
+use FOS\HttpCache\ProxyClient\Invalidation\ClearCapable;
+use FOS\HttpCache\ProxyClient\Invalidation\PurgeCapable;
 use Http\Adapter\Guzzle7\Client;
 use Http\Client\Common\Plugin\ErrorPlugin;
 use Http\Client\Common\PluginClient;
 use Http\Client\HttpAsyncClient;
+use Illuminate\Support\Facades\Bus;
 
 
 /**
@@ -51,6 +52,27 @@ class Cdn
 
 
     /**
+     * Returns the FOSHttpCache proxy client class of the configured driver.
+     *
+     * @param array<string, mixed> $config Client configuration
+     * @return class-string<HttpProxyClient&PurgeCapable> Proxy client class
+     * @throws \InvalidArgumentException If the driver isn't a FOSHttpCache proxy client which can purge URLs
+     */
+    public static function driver( array $config ) : string
+    {
+        // Drivers are the HTTP proxy clients of FOSHttpCache, so configurations can't create other classes
+        $driver = (string) ( $config['driver'] ?? '' );
+        $class = 'FOS\\HttpCache\\ProxyClient\\' . ucfirst( $driver );
+
+        if( !ctype_alpha( $driver ) || !is_subclass_of( $class, HttpProxyClient::class ) || !is_subclass_of( $class, PurgeCapable::class ) ) {
+            throw new \InvalidArgumentException( sprintf( 'Unknown CDN driver "%s"', $driver ) );
+        }
+
+        return $class;
+    }
+
+
+    /**
      * Returns the absolute URL of a path on the public disk of the CMS files.
      *
      * @param string $path Relative file path
@@ -74,30 +96,21 @@ class Cdn
     {
         $http ??= app()->bound( 'cms.cdn.http' ) ? app( 'cms.cdn.http' ) : self::http();
         $servers = array_values( array_map( strval( ... ), (array) ( $config['servers'] ?? [] ) ) );
+        $class = self::driver( $config );
 
-        $client = match( $config['driver'] ?? null ) {
-            'cloudflare' => new Cloudflare( new HttpDispatcher( ['https://api.cloudflare.com'], '', $http ), [
-                'authentication_token' => (string) $config['token'],
-                'zone_identifier' => (string) $config['zone'],
-            ] ),
-            'fastly' => new Fastly( new HttpDispatcher( ['https://api.fastly.com'], '', $http ), [
-                'authentication_token' => (string) $config['token'],
-                'service_identifier' => (string) $config['service'],
-                'soft_purge' => (bool) ( $config['soft'] ?? true ),
-            ] ),
-            'varnish' => new Varnish( new HttpDispatcher( $servers, '', $http ) ),
-            default => throw new \InvalidArgumentException( sprintf( 'Unknown CDN driver "%s"', $config['driver'] ?? '' ) ),
-        };
+        $dispatcher = new HttpDispatcher( $servers, (string) ( $config['base_uri'] ?? '' ), $http );
+        $client = new $class( $dispatcher, (array) ( $config['options'] ?? [] ) );
 
         return new CacheInvalidator( $client );
     }
 
 
     /**
-     * Queues one purge job per client and chunk of URLs.
+     * Queues one purge job per client, server and chunk of URLs.
      *
-     * Outer caches can wait longer than the caches they fetch the content from, so the inner caches are purged first.
-     * Using the sync queue, the URLs are purged after the response is sent and aren't retried.
+     * Outer caches configured with "after" are purged in a chain after the inner caches they fetch the content from
+     * succeeded, so they can't fetch outdated content again. Using the sync queue, the URLs are purged after the
+     * response is sent in the same order and aren't retried.
      *
      * @param list<string> $urls Absolute URLs
      */
@@ -107,15 +120,19 @@ class Cdn
         $limit = max( 0, (int) config( 'cms.cdn.limit', 0 ) );
         $conn = config( 'cms.queue.connection' ) ?: config( 'queue.default' );
         $sync = config( 'queue.connections.' . $conn . '.driver' ) === 'sync';
+        $clients = self::clients();
+        $stacks = self::stacks( $clients );
+        $sizes = array_count_values( $stacks );
+        $chains = [];
 
-        foreach( self::clients() as $name => $config )
+        foreach( $stacks as $name => $root )
         {
-            if( !$list = self::urls( $config, $urls ) ) {
+            if( !$list = self::urls( $config = $clients[$name], $urls ) ) {
                 continue;
             }
 
-            // Only Cloudflare and Fastly can remove all content with one request
-            if( $limit > 0 && count( $list ) > $limit && self::invalidator( $config )->supports( CacheInvalidator::CLEAR ) ) {
+            // Only some clients like Cloudflare and Fastly can remove all content with one request
+            if( $limit > 0 && count( $list ) > $limit && is_subclass_of( self::driver( $config ), ClearCapable::class ) ) {
                 $list = [self::ALL];
             }
 
@@ -123,11 +140,70 @@ class Cdn
 
             foreach( array_chunk( $list, self::CHUNK ) as $chunk )
             {
-                $job = PurgeCdn::dispatch( $name, $chunk );
-                // The sync queue can't delay jobs, so the URLs are purged after the response is sent instead
-                $sync ? $job->afterResponse() : $job->delay( $delay ?: null );
+                foreach( self::servers( $config ) as $server )
+                {
+                    $job = new PurgeCdn( $name, $chunk, $server );
+
+                    if( $sync ) {
+                        // The sync queue can't delay jobs, so the URLs are purged after the response is sent instead
+                        dispatch( $job )->afterResponse();
+                    } elseif( $sizes[$root] > 1 ) {
+                        $chains[$root][] = $job->delay( $delay ?: null );
+                    } else {
+                        dispatch( $job->delay( $delay ?: null ) );
+                    }
+                }
             }
         }
+
+        foreach( $chains as $jobs ) {
+            Bus::chain( $jobs )->dispatch();
+        }
+    }
+
+
+    /**
+     * Returns the servers which get their own jobs, so a failing server doesn't repeat the purges of the others.
+     *
+     * @param array<string, mixed> $config Client configuration
+     * @return list<string|null> Server addresses or only NULL for all servers
+     */
+    public static function servers( array $config ) : array
+    {
+        $servers = array_values( array_unique( array_map( strval( ... ), (array) ( $config['servers'] ?? [] ) ) ) );
+
+        return count( $servers ) > 1 ? $servers : [null];
+    }
+
+
+    /**
+     * Returns the client names ordered by their position in the cache stack with the name of the innermost cache.
+     *
+     * @param array<string, array<string, mixed>> $clients Client name => client configuration
+     * @return array<string, string> Client name => name of the innermost client it fetches the content from
+     */
+    public static function stacks( array $clients ) : array
+    {
+        $result = $depths = [];
+
+        foreach( $clients as $name => $config )
+        {
+            $root = $name;
+            $depth = 0;
+
+            // Unknown or unconfigured inner clients are skipped and cycles end after visiting each client once
+            while( is_string( $after = $clients[$root]['after'] ?? null ) && isset( $clients[$after] ) && $depth < count( $clients ) )
+            {
+                $root = $after;
+                $depth++;
+            }
+
+            $result[$name] = $root;
+            $depths[$name] = $depth;
+        }
+
+        uksort( $result, fn( $a, $b ) => $depths[$a] <=> $depths[$b] );
+        return $result;
     }
 
 

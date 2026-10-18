@@ -30,6 +30,7 @@ class CdnServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\CheckCdn::class,
                 \Aimeos\Cms\Commands\PurgeCdn::class,
             ] );
         }
