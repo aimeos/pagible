@@ -163,6 +163,33 @@ counts. Health updates don't change `updated_at`.
 | `invalid_encryption` | The secret can't be decrypted with the current keys |
 | `delivery_failed` | The queue worker failed |
 
+## Application integrations
+
+### Managing subscriptions in code
+
+`Aimeos\Cms\WebhookManager` offers the operations of the admin panel, e.g. to create a subscription for each new tenant. All methods work in the current tenant and require a user with the `config:webhook` permission, `null` is denied:
+
+```php
+use Aimeos\Cms\WebhookManager;
+
+$result = app( WebhookManager::class )->add( 'https://example.com/hooks/cms', ['page.published'], true, $user, 'Shop sync' );
+
+$result['webhook']->id; // subscription ID for save(), rotate(), ping() and purge()
+$result['secret'];      // returned only once, store it now
+```
+
+`save( $id, $events, $status, $user, $name )` changes the events, status and name, `rotate( $id, $user )` returns a new secret, `ping( $id, $user )` sends a test event and `purge( $ids, $user )` deletes subscriptions.
+
+### Reacting in the same application
+
+The payload is the same for all receivers and can't be extended. To react to content changes within your Laravel application, listen to the CMS events directly instead of sending webhooks to yourself. `Change::listen()` of the core package passes the same changes, also from queued listeners, without HTTP requests and signatures:
+
+```php
+use Aimeos\Cms\Events\Change;
+
+Change::listen( ['published', 'dropped'], \App\Listeners\SyncShop::class );
+```
+
 ## Receiving webhooks
 
 These events are sent:

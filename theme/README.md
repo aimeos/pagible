@@ -123,6 +123,117 @@ CSP directives are configured under the `csp` key, with defaults for hCaptcha an
 | `csp.script-src` | `CMS_CSP_SCRIPT_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
 | `csp.connect-src` | `CMS_CSP_CONNECT_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
 
+## Custom content elements
+
+Your application can add its own element types next to the bundled ones. Describe them in a `schema.json` file, e.g. `resources/cms/schema.json`:
+
+```json
+{
+    "label": "App",
+    "content": {
+        "promo": {
+            "label": "Promotion",
+            "group": "app",
+            "fields": {
+                "title": {"type": "string", "label": "Title", "required": true, "max": 100},
+                "text": {"type": "markdown", "label": "Text"},
+                "file": {"type": "image", "label": "Image"},
+                "action": {"type": "hidden", "value": "\\App\\Cms\\Promotions"}
+            }
+        }
+    }
+}
+```
+
+Register the schema and its views in the `boot()` method of a service provider:
+
+```php
+use Aimeos\Cms\Schema;
+use Illuminate\Support\Facades\View;
+
+Schema::register( resource_path( 'cms' ), 'app' );
+View::addNamespace( 'app', resource_path( 'cms/views' ) );
+```
+
+Element types are stored with the schema name as prefix (`app::promo`) and rendered by the first existing view of `app::promo`, `cms::promo` and `cms::invalid`. The view `resources/cms/views/promo.blade.php` gets:
+
+| Variable | Content |
+|----------|---------|
+| `$data` | Element fields as object, e.g. `$data->title` |
+| `$files` | Files of the page keyed by ID, e.g. `cms( $files, $data->file?->id ?? null )` |
+| `$action` | Return value of the action class or `null` |
+| `$page`, `$theme`, `$nav` | Current page, theme name and navigation of the layout |
+
+```blade
+<section class="promo">
+    <h2>{{ $data->title }}</h2>
+    @markdown($data->text ?? '')
+</section>
+```
+
+Available field types are `audio`, `autocomplete`, `checkbox`, `color`, `combobox`, `date`, `file`, `hidden`, `html`, `image`, `images`, `items`, `map`, `markdown`, `media`, `number`, `plaintext`, `radio`, `range`, `select`, `slider`, `string`, `switch`, `table`, `text`, `url` and `video`. Fields accept `label`, `hint`, `required`, `default`, `min`, `max`, `step`, `pattern`, `options`, `multiple` and `translate` (`false` excludes the field from AI translation), while `items` fields contain their nested fields in `item`. See `theme/schema.json` for examples.
+
+Fields with unknown types aren't shown in the admin panel, so check your schemas after changing them:
+
+```bash
+php artisan cms:schema:check app
+```
+
+The class of the hidden `action` field is resolved by `app()->call()` with the `page` and the element `item`, so the content can come from your application:
+
+```php
+namespace App\Cms;
+
+use Aimeos\Cms\Models\PageView;
+
+class Promotions
+{
+    public function __invoke( PageView $page, object $item ): array
+    {
+        return \App\Models\Promotion::active()->limit( 3 )->get()->all();
+    }
+}
+```
+
+Anonymous responses are stored in the page cache for the `cache` minutes of the page, so set `cache` to `0` for pages whose action results must always be current.
+
+A schema without `types` only adds elements and isn't offered as theme in the admin panel.
+
+## Building a theme
+
+A theme is a Composer package with a `schema.json` that also defines the page `types` and their content `sections`:
+
+```
+my-theme/
+├── composer.json        PSR-4 autoload and Laravel provider discovery
+├── schema.json          label, types, content, meta and config definitions
+├── public/              CSS, JS and images, published to public/vendor/cms/mytheme/
+├── views/
+│   ├── layouts/main.blade.php   Main layout, extended by all page type layouts
+│   └── hero.blade.php           Overrides the core hero element
+├── database/seeders/MythemeDemo.php   Optional demo content for cms:demo
+└── src/MythemeServiceProvider.php
+```
+
+```php
+public function boot(): void
+{
+    $basedir = dirname( __DIR__ );
+
+    Schema::register( $basedir, 'mytheme' );
+    View::addNamespace( 'mytheme', $basedir . '/views' );
+
+    $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/mytheme' )], 'cms-theme' );
+}
+```
+
+- Pages of type `blog` use the first existing layout of `mytheme::layouts.blog`, `cms::layouts.blog` and `cms::layouts.page`, and the core layouts extend `mytheme::layouts.main`
+- Views with the name of a core element (e.g. `hero.blade.php`) replace it for pages using the theme
+- `cmstheme( $page, 'hero.css' )` returns the versioned URL of the theme asset and falls back to the core theme file
+- `Database\Seeders\MythemeDemo` extends `Database\Seeders\AbstractDemo` and provides the demo pages created by `cms:demo`
+
+The bundled themes in `themes/` are complete examples.
+
 ## Commands
 
 ### cms:install:theme
@@ -134,6 +245,17 @@ php artisan cms:install:theme
 ```
 
 Publishes theme files and adds hCaptcha configuration to `config/services.php`. Requires `HCAPTCHA_SITEKEY` and `HCAPTCHA_SECRET` environment variables for contact form spam protection.
+
+### cms:schema:check
+
+Checks the schemas of the registered themes, or only of the given ones, for unknown field types, `select` and `radio` fields without options, `autocomplete` fields without data source, missing action classes and element types without view.
+
+```bash
+php artisan cms:schema:check
+php artisan cms:schema:check app estate
+```
+
+The command exits with code 1 if errors are found, so it can run in your CI pipeline.
 
 ## Blade Directives
 

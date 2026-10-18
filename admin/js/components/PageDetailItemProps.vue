@@ -68,6 +68,11 @@ export default {
       return [(v) => !!v || this.$gettext('Field is required')]
     },
 
+    // schemas without page types only add elements and aren't selectable as themes
+    themeItems() {
+      return Object.keys(this.schemas.themes).filter((name) => this.schemas.themes[name].types)
+    },
+
     // the only configured language, there's nothing to choose from then
     defaultLang() {
       const list = this.locales()
@@ -304,7 +309,7 @@ export default {
             :readonly="readonly"
             :modelValue="item.theme"
             :label="$gettext('Theme') + ' ‒ ' + $gettext('Design used to display the page')"
-            :items="Object.keys(schemas.themes)"
+            :items="themeItems"
             @update:modelValue="themeUpdated"
             variant="underlined"
           ></v-select>

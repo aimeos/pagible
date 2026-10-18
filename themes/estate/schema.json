@@ -352,7 +352,7 @@
                     ]
                 },
                 "filters": {
-                    "type": "boolean",
+                    "type": "switch",
                     "label": "Show filters",
                     "hint": "Allow visitors to filter the properties",
                     "default": true

@@ -49,6 +49,43 @@ class FacadeTest extends CoreTestAbstract
     }
 
 
+    public function testReadsPublishedContent() : void
+    {
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $content = [['type' => 'text', 'data' => ['text' => 'Hello']]];
+
+        $page = Facades\Pages::add( ['lang' => 'en', 'name' => 'About', 'path' => 'about', 'status' => 1, 'content' => $content], parent: $root->id );
+        Facades\Pages::publish( $page->id );
+        Facades\Pages::save( $page->id, ['title' => 'Draft'] );
+        Facades\Variants::add( $page->id, 'de' );
+
+        // same query as in the README
+        $read = fn( string $lang ) => PageView::visible( $lang )
+            ->withGlobalScope( 'status', new \Aimeos\Cms\Scopes\Status() )
+            ->access( null )
+            ->with( PageView::contentRelations() )
+            ->whereKey( $page->id )
+            ->first();
+
+        // the unpublished "de" variant falls back to the published source variant without its draft
+        $this->assertEquals( 'en', $read( 'de' )?->lang );
+        $this->assertNotEquals( 'Draft', $read( 'de' )?->title );
+        $this->assertEquals( 'Hello', $read( 'de' )?->content[0]->data->text ?? null );
+
+        // new variants are inactive until their status is changed
+        Facades\Variants::publish( $page->id, 'de' );
+        $this->assertEquals( 'en', $read( 'de' )?->lang );
+
+        Facades\Variants::save( $page->id, 'de', ['status' => 1] );
+        Facades\Variants::publish( $page->id, 'de' );
+        $this->assertEquals( 'de', $read( 'de' )?->lang );
+
+        // each variant has its own URL path
+        $de = PageView::allVariants()->where( 'path', $read( 'de' )?->path )->first();
+        $this->assertEquals( 'de', $de?->lang );
+    }
+
+
     public function testShouldReceive() : void
     {
         $page = new PageView( ['name' => 'Mocked'] );
