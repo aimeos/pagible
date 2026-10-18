@@ -17,6 +17,7 @@ use Aimeos\Cms\Jobs\DeliverEndpoint;
 use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\WebhookClient;
+use Aimeos\Cms\WebhookConfig;
 use Aimeos\Cms\WebhookResponse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
@@ -370,6 +371,148 @@ class WebhookListenerTest extends WebhookTestAbstract
                 ['id' => 'page-2', 'version_id' => 'published-version-2'],
                 ['id' => 'page-1', 'version_id' => 'version-1'],
             ];
+        } );
+    }
+
+
+    public function testPayloadAddsExtraFieldsOfApplication() : void
+    {
+        $this->webhook();
+        Queue::fake();
+
+        WebhookConfig::payload( fn( array $changes, string $event ) => [
+            'page-2' => ['url' => '/page-2', 'event' => $event, 'count' => count( $changes )],
+            'page-1' => [],
+            'unknown' => ['url' => '/unknown'],
+        ] );
+
+        event( new Bulk(
+            'page', ['page-2', 'page-1'], ['page-1' => 'version-1', 'page-2' => 'version-2'],
+            ['published' => true], tenant: 'test', action: 'published',
+        ) );
+
+        Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) {
+            $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
+
+            // all changes are passed at once and empty or unknown entries are skipped
+            return $payload['data'] === [
+                ['id' => 'page-2', 'version_id' => 'version-2', 'extra' => ['url' => '/page-2', 'event' => 'page.published', 'count' => 2]],
+                ['id' => 'page-1', 'version_id' => 'version-1'],
+            ];
+        } );
+
+        WebhookConfig::payload( null );
+        $this->assertFalse( app()->bound( 'cms.webhooks.payload' ) );
+    }
+
+
+    public function testPayloadRunsInTenantOfEvent() : void
+    {
+        $this->webhook();
+        Queue::fake();
+
+        WebhookConfig::payload( fn( array $changes ) => ['page-1' => ['tenant' => \Aimeos\Cms\Tenancy::value()]] );
+
+        // the current tenant is restored afterwards
+        $current = \Aimeos\Cms\Tenancy::run( 'other', function() {
+            event( new Bulk(
+                'page', ['page-1'], ['page-1' => 'version-1'],
+                ['published' => true], tenant: 'test', action: 'published',
+            ) );
+
+            return \Aimeos\Cms\Tenancy::value();
+        } );
+
+        $this->assertSame( 'other', $current );
+
+        Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) {
+            $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
+            return $payload['data'][0]['extra'] === ['tenant' => 'test'];
+        } );
+    }
+
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function droppedPayloads() : array
+    {
+        return [
+            'exceeding limit' => [str_repeat( 'x', \Aimeos\Cms\Listeners\WebhookListener::MAX_EXTRA )],
+            'invalid JSON' => ["\xB1\x31"],
+        ];
+    }
+
+
+    #[\PHPUnit\Framework\Attributes\DataProvider( 'droppedPayloads' )]
+    public function testPayloadDropsInvalidExtraFieldsOnly( string $text ) : void
+    {
+        $this->webhook();
+        Queue::fake();
+        Log::spy();
+
+        WebhookConfig::payload( fn() => [
+            'page-1' => ['sku' => 'P-1001'],
+            'page-2' => ['text' => $text],
+        ] );
+
+        event( new Bulk(
+            'page', ['page-1', 'page-2'], ['page-1' => 'version-1', 'page-2' => 'version-2'],
+            ['published' => true], tenant: 'test', action: 'published',
+        ) );
+
+        Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) {
+            $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
+
+            return $payload['data'] === [
+                ['id' => 'page-1', 'version_id' => 'version-1', 'extra' => ['sku' => 'P-1001']],
+                ['id' => 'page-2', 'version_id' => 'version-2'],
+            ];
+        } );
+        Log::shouldHaveReceived( 'warning' )->once()->with(
+            'cms.webhook.extra_dropped', \Mockery::on( fn( array $data ) => $data['event'] === 'page.published' )
+        );
+    }
+
+
+    /**
+     * @return array<string, array{\Closure}>
+     */
+    public static function brokenPayloads() : array
+    {
+        return [
+            'exception' => [fn() => throw new \RuntimeException( 'broken ' . uniqid() )],
+        ];
+    }
+
+
+    #[\PHPUnit\Framework\Attributes\DataProvider( 'brokenPayloads' )]
+    public function testBrokenPayloadIsDeliveredWithoutExtraFields( \Closure $callback ) : void
+    {
+        $this->webhook();
+        Queue::fake();
+
+        Log::spy();
+        WebhookConfig::payload( $callback );
+
+        // the same error is logged only once
+        foreach( [1, 2] as $num ) {
+            event( new Bulk(
+                'page', ['page-1'], ['page-1' => 'version-1'],
+                ['published' => true], tenant: 'test', action: 'published',
+            ) );
+        }
+
+        Queue::assertPushed( DeliverWebhook::class, 2 );
+        Log::shouldHaveReceived( 'warning' )->once()->with(
+            'cms.webhook.extra_failed', \Mockery::on( fn( array $data ) => $data['event'] === 'page.published'
+                && str_contains( $data['location'], '.php:' ) && !str_contains( serialize( $data ), 'broken' )
+            )
+        );
+
+        Queue::assertPushed( DeliverWebhook::class, function( DeliverWebhook $job ) {
+            $payload = json_decode( $job->body, true, flags: JSON_THROW_ON_ERROR );
+            return $payload['data'] === [['id' => 'page-1', 'version_id' => 'version-1']];
         } );
     }
 
