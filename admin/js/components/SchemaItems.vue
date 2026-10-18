@@ -2,7 +2,7 @@
 
 <script>
 import { mdiMagnify, mdiRefresh } from '@mdi/js'
-import { useMessageStore, useSchemaStore, useUserStore } from '../stores'
+import { useMessageStore, useSchemaStore, useSettingStore } from '../stores'
 import ListSort from './ListSort.vue'
 import { typeLabel } from '../i18n'
 
@@ -25,7 +25,7 @@ export default {
   data() {
     return {
       loading: false,
-      sort: this.user.setting('schema', 'sort', { column: 'POSITION', order: 'ASC' }),
+      sort: this.settings.setting('schema', 'sort', { column: 'POSITION', order: 'ASC' }),
       tab: 'basic',
       term: ''
     }
@@ -34,9 +34,9 @@ export default {
   setup() {
     const messages = useMessageStore()
     const schemas = useSchemaStore()
-    const user = useUserStore()
+    const settings = useSettingStore()
 
-    return { messages, schemas, user, mdiMagnify, mdiRefresh, sortOptions: SORT_OPTIONS }
+    return { messages, schemas, settings, mdiMagnify, mdiRefresh, sortOptions: SORT_OPTIONS }
   },
 
   computed: {

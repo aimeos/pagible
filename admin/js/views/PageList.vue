@@ -58,7 +58,7 @@ export default {
 
     return {
       defaults: defaults,
-      filter: this.user.filter('page', defaults),
+      filter: this.settings.filter('page', defaults),
       translations: null,
       // translation counts must be fetched again when the aside opens
       outdated: false
@@ -166,7 +166,7 @@ export default {
 
     // current language of the page list, chosen in its language selector
     lang() {
-      return this.user.getData('page', 'lang', this.languages.default())
+      return this.settings.getData('page', 'lang', this.languages.default())
     }
   },
 
@@ -319,10 +319,10 @@ export default {
             <v-btn
               v-else-if="user.can('audio:transcribe')"
               @click="record()"
-              :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+              :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
               :title="$gettext('Dictate')"
-              :class="{ dictating: audio }"
-              :loading="dictating"
+              :class="{ dictating: dictation.active() }"
+              :loading="dictation.busy()"
               variant="text"
             />
           </template>

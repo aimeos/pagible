@@ -6,7 +6,7 @@ import AsideList from '../components/AsideList.vue'
 import Navigation from '../components/Navigation.vue'
 import User from '../components/User.vue'
 import { pluginLabel } from '../i18n'
-import { useDrawerStore, useUserStore } from '../stores'
+import { useDrawerStore, useSettingStore } from '../stores'
 
 export default {
   name: 'PluginPanel',
@@ -34,13 +34,13 @@ export default {
 
   setup() {
     const drawer = useDrawerStore()
-    const user = useUserStore()
+    const settings = useSettingStore()
 
-    return { drawer, user, mdiChevronLeft, mdiChevronRight, mdiClose, mdiMenu }
+    return { drawer, settings, mdiChevronLeft, mdiChevronRight, mdiClose, mdiMenu }
   },
 
   beforeUnmount() {
-    this.user.flush()
+    this.settings.flush()
   },
 
   methods: {
@@ -51,7 +51,7 @@ export default {
      * @param {Object} defaults Filter values used initially and on reset
      */
     register(content, defaults) {
-      this.aside = { content, defaults, filter: this.user.filter('plugin:' + this.panel.key, defaults) }
+      this.aside = { content, defaults, filter: this.settings.filter('plugin:' + this.panel.key, defaults) }
       return this.aside.filter
     },
 

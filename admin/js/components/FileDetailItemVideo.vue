@@ -5,7 +5,8 @@ import gql from 'graphql-tag'
 import { invalidateList } from '../graphql'
 import { previewUrl } from '../files'
 import { useMessageStore } from '../stores'
-import { fileurl, safeParse } from '../utils'
+import { fileurl } from '../urls'
+import { safeParse } from '../utils'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 const SAVE_FILE_PREVIEW = gql`

@@ -2,7 +2,7 @@
 
 <script>
 import CmsDialog from './Dialog.vue'
-import { locales } from '../utils'
+import { locales } from '../options'
 
 export default {
   components: {

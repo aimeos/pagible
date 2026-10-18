@@ -3,7 +3,7 @@
 <script>
 import Fields from './Fields.vue'
 import { useSchemaStore, useUserStore } from '../stores'
-import { locales } from '../utils'
+import { locales } from '../options'
 
 export default {
   components: {

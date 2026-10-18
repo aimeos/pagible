@@ -8,7 +8,9 @@ import FileDetailItemAudio from './FileDetailItemAudio.vue'
 import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
 import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
 import { relocateFiles } from '../files'
-import { dictate, fileurl, locales, txlocales } from '../utils'
+import { useDictation } from '../dictation'
+import { locales, txlocales } from '../options'
+import { fileurl } from '../urls'
 
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
 const FileDetailItemVideo = defineAsyncComponent(() => import('./FileDetailItemVideo.vue'))
@@ -37,10 +39,10 @@ export default {
 
   data() {
     return {
+      dictation: useDictation(),
       loading: {},
       tabtrans: null,
-      tabdesc: null,
-      audio: null
+      tabdesc: null
     }
   },
 
@@ -65,10 +67,7 @@ export default {
   },
 
   beforeUnmount() {
-    if (this.audio) {
-      this.audio.then((rec) => rec?.stop?.()).catch(() => {})
-      this.audio = null
-    }
+    this.dictation.stop()
   },
 
   computed: {
@@ -134,7 +133,7 @@ export default {
     record() {
       if (this.readonly) return this.messages.denied()
 
-      this.audio = dictate(this.audio, (busy) => (this.loading.dictate = busy), (text) => {
+      this.dictation.toggle((text) => {
         this.update('description', { ...this.item.description, [this.lang]: text })
       })
     },
@@ -415,10 +414,10 @@ export default {
               <v-btn
                 v-if="user.can('audio:transcribe')"
                 @click="record()"
-                :class="{ dictating: audio }"
-                :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+                :class="{ dictating: dictation.active() }"
+                :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
                 :title="$gettext('Dictate')"
-                :loading="loading.dictate"
+                :loading="dictation.busy()"
                 variant="text"
               />
             </div>

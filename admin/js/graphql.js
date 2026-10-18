@@ -7,13 +7,32 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client/core'
-import router from './routes'
 import { socketId } from './echo'
-import { useUserStore } from './stores'
 import { urlgraphql } from './config'
-import { xsrfHeaders } from './utils'
+import { xsrfHeaders } from './http'
 
 const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
+
+// Handlers for the user session, registered by session.js so this module doesn't depend on the stores and router
+const session = {
+  // returns TRUE if a user is signed in
+  active: () => false,
+  // resolves after the user signed in again, rejects if the user gave up
+  reauth: () => Promise.reject(new Error('Unauthenticated')),
+  // called when the session ended and the user must sign in again
+  ended: () => {},
+  // called for each successful request, which extends the session
+  touch: () => {}
+}
+
+/**
+ * Registers the handlers for the user session
+ *
+ * @param {Object} handlers Functions active(), reauth(), ended() and touch()
+ */
+export function onSession(handlers) {
+  Object.assign(session, handlers)
+}
 
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
@@ -50,7 +69,7 @@ export function graphqlFetch(input, init) {
     }
 
     // each request extends the session, so check it again after it would expire without one
-    useUserStore().touch()
+    session.touch()
 
     return response
   })
@@ -65,15 +84,13 @@ export function handleError({ graphQLErrors, networkError, operation, forward })
 
   if (!unauthorized || operation?.getContext().relogin) return
 
-  const user = useUserStore()
-
   // Session expired while editing: keep the open views and retry the request after
   // the user signed in again instead of dropping all unsaved changes
-  if (user.me && forward) {
+  if (session.active() && forward) {
     return new Observable((observer) => {
       let sub = null
 
-      user.reauth()
+      session.reauth()
         .then(() => { sub = forward(operation).subscribe(observer) })
         .catch(() => observer.error(networkError || new Error(graphQLErrors?.[0]?.message || 'Unauthenticated')))
 
@@ -81,9 +98,8 @@ export function handleError({ graphQLErrors, networkError, operation, forward })
     })
   }
 
-  user.me = false
   apolloClient.clearStore().catch((error) => console.error('Failed to clear Apollo cache', error))
-  router.push({ name: 'login' })
+  session.ended()
 }
 
 /** Removes every cached variant of a root list field. */

@@ -24,8 +24,9 @@ import AsideList from './components/AsideList.vue'
 import ChatDialog from './components/ChatDialog.vue'
 import Navigation from './components/Navigation.vue'
 import User from './components/User.vue'
-import { useDrawerStore, useMessageStore, useUserStore } from './stores'
-import { dictate, languageFilter } from './utils'
+import { useDrawerStore, useMessageStore, useSettingStore, useUserStore } from './stores'
+import { useDictation } from './dictation'
+import { languageFilter } from './options'
 
 /**
  * Returns the setup bindings of the page, element and file list views
@@ -35,6 +36,7 @@ export function useListView(type) {
     type,
     drawer: useDrawerStore(),
     messages: useMessageStore(),
+    settings: useSettingStore(),
     user: useUserStore(),
     mdiArrowRightCircle,
     mdiChevronLeft,
@@ -62,11 +64,10 @@ export const listViewBase = {
 
   data() {
     return {
-      audio: null,
       chat: '',
       chatOpen: false,
       chatPending: false,
-      dictating: false,
+      dictation: useDictation(),
       help: false,
       scrollTop: 0
     }
@@ -84,7 +85,8 @@ export const listViewBase = {
   },
 
   beforeUnmount() {
-    this.user.flush()
+    this.dictation.stop()
+    this.settings.flush()
   },
 
   computed: {
@@ -167,7 +169,7 @@ export const listViewBase = {
     },
 
     record() {
-      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
+      this.dictation.toggle((text) => (this.chat = text))
     }
   },
 

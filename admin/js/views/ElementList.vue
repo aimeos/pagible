@@ -27,7 +27,7 @@ export default {
 
     return {
       defaults: defaults,
-      filter: this.user.filter('element', defaults)
+      filter: this.settings.filter('element', defaults)
     }
   },
 
@@ -103,10 +103,10 @@ export default {
             <v-btn
               v-else-if="user.can('audio:transcribe')"
               @click="record()"
-              :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+              :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
               :title="$gettext('Dictate')"
-              :class="{ dictating: audio }"
-              :loading="dictating"
+              :class="{ dictating: dictation.active() }"
+              :loading="dictation.busy()"
               variant="text"
             />
           </template>

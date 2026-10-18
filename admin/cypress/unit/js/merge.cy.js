@@ -1,0 +1,56 @@
+import { hasUnresolved, resolveChange, unresolveChange } from '../../../js/merge'
+
+function conflicts() {
+  return {
+    data: { title: { current: 'Mine', overwritten: 'Theirs' } },
+    content: { abc123: { current: {}, overwritten: {} } },
+  }
+}
+
+describe('merge', () => {
+  describe('resolveChange()', () => {
+    it('marks the conflict as resolved without a target', () => {
+      const changed = conflicts()
+
+      resolveChange(changed, undefined, 'data', 'title', 'My Title')
+
+      expect(changed.data.title.resolved).to.equal('My Title')
+      expect(hasUnresolved(changed)).to.equal(false)
+    })
+
+    it('updates the target object', () => {
+      const changed = conflicts()
+      const target = { title: 'old' }
+
+      resolveChange(changed, { data: target }, 'data', 'title', 'My Title')
+
+      expect(target.title).to.equal('My Title')
+      expect(changed.data.title.snapshot).to.equal('old')
+    })
+
+    it('updates the target array by id match', () => {
+      const changed = conflicts()
+      const target = [{ id: 'abc123', type: 'text', data: { text: 'old' } }]
+      const replacement = { id: 'abc123', type: 'text', data: { text: 'mine' } }
+
+      resolveChange(changed, { content: target }, 'content', 'abc123', replacement)
+
+      expect(target[0]).to.equal(replacement)
+    })
+  })
+
+  describe('unresolveChange()', () => {
+    it('restores the original target value', () => {
+      const changed = conflicts()
+      const target = { title: 'original' }
+
+      resolveChange(changed, { data: target }, 'data', 'title', 'Their Title')
+      unresolveChange(changed, { data: target }, 'data', 'title')
+
+      expect(target.title).to.equal('original')
+      expect(changed.data.title).not.to.have.property('resolved')
+      expect(changed.data.title).not.to.have.property('snapshot')
+      expect(hasUnresolved(changed)).to.equal(true)
+    })
+  })
+})

@@ -2,9 +2,8 @@
 
 <script>
 import { VueDraggable } from 'vue-draggable-plus'
-import { createFile, FETCH_FILE_DISKS, relocateFiles, revokeBlob } from '../files'
+import { revokeBlob } from '../files'
 import { required, minEntries, maxEntries } from '../rules'
-import { invalidateList } from '../graphql'
 import { IMAGE_MIME_FILTER } from '../utils'
 import FileField, { components, useFileField } from '../filefield'
 
@@ -65,46 +64,31 @@ export default {
     add(files) {
       if (!this.user.can('file:add')) return this.messages.denied()
 
-      const promises = []
-
       if (!files?.length) {
         return
       }
 
-      for (const file of files) {
-        const path = URL.createObjectURL(file)
-        const disk = this.protect ? 'private' : 'public'
-        const pending = { disk, path, uploading: true }
+      const promises = Array.from(files, (file) => {
+        const { pending, promise } = this.upload(file)
         this.images.push(pending)
 
-        const promise = createFile(this.$apollo, { disk, file })
-          .then((item) => {
-            const idx = this.images.indexOf(pending)
+        return promise.then((item) => {
+          const idx = this.images.indexOf(pending)
 
-            if (idx !== -1) {
-              this.images[idx] = item
-              this.$emit('addFile', item)
-            }
-          })
-          .catch((error) => {
-            const idx = this.images.indexOf(pending)
+          if (idx === -1) {
+            return
+          }
 
-            if (idx !== -1) {
-              this.images.splice(idx, 1)
-            }
-            this.messages.error(this.$gettext(`Error adding file %{path}`, { path: file.name }), error, file)
-          })
-          .finally(() => {
-            URL.revokeObjectURL(path)
-          })
-
-        promises.push(promise)
-      }
-
-      return Promise.all(promises).then(() => {
-        invalidateList('files')
-        this.change()
+          if (item) {
+            this.images[idx] = item
+            this.$emit('addFile', item)
+          } else {
+            this.images.splice(idx, 1)
+          }
+        })
       })
+
+      return Promise.all(promises).then(() => this.change())
     },
 
     change() {
@@ -163,28 +147,12 @@ export default {
         return
       }
 
-      this.protecting = true
+      const { items, failed } = await this.relocate(files, protect)
 
-      try {
-        const items = await relocateFiles(this.$apollo, files.map((item) => item.id), protect ? 'private' : 'public')
-        this.sync(files, items)
-      } catch (error) {
-        try {
-          const response = await this.$apollo.query({
-            query: FETCH_FILE_DISKS,
-            variables: { id: files.map((item) => item.id) },
-            fetchPolicy: 'no-cache'
-          })
+      this.sync(files, items)
 
-          this.sync(files, response.data?.files?.data)
-        } catch (reloadError) {
-          this.$log(`Images::setProtect(): Error reloading files`, reloadError)
-        }
-
+      if (failed) {
         this.protect = this.allPrivate
-        this.messages.error(this.$gettext(`Error saving file`), error)
-      } finally {
-        this.protecting = false
       }
     },
 

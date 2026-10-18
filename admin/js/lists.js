@@ -25,6 +25,7 @@ import {
   useConfirmStore,
   useDrawerStore,
   useMessageStore,
+  useSettingStore,
   useUserStore
 } from './stores'
 import { debounce } from './utils'
@@ -127,6 +128,7 @@ export function useList(type, query, create) {
     type,
     query,
     listKey: useListKeys(),
+    settings: useSettingStore(),
     user: useUserStore(),
     changes: useChangeStore(),
     confirm: useConfirmStore(),
@@ -163,7 +165,7 @@ export const listBase = {
       items: [],
       checked: new Set(),
       term: '',
-      sort: this.user.setting(this.type, 'sort', { column: 'ID', order: 'DESC' }),
+      sort: this.settings.setting(this.type, 'sort', { column: 'ID', order: 'DESC' }),
       page: 1,
       last: 1,
       limit: 100,

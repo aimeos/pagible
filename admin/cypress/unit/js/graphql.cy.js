@@ -3,6 +3,7 @@ import router from '../../../js/routes'
 import { useUserStore } from '../../../js/stores'
 import { Observable } from '@apollo/client/core'
 import { apolloClient, graphqlFetch, handleError, invalidateList, listFetchPolicy, retry } from '../../../js/graphql'
+import '../../../js/session'
 
 describe('handleError()', () => {
   beforeEach(() => {

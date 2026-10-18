@@ -5,7 +5,7 @@ import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
 import ActionMenu from './ActionMenu.vue'
 import { load as loadTranslations, ready } from '../i18n'
-import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
+import { useLanguageStore, useMessageStore, useSettingStore, useUserStore } from '../stores'
 import {
   mdiWhiteBalanceSunny,
   mdiWeatherNight,
@@ -22,11 +22,13 @@ export default {
   setup() {
     const languages = useLanguageStore()
     const messages = useMessageStore()
+    const settings = useSettingStore()
     const user = useUserStore()
     const i18n = useGettext()
     const theme = useTheme()
 
     return {
+      settings,
       user,
       i18n,
       languages,
@@ -46,12 +48,12 @@ export default {
       .then((user) => {
         this.me = user
 
-        const storedTheme = this.user.getData('app', 'theme')
+        const storedTheme = this.settings.getData('app', 'theme')
         if (storedTheme) {
           this.theme.change(storedTheme)
         }
 
-        const storedLanguage = this.user.getData('app', 'language')
+        const storedLanguage = this.settings.getData('app', 'language')
         if (storedLanguage && storedLanguage !== this.i18n.current) {
           this.change(storedLanguage)
         }
@@ -74,13 +76,13 @@ export default {
         if (!applied) return
 
         this.$vuetify.locale.current = code
-        this.user.saveData('app', 'language', code)
+        this.settings.saveData('app', 'language', code)
       })
     },
 
     toggleTheme() {
       this.theme.toggle()
-      this.user.saveData('app', 'theme', this.theme.global.name.value)
+      this.settings.saveData('app', 'theme', this.theme.global.name.value)
     },
 
     logout() {

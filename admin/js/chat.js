@@ -5,7 +5,7 @@
 // Raw chunked-text streaming transport for the admin AI chat (POST cms.chat). Kept apart from ai.js
 // because that module's transcribe/translate/write go through GraphQL/Apollo, not fetch streaming.
 import gettext from './i18n'
-import { postHeaders } from './utils'
+import { postHeaders } from './http'
 import { useUserStore } from './stores'
 import { urlchat } from './config'
 

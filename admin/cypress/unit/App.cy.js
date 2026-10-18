@@ -1,7 +1,9 @@
 import App from '../../js/App.vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { isReactive } from 'vue'
-import { slugify, toBlob, debounce, locales, txlocales, url } from '../../js/utils'
+import { locales, txlocales } from '../../js/options'
+import { url } from '../../js/urls'
+import { slugify, toBlob, debounce } from '../../js/utils'
 import { write, translate, transcribe } from '../../js/ai'
 import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewStack } from '../../js/stores'
 

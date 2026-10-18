@@ -12,7 +12,8 @@ const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
-import { ignoreChanges, translateNew, translatePages } from '../variants'
+import { translatePages } from '../translate'
+import { ignoreChanges, translateNew } from '../variants'
 import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { defineAsyncComponent, markRaw } from 'vue'

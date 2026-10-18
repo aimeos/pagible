@@ -2,9 +2,9 @@
 
 <script>
 import { mdiFileOutline } from '@mdi/js'
-import { createFile, relocateFiles, revokeBlob } from '../files'
-import { invalidateList } from '../graphql'
-import { AUDIO_MIME_FILTER, IMAGE_MIME_FILTER, MEDIA_MIME_FILTER, VIDEO_MIME_FILTER, fileurl } from '../utils'
+import { revokeBlob } from '../files'
+import { fileurl } from '../urls'
+import { AUDIO_MIME_FILTER, IMAGE_MIME_FILTER, MEDIA_MIME_FILTER, VIDEO_MIME_FILTER } from '../utils'
 import FileField, { components, useFileField } from '../filefield'
 
 const profiles = {
@@ -89,25 +89,17 @@ export default {
         return
       }
 
-      const path = URL.createObjectURL(file)
-      const disk = this.protect ? 'private' : 'public'
-      this.file = { disk, path: path, uploading: true }
+      const { pending, promise } = this.upload(file)
+      this.file = pending
 
-      return createFile(this.$apollo, { disk, file })
-        .then((item) => {
-          invalidateList('files')
-          return this.select([item])
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext(`Error adding file %{path}`, { path: file.name }), error, file)
-        })
-        .finally(() => {
-          if (this.file.path === path) {
-            this.file = {}
-          }
-          URL.revokeObjectURL(path)
-          this.selected = null
-        })
+      return promise.then((item) => {
+        if (this.file.path === pending.path) {
+          this.file = {}
+        }
+        this.selected = null
+
+        return item ? this.select([item]) : undefined
+      })
     },
 
     formatDate(dateStr) {
@@ -158,7 +150,7 @@ export default {
       return item
     },
 
-    setProtect(value) {
+    async setProtect(value) {
       this.protect = Boolean(value)
 
       if (!this.file.id) {
@@ -172,21 +164,15 @@ export default {
         return
       }
 
-      this.protecting = true
+      const { items } = await this.relocate([this.file], this.protect)
 
-      return relocateFiles(this.$apollo, [this.file.id], this.protect ? 'private' : 'public')
-        .then((items) => {
-          this.file = { ...this.file, ...items[0] }
-          this.$emit('addFile', this.file)
-        })
-        .catch((error) => {
-          this.protect = previous
-          this.messages.error(this.$gettext(`Error saving file`), error, this.file)
-        })
-        .finally(() => {
-          this.protecting = false
-          this.protectSet = false
-        })
+      if (items[0]) {
+        this.file = { ...this.file, ...items[0] }
+        this.$emit('addFile', this.file)
+      }
+
+      this.protect = this.file.disk === 'private'
+      this.protectSet = false
     }
   },
 

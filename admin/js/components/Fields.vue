@@ -5,7 +5,9 @@ import ActionMenu from './ActionMenu.vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { changedState } from '../merge'
 import { aiContext, hintTypes, protectTypes, toName } from '../fieldtypes'
-import { dictate, hasTrue, txlocales } from '../utils'
+import { useDictation } from '../dictation'
+import { txlocales } from '../options'
+import { hasTrue } from '../utils'
 import {
   mdiTranslate,
   mdiArrowRightThin,
@@ -37,11 +39,10 @@ export default {
       dirty: new Set(),
       original: {},
       translating: {},
-      dictating: {},
+      dictation: useDictation(),
       composing: {},
       errors: {},
-      lastError: false,
-      audio: {}
+      lastError: false
     }
   },
 
@@ -67,11 +68,7 @@ export default {
   },
 
   beforeUnmount() {
-    for (const key of Object.keys(this.audio)) {
-      if (this.audio[key]) {
-        this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
-      }
-    }
+    this.dictation.stop()
   },
 
   methods: {
@@ -108,7 +105,7 @@ export default {
     record(code) {
       if (this.readonly) return this.messages.denied()
 
-      this.audio[code] = dictate(this.audio[code], (busy) => (this.dictating[code] = busy), (text) => this.update(code, text))
+      this.dictation.toggle((text) => this.update(code, text), code)
     },
 
     removeFile(id) {
@@ -274,10 +271,10 @@ export default {
           <v-btn
             v-if="user.can('audio:transcribe')"
             @click="record(code)"
-            :class="['btn-dictate', { dictating: audio[code] }]"
-            :icon="audio[code] ? mdiMicrophoneOutline : mdiMicrophone"
+            :class="['btn-dictate', { dictating: dictation.active(code) }]"
+            :icon="dictation.active(code) ? mdiMicrophoneOutline : mdiMicrophone"
             :title="$gettext('Dictate')"
-            :loading="dictating[code]"
+            :loading="dictation.busy(code)"
             variant="text"
           />
         </template>

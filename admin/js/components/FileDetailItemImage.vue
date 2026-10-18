@@ -7,7 +7,8 @@ import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 import CmsDialog from './Dialog.vue'
 import { useUserStore, useMessageStore } from '../stores'
-import { fileurl, toBlob } from '../utils'
+import { fileurl } from '../urls'
+import { toBlob } from '../utils'
 import {
   mdiClose,
   mdiCropFree,

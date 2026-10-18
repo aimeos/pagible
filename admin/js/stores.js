@@ -9,7 +9,7 @@ import { apolloClient, clearUploadLink } from './graphql'
 import { disconnect, resubscribe } from './echo'
 import gettext from './i18n'
 import { safeParse, sanitize } from './json'
-import { awaitTranslation } from './variants'
+import { awaitTranslation } from './translate'
 import languages from './languages'
 import {
   urladmin,
@@ -144,13 +144,32 @@ function csrf() {
   })
 }
 
+// Resets the data of the signed-in user kept by the other stores and the GraphQL client
+async function resetStores() {
+  useAppStore().urlproxy = urlproxy
+  useClipboardStore().$reset()
+  useChangeStore().$reset()
+  useConfirmStore().close(false)
+  const dirty = useDirtyStore()
+  dirty.unregister()
+  dirty.$reset()
+  useDrawerStore().$reset()
+  useSchemaStore().clear()
+  useSettingStore().clear()
+  useSideStore().$reset()
+  useViewStack().$reset()
+  clearUploadLink()
+
+  await disconnect()
+  await apolloClient.clearStore()
+}
+
 export const useUserStore = defineStore('user', {
   state: () => ({
     expired: false,
     me: null,
     session: 0,
     urlintended: null,
-    saveTimer: null,
     tokenTimer: null
   }),
 
@@ -175,27 +194,10 @@ export const useUserStore = defineStore('user', {
       clearTimeout(sessionTimer)
       sessionTimer = null
 
-      clearTimeout(this.saveTimer)
-      this.saveTimer = null
-
       clearTimeout(this.tokenTimer)
       this.tokenTimer = null
 
-      useAppStore().urlproxy = urlproxy
-      useClipboardStore().$reset()
-      useChangeStore().$reset()
-      useConfirmStore().close(false)
-      const dirty = useDirtyStore()
-      dirty.unregister()
-      dirty.$reset()
-      useDrawerStore().$reset()
-      useSchemaStore().clear()
-      useSideStore().$reset()
-      useViewStack().$reset()
-      clearUploadLink()
-
-      await disconnect()
-      await apolloClient.clearStore()
+      await resetStores()
     },
 
     intended(url) {
@@ -428,6 +430,22 @@ export const useUserStore = defineStore('user', {
       }
 
       return null
+    }
+  }
+})
+
+/**
+ * Panel settings of the signed-in user like list filters and sort orders, saved delayed in one request
+ */
+export const useSettingStore = defineStore('setting', {
+  state: () => ({
+    saveTimer: null
+  }),
+
+  actions: {
+    clear() {
+      clearTimeout(this.saveTimer)
+      this.saveTimer = null
     },
 
     /**
@@ -460,28 +478,32 @@ export const useUserStore = defineStore('user', {
     },
 
     getData(panel, key, defval = null) {
-      return this.me?.settings?.[panel]?.[key] ?? defval
+      return useUserStore().me?.settings?.[panel]?.[key] ?? defval
     },
 
     saveData(panel, key, value) {
-      if (!this.me) return
+      const me = useUserStore().me
 
-      if (!this.me.settings) {
-        this.me.settings = {}
+      if (!me) return
+
+      if (!me.settings) {
+        me.settings = {}
       }
 
-      if (!this.me.settings[panel]) {
-        this.me.settings[panel] = {}
+      if (!me.settings[panel]) {
+        me.settings[panel] = {}
       }
 
-      this.me.settings[panel][key] = value
+      me.settings[panel][key] = value
 
       clearTimeout(this.saveTimer)
       this.saveTimer = setTimeout(() => this.flush(), 60000)
     },
 
     flush() {
-      if (!this.saveTimer || !this.me?.settings) return
+      const settings = useUserStore().me?.settings
+
+      if (!this.saveTimer || !settings) return
 
       clearTimeout(this.saveTimer)
       this.saveTimer = null
@@ -491,7 +513,7 @@ export const useUserStore = defineStore('user', {
       apolloClient.mutate({
         mutation: SAVE_SETTINGS,
         variables: {
-          settings: JSON.stringify(this.me.settings)
+          settings: JSON.stringify(settings)
         }
       }).catch((error) => {
         messages.error(gettext.$gettext('Failed to save user settings'), error)

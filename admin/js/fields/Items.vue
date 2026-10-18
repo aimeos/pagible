@@ -30,7 +30,9 @@ import ActionMenu from '../components/ActionMenu.vue'
 import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
 import { fieldBase } from '../field'
 import { aiContext, hintTypes, protectTypes, toName } from '../fieldtypes'
-import { clone, dictate, itemTitle, txlocales, uid } from '../utils'
+import { useDictation } from '../dictation'
+import { txlocales } from '../options'
+import { clone, itemTitle, uid } from '../utils'
 import { key, reveal, scrollParent } from '../virtual'
 
 export default {
@@ -54,13 +56,12 @@ export default {
   data() {
     return {
       translating: {},
-      dictating: {},
+      dictation: useDictation(),
       composing: {},
       items: this.init(this.modelValue),
       itemKey: (item) => item?.[this.config.identity] || key(item),
       panel: [],
-      scroller: null,
-      audio: {}
+      scroller: null
     }
   },
 
@@ -99,11 +100,7 @@ export default {
   },
 
   beforeUnmount() {
-    for (const key of Object.keys(this.audio)) {
-      if (this.audio[key]) {
-        this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
-      }
-    }
+    this.dictation.stop()
   },
 
   computed: {
@@ -206,8 +203,7 @@ export default {
     record(idx, code) {
       if (this.readonly) return this.messages.denied()
 
-      const key = idx + code
-      this.audio[key] = dictate(this.audio[key], (busy) => (this.dictating[key] = busy), (text) => this.update(idx, code, text))
+      this.dictation.toggle((text) => this.update(idx, code, text), idx + code)
     },
 
     remove(idx) {
@@ -374,10 +370,10 @@ export default {
                 <v-btn
                   v-if="user.can('audio:transcribe')"
                   @click="record(idx, code)"
-                  :class="{ dictating: audio[idx + code] }"
-                  :icon="audio[idx + code] ? mdiMicrophoneOutline : mdiMicrophone"
+                  :class="{ dictating: dictation.active(idx + code) }"
+                  :icon="dictation.active(idx + code) ? mdiMicrophoneOutline : mdiMicrophone"
                   :title="$gettext('Dictate')"
-                  :loading="dictating[idx + code]"
+                  :loading="dictation.busy(idx + code)"
                   variant="text"
                 />
               </div>

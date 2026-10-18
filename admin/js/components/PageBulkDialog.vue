@@ -4,7 +4,8 @@
 import CmsDialog from './Dialog.vue'
 import { useAppStore, useSchemaStore } from '../stores'
 import { domain } from '../rules'
-import { cacheItems, locales, PAGE_BULK_LIMIT, statusItems } from '../utils'
+import { cacheItems, locales, statusItems } from '../options'
+import { PAGE_BULK_LIMIT } from '../utils'
 
 
 export default {

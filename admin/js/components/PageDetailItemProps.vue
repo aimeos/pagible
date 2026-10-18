@@ -4,7 +4,8 @@
 import gql from 'graphql-tag'
 import { domain } from '../rules'
 import { useAppStore, useUserStore, useSchemaStore } from '../stores'
-import { cacheItems, debounce, locales, slugify, statusItems } from '../utils'
+import { cacheItems, locales, statusItems } from '../options'
+import { debounce, slugify } from '../utils'
 
 const REDIRECT_REGEX = /^((https?:)?\/\/([^\s/:@]+(:[^\s/:@]+)?@)?([0-9a-z]+(\.|-))*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/[^\s]*)?$/
 

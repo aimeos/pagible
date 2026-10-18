@@ -11,8 +11,9 @@ import {
 } from '@mdi/js'
 import { defineAsyncComponent } from 'vue'
 import { useMessageStore, useUserStore, useViewStack } from './stores'
-import { filesrcset } from './utils'
-import { previewUrl } from './files'
+import { filesrcset } from './urls'
+import { createFile, FETCH_FILE_DISKS, previewUrl, relocateFiles } from './files'
+import { invalidateList } from './graphql'
 import FileActionMenu from './components/FileActionMenu.vue'
 import FileProtect from './components/FileProtect.vue'
 
@@ -101,6 +102,71 @@ export default {
         stacked: true,
         onSaved: () => this.update?.()
       })
+    },
+
+    /**
+     * Moves the files to the private or public disk
+     *
+     * Returns the updated files, or their current state from the server if moving failed.
+     *
+     * @param {Array} files File objects with ID
+     * @param {Boolean} protect True to move the files to the private disk
+     * @returns {Promise<{items: Array, failed: Boolean}>}
+     */
+    async relocate(files, protect) {
+      const ids = files.map((item) => item.id)
+
+      this.protecting = true
+
+      try {
+        return { items: await relocateFiles(this.$apollo, ids, protect ? 'private' : 'public'), failed: false }
+      } catch (error) {
+        this.messages.error(this.$gettext(`Error saving file`), error)
+
+        try {
+          const response = await this.$apollo.query({
+            query: FETCH_FILE_DISKS,
+            variables: { id: ids },
+            fetchPolicy: 'no-cache'
+          })
+
+          return { items: response.data?.files?.data || [], failed: true }
+        } catch (reloadError) {
+          this.$log(`FileField::relocate(): Error reloading files`, reloadError)
+          return { items: [], failed: true }
+        }
+      } finally {
+        this.protecting = false
+      }
+    },
+
+    /**
+     * Uploads the file to the disk selected by the protect switch
+     *
+     * Returns a placeholder for showing the upload and a promise resolving to the
+     * created file, or to null if the upload failed.
+     *
+     * @param {File} file Selected or dropped file
+     * @returns {{pending: Object, promise: Promise<Object|null>}}
+     */
+    upload(file) {
+      const path = URL.createObjectURL(file)
+      const disk = this.protect ? 'private' : 'public'
+
+      const promise = createFile(this.$apollo, { disk, file })
+        .then((item) => {
+          invalidateList('files')
+          return item
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext(`Error adding file %{path}`, { path: file.name }), error, file)
+          return null
+        })
+        .finally(() => {
+          URL.revokeObjectURL(path)
+        })
+
+      return { pending: { disk, path, uploading: true }, promise }
     }
   }
 }

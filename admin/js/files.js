@@ -4,7 +4,8 @@
 
 import gql from 'graphql-tag'
 import { invalidateList } from './graphql'
-import { fileurl, safeParse, sanitize } from './utils'
+import { fileurl } from './urls'
+import { safeParse, sanitize } from './utils'
 
 export const FILE_FIELDS = gql`
   fragment CmsFileFields on File {

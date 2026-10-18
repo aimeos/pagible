@@ -2,7 +2,7 @@
 
 <script>
 import { filepairs, lineRows, tableRows, words } from '../history'
-import { fileurl, filesrcset } from '../utils'
+import { fileurl, filesrcset } from '../urls'
 import CmsDialog from './Dialog.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 

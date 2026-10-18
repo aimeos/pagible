@@ -13,7 +13,7 @@ import {
   mdiStop
 } from '@mdi/js'
 import { useUserStore } from '../stores'
-import { dictate } from '../utils'
+import { useDictation } from '../dictation'
 import { chat } from '../chat'
 import CmsDialog from './Dialog.vue'
 
@@ -38,9 +38,8 @@ export default {
 
   data() {
     return {
-      audio: null,
       busy: false,
-      dictating: false,
+      dictation: useDictation(),
       historyDraft: '',
       historyIndex: null,
       input: '',
@@ -83,6 +82,10 @@ export default {
         this.stop()
       }
     }
+  },
+
+  beforeUnmount() {
+    this.dictation.stop()
   },
 
   methods: {
@@ -141,7 +144,7 @@ export default {
     },
 
     record() {
-      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => {
+      this.dictation.toggle((text) => {
         this.input = (this.input ? this.input + ' ' : '') + text
       })
     },
@@ -378,11 +381,11 @@ export default {
             <v-btn
               v-if="user.can('audio:transcribe') && !input"
               @click="record()"
-              :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+              :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
               :title="$gettext('Dictate')"
               :aria-label="$gettext('Dictate')"
-              :class="{ dictating: audio }"
-              :loading="dictating"
+              :class="{ dictating: dictation.active() }"
+              :loading="dictation.busy()"
               variant="tonal"
               size="small"
             />

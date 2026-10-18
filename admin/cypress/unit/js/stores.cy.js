@@ -10,6 +10,7 @@ import {
   useLanguageStore,
   useMessageStore,
   useSchemaStore,
+  useSettingStore,
   useSideStore,
   useTranslationStore,
   useViewStack,
@@ -62,6 +63,7 @@ describe('useUserStore', () => {
     it('clears all session caches', () => {
       const clearStore = cy.stub(apolloClient, 'clearStore').resolves()
       const user = useUserStore()
+      const settings = useSettingStore()
       const app = useAppStore()
       const clip = useClipboardStore()
       const changes = useChangeStore()
@@ -79,11 +81,11 @@ describe('useUserStore', () => {
       schema.content = { text: {} }
       side.store = { text: 1 }
       views.stack = [{ component: {} }]
-      user.saveTimer = setTimeout(() => {}, 10000)
+      settings.saveTimer = setTimeout(() => {}, 10000)
       user.tokenTimer = setTimeout(() => {}, 10000)
 
       return user.clear().then(() => {
-        expect(user.saveTimer).to.be.null
+        expect(settings.saveTimer).to.be.null
         expect(user.tokenTimer).to.be.null
         expect(app.urlproxy).to.include('url=')
         expect(app.urlproxy).not.to.include('token=old')
@@ -103,18 +105,20 @@ describe('useUserStore', () => {
   describe('filter()', () => {
     it('merges the stored filter into the defaults', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: { page: { filter: { view: 'list' } } } }
       const scope = effectScope()
-      const filter = scope.run(() => user.filter('page', { view: 'tree', lang: null }))
+      const filter = scope.run(() => settings.filter('page', { view: 'tree', lang: null }))
       expect(filter).to.deep.equal({ view: 'list', lang: null })
       scope.stop()
     })
 
     it('saves the filter on changes until the scope stops', async () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: {} }
       const scope = effectScope()
-      const filter = scope.run(() => user.filter('page', { view: 'tree' }))
+      const filter = scope.run(() => settings.filter('page', { view: 'tree' }))
 
       filter.view = 'list'
       await nextTick()
@@ -125,27 +129,29 @@ describe('useUserStore', () => {
       filter.view = 'tree'
       await nextTick()
       expect(user.me.settings).to.deep.equal({})
-      clearTimeout(user.saveTimer)
+      clearTimeout(settings.saveTimer)
     })
   })
 
   describe('setting()', () => {
     it('returns the stored value or the default', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: { page: { sort: { column: 'ID' } } } }
       const scope = effectScope()
       scope.run(() => {
-        expect(user.setting('page', 'sort', { column: 'LFT' }).value).to.deep.equal({ column: 'ID' })
-        expect(user.setting('file', 'sort', { column: 'LFT' }).value).to.deep.equal({ column: 'LFT' })
+        expect(settings.setting('page', 'sort', { column: 'LFT' }).value).to.deep.equal({ column: 'ID' })
+        expect(settings.setting('file', 'sort', { column: 'LFT' }).value).to.deep.equal({ column: 'LFT' })
       })
       scope.stop()
     })
 
     it('saves replaced values until the scope stops', async () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: {} }
       const scope = effectScope()
-      const sort = scope.run(() => user.setting('schema', 'sort', { column: 'POSITION' }))
+      const sort = scope.run(() => settings.setting('schema', 'sort', { column: 'POSITION' }))
 
       sort.value = { column: 'NAME' }
       await nextTick()
@@ -156,33 +162,37 @@ describe('useUserStore', () => {
       sort.value = { column: 'POSITION' }
       await nextTick()
       expect(user.me.settings).to.deep.equal({})
-      clearTimeout(user.saveTimer)
+      clearTimeout(settings.saveTimer)
     })
   })
 
   describe('getData()', () => {
     it('returns defval when me is null', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = null
-      expect(user.getData('page', 'filter')).to.be.null
+      expect(settings.getData('page', 'filter')).to.be.null
     })
 
     it('returns defval when settings is null', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: null }
-      expect(user.getData('page', 'filter', 'default')).to.equal('default')
+      expect(settings.getData('page', 'filter', 'default')).to.equal('default')
     })
 
     it('returns defval when panel does not exist', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: {} }
-      expect(user.getData('page', 'filter', 'fallback')).to.equal('fallback')
+      expect(settings.getData('page', 'filter', 'fallback')).to.equal('fallback')
     })
 
     it('returns stored value', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: { page: { filter: { view: 'list' } } } }
-      expect(user.getData('page', 'filter')).to.deep.equal({ view: 'list' })
+      expect(settings.getData('page', 'filter')).to.deep.equal({ view: 'list' })
     })
   })
 
@@ -378,43 +388,48 @@ describe('useUserStore', () => {
   describe('saveData()', () => {
     it('creates settings structure when missing', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = {}
-      user.saveData('page', 'filter', { view: 'list' })
+      settings.saveData('page', 'filter', { view: 'list' })
       expect(user.me.settings.page.filter).to.deep.equal({ view: 'list' })
-      clearTimeout(user._saveTimer)
+      clearTimeout(settings.saveTimer)
     })
 
     it('does nothing when me is null', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = null
-      user.saveData('page', 'filter', { view: 'list' })
+      settings.saveData('page', 'filter', { view: 'list' })
       expect(user.me).to.be.null
     })
 
     it('sets a debounce timer', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = {}
-      user.saveData('page', 'sort', { column: 'ID' })
-      expect(user._saveTimer).to.not.be.null
-      clearTimeout(user._saveTimer)
+      settings.saveData('page', 'sort', { column: 'ID' })
+      expect(settings.saveTimer).to.not.be.null
+      clearTimeout(settings.saveTimer)
     })
 
     it('overwrites existing values', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: { page: { filter: { view: 'tree' } } } }
-      user.saveData('page', 'filter', { view: 'list' })
+      settings.saveData('page', 'filter', { view: 'list' })
       expect(user.me.settings.page.filter).to.deep.equal({ view: 'list' })
-      clearTimeout(user._saveTimer)
+      clearTimeout(settings.saveTimer)
     })
   })
 
   describe('flush()', () => {
     it('does nothing without pending timer', () => {
       const user = useUserStore()
+      const settings = useSettingStore()
       user.me = { settings: {} }
-      user._saveTimer = null
-      user.flush()
-      expect(user._saveTimer).to.be.null
+      settings.saveTimer = null
+      settings.flush()
+      expect(settings.saveTimer).to.be.null
     })
   })
 

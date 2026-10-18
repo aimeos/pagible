@@ -19,7 +19,7 @@ import ListSort from './ListSort.vue'
 import { createFile, FILE_FIELDS, normalizeFile } from '../files'
 import { listBase, useList } from '../lists'
 import { useLanguageStore } from '../stores'
-import { fileurl, filesrcset } from '../utils'
+import { fileurl, filesrcset } from '../urls'
 
 const FILE_LIST_FIELDS = `...CmsFileFields
         latest {
@@ -98,7 +98,7 @@ export default {
 
   data() {
     return {
-      vgrid: this.user.getData('file', 'grid') ?? this.grid,
+      vgrid: this.settings.getData('file', 'grid') ?? this.grid,
       // progress of the running translation as { done, total } or null
       translating: null
     }
@@ -262,7 +262,7 @@ export default {
 
   watch: {
     vgrid(val) {
-      this.user.saveData('file', 'grid', val)
+      this.settings.saveData('file', 'grid', val)
     }
   }
 }

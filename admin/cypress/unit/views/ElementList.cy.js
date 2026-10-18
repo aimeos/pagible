@@ -1,5 +1,5 @@
 import ElementList from '../../../js/views/ElementList.vue'
-import { useUserStore } from '../../../js/stores'
+import { useSettingStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   ElementListItems: {
@@ -153,7 +153,7 @@ describe('ElementList', () => {
       const vm = Cypress.vueWrapper.findComponent(ElementList).vm
       expect(vm.filter.publish).to.equal('DRAFT')
       expect(vm.filter.lang).to.equal('de')
-      expect(useUserStore().getData('element', 'filter')).to.include({ publish: 'DRAFT', lang: 'de' })
+      expect(useSettingStore().getData('element', 'filter')).to.include({ publish: 'DRAFT', lang: 'de' })
     })
   })
 

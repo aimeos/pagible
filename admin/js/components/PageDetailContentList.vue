@@ -18,7 +18,8 @@ import { changedState } from '../merge'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { invalidateList } from '../graphql'
 import { editable } from '../shortcuts'
-import { clone, debounce, dictate, frozenParse, itemTitle, safeParse, uid } from '../utils'
+import { useDictation } from '../dictation'
+import { clone, debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
 import { reveal, scrollParent } from '../virtual'
 import { typeLabel } from '../i18n'
 import {
@@ -93,8 +94,7 @@ export default {
 
   data: () => ({
     chat: '',
-    audio: null,
-    dictating: false,
+    dictation: useDictation(),
     help: false,
     lastError: false,
     refining: false,
@@ -346,7 +346,7 @@ export default {
     },
 
     record() {
-      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
+      this.dictation.toggle((text) => (this.chat = text))
     },
 
     refine() {
@@ -648,10 +648,7 @@ export default {
   },
 
   beforeUnmount() {
-    if (this.audio) {
-      this.audio.then((rec) => rec?.stop?.()).catch(() => {})
-      this.audio = null
-    }
+    this.dictation.stop()
   },
 
   watch: {
@@ -723,10 +720,10 @@ export default {
         <v-btn
           v-else-if="user.can('audio:transcribe')"
           @click="record()"
-          :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+          :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
           :title="$gettext('Dictate')"
-          :class="{ dictating: audio }"
-          :loading="dictating"
+          :class="{ dictating: dictation.active() }"
+          :loading="dictation.busy()"
           variant="text"
         />
       </template>

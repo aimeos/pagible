@@ -2,12 +2,9 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import gettext from './i18n'
-import { markRaw, toRaw } from 'vue'
-import { useAppStore, useLanguageStore } from './stores'
+import { toRaw } from 'vue'
 
 export { frozenParse, safeParse, sanitize } from './json'
-
 
 export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
 
@@ -24,19 +21,6 @@ export const browser = {
   assign(url) {
     window.location.assign(url)
   }
-}
-
-/**
- * Returns the translated cache duration options of pages in minutes
- */
-export function cacheItems() {
-  const { $gettext, $ngettext } = gettext
-
-  return [
-    { key: 0, val: $gettext('No cache') },
-    ...[1, 5, 15, 30].map((num) => ({ key: num, val: $ngettext('%{num} minute', '%{num} minutes', num, { num }) })),
-    ...[1, 3, 6, 12, 24].map((num) => ({ key: num * 60, val: $ngettext('%{num} hour', '%{num} hours', num, { num }) }))
-  ]
 }
 
 /**
@@ -101,31 +85,6 @@ export function debounce(func, delay) {
   debounced.cancel = () => clearTimeout(timer)
 
   return debounced
-}
-
-/**
- * Starts a recording if none is running, otherwise stops it and passes the transcribed text to "done"
- *
- * @param {Promise|null} audio Running recording returned by the previous call
- * @param {Function} busy Called with true while transcribing and with false afterwards
- * @param {Function} done Called with the transcribed text
- * @returns {Promise|null} New recording state the caller must store
- */
-export function dictate(audio, busy, done) {
-  if (!audio) {
-    return markRaw(import('./audio').then((mod) => mod.recording().start()))
-  }
-
-  busy(true)
-
-  audio
-    .then((rec) => rec.stop())
-    .then((buffer) => import('./ai').then((mod) => mod.transcribe(buffer)))
-    .then((transcription) => done(transcription.asText()))
-    .catch((error) => console.error('dictate(): Error recording audio', error))
-    .finally(() => busy(false))
-
-  return null
 }
 
 /**
@@ -219,67 +178,6 @@ export function itemTitle(data) {
   )
 }
 
-let langCache = null
-
-const supported = new Set([
-  'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US',
-  'es', 'et', 'fi', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko',
-  'lt', 'lv', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk',
-  'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh', 'zh-Hans', 'zh-Hant'
-])
-
-/**
- * Returns the cached locale lists, rebuilt when the available languages change
- *
- * @returns {Object} { locales, tx, filter } lists of the available languages
- */
-function langs() {
-  const languages = useLanguageStore()
-
-  if (langCache?.key !== languages.available) {
-    const all = languages.available.map((code) => ({
-      code,
-      name: languages.translate(code) + ' (' + code.toUpperCase() + ')'
-    }))
-
-    langCache = {
-      key: languages.available,
-      locales: all.map(({ code, name }) => ({ value: code, title: name })),
-      tx: all.filter(({ code }) => supported.has(code)),
-      filter: {}
-    }
-  }
-
-  return langCache
-}
-
-/**
- * Returns filter dropdown items for language selection in list views
- *
- * @param {String} allIcon Icon for the "All" item
- * @param {String} langIcon Icon for each language item
- * @returns {Array} List of { title, icon, value } objects
- */
-export function languageFilter(allIcon, langIcon) {
-  const cache = langs()
-
-  return (cache.filter[allIcon + langIcon] ??= [
-    { title: gettext.$gettext('All'), icon: allIcon, value: { lang: null } },
-    ...cache.locales.map((entry) => ({ title: entry.title, icon: langIcon, value: { lang: entry.value } }))
-  ])
-}
-
-/**
- * Returns available locales as a list for dropdown menus
- *
- * @param {boolean} none If true, prepends a "None" option with null value
- * @returns {Array<{value: string|null, title: string}>} Locale options
- */
-export function locales(none = false) {
-  const list = langs().locales
-  return none ? [{ value: null, title: gettext.$gettext('None') }, ...list] : list
-}
-
 /**
  * Returns the URL of the login page of the application for single sign-on
  *
@@ -305,19 +203,6 @@ export function slugify(text) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '')
     .toLowerCase()
-}
-
-/**
- * Returns the translated status options of pages
- */
-export function statusItems() {
-  const { $gettext } = gettext
-
-  return [
-    { key: 0, val: $gettext('Disabled') },
-    { key: 1, val: $gettext('Enabled') },
-    { key: 2, val: $gettext('Hidden in navigation') }
-  ]
 }
 
 /**
@@ -355,17 +240,6 @@ export function toBlob(base64, mimeType = 'image/png') {
 }
 
 /**
- * Returns available locales that support AI translation, excluding the current locale
- *
- * @param {string|null} current Locale code to exclude from the list
- * @returns {Array<{code: string, name: string}>} Translation-supported locale options
- */
-export function txlocales(current = null) {
-  const list = langs().tx
-  return current ? list.filter((entry) => entry.code !== current) : list
-}
-
-/**
  * Generates a unique content ID based on the current date and time.
  *
  * @returns String Unique content ID
@@ -390,90 +264,3 @@ const uid = (function () {
 
 export { uid }
 
-/**
- * Returns the CSRF header derived from Laravel's XSRF-TOKEN cookie for cookie-authenticated
- * requests, or an empty object when the cookie is absent. Used directly by Apollo's headersLink and
- * (via postHeaders) by raw fetch POSTs, so the cookie/header contract lives in one place.
- *
- * @returns {Object} { 'X-XSRF-TOKEN': token } or {}
- */
-export function xsrfHeaders() {
-  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)
-
-  return match ? { 'X-XSRF-TOKEN': decodeURIComponent(match[1]) } : {}
-}
-
-/**
- * Returns the request headers for a cookie-authenticated JSON POST: content negotiation plus the
- * CSRF token header. Keeps the header contract for raw fetch() calls in one place (builds on
- * xsrfHeaders so a future CSRF-contract change is made once).
- *
- * @param {string} accept Value for the Accept header (e.g. 'text/plain' for a streamed response)
- * @returns {Object} request headers
- */
-export function postHeaders(accept = 'application/json') {
-  return { 'Content-Type': 'application/json', Accept: accept, ...xsrfHeaders() }
-}
-
-/**
- * Resolves a file path to a full URL using the app's file or proxy URL
- *
- * @param {string} path Relative path, absolute URL, or blob URL
- * @param {boolean} proxy If true, routes external URLs through the media proxy
- * @returns {string} Resolved URL
- */
-export function url(path, proxy = false) {
-  if (!path) return ''
-
-  if (typeof path !== 'string') {
-    return path
-  }
-
-  const app = useAppStore()
-
-  if (proxy && path.startsWith('http')) {
-    return app.urlproxy.replace(/_url_/, encodeURIComponent(path))
-  }
-
-  if (path.startsWith('http') || path.startsWith('blob:')) {
-    return path
-  }
-
-  return app.urlfile.replace(/\/+$/g, '') + '/' + path
-}
-
-/**
- * Resolves a public or private File URL for the admin editor.
- *
- * @param {Object} file File data including id, disk, path and previews
- * @param {string|null} path Original or preview path
- * @param {boolean} proxy Route a public remote URL through the media proxy
- * @returns {string} Resolved URL
- */
-export function fileurl(file, path = null, proxy = false) {
-  path ??= file?.path
-
-  if (!file || file.disk !== 'private') {
-    return url(path, proxy)
-  }
-
-  const preview = Object.entries(file.previews || {}).find((entry) => entry[1] === path)
-  const variant = preview?.[0] || ''
-
-  return useAppStore()
-    .urlasset.replace(/_file_/, encodeURIComponent(file.id))
-    .replace(/_variant_/, encodeURIComponent(variant))
-    .replace(/\/+$/g, '')
-}
-
-/**
- * Generates a srcset for a public or private File.
- *
- * @param {Object} file File data including previews
- * @returns {string} Responsive image srcset
- */
-export function filesrcset(file) {
-  return Object.entries(file?.previews || {})
-    .map(([width, path]) => `${fileurl(file, path)} ${width}w`)
-    .join(',')
-}

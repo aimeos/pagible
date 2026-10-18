@@ -44,6 +44,7 @@ import TranslateDialog from './TranslateDialog.vue'
 import ListSort from './ListSort.vue'
 import {
   useAppStore,
+  useSettingStore,
   useUserStore,
   useConfirmStore,
   useLanguageStore,
@@ -243,7 +244,7 @@ export default {
 
   data() {
     // the list always shows the pages in a current language, the last one chosen or the default
-    const lang = this.user.setting('page', 'lang', this.languages.default())
+    const lang = this.settings.setting('page', 'lang', this.languages.default())
 
     if (!this.languages.available.includes(lang.value)) {
       lang.value = this.languages.default()
@@ -267,7 +268,7 @@ export default {
       counts: tally([]),
       // translation state counts per language shown in the language selector
       langStates: {},
-      sort: this.user.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
+      sort: this.settings.setting('page', 'sort', { column: 'LFT', order: 'ASC' }),
       term: '',
       destroyed: false,
       loadId: 0,
@@ -281,6 +282,7 @@ export default {
 
     const languages = useLanguageStore()
     const messages = useMessageStore()
+    const settings = useSettingStore()
     const user = useUserStore()
     const app = useAppStore()
     const changes = useChangeStore()
@@ -289,6 +291,7 @@ export default {
     return {
       type: 'page',
       app,
+      settings,
       user,
       changes,
       confirm,

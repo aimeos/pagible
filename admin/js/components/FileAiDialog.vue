@@ -7,7 +7,9 @@ import CmsDialog from './Dialog.vue'
 import FileListItems from './FileListItems.vue'
 import { createFile, revokeBlob } from '../files'
 import { useUserStore, useMessageStore } from '../stores'
-import { dictate, fileurl, IMAGE_MIME_FILTER, toBlob } from '../utils'
+import { useDictation } from '../dictation'
+import { fileurl } from '../urls'
+import { IMAGE_MIME_FILTER, toBlob } from '../utils'
 import { mdiMicrophoneOutline, mdiMicrophone, mdiDelete } from '@mdi/js'
 
 const IMAGINE = gql`
@@ -48,12 +50,11 @@ export default {
 
   data() {
     return {
-      audio: null,
       chat: '',
+      dictation: useDictation(),
       items: [],
       used: [],
-      loading: false,
-      dictating: false
+      loading: false
     }
   },
 
@@ -79,10 +80,7 @@ export default {
   },
 
   beforeUnmount() {
-    if (this.audio) {
-      this.audio.then((rec) => rec?.stop?.()).catch(() => {})
-      this.audio = null
-    }
+    this.dictation.stop()
 
     this.items.forEach(revokeBlob)
     this.items = []
@@ -162,7 +160,7 @@ export default {
     },
 
     record() {
-      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
+      this.dictation.toggle((text) => (this.chat = text))
     },
 
     remove(idx) {
@@ -195,10 +193,10 @@ export default {
       <v-btn
         v-if="user.can('audio:transcribe')"
         @click="record()"
-        :class="{ dictating: audio }"
-        :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+        :class="{ dictating: dictation.active() }"
+        :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
         :aria-label="$gettext('Dictate')"
-        :loading="dictating"
+        :loading="dictation.busy()"
       />
     </template>
 
