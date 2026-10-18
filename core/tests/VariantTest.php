@@ -1300,9 +1300,10 @@ class VariantTest extends CoreTestAbstract
         // only page columns are filtered by the pagination count query without the chain joins
         $conn = PageView::query()->getConnection();
         $sql = fn( $query ) => $conn->pretend( fn() => $query->paginate( 2 ) )[0]['query'];
+        $join = $conn->getQueryGrammar()->wrap( 'f0' );
 
-        $this->assertStringNotContainsString( '"f0"', $sql( PageView::fallback( 'de-CH' )->whereIn( 'id', $ids ) ) );
-        $this->assertStringContainsString( '"f0"', $sql( PageView::fallback( 'de-CH' )->whereIn( 'id', $ids )->where( 'status', 1 ) ) );
+        $this->assertStringNotContainsString( $join, $sql( PageView::fallback( 'de-CH' )->whereIn( 'id', $ids ) ) );
+        $this->assertStringContainsString( $join, $sql( PageView::fallback( 'de-CH' )->whereIn( 'id', $ids )->where( 'status', 1 ) ) );
         $this->assertEquals( 1, PageView::fallback( 'de-CH' )->whereIn( 'id', $ids )->where( 'status', 1 )->count() );
     }
 
