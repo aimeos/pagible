@@ -107,7 +107,7 @@ encrypted queue messages and HTTP requests.
 
 ### Log entries
 
-`delivery_retried`, `delivery_expired`, `delivery_blocked` and `endpoint_invalid` are logged at most
+`delivery_retried`, `delivery_expired`, `delivery_blocked`, `endpoint_invalid`, `extra_dropped` and `extra_failed` are logged at most
 once every 10 minutes for the same problem and destination:
 
 | Entry | Logged when |
@@ -119,6 +119,8 @@ once every 10 minutes for the same problem and destination:
 | `cms.webhook.delivery_expired` | A delivery was queued for more than 24 hours, i.e. workers can't keep up or were stopped too long |
 | `cms.webhook.delivery_blocked` | Nothing was queued because of `invalid_queue`, `queue_failed` or `invalid_policy` |
 | `cms.webhook.endpoint_invalid` | An operator endpoint is misconfigured and was skipped |
+| `cms.webhook.extra_dropped` | Fields added by `WebhookConfig::payload()` exceeded 1 KB or couldn't be encoded as JSON for some changes and were left out, with the event name |
+| `cms.webhook.extra_failed` | The callback of `WebhookConfig::payload()` failed, with the event name, the exception class and the location where it was thrown, the event was sent without the fields |
 
 ## Subscriptions
 
@@ -180,9 +182,29 @@ $result['secret'];      // returned only once, store it now
 
 `save( $id, $events, $status, $user, $name )` changes the events, status and name, `rotate( $id, $user )` returns a new secret, `ping( $id, $user )` sends a test event and `purge( $ids, $user )` deletes subscriptions.
 
+### Adding payload fields
+
+Add fields of your application to the changes in the `boot()` method of a service provider, e.g. the public URL of a page or the ID of a related record. The callback receives all changes of an event at once, so bulk events need only one query, and returns the fields per change ID:
+
+```php
+use Aimeos\Cms\Events\Change;
+use Aimeos\Cms\WebhookConfig;
+
+WebhookConfig::payload( function( array $changes, string $event ) {
+    $ids = array_map( fn( Change $change ) => $change->id, $changes );
+
+    // all changes of an event belong to the same tenant
+    return Product::where( 'tenant_id', $changes[0]->tenant )->whereIn( 'page_id', $ids )->pluck( 'sku', 'page_id' )
+        ->map( fn( string $sku ) => ['sku' => $sku] )
+        ->all();
+} );
+```
+
+The fields are added as `extra` object to the data of each change, so they never collide with the fields of the CMS. Changes without fields have no `extra` key. Each delivery is queued as a separate job containing the whole payload and bulk events contain up to 1000 changes, so the fields of a change are limited to 1 KB as JSON. Larger ones and fields which can't be encoded as JSON, e.g. due to invalid UTF-8, are dropped and logged as `cms.webhook.extra_dropped`, the fields of the other changes are kept. Add IDs or short values receivers can look up instead of content, because queues limit the job size too, e.g. Amazon SQS to 256 KB. The callback runs after the database transaction is committed but before the deliveries are queued, so keep it fast. If it throws an exception, the event is delivered without the fields and the error is logged as `cms.webhook.extra_failed`. The callback runs in the tenant of the changes, so `Tenancy::value()` and the CMS models use the right tenant even in commands and queue workers. Limit queries of your own models to `$change->tenant` if they don't use the CMS tenancy. The fields are readable by everyone with the `config:webhook` permission, who can send the payloads to any URL, and by all operator endpoints, so only add fields these users are allowed to see in your application. All subscriptions of the tenant and all endpoints receive the same payload and webhook URLs usually point to other systems, so don't add confidential or personal data like names and e-mail addresses of editors or customers. `WebhookConfig::payload( null )` removes the callback.
+
 ### Reacting in the same application
 
-The payload is the same for all receivers and can't be extended. To react to content changes within your Laravel application, listen to the CMS events directly instead of sending webhooks to yourself. `Change::listen()` of the core package passes the same changes, also from queued listeners, without HTTP requests and signatures:
+To react to content changes within your Laravel application, listen to the CMS events directly instead of sending webhooks to yourself. `Change::listen()` of the core package passes the same changes, also from queued listeners, without HTTP requests and signatures:
 
 ```php
 use Aimeos\Cms\Events\Change;
@@ -211,12 +233,13 @@ the content and version IDs. Page events also contain the route if available:
     "version_id": "01995d6a-cb84-7218-9bb9-79063c4bf682",
     "path": "products/example",
     "domain": "example.com",
-    "lang": "en"
+    "lang": "en",
+    "extra": {"sku": "P-1001"}
   }
 }
 ```
 
-Bulk events contain an ordered array of `{id, version_id}` references in `data`, page references also
+The optional `extra` object contains the [fields added by the application](#adding-payload-fields). Bulk events contain an ordered array of `{id, version_id}` references in `data`, page references also
 contain the `lang` of the page variant. Fetch the details through the CMS API if needed.
 
 The `page.deleted`, `page.restored` and `page.purged` events tell by `lang` what has been affected: If
