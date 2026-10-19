@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Facades\Variants;
@@ -78,7 +79,7 @@ class PageToolsTest extends McpTestAbstract
     public function testGetPageIncludesImmediateAccess()
     {
         $page = PageView::where( 'name', 'Home' )->firstOrFail();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [
             'id' => $page->id,
@@ -95,7 +96,7 @@ class PageToolsTest extends McpTestAbstract
     public function testGetPageProtectsImmediateAccessValues()
     {
         $page = PageView::where( 'name', 'Home' )->firstOrFail();
-        PageAccess::set( [$page->id], ['member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['member'] ) );
         $this->user->cmsperms = ['access:view', 'page:view'];
 
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPage::class, [

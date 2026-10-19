@@ -6,6 +6,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Nav;
@@ -41,7 +42,7 @@ class NavigationTest extends ThemeTestAbstract
         $this->assertNotNull( $route );
         $this->assertFalse( $route->access_exists );
 
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         $route = Nav::lookup( $page->path, $page->domain );
 
         $this->assertNotNull( $route );
@@ -54,7 +55,7 @@ class NavigationTest extends ThemeTestAbstract
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $blog = PageView::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::set( [$blog->id], [] );
+        Permission::system( fn() => PageAccess::set( [$blog->id], [] ) );
 
         $nav = new Navigation( $page, null );
 
@@ -83,7 +84,7 @@ class NavigationTest extends ThemeTestAbstract
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $blog = PageView::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::set( [$blog->id], [] );
+        Permission::system( fn() => PageAccess::set( [$blog->id], [] ) );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -99,7 +100,7 @@ class NavigationTest extends ThemeTestAbstract
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         $blog = PageView::where( 'path', 'blog' )->firstOrFail();
         $article = PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
-        PageAccess::set( [$blog->id], [] );
+        Permission::system( fn() => PageAccess::set( [$blog->id], [] ) );
 
         $ids = ( new Navigation( $page, null ) )->items()->pluck( 'id' );
 
@@ -153,7 +154,7 @@ class NavigationTest extends ThemeTestAbstract
     {
         $article = PageView::where( 'path', 'welcome-to-laravelcms' )->firstOrFail();
         $blog = PageView::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::set( [$blog->id], [] );
+        Permission::system( fn() => PageAccess::set( [$blog->id], [] ) );
 
         $user = new \App\Models\User();
         $user->id = 42;

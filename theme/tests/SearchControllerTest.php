@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageAccess;
@@ -133,7 +134,7 @@ class SearchControllerTest extends ThemeTestAbstract
         $manager->forgetDrivers();
         config( ['scout.driver' => 'stale-access-test'] );
         Access::using( fn() => [] );
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
 
         $request = Request::create( '/cmsapi/search', 'GET', [
             'q' => 'welcome',

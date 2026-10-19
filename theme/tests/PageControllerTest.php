@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Models\Element;
@@ -687,7 +688,7 @@ class PageControllerTest extends ThemeTestAbstract
         $start = hrtime( true );
 
         try {
-            PageAccess::set( [$page->id], [] );
+            Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         } finally {
             $lock->release();
         }
@@ -714,7 +715,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->assertTrue( $lock->get() );
 
         try {
-            PageAccess::set( [$page->id], [] );
+            Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
             $this->assertNull( PageCache::response( $page ) );
             $this->get( '/hidden' )->assertRedirect( '/login' );
         } finally {
@@ -732,7 +733,7 @@ class PageControllerTest extends ThemeTestAbstract
         $this->cache( $changed, 'changed-html' );
         $this->cache( $shared, 'shared-html' );
 
-        PageAccess::set( [(string) $changed->id], [] );
+        Permission::system( fn() => PageAccess::set( [(string) $changed->id], [] ) );
 
         $this->assertNull( PageCache::response( $changed ) );
         $this->assertSame( 'shared-html', PageCache::response( $shared )?->getContent() );
@@ -742,7 +743,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageRedirectsGuestAndAllowsPermission(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['frontend.member'] ) );
 
         $guest = $this->get( '/hidden' );
         $guest->assertRedirect( '/login' );
@@ -763,7 +764,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageUsesExtendedAccessWithoutRuleQuery(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [(string) $page->id], ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [(string) $page->id], ['frontend.member'] ) );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -794,7 +795,7 @@ class PageControllerTest extends ThemeTestAbstract
             'id' => 'private-file', 'disk' => 'private', 'path' => 'cms/test/private.pdf',
         ] );
         $url = null;
-        PageAccess::set( [$page->id], ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['frontend.member'] ) );
         View::composer( '*', function() use ( &$url, $file, $page ) {
             $url ??= cmsasset( $page, $file );
         } );
@@ -815,7 +816,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageReturnsUnauthorizedForJsonGuest(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['frontend.member'] ) );
 
         $this->getJson( '/hidden' )->assertUnauthorized();
     }
@@ -824,7 +825,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageForbidsAuthenticatedUserWithoutPermission(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['frontend.member'] ) );
 
         $user = new \App\Models\User();
         $user->id = 43;
@@ -839,7 +840,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testEditorFromAnotherTenantCannotBypassPageAccess(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         $this->user->tenant_id = 'other';
 
         $this->actingAs( $this->user )->get( '/hidden' )->assertForbidden();
@@ -849,7 +850,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedPageIsHiddenFromGuestNavigation(): void
     {
         $blog = PageView::where( 'path', 'blog' )->firstOrFail();
-        PageAccess::set( [$blog->id], [] );
+        Permission::system( fn() => PageAccess::set( [$blog->id], [] ) );
 
         $response = $this->get( '/hidden' );
 
@@ -900,7 +901,7 @@ class PageControllerTest extends ThemeTestAbstract
     public function testRestrictedGuestPreflightUsesOneQuery(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         DB::flushQueryLog();
         DB::enableQueryLog();
 

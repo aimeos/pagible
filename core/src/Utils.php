@@ -22,11 +22,15 @@ class Utils
      * Returns the editor identifier for the current user.
      *
      * @param object|null $user The authenticated user object
-     * @return string The user's email or the request IP address
+     * @return string The user's email, "system" for calls without user inside Permission::system() or the request IP address
      */
     public static function editor( ?object $user = null ) : string
     {
-        return (string) ( $user && isset( $user->email ) ? $user->email : request()->ip() );
+        if( $user && isset( $user->email ) ) {
+            return (string) $user->email;
+        }
+
+        return !$user && Hooks::get()->system ? 'system' : (string) request()->ip();
     }
 
 

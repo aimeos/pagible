@@ -107,19 +107,18 @@ class Ai
      *
      * @template T of \Aimeos\Prisma\Files\File
      * @param array<int, string> $ids UUIDs of the files
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User loading the files or NULL inside Permission::system()
      * @param class-string<T> $class Prisma file class, e.g. Image::class
      * @return array<int, T> List of Prisma file objects
-     * @throws Exception If the user isn't allowed to view files
+     * @throws \Aimeos\Cms\Exceptions\PermissionException If the user isn't allowed to view files
      */
-    public static function files( array $ids, string $class = \Aimeos\Prisma\Files\File::class ) : array
+    public static function files( array $ids, ?\Illuminate\Contracts\Auth\Authenticatable $user, string $class = \Aimeos\Prisma\Files\File::class ) : array
     {
         if( empty( $ids ) ) {
             return [];
         }
 
-        if( !Permission::can( 'file:view', Auth::user() ) ) {
-            throw new Exception( 'Insufficient permissions' );
-        }
+        Permission::check( 'file:view', $user );
 
         $type = $class !== \Aimeos\Prisma\Files\File::class ? strtolower( class_basename( $class ) ) . '/' : '';
 
@@ -425,12 +424,12 @@ class Ai
     /**
      * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
      *
-     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts or NULL inside Permission::system()
      * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
      */
     public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user ) : ?\Closure
     {
-        if( !config( 'cms.ai.translate.provider' ) || !Permission::can( 'text:translate', $user ) ) {
+        if( !config( 'cms.ai.translate.provider' ) || !Permission::allowed( 'text:translate', $user ) ) {
             return null;
         }
 

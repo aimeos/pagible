@@ -9,6 +9,8 @@ namespace Aimeos\Cms\Jobs;
 
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Exception;
+use Aimeos\Cms\Exceptions\PermissionException;
+use Aimeos\Cms\Hooks;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
@@ -69,6 +71,9 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     /** @var string|null Class of the user who started the translation */
     public ?string $model = null;
 
+    /** @var bool TRUE if the translation was started without user inside Permission::system() */
+    public bool $system = false;
+
     /** @var int Seconds until the translation of the page and language can be queued again if the job got lost */
     public int $uniqueFor = 3600 * self::HOURS;
 
@@ -83,6 +88,7 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
     {
         $this->routeQueue();
         $this->guard = Auth::getDefaultDriver();
+        $this->system = $userId === null && Hooks::get()->system;
 
         if( ( $user = Auth::user() ) && $userId !== null && (string) $user->getAuthIdentifier() === (string) $userId ) {
             $this->model = get_class( $user );
@@ -339,10 +345,16 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                     return;
                 }
 
+                // the permission checks of Variants::translate() apply to translations started by the system
+                if( $this->system ) {
+                    Permission::system( fn() => Ai::limited( fn() => Variants::translate( $this->id, $this->lang, null, Ai::translator( null ) ), $this->tenant ) );
+                    return;
+                }
+
                 if( !( $user = $this->user() ) || !Permission::can( 'page:save', $user ) || ( !Permission::can( 'page:add', $user )
                     && !PageVariant::withTrashed()->where( 'page_id', $this->id )->where( 'lang', $this->lang )->exists() )
                 ) {
-                    throw new Exception( 'Insufficient permissions' );
+                    throw new PermissionException( 'Insufficient permissions' );
                 }
 
                 // queue workers are long running, so later jobs mustn't run as this user

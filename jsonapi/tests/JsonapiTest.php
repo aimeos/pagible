@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Concerns\ResolvesFiles;
 use Aimeos\Cms\Models\File;
@@ -365,7 +366,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testRestrictedPageIsHiddenFromGuests()
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
 
         $response = $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
@@ -390,7 +391,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testAuthenticationOnlyPageIsVisibleToAuthenticatedUsers()
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -405,7 +406,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testAnyGrantedPermissionMakesPageVisible()
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::set( [$page->id], ['denied', 'member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['denied', 'member'] ) );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -421,7 +422,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testDeniedPageIsHiddenFromAuthenticatedCollections()
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::set( [$page->id], ['denied'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['denied'] ) );
         $user = new \App\Models\User();
         $user->id = 42;
         $user->tenant_id = 'test';
@@ -440,7 +441,7 @@ class JsonapiTest extends JsonapiTestAbstract
     public function testAccessScopeIsLimitedToTheJsonapiRequest()
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        PageAccess::set( [$page->id], ['member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['member'] ) );
         $allowed = new \App\Models\User();
         $allowed->id = 42;
         $allowed->tenant_id = 'test';
@@ -467,7 +468,7 @@ class JsonapiTest extends JsonapiTestAbstract
     {
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $child = $page->children()->where( 'status', '>', 0 )->firstOrFail();
-        PageAccess::set( [$child->id], [] );
+        Permission::system( fn() => PageAccess::set( [$child->id], [] ) );
 
         $response = $this->jsonApi()->expects( 'pages' )
             ->includePaths( 'children' )

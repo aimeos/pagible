@@ -103,7 +103,7 @@ class Validation
             throw new InvalidInputException( sprintf( 'Invalid language code "%1$s"', $input['lang'] ) );
         }
 
-        if( !Permission::can( 'page:config', $user ) ) {
+        if( !Permission::allowed( 'page:config', $user ) ) {
             unset( $input['config'] );
         }
 

@@ -6,6 +6,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Models\Element;
@@ -82,7 +83,7 @@ class AssetControllerTest extends CoreTestAbstract
     public function testPrivateFileRequiresAccessToItsPage()
     {
         [$page, $file] = $this->asset();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         $url = route( 'cms.asset', ['page' => $page->id, 'file' => $file->id], false );
 
         $this->get( $url )->assertRedirect( '/login' );
@@ -100,7 +101,7 @@ class AssetControllerTest extends CoreTestAbstract
     public function testSignedPrivateFileSkipsRepeatedPageAuthorization()
     {
         [$page, $file] = $this->asset();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         $url = URL::temporarySignedRoute(
             'cms.asset',
             now()->addMinute(),
@@ -150,7 +151,7 @@ class AssetControllerTest extends CoreTestAbstract
     public function testExpiredPrivateFileTokenDoesNotBypassPageAuthorization()
     {
         [$page, $file] = $this->asset();
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
         $url = URL::temporarySignedRoute(
             'cms.asset',
             now()->subMinute(),
@@ -350,7 +351,7 @@ class AssetControllerTest extends CoreTestAbstract
     public function testPrivateFileOfTranslationCanBeDelivered()
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $variant = Variants::add( $page->id, 'de' );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
         PageVariant::whereKey( $variant->variant_id )->update( ['status' => 1] );
 
         [$page, $file] = $this->asset( true, $variant );

@@ -169,15 +169,19 @@ counts. Health updates don't change `updated_at`.
 
 ### Managing subscriptions in code
 
-`Aimeos\Cms\WebhookManager` offers the operations of the admin panel, e.g. to create a subscription for each new tenant. All methods work in the current tenant and require a user with the `config:webhook` permission, `null` is denied:
+`Aimeos\Cms\WebhookManager` offers the operations of the admin panel, e.g. to create a subscription for each new tenant. All methods work in the current tenant and require a user with the `config:webhook` permission. Without user (`null`), they throw a `PermissionException` unless they run inside `Permission::system()`, e.g. in a listener for new tenants:
 
 ```php
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\WebhookManager;
 
 $result = app( WebhookManager::class )->add( 'https://example.com/hooks/cms', ['page.published'], true, $user, 'Shop sync' );
 
 $result['webhook']->id; // subscription ID for save(), rotate(), ping() and purge()
 $result['secret'];      // returned only once, store it now
+
+// without user, e.g. when a new tenant is created
+$result = Permission::system( fn() => app( WebhookManager::class )->add( 'https://example.com/hooks/cms', ['page.published'], true, null ) );
 ```
 
 `save( $id, $events, $status, $user, $name )` changes the events, status and name, `rotate( $id, $user )` returns a new secret, `ping( $id, $user )` sends a test event and `purge( $ids, $user )` deletes subscriptions.

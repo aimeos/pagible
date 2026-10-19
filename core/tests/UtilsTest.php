@@ -13,6 +13,14 @@ use PHPUnit\Framework\Attributes\Group;
 
 class UtilsTest extends CoreTestAbstract
 {
+    public function testEditor()
+    {
+        $this->assertSame( 'editor@example.com', Utils::editor( (object) ['email' => 'editor@example.com'] ) );
+        $this->assertSame( '127.0.0.1', Utils::editor() );
+        $this->assertSame( 'system', \Aimeos\Cms\Permission::system( fn() => Utils::editor() ) );
+    }
+
+
     public function testIsValidUrlNull()
     {
         $this->assertTrue( Utils::isValidUrl( null ) );

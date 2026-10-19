@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -1628,8 +1629,28 @@ class ResourceTest extends CoreTestAbstract
         $this->assertThrows( fn() => Variants::bulk( [$page->id], 'en', ['title' => 'Changed'], $user ), PermissionException::class );
         $this->assertThrows( fn() => Variants::publish( $page->id, 'en', $user ), PermissionException::class );
 
-        // without user, the call is trusted
-        $this->assertEquals( 'Trusted', Pages::save( $page->id, ['title' => 'Trusted'] )->latest?->data->title );
+        // without user, the call is anonymous outside Permission::system()
+        $this->assertThrows( fn() => Pages::save( $page->id, ['title' => 'Anonymous'] ), PermissionException::class );
+        $this->assertEquals( 'Trusted', Permission::system( fn() => Pages::save( $page->id, ['title' => 'Trusted'] ) )->latest?->data->title );
+    }
+
+
+    public function testSystemKeepsConfig()
+    {
+        $config = fn( string $title ) => ['website-title' => ['type' => 'website-title', 'data' => ['title' => $title], 'files' => []]];
+
+        $page = Permission::system( fn() => Pages::add( [
+            'lang' => 'en', 'name' => 'Config', 'path' => 'res-config', 'config' => $config( 'Added' ),
+        ], parent: $this->root()->id ) );
+        $this->assertEquals( 'Added', $page->latest->aux->config->{'website-title'}->data->title );
+
+        Permission::system( fn() => Pages::publish( $page->id ) );
+        $page = Permission::system( fn() => Pages::save( $page->id, ['config' => $config( 'Saved' )], latestId: $page->latest_id ) );
+        $this->assertEquals( 'Saved', $page->latest->aux->config->{'website-title'}->data->title );
+
+        $editor = new \App\Models\User( ['name' => 'Editor', 'cmsperms' => ['page:view', 'page:save']] );
+        $page = Pages::save( $page->id, ['config' => $config( 'Editor' )], $editor, $page->latest_id );
+        $this->assertEquals( 'Saved', $page->latest->aux->config->{'website-title'}->data->title );
     }
 
 
