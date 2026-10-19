@@ -3,9 +3,8 @@
  */
 
 import { nextTick } from 'vue'
-import { uid } from './utils'
-
 const keys = new WeakMap()
+let counter = 0
 
 /**
  * Returns a stable fallback identity for an item.
@@ -16,7 +15,7 @@ export function key(item) {
   }
 
   if (!keys.has(item)) {
-    keys.set(item, uid())
+    keys.set(item, 'key-' + ++counter)
   }
 
   return keys.get(item)

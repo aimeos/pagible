@@ -19,11 +19,12 @@ describe('uid()', () => {
   })
 
   it('generates unique IDs on consecutive calls', () => {
+    // more than the 128 IDs the old time based IDs could generate within 4 seconds
     const ids = new Set()
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 300; i++) {
       ids.add(uid())
     }
-    expect(ids.size).to.equal(100)
+    expect(ids.size).to.equal(300)
   })
 
   it('returns a different value on each call', () => {

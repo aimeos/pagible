@@ -261,8 +261,9 @@ class UtilsTest extends CoreTestAbstract
 
     public function testUidUnique()
     {
-        $ids = array_map( fn() => Utils::uid(), range( 1, 100 ) );
+        // more than the 128 IDs the old time based IDs could generate within 4 seconds
+        $ids = array_map( fn() => Utils::uid(), range( 1, 300 ) );
 
-        $this->assertCount( 100, array_unique( $ids ) );
+        $this->assertCount( 300, array_unique( $ids ) );
     }
 }
