@@ -89,3 +89,4 @@ parameters:
 		- themes/folio/src
 		- themes/folio/database/seeders
 		- tests/User.php
+		- core/tests/UserFactory.php

@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Database\Factories\ElementFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Aimeos\Cms\Concerns\Referenced;
 use Aimeos\Cms\ContentType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -34,6 +36,8 @@ use Aimeos\Cms\Translation\Texts;
  */
 class Element extends Base
 {
+    /** @use HasFactory<ElementFactory> */
+    use HasFactory;
     use Referenced;
 
     public const PERM = ContentType::Element->value;
@@ -187,4 +191,11 @@ class Element extends Base
     }
 
 
+    /**
+     * Returns the factory creating the items through the facade.
+     */
+    protected static function newFactory() : ElementFactory
+    {
+        return ElementFactory::new();
+    }
 }
