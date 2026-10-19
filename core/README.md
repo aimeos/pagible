@@ -231,7 +231,21 @@ The user is passed directly after the required arguments. Optional arguments lik
 
 ### Permissions
 
-Each method checks the permission of its action for the passed user, e.g. `page:save` for `Pages::save()` or `file:relocate` for `Files::relocate()`, and throws a `PermissionException` if the user lacks it. If no user is passed (`null`), the call is trusted and no permissions are checked, which is meant for commands, jobs and seeders only. Always pass the authenticated user when handling requests.
+Each method checks the permission of its action for the passed user, e.g. `page:save` for `Pages::save()` or `file:relocate` for `Files::relocate()`, and throws a `PermissionException` if the user lacks it. If no user is passed (`null`), the call is anonymous and throws a `PermissionException` too. For system changes in commands, jobs, seeders or payment webhooks, wrap the calls in `Permission::system()`:
+
+```php
+use Aimeos\Cms\Permission;
+
+Permission::system( fn() => Pages::publish( $pageId ) );
+```
+
+Inside `system()`, calls without user aren't checked and their changes are recorded with `system` as editor, while users passed explicitly are still checked. For your own write operations, `Permission::check( $action, $user )` throws the same way and `Permission::allowed( $action, $user )` returns the result instead, while `Permission::can( $action, $user )` is always `false` without user.
+
+`system()` only applies to the current process. Queued AI translations started inside `system()` without user run as system in the queue worker too, but your own queued jobs must wrap the CMS calls in `handle()` with `Permission::system()` themselves.
+
+`Permission::set( $user, $entries )` assigns roles and permissions without checking the acting user, so check whether the current user may manage permissions before calling it from your own controllers.
+
+Write operations only use the passed user. Read operations decide about previews of unpublished drafts by the authenticated user (`Auth::user()`), so queued jobs must log in the user (`Auth::setUser()`) to read drafts as editor.
 
 The actions are also Laravel Gate abilities, so the CMS roles, deny entries and tenant checks apply to your application code too:
 
@@ -368,7 +382,7 @@ Drafts are stored in the latest version: `$page->latest?->data` contains the pag
 
 ### Testing
 
-The CMS operations work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). Pass `null` as user to skip the permission checks, or a user whose permissions are assigned by `Permission::set()` to test them:
+The CMS operations work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). Wrap the calls in `Permission::system()` to skip the permission checks, or pass a user whose permissions are assigned by `Permission::set()` to test them:
 
 ```php
 use Aimeos\Cms\Events\Change;
@@ -380,18 +394,18 @@ use Illuminate\Support\Facades\Event;
 
 public function testPublish() : void
 {
-    $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] );
+    $page = Permission::system( fn() => Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] ) );
 
     Event::fake( [Published::class] );
 
-    Pages::publish( $page->id );
+    Permission::system( fn() => Pages::publish( $page->id ) );
 
     Event::assertDispatched( Published::class, fn( Published $event ) => $event->id === $page->id );
 }
 
 public function testPermission() : void
 {
-    $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] );
+    $page = Permission::system( fn() => Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] ) );
     Permission::set( $user = User::factory()->create(), ['editor'] );
 
     $this->expectException( PermissionException::class );
@@ -413,7 +427,7 @@ $this->actingAs( User::factory()->cms( 'editor', '!page:drop' )->create() )
     ->assertOk();
 ```
 
-For content fixtures, `$this->artisan( 'cms:demo' )` of the theme package creates a published demo page tree, while `Pages::add()` and `Pages::publish()` create single pages.
+For content fixtures, `$this->artisan( 'cms:demo' )` of the theme package creates a published demo page tree, while `Pages::add()` and `Pages::publish()` inside `Permission::system()` create single pages.
 
 Events are only dispatched if `cms.broadcast` is enabled, listeners for them are registered or `Event::fake()` is used. Alternatively, register a listener by `Change::listen()` and collect the passed `Change` objects. `Bulk` events are dispatched instead of the per-item events if several items are changed at once, e.g. by `publishMany()`.
 

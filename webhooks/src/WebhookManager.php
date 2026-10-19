@@ -250,10 +250,7 @@ class WebhookManager
 
     private function authorize( ?Authenticatable $user ) : string
     {
-        if( !Permission::can( 'config:webhook', $user ) ) {
-            throw new Exception( 'Permission denied.' );
-        }
-
+        Permission::check( 'config:webhook', $user );
         return Tenancy::value();
     }
 

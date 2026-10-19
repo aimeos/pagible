@@ -72,6 +72,22 @@ class Permission
 
 
     /**
+     * Checks if the action is allowed for the user or for calls without user inside system().
+     *
+     * Use it for optional parts of write operations, e.g. fields requiring an additional permission.
+     * For read decisions like previews, use can() because calls without user must be treated as anonymous.
+     *
+     * @param string $action Name of the requested action, e.g. "page:config"
+     * @param Authenticatable|null $user Laravel user object or NULL for anonymous users
+     * @return bool TRUE if the action is allowed, FALSE if not
+     */
+    public static function allowed( string $action, ?Authenticatable $user ) : bool
+    {
+        return $user ? self::can( $action, $user ) : Hooks::get()->system;
+    }
+
+
+    /**
      * Returns the raw CMS roles and permissions assigned to the user.
      *
      * @return array<int, string>
@@ -155,16 +171,16 @@ class Permission
     /**
      * Throws an exception if the user isn't allowed to perform the action.
      *
-     * A NULL user is a system call and always allowed.
+     * A NULL user is anonymous and only allowed inside system().
      *
      * @param string $action Action name, e.g. "page:publish"
-     * @param Authenticatable|null $user Laravel user object or NULL for system calls
+     * @param Authenticatable|null $user Laravel user object or NULL for anonymous users
      * @param bool $needed FALSE to skip the check, e.g. if there are no related items
-     * @throws Exception If the user lacks the permission
+     * @throws PermissionException If the user lacks the permission
      */
     public static function check( string $action, ?Authenticatable $user, bool $needed = true ) : void
     {
-        if( $needed && $user && !self::can( $action, $user ) ) {
+        if( $user ? $needed && !self::can( $action, $user ) : !Hooks::get()->system ) {
             throw new PermissionException( 'Insufficient permissions' );
         }
     }
@@ -269,6 +285,30 @@ class Permission
         self::audit( $user, $result, $tenant );
 
         return $result;
+    }
+
+
+    /**
+     * Executes the callback without permission checks for calls without user.
+     *
+     * Use it for system changes, e.g. in commands, jobs, seeders or payment webhooks.
+     * Explicitly passed users are still checked.
+     *
+     * @template T
+     * @param \Closure(): T $callback Function calling the CMS operations
+     * @return T Result of the callback
+     */
+    public static function system( \Closure $callback ) : mixed
+    {
+        $hooks = Hooks::get();
+        $system = $hooks->system;
+        $hooks->system = true;
+
+        try {
+            return $callback();
+        } finally {
+            $hooks->system = $system;
+        }
     }
 
 

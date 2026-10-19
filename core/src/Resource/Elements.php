@@ -35,7 +35,7 @@ use Illuminate\Support\Collection;
  *
  * Each method checks the permission of its action for the passed user, e.g. "element:save" for
  * save(), and throws a PermissionException if it's missing. Without user (NULL), the call is
- * trusted like in commands and jobs and no permissions are checked.
+ * anonymous and throws too unless it runs inside Permission::system(), e.g. in commands or jobs.
  *
  * Use it via the Aimeos\Cms\Facades\Elements facade, which resolves the instance from the container.
  * Applications can replace it by a subclass overriding the public or protected methods, e.g. with

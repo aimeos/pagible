@@ -61,6 +61,6 @@ class InpaintImage extends Tool
             'file.required' => 'You must specify the UUID of the image file to edit.',
             'prompt.required' => 'You must provide a prompt describing the desired content.',
             'mask.required' => 'You must specify the UUID of the mask image file.',
-        ], fn( $image, $v ) => Ai::inpaint( $image, $this->image( $v['mask'], 'Mask' ), $v['prompt'] ) );
+        ], fn( $image, $v ) => Ai::inpaint( $image, $this->image( $v['mask'], $request->user(), 'Mask' ), $v['prompt'] ) );
     }
 }

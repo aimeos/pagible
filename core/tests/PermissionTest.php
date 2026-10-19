@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use Illuminate\Auth\GenericUser;
@@ -543,6 +544,64 @@ class PermissionTest extends CoreTestAbstract
 
         Permission::unregister( 'test:run' );
         $this->assertFalse( $user->can( 'test:run' ) );
+    }
+
+
+    public function testCheckUser()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['editor']] );
+
+        Permission::check( 'page:save', $user );
+
+        $this->expectException( PermissionException::class );
+        Permission::check( 'page:publish', $user );
+    }
+
+
+    public function testCheckAnonymous()
+    {
+        $this->actingAs( new \App\Models\User( ['cmsperms' => ['admin']] ) );
+
+        $this->expectException( PermissionException::class );
+        Permission::check( 'page:view', null, false );
+    }
+
+
+    public function testAllowed()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['page:config']] );
+
+        $this->assertTrue( Permission::allowed( 'page:config', $user ) );
+        $this->assertFalse( Permission::allowed( 'page:publish', $user ) );
+        $this->assertFalse( Permission::allowed( 'page:config', null ) );
+        $this->assertTrue( Permission::system( fn() => Permission::allowed( 'page:config', null ) ) );
+        $this->assertFalse( Permission::system( fn() => Permission::allowed( 'page:publish', $user ) ) );
+        $this->assertFalse( Permission::system( fn() => Permission::can( 'page:config', null ) ) );
+    }
+
+
+    public function testSystem()
+    {
+        $user = new \App\Models\User( ['cmsperms' => ['editor']] );
+
+        $this->assertSame( 'ok', Permission::system( function() {
+            Permission::check( 'page:publish', null );
+            return 'ok';
+        } ) );
+
+        $this->expectException( PermissionException::class );
+        Permission::system( fn() => Permission::check( 'page:publish', $user ) );
+    }
+
+
+    public function testSystemRestores()
+    {
+        try {
+            Permission::system( fn() => throw new \RuntimeException() );
+        } catch( \RuntimeException $e ) {}
+
+        $this->expectException( PermissionException::class );
+        Permission::check( 'page:publish', null );
     }
 
 

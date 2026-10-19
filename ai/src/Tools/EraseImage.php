@@ -56,6 +56,6 @@ class EraseImage extends Tool
         ], [
             'file.required' => 'You must specify the UUID of the image file to edit.',
             'mask.required' => 'You must specify the UUID of the mask image file.',
-        ], fn( $image, $v ) => Ai::erase( $image, $this->image( $v['mask'], 'Mask' ) ) );
+        ], fn( $image, $v ) => Ai::erase( $image, $this->image( $v['mask'], $request->user(), 'Mask' ) ) );
     }
 }

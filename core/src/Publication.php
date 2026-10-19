@@ -544,7 +544,11 @@ final class Publication
                 }
             }
 
-            Permission::check( $model::PERM . ':publish', $user, (bool) $items );
+            // calls without user passed the entry check inside Permission::system() or are model calls like Base::publish()
+            if( $user ) {
+                Permission::check( $model::PERM . ':publish', $user, (bool) $items );
+            }
+
             $apply( $items );
         }
 

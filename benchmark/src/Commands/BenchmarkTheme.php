@@ -158,7 +158,7 @@ class BenchmarkTheme extends Command
             readOnly: true, tries: $tries,
         );
 
-        $this->benchmarkAccess( $uncachedPage, $domain, $baseurl, $middleware, $tries );
+        Permission::system( fn() => $this->benchmarkAccess( $uncachedPage, $domain, $baseurl, $middleware, $tries ) );
 
         // Page latest (editor preview via versioned path)
         $user = $this->user();
