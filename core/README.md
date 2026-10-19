@@ -243,6 +243,13 @@ Inside `system()`, calls without user aren't checked and their changes are recor
 
 `system()` only applies to the current process. Queued AI translations started inside `system()` without user run as system in the queue worker too, but your own queued jobs must wrap the CMS calls in `handle()` with `Permission::system()` themselves.
 
+Every call without user inside `system()` is trusted, including those of event listeners and synchronous jobs it triggers, and may also change the page `config`. Therefore:
+
+- Keep the callbacks small and only wrap the CMS calls that need it
+- Never pass `$request->user()` or `Auth::user()` inside `system()` because guests would become the system user
+- Only pass fixed or validated values, e.g. a page ID from your own database instead of the payload of a payment webhook
+- Calls without user aren't bound to a tenant, so initialize the tenant first in commands and jobs, e.g. `Tenancy::run( $tenantId, fn() => Permission::system( ... ) )`
+
 `Permission::set( $user, $entries )` assigns roles and permissions without checking the acting user, so check whether the current user may manage permissions before calling it from your own controllers.
 
 Write operations only use the passed user. Read operations decide about previews of unpublished drafts by the authenticated user (`Auth::user()`), so queued jobs must log in the user (`Auth::setUser()`) to read drafts as editor.
