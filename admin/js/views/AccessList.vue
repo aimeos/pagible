@@ -2,13 +2,14 @@
 
 <script>
 import gql from 'graphql-tag'
-import { mdiClose, mdiDeleteForever, mdiKeyPlus, mdiMagnify, mdiMenu } from '@mdi/js'
+import { mdiDeleteForever, mdiKeyPlus, mdiMagnify } from '@mdi/js'
+import ListAppBar from '../components/ListAppBar.vue'
 import Navigation from '../components/Navigation.vue'
-import User from '../components/User.vue'
 import AccessUsers from '../components/AccessUsers.vue'
 import CmsDialog from '../components/Dialog.vue'
-import { apolloClient } from '../graphql'
-import { useConfirmStore, useDrawerStore, useMessageStore, useUserStore } from '../stores'
+import { useConfirmStore, useMessageStore, useUserStore } from '../stores'
+
+const MAX_LENGTH = 100 // maximum length of an access value
 
 const FETCH_ACCESS = gql`
   query {
@@ -34,26 +35,23 @@ export default {
   components: {
     AccessUsers,
     CmsDialog,
-    Navigation,
-    User
+    ListAppBar,
+    Navigation
   },
 
   setup() {
     const confirm = useConfirmStore()
-    const drawer = useDrawerStore()
     const messages = useMessageStore()
     const user = useUserStore()
 
     return {
       confirm,
-      drawer,
       messages,
       user,
-      mdiClose,
       mdiDeleteForever,
       mdiKeyPlus,
       mdiMagnify,
-      mdiMenu
+      MAX_LENGTH
     }
   },
 
@@ -100,7 +98,7 @@ export default {
 
     addDisabled() {
       const value = this.value.trim()
-      return this.saving || !value || value.length > 100 || this.items.includes(value)
+      return this.saving || !value || value.length > MAX_LENGTH || this.items.includes(value)
     },
 
     allSelected() {
@@ -117,8 +115,9 @@ export default {
   },
 
   mounted() {
+    // query-only redirects reuse this instance, so load() must still run to reset the loading state
     if (this.$route.name === 'access:view' && !this.canAccess && this.canManageUsers) {
-      return this.$router.replace({ name: 'access:view', query: { ...this.$route.query, tab: 'users' } })
+      this.$router.replace({ name: 'access:view', query: { ...this.$route.query, tab: 'users' } })
     }
 
     this.load()
@@ -132,7 +131,7 @@ export default {
       }
 
       try {
-        const response = await apolloClient.query({
+        const response = await this.$apollo.query({
           query: FETCH_ACCESS,
           fetchPolicy: 'network-only'
         })
@@ -158,7 +157,7 @@ export default {
       this.saving = true
 
       try {
-        const response = await apolloClient.mutate({
+        const response = await this.$apollo.mutate({
           mutation: ADD_ACCESS,
           variables: { value: this.value.trim() }
         })
@@ -192,7 +191,7 @@ export default {
       this.saving = true
 
       try {
-        const response = await apolloClient.mutate({
+        const response = await this.$apollo.mutate({
           mutation: DELETE_ACCESS,
           variables: { values }
         })
@@ -228,21 +227,7 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
-    <template #prepend>
-      <v-btn
-        @click="drawer.toggle('nav')"
-        :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? mdiClose : mdiMenu"
-      />
-    </template>
-
-    <v-app-bar-title><h1>{{ $gettext('Access') }}</h1></v-app-bar-title>
-
-    <template #append>
-      <User />
-    </template>
-  </v-app-bar>
+  <ListAppBar :title="$gettext('Access')" :aside="false" />
 
   <Navigation />
 
@@ -336,7 +321,7 @@ export default {
         ref="value"
         v-model="value"
         :label="$gettext('Access value') + ' ‒ ' + $gettext('Role name which can be assigned to pages and users')"
-        maxlength="100"
+        :maxlength="MAX_LENGTH"
         counter
         autofocus
         @keyup.enter="add()"

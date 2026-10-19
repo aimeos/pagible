@@ -556,7 +556,7 @@ describe('PageDetail', () => {
     it('shows changes button even when all conflicts are resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
-        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c', resolved: true, chosen: 'c' } } }
         cy.get('.menu-changed').should('exist')
       })
     })
@@ -581,7 +581,7 @@ describe('PageDetail', () => {
     it('hasConflict is false when all conflicts are resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
-        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        vm.changed = { editor: 'x', data: { title: { previous: 'a', current: 'b', overwritten: 'c', resolved: true, chosen: 'c' } } }
         expect(vm.hasConflict).to.be.false
       })
     })

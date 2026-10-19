@@ -159,4 +159,18 @@ describe('FileUrlDialog', () => {
       })
     })
   })
+
+  it('resets previous errors when the URLs are checked again', () => {
+    mountDialog({ multiple: true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileUrlDialog).vm
+
+      vm.input = 'https://example.com/' + 'a'.repeat(300)
+      vm.update()
+      expect(vm.errors).to.have.length(1)
+
+      vm.input = ''
+      vm.update()
+      expect(vm.errors).to.have.length(0)
+    })
+  })
 })

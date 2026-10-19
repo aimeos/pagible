@@ -7,11 +7,14 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client/core'
-import { socketId } from './echo'
+import { realtime, socketId } from './echo'
 import { urlgraphql } from './config'
 import { xsrfHeaders } from './http'
 
 const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
+
+// HTTP status codes of requests rejected because the session expired
+export const AUTH_STATUS = Object.freeze([401, 419])
 
 // Handlers for the user session, registered by session.js so this module doesn't depend on the stores and router
 const session = {
@@ -76,7 +79,7 @@ export function graphqlFetch(input, init) {
 }
 
 export function handleError({ graphQLErrors, networkError, operation, forward }) {
-  const unauthorized = [401, 419].includes(networkError?.statusCode) || graphQLErrors?.some((err) =>
+  const unauthorized = AUTH_STATUS.includes(networkError?.statusCode) || graphQLErrors?.some((err) =>
     err.message === 'Unauthenticated.' ||
     err.extensions?.code === 'UNAUTHENTICATED' ||
     err.extensions?.http?.status === 401
@@ -110,7 +113,7 @@ export function invalidateList(field, cache = apolloClient.cache) {
 
 /** Uses cached lists only when remote invalidation is configured. */
 export function listFetchPolicy() {
-  return document.querySelector('#app')?.dataset?.reverb ? 'cache-first' : 'network-only'
+  return realtime() ? 'cache-first' : 'network-only'
 }
 
 export function retry(error) {

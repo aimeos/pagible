@@ -8,6 +8,13 @@ export default {
 
   props: {
     modelValue: { type: Array }
+  },
+
+  computed: {
+    // the labels must show the same value as the slider position
+    value() {
+      return this.modelValue ?? this.config.default ?? []
+    }
   }
 }
 </script>
@@ -20,15 +27,15 @@ export default {
     :max="config.max ?? 100"
     :min="config.min ?? 0"
     :readonly="readonly"
-    :modelValue="modelValue ?? config.default ?? []"
+    :modelValue="value"
     @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
   >
     <template #prepend>
-      <span>{{ modelValue?.[0] ?? '' }}</span>
+      <span>{{ value[0] ?? '' }}</span>
     </template>
     <template #append>
-      <span>{{ modelValue?.[1] ?? '' }}</span>
+      <span>{{ value[1] ?? '' }}</span>
     </template>
   </v-range-slider>
 </template>

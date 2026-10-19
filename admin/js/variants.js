@@ -3,8 +3,16 @@
  */
 
 import gql from 'graphql-tag'
-import { useTranslationStore } from './stores'
+import { useLanguageStore, useTranslationStore } from './stores'
 import { translatePages } from './translate'
+
+const ADD_VARIANT = gql`
+  mutation ($id: ID!, $lang: String!) {
+    addPageVariant(id: $id, lang: $lang) {
+      id
+    }
+  }
+`
 
 const IGNORE_CHANGES = gql`
   mutation ($id: [ID!]!, $lang: String!) {
@@ -13,6 +21,16 @@ const IGNORE_CHANGES = gql`
     }
   }
 `
+
+/**
+ * Returns if the user is allowed to translate pages
+ *
+ * @param {Object} user User store
+ * @returns {boolean} TRUE if pages can be translated
+ */
+export function canTranslate(user) {
+  return user.can('page:save') && user.can('text:translate')
+}
 
 /**
  * Queues the translation of new variants, which are untranslated copies of the source until then.
@@ -28,7 +46,7 @@ const IGNORE_CHANGES = gql`
  * @returns {Promise<Object|null>} Batch or NULL if nothing was queued
  */
 export function translateNew(apollo, user, ids, lang, success = '') {
-  if (!user.can('page:save') || !user.can('text:translate')) {
+  if (!canTranslate(user)) {
     return Promise.resolve(null)
   }
 
@@ -37,7 +55,8 @@ export function translateNew(apollo, user, ids, lang, success = '') {
       return null
     }
 
-    useTranslationStore().add(batch, { ids, langs: [lang], success }, apollo)
+    // the store outlives the component, so it polls with the default client instead of the component's one
+    useTranslationStore().add(batch, { ids, langs: [lang], success })
     return batch
   })
 }
@@ -108,7 +127,7 @@ export const pageVariants = {
   methods: {
     // moves the variants in the current language to the trash, source variants are skipped
     async dropLang(stat = null) {
-      const all = this.allowed('drop') ? (stat ? [stat] : this.selected((page) => !this.missing(page))) : []
+      const all = this.allowed('drop') ? this.targets(stat, (page) => !this.missing(page)) : []
       const list = all.filter((item) => item.data.lang !== item.data.source && !item.data.variant_deleted_at)
       const skipped = all.filter((item) => item.data.lang === item.data.source).length
 
@@ -155,7 +174,7 @@ export const pageVariants = {
 
     // restores the trashed variants in the current language
     keepLang(stat = null) {
-      const list = this.allowed('keep') ? (stat ? [stat] : this.selected((page) => this.restorable(page))) : []
+      const list = this.allowed('keep') ? this.targets(stat, (page) => this.restorable(page)) : []
 
       if (!list.length) {
         return
@@ -168,7 +187,7 @@ export const pageVariants = {
 
     // permanently removes the variants in the current language incl. the trashed ones, source variants are skipped
     async purgeLang(stat = null) {
-      const list = (this.allowed('purge') ? (stat ? [stat] : this.selected()) : []).filter((item) => this.purgeable(item.data))
+      const list = (this.allowed('purge') ? this.targets(stat) : []).filter((item) => this.purgeable(item.data))
 
       if (
         !list.length ||
@@ -189,7 +208,7 @@ export const pageVariants = {
 
     // marks the variants in the current language as up to date without changing their content
     ignore(stat = null) {
-      const list = this.user.can('page:save') ? (stat ? [stat] : this.selected((page) => this.isStale(page))) : []
+      const list = this.user.can('page:save') ? this.targets(stat, (page) => this.isStale(page)) : []
 
       if (!list.length) {
         return
@@ -238,8 +257,7 @@ export const pageVariants = {
     translatable(page) {
       return (
         this.languages.available.length > 1 &&
-        this.user.can('page:save') &&
-        this.user.can('text:translate') &&
+        canTranslate(this.user) &&
         !page.deleted_at &&
         !!page.source
       )
@@ -247,7 +265,7 @@ export const pageVariants = {
 
     // opens the dialog for translating the page or the selected pages into one or more languages
     translate(stat = null) {
-      const list = stat ? [stat] : this.selected((page) => this.translatable(page))
+      const list = this.targets(stat, (page) => this.translatable(page))
 
       if (!list.length) {
         return
@@ -277,11 +295,194 @@ export const pageVariants = {
             return
           }
 
-          return this.translationStore.add(batch, { ids, langs }, this.$apollo)
+          return this.translationStore.add(batch, { ids, langs })
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error translating pages'), error, ids)
         })
+    }
+  }
+}
+
+/**
+ * Language variants of the page shown in the page editor: switching between them, adding missing
+ * ones and translating the changes of the source variant
+ *
+ * Requires the item and stacked properties, the user and messages properties and the hasChanged
+ * computed property as well as the invalidate(), refresh() and save() methods. The language of
+ * the edited variant is "variantLang", NULL for the source variant.
+ */
+export const detailVariants = {
+  data() {
+    return {
+      switching: false,
+      translating: false,
+      variantLang: (!this.stacked && this.$route?.query?.lang) || null
+    }
+  },
+
+  mounted() {
+    this.unlisten = this.translationStore.listen((batch, progress) => this.translated(batch, progress))
+  },
+
+  beforeUnmount() {
+    this.unlisten?.()
+  },
+
+  computed: {
+    // the variant isn't the source variant and can be updated from it
+    isTranslation() {
+      return !!this.item.source && !!this.item.lang && this.item.lang !== this.item.source
+    },
+
+    // the variant is queued for translation or the translation is requested right now
+    isTranslating() {
+      return this.translating || this.translationStore.has(this.item.id, this.item.lang)
+    },
+
+    // all site languages and those of the existing variants with their state
+    langs() {
+      const map = new Map((this.item.variants || []).map((v) => [v.lang, v]))
+      const codes = [...new Set([...this.languages.available, ...map.keys()])]
+
+      return codes.map((code) => ({
+        code,
+        name: this.languages.translate(code),
+        source: !!map.get(code)?.source,
+        state: map.get(code)?.state || 'missing'
+      }))
+    },
+
+    languages() {
+      return useLanguageStore()
+    },
+
+    translationStore() {
+      return useTranslationStore()
+    }
+  },
+
+  methods: {
+    // updates the stale state of the edited variant
+    setVariantState(stale) {
+      const state = stale ? 'stale' : 'current'
+
+      this.item.stale = stale
+      this.item.variants = (this.item.variants || []).map((v) => (v.lang === this.item.lang ? { ...v, state } : v))
+    },
+
+    // switches the editor to the variant in the language, missing variants are created as untranslated
+    // copy and translated in the background if the user is allowed to translate pages
+    async switchLang(entry) {
+      if (entry.code === this.variantLang || entry.state === 'trashed' || this.switching) {
+        return
+      }
+
+      if (entry.state === 'missing' && !this.user.can('page:add')) {
+        return this.messages.denied()
+      }
+
+      if (this.hasChanged && !(await this.save(true))) {
+        return
+      }
+
+      this.switching = true
+
+      try {
+        if (entry.state === 'missing') {
+          await this.$apollo.mutate({ mutation: ADD_VARIANT, variables: { id: this.item.id, lang: entry.code } })
+          this.invalidate()
+        }
+      } catch (error) {
+        this.switching = false
+        return this.messages.error(this.$gettext('Error adding language'), error, entry.code)
+      }
+
+      // the untranslated copy stays if queueing its translation fails
+      if (entry.state === 'missing') {
+        await translateNew(
+          this.$apollo,
+          this.user,
+          [this.item.id],
+          entry.code,
+          this.$gettext('Translation saved as draft, review the changes')
+        ).catch((error) => this.messages.error(this.$gettext('Error translating page'), error))
+      }
+
+      this.variantLang = entry.code
+      this.vhistory = false
+
+      if (!this.stacked) {
+        this.$router?.replace({ query: { ...this.$route?.query, lang: entry.code } })
+      }
+
+      return this.refresh().finally(() => {
+        this.switching = false
+      })
+    },
+
+    // marks the variant as up to date with the source variant without changing its content
+    ignoreChanges() {
+      if (!this.user.can('page:save')) return this.messages.denied()
+
+      return ignoreChanges(this.$apollo, [this.item.id], this.item.lang)
+        .then(() => {
+          this.setVariantState(false)
+          this.invalidate()
+          this.messages.add(this.$gettext('Marked as up to date'), 'success')
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error marking as up to date'), error)
+        })
+    },
+
+    // translates the changes of the source variant into a new draft of the variant
+    async translate() {
+      if (!canTranslate(this.user)) return this.messages.denied()
+
+      if (this.hasChanged && !(await this.save(true))) {
+        return
+      }
+
+      const { id, lang } = this.item
+      let polling
+      this.translating = true
+
+      try {
+        const batch = await translatePages(this.$apollo, [id], [lang])
+
+        // up to date translations and those which are already queued are skipped
+        if (!batch.total) {
+          this.messages.add(this.$gettext('Nothing to translate, the page is up to date or already being translated'), 'info')
+          return
+        }
+
+        // the store keeps polling if the editor is closed and reports the result
+        polling = this.translationStore.add(
+          batch,
+          { ids: [id], langs: [lang], success: this.$gettext('Translation saved as draft, review the changes') },
+          this.$apollo
+        )
+      } catch (error) {
+        this.messages.error(this.$gettext('Error translating page'), error)
+      } finally {
+        this.translating = false
+      }
+
+      return polling
+    },
+
+    // loads the translated draft if the variant is still shown without unsaved changes
+    translated(batch, progress) {
+      if (!this.item?.id || !batch.ids.includes(this.item.id) || !batch.langs.includes(this.item.lang)) {
+        return
+      }
+
+      this.invalidate()
+
+      if (!progress.running && !progress.failed && !this.hasChanged) {
+        return this.refresh()
+      }
     }
   }
 }

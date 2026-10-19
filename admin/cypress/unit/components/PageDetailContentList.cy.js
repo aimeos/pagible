@@ -286,6 +286,49 @@ describe('PageDetailContentList', () => {
     cy.contains('.v-overlay .v-btn', 'Cut (2)').should('exist')
   })
 
+  it('merges the selected elements from the bulk menu', () => {
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0, 2))
+
+    cy.get('.bulk .v-btn').first().click()
+    cy.contains('.v-overlay .v-btn', 'Merge').click()
+
+    cy.get('.v-expansion-panel').should('have.length', 2)
+  })
+
+  it('shows merge in the context menu of a selected element only', () => {
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0, 2))
+
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(0).click()
+    cy.contains('.v-overlay .v-btn', 'Merge').should('exist')
+    cy.get('body').type('{esc}')
+
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(1).click()
+    cy.contains('.v-overlay--active .v-btn', 'Copy').should('exist')
+    cy.contains('.v-overlay--active .v-btn', 'Merge').should('not.exist')
+  })
+
+  it('selects all shown elements if some are unselected and clears them if all are selected', () => {
+    mountList({ content: contentItems(5) }, { 'page:save': true }).then(({ vm }) => {
+      select(vm, 0, 2)
+      expect(vm.allSelected).to.equal(false)
+
+      vm.toggle()
+      expect(vm.checkedCount).to.equal(5)
+      expect(vm.allSelected).to.equal(true)
+
+      vm.toggle()
+      expect(vm.checkedCount).to.equal(0)
+    })
+  })
+
+  it('hides merge with less than two selected elements', () => {
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0))
+
+    cy.get('.bulk .v-btn').first().click()
+    cy.contains('.v-overlay .v-btn', 'Copy (1)').should('exist')
+    cy.contains('.v-overlay .v-btn', 'Merge').should('not.exist')
+  })
+
   it('cuts only the current element from the context menu of an unselected element', () => {
     mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ owner, vm }) => {
       select(vm, 0, 2)
@@ -321,6 +364,42 @@ describe('PageDetailContentList', () => {
   it('shows AI refine textarea with page:refine permission', () => {
     mountList({}, { 'page:refine': true })
     cy.get('textarea').should('exist')
+  })
+
+  it('refines the content and shows the success state for a while', () => {
+    const refined = JSON.stringify([{ id: 'c1', type: 'heading', data: { title: 'Better' } }])
+    const mutate = cy.stub().resolves({ data: { refine: refined } })
+
+    cy.clock(Date.now(), ['setTimeout', 'clearTimeout'])
+    mountList({}, { 'page:refine': true }, { mutate }).then(({ vm, owner }) => {
+      vm.chat = 'Improve'
+
+      return vm.refine().then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(owner.content[0].data.title).to.equal('Better')
+        expect(owner.content[0]._changed).to.equal(true)
+        expect(vm.refining).to.equal(false)
+        expect(vm.refined).to.equal(true)
+        expect(vm.chat).to.equal('')
+      }).then(() => vm)
+    }).then((vm) => {
+      cy.tick(3000).then(() => expect(vm.refined).to.equal(false))
+    })
+  })
+
+  it('ignores refine requests while refining or without prompt', () => {
+    const mutate = cy.stub().returns(new Promise(() => {}))
+
+    mountList({}, { 'page:refine': true }, { mutate }).then(({ vm }) => {
+      vm.refine()
+      expect(mutate).not.to.have.been.called
+
+      vm.chat = 'Improve'
+      vm.refine()
+      vm.refine()
+      expect(mutate).to.have.been.calledOnce
+      expect(vm.refining).to.equal(true)
+    })
   })
 
   it('hides AI refine textarea without page:refine permission', () => {

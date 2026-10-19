@@ -96,4 +96,19 @@ describe('AsideList', () => {
     cy.get('@update').should('have.been.calledOnceWith', { status: null, publish: null })
     cy.wrap(filter).should('deep.equal', { status: 'PUBLISHED', publish: 'DRAFT' })
   })
+
+  it('marks only groups whose filter differs from the defaults as active', () => {
+    const filter = { status: 'PUBLISHED', trashed: 'WITHOUT' }
+
+    cy.mount(AsideList, {
+      props: { content, filter, defaults: { status: null, trashed: 'WITHOUT' } },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(AsideList).vm
+      expect(vm.has('status')).to.equal(true)
+      expect(vm.has('trashed')).to.equal(false)
+      expect(vm.has('missing')).to.equal(false)
+    })
+    cy.get('.v-list-group').first().find('.v-list-item.active').should('exist')
+    cy.get('.v-list-group').eq(1).find('.v-list-item.active').should('not.exist')
+  })
 })

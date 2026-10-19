@@ -58,4 +58,21 @@ describe('AsideCount', () => {
     mountWithData({})
     cy.get('.v-list-group').should('not.exist')
   })
+
+  it('keeps groups open by key when other groups are added', () => {
+    cy.mount(AsideCount).then(({ wrapper }) => {
+      const side = useSideStore()
+      const vm = wrapper.findComponent(AsideCount).vm
+
+      side.store = { mmm: { a: 1 } }
+      return vm.$nextTick().then(() => {
+        vm.open = []
+        side.store = { aaa: { b: 2 }, mmm: { a: 1 } }
+        return vm.$nextTick()
+      }).then(() => {
+        expect(vm.open).to.deep.equal(['aaa'])
+      })
+    })
+  })
 })
+

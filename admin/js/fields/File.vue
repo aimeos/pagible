@@ -2,9 +2,9 @@
 
 <script>
 import { mdiFileOutline } from '@mdi/js'
-import { revokeBlob } from '../files'
+import { AUDIO_MIME_FILTER, IMAGE_MIME_FILTER, MEDIA_MIME_FILTER, revokeBlob, VIDEO_MIME_FILTER } from '../files'
 import { fileurl } from '../urls'
-import { AUDIO_MIME_FILTER, IMAGE_MIME_FILTER, MEDIA_MIME_FILTER, VIDEO_MIME_FILTER } from '../utils'
+import { formatDate } from '../utils'
 import FileField, { components, useFileField } from '../filefield'
 
 const profiles = {
@@ -85,7 +85,8 @@ export default {
     add(file) {
       if (!this.user.can('file:add')) return this.messages.denied()
 
-      if (!file) {
+      // only one upload at a time, a second one would race the first
+      if (!file || this.file.uploading) {
         return
       }
 
@@ -103,7 +104,7 @@ export default {
     },
 
     formatDate(dateStr) {
-      return new Date(dateStr).toLocaleString()
+      return formatDate(dateStr, this.$vuetify.locale.current)
     },
 
     load() {
@@ -201,10 +202,10 @@ export default {
     <slot name="label" />
   </FileProtect>
 
-  <v-row class="file-field" :class="{ 'field-columns': file.path }">
+  <v-row class="file-field" :class="{ 'field-columns': file.path && !file.uploading }">
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
-        <div v-if="file.id" class="file">
+        <div v-if="file.id || file.uploading" class="file">
           <v-progress-linear
             v-if="file.uploading"
             color="primary"
@@ -318,7 +319,7 @@ export default {
         </div>
       </div>
     </v-col>
-    <v-col cols="12" md="6" v-if="file.path" class="meta">
+    <v-col cols="12" md="6" v-if="file.path && !file.uploading" class="meta">
       <v-row
         v-for="row in [
           [$gettext('name'), file.name],

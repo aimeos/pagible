@@ -5,7 +5,7 @@
 import gql from 'graphql-tag'
 import { invalidateList } from './graphql'
 import { fileurl } from './urls'
-import { safeParse, sanitize } from './utils'
+import { safeParse, sanitize } from './json'
 
 export const FILE_FIELDS = gql`
   fragment CmsFileFields on File {
@@ -114,4 +114,34 @@ export function revokeBlob(item) {
   if (item?.path?.startsWith('blob:')) {
     URL.revokeObjectURL(item.path)
   }
+}
+
+export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
+
+export const AUDIO_MIME_FILTER = { mime: ['audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'audio/ogg', 'audio/webm', 'audio/wav', 'audio/wave', 'audio/x-wav', 'audio/vnd.wave', 'audio/flac', 'audio/x-flac'] }
+
+export const VIDEO_MIME_FILTER = { mime: ['video/mp4', 'video/webm', 'video/ogg'] }
+
+export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MIME_FILTER.mime] }
+
+/**
+ * Converts a base64-encoded string to a Blob
+ *
+ * @param {string} base64 Base64-encoded binary data
+ * @param {string} mimeType MIME type for the resulting Blob
+ * @returns {Blob|null} Blob object or null if input is empty
+ */
+export function toBlob(base64, mimeType = 'image/png') {
+  if (!base64) {
+    return null
+  }
+
+  const binary = atob(base64)
+  const byteArray = new Uint8Array(binary.length)
+
+  for (let i = 0; i < binary.length; i++) {
+    byteArray[i] = binary.charCodeAt(i)
+  }
+
+  return new Blob([byteArray], { type: mimeType })
 }

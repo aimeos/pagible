@@ -11,13 +11,12 @@ import {
   mdiDeleteRestore,
   mdiDeleteForever,
   mdiPlus,
-  mdiMagnify,
   mdiClockOutline,
-  mdiRefresh,
   mdiPencil,
   mdiCloseCircleOutline
 } from '@mdi/js'
-import { setupEcho, listEcho } from './echo'
+import { setupEcho } from './echo'
+import { listEcho } from './livesync'
 import { invalidateList, listFetchPolicy } from './graphql'
 import { command, useShortcuts } from './shortcuts'
 import {
@@ -28,7 +27,7 @@ import {
   useSettingStore,
   useUserStore
 } from './stores'
-import { debounce } from './utils'
+import { debounce, ucfirst } from './utils'
 
 /**
  * Returns the number of items in total and those affected by publishing, deleting and restoring
@@ -95,23 +94,39 @@ function assign(node, item) {
   }
 }
 
+/**
+ * Shows the "Moved to trash" message for the number of items with an undo action if "undo" is passed
+ */
+export function trashMessage(vm, count, undo = null) {
+  vm.messages.add(
+    vm.$ngettext('Moved to trash', '%{num} entries moved to trash', count, { num: count }),
+    'success',
+    null,
+    undo ? { label: vm.$gettext('Undo'), handler: undo } : null
+  )
+}
+
 const mutations = new Map()
 
 /**
  * Returns the cached mutation document for an action like "drop" or "bulk" of the given type
  * "lang" adds a $lang variable for actions applied to the page variants of one language
+ * "at" adds an $at variable for scheduled publishing
  */
-export function mutation(action, type, lang = false) {
-  const model = type[0].toUpperCase() + type.slice(1)
+export function mutation(action, type, lang = false, at = false) {
+  const model = ucfirst(type)
   const name = action + model
-  const key = name + (lang ? ':lang' : '')
+  const key = name + (lang ? ':lang' : '') + (at ? ':at' : '')
 
   if (!mutations.has(key)) {
-    mutations.set(key, action === 'bulk'
-      ? gql`mutation ($id: [ID!]!, $input: ${model}Input!) { ${name}(id: $id, input: $input) { ids } }`
-      : lang
-        ? gql`mutation ($id: [ID!]!, $lang: String) { ${name}(id: $id, lang: $lang) { id } }`
-        : gql`mutation ($id: [ID!]!) { ${name}(id: $id) { id } }`)
+    if (action === 'bulk') {
+      mutations.set(key, gql`mutation ($id: [ID!]!, $input: ${model}Input!) { ${name}(id: $id, input: $input) { ids } }`)
+    } else {
+      const vars = ['$id: [ID!]!', at && '$at: DateTime', lang && '$lang: String'].filter(Boolean)
+      const args = ['id: $id', at && 'at: $at', lang && 'lang: $lang'].filter(Boolean)
+
+      mutations.set(key, gql`mutation (${vars.join(', ')}) { ${name}(${args.join(', ')}) { id } }`)
+    }
   }
 
   return mutations.get(key)
@@ -139,9 +154,7 @@ export function useList(type, query, create) {
     mdiDeleteRestore,
     mdiDeleteForever,
     mdiPlus,
-    mdiMagnify,
     mdiClockOutline,
-    mdiRefresh,
     mdiPencil,
     mdiCloseCircleOutline
   }
@@ -178,7 +191,7 @@ export const listBase = {
   },
 
   created() {
-    this.searchd = debounce(this.search, 500)
+    this.debouncedSearch = debounce(this.search, 500)
     this.search()
     this.$watch(() => this.changes.changed[this.type], () => this.sync())
 
@@ -191,6 +204,7 @@ export const listBase = {
   },
 
   beforeUnmount() {
+    this.debouncedSearch.cancel()
     this.unsubscribe?.()
 
     this.items = null
@@ -222,6 +236,10 @@ export const listBase = {
 
     isChecked() {
       return this.checked.size > 0
+    },
+
+    allChecked() {
+      return this.items.length > 0 && this.items.every((item) => this.checked.has(item.id))
     }
   },
 
@@ -235,20 +253,11 @@ export const listBase = {
     },
 
     drop(item) {
-      const list = this.allowed('drop') ? (item ? [item] : this.selected()) : []
+      const list = this.allowed('drop') ? this.targets(item) : []
 
       if (list.length) {
         this.mutate('drop', list).then((ok) => {
-          ok && this.messages.add(
-            this.$ngettext('Moved to trash', '%{num} entries moved to trash', list.length, {
-              num: list.length
-            }),
-            'success',
-            null,
-            this.user.can(`${this.type}:keep`)
-              ? { label: this.$gettext('Undo'), handler: () => this.keep(list) }
-              : null
-          )
+          ok && trashMessage(this, list.length, this.user.can(`${this.type}:keep`) ? () => this.keep(list) : null)
         })
       }
     },
@@ -264,7 +273,7 @@ export const listBase = {
     },
 
     keep(item) {
-      const list = this.allowed('keep') ? (Array.isArray(item) ? item : item ? [item] : this.selected()) : []
+      const list = this.allowed('keep') ? this.targets(item) : []
 
       if (list.length) {
         this.mutate('keep', list)
@@ -335,9 +344,7 @@ export const listBase = {
     },
 
     publish(item) {
-      const list = this.allowed('publish')
-        ? item ? [item] : this.selected().filter((item) => item.id && !item.published)
-        : []
+      const list = this.allowed('publish') ? this.targets(item, (item) => item.id && !item.published) : []
 
       if (list.length) {
         this.mutate('pub', list)
@@ -345,7 +352,7 @@ export const listBase = {
     },
 
     async purge(item) {
-      const list = this.allowed('purge') ? (item ? [item] : this.selected()) : []
+      const list = this.allowed('purge') ? this.targets(item) : []
 
       if (
         list.length &&
@@ -358,8 +365,21 @@ export const listBase = {
     reload() {
       this.outdated = false
       this.items = []
-      this.loading = true
-      return this.$apollo.provider.defaultClient.clearStore().then(() => this.search())
+      // only the cached results of this list are dropped, not the whole cache
+      invalidateList(this.type + 's', this.$apollo.provider.defaultClient.cache)
+      return this.search()
+    },
+
+    // starts at the first page again after the filter, term or sort order changed
+    research(debounced = false) {
+      if (this.page !== 1) {
+        // the page watcher runs the search
+        this.debouncedSearch.cancel()
+        this.page = 1
+        return
+      }
+
+      debounced ? this.debouncedSearch() : this.search()
     },
 
     resetFilter() {
@@ -440,28 +460,47 @@ export const listBase = {
         return Promise.resolve([])
       }
 
+      // only the response of the latest request is applied
+      const seq = (this.searchSeq = (this.searchSeq || 0) + 1)
       this.loading = true
 
       return this.$apollo
         .query(this.options())
         .then((result) => {
+          if (seq !== this.searchSeq || !this.items) return this.items
+
           const list = result.data[this.type + 's'] || {}
 
           this.last = list.paginatorInfo?.lastPage || 1
           this.items = (list.data || []).map((entry) => this.hydrate(entry))
           this.checked = new Set()
           this.outdated = false
-          this.loading = false
 
           return this.items
         })
         .catch((error) => {
-          this.messages.error(this.failed('search'), error)
+          if (seq === this.searchSeq) {
+            this.messages.error(this.failed('search'), error)
+          }
+        })
+        .finally(() => {
+          if (seq === this.searchSeq) {
+            this.loading = false
+          }
         })
     },
 
-    selected() {
-      return this.items.filter((item) => this.checked.has(item.id))
+    selected(fn = () => true) {
+      return this.items.filter((item) => this.checked.has(item.id) && fn(item))
+    },
+
+    // returns the passed item or items, otherwise the selected ones matching the filter
+    targets(item = null, fn = () => true) {
+      if (Array.isArray(item)) {
+        return item
+      }
+
+      return item ? [item] : this.selected(fn)
     },
 
     sync() {
@@ -479,8 +518,9 @@ export const listBase = {
         : ''
     },
 
+    // checks all items if one is unchecked, otherwise unchecks all
     toggle() {
-      this.checked = new Set(this.checked.size ? [] : this.items.map((item) => item.id))
+      this.checked = new Set(this.allChecked ? [] : this.items.map((item) => item.id))
     },
 
     toggleCheck(item) {
@@ -494,12 +534,12 @@ export const listBase = {
     filter: {
       deep: true,
       handler() {
-        this.search()
+        this.research()
       }
     },
 
     term() {
-      this.searchd()
+      this.research(true)
     },
 
     page() {
@@ -507,7 +547,7 @@ export const listBase = {
     },
 
     sort() {
-      this.search()
+      this.research()
     }
   }
 }

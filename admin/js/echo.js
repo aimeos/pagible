@@ -1,18 +1,22 @@
 /** @license MIT, https://opensource.org/license/mit */
 
-import { debounce, safeParse, sanitize } from './utils'
+import { reverb } from './config'
 
 let echoPromise = null
 let echoInstance = null
 let idleTimer = null
 let activeChannels = 0
 let tenant = ''
+let unavailable = false // the Echo libraries failed to load
 
 const IDLE_TIMEOUT = 5 * 60 * 1000
 
 // Active subscriber callbacks, notified with (null, RECONNECT) after the socket reconnects
 // so views can re-sync state that changed while the connection was down.
 const subscriptions = new Set()
+
+// Subscriber counts per channel name, the channel is left when the last one unsubscribes
+const channelRefs = new Map()
 
 // Synthetic action delivered to every subscriber when the websocket reconnects.
 export const RECONNECT = 'reconnect'
@@ -37,9 +41,16 @@ function resetIdleTimer() {
   }
 }
 
+/**
+ * Returns if realtime updates are configured and the Echo libraries haven't failed to load.
+ */
+export function realtime() {
+  return !unavailable && !!reverb()
+}
+
 function getEcho() {
-  const node = document.querySelector('#app')
-  if (!node?.dataset?.reverb) return Promise.resolve(null)
+  const config = realtime() && reverb()
+  if (!config) return Promise.resolve(null)
 
   clearTimeout(idleTimer)
   idleTimer = null
@@ -48,7 +59,6 @@ function getEcho() {
     echoPromise = Promise.all([import('laravel-echo'), import('pusher-js')])
       .then(([{ default: Echo }, pusherModule]) => {
         const Pusher = pusherModule.default || pusherModule
-        const config = safeParse(node.dataset.reverb)
         tenant = config.tenant ?? ''
         echoInstance = new Echo({
           Pusher,
@@ -65,7 +75,7 @@ function getEcho() {
       })
       .catch((err) => {
         console.warn('Laravel Echo not available:', err.message)
-        delete node.dataset.reverb
+        unavailable = true
         echoPromise = null
         echoInstance = null
         return null
@@ -92,12 +102,13 @@ export async function disconnect() {
   idleTimer = null
   activeChannels = 0
   subscriptions.clear()
+  channelRefs.clear()
   const pending = echoPromise
   echoPromise = null
   echoInstance = null
   const echo = await pending
   if (echo) {
-    try { echo.connector?.pusher?.disconnect() } catch {}
+    try { echo.connector?.pusher?.disconnect() } catch { /* the connection may already be closed */ }
     echo.disconnect()
   }
 }
@@ -169,9 +180,10 @@ export async function subscribe(contentType, callback, actions = LIST_ACTIONS) {
   activeChannels++
   const name = channelName(contentType)
   const channel = echo.private(name)
+  const leave = joinChannel(echo, name)
   // track each handler so cleanup removes only this subscriber's listeners: the per-type
-  // channel is shared by the list/tree and any open detail view of the same type, so leaving
-  // the whole channel would tear out the other's listeners
+  // channel is shared by the list/tree and any open detail view of the same type, so it's
+  // only left when the last subscriber unsubscribes
   const handlers = actions.map((action) => {
     const event = `.${contentType}.${action}`
     const handler = (data) => callback(data, action)
@@ -180,11 +192,40 @@ export async function subscribe(contentType, callback, actions = LIST_ACTIONS) {
   })
   subscriptions.add(callback)
 
+  let released = false
+
   return () => {
+    if (released) return
+    released = true
+
     handlers.forEach(([event, handler]) => channel.stopListening(event, handler))
     subscriptions.delete(callback)
     activeChannels = Math.max(0, activeChannels - 1)
+    leave()
     resetIdleTimer()
+  }
+}
+
+/**
+ * Counts the subscribers of the channel and returns a function which releases one of them.
+ * The channel is left when the last subscriber is released. Exposed for testing.
+ */
+export function joinChannel(echo, name, refs = channelRefs) {
+  const entry = refs.get(name) || { count: 0 }
+  let released = false
+
+  entry.count++
+  refs.set(name, entry)
+
+  return () => {
+    // the counts are cleared on disconnect, so a closed connection isn't touched again
+    if (released || refs.get(name) !== entry) return
+    released = true
+
+    if (--entry.count <= 0) {
+      refs.delete(name)
+      echo.leave(name)
+    }
   }
 }
 
@@ -210,74 +251,4 @@ export function resync(subs = subscriptions) {
       console.warn('Echo resync subscriber failed:', err)
     }
   })
-}
-
-/**
- * Builds the in-place row update a list/tree view applies from a patch event.
- */
-export function eventPatch(event) {
-  return {
-    ...sanitize(event.data),
-    id: event.id,
-    published: event.published,
-    deleted_at: event.deleted_at,
-    publish_at: event.publish_at,
-    updated_at: event.updated_at,
-    editor: event.editor,
-    latest_id: event.latest_id
-  }
-}
-
-/**
- * Builds the in-place row update for one id of a coalesced bulk-edit event: the already-sanitized
- * shared fields (the same object for every id, so sanitize once and pass it in) plus that id's new
- * latest version id. The bulk payload (ids, latest map, shared data) mirrors what the bulk mutation
- * returns, so this is the broadcast counterpart of the editor's own response patch.
- */
-export function bulkPatch(data, event, id) {
-  return {
-    ...data,
-    id,
-    editor: event.editor,
-    latest_id: event.latest?.[id]
-  }
-}
-
-/**
- * Routes a per-type channel event for a list/tree view: a reconnect or a structural change flags
- * the list for reload, a single-item patch action updates the row in place, and an event with
- * several ids (except purged ones) patches every row it lists via patchItems() in a single pass
- * over the loaded rows (O(rows), not O(ids x rows)). The originating tab is already excluded server-side via toOthers(), so other tabs
- * (even of the same user) still update. Reaches into vm.{outdated,patch,patchItems}, the shared
- * contract of the list components.
- */
-export function listEcho(vm, event, name) {
-  if (name === RECONNECT) { vm.outdated = true; return }
-  if (event?.ids && name !== 'purged') {
-    const data = sanitize(event.data)
-    vm.patchItems((event.ids || []).map((id) => bulkPatch(data, event, id)))
-    return
-  }
-  if (!PATCH_ACTIONS.includes(name)) { vm.outdated = true; return }
-  vm.patch(eventPatch(event))
-}
-
-/**
- * Subscribes a detail view to its per-type channel and reloads (debounced) when its own item is
- * saved elsewhere, or after a reconnect that may have missed a save - guarded by enabled() (e.g.
- * not dirty and permitted). The returned disposer also cancels a pending reload.
- */
-export function setupReload(type, id, reload, enabled, connect = subscribe) {
-  const reloadd = debounce(reload, 300)
-  // a detail view reloads its own item on any patch action, a bulk change including its id, or reconnect
-  const dispose = setupEcho(type, (event, name) => {
-    if ((name === RECONNECT || event?.id === id || event?.ids?.includes(id)) && enabled()) {
-      reloadd()
-    }
-  }, [...PATCH_ACTIONS, 'added', ...VARIANT_ACTIONS], connect)
-
-  return () => {
-    reloadd.cancel()
-    dispose()
-  }
 }

@@ -36,7 +36,7 @@ describe('PluginPanel', () => {
           }
         }],
         stubs: {
-          User: { template: '<div class="user-stub" />' }
+          User: { render: () => h('div', { class: 'user-stub' }) }
         }
       }
     })

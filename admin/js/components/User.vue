@@ -4,8 +4,8 @@
 import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
 import ActionMenu from './ActionMenu.vue'
-import { load as loadTranslations, ready } from '../i18n'
-import { useLanguageStore, useMessageStore, useSettingStore, useUserStore } from '../stores'
+import { switchLanguage } from '../locale'
+import { useLanguageStore, useMessageStore, useSessionStore, useSettingStore, useUserStore } from '../stores'
 import {
   mdiWhiteBalanceSunny,
   mdiWeatherNight,
@@ -17,17 +17,17 @@ import {
 export default {
   components: { ActionMenu },
 
-  data: () => ({ me: null }),
-
   setup() {
     const languages = useLanguageStore()
     const messages = useMessageStore()
     const settings = useSettingStore()
+    const session = useSessionStore()
     const user = useUserStore()
     const i18n = useGettext()
     const theme = useTheme()
 
     return {
+      session,
       settings,
       user,
       i18n,
@@ -43,41 +43,28 @@ export default {
   },
 
   created() {
-    this.user
-      .user()
-      .then((user) => {
-        this.me = user
+    // loads the signed-in user into the user store if not available yet
+    this.session.user().catch((error) => {
+      this.messages.error(this.$gettext('Failed to load user'), error)
+    })
+  },
 
-        const storedTheme = this.settings.getData('app', 'theme')
-        if (storedTheme) {
-          this.theme.change(storedTheme)
-        }
-
-        const storedLanguage = this.settings.getData('app', 'language')
-        if (storedLanguage && storedLanguage !== this.i18n.current) {
-          this.change(storedLanguage)
-        }
-      })
-      .catch((error) => {
-        this.messages.error(this.$gettext('Failed to load user'), error)
-      })
+  computed: {
+    // the user store is cleared on logout and updated on relogin
+    me() {
+      return this.user.me
+    }
   },
 
   methods: {
     change(code) {
-      if (!this.i18n.available[code]) {
-        return
-      }
-
-      return ready.then(() => Promise.all([
-        loadTranslations(code),
-        import('../vuetify').then((v) => v.switchLocale(code))
-      ])).then(([applied]) => {
-        if (!applied) return
-
-        this.$vuetify.locale.current = code
-        this.settings.saveData('app', 'language', code)
-      })
+      return switchLanguage(code, this.$vuetify)
+        .then((applied) => {
+          applied && this.settings.saveData('app', 'language', code)
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error switching language'), error)
+        })
     },
 
     toggleTheme() {
@@ -86,10 +73,14 @@ export default {
     },
 
     logout() {
-      this.user.logout().finally(() => {
-        this.me = null
-        this.$router.push({ name: 'login' })
-      })
+      return this.session
+        .logout()
+        .catch((error) => {
+          this.messages.error(this.$gettext('Logout failed'), error)
+        })
+        .finally(() => {
+          this.$router.push({ name: 'login' })
+        })
     }
   }
 }

@@ -1,20 +1,19 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiChevronLeft, mdiChevronRight, mdiClose, mdiMenu } from '@mdi/js'
 import AsideList from '../components/AsideList.vue'
+import ListAppBar from '../components/ListAppBar.vue'
 import Navigation from '../components/Navigation.vue'
-import User from '../components/User.vue'
 import { pluginLabel } from '../i18n'
-import { useDrawerStore, useSettingStore } from '../stores'
+import { useSettingStore } from '../stores'
 
 export default {
   name: 'PluginPanel',
 
   components: {
     AsideList,
-    Navigation,
-    User
+    ListAppBar,
+    Navigation
   },
 
   props: {
@@ -33,10 +32,7 @@ export default {
   },
 
   setup() {
-    const drawer = useDrawerStore()
-    const settings = useSettingStore()
-
-    return { drawer, settings, mdiChevronLeft, mdiChevronRight, mdiClose, mdiMenu }
+    return { settings: useSettingStore() }
   },
 
   beforeUnmount() {
@@ -63,29 +59,7 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
-    <template #prepend>
-      <v-btn
-        @click="drawer.toggle('nav')"
-        :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? mdiClose : mdiMenu"
-      />
-    </template>
-
-    <v-app-bar-title><h1>{{ label(panel) }}</h1></v-app-bar-title>
-
-    <template #append>
-      <User />
-
-      <v-btn
-        v-if="aside"
-        @click="drawer.toggle('aside')"
-        :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
-        class="btn-sidemenu"
-      />
-    </template>
-  </v-app-bar>
+  <ListAppBar :title="label(panel)" :aside="!!aside" />
 
   <Navigation />
 

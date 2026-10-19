@@ -72,11 +72,13 @@ export default {
   created() {
     // collapses bursts of changes into one query of the translation counts
     this.fetchTranslations = debounce(this.queryTranslations, 400)
+    this.translationSeq = 0
     this.changed()
   },
 
   beforeUnmount() {
     this.fetchTranslations.cancel()
+    this.translationSeq++
     clearTimeout(this.throttled)
   },
 
@@ -193,6 +195,8 @@ export default {
       }
 
       const lang = this.lang
+      // only the latest query updates the counts, older responses may arrive later
+      const seq = ++this.translationSeq
       this.outdated = false
       this.fetchedAt = Date.now()
 
@@ -203,11 +207,12 @@ export default {
           fetchPolicy: 'no-cache'
         })
         .then((result) => {
-          if (lang === this.lang) {
+          if (seq === this.translationSeq && lang === this.lang) {
             this.translations = result.data?.pageTranslationStates?.[0] || null
           }
         })
         .catch((error) => {
+          if (seq !== this.translationSeq) return
           this.outdated = true
           this.messages.error(this.$gettext('Error fetching translation states'), error)
         })
@@ -254,95 +259,23 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
-    <template #prepend>
-      <v-btn
-        @click="drawer.toggle('nav')"
-        :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? mdiClose : mdiMenu"
-      />
-    </template>
-
-    <v-app-bar-title
-      ><h1>{{ $gettext('Pages') }}</h1></v-app-bar-title
-    >
-
-    <template #append>
-      <User />
-
-      <v-btn
-        @click="drawer.toggle('aside')"
-        :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
-        class="btn-sidemenu"
-      />
-    </template>
-  </v-app-bar>
+  <ListAppBar :title="$gettext('Pages')" />
 
   <Navigation />
 
   <v-main class="page-list" :aria-label="$gettext('Pages')">
     <v-container>
       <v-sheet ref="scroll" class="box scroll">
-        <v-textarea
+        <AiPrompt
           v-if="user.can('page:chat')"
           v-model="chat"
-          :placeholder="$gettext('What shall I do for you?') + ' ' + $gettext('Press Enter to open the chat')"
-          @keydown.enter="onEnter"
-          variant="outlined"
-          class="prompt"
-          rounded="lg"
-          hide-details
-          auto-grow
-          clearable
-          rows="1"
+          type="page"
+          :send-title="$gettext('Generate page based on prompt')"
+          @submit="openChat()"
         >
-          <template #prepend>
-            <v-btn
-              @click="help = !help"
-              :icon="mdiHelpCircleOutline"
-              class="no-rtl"
-              :title="help ? $gettext('Hide help') : $gettext('Show help')"
-              :aria-expanded="help"
-              aria-controls="page-help"
-              variant="text"
-            />
-          </template>
-          <template #append>
-            <v-btn
-              v-if="chat"
-              @click="openChat()"
-              :icon="mdiArrowRightCircle"
-              :title="$gettext('Generate page based on prompt')"
-              variant="text"
-            />
-            <v-btn
-              v-else-if="user.can('audio:transcribe')"
-              @click="record()"
-              :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
-              :title="$gettext('Dictate')"
-              :class="{ dictating: dictation.active() }"
-              :loading="dictation.busy()"
-              variant="text"
-            />
-          </template>
-        </v-textarea>
-        <div v-if="help" id="page-help" class="help">
-          <ul :aria-label="$gettext('Help')">
-            <li>
-              {{
-                $gettext(
-                  'AI can create a page and content based on your input and add it to the page tree'
-                )
-              }}
-            </li>
-            <li>
-              {{
-                $gettext('Press Enter or the arrow to open the AI assistant and refine in a chat')
-              }}
-            </li>
-          </ul>
-        </div>
+          <li>{{ $gettext('AI can create a page and content based on your input and add it to the page tree') }}</li>
+          <li>{{ $gettext('Press Enter or the arrow to open the AI assistant and refine in a chat') }}</li>
+        </AiPrompt>
 
         <PageListItems
           ref="pagelist"
@@ -369,14 +302,5 @@ export default {
 <style scoped>
 .v-main {
   overflow-y: auto;
-}
-
-.prompt {
-  margin-bottom: 16px;
-}
-
-.v-input--horizontal :deep(.v-input__prepend),
-.v-input--horizontal :deep(.v-input__append) {
-  margin: 0;
 }
 </style>

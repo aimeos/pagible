@@ -190,7 +190,7 @@ describe('ElementListItems', () => {
     })
   })
 
-  it('clears the complete Apollo cache before a manual reload', () => {
+  it('drops the cached list before a manual reload', () => {
     const calls = []
     const query = cy.stub().callsFake(() => {
       calls.push('query')
@@ -207,13 +207,13 @@ describe('ElementListItems', () => {
       query,
       provider: {
         defaultClient: {
-          cache: { diff: () => ({ complete: true }), evict() {}, gc() {} },
+          cache: { diff: () => ({ complete: true }), evict: (opts) => calls.push('evict:' + opts.fieldName), gc() {} },
           clearStore,
         },
       },
     }).then(({ wrapper }) => {
       return wrapper.findComponent(ElementListItems).vm.reload().then(() => {
-        expect(calls).to.deep.equal(['clearStore', 'query'])
+        expect(calls).to.deep.equal(['evict:elements', 'query'])
       })
     })
   })

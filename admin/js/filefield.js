@@ -56,8 +56,8 @@ export default {
   components,
 
   props: {
-    config: { type: Object, default: () => {} },
-    assets: { type: Object, default: () => {} },
+    config: { type: Object, default: () => ({}) },
+    assets: { type: Object, default: () => ({}) },
     label: { type: String, default: '' },
     readonly: { type: Boolean, default: false },
     context: { type: Object }

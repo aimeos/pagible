@@ -16,7 +16,7 @@ export default {
 
   props: {
     item: { type: Object, required: true },
-    assets: { type: Object, default: () => {} }
+    assets: { type: Object, default: () => ({}) }
   },
 
   emits: ['patch', 'add-assets', 'update:access', 'update:aside', 'error'],
@@ -43,13 +43,13 @@ export default {
       this.changed = {}
       this.errors = {}
 
-      this.$refs.props?.reset()
+      this.$refs.details?.reset()
       this.$refs.meta?.reset()
       this.$refs.config?.reset()
     },
 
     async showError() {
-      const tab = ['details', 'meta', 'config', 'access'].find((key) => this.errors[key])
+      const tab = ['details', 'meta', 'config'].find((key) => this.errors[key])
 
       if (!tab) {
         return
@@ -58,6 +58,7 @@ export default {
       this.tab = tab
       this.$emit('update:aside', tab === 'details' ? 'meta' : 'count')
 
+      // the details are a plain form, only the sections need to open the failed panel
       await this.$nextTick()
       await this.$refs[tab]?.showError?.()
     },
@@ -107,7 +108,7 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="details">
           <PageDetailItemProps
-            ref="props"
+            ref="details"
             :item="item"
             @patch="update('details', $event)"
             @error="error('details', $event)"
@@ -162,6 +163,6 @@ export default {
 }
 
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 </style>

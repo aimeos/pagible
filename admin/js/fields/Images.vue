@@ -2,9 +2,8 @@
 
 <script>
 import { VueDraggable } from 'vue-draggable-plus'
-import { revokeBlob } from '../files'
+import { IMAGE_MIME_FILTER, revokeBlob } from '../files'
 import { required, minEntries, maxEntries } from '../rules'
-import { IMAGE_MIME_FILTER } from '../utils'
 import FileField, { components, useFileField } from '../filefield'
 
 /**

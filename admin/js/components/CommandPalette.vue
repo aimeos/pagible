@@ -4,12 +4,17 @@
 import gql from 'graphql-tag'
 import CmsDialog from './Dialog.vue'
 import { pluginLabel } from '../i18n'
-import { available, commands, execute, routes, shortcuts } from '../shortcuts'
+import { commands, routes } from '../commands'
+import { available, execute, shortcuts } from '../shortcuts'
 import { usePluginStore, useUserStore } from '../stores'
-import { safeParse } from '../utils'
+import { safeParse } from '../json'
 import { mdiFileDocumentOutline, mdiFileImageOutline, mdiPuzzleOutline, mdiShareVariant } from '@mdi/js'
 
 const LIMIT = 5
+// minimum number of characters before searching
+const MIN_TERM_LENGTH = 2
+// milliseconds to wait after the last key stroke before searching
+const SEARCH_DELAY = 250
 
 // searchable content types, their icon and the additional info shown for each result
 const TYPES = {
@@ -150,12 +155,12 @@ export default {
 
       const term = value.trim()
 
-      if (term.length < 2) {
+      if (term.length < MIN_TERM_LENGTH) {
         this.clear()
         return
       }
 
-      this.timer = setTimeout(() => this.search(term), 250)
+      this.timer = setTimeout(() => this.search(term), SEARCH_DELAY)
     },
 
     items(list) {
@@ -251,6 +256,7 @@ export default {
           }
         })
         .catch((error) => {
+          // the palette shows its own error message instead of a global one
           if (seq === this.seq) {
             this.$log?.(`CommandPalette::search(): Error searching`, error)
             this.failed = true

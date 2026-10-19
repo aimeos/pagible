@@ -115,4 +115,57 @@ describe('PageDetailMetrics', () => {
       expect(metrics.vm.url(page)).to.equal(expected.href)
     })
   })
+
+  it('ignores responses of outdated requests', () => {
+    const resolvers = []
+
+    mountMetrics().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailMetrics).vm
+
+      vm.$apollo.mutate = () => new Promise((resolve) => resolvers.push(resolve))
+
+      const first = vm.metrics()
+      const second = vm.metrics()
+
+      resolvers[1]({ data: { metrics: { queries: [{ key: 'new', impressions: 1 }] } } })
+      resolvers[0]({ data: { metrics: { queries: [{ key: 'old', impressions: 1 }] } } })
+
+      return Promise.all([first, second]).then(() => {
+        expect(vm.queries.map((q) => q.key)).to.deep.equal(['new'])
+        expect(vm.loading).to.be.false
+      })
+    })
+  })
+
+  it('sorts the queries without changing the response', () => {
+    const queries = Object.freeze([
+      Object.freeze({ key: 'a', impressions: 1 }),
+      Object.freeze({ key: 'b', impressions: 5 })
+    ])
+
+    mountMetrics().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailMetrics).vm
+
+      vm.$apollo.mutate = () => Promise.resolve({ data: { metrics: { queries } } })
+
+      return vm.metrics().then(() => {
+        expect(vm.errors).to.deep.equal([])
+        expect(vm.queries.map((q) => q.key)).to.deep.equal(['b', 'a'])
+        expect(queries.map((q) => q.key)).to.deep.equal(['a', 'b'])
+      })
+    })
+  })
+
+  it('shows the first query page again after loading new metrics', () => {
+    mountMetrics().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailMetrics).vm
+
+      vm.querypage = 3
+      vm.$apollo.mutate = () => Promise.resolve({ data: { metrics: { queries: [] } } })
+
+      return vm.metrics().then(() => {
+        expect(vm.querypage).to.equal(1)
+      })
+    })
+  })
 })

@@ -1,5 +1,5 @@
 import FileDetailItem from '../../../js/components/FileDetailItem.vue'
-import { useUserStore } from '../../../js/stores'
+import { useMessageStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   FileAiDialog: { template: '<div class="ai-dialog-stub" />' },
@@ -43,7 +43,7 @@ function mountDetail(props = {}, perms = {}, apollo = {}) {
         locales: () => ['en', 'de'],
         transcribe: () => Promise.resolve({ asText: () => '' }),
         translate: () => Promise.resolve(['']),
-        txlocales: () => [],
+        txLocaleItems: () => [],
         url: (path) => path,
       },
     },
@@ -221,8 +221,10 @@ describe('FileDetailItem', () => {
     mountDetail({}, { 'file:save': true, 'text:translate': true }).then(() => {
       const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
 
-      expect(() => wrapper.vm.translateText({ en: '', de: null })).not.to.throw()
-      expect(wrapper.vm.loading.translate).not.to.equal(true)
+      return wrapper.vm.translateMap({ en: '', de: null }).then((texts) => {
+        expect(texts).to.deep.equal({})
+        expect(wrapper.vm.loading.translate).not.to.equal(true)
+      })
     })
   })
 
@@ -240,4 +242,48 @@ describe('FileDetailItem', () => {
     mountDetail()
     cy.contains('Transcriptions').should('not.exist')
   })
+
+  it('generates the description in the language of the shown tab', () => {
+    const mutate = cy.stub().resolves({ data: { describe: 'Ein Foto' } })
+
+    mountDetail({}, { 'file:save': true }, { mutate }).then(({ wrapper }) => {
+      const detail = wrapper.findComponent(FileDetailItem)
+
+      detail.vm.tabdesc = 'de'
+      detail.vm.describe()
+
+      expect(mutate.firstCall.args[0].variables.lang).to.equal('de')
+      cy.wrap(detail).should(() => {
+        expect(detail.emitted('patch')?.[0]?.[0]?.description).to.deep.equal({ de: 'Ein Foto' })
+      })
+    })
+  })
+
+  it('reports an error if the clipboard is unavailable', () => {
+    mountDetail().then(({ wrapper }) => {
+      const messages = useMessageStore()
+      messages.queue = []
+
+      cy.stub(navigator, 'clipboard').value(undefined)
+      wrapper.findComponent(FileDetailItem).vm.copyUrl()
+
+      expect(messages.queue.map((m) => m.text)).to.deep.equal(['Error copying to clipboard'])
+    })
+  })
+
+  it('reports an error if copying to the clipboard fails', () => {
+    mountDetail().then(({ wrapper }) => {
+      const messages = useMessageStore()
+      messages.queue = []
+
+      cy.stub(navigator, 'clipboard').value({ writeText: () => Promise.reject(new Error('denied')) })
+      wrapper.findComponent(FileDetailItem).vm.copyUrl()
+
+      cy.wrap(messages).its('queue.length').should('equal', 1).then(() => {
+        expect(messages.queue[0].color).to.equal('error')
+        expect(messages.queue[0].text).to.contain('Error copying to clipboard')
+      })
+    })
+  })
 })
+

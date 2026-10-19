@@ -14,12 +14,15 @@ import {
 } from '@mdi/js'
 import { useUserStore } from '../stores'
 import { useDictation } from '../dictation'
+import { appendChunk, finishStream, streamMessage } from '../blockstream'
 import { chat } from '../chat'
 import CmsDialog from './Dialog.vue'
 
 // GFM (tables, task lists, strikethrough) with single newlines as <br> to match chat expectations.
 // A dedicated instance avoids mutating marked's global options; DOMPurify sanitizes the output.
 const md = new Marked({ gfm: true, breaks: true })
+// number of prior turns sent as history, the server keeps no more anyway
+const MAX_HISTORY = 20
 
 export default {
   name: 'ChatDialog',
@@ -86,6 +89,8 @@ export default {
 
   beforeUnmount() {
     this.dictation.stop()
+    // releases the request and the server-side chat lock if the view is left while streaming
+    this.controller?.abort()
   },
 
   methods: {
@@ -103,7 +108,9 @@ export default {
     },
 
     copy(text) {
-      navigator.clipboard?.writeText(this.clean(text))
+      navigator.clipboard
+        ?.writeText(this.clean(text))
+        .catch((error) => console.warn('Failed to copy to clipboard', error))
     },
 
     keydown(e) {
@@ -171,6 +178,54 @@ export default {
       })
     },
 
+    // marks the assistant turn as failed and shows the error if nothing streamed
+    failed(assistant, error) {
+      assistant.error = true
+      if (!assistant.content) {
+        // Errors flagged `shown` carry a translated, user-facing message (lock / rate-limit /
+        // unavailable); show it verbatim. Everything else gets the generic fallback.
+        assistant.content = error?.shown
+          ? error.message
+          : this.$gettext('Sorry, something went wrong.')
+      }
+    },
+
+    // ends the assistant turn of the request with the passed controller
+    finish(assistant, controller) {
+      finishStream(assistant, this.render)
+      // Only clear the shared turn state if a newer turn (Stop + fast resend) hasn't taken over
+      if (this.controller === controller) {
+        this.busy = false
+        this.controller = null
+      }
+
+      if (assistant.content) {
+        // Any turn that streamed output may have created or changed pages via tool calls - even
+        // one that errored or was stopped mid-way, since AddPage persists immediately. So reload
+        // the list (on dialog close) regardless of the error flag; a no-op reload is cheap.
+        this.$emit('done')
+      } else {
+        // Cancelled before any output: drop the empty assistant bubble so it doesn't linger.
+        const idx = this.messages.indexOf(assistant)
+        if (idx !== -1) {
+          this.messages.splice(idx, 1)
+        }
+      }
+
+      this.scrollDown()
+    },
+
+    // Prior turns only - the endpoint appends the current prompt as the next user message. Drop
+    // errored turns and inline tool markers, and cap to the last turns the server keeps anyway
+    // (so clean() runs a bounded number of times); the server re-enforces user/assistant alternation.
+    priorTurns() {
+      return this.messages
+        .filter((m) => !m.error)
+        .slice(-MAX_HISTORY)
+        .map((m) => ({ role: m.role, content: this.clean(m.content) }))
+        .filter((m) => m.content)
+    },
+
     send(text) {
       text = String(text ?? this.input).trim()
 
@@ -178,14 +233,7 @@ export default {
         return
       }
 
-      // Prior turns only - the endpoint appends the current prompt as the next user message. Drop
-      // errored turns and inline tool markers, and cap to the last 20 turns the server keeps anyway
-      // (so clean() runs a bounded number of times); the server re-enforces user/assistant alternation.
-      const history = this.messages
-        .filter((m) => !m.error)
-        .slice(-20)
-        .map((m) => ({ role: m.role, content: this.clean(m.content) }))
-        .filter((m) => m.content)
+      const history = this.priorTurns()
 
       this.input = ''
       this.historyDraft = ''
@@ -194,17 +242,7 @@ export default {
       const controller = (this.controller = new AbortController())
 
       this.messages.push({ id: ++this.seq, role: 'user', content: text })
-      this.messages.push({
-        id: ++this.seq,
-        role: 'assistant',
-        content: '',
-        blocks: [],
-        pending: '',
-        mark: 0,
-        scanned: 0,
-        fenceOpen: false,
-        streaming: true
-      })
+      this.messages.push(streamMessage({ id: ++this.seq, role: 'assistant' }))
 
       const assistant = this.messages[this.messages.length - 1]
       this.scrollDown()
@@ -213,36 +251,7 @@ export default {
         text,
         history,
         (delta) => {
-          const text = delta.text || ''
-          // A blank line may close one or more blocks; render & cache those once (never
-          // re-sanitized or re-parsed). Track ``` fences incrementally - counting only the
-          // line-start delimiters marked treats as code fences in the newly-arrived span (so
-          // inline/prose backticks don't false-open one) - so a blank line inside an open fenced
-          // code block defers its commit without an O(n^2) re-scan.
-          const boundary = (assistant.content.slice(-1) + text).includes('\n\n')
-          assistant.content += text
-          assistant.pending += text // accumulate the raw tail incrementally (O(chunk), not O(tail))
-
-          if (boundary) {
-            const end = assistant.content.lastIndexOf('\n\n')
-
-            if (end >= assistant.scanned) {
-              if (
-                (assistant.content.slice(assistant.scanned, end).match(/^```/gm) || []).length % 2
-              ) {
-                assistant.fenceOpen = !assistant.fenceOpen
-              }
-              assistant.scanned = end
-
-              if (!assistant.fenceOpen) {
-                assistant.blocks.push(this.render(assistant.content.slice(assistant.mark, end)))
-                assistant.mark = end + 2
-                assistant.scanned = end + 2
-                assistant.pending = assistant.content.slice(assistant.mark) // reset tail after a commit
-              }
-            }
-          }
-
+          appendChunk(assistant, delta.text || '', this.render)
           this.scrollDown()
         },
         controller.signal,
@@ -256,45 +265,8 @@ export default {
             assistant.content = result || this.$gettext('Done')
           }
         })
-        .catch((error) => {
-          assistant.error = true
-          if (!assistant.content) {
-            // Errors flagged `shown` carry a translated, user-facing message (lock / rate-limit /
-            // unavailable); show it verbatim. Everything else gets the generic fallback.
-            assistant.content = error?.shown
-              ? error.message
-              : this.$gettext('Sorry, something went wrong.')
-          }
-        })
-        .finally(() => {
-          // Cache the final open block (everything past the last cached block) as the last chunk
-          if (assistant.mark < assistant.content.length) {
-            assistant.blocks.push(this.render(assistant.content.slice(assistant.mark)))
-            assistant.mark = assistant.content.length
-          }
-          assistant.pending = ''
-          assistant.streaming = false
-          // Only clear the shared turn state if a newer turn (Stop + fast resend) hasn't taken over
-          if (this.controller === controller) {
-            this.busy = false
-            this.controller = null
-          }
-
-          if (assistant.content) {
-            // Any turn that streamed output may have created or changed pages via tool calls - even
-            // one that errored or was stopped mid-way, since AddPage persists immediately. So reload
-            // the list (on dialog close) regardless of the error flag; a no-op reload is cheap.
-            this.$emit('done')
-          } else {
-            // Cancelled before any output: drop the empty assistant bubble so it doesn't linger.
-            const idx = this.messages.indexOf(assistant)
-            if (idx !== -1) {
-              this.messages.splice(idx, 1)
-            }
-          }
-
-          this.scrollDown()
-        })
+        .catch((error) => this.failed(assistant, error))
+        .finally(() => this.finish(assistant, controller))
     },
 
     stop() {

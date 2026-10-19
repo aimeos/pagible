@@ -61,6 +61,12 @@ describe('PageDetailEditor', () => {
       .and('have.css', 'margin-right', '8px')
   })
 
+  it('uses the shared detail height below the app bar', () => {
+    cy.viewport(1000, 720)
+    mountEditor()
+    cy.get('.page-preview-stage').should('have.css', 'height', '624px')
+  })
+
   it('does not add the sidebar gap on mobile', () => {
     cy.viewport(375, 667)
     mountEditor({ asideVisible: true })
@@ -208,6 +214,53 @@ describe('PageDetailEditor', () => {
       expect(editor.emitted('edit')).to.deep.equal([[null]])
       expect(editor.emitted('change')).to.deep.equal([['content']])
       expect(save).to.have.been.calledOnceWith(true)
+    })
+  })
+
+  it('shows the loading state again when the preview URL changes', () => {
+    mountEditor().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailEditor).vm
+
+      vm.visible = true
+
+      return vm.$nextTick().then(() => {
+        vm.loaded()
+        return vm.$nextTick()
+      }).then(() => {
+        expect(vm.loading).to.be.false
+        vm.saved = { domain: '', path: 'other-page' }
+        return vm.$nextTick()
+      }).then(() => expect(vm.loading).to.be.true)
+    })
+  })
+
+  it('restarts the hint timer when the same hint is shown again', () => {
+    cy.clock()
+
+    mountEditor().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailEditor).vm
+
+      vm.hint('vpreview')
+      cy.tick(2000).then(() => vm.hint('vpreview'))
+      cy.tick(2000).then(() => expect(vm.vpreview).to.be.true)
+      cy.tick(1000).then(() => expect(vm.vpreview).to.be.false)
+    })
+  })
+
+  it('clears pending hint timers on unmount', () => {
+    cy.clock()
+
+    mountEditor().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailEditor).vm
+      const clear = cy.spy(window, 'clearTimeout')
+
+      vm.hint('vpreview')
+      vm.hint('vcontent')
+      const ids = Object.values(vm.timers)
+
+      wrapper.unmount()
+
+      ids.forEach((id) => expect(clear).to.have.been.calledWith(id))
     })
   })
 })

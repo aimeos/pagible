@@ -14,8 +14,25 @@ describe('merge', () => {
 
       resolveChange(changed, undefined, 'data', 'title', 'My Title')
 
-      expect(changed.data.title.resolved).to.equal('My Title')
+      expect(changed.data.title.resolved).to.equal(true)
+      expect(changed.data.title.chosen).to.equal('My Title')
       expect(hasUnresolved(changed)).to.equal(false)
+    })
+
+    it('resolves the conflict with an empty value', () => {
+      const changed = conflicts()
+      const target = { title: 'old' }
+
+      resolveChange(changed, { data: target }, 'data', 'title', '')
+
+      expect(target.title).to.equal('')
+      expect(hasUnresolved(changed)).to.equal(false)
+
+      unresolveChange(changed, { data: target }, 'data', 'title')
+
+      expect(target.title).to.equal('old')
+      expect(changed.data.title).not.to.have.property('chosen')
+      expect(hasUnresolved(changed)).to.equal(true)
     })
 
     it('updates the target object', () => {

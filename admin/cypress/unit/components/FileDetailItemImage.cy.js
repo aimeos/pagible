@@ -166,4 +166,62 @@ describe('FileDetailItemImage', () => {
         expect(image.height).to.be.at.least(180)
       })
   })
+
+  it('keeps the alpha channel when converting to monochrome', () => {
+    const canvas = document.createElement('canvas')
+    canvas.width = 1
+    canvas.height = 1
+    const context = canvas.getContext('2d')
+    context.putImageData(new ImageData(new Uint8ClampedArray([255, 0, 0, 128]), 1, 1), 0, 0)
+
+    cy.mount(FileDetailItemImage, {
+      props: { item: { ...item }, readonly: true },
+      global: { provide: { base64ToBlob: () => new Blob(), url: (path) => path } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileDetailItemImage).vm
+      vm.cropper = { getCroppedCanvas: () => canvas, destroy: cy.stub() }
+      vm.clear = cy.stub()
+      vm.replace = cy.stub()
+      vm.monochrome()
+
+      const data = context.getImageData(0, 0, 1, 1).data
+      expect(data[3]).to.equal(128)
+      expect(data[0]).to.equal(data[1])
+      expect(data[1]).to.equal(data[2])
+    })
+  })
+
+  it('ignores using an image without cropper', () => {
+    const onUse = cy.spy().as('use')
+
+    cy.mount(FileDetailItemImage, {
+      props: { item: { ...item }, readonly: true, onUse },
+      global: { provide: { base64ToBlob: () => new Blob(), url: (path) => path } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileDetailItemImage).vm
+      expect(() => vm.use([{ ...item }])).not.to.throw()
+      cy.get('@use').should('not.have.been.called')
+    })
+  })
+
+  it('names edited images as PNG files matching their content', () => {
+    mountImage().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileDetailItemImage).vm
+      const file = vm.pngFile(new Blob(['png'], { type: 'image/png' }))
+
+      expect(file.name).to.equal('photo.png')
+      expect(file.type).to.equal('image/png')
+    })
+  })
+
+  it('does not report a ratio before the image dimensions are known', () => {
+    mountImage().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileDetailItemImage).vm
+
+      vm.width = 0
+      vm.height = 0
+      expect(Number.isNaN(vm.ratio)).to.equal(true)
+    })
+  })
 })
+

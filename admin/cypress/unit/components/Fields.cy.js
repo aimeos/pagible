@@ -39,7 +39,7 @@ function mountFields(props = {}, perms = {}) {
         write: () => Promise.resolve(''),
         translate: () => Promise.resolve(['']),
         transcribe: () => Promise.resolve({ asText: () => '' }),
-        txlocales: () => [],
+        txLocaleItems: () => [],
       },
       plugins: [{
         install() {
@@ -210,7 +210,7 @@ describe('Fields', () => {
           write: () => Promise.resolve(''),
           translate: () => Promise.resolve(['']),
           transcribe: () => Promise.resolve({ asText: () => '' }),
-          txlocales: () => [],
+          txLocaleItems: () => [],
         },
       },
     })

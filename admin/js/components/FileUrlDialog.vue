@@ -7,6 +7,8 @@ import { useAppStore, useMessageStore } from '../stores'
 import { mdiCheck, mdiDelete } from '@mdi/js'
 import CmsDialog from './Dialog.vue'
 
+const MAX_URL_LENGTH = 255
+
 export default {
   components: { CmsDialog },
 
@@ -23,7 +25,7 @@ export default {
     const messages = useMessageStore()
     const app = useAppStore()
 
-    return { app, messages, mdiCheck, mdiDelete }
+    return { app, messages, maxUrlLength: MAX_URL_LENGTH, mdiCheck, mdiDelete }
   },
 
   data() {
@@ -96,6 +98,8 @@ export default {
     },
 
     update() {
+      this.errors = []
+
       if (this.abortController) {
         this.abortController.abort()
       }
@@ -108,7 +112,8 @@ export default {
         .filter((url) => url && url.startsWith('http'))
 
       for (const url of urls) {
-        if (url?.length > 255) {
+        if (url?.length > MAX_URL_LENGTH) {
+          // the number is part of the message ID to keep the existing translations
           this.errors = [this.$gettext('At least one URL is longer than 255 characters')]
           return
         }
@@ -218,8 +223,8 @@ export default {
       :placeholder="$gettext('Enter URL')"
       :label="$gettext('URL') + ' ‒ ' + $gettext('The file is downloaded from this URL and added to the media list')"
       variant="outlined"
-      maxlength="255"
-      counter="255"
+:maxlength="maxUrlLength"
+      :counter="maxUrlLength"
       autofocus
       clearable
     ></v-text-field>

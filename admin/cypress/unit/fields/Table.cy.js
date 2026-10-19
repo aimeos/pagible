@@ -123,4 +123,71 @@ describe('Table', () => {
     })
     cy.get('thead .btn-actions button').should('not.exist')
   })
+
+  it('validates immediately on load', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(TableField, { props: { modelValue: [['a']], config: { min: 2 }, onError } })
+    cy.get('@error').should('have.been.calledWith', true)
+  })
+
+  it('hides the drag handles and makes the cells readonly in readonly mode', () => {
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b']], config: {}, readonly: true },
+    })
+    cy.get('.row-handle').should('not.exist')
+    cy.get('.col-handle').should('not.exist')
+    cy.get('tbody textarea:not(.v-textarea__sizer)').each(($el) => {
+      cy.wrap($el).should('have.attr', 'readonly')
+    })
+  })
+
+  it('removes the selected column and keeps the IDs of the others', () => {
+    const onUpdate = cy.spy().as('update')
+
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b', 'c'], ['d', 'e', 'f']], config: {}, 'onUpdate:modelValue': onUpdate },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(TableField).vm
+      const [first, , third] = vm.cols
+
+      vm.rmCol(1)
+
+      expect(vm.cols).to.deep.equal([first, third])
+      expect(vm.columns[0]).to.equal(null)
+      expect(vm.columns[vm.columns.length - 1]).to.equal(null)
+    })
+    cy.get('@update').should('have.been.calledWith', [['a', 'c'], ['d', 'f']])
+  })
+
+  it('inserts columns with new IDs without changing the existing ones', () => {
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b']], config: {} },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(TableField).vm
+      const [first, second] = vm.cols
+
+      vm.addCol(1)
+
+      expect(vm.cols).to.have.length(3)
+      expect(vm.cols[0]).to.equal(first)
+      expect(vm.cols[2]).to.equal(second)
+      expect(new Set(vm.cols).size).to.equal(3)
+      expect(vm.table).to.deep.equal([['a', '', 'b']])
+    })
+  })
+
+  it('keeps the row keys when rows are moved', () => {
+    cy.mount(TableField, {
+      props: { modelValue: [['a'], ['b']], config: {} },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(TableField).vm
+      const keys = vm.table.map((row) => vm.rowKey(row))
+
+      vm.table.reverse()
+
+      expect(vm.table.map((row) => vm.rowKey(row))).to.deep.equal([...keys].reverse())
+      expect(keys[0]).not.to.equal(keys[1])
+    })
+  })
 })
+

@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import ElementList from '../../../js/views/ElementList.vue'
 import { useSettingStore, useUserStore } from '../../../js/stores'
 
@@ -9,7 +10,7 @@ const stubs = {
   ElementDetail: { template: '<div class="element-detail-stub" />' },
   Navigation: { template: '<div class="navigation-stub" />' },
   AsideList: { template: '<div class="aside-list-stub" />' },
-  User: { template: '<div class="user-stub" />' },
+  User: { render: () => h('div', { class: 'user-stub' }) },
 }
 
 function mountElementList(perms = {}, filter = {}) {

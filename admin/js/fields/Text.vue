@@ -95,9 +95,14 @@ export default {
         delete translationCache[keys[0]]
       }
 
-      const mod = await import(`ckeditor5/translations/${locale}.js`)
-
-      translationCache[locale] = [mod.default]
+      try {
+        const mod = await import(`ckeditor5/translations/${locale}.js`)
+        translationCache[locale] = [mod.default]
+      } catch (error) {
+        // the editor falls back to English and the failed import is retried next time
+        this.$log(`Text::created(): Failed to load editor translations for "${locale}"`, error)
+        return
+      }
     }
 
     if (this.destroyed) return

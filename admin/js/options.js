@@ -87,7 +87,7 @@ export function languageFilter(allIcon, langIcon) {
  * @param {boolean} none If true, prepends a "None" option with null value
  * @returns {Array<{value: string|null, title: string}>} Locale options
  */
-export function locales(none = false) {
+export function localeItems(none = false) {
   const list = langs().locales
   return none ? [{ value: null, title: gettext.$gettext('None') }, ...list] : list
 }
@@ -98,7 +98,7 @@ export function locales(none = false) {
  * @param {string|null} current Locale code to exclude from the list
  * @returns {Array<{code: string, name: string}>} Translation-supported locale options
  */
-export function txlocales(current = null) {
+export function txLocaleItems(current = null) {
   const list = langs().tx
   return current ? list.filter((entry) => entry.code !== current) : list
 }

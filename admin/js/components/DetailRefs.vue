@@ -3,7 +3,11 @@
 <script>
 import gql from 'graphql-tag'
 import { mdiLock } from '@mdi/js'
-import { useUserStore, useViewStack } from '../stores'
+import { useMessageStore, useUserStore, useViewStack } from '../stores'
+import { formatDate } from '../utils'
+
+// indexes of the panels which are expanded initially
+const OPEN_PANELS = [0, 1, 2]
 
 const queries = new Map()
 const views = {
@@ -48,15 +52,21 @@ export default {
   },
 
   data: () => ({
-    panel: [0, 1, 2],
-    versions: {},
-    refs: {}
+    panel: [...OPEN_PANELS],
+    versions: [],
+    references: {}
   }),
 
   setup() {
+    const messages = useMessageStore()
     const viewStack = useViewStack()
     const user = useUserStore()
-    return { mdiLock, user, viewStack }
+    return { messages, mdiLock, user, viewStack }
+  },
+
+  created() {
+    // number of the latest request, older responses are ignored
+    this.seq = 0
   },
 
   methods: {
@@ -69,7 +79,7 @@ export default {
         published: item.published
           ? this.$gettext('yes')
           : item.publish_at
-            ? new Date(item.publish_at).toLocaleDateString()
+            ? formatDate(item.publish_at, this.$vuetify.locale.current, false)
             : this.$gettext('no')
       }
     },
@@ -85,6 +95,11 @@ export default {
     item: {
       immediate: true,
       handler(item) {
+        const seq = ++this.seq
+
+        this.references = {}
+        this.versions = []
+
         if (!item.id || !this.user.can(this.type + ':view')) {
           return
         }
@@ -98,8 +113,12 @@ export default {
             }
           })
           .then((result) => {
+            if (seq !== this.seq) {
+              return
+            }
+
             const refs = result.data?.[this.type] || {}
-            this.refs = Object.freeze({
+            this.references = Object.freeze({
               ...refs,
               bypages: Object.freeze((refs.bypages || []).map(p => Object.freeze(p))),
               byelements: Object.freeze((refs.byelements || []).map(e => Object.freeze(e)))
@@ -112,7 +131,9 @@ export default {
             )
           })
           .catch((error) => {
-            this.$log(`DetailRefs::watch(item): Error fetching ${this.type} references`, item, error)
+            if (seq === this.seq) {
+              this.messages.error(this.$gettext('Error fetching references'), error, item)
+            }
           })
       }
     }
@@ -124,7 +145,7 @@ export default {
   <v-container>
     <v-sheet class="scroll refs">
       <v-expansion-panels v-model="panel" elevation="0" multiple>
-        <v-expansion-panel v-if="refs.bypages?.length && user.can('page:view')">
+        <v-expansion-panel v-if="references.bypages?.length && user.can('page:view')">
           <v-expansion-panel-title>{{ $gettext('Pages') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="pages" density="comfortable" hover>
@@ -136,7 +157,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in refs.bypages" :key="v.id" @click="open('Page', v)">
+                <tr v-for="v in references.bypages" :key="v.id" @click="open('Page', v)">
                   <td>{{ v.id }}</td>
                   <td>{{ '/' + v.path }}</td>
                   <td>
@@ -154,7 +175,7 @@ export default {
           </v-expansion-panel-text>
         </v-expansion-panel>
 
-        <v-expansion-panel v-if="refs.byelements?.length && user.can('element:view')">
+        <v-expansion-panel v-if="references.byelements?.length && user.can('element:view')">
           <v-expansion-panel-title>{{ $gettext('Elements') }}</v-expansion-panel-title>
           <v-expansion-panel-text>
             <v-table class="elements" density="comfortable" hover>
@@ -166,7 +187,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in refs.byelements" :key="v.id" @click="open('Element', v)">
+                <tr v-for="v in references.byelements" :key="v.id" @click="open('Element', v)">
                   <td>{{ v.id }}</td>
                   <td>{{ v.type }}</td>
                   <td>{{ v.name }}</td>
@@ -204,6 +225,6 @@ export default {
 
 <style scoped>
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 </style>

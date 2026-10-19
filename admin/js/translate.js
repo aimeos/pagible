@@ -56,11 +56,19 @@ function translateProgress(apollo, batch) {
     .then((result) => result.data?.translateProgress || null)
 }
 
+// Delay in milliseconds between the polls while the translations progress
+const POLL_DELAY = 2000
+// Longest delay in milliseconds between the polls while nothing changes or the requests fail
+const POLL_MAX_DELAY = 30000
+// Number of polls without progress (or failed requests) until the polling is given up
+const POLL_MAX_UNCHANGED = 20
+
 /**
  * Polls the progress of queued translations until all are finished.
  *
- * Polls every two seconds and backs off up to 30 seconds while the progress doesn't change.
- * Polling pauses while the browser tab is hidden and stops after 20 polls without any progress.
+ * Polls every two seconds and backs off up to 30 seconds while the progress doesn't change or
+ * the requests fail. Polling pauses while the browser tab is hidden and stops after 20 polls
+ * without any progress.
  *
  * @param {Object} apollo Apollo client
  * @param {String} batch Batch ID
@@ -69,7 +77,7 @@ function translateProgress(apollo, batch) {
  *  didn't progress any more, or NULL if the batch is unknown or the polling was cancelled
  */
 export async function awaitTranslation(apollo, batch, { onProgress = null, cancelled = () => false } = {}) {
-  let delay = 2000
+  let delay = POLL_DELAY
   let unchanged = 0
   let last = null
 
@@ -79,29 +87,39 @@ export async function awaitTranslation(apollo, batch, { onProgress = null, cance
       continue
     }
 
-    const progress = await translateProgress(apollo, batch)
+    let progress
 
-    if (!progress || cancelled()) {
+    try {
+      progress = await translateProgress(apollo, batch)
+    } catch (error) {
+      // the translations continue on the server, so temporary errors only delay the next poll
+      console.warn('Failed to fetch translation progress, retrying', error)
+      progress = undefined
+    }
+
+    if (progress === null || cancelled()) {
       return null
     }
 
-    onProgress?.(progress)
+    if (progress) {
+      onProgress?.(progress)
 
-    if (progress.done + progress.failed >= progress.total) {
-      return progress
+      if (progress.done + progress.failed >= progress.total) {
+        return progress
+      }
     }
 
-    if (last && progress.done === last.done && progress.failed === last.failed) {
-      if (++unchanged >= 20) {
-        return { ...progress, running: true }
+    if (!progress || (last && progress.done === last.done && progress.failed === last.failed)) {
+      if (++unchanged >= POLL_MAX_UNCHANGED) {
+        return { total: 0, done: 0, failed: 0, ...last, ...progress, running: true }
       }
-      delay = Math.min(delay * 2, 30000)
+      delay = Math.min(delay * 2, POLL_MAX_DELAY)
     } else {
       unchanged = 0
-      delay = 2000
+      delay = POLL_DELAY
     }
 
-    last = progress
+    last = progress || last
     await new Promise((resolve) => setTimeout(resolve, delay))
   }
 

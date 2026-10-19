@@ -192,7 +192,7 @@ export default {
 }
 
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 
 .subtabs {

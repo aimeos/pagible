@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import FileList from '../../../js/views/FileList.vue'
 import { useSettingStore, useUserStore } from '../../../js/stores'
 
@@ -9,7 +10,7 @@ const stubs = {
   FileDetail: { template: '<div class="file-detail-stub" />' },
   Navigation: { template: '<div class="navigation-stub" />' },
   AsideList: { template: '<div class="aside-list-stub" />' },
-  User: { template: '<div class="user-stub" />' },
+  User: { render: () => h('div', { class: 'user-stub' }) },
 }
 
 function mountFileList(perms = {}, filter = {}) {

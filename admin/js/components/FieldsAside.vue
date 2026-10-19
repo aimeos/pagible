@@ -6,7 +6,8 @@ import ActionMenu from './ActionMenu.vue'
 import Fields from './Fields.vue'
 import { useDrawerStore, useSchemaStore } from '../stores'
 import { clone } from '../utils'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
+import { schemaFields } from '../field'
 import {
   mdiCellphone,
   mdiClose,
@@ -22,6 +23,8 @@ import {
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 export default {
+  mixins: [typeLabelMixin],
+
   components: {
     ActionMenu,
     Fields,
@@ -82,10 +85,6 @@ export default {
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     // the owner applies the values to the element synchronously, so the changes are visible afterwards
     change(values) {
       this.$emit('patch-entry', this.element, { ...values, _changed: true })
@@ -118,14 +117,7 @@ export default {
     },
 
     fields(type) {
-      const fields = this.schemas[this.type]?.[type]?.fields
-
-      if (!fields) {
-        console.warn(`No definition of fields for "${type}" (${this.type}) schemas`)
-        return []
-      }
-
-      return fields
+      return schemaFields(this, this.schemas, this.type, type)
     },
 
     revert() {

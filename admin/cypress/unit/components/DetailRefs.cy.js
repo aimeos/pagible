@@ -60,7 +60,7 @@ for (const type of ['element', 'file']) {
 
     it('shows a lock icon only for restricted page references', () => {
       mountRefs(type, {}, { 'page:view': true }).then(({ wrapper }) => {
-        wrapper.findComponent(DetailRefs).vm.refs = {
+        wrapper.findComponent(DetailRefs).vm.references = {
           bypages: [
             { id: 'page-1', path: 'public', name: 'Public page', restricted: false },
             { id: 'page-2', path: 'private', name: 'Restricted page', restricted: true },
@@ -78,7 +78,7 @@ for (const type of ['element', 'file']) {
         const vm = wrapper.findComponent(DetailRefs).vm
         const page = { id: 'page-1', path: 'page', name: 'Page' }
 
-        vm.refs = { bypages: [page] }
+        vm.references = { bypages: [page] }
         cy.stub(vm, 'open').as('open')
 
         cy.get('.v-table.pages tbody tr').should('contain', '/page').click()

@@ -67,6 +67,17 @@ export function typeLabel(type, translator = gettext) {
   return label.replace('::', ' ')
 }
 
+/**
+ * Mixin adding a typeLabel(type) method translating with the component
+ */
+export const typeLabelMixin = {
+  methods: {
+    typeLabel(type) {
+      return typeLabel(type, this)
+    }
+  }
+}
+
 function fetchCatalog(url) {
   if (!cache.has(url)) {
     const promise = fetch(url, {

@@ -2,15 +2,15 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import gql from 'graphql-tag'
 import { defineAsyncComponent } from 'vue'
 import AsideMeta from './components/AsideMeta.vue'
 import DetailAppBar from './components/DetailAppBar.vue'
-import { setupReload } from './echo'
+import { setupReload } from './livesync'
 import { invalidateList } from './graphql'
 import { pluginLabel } from './i18n'
 import { hasUnresolved, resolveChange, unresolveChange } from './merge'
-import { clone, focusInvalid } from './utils'
+import { mutation } from './lists'
+import { clone, dbDate } from './utils'
 import {
   useChangeStore,
   useDirtyStore,
@@ -122,7 +122,9 @@ export const detailBase = {
   },
 
   created() {
-    this.dirtyStore.register(() => this.save(true))
+    // stacked views register on top of the view below, which gets its state back on close
+    this.dirtySave = () => this.save(true)
+    this.dirtyStore.register(this.dirtySave)
 
     if (!this.item?.id || !this.user.can(`${this.type}:view`)) {
       this.loading = false
@@ -139,8 +141,12 @@ export const detailBase = {
   },
 
   beforeUnmount() {
-    this.dirtyStore.unregister()
-    this.side.$reset()
+    this.dirtyStore.unregister(this.dirtySave)
+
+    // the view below shares the side store
+    if (!this.stacked) {
+      this.side.$reset()
+    }
 
     this.destroyed = true
     this.changed = null
@@ -240,7 +246,6 @@ export const detailBase = {
       if (!this.user.can(`${this.type}:publish`)) return this.messages.denied()
 
       const msgs = publishTexts(this, at)
-      const model = this.type[0].toUpperCase() + this.type.slice(1)
       // language of the page variant to publish, the source variant if none
       const lang = this.variantLang ?? null
       this.publishing = true
@@ -251,12 +256,10 @@ export const detailBase = {
 
           return this.$apollo
             .mutate({
-              mutation: lang
-                ? gql`mutation ($id: [ID!]!, $at: DateTime, $lang: String) { pub${model}(id: $id, at: $at, lang: $lang) { id } }`
-                : gql`mutation ($id: [ID!]!, $at: DateTime) { pub${model}(id: $id, at: $at) { id } }`,
+              mutation: mutation('pub', this.type, !!lang, true),
               variables: {
                 id: [this.item.id],
-                at: at?.toISOString()?.substring(0, 19)?.replace('T', ' '),
+                at: at ? dbDate(at) : undefined,
                 ...(lang && { lang })
               }
             })
@@ -398,7 +401,32 @@ export const detailBase = {
 
   watch: {
     hasChanged(value) {
-      this.dirtyStore.set(value)
+      this.dirtyStore.set(value, this.dirtySave)
     }
   }
+}
+
+/**
+ * Validates a form, scrolls to the first visible invalid input and focuses it
+ *
+ * Validating the form is required because inputs only show their errors after the
+ * user interacted with them, e.g. empty required fields aren't highlighted otherwise.
+ *
+ * @param {Object} form VForm component instance
+ * @returns {Promise<boolean>} True if an invalid input has been focused
+ */
+export async function focusInvalid(form) {
+  const result = await form?.validate()
+
+  for (const { id } of result?.errors || []) {
+    const input = document.getElementById(id)
+
+    if (input && input.getClientRects().length) {
+      input.closest('.v-input')?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+      input.focus({ preventScroll: true })
+      return true
+    }
+  }
+
+  return false
 }

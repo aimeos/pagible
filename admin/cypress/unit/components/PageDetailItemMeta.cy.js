@@ -1,5 +1,6 @@
 import PageDetailItemSection from '../../../js/components/PageDetailItemSection.vue'
-import { useUserStore, useSchemaStore } from '../../../js/stores'
+import { reactive } from 'vue'
+import { useUserStore, useSchemaStore, useSideStore } from '../../../js/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },
@@ -105,6 +106,31 @@ describe('PageDetailItemSection (meta)', () => {
   it('renders without meta items', () => {
     mountMeta({ item: { id: '1', meta: {} } })
     cy.get('.v-expansion-panel').should('not.exist')
+  })
+
+  it('hides add button if the section has no schemas', () => {
+    mountMeta({ section: 'config', item: { id: '1', config: {} } }, { 'page:save': true })
+    cy.get('.v-expansion-panel').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
+  })
+
+  it('keeps the open panels of other entries and updates the counts when removing an entry', () => {
+    const page = reactive({
+      id: '1',
+      meta: {
+        seo: { type: 'seo', data: {}, files: [] },
+        social: { type: 'social', data: {}, files: [] },
+      },
+    })
+
+    mountMeta({ item: page, onPatch: (entries) => Object.assign(page, entries) }, { 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailItemSection).vm
+      vm.panel = ['seo', 'social']
+      vm.remove('seo')
+
+      expect(vm.panel).to.deep.equal(['social'])
+      expect(useSideStore().store.type).to.deep.equal({ social: 1 })
+    })
   })
 
   it('adds canonical meta items without a group', () => {

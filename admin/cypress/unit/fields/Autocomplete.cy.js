@@ -107,4 +107,37 @@ describe('Autocomplete', () => {
     cy.mount(Autocomplete, { props: { config: { options: staticOptions }, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
   })
+
+  it('resets loading after a failed request', () => {
+    cy.mount(Autocomplete, {
+      props: { config: { 'api-type': 'GQL', query: 'query{access}' } },
+      global: { mocks: { $apollo: { query: () => Promise.reject(new Error('failed')) } } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Autocomplete).vm
+      vm.graphql('a')
+      expect(vm.loading).to.equal(true)
+      cy.wrap(vm).its('loading').should('equal', false)
+    })
+  })
+
+  it('ignores stale responses of older requests', () => {
+    const resolvers = []
+    cy.mount(Autocomplete, {
+      props: { config: { 'api-type': 'GQL', query: 'query{access}', 'list-key': 'access' } },
+      global: {
+        mocks: { $apollo: { query: () => new Promise((resolve) => resolvers.push(resolve)) } }
+      }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Autocomplete).vm
+      vm.graphql('a')
+      vm.graphql('ab')
+
+      resolvers[1]({ data: { access: ['new'] } })
+      cy.wrap(vm).its('list').should('deep.equal', ['new']).then(() => {
+        resolvers[0]({ data: { access: ['old'] } })
+      })
+      cy.wrap(vm).its('loading').should('equal', false)
+      cy.wrap(vm).its('list').should('deep.equal', ['new'])
+    })
+  })
 })

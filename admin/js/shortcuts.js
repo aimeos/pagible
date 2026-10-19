@@ -6,8 +6,6 @@ import { getCurrentInstance, onActivated, onBeforeUnmount, onDeactivated, onMoun
 import { commands, isMac, routes } from './commands'
 import { useUserStore } from './stores'
 
-export { commands, hint, routes } from './commands'
-
 export const shortcuts = reactive({ palette: false, sheet: false })
 
 // single key view actions which are ignored while typing or when a menu/dialog is open
@@ -109,6 +107,11 @@ export function has(name) {
   return !!views[views.length - 1]?.[name]
 }
 
+// Key of the event, lower case for printable characters so Shift doesn't change it
+function normKey(ev) {
+  return ev.key?.length === 1 ? ev.key.toLowerCase() : ev.key
+}
+
 /**
  * Returns the name of the command of the given scopes matching the key event
  * Auto-repeated keys and keys typed in input fields are ignored,
@@ -121,7 +124,7 @@ export function command(ev, ...scopes) {
     return undefined
   }
 
-  const key = ev.key?.length === 1 ? ev.key.toLowerCase() : ev.key
+  const key = normKey(ev)
 
   return Object.keys(commands).find((name) => {
     const cmd = commands[name]
@@ -221,7 +224,7 @@ export function keydown(e) {
   }
 
   if ((e.ctrlKey || e.metaKey) && !e.altKey) {
-    const key = e.key?.length === 1 ? e.key.toLowerCase() : e.key
+    const key = normKey(e)
     const name = modKeys[(e.shiftKey ? 'Shift+' : '') + key]
 
     switch (name) {

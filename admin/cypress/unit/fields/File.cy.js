@@ -200,6 +200,24 @@ describe('File', () => {
     })
   })
 
+  it('shows the upload progress and ignores further uploads meanwhile', () => {
+    cy.stub(URL, 'createObjectURL').returns('blob:upload')
+    cy.stub(URL, 'revokeObjectURL')
+    const mutate = cy.stub().returns(new Promise(() => {}))
+
+    mountFile({}, { 'file:add': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileField).vm
+
+      vm.add(new File(['content'], 'document.pdf', { type: 'application/pdf' }))
+      expect(vm.add(new File(['other'], 'other.pdf', { type: 'application/pdf' }))).to.equal(undefined)
+      expect(vm.add(null)).to.equal(undefined)
+      expect(mutate).to.have.been.calledOnce
+    })
+
+    cy.get('.file .v-progress-linear').should('exist')
+    cy.get('.meta').should('not.exist')
+  })
+
   it('shows file metadata when file is present', () => {
     mountFile({
       modelValue: { id: '1', type: 'file' },

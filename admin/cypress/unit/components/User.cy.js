@@ -1,5 +1,5 @@
 import User from '../../../js/components/User.vue'
-import { useUserStore } from '../../../js/stores'
+import { useMessageStore, useSessionStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
 }
@@ -27,5 +27,35 @@ describe('User', () => {
   it('renders the theme toggle with sun or moon icon', () => {
     mountUser()
     cy.get('button.btn-darkmode .v-icon').should('exist')
+  })
+
+  it('shows the user menu of the current user in the user store', () => {
+    mountUser().then(() => {
+      useUserStore().me = { name: 'Editor', permission: {} }
+    })
+    cy.get('button.icon').should('exist')
+
+    cy.then(() => {
+      useUserStore().me = null
+    })
+    cy.get('button.icon').should('not.exist')
+  })
+
+  it('shows an error and opens the login page if logging out fails', () => {
+    const push = cy.stub()
+
+    cy.mount(User, {
+      global: { stubs, mocks: { $router: { push } } },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(User).vm
+      const error = cy.stub(useMessageStore(), 'error')
+
+      useSessionStore().logout = () => Promise.reject(new Error('offline'))
+
+      return vm.logout().then(() => {
+        expect(error).to.have.been.calledWith('Logout failed')
+        expect(push).to.have.been.calledWith({ name: 'login' })
+      })
+    })
   })
 })

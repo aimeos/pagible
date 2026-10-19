@@ -77,7 +77,9 @@ export function resolveChange(changed, targets, section, key, value) {
     target[idx] = value
   }
 
-  info.resolved = value
+  // a flag because the chosen value may be falsy, e.g. an empty title
+  info.resolved = true
+  info.chosen = value
 }
 
 
@@ -99,6 +101,7 @@ export function unresolveChange(changed, targets, section, key) {
 
   delete info.snapshot
   delete info.resolved
+  delete info.chosen
 }
 
 

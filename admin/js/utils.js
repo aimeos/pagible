@@ -4,18 +4,6 @@
 
 import { toRaw } from 'vue'
 
-export { frozenParse, safeParse, sanitize } from './json'
-
-export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
-
-export const AUDIO_MIME_FILTER = { mime: ['audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'audio/ogg', 'audio/webm', 'audio/wav', 'audio/wave', 'audio/x-wav', 'audio/vnd.wave', 'audio/flac', 'audio/x-flac'] }
-
-export const VIDEO_MIME_FILTER = { mime: ['video/mp4', 'video/webm', 'video/ogg'] }
-
-export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MIME_FILTER.mime] }
-
-export const PAGE_BULK_LIMIT = 1000
-
 // Wraps the browser navigation so it can be replaced in tests
 export const browser = {
   assign(url) {
@@ -57,34 +45,68 @@ export function clone(value) {
 }
 
 /**
- * Creates a debounced version of a function that returns a Promise. The returned function
- * exposes a cancel() method that clears any pending invocation.
+ * Creates a debounced version of a function that returns a Promise. All calls of one burst
+ * share the result of the final invocation and the returned function exposes a cancel()
+ * method that clears any pending invocation and resolves the waiting calls with undefined
+ * and a flush() method that runs a pending invocation immediately.
  *
  * @param {Function} func Function to debounce
  * @param {number} delay Delay in milliseconds
- * @returns {Function} Debounced function (with a cancel() method) that returns a Promise
+ * @returns {Function} Debounced function (with cancel() and flush() methods) that returns a Promise
  */
 export function debounce(func, delay) {
   let timer
+  let invoke = null // runs the pending invocation
+  let waiting = [] // settle callbacks of the calls of the current burst
 
   function debounced(...args) {
-    return new Promise((resolve, reject) => {
-      const context = this
+    const context = this
 
-      clearTimeout(timer)
-      timer = setTimeout(() => {
+    clearTimeout(timer)
+
+    return new Promise((resolve, reject) => {
+      waiting.push({ resolve, reject })
+
+      invoke = () => {
+        const calls = waiting
+        waiting = []
+        invoke = null
+
         try {
-          resolve(func.apply(context, args))
+          const result = func.apply(context, args)
+          calls.forEach((call) => call.resolve(result))
         } catch (error) {
-          reject(error)
+          calls.forEach((call) => call.reject(error))
         }
-      }, delay)
+      }
+
+      timer = setTimeout(invoke, delay)
     })
   }
 
-  debounced.cancel = () => clearTimeout(timer)
+  debounced.flush = () => {
+    clearTimeout(timer)
+    invoke?.()
+  }
+
+  debounced.cancel = () => {
+    invoke = null
+    clearTimeout(timer)
+    waiting.forEach((call) => call.resolve(undefined))
+    waiting = []
+  }
 
   return debounced
+}
+
+/**
+ * Returns the string with the first character in upper case
+ *
+ * @param {string} str String to convert
+ * @returns {string} Converted string
+ */
+export function ucfirst(str) {
+  return str ? str[0].toUpperCase() + str.slice(1) : ''
 }
 
 /**
@@ -95,31 +117,6 @@ export function debounce(func, delay) {
  */
 export function empty(val) {
   return val == null || (typeof val === 'object' && Object.keys(val).length === 0)
-}
-
-/**
- * Validates a form, scrolls to the first visible invalid input and focuses it
- *
- * Validating the form is required because inputs only show their errors after the
- * user interacted with them, e.g. empty required fields aren't highlighted otherwise.
- *
- * @param {Object} form VForm component instance
- * @returns {Promise<boolean>} True if an invalid input has been focused
- */
-export async function focusInvalid(form) {
-  const result = await form?.validate()
-
-  for (const { id } of result?.errors || []) {
-    const input = document.getElementById(id)
-
-    if (input && input.getClientRects().length) {
-      input.closest('.v-input')?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
-      input.focus({ preventScroll: true })
-      return true
-    }
-  }
-
-  return false
 }
 
 /**
@@ -136,17 +133,26 @@ export function hasTrue(obj) {
 }
 
 /**
- * Checks if any value in an object has a truthy property
+ * Returns the date in the "YYYY-MM-DD HH:MM:SS" UTC format used by the server
  *
- * @param {Object} obj Object to check
- * @param {string} prop Property name to check on each value
- * @returns {boolean} True if any value has a truthy property
+ * @param {Date} date Date to format, now by default
+ * @returns {string} Formatted date
  */
-export function hasProp(obj, prop) {
-  for (const k in obj) {
-    if (obj[k]?.[prop]) return true
-  }
-  return false
+export function dbDate(date = new Date()) {
+  return date.toISOString().substring(0, 19).replace('T', ' ')
+}
+
+/**
+ * Formats a date value for display in the given UI locale
+ *
+ * @param {string|number|Date} value Date value
+ * @param {string} locale UI locale, e.g. $vuetify.locale.current
+ * @param {boolean} time Include the time, otherwise only the date
+ * @returns {string} Localized date
+ */
+export function formatDate(value, locale, time = true) {
+  const date = new Date(value)
+  return time ? date.toLocaleString(locale) : date.toLocaleDateString(locale)
 }
 
 /**
@@ -179,17 +185,6 @@ export function itemTitle(data) {
 }
 
 /**
- * Returns the URL of the login page of the application for single sign-on
- *
- * @param {String} template Login page URL (cms.admin.login), may contain the "_url_" placeholder
- * @param {String} back URL the login page should return to afterwards
- * @returns {String} Login page URL
- */
-export function loginUrl(template, back = window.location.href) {
-  return template.replace('_url_', encodeURIComponent(back))
-}
-
-/**
  * Converts text to a URL-safe slug
  *
  * @param {string} text Input text
@@ -215,28 +210,6 @@ export function stringify(value) {
   if (value == null) return ''
 
   return typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)
-}
-
-/**
- * Converts a base64-encoded string to a Blob
- *
- * @param {string} base64 Base64-encoded binary data
- * @param {string} mimeType MIME type for the resulting Blob
- * @returns {Blob|null} Blob object or null if input is empty
- */
-export function toBlob(base64, mimeType = 'image/png') {
-  if (!base64) {
-    return null
-  }
-
-  const binary = atob(base64)
-  const byteArray = new Uint8Array(binary.length)
-
-  for (let i = 0; i < binary.length; i++) {
-    byteArray[i] = binary.charCodeAt(i)
-  }
-
-  return new Blob([byteArray], { type: mimeType })
 }
 
 /**

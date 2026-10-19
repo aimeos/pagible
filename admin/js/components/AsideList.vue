@@ -50,8 +50,9 @@ export default {
       return true
     },
 
+    // a group is active if its filter value differs from the default value
     has(key) {
-      return this.filter[key] !== null ? true : false
+      return (this.filter[key] ?? null) !== (this.initial?.[key] ?? null)
     },
 
     reset() {

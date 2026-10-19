@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import PageList from '../../../js/views/PageList.vue'
 import { useChangeStore, useDrawerStore, useLanguageStore, useSettingStore, useUserStore } from '../../../js/stores'
 
@@ -6,7 +7,7 @@ const stubs = {
   PageDetail: { template: '<div class="page-detail-stub" />' },
   Navigation: { template: '<div class="navigation-stub" />' },
   AsideList: { template: '<div class="aside-list-stub" />' },
-  User: { template: '<div class="user-stub" />' },
+  User: { render: () => h('div', { class: 'user-stub' }) },
 }
 
 function mountPageList(perms = {}) {

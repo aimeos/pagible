@@ -196,4 +196,53 @@ describe('Url', () => {
     cy.mount(Url, { props: { config: {}, readonly: true } })
     cy.get('input[role="combobox"]').should('have.attr', 'readonly')
   })
+
+  it('ignores page suggestions of outdated searches', () => {
+    const pending = []
+    const query = cy.stub().callsFake(() => new Promise((resolve) => pending.push(resolve)))
+
+    cy.mount(Url, {
+      props: { config: {} },
+      global: { mocks: { $apollo: { query } } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+
+      vm.search('fir')
+      vm.search('first')
+
+      pending[1]({ data: { pages: { data: [{ path: 'first' }] } } })
+      pending[0]({ data: { pages: { data: [{ path: 'firewall' }] } } })
+
+      return new Promise((resolve) => setTimeout(resolve, 0)).then(() => {
+        expect(vm.pages).to.deep.equal(['/first'])
+        expect(vm.loading).to.equal(false)
+      })
+    })
+  })
+
+  it('drops pending suggestions when the input is cleared', () => {
+    let resolve
+    const query = cy.stub().returns(new Promise((res) => (resolve = res)))
+
+    cy.mount(Url, {
+      props: { config: {} },
+      global: { mocks: { $apollo: { query } } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+
+      vm.search('home')
+      expect(vm.loading).to.equal(true)
+
+      vm.search('')
+      expect(vm.loading).to.equal(false)
+
+      resolve({ data: { pages: { data: [{ path: 'home' }] } } })
+
+      return new Promise((res) => setTimeout(res, 0)).then(() => {
+        expect(vm.pages).to.deep.equal([])
+        expect(vm.loading).to.equal(false)
+      })
+    })
+  })
 })
+

@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import WebhookList from '../../../src/views/WebhookList.vue'
 import BuiltWebhookList from '../../../dist/WebhookList.js'
+import { validUrl } from '../../../src/webhooks'
 import { pluginUi } from '@/plugin'
 import '@/assets/base.css'
 
@@ -15,6 +16,8 @@ function vm(data = {}) {
     $pgettext: (context, value) => value,
     confirm: { purge: cy.stub().resolves(true) },
     messages: messageStub(),
+    changes: 0,
+    loadSeq: 0,
     saving: false,
     ...data
   }
@@ -178,19 +181,19 @@ describe('WebhookList', () => {
     const original = Object.freeze({ id: 'first', status: false })
     const updated = Object.freeze({ id: 'first', status: true })
     const webhooks = Object.freeze([original])
-    const names = Object.freeze(['page.published'])
+    const events = Object.freeze(['page.published'])
     const state = vm({
-      apollo: { query: cy.stub().resolves({ data: { cmsWebhooks: webhooks, cmsWebhookEvents: names, cmsWebhookServer: { enabled: true, blocked: null } } }) },
+      apollo: { query: cy.stub().resolves({ data: { cmsWebhooks: webhooks, cmsWebhookEvents: events, cmsWebhookServer: { enabled: true, blocked: null } } }) },
       checked: new Set(['old']),
       items: [],
       loading: false,
-      names: []
+      events: []
     })
 
     await state.load()
 
     expect(state.items).to.equal(webhooks)
-    expect(state.names).to.equal(names)
+    expect(state.events).to.equal(events)
     expect(state.server).to.deep.equal({ enabled: true, blocked: null })
 
     state.put(updated)
@@ -209,13 +212,12 @@ describe('WebhookList', () => {
       apollo: { mutate },
       checked: new Set(),
       dialog: true,
-      form: { url: 'https://example.com/hook', name: ' Orders ', events: ['page.published'], status: true },
       items: webhooks,
       secret: '',
       selected: null
     })
 
-    await state.save()
+    await state.save({ url: 'https://example.com/hook', name: ' Orders ', events: ['page.published'], status: true })
 
     expect(mutate.firstCall.args[0].variables.input).to.deep.equal({
       url: 'https://example.com/hook',
@@ -229,6 +231,52 @@ describe('WebhookList', () => {
     expect(state.dialog).to.equal(true)
   })
 
+  it('reopens the dialog to show the secret if it was closed while adding', async () => {
+    const webhook = Object.freeze({ id: 'new' })
+    const state = vm({
+      apollo: { mutate: cy.stub().resolves({ data: { addWebhook: { secret: 'secret', webhook } } }) },
+      checked: new Set(),
+      dialog: false,
+      items: [],
+      secret: '',
+      selected: null
+    })
+
+    await state.save({ url: 'https://example.com/hook', name: 'Orders', events: ['page.published'], status: true })
+
+    expect(state.secret).to.equal('secret')
+    expect(state.dialog).to.equal(true)
+  })
+
+  it('ignores outdated list responses and keeps webhooks changed while loading', async () => {
+    const resolvers = []
+    const response = (id) => ({ data: { cmsWebhooks: [{ id }], cmsWebhookEvents: [], cmsWebhookServer: { enabled: true, blocked: null } } })
+    const state = vm({
+      apollo: { query: () => new Promise((resolve) => resolvers.push(resolve)) },
+      checked: new Set(),
+      items: [],
+      loading: false,
+      events: []
+    })
+
+    const first = state.load()
+    const second = state.load()
+
+    resolvers[1](response('new'))
+    resolvers[0](response('old'))
+    await Promise.all([first, second])
+
+    expect(state.items).to.deep.equal([{ id: 'new' }])
+    expect(state.loading).to.equal(false)
+
+    const third = state.load()
+    state.put(Object.freeze({ id: 'new', status: true }))
+    resolvers[2](response('stale'))
+    await third
+
+    expect(state.items).to.deep.equal([{ id: 'new', status: true }])
+  })
+
   it('saves the name of an existing webhook', async () => {
     const webhook = Object.freeze({ id: 'first', name: 'Orders' })
     const mutate = cy.stub().resolves({ data: { saveWebhook: webhook } })
@@ -236,12 +284,11 @@ describe('WebhookList', () => {
       apollo: { mutate },
       checked: new Set(),
       dialog: true,
-      form: { name: ' Orders ', events: ['page.published'], status: false },
       items: [],
       selected: { id: 'first' }
     })
 
-    await state.save()
+    await state.save({ name: ' Orders ', events: ['page.published'], status: false })
 
     expect(mutate.firstCall.args[0].variables).to.deep.equal({
       id: 'first',
@@ -252,8 +299,6 @@ describe('WebhookList', () => {
   })
 
   it('accepts only https endpoint URLs', () => {
-    const validUrl = WebhookList.methods.validUrl
-
     expect(validUrl('https://example.com/hook')).to.equal(true)
     expect(validUrl(' https://example.com/hook?x=1 ')).to.equal(true)
     expect(validUrl('http://example.com/hook')).to.equal(false)

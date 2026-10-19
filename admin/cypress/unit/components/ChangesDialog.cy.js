@@ -226,7 +226,7 @@ describe('ChangesDialog', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         const info = { current: 'value' }
-        const result = vm.label('data', 'title', info)
+        const result = vm.label('title', info)
         expect(result).to.equal('title')
       })
     })
@@ -235,7 +235,7 @@ describe('ChangesDialog', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         const info = { current: { type: 'text', data: { title: 'Hello' } } }
-        const result = vm.label('content', 'abc', info)
+        const result = vm.label('abc', info)
         expect(result).to.contain('text')
         expect(result).to.contain('Hello')
       })

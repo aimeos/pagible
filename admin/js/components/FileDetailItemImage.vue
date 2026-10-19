@@ -1,14 +1,13 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 import CmsDialog from './Dialog.vue'
 import { useUserStore, useMessageStore } from '../stores'
 import { fileurl } from '../urls'
-import { toBlob } from '../utils'
+import { imageAi } from '../imageai'
 import {
   mdiClose,
   mdiCropFree,
@@ -27,44 +26,15 @@ import {
   mdiHistory
 } from '@mdi/js'
 
-const ERASE_IMAGE = gql`
-  mutation ($file: Upload!, $mask: Upload!) {
-    erase(file: $file, mask: $mask)
-  }
-`
-
-const INPAINT_IMAGE = gql`
-  mutation ($file: Upload!, $mask: Upload!, $prompt: String!) {
-    inpaint(file: $file, mask: $mask, prompt: $prompt)
-  }
-`
-
-const ISOLATE_IMAGE = gql`
-  mutation ($file: Upload!) {
-    isolate(file: $file)
-  }
-`
-
-const REPAINT_IMAGE = gql`
-  mutation ($file: Upload!, $prompt: String!) {
-    repaint(file: $file, prompt: $prompt)
-  }
-`
-
-const UNCROP_IMAGE = gql`
-  mutation ($file: Upload!, $top: Int!, $right: Int!, $bottom: Int, $left: Int) {
-    uncrop(file: $file, top: $top, right: $right, bottom: $bottom, left: $left)
-  }
-`
-
-const UPSCALE_IMAGE = gql`
-  mutation ($file: Upload!, $factor: Int!) {
-    upscale(file: $file, factor: $factor)
-  }
-`
+// number of image versions kept for undo
+const HISTORY_SIZE = 10
+// maximum width and height upscaled images can have
+const MAX_UPSCALE_SIZE = 4096
 
 export default {
   components: { ActionItem, ActionMenu, CmsDialog },
+
+  mixins: [imageAi],
 
   props: {
     item: { type: Object, required: true },
@@ -77,20 +47,11 @@ export default {
     return {
       destroyed: false,
       selected: false,
-      loading: {},
-      edittext: null,
       cropLabel: null,
       cropper: null,
       images: [],
-      menu: {},
       width: 0,
-      height: 0,
-      extend: {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-      }
+      height: 0
     }
   },
 
@@ -102,6 +63,7 @@ export default {
       user,
       messages,
       fileurl,
+      maxUpscaleSize: MAX_UPSCALE_SIZE,
       mdiClose,
       mdiCropFree,
       mdiCrop,
@@ -153,30 +115,9 @@ export default {
       ]
     },
 
-    edges() {
-      const hint = ' ‒ ' + this.$gettext('Number of pixels added at this side of the image')
-
-      return [
-        [['top', this.$pgettext('image edge', 'Top') + hint]],
-        [
-          ['left', this.$pgettext('image edge', 'Left') + hint],
-          ['right', this.$pgettext('image edge', 'Right') + hint]
-        ],
-        [['bottom', this.$pgettext('image edge', 'Bottom') + hint]]
-      ]
-    },
-
-    factors() {
-      return [16, 8, 4, 2].filter((f) => this.width * f <= 4096 && this.height * f <= 4096)
-    },
-
+    // updated by the cropper's ready() handler whenever an image is loaded
     ratio() {
-      if (!this.cropper) {
-        return NaN
-      }
-
-      const imageData = this.cropper.getImageData()
-      return imageData.naturalWidth / imageData.naturalHeight
+      return this.width && this.height ? this.width / this.height : NaN
     },
 
     svg() {
@@ -218,13 +159,6 @@ export default {
         link.click()
 
         URL.revokeObjectURL(url)
-      })
-    },
-
-    erase() {
-      if (!this.cropper) return
-      this.masked().then((files) => {
-        this.mutate('image:erase', ERASE_IMAGE, files, this.$gettext('Error erasing image part'))
       })
     },
 
@@ -302,75 +236,14 @@ export default {
           self.selected = true
         },
         ready() {
-          const imageData = this.cropper.getImageData()
+          const imageData = self.cropper?.getImageData()
+
+          if (!imageData) return
 
           self.height = imageData.naturalHeight
           self.width = imageData.naturalWidth
         }
       })
-    },
-
-    inpaint() {
-      if (!this.cropper || !this.edittext?.trim()) {
-        return
-      }
-
-      this.masked().then((files) => {
-        const vars = { ...files, prompt: this.edittext }
-        this.mutate('image:inpaint', INPAINT_IMAGE, vars, this.$gettext('Error editing image part'))
-      })
-    },
-
-    isolate() {
-      if (!this.cropper) return
-
-      this.clear()
-
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate('image:isolate', ISOLATE_IMAGE, {
-          file: new File([blob], 'image.png', { type: 'image/png' })
-        }, this.$gettext('Error removing background'))
-      })
-    },
-
-    mask() {
-      if (!this.cropper) return null
-
-      const canvas = document.createElement('canvas')
-      const context = canvas.getContext('2d')
-
-      const data = this.cropper.getImageData()
-      const crop = this.cropper.getData()
-
-      canvas.width = data.naturalWidth
-      canvas.height = data.naturalHeight
-
-      context.fillStyle = 'black'
-      context.fillRect(0, 0, canvas.width, canvas.height)
-
-      context.fillStyle = 'white'
-      context.fillRect(crop.x, crop.y, crop.width, crop.height)
-
-      const origToBlob = canvas.toBlob.bind(canvas)
-      canvas.toBlob = (callback, ...args) => {
-        origToBlob((blob) => {
-          canvas.width = 0
-          canvas.height = 0
-          callback(blob)
-        }, ...args)
-      }
-
-      return canvas
-    },
-
-    // returns the image and the mask of the selected area as upload files
-    masked() {
-      return this.image().then((blob) =>
-        new Promise((resolve) => this.mask().toBlob(resolve)).then((mask) => ({
-          file: new File([blob], 'image', { type: this.item.mime }),
-          mask: new File([mask], 'mask', { type: 'image/png' })
-        }))
-      )
     },
 
     monochrome() {
@@ -388,7 +261,6 @@ export default {
         data[i] = gray
         data[i + 1] = gray
         data[i + 2] = gray
-        data[i + 3] = Math.round(gray)
       }
 
       context.putImageData(imageData, 0, 0)
@@ -397,47 +269,6 @@ export default {
         if (blob) {
           this.replace(blob)
         }
-      })
-    },
-
-    // runs the AI image mutation and replaces the image by the result
-    mutate(action, mutation, variables, msg) {
-      if (this.readonly || !this.user.can(action)) {
-        this.messages.denied()
-        return this.clear()
-      }
-
-      this.loading[action] = true
-
-      return this.$apollo
-        .mutate({
-          mutation,
-          variables,
-          context: { hasUpload: true }
-        })
-        .then((response) => this.replace(toBlob(response.data?.[action.split(':')[1]])))
-        .catch((error) => this.messages.error(msg, error))
-        .finally(() => {
-          this.loading[action] = false
-          this.clear()
-        })
-    },
-
-    painted() {
-      this.selected ? this.inpaint() : this.repaint()
-      this.menu['paint'] = false
-    },
-
-    repaint() {
-      if (!this.edittext?.trim()) {
-        return
-      }
-
-      this.image().then((blob) => {
-        this.mutate('image:repaint', REPAINT_IMAGE, {
-          file: new File([blob], 'image', { type: this.item.mime }),
-          prompt: this.edittext
-        }, this.$gettext('Error editing image'))
       })
     },
 
@@ -452,7 +283,7 @@ export default {
         }
 
         this.cropper.replace(this.remember(blob))
-        file = new File([blob], this.item.path.split('/').pop(), { type: 'image/png' })
+        file = this.pngFile(blob)
       }
 
       this.$emit('update:file', file)
@@ -464,7 +295,7 @@ export default {
       const url = URL.createObjectURL(blob)
 
       this.images.unshift({ blob: blob, url: url })
-      this.images.splice(10).forEach((img) => URL.revokeObjectURL(img.url))
+      this.images.splice(HISTORY_SIZE).forEach((img) => URL.revokeObjectURL(img.url))
 
       return url
     },
@@ -484,7 +315,7 @@ export default {
       this.updateFile()
 
       this.$nextTick(() => {
-        if (this.destroyed) return
+        if (this.destroyed || !this.cropper) return
 
         const container = this.cropper.getContainerData()
         const image = this.cropper.getImageData()
@@ -502,56 +333,26 @@ export default {
       })
     },
 
-    uncrop() {
-      if (!this.cropper || (!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left)) {
-        return
-      }
-
-      this.clear()
-
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate('image:uncrop', UNCROP_IMAGE, {
-          file: new File([blob], 'image.png', { type: 'image/png' }),
-          top: this.extend.top ?? 0,
-          right: this.extend.right ?? 0,
-          bottom: this.extend.bottom ?? 0,
-          left: this.extend.left ?? 0
-        }, this.$gettext('Error uncropping image'))
-      })
-    },
-
-    uncropped() {
-      this.uncrop()
-      this.menu['uncrop'] = false
+    // edited images are always encoded as PNG, so the file name must have the matching extension
+    pngFile(blob) {
+      const name = this.item.path.split('/').pop().replace(/\.[^.]*$/, '')
+      return new File([blob], (name || 'image') + '.png', { type: 'image/png' })
     },
 
     updateFile() {
-      if (!this.readonly && !this.destroyed && this.cropper) {
-        this.cropper.getCroppedCanvas().toBlob((blob) => {
-          this.cropper.replace(this.remember(blob))
-          this.$emit(
-            'update:file',
-            new File([blob], this.item.path.split('/').pop(), { type: 'image/png' })
-          )
-        })
-      }
-    },
-
-    upscale(factor) {
-      if (!this.cropper) return
-
-      this.clear()
+      if (this.readonly || this.destroyed || !this.cropper) return
 
       this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate('image:upscale', UPSCALE_IMAGE, {
-          file: new File([blob], 'image.png', { type: 'image/png' }),
-          factor: factor
-        }, this.$gettext('Error upscaling image'))
+        // unmounted while encoding or the canvas was too large to encode
+        if (!blob || this.destroyed || !this.cropper) return
+
+        this.cropper.replace(this.remember(blob))
+        this.$emit('update:file', this.pngFile(blob))
       })
     },
 
     use(items) {
-      if (!items?.length) {
+      if (!items?.length || !this.cropper) {
         return
       }
 
@@ -728,7 +529,7 @@ export default {
           <v-btn
             v-bind="props"
             :loading="loading['image:upscale']"
-            :disabled="width >= 4096 && height >= 4096"
+            :disabled="width >= maxUpscaleSize && height >= maxUpscaleSize"
             :title="$gettext('Upscale image')"
             :icon="mdiMagnifyExpand"
             class="btn-upscale no-rtl"

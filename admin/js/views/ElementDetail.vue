@@ -10,7 +10,8 @@ import { detailBase, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { references } from '../history'
 import { markRaw } from 'vue'
-import { frozenParse, itemTitle, safeParse } from '../utils'
+import { frozenParse, safeParse } from '../json'
+import { itemTitle } from '../utils'
 
 const FETCH_ELEMENT = gql`
   ${FILE_FIELDS}
@@ -74,8 +75,7 @@ export default {
   },
 
   data: () => ({
-    assets: {},
-    latestId: null
+    assets: {}
   }),
 
   setup() {
@@ -84,10 +84,6 @@ export default {
 
   created() {
     this.schemas.load()
-  },
-
-  beforeUnmount() {
-    this.assets = markRaw({})
   },
 
   computed: {
@@ -127,7 +123,7 @@ export default {
         this.item.published = element.latest?.published
         this.item.editor = element.latest?.editor
         this.item.updated_at = element.latest?.created_at
-        this.latestId = element.latest?.id
+        this.item.latestId = element.latest?.id
 
         const files = element.latest?.files || element.files || []
         this.assets = markRaw(fileMap(files))
@@ -171,7 +167,7 @@ export default {
               lang: this.item.lang,
               data: JSON.stringify(this.item.data || {})
             },
-            latestId: this.latestId
+            latestId: this.item.latestId
           }
         })
         .then((result) => {
@@ -179,12 +175,11 @@ export default {
           const changed = el?.changed ? markRaw(safeParse(el.changed)) : null
 
           if (changed?.latest?.id || el?.latest?.id) {
-            this.latestId = changed?.latest?.id ?? el.latest.id
+            this.item.latestId = changed?.latest?.id ?? el.latest.id
           }
 
           applyResult(this, changed, this.$gettext('Element saved successfully'), quiet)
 
-          this.item.latestId = this.latestId
           this.saved(el?.latest)
 
           return true
@@ -222,7 +217,7 @@ export default {
 </script>
 
 <template>
-  <DetailAppBar v-bind="bar" :label="$gettext('Element')" :has-latest="!!latestId" />
+  <DetailAppBar v-bind="bar" :label="$gettext('Element')" :has-latest="!!item.latestId" />
 
   <v-main class="element-details" :aria-label="$gettext('Element')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />

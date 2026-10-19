@@ -91,18 +91,75 @@ describe('FileDetailItemVideo', () => {
     })
   })
 
-  it('emits empty previews when removing the cover', () => {
-    const mutate = cy.stub().resolves({ data: { saveFile: { latest: null } } })
+  it('emits the previews from the response when removing the cover', () => {
+    const mutate = cy.stub().resolves({
+      data: { saveFile: { latest: { data: JSON.stringify({ previews: {} }), created_at: '2026-01-03' } } }
+    })
 
     cy.mount(FileDetailItemVideo, {
       props: { item: { ...item, previews: { 500: 'files/clip.png' } } },
       global: { mocks: { $apollo: { mutate } }, provide: { url: (path) => path } }
     }).then(({ wrapper }) => {
       wrapper = wrapper.findComponent(FileDetailItemVideo)
-      wrapper.vm.removeCover()
+      const promise = wrapper.vm.removeCover()
 
-      expect(wrapper.emitted('sync')[0]).to.deep.equal([{ previews: {} }])
-      expect(wrapper.props('item').previews).to.deep.equal({ 500: 'files/clip.png' })
+      // not synced before the cover is removed on the server
+      expect(wrapper.emitted('sync')).to.equal(undefined)
+      expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', preview: false })
+
+      return promise.then(() => {
+        expect(wrapper.emitted('sync')).to.deep.equal([[{ previews: {}, updated_at: '2026-01-03' }]])
+        expect(wrapper.props('item').previews).to.deep.equal({ 500: 'files/clip.png' })
+      })
+    })
+  })
+
+  it('keeps the previews when removing the cover fails', () => {
+    const mutate = cy.stub().rejects(new Error('failed'))
+
+    cy.mount(FileDetailItemVideo, {
+      props: { item: { ...item, previews: { 500: 'files/clip.png' } } },
+      global: { mocks: { $apollo: { mutate } }, provide: { url: (path) => path } }
+    }).then(({ wrapper }) => {
+      wrapper = wrapper.findComponent(FileDetailItemVideo)
+
+      return wrapper.vm.cover(false, 'error').then(() => {
+        expect(wrapper.emitted('sync')).to.equal(undefined)
+      })
+    })
+  })
+
+  it('does not capture a cover before the video has a frame', () => {
+    const mutate = cy.stub()
+
+    cy.mount(FileDetailItemVideo, {
+      props: { item: { ...item } },
+      global: { mocks: { $apollo: { mutate } }, provide: { url: (path) => path } }
+    }).then(({ wrapper }) => {
+      wrapper = wrapper.findComponent(FileDetailItemVideo)
+      const drawImage = cy.spy(CanvasRenderingContext2D.prototype, 'drawImage')
+
+      wrapper.vm.addCover()
+
+      expect(drawImage).not.to.have.been.called
+      expect(mutate).not.to.have.been.called
+    })
+  })
+
+  it('resets the cover input so the same file can be selected again', () => {
+    const mutate = cy.stub().resolves({ data: { saveFile: { latest: null } } })
+
+    cy.mount(FileDetailItemVideo, {
+      props: { item: { ...item } },
+      global: { mocks: { $apollo: { mutate } }, provide: { url: (path) => path } }
+    }).then(({ wrapper }) => {
+      wrapper = wrapper.findComponent(FileDetailItemVideo)
+      const target = { files: [new File(['x'], 'cover.png', { type: 'image/png' })], value: 'C:\\fakepath\\cover.png' }
+
+      wrapper.vm.uploadCover({ target })
+
+      expect(target.value).to.equal('')
+      expect(mutate).to.have.been.calledOnce
     })
   })
 })

@@ -19,6 +19,8 @@ import { required } from '../rules'
 import { debounce } from '../utils'
 import { fieldBase } from '../field'
 
+const DEFAULT_SCHEMES = ['http', 'https']
+
 export default {
   extends: fieldBase,
 
@@ -33,30 +35,17 @@ export default {
 
   emits: ['update:rel'],
 
-  setup() {
-    return { debounce }
-  },
-
   data() {
-    // Only allow plain alphabetic schemes into the pattern so a misconfigured
-    // schema cannot inject regex metacharacters.
-    const raw = this.config.allowed || ['http', 'https']
-    const allowed = raw.every((s) => /^[a-z]+$/.test(s)) ? raw : ['http', 'https']
-
     return {
       relItems: [],
       loading: false,
-      pages: [],
-      // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
-      // to avoid catastrophic backtracking (ReDoS) on crafted input.
-      regex: new RegExp(
-        `^(?:(?:${allowed.join('|')})://)?(?:[^/@: ]+(?::[^/@: ]+)?@)?(?:(?:[0-9a-z]+(?:-[0-9a-z]+)*\\.)+[a-z]{2,}(?::[0-9]{1,5})?)?(?:/.*)?$`
-      )
+      pages: []
     }
   },
 
   created() {
-    this.searchd = this.debounce(this.search, 300)
+    this.debouncedSearch = debounce(this.search, 300)
+    this.searchSeq = 0
     this.relItems = [
       { key: '', val: this.$gettext('None') },
       { key: 'sponsored', val: this.$gettext('Sponsored') },
@@ -64,9 +53,34 @@ export default {
     ]
   },
 
+  beforeUnmount() {
+    this.debouncedSearch.cancel()
+    this.searchSeq++
+  },
+
   computed: {
+    allowed() {
+      return this.config.allowed || DEFAULT_SCHEMES
+    },
+
+    // Only plain alphabetic schemes are allowed into the pattern so a misconfigured
+    // schema cannot inject regex metacharacters.
+    allowedValid() {
+      return this.allowed.every((s) => /^[a-z]+$/.test(s))
+    },
+
     external() {
       return this.config.rel && /^(?:https?:)?\/\//i.test(this.modelValue ?? this.config.default ?? '')
+    },
+
+    // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
+    // to avoid catastrophic backtracking (ReDoS) on crafted input.
+    regex() {
+      const allowed = this.allowedValid ? this.allowed : DEFAULT_SCHEMES
+
+      return new RegExp(
+        `^(?:(?:${allowed.join('|')})://)?(?:[^/@: ]+(?::[^/@: ]+)?@)?(?:(?:[0-9a-z]+(?:-[0-9a-z]+)*\\.)+[a-z]{2,}(?::[0-9]{1,5})?)?(?:/.*)?$`
+      )
     },
 
     rules() {
@@ -79,9 +93,7 @@ export default {
 
   methods: {
     check(v) {
-      const allowed = this.config.allowed || ['http', 'https']
-
-      if (!allowed.every((s) => /^[a-z]+$/.test(s))) {
+      if (!this.allowedValid) {
         return this.$gettext('Invalid URL schema configuration')
       }
 
@@ -90,7 +102,7 @@ export default {
           const url = new URL(v)
           const scheme = url.protocol.slice(0, -1)
 
-          return allowed.includes(scheme) && v.toLowerCase().startsWith(`${scheme}://`) && !!url.hostname
+          return this.allowed.includes(scheme) && v.toLowerCase().startsWith(`${scheme}://`) && !!url.hostname
         } catch {
           return false
         }
@@ -100,8 +112,12 @@ export default {
     },
 
     search(value) {
+      // invalidates pending requests so older responses can't overwrite newer results
+      const seq = ++this.searchSeq
+
       if (!value || this.config.absolute) {
         this.pages = []
+        this.loading = false
         return
       }
 
@@ -123,13 +139,15 @@ export default {
           }
         })
         .then((result) => {
+          if (seq !== this.searchSeq) return
           this.pages = (result.data?.pages?.data || []).map((page) => '/' + (page.path || ''))
         })
         .catch((error) => {
+          // the suggestions are optional and the URL can be entered without them
           this.$log('Url::search(): Error fetching pages', error)
         })
         .finally(() => {
-          this.loading = false
+          if (seq === this.searchSeq) this.loading = false
         })
     }
   }
@@ -150,7 +168,7 @@ export default {
         :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
         :modelValue="modelValue ?? config.default ?? ''"
         @update:modelValue="$emit('update:modelValue', $event)"
-        @update:search="searchd($event)"
+        @update:search="debouncedSearch($event)"
         density="comfortable"
         hide-details="auto"
         variant="outlined"

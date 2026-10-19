@@ -46,6 +46,16 @@ describe('HistoryDialog', () => {
     })
   })
 
+  it('uses the first preview image of files and the file itself without previews', () => {
+    mountMedia().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(HistoryField).vm
+
+      expect(vm.previewUrl({ path: 'https://cdn.test/file.svg' })).to.equal('https://cdn.test/file.svg')
+      expect(vm.previewUrl({ path: 'https://cdn.test/file.svg', previews: { 500: 'https://cdn.test/small.svg' } }))
+        .to.equal('https://cdn.test/small.svg')
+    })
+  })
+
   it('preserves unchanged nested fields and blocks when restoring without a current snapshot', () => {
     const content = [textBlock('keep', 'Keep this block')]
     const latest = { id: 'latest', data: { content, meta: { seo: { title: 'Latest title', description: 'Keep description' } } } }

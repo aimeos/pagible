@@ -73,4 +73,30 @@ describe('PageBulkDialog', () => {
     press()
     cy.get('@apply').should('have.been.calledOnce')
   })
+
+  it('ignores invalid values of unticked fields and resets the state when reopened', () => {
+    cy.mount(PageBulkDialog, {
+      props: { modelValue: true, count: 2 },
+      global: {
+        plugins: [{
+          install() {
+            useSchemaStore().load = () => Promise.resolve()
+          }
+        }],
+      },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageBulkDialog).vm
+
+      vm.set('domain', 'invalid domain')
+      cy.get('.btn-apply').should('be.disabled').then(() => {
+        vm.enabled.domain = false
+        vm.set('status', 0)
+      })
+      cy.get('.btn-apply').should('not.be.disabled').then(() => {
+        vm.reset()
+        expect(vm.enabled.status).to.be.false
+        expect(vm.values.domain).to.equal('')
+      })
+    })
+  })
 })

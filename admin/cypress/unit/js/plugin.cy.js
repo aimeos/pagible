@@ -66,8 +66,22 @@ describe('pluginUi', () => {
     expect(wrapped.components.CmsDialog).to.equal(pluginComponents.CmsDialog)
     expect(wrapped.components.CmsFilePicker).to.equal(pluginComponents.CmsFilePicker)
     expect(wrapped.components.CmsLoadingSpinner).to.equal(pluginComponents.CmsLoadingSpinner)
-    expect(wrapped.components.LocalComponent).to.equal(LocalComponent)
+    expect(wrapped.components.LocalComponent.components).to.include.keys(...common)
     expect(panel.components).to.deep.equal({ LocalComponent })
+    expect(LocalComponent).to.deep.equal({})
+  })
+
+  it('provides the components to nested and recursive plugin components', () => {
+    const Leaf = { name: 'Leaf' }
+    const Tree = { name: 'Tree', components: { Leaf } }
+    Tree.components.Tree = Tree
+    const Async = { __asyncLoader: () => Promise.resolve({}) }
+    const wrapped = pluginUi({ components: { Tree, Leaf, Async } })
+
+    expect(wrapped.components.Tree.components.Leaf.components).to.include.keys('CmsDialog')
+    expect(wrapped.components.Tree.components.Tree).to.equal(wrapped.components.Tree)
+    expect(wrapped.components.Leaf).to.equal(wrapped.components.Tree.components.Leaf)
+    expect(wrapped.components.Async).to.equal(Async)
   })
 
   it('keeps shell, Labs and heavy specialized components private', () => {

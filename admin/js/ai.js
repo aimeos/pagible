@@ -8,7 +8,7 @@ import { apolloClient } from './graphql'
 import { toMp3, transcription } from './audio'
 import { useUserStore, useMessageStore } from './stores'
 import { url } from './urls'
-import { safeParse } from './utils'
+import { safeParse } from './json'
 
 const TRANSCRIBE = gql`
   mutation ($file: Upload!) {

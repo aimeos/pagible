@@ -13,9 +13,14 @@ const number = (value) => {
   return Number.isFinite(result) ? result : null
 }
 
-const limitedZoom = (value, fallback = 15) => {
+// zoom levels supported by OpenStreetMap and the level used if none is configured
+const MIN_ZOOM = 1
+const MAX_ZOOM = 19
+const DEFAULT_ZOOM = 15
+
+const limitedZoom = (value, fallback = DEFAULT_ZOOM) => {
   const zoom = number(value)
-  return zoom === null ? fallback : Math.min(19, Math.max(1, Math.round(zoom)))
+  return zoom === null ? fallback : Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.round(zoom)))
 }
 
 const markerIcon = () => L.divIcon({
@@ -77,11 +82,11 @@ export default {
 
     valid() {
       return this.pointValid
-        && this.zoom !== null && Number.isInteger(this.zoom) && this.zoom >= 1 && this.zoom <= 19
+        && this.zoom !== null && Number.isInteger(this.zoom) && this.zoom >= MIN_ZOOM && this.zoom <= MAX_ZOOM
     },
 
     zoom() {
-      return number(this.current.zoom ?? this.config.zoom ?? 15)
+      return number(this.current.zoom ?? this.config.zoom ?? DEFAULT_ZOOM)
     }
   },
 
@@ -92,14 +97,14 @@ export default {
     this.map = markRaw(L.map(this.$refs.map, {
       center,
       zoom,
-      maxZoom: 19,
+      maxZoom: MAX_ZOOM,
       scrollWheelZoom: false,
       worldCopyJump: true
     }))
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      maxZoom: 19
+      maxZoom: MAX_ZOOM
     }).addTo(this.map)
 
     this.map.on('click', this.select)

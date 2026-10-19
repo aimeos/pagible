@@ -1,7 +1,6 @@
 <!-- @license MIT, https://opensource.org/license/mit -->
 
 <script>
-import gql from "graphql-tag";
 import {
   mdiCheckCircleOutline,
   mdiCloseCircleOutline,
@@ -14,92 +13,14 @@ import {
   mdiPlus,
   mdiRefresh,
 } from "@mdi/js";
-
-const FIELDS = gql`
-  fragment CmsWebhookFields on CmsWebhook {
-    id
-    status
-    name
-    endpoint
-    events
-    last_error {
-      reason
-      status
-      at
-    }
-    last_success_at
-    paused_until
-  }
-`;
-
-const LIST = gql`
-  query CmsWebhooks {
-    cmsWebhooks {
-      ...CmsWebhookFields
-    }
-    cmsWebhookEvents
-    cmsWebhookServer {
-      enabled
-      blocked
-    }
-  }
-  ${FIELDS}
-`;
-
-const ADD = gql`
-  mutation AddWebhook($input: CmsWebhookAddInput!) {
-    addWebhook(input: $input) {
-      secret
-      webhook {
-        ...CmsWebhookFields
-      }
-    }
-  }
-  ${FIELDS}
-`;
-
-const SAVE = gql`
-  mutation SaveWebhook($id: ID!, $input: CmsWebhookSaveInput!) {
-    saveWebhook(id: $id, input: $input) {
-      ...CmsWebhookFields
-    }
-  }
-  ${FIELDS}
-`;
-
-const ROTATE = gql`
-  mutation RotateWebhook($id: ID!) {
-    rotateWebhook(id: $id) {
-      secret
-      webhook {
-        ...CmsWebhookFields
-      }
-    }
-  }
-  ${FIELDS}
-`;
-
-const PING = gql`
-  mutation PingWebhook($id: ID!) {
-    pingWebhook(id: $id) {
-      success
-      status
-      reason
-    }
-  }
-`;
-
-const PURGE = gql`
-  mutation PurgeWebhook($id: [ID!]!) {
-    purgeWebhook(id: $id)
-  }
-`;
-
-// default values of the webhook form
-const blank = () => ({ url: "", name: "", events: [], status: false });
+import WebhookDialog from "../components/WebhookDialog.vue";
+import { ADD, LIST, PING, PURGE, ROTATE, SAVE } from "../graphql";
+import { PURGE_BATCH, reasonText } from "../webhooks";
 
 export default {
   name: "WebhookList",
+
+  components: { WebhookDialog },
 
   inject: {
     apollo: {},
@@ -119,29 +40,43 @@ export default {
       testing: false,
       items: [],
       checked: new Set(),
-      names: [],
+      events: [],
       selected: null,
       term: "",
       filter: this.pluginAside?.(() => this.asideContent, defaults) ?? defaults,
-      form: blank(),
       secret: "",
       server: { enabled: true, blocked: null },
+      // counts local changes and list requests to ignore outdated responses
+      changes: 0,
+      loadSeq: 0,
     };
   },
 
   setup() {
     return {
       mdiDeleteForever,
-      mdiDotsVertical,
       mdiKeyVariant,
       mdiMagnify,
       mdiPencil,
-      mdiPlus,
       mdiRefresh,
+      // shared props of the activator buttons of the action menus
+      menuButton: { icon: mdiDotsVertical, variant: "text" },
     };
   },
 
   computed: {
+    // props of the "Add webhook" buttons above and below the list
+    addButton() {
+      return {
+        title: this.$pgettext("webhooks", "Add webhook"),
+        disabled: this.loading,
+        icon: mdiPlus,
+        class: "btn-add",
+        color: "primary",
+        variant: "tonal",
+      };
+    },
+
     serverText() {
       if (!this.server.enabled) {
         return this.$pgettext(
@@ -230,21 +165,6 @@ export default {
       }
     },
 
-    async copySecret() {
-      try {
-        await navigator.clipboard.writeText(this.secret);
-        this.messages.add(
-          this.$pgettext("webhooks", "Secret copied"),
-          "success",
-        );
-      } catch (_error) {
-        this.messages.add(
-          this.$pgettext("webhooks", "Unable to copy secret"),
-          "error",
-        );
-      }
-    },
-
     dateText(value) {
       return new Date(value).toLocaleString(this.$vuetify.locale.current);
     },
@@ -259,33 +179,44 @@ export default {
     },
 
     async load() {
+      const seq = ++this.loadSeq;
+      const changes = this.changes;
       this.loading = true;
+
       try {
         const { data } = await this.apollo.query({
           query: LIST,
           fetchPolicy: "network-only",
         });
-        this.items = data.cmsWebhooks;
-        this.checked = new Set();
-        this.names = data.cmsWebhookEvents;
+
+        if (seq !== this.loadSeq) return;
+
+        // the list is outdated if webhooks were changed while it was loading
+        if (changes === this.changes) {
+          this.items = data.cmsWebhooks;
+          this.checked = new Set();
+        }
+        this.events = data.cmsWebhookEvents;
         this.server = data.cmsWebhookServer;
       } catch (error) {
-        this.messages.error(this.$pgettext("webhooks", "Error fetching webhooks"), error);
+        if (seq === this.loadSeq) {
+          this.messages.error(this.$pgettext("webhooks", "Error fetching webhooks"), error);
+        }
       } finally {
-        this.loading = false;
+        if (seq === this.loadSeq) {
+          this.loading = false;
+        }
       }
     },
 
     openAdd() {
       this.selected = null;
-      this.form = blank();
       this.secret = "";
       this.dialog = true;
     },
 
     openEdit(item) {
       this.selected = item;
-      this.form = { url: "", name: item.name, events: [...item.events], status: item.status };
       this.secret = "";
       this.dialog = true;
     },
@@ -347,15 +278,15 @@ export default {
 
       await this.change(
         async () => {
-          // the server purges up to 100 webhooks at once, see purgeWebhook in the GraphQL schema
-          for (let i = 0; i < ids.length; i += 100) {
-            const removed = new Set(ids.slice(i, i + 100));
+          for (let i = 0; i < ids.length; i += PURGE_BATCH) {
+            const removed = new Set(ids.slice(i, i + PURGE_BATCH));
 
             await this.apollo.mutate({
               mutation: PURGE,
               variables: { id: [...removed] },
             });
             this.items = this.items.filter((entry) => !removed.has(entry.id));
+            this.changes++;
             this.checked = new Set(
               [...this.checked].filter((id) => !removed.has(id)),
             );
@@ -374,27 +305,11 @@ export default {
         ? this.items.map((entry) => (entry.id === item.id ? item : entry))
         : [item, ...this.items];
       this.checked = checked;
+      this.changes++;
     },
 
     reasonText(reason, status) {
-      const reasons = {
-        connection_failed: this.$pgettext("webhooks", "Connection failed"),
-        destination_not_allowed: this.$pgettext("webhooks", "Access denied"),
-        invalid_encryption: this.$pgettext("webhooks", "Secret can't be decrypted, rotate it"),
-        invalid_policy: this.$pgettext("webhooks", "Blocked by server configuration"),
-        invalid_url: this.$pgettext("webhooks", "Not a valid URL"),
-        queue_failed: this.$pgettext("webhooks", "Queue unavailable"),
-        resolution_failed: this.$pgettext("webhooks", "Host not found"),
-        response_headers_too_large: this.$pgettext("webhooks", "Response too large"),
-        timeout: this.$pgettext("webhooks", "Request timed out"),
-      };
-      // redirects are rejected to prevent forwarding deliveries to other hosts
-      const redirect = reason === "http_error" && status >= 300 && status < 400;
-      const text = redirect
-        ? this.$pgettext("webhooks", "Redirects aren't followed")
-        : reasons[reason] || this.$pgettext("webhooks", "Delivery failed");
-
-      return status ? `${text} (${status})` : text;
+      return reasonText(this.$pgettext, reason, status);
     },
 
     async rotate(item) {
@@ -427,12 +342,7 @@ export default {
       );
     },
 
-    async save() {
-      const form = this.form;
-
-      if (!form.events.length || (!this.selected && !this.validUrl(form.url)))
-        return;
-
+    async save(form) {
       const input = {
         name: form.name.trim(),
         events: form.events,
@@ -453,9 +363,10 @@ export default {
               mutation: ADD,
               variables: { input: { ...input, url: form.url.trim() } },
             });
-            // keep the dialog open to show the one-time secret
+            // keep (or reopen) the dialog to show the one-time secret
             this.put(data.addWebhook.webhook);
             this.secret = data.addWebhook.secret;
+            this.dialog = true;
           }
         },
         this.$pgettext("webhooks", "Error saving webhook"),
@@ -483,23 +394,6 @@ export default {
       const checked = new Set(this.checked);
       if (!checked.delete(item.id)) checked.add(item.id);
       this.checked = checked;
-    },
-
-    // deliveries fail until the secret is rotated
-    undecryptable(item) {
-      return item?.last_error?.reason === "invalid_encryption";
-    },
-
-    validUrl(value) {
-      const url = (value ?? "").trim();
-
-      if (!/^https:\/\/\S+$/i.test(url)) return false;
-
-      try {
-        return !!new URL(url).hostname;
-      } catch (_error) {
-        return false;
-      }
     },
   },
 };
@@ -537,11 +431,9 @@ export default {
           <CmsActionMenu>
             <template #activator="{ props, label }">
               <v-btn
-                v-bind="props"
+                v-bind="{ ...props, ...menuButton }"
                 :disabled="!checked.size"
                 :title="label"
-                :icon="mdiDotsVertical"
-                variant="text"
               />
             </template>
             <v-list-item>
@@ -557,15 +449,7 @@ export default {
             </v-list-item>
           </CmsActionMenu>
 
-          <v-btn
-            :title="$pgettext('webhooks', 'Add webhook')"
-            :disabled="loading"
-            :icon="mdiPlus"
-            class="btn-add"
-            color="primary"
-            variant="tonal"
-            @click="openAdd"
-          />
+          <v-btn v-bind="addButton" @click="openAdd" />
         </div>
 
         <div class="search">
@@ -611,10 +495,8 @@ export default {
               <CmsActionMenu>
                 <template #activator="{ props, label }">
                   <v-btn
-                    v-bind="props"
+                    v-bind="{ ...props, ...menuButton }"
                     :title="label"
-                    :icon="mdiDotsVertical"
-                    variant="text"
                   />
                 </template>
                 <v-list-item>
@@ -708,143 +590,23 @@ export default {
       </p>
 
       <div class="btn-group">
-        <v-btn
-          :title="$pgettext('webhooks', 'Add webhook')"
-          :disabled="loading"
-          :icon="mdiPlus"
-          class="btn-add"
-          color="primary"
-          variant="tonal"
-          @click="openAdd"
-        />
+        <v-btn v-bind="addButton" @click="openAdd" />
       </div>
     </v-sheet>
   </v-container>
 
-  <CmsDialog
+  <WebhookDialog
     v-model="dialog"
-    :title="
-      secret
-        ? $pgettext('webhooks', 'Webhook secret')
-        : selected
-          ? $pgettext('webhooks', 'Edit webhook')
-          : $pgettext('webhooks', 'Add webhook')
-    "
-    :persistent="!!secret"
-    max-width="640"
-    @after-leave="secret = ''"
-  >
-    <template v-if="secret">
-      <v-alert type="warning" variant="tonal" class="mb-4">
-        {{
-          $pgettext(
-            "webhooks",
-            "Copy this secret now. It will not be shown again.",
-          )
-        }}
-      </v-alert>
-      <v-text-field
-        :model-value="secret"
-        class="webhook-secret"
-        variant="underlined"
-        readonly
-      />
-    </template>
-    <template v-else>
-      <div class="webhook-status">
-        <div class="webhook-status-label label d-flex align-center font-weight-bold mb-1">
-          {{ $pgettext("webhooks", "Active") }}
-        </div>
-        <v-switch
-          v-model="form.status"
-          :aria-label="$pgettext('webhooks', 'Active')"
-          :hint="$pgettext('webhooks', 'Inactive webhooks receive no events and their queued deliveries are dropped')"
-          color="primary"
-          hide-details="auto"
-          inset
-        />
-      </div>
-      <v-text-field
-        v-if="!selected"
-        v-model="form.url"
-        :label="$pgettext('webhooks', 'HTTPS endpoint URL')"
-        :hint="$pgettext('webhooks', 'Address receiving the signed events, it cannot be changed later')"
-        :rules="[
-          (value) =>
-            validUrl(value) || $pgettext('webhooks', 'Not a valid URL'),
-        ]"
-        validate-on="invalid-input"
-        variant="underlined"
-        maxlength="500"
-        autofocus
-      />
-      <template v-else>
-        <p class="webhook-current on-surface text-break mt-4 mb-4">{{ selected.endpoint }}</p>
-        <v-alert
-          v-if="undecryptable(selected)"
-          type="warning"
-          variant="tonal"
-          class="webhook-undecryptable mb-4"
-        >
-          {{ reasonText("invalid_encryption") }}
-        </v-alert>
-      </template>
-      <v-select
-        v-model="form.events"
-        :items="names"
-        :label="$pgettext('webhooks', 'Events')"
-        :hint="$pgettext('webhooks', 'Events sent to the webhook, queued deliveries of removed events are cancelled')"
-        variant="underlined"
-        multiple
-        chips
-      />
-      <v-text-field
-        v-model="form.name"
-        :label="$pgettext('webhooks', 'Name')"
-        :hint="$pgettext('webhooks', 'Optional name to tell webhooks with the same endpoint apart, visible to all webhook editors')"
-        class="webhook-name"
-        variant="underlined"
-        maxlength="100"
-      />
-    </template>
-
-    <template #actions="{ close }">
-      <template v-if="secret">
-        <v-btn variant="text" @click="close">{{
-          $pgettext("webhooks", "Done")
-        }}</v-btn>
-        <v-btn color="primary" variant="tonal" @click="copySecret">{{
-          $pgettext("webhooks", "Copy secret")
-        }}</v-btn>
-      </template>
-      <template v-else>
-        <!-- sends a test event to the saved destination, placed before the spacer of the dialog -->
-        <v-btn
-          v-if="selected"
-          class="btn-test order-first"
-          variant="outlined"
-          :disabled="saving || !server.enabled"
-          :loading="testing"
-          @click="ping(selected)"
-          active
-          >{{ $pgettext("webhooks", "Test") }}</v-btn
-        >
-        <v-btn variant="text" @click="close">{{
-          $pgettext("webhooks", "Cancel")
-        }}</v-btn>
-        <v-btn
-          color="primary"
-          variant="tonal"
-          :disabled="
-            testing || !form.events.length || (!selected && !validUrl(form.url))
-          "
-          :loading="saving && !testing"
-          @click="save"
-          >{{ $pgettext("webhooks", "Save") }}</v-btn
-        >
-      </template>
-    </template>
-  </CmsDialog>
+    :webhook="selected"
+    :events="events"
+    :secret="secret"
+    :saving="saving"
+    :testing="testing"
+    :enabled="server.enabled"
+    @closed="secret = ''"
+    @save="save($event)"
+    @test="ping($event)"
+  />
 </template>
 
 <style scoped>

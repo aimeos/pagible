@@ -4,9 +4,22 @@
 import CmsDialog from './Dialog.vue'
 import { useAppStore, useSchemaStore } from '../stores'
 import { domain } from '../rules'
-import { cacheItems, locales, statusItems } from '../options'
-import { PAGE_BULK_LIMIT } from '../utils'
+import { cacheItems, localeItems, statusItems } from '../options'
+import { PAGE_BULK_LIMIT } from '../pages'
 
+// initial state of the dialog, nothing is changed by default
+const defaults = () => ({
+  enabled: {
+    status: false,
+    cache: false,
+    theme: false,
+    type: false,
+    tag: false,
+    lang: false,
+    domain: false
+  },
+  values: { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
+})
 
 export default {
   components: {
@@ -22,26 +35,21 @@ export default {
   emits: ['apply', 'update:modelValue'],
 
   data() {
-    return {
-      valid: true,
-      enabled: {
-        status: false,
-        cache: false,
-        theme: false,
-        type: false,
-        tag: false,
-        lang: false,
-        domain: false
-      },
-      values: { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
-    }
+    return defaults()
   },
 
   setup() {
     const schemas = useSchemaStore()
     const app = useAppStore()
 
-    return { app, schemas, locales, cacheItems: cacheItems(), statusItems: statusItems() }
+    return {
+      app,
+      schemas,
+      localeItems,
+      bulkLimit: PAGE_BULK_LIMIT,
+      cacheItems: cacheItems(),
+      statusItems: statusItems()
+    }
   },
 
   created() {
@@ -71,6 +79,11 @@ export default {
       return input
     },
 
+    // only the enabled fields are applied, so invalid values in unticked fields don't matter
+    valid() {
+      return !this.enabled.domain || this.domainRules.every((rule) => rule(this.values.domain) === true)
+    },
+
     limited() {
       return this.count > PAGE_BULK_LIMIT
     },
@@ -95,16 +108,7 @@ export default {
     },
 
     reset() {
-      this.enabled = {
-        status: false,
-        cache: false,
-        theme: false,
-        type: false,
-        tag: false,
-        lang: false,
-        domain: false
-      }
-      this.values = { status: 1, cache: 5, theme: '', type: '', tag: '', lang: '', domain: '' }
+      Object.assign(this, defaults())
     },
 
     set(key, value) {
@@ -148,7 +152,7 @@ export default {
       }}
     </p>
 
-    <v-form v-model="valid">
+    <v-form>
       <div class="prop" :class="{ on: enabled.status }">
         <v-checkbox-btn v-model="enabled.status" :aria-label="$gettext('Change status')" />
         <v-select
@@ -180,7 +184,7 @@ export default {
       <div class="prop" :class="{ on: enabled.lang }">
         <v-checkbox-btn v-model="enabled.lang" :aria-label="$gettext('Change source language')" />
         <v-select
-          :items="locales()"
+          :items="localeItems()"
           :modelValue="values.lang"
           @update:modelValue="set('lang', $event)"
           :label="$gettext('Source language') + ' ‒ ' + $gettext('Language of the source page content')"
@@ -262,7 +266,7 @@ export default {
 
     <template #footer>
       <p v-if="limited || recurseLimited" class="hint limit">
-        {{ $gettext('Page bulk changes are limited to 1,000 pages') }}
+        {{ $gettext('Page bulk changes are limited to %{count} pages', { count: bulkLimit.toLocaleString($vuetify.locale.current) }) }}
       </p>
     </template>
   </CmsDialog>

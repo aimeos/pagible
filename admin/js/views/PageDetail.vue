@@ -12,13 +12,13 @@ const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 import { applyResult, hasUnresolved } from '../merge'
-import { translatePages } from '../translate'
-import { ignoreChanges, translateNew } from '../variants'
-import { detailBase, useDetail } from '../detail'
+import { detailVariants } from '../variants'
+import { detailBase, focusInvalid, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { focusInvalid, frozenParse, hasTrue, safeParse } from '../utils'
-import { useAppStore, useDrawerStore, useLanguageStore, useSchemaStore, useTranslationStore } from '../stores'
+import { frozenParse, safeParse } from '../json'
+import { hasTrue } from '../utils'
+import { useAppStore, useDrawerStore, useSchemaStore } from '../stores'
 import {
   mdiCreation,
   mdiCheck,
@@ -28,7 +28,6 @@ import {
   mdiSync,
   mdiTranslate
 } from '@mdi/js'
-
 
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
 
@@ -103,14 +102,6 @@ const FETCH_PAGE_VERSIONS = gql`
   }
 `
 
-const ADD_PAGE_VARIANT = gql`
-  mutation ($id: ID!, $lang: String!) {
-    addPageVariant(id: $id, lang: $lang) {
-      id
-    }
-  }
-`
-
 const SAVE_PAGE = gql`
   mutation ($id: ID!, $input: PageInput!, $latestId: ID, $lang: String, $restore: Boolean) {
     savePage(id: $id, input: $input, latestId: $latestId, lang: $lang, restore: $restore) {
@@ -124,6 +115,8 @@ const SAVE_PAGE = gql`
 
 export default {
   extends: detailBase,
+
+  mixins: [detailVariants],
 
   components: {
     ...detailBase.components,
@@ -150,9 +143,7 @@ export default {
       ...useDetail('page'),
       app: useAppStore(),
       drawer: useDrawerStore(),
-      languages: useLanguageStore(),
       schemas: useSchemaStore(),
-      translations: useTranslationStore(),
       mdiCreation,
       mdiCheck,
       mdiCheckAll,
@@ -179,12 +170,8 @@ export default {
       latest: null,
       // changes restored from an old version, which marks translations as outdated
       restored: false,
-      translating: false,
       savecnt: 0,
-      historyData: null,
-      // language of the edited page variant, the source variant if NULL
-      variantLang: (!this.stacked && this.$route?.query?.lang) || null,
-      switching: false
+      historyData: null
     }
   },
 
@@ -194,16 +181,6 @@ export default {
         'The user is viewing the page with ID "%{id}". When they refer to "this page", use get-page with that ID.',
         { id: this.item.id }
       )
-    },
-
-    // the variant isn't the source variant and can be updated from it
-    isTranslation() {
-      return !!this.item.source && !!this.item.lang && this.item.lang !== this.item.source
-    },
-
-    // the variant is queued for translation or the translation is requested right now
-    isTranslating() {
-      return this.translating || this.translations.has(this.item.id, this.item.lang)
     },
 
     hasChanged() {
@@ -226,19 +203,6 @@ export default {
       return hasTrue(this.errors)
     },
 
-    // all site languages and those of the existing variants with their state
-    langs() {
-      const map = new Map((this.item.variants || []).map((v) => [v.lang, v]))
-      const codes = [...new Set([...this.languages.available, ...map.keys()])]
-
-      return codes.map((code) => ({
-        code,
-        name: this.languages.translate(code),
-        source: !!map.get(code)?.source,
-        state: map.get(code)?.state || 'missing'
-      }))
-    },
-
     changeTargets() {
       const item = this.item
       return markRaw({ data: item, meta: item.meta, config: item.config, content: item.content })
@@ -251,21 +215,6 @@ export default {
 
   created() {
     this.schemas.load()
-  },
-
-  mounted() {
-    this.unlisten = this.translations.listen((batch, progress) => this.translated(batch, progress))
-  },
-
-  beforeUnmount() {
-    this.unlisten?.()
-    this.assets = markRaw({})
-    this.elements = markRaw({})
-    this.editorActions = false
-    this.editorElement = null
-    this.latest = null
-    this.dirty = null
-    this.errors = null
   },
 
   methods: {
@@ -614,128 +563,6 @@ export default {
         .finally(() => {
           this.saving = false
         })
-    },
-
-    // updates the stale state of the edited variant
-    setVariantState(stale) {
-      const state = stale ? 'stale' : 'current'
-
-      this.item.stale = stale
-      this.item.variants = (this.item.variants || []).map((v) => (v.lang === this.item.lang ? { ...v, state } : v))
-    },
-
-    // switches the editor to the variant in the language, missing variants are created as untranslated
-    // copy and translated in the background if the user is allowed to translate pages
-    async switchLang(entry) {
-      if (entry.code === this.variantLang || entry.state === 'trashed' || this.switching) {
-        return
-      }
-
-      if (entry.state === 'missing' && !this.user.can('page:add')) {
-        return this.messages.denied()
-      }
-
-      if (this.hasChanged && !(await this.save(true))) {
-        return
-      }
-
-      this.switching = true
-
-      try {
-        if (entry.state === 'missing') {
-          await this.$apollo.mutate({ mutation: ADD_PAGE_VARIANT, variables: { id: this.item.id, lang: entry.code } })
-          this.invalidate()
-        }
-      } catch (error) {
-        this.switching = false
-        return this.messages.error(this.$gettext('Error adding language'), error, entry.code)
-      }
-
-      // the untranslated copy stays if queueing its translation fails
-      if (entry.state === 'missing') {
-        await translateNew(
-          this.$apollo,
-          this.user,
-          [this.item.id],
-          entry.code,
-          this.$gettext('Translation saved as draft, review the changes')
-        ).catch((error) => this.messages.error(this.$gettext('Error translating page'), error))
-      }
-
-      this.variantLang = entry.code
-      this.vhistory = false
-
-      if (!this.stacked) {
-        this.$router?.replace({ query: { ...this.$route?.query, lang: entry.code } })
-      }
-
-      return this.refresh().finally(() => {
-        this.switching = false
-      })
-    },
-
-    // marks the variant as up to date with the source variant without changing its content
-    ignoreChanges() {
-      if (!this.user.can('page:save')) return this.messages.denied()
-
-      return ignoreChanges(this.$apollo, [this.item.id], this.item.lang)
-        .then(() => {
-          this.setVariantState(false)
-          this.invalidate()
-          this.messages.add(this.$gettext('Marked as up to date'), 'success')
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error marking as up to date'), error)
-        })
-    },
-
-    // translates the changes of the source variant into a new draft of the variant
-    async translate() {
-      if (!this.user.can('page:save') || !this.user.can('text:translate')) return this.messages.denied()
-
-      if (this.hasChanged && !(await this.save(true))) {
-        return
-      }
-
-      const { id, lang } = this.item
-      let polling
-      this.translating = true
-
-      try {
-        const batch = await translatePages(this.$apollo, [id], [lang])
-
-        // up to date translations and those which are already queued are skipped
-        if (!batch.total) {
-          this.messages.add(this.$gettext('Nothing to translate, the page is up to date or already being translated'), 'info')
-          return
-        }
-
-        // the store keeps polling if the editor is closed and reports the result
-        polling = this.translations.add(
-          batch,
-          { ids: [id], langs: [lang], success: this.$gettext('Translation saved as draft, review the changes') },
-          this.$apollo
-        )
-      } catch (error) {
-        this.messages.error(this.$gettext('Error translating page'), error)
-      } finally {
-        this.translating = false
-      }
-
-      return polling
-    },
-
-    // loads the translated draft if the variant is still shown without unsaved changes
-    translated(batch, progress) {
-      if (!this.item?.id || !batch.ids.includes(this.item.id) || !batch.langs.includes(this.item.lang)) {
-        return
-      }
-
-      this.invalidate()
-
-      if (!progress.running && !progress.failed && !this.hasChanged) {
-        return this.refresh()
-      }
     },
 
     use(version, clean = false) {

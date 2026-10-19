@@ -373,4 +373,53 @@ describe('Items', () => {
     cy.get('.field-images').click()
     cy.wrap(onAddFile).should('have.been.calledOnceWith', [{ id: '1' }, { id: '2' }])
   })
+
+  it('includes errors of nested fields and drops them for removed items', () => {
+    const onError = cy.spy().as('error')
+    const invalid = {
+      emits: ['error'],
+      mounted() { this.$emit('error', true) },
+      render: () => h('div', { class: 'nested-string' })
+    }
+
+    let vm
+
+    mountItems({ modelValue: [{ id: 'a', title: 'One' }], config: { identity: 'id', item: { title: { type: 'string' } } }, onError }, {}, { String: invalid })
+      .then(({ wrapper }) => {
+        vm = wrapper.findComponent(ItemsField).vm
+        vm.panel = [vm.itemKey(vm.items[0])]
+      })
+
+    cy.get('.nested-string').should('exist')
+    cy.get('@error').should('have.been.calledWith', true)
+      .then(() => {
+        onError.resetHistory()
+      })
+
+    cy.get('.items').then(() => {
+      vm.remove(0)
+      expect(Object.keys(vm.errors)).to.have.length(0)
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('applies AI results of nested text fields', () => {
+    const write = cy.stub().resolves('Generated')
+
+    cy.mount(ItemsField, {
+      props: { modelValue: [{ id: 'a', title: 'One' }], config: { identity: 'id', item: { title: { type: 'string' } } } },
+      global: {
+        stubs: { String: { render: () => h('div') } },
+        provide: { write, translate: () => Promise.resolve(['']) }
+      }
+    }).then(({ wrapper }) => {
+      useUserStore().me = { permission: { 'text:write': true } }
+      const vm = wrapper.findComponent(ItemsField).vm
+      vm.panel = [vm.itemKey(vm.items[0])]
+    })
+
+    cy.get('button.btn-generate').click()
+    cy.wrap(write).should('have.been.calledWith', 'One')
+    cy.get('.element-title').should('contain', 'Generated')
+  })
 })

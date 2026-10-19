@@ -4,7 +4,8 @@
 import { useDisplay } from 'vuetify'
 import { pluginLabel } from '../i18n'
 import { useUserStore, useDrawerStore, usePluginStore } from '../stores'
-import { commands, hint, shortcuts } from '../shortcuts'
+import { commands, hint } from '../commands'
+import { shortcuts } from '../shortcuts'
 import {
   mdiConsoleLine,
   mdiFileTree,

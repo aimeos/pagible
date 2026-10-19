@@ -1,7 +1,8 @@
 import { computed } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { useUserStore } from '../../../js/stores'
-import { available, command, commands, execute, has, hint, keydown, register, routes, run, setNavigate, shortcuts, trigger } from '../../../js/shortcuts'
+import { commands, hint, routes } from '../../../js/commands'
+import { available, command, execute, has, keydown, register, run, setNavigate, shortcuts, trigger } from '../../../js/shortcuts'
 
 describe('shortcuts', () => {
   const key = (key, opts = {}) => {

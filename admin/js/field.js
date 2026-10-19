@@ -37,3 +37,25 @@ export const fieldBase = {
     }
   }
 }
+
+/** Field types containing text which can be translated, generated and dictated */
+export const TEXT_TYPES = Object.freeze(['markdown', 'plaintext', 'string', 'text'])
+
+/** Translated label of the schema field with the given code */
+export const fieldLabel = (vm, field, code) => vm.$pgettext('fn', field?.label || code).replace(/-|_/g, ' ')
+
+/** Field definitions of the schema type in the group (e.g. "content"), an empty list if there are none */
+export function schemaFields(vm, schemas, group, type) {
+  if (!type) {
+    return []
+  }
+
+  const fields = schemas?.[group]?.[type]?.fields
+
+  if (!fields) {
+    vm.$log(`No definition of fields for "${type}" (${group}) schemas`)
+    return []
+  }
+
+  return fields
+}

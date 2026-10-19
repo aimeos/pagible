@@ -9,7 +9,7 @@ import { useUserStore, useLanguageStore, useMessageStore } from '../stores'
 import { mdiContentCopy, mdiTranslate, mdiCreation, mdiMicrophoneOutline, mdiMicrophone } from '@mdi/js'
 import { relocateFiles } from '../files'
 import { useDictation } from '../dictation'
-import { locales, txlocales } from '../options'
+import { localeItems, txLocaleItems } from '../options'
 import { fileurl } from '../urls'
 
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
@@ -35,7 +35,7 @@ export default {
     item: { type: Object, required: true }
   },
 
-  emits: ['patch', 'sync', 'update:file', 'error'],
+  emits: ['patch', 'sync', 'update:file'],
 
   data() {
     return {
@@ -59,8 +59,8 @@ export default {
       mdiCreation,
       mdiMicrophoneOutline,
       fileurl,
-      locales,
-      txlocales,
+      localeItems,
+      txLocaleItems,
       mdiContentCopy,
       mdiMicrophone
     }
@@ -79,6 +79,16 @@ export default {
       return this.desclangs[0] || this.item.lang || 'en'
     },
 
+    // language of the shown description tab
+    descLang() {
+      return this.tabdesc || this.lang
+    },
+
+    // language of the shown transcription tab
+    transLang() {
+      return this.tabtrans || this.lang
+    },
+
     protect() {
       return this.item.disk === 'private'
     },
@@ -94,13 +104,22 @@ export default {
 
   methods: {
     copyUrl() {
-      navigator.clipboard.writeText(this.fileurl(this.item)).then(() => {
-        this.messages.add(this.$gettext('Copied to clipboard'), 'success')
-      })
+      if (!navigator.clipboard) {
+        return this.messages.add(this.$gettext('Error copying to clipboard'), 'error')
+      }
+
+      navigator.clipboard
+        .writeText(this.fileurl(this.item))
+        .then(() => {
+          this.messages.add(this.$gettext('Copied to clipboard'), 'success')
+        })
+        .catch((error) => {
+          this.messages.error(this.$gettext('Error copying to clipboard'), error)
+        })
     },
 
     describe() {
-      const lang = this.lang
+      const lang = this.descLang
 
       this.loading.describe = true
 
@@ -134,7 +153,7 @@ export default {
       if (this.readonly) return this.messages.denied()
 
       this.dictation.toggle((text) => {
-        this.update('description', { ...this.item.description, [this.lang]: text })
+        this.update('description', { ...this.item.description, [this.descLang]: text })
       })
     },
 
@@ -186,12 +205,18 @@ export default {
         )
       }
 
+      const lang = this.transLang
       this.loading.transcribe = true
 
       import('../ai')
         .then((mod) => mod.transcribe(this.item.path))
         .then((transcription) => {
-          this.update('transcription', { ...this.item.transcription, [this.lang]: transcription.asText() })
+          const text = transcription.asText()
+
+          // failed transcriptions are empty and must not replace the existing text
+          if (text) {
+            this.update('transcription', { ...this.item.transcription, [lang]: text })
+          }
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Error transcribing file'), error)
@@ -206,51 +231,58 @@ export default {
     },
 
     translateDescription() {
-      this.translateText(this.item.description)?.then?.((texts) => {
-        this.update('description', { ...this.item.description, ...texts })
+      this.translateMap(this.item.description).then((texts) => {
+        if (Object.keys(texts).length) {
+          this.update('description', { ...this.item.description, ...texts })
+        }
       })
     },
 
-    // resolves to the translations of the first non-empty text, keyed by language
-    translateText(map) {
-      if (this.readonly || !this.user.can('text:translate')) return this.messages.denied()
+    // resolves to the translations of the first non-empty text keyed by language, or an empty object
+    async translateMap(map) {
+      if (this.readonly || !this.user.can('text:translate')) {
+        this.messages.denied()
+        return {}
+      }
 
       if (!map || typeof map !== 'object') {
-        this.$log(`FileDetailItem::translateText(): Invalid map object`, map)
-        return
+        this.$log(`FileDetailItem::translateMap(): Invalid map object`, map)
+        return {}
       }
 
       const [lang, text] = Object.entries(map).find(([lang, text]) => text) || []
 
-      if (!text) return
+      if (!text) return {}
 
       this.loading.translate = true
 
-      return import('../ai').then((ai) => {
-        const promises = []
+      try {
+        const ai = await import('../ai')
         const texts = {}
 
-        this.txlocales(lang)
-          .map((lang) => lang.code)
-          .forEach((lang) => {
-            promises.push(
-              ai.translate(text, lang).then((result) => {
-                if (result[0]) {
-                  texts[lang] = result[0]
+        await Promise.all(
+          this.txLocaleItems(lang).map(({ code }) =>
+            ai
+              .translate(text, code)
+              .then((result) => {
+                // translate() reports its own errors and returns no array then
+                if (Array.isArray(result) && result[0]) {
+                  texts[code] = result[0]
                 }
               })
               .catch((error) => {
-                this.$log(`FileDetailItem::translateText(): Error translating text`, error)
+                this.messages.error(this.$gettext('Error translating texts'), error)
               })
-            )
-          })
+          )
+        )
 
-        return Promise.all(promises).then(() => {
-          this.loading.translate = false
-
-          return texts
-        })
-      })
+        return texts
+      } catch (error) {
+        this.messages.error(this.$gettext('Error translating texts'), error)
+        return {}
+      } finally {
+        this.loading.translate = false
+      }
     },
 
     translateVTT(map) {
@@ -273,7 +305,11 @@ export default {
         }
       }
 
-      this.translateText(texts)?.then?.((texts) => {
+      this.translateMap(texts).then((texts) => {
+        if (!Object.keys(texts).length) {
+          return
+        }
+
         const transcription = { ...this.item.transcription }
 
         for (const [lang, text] of Object.entries(texts)) {
@@ -332,7 +368,7 @@ export default {
         </v-col>
         <v-col cols="12" md="6">
           <v-select
-            :items="locales(true)"
+            :items="localeItems(true)"
             :readonly="readonly"
             :modelValue="item.lang"
             @update:modelValue="update('lang', $event)"
@@ -424,12 +460,12 @@ export default {
           </div>
 
           <v-tabs v-model="tabdesc">
-            <v-tab v-for="entry in locales()" :key="entry.value" :value="entry.value">{{
+            <v-tab v-for="entry in localeItems()" :key="entry.value" :value="entry.value">{{
               entry.title
             }}</v-tab>
           </v-tabs>
           <v-window v-model="tabdesc" :touch="false">
-            <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
+            <v-window-item v-for="entry in localeItems()" :key="entry.value" :value="entry.value">
               <v-textarea
                     @update:modelValue="descriptionUpdated(entry.value, $event)"
                 :label="$gettext('Description (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Alternative text for screen readers and search engines, also used as caption')"
@@ -473,12 +509,12 @@ export default {
           </div>
 
           <v-tabs v-model="tabtrans">
-            <v-tab v-for="entry in locales()" :key="entry.value" :value="entry.value">{{
+            <v-tab v-for="entry in localeItems()" :key="entry.value" :value="entry.value">{{
               entry.title
             }}</v-tab>
           </v-tabs>
           <v-window v-model="tabtrans" :touch="false">
-            <v-window-item v-for="entry in locales()" :key="entry.value" :value="entry.value">
+            <v-window-item v-for="entry in localeItems()" :key="entry.value" :value="entry.value">
               <v-textarea
                     @update:modelValue="transcriptionUpdated(entry.value, $event)"
                 :label="$gettext('Transcription (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Spoken text in WebVTT format, shown as subtitles and transcript')"
@@ -499,7 +535,7 @@ export default {
 
 <style scoped>
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 
 .file-url-col {

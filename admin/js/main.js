@@ -34,12 +34,18 @@ app.directive('safe-svg', (el, binding) => {
   if (!purifyLoading) {
     purifyLoading = import('dompurify').then(mod => {
       purify = mod.default
+    }).catch(error => {
+      // the next update tries to load it again, e.g. after a network error
+      purifyLoading = null
+      throw error
     })
   }
   purifyLoading.then(() => {
     el.innerHTML = purify.sanitize(binding.value, {
       USE_PROFILES: { svg: true, svgFilters: true }
     })
+  }).catch(error => {
+    console.error('Loading DOMPurify failed', error)
   })
 })
 app.directive('visible', visible)

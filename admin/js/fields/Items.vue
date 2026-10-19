@@ -17,21 +17,15 @@ import {
   mdiDelete,
   mdiArrowUp,
   mdiArrowDown,
-  mdiTranslate,
-  mdiArrowRightThin,
-  mdiCreation,
-  mdiMicrophoneOutline,
-  mdiMicrophone,
   mdiViewGridPlus
 } from '@mdi/js'
 import VirtualList from 'vue-virtual-sortable'
 import { required, minEntries, maxEntries } from '../rules'
 import ActionMenu from '../components/ActionMenu.vue'
-import { useUserStore, useClipboardStore, useMessageStore } from '../stores'
-import { fieldBase } from '../field'
-import { aiContext, hintTypes, protectTypes, toName } from '../fieldtypes'
-import { useDictation } from '../dictation'
-import { txlocales } from '../options'
+import FieldActions from '../components/FieldActions.vue'
+import { useClipboardStore } from '../stores'
+import { TEXT_TYPES, fieldBase, fieldLabel } from '../field'
+import { hintTypes, protectTypes, toName } from '../fieldtypes'
 import { clone, itemTitle, uid } from '../utils'
 import { key, reveal, scrollParent } from '../virtual'
 
@@ -42,6 +36,7 @@ export default {
 
   components: {
     ActionMenu,
+    FieldActions,
     VirtualList
   },
 
@@ -51,13 +46,10 @@ export default {
 
   emits: ['addFile', 'removeFile'],
 
-  inject: ['write', 'translate'],
-
   data() {
     return {
-      translating: {},
-      dictation: useDictation(),
-      composing: {},
+      // errors of the nested fields by item key and field code
+      errors: {},
       items: this.init(this.modelValue),
       itemKey: (item) => item?.[this.config.identity] || key(item),
       panel: [],
@@ -67,13 +59,9 @@ export default {
 
   setup() {
     const clipboard = useClipboardStore()
-    const messages = useMessageStore()
-    const user = useUserStore()
 
     return {
-      user,
       clipboard,
-      messages,
       mdiDotsVertical,
       mdiDragVertical,
       mdiContentCopy,
@@ -81,17 +69,12 @@ export default {
       mdiDelete,
       mdiArrowUp,
       mdiArrowDown,
-      mdiTranslate,
-      mdiArrowRightThin,
-      mdiCreation,
-      mdiMicrophoneOutline,
-      mdiMicrophone,
       mdiViewGridPlus,
       hintTypes,
       itemTitle,
       protectTypes,
-      toName,
-      txlocales
+      textTypes: TEXT_TYPES,
+      toName
     }
   },
 
@@ -99,13 +82,12 @@ export default {
     this.scroller = scrollParent(this.$refs.panels.$el)
   },
 
-  beforeUnmount() {
-    this.dictation.stop()
-  },
-
   computed: {
     hasError() {
-      return !this.rules.every((rule) => rule(this.items) === true)
+      const keys = new Set(this.items.map((item) => this.itemKey(item)))
+      const nested = Object.entries(this.errors).some(([key, codes]) => keys.has(key) && Object.values(codes).some(Boolean))
+
+      return nested || !this.rules.every((rule) => rule(this.items) === true)
     },
 
     rules() {
@@ -125,6 +107,7 @@ export default {
     // emits a new array, so the parent's value and the working copy are never the same array
     change(items = this.items) {
       this.items = items
+      this.prune()
       this.emitted = [...this.items]
       this.$emit('update:modelValue', this.emitted)
     },
@@ -169,6 +152,11 @@ export default {
       return result
     },
 
+    error(item, code, value) {
+      const key = this.itemKey(item)
+      this.errors[key] = { ...this.errors[key], [code]: value }
+    },
+
     init(val) {
       const items = Array.isArray(val) ? val : clone(this.config.default ?? [])
       return items.map((item) => this.identity(item, this.config))
@@ -200,10 +188,24 @@ export default {
       this.change()
     },
 
-    record(idx, code) {
-      if (this.readonly) return this.messages.denied()
+    label(field, code) {
+      return fieldLabel(this, field, code)
+    },
 
-      this.dictation.toggle((text) => this.update(idx, code, text), idx + code)
+    // AI prompt used if the field is empty
+    prompt(item) {
+      return item?.title ? 'Write a sentence about "' + item.title + '"' : ''
+    },
+
+    // removes the errors of items which don't exist any more
+    prune() {
+      const keys = new Set(this.items.map((item) => this.itemKey(item)))
+
+      for (const key of Object.keys(this.errors)) {
+        if (!keys.has(key)) {
+          delete this.errors[key]
+        }
+      }
     },
 
     remove(idx) {
@@ -214,41 +216,10 @@ export default {
       this.change()
     },
 
-    translateText(idx, code, lang) {
-      this.translating[idx + code] = true
-
-      this.translate([this.items[idx][code]], lang)
-        .then((result) => {
-          this.update(idx, code, result[0] || '')
-        })
-        .finally(() => {
-          this.translating[idx + code] = false
-        })
-    },
-
     // replaces the changed item, the item objects are shared with the parent's value
     update(idx, code, value) {
       this.items[idx] = { ...this.items[idx], [code]: value }
       this.change()
-    },
-
-    writeText(idx, code) {
-      const context = aiContext(this.config.item?.[code] || {}, code, this.items[idx])
-      const prompt =
-        this.items[idx][code] ||
-        (this.items[idx]['title']
-          ? 'Write a sentence about "' + this.items[idx]['title'] + '"'
-          : '')
-
-      this.composing[idx + code] = true
-
-      this.write(prompt, context)
-        .then((result) => {
-          this.update(idx, code, result)
-        })
-        .finally(() => {
-          this.composing[idx + code] = false
-        })
     }
   },
 
@@ -330,51 +301,15 @@ export default {
         <v-expansion-panel-text>
           <div v-for="(field, code) in config.item || {}" :key="code" class="field">
             <div v-if="!protectTypes.has(toName(field.type))" class="label">
-              {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
-              <div
-                v-if="!readonly && ['markdown', 'plaintext', 'string', 'text'].includes(field.type)"
-                class="actions"
-              >
-                <ActionMenu
-                  v-if="user.can('text:translate')"
-                  :title="$gettext('Translate')"
-                  location="end center"
-                >
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      :title="$gettext('Translate')"
-                      :loading="translating[idx + code]"
-                      :icon="mdiTranslate"
-                      variant="text"
-                    />
-                  </template>
-
-                  <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                    <v-btn
-                      @click="translateText(idx, code, lang.code)"
-                      :prepend-icon="mdiArrowRightThin"
-                      variant="text"
-                      >{{ lang.name }}</v-btn
-                    >
-                  </v-list-item>
-                </ActionMenu>
-                <v-btn
-                  v-if="user.can('text:write')"
-                  :title="$gettext('Generate text')"
-                  :loading="composing[idx + code]"
-                  @click="writeText(idx, code)"
-                  :icon="mdiCreation"
-                  variant="text"
-                />
-                <v-btn
-                  v-if="user.can('audio:transcribe')"
-                  @click="record(idx, code)"
-                  :class="{ dictating: dictation.active(idx + code) }"
-                  :icon="dictation.active(idx + code) ? mdiMicrophoneOutline : mdiMicrophone"
-                  :title="$gettext('Dictate')"
-                  :loading="dictation.busy(idx + code)"
-                  variant="text"
+              {{ label(field, code) }}
+              <div v-if="!readonly && textTypes.includes(field.type)" class="actions">
+                <FieldActions
+                  :code="code"
+                  :field="field"
+                  :value="items[idx]?.[code]"
+                  :context="items[idx]"
+                  :prompt="prompt(item)"
+                  @update="update(idx, code, $event)"
                 />
               </div>
             </div>
@@ -384,13 +319,14 @@ export default {
               v-bind="field.rel ? { rel: items[idx]?.[code + '-rel'] } : {}"
               v-on="field.rel ? { 'update:rel': value => update(idx, code + '-rel', value) } : {}"
               @update:modelValue="update(idx, code, $event)"
+              @error="error(item, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
               :readonly="readonly"
               :context="items[idx]"
               :assets="assets"
               :config="field"
-              :label="protectTypes.has(toName(field.type)) ? $pgettext('fn', field.label || code).replace(/-|_/g, ' ') : null"
+              :label="protectTypes.has(toName(field.type)) ? label(field, code) : null"
             ></component>
             <div
               v-if="field.hint && field.type !== 'hidden' && !hintTypes.has(toName(field.type))"

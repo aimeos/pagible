@@ -4,7 +4,7 @@
 
 import { watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
+import { useClipboardStore, useDirtyStore, useSessionStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
 import { urladmin } from './config'
 import gettext, { pluginLabel } from './i18n'
 
@@ -99,18 +99,17 @@ const router = createRouter({
 export async function guard(to) {
   const dirty = useDirtyStore()
 
-  if (dirty.dirty) {
-    const allowed = await dirty.confirm()
-    if (!allowed) return false
-    return
+  // the auth and permission checks below still apply after discarding or saving the changes
+  if (dirty.dirty && !(await dirty.confirm())) {
+    return false
   }
 
   if (!to.matched.some((record) => record.meta.auth)) return
 
   const user = useUserStore()
 
-  if (!await user.isAuthenticated()) {
-    user.intended(to.fullPath)
+  if (!await useSessionStore().isAuthenticated()) {
+    useSessionStore().intended(to.fullPath)
     return { name: 'login' }
   }
 

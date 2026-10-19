@@ -6,7 +6,10 @@ import SchemaDialog from './SchemaDialog.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
 import { hasTrue, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
+
+// types without field definitions which have been reported already
+const warned = new Set()
 
 export default {
   components: {
@@ -14,8 +17,10 @@ export default {
     SchemaDialog
   },
 
+  mixins: [typeLabelMixin],
+
   props: {
-    assets: { type: Object, default: () => {} },
+    assets: { type: Object, default: () => ({}) },
     item: { type: Object, required: true },
     permission: { type: String, default: null },
     section: { type: String, required: true }
@@ -40,7 +45,7 @@ export default {
 
   computed: {
     available() {
-      return Object.keys(this.schemas).length
+      return Object.keys(this.schemas[this.section] || {}).length
     },
 
     canEdit() {
@@ -53,10 +58,6 @@ export default {
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     add(item) {
       if (this.entries[item.type]) {
         this.messages.add(this.$gettext('The element has already been added'), 'error')
@@ -64,7 +65,7 @@ export default {
       }
 
       this.patch({ ...this.entries, [item.type]: { type: item.type, data: {}, files: [] } })
-      this.panel.push(Object.keys(this.entries).length - 1)
+      this.panel.push(item.type)
       this.vschemas = false
     },
 
@@ -76,7 +77,11 @@ export default {
 
     fields(type) {
       if (!this.schemas[this.section]?.[type]?.fields) {
-        console.warn(`No definition of fields for "${type}" available`)
+        // called while rendering, so each missing type is only reported once
+        if (type && !warned.has(type)) {
+          warned.add(type)
+          console.warn(`No definition of fields for "${type}" available`)
+        }
         return []
       }
 
@@ -92,7 +97,9 @@ export default {
       const { [code]: removed, ...entries } = this.entries
 
       delete this.errors[code]
+      this.panel = this.panel.filter((open) => open !== code)
       this.patch(entries)
+      this.store()
 
       this.$nextTick(() => {
         this.validate().then((valid) => {
@@ -106,10 +113,10 @@ export default {
     },
 
     showError() {
-      const idx = Object.keys(this.entries).findIndex((code) => this.errors[code])
+      const code = Object.keys(this.entries).find((code) => this.errors[code])
 
-      if (idx >= 0 && !this.panel.includes(idx)) {
-        this.panel.push(idx)
+      if (code && !this.panel.includes(code)) {
+        this.panel.push(code)
       }
     },
 
@@ -182,6 +189,7 @@ export default {
         <v-expansion-panel
           v-for="(el, code) in entries"
           :key="code"
+          :value="code"
           :class="{ changed: el._changed, error: errors[code] }"
           v-show="shown(el, code)"
         >

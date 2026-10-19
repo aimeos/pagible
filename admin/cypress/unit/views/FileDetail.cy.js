@@ -267,6 +267,33 @@ describe('FileDetail', () => {
         })
       })
     })
+
+    it('uploads an edited file only with the next save', () => {
+      const files = []
+      const mutate = (options) => {
+        files.push(options.variables.file)
+        return Promise.resolve({ data: { saveFile: { latest: { id: 'v2', data: '{}' } } } })
+      }
+
+      mountDetail({ 'file:save': true }, {}, { mutate }).then(() => {
+        const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+        const file = new File(['png'], 'photo.png', { type: 'image/png' })
+
+        vm.fileUpdated(file)
+
+        return vm.save().then(() => {
+          expect(files[0]).to.equal(file)
+          expect(vm.file).to.equal(null)
+
+          vm.item.name = 'renamed.jpg'
+          vm.dirty = true
+
+          return vm.save()
+        }).then(() => {
+          expect(files[1]).to.equal(null)
+        })
+      })
+    })
   })
 
   describe('versions()', () => {
@@ -361,7 +388,7 @@ describe('FileDetail', () => {
     it('shows changes button even when all conflicts are resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
-        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: true, chosen: 'c' } } }
         cy.get('.menu-changed').should('exist')
       })
     })
@@ -378,7 +405,7 @@ describe('FileDetail', () => {
     it('hasConflict is false when all conflicts are resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
-        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: true, chosen: 'c' } } }
         expect(vm.hasConflict).to.be.false
       })
     })

@@ -157,7 +157,11 @@ describe('FileListItems', () => {
       const vm = wrapper.findComponent(FileListItems).vm
       const file = new File(['private'], 'private.pdf', { type: 'application/pdf' })
 
-      return vm.add({ target: { files: [file] } }, 'private').then(() => {
+      const target = { files: [file], value: 'private.pdf' }
+
+      return vm.add({ target }, 'private').then(() => {
+        // allows selecting the same file again
+        expect(target.value).to.equal('')
         expect(mutate).to.have.been.calledOnce
         expect(mutate.firstCall.args[0].variables).to.deep.equal({
           disk: 'private',
@@ -276,7 +280,7 @@ describe('FileListItems', () => {
     })
   })
 
-  it('clears the complete Apollo cache before a manual reload', () => {
+  it('drops the cached list before a manual reload', () => {
     const calls = []
     const query = cy.stub().callsFake(() => {
       calls.push('query')
@@ -293,13 +297,13 @@ describe('FileListItems', () => {
       query,
       provider: {
         defaultClient: {
-          cache: { diff: () => ({ complete: true }), evict() {}, gc() {} },
+          cache: { diff: () => ({ complete: true }), evict: (opts) => calls.push('evict:' + opts.fieldName), gc() {} },
           clearStore,
         },
       },
     }).then(({ wrapper }) => {
       return wrapper.findComponent(FileListItems).vm.reload().then(() => {
-        expect(calls).to.deep.equal(['clearStore', 'query'])
+        expect(calls).to.deep.equal(['evict:files', 'query'])
       })
     })
   })

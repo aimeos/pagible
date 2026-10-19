@@ -3,14 +3,20 @@
 <script>
 import router from '../routes'
 import { urllogin } from '../config'
-import { useUserStore, useMessageStore } from '../stores'
-import { browser, loginUrl } from '../utils'
-import { mdiEyeOff, mdiEye, mdiAlertOctagon } from '@mdi/js'
+import { useMessageStore, useSessionStore, useUserStore } from '../stores'
+import { loginUrl } from '../urls'
+import { browser } from '../utils'
+import { mdiAlertOctagon } from '@mdi/js'
+import PasswordField from '../components/PasswordField.vue'
 
 // Stops redirecting to the single sign-on page if it didn't sign in the user within that time
 const SSO_RETRY = 60000
 
 export default {
+  components: {
+    PasswordField
+  },
+
   props: {
     // Login page of the application if users don't sign in with a password (cms.admin.login)
     urllogin: { type: String, default: urllogin }
@@ -25,15 +31,15 @@ export default {
     form: null,
     error: null,
     loading: false,
-    login: false,
-    show: false
+    login: false
   }),
 
   setup() {
     const messages = useMessageStore()
+    const session = useSessionStore()
     const user = useUserStore()
 
-    return { user, messages, mdiEyeOff, mdiEye, mdiAlertOctagon }
+    return { session, user, messages, mdiAlertOctagon }
   },
 
   watch: {
@@ -62,16 +68,14 @@ export default {
     this.creds.email = config.email ?? ''
     this.creds.password = config.password ?? ''
 
-    this.user
+    this.session
       .isAuthenticated()
+      .catch(() => false)
       .then((result) => {
-        if (!result) {
-          throw result
+        if (result) {
+          return router.replace(this.next())
         }
 
-        router.replace(this.next())
-      })
-      .catch((err) => {
         if (this.urllogin) {
           return this.sso(true)
         }
@@ -106,7 +110,7 @@ export default {
       this.error = null
       this.loading = true
 
-      this.user
+      this.session
         .login(this.creds.email, this.creds.password)
         .then((user) => {
           if (Object.values(user.permission || {}).some((perm) => perm === true)) {
@@ -156,13 +160,13 @@ export default {
         // storage not available, e.g. in private mode
       }
 
-      const back = new URL(router.resolve(this.user.intended() || '/').href, window.location.origin)
+      const back = new URL(router.resolve(this.session.intended() || '/').href, window.location.origin)
       browser.assign(loginUrl(this.urllogin, back.href))
     },
 
     next() {
       const url =
-        this.user.intended() ||
+        this.session.intended() ||
         router.getRoutes().find((route) => {
           return this.user.can(route.name)
         })?.path
@@ -172,10 +176,6 @@ export default {
       }
 
       return url || '/'
-    },
-
-    toggleShow() {
-      this.show = !this.show
     }
   }
 }
@@ -203,26 +203,12 @@ export default {
             validate-on="blur"
             autofocus
           />
-          <v-text-field
+          <PasswordField
             v-model="creds.password"
-            :type="show ? `text` : `password`"
-            :label="$gettext('Password')"
             :rules="passwordRules"
             :placeholder="autofilled ? '********' : undefined"
             :persistent-placeholder="autofilled"
-            autocomplete="current-password"
-            variant="underlined"
-          >
-            <template v-slot:append-inner>
-              <v-btn
-                @click="toggleShow"
-                :aria-label="show ? $gettext('Hide password') : $gettext('Show password')"
-                :icon="show ? mdiEyeOff : mdiEye"
-                density="compact"
-                variant="text"
-              />
-            </template>
-          </v-text-field>
+          />
         </template>
         <v-alert v-show="error" color="surface" border="start" border-color="error">
           <template v-slot:prepend>

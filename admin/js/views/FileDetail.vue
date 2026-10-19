@@ -7,7 +7,7 @@ import FileDetailItem from '../components/FileDetailItem.vue'
 import { applyResult, hasUnresolved } from '../merge'
 import { detailBase, useDetail } from '../detail'
 import { markRaw } from 'vue'
-import { safeParse } from '../utils'
+import { safeParse } from '../json'
 
 const FETCH_FILE = gql`
   query ($id: ID!) {
@@ -87,10 +87,6 @@ export default {
 
   created() {
     this.savedPreviews = this.previewsJson()
-  },
-
-  beforeUnmount() {
-    this.file = null
   },
 
   computed: {
@@ -215,6 +211,8 @@ export default {
           Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
           this.item.latestId = latest?.id
           this.savedPreviews = this.previewsJson()
+          // the uploaded image is saved now, later saves must not upload it again
+          this.file = null
 
           applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
 
@@ -258,7 +256,7 @@ export default {
     <v-progress-linear v-if="loading" indeterminate color="primary" />
     <v-form v-else ref="form" @submit.prevent>
       <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
-        <v-tab value="file" :class="{ changed: dirty, error: error }">{{
+        <v-tab value="file" :class="{ changed: dirty }">{{
           $gettext('File')
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
@@ -273,7 +271,6 @@ export default {
             @patch="itemUpdated"
             @sync="itemSynced"
             @update:file="fileUpdated"
-            @error="error = $event"
             :item="item"
           />
         </v-window-item>

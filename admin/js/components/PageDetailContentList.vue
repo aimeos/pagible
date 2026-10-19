@@ -1,10 +1,10 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import gql from 'graphql-tag'
 import Fields from './Fields.vue'
 import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
+import AiPrompt from './AiPrompt.vue'
 import { defineAsyncComponent } from 'vue'
 import VirtualList from 'vue-virtual-sortable'
 import {
@@ -15,13 +15,13 @@ import {
   useSideStore
 } from '../stores'
 import { changedState } from '../merge'
-import { FILE_FIELDS, normalizeFile } from '../files'
-import { invalidateList } from '../graphql'
 import { editable } from '../shortcuts'
-import { useDictation } from '../dictation'
-import { clone, debounce, frozenParse, itemTitle, safeParse, uid } from '../utils'
+import { contentRefine } from '../contentrefine'
+import { contentShare } from '../contentshare'
+import { MARKDOWN_TYPES, fromMarkdown, toMarkdown } from '../markdown'
+import { clone, debounce, itemTitle, uid } from '../utils'
 import { reveal, scrollParent } from '../virtual'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
 import {
   mdiMenuDown,
   mdiContentCopy,
@@ -38,48 +38,27 @@ import {
   mdiLinkOff,
   mdiSwapHorizontal,
   mdiSetSplit,
-  mdiViewGridPlus,
-  mdiHelpCircleOutline,
-  mdiCheckBold,
-  mdiArrowRightCircle,
-  mdiMicrophone,
-  mdiMicrophoneOutline
+  mdiViewGridPlus
 } from '@mdi/js'
 
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
+const VIRTUAL_KEEPS = 30 // number of entries the virtual list renders at least
+const MAX_PANELS = 3 // number of element panels open at the same time
 
-const REFINE_CONTENT = gql`
-  mutation ($prompt: String!, $content: JSON!, $type: String, $context: String, $lang: String, $pagetype: String) {
-    refine(prompt: $prompt, content: $content, type: $type, context: $context, lang: $lang, pagetype: $pagetype)
-  }
-`
-
-const ADD_ELEMENT = gql`
-  ${FILE_FIELDS}
-  mutation ($input: ElementInput!) {
-    addElement(input: $input) {
-      id
-      type
-      lang
-      name
-      data
-      editor
-      updated_at
-      files {
-        ...CmsFileFields
-      }
-    }
-  }
-`
+// types without field definitions which have been reported already
+const warned = new Set()
 
 export default {
   components: {
     ActionItem,
     ActionMenu,
+    AiPrompt,
     Fields,
     SchemaDialog,
     VirtualList
   },
+
+  mixins: [contentRefine, contentShare, typeLabelMixin],
 
   props: {
     item: { type: Object, required: true },
@@ -93,15 +72,10 @@ export default {
   emits: ['change', 'error', 'update:content', 'patch-entry', 'add-assets', 'add-elements'],
 
   data: () => ({
-    chat: '',
-    dictation: useDictation(),
-    help: false,
     lastError: false,
-    refining: false,
     panel: [],
     index: null,
     scroller: null,
-    checked: false,
     hidden: new Set(),
     selected: new Set(),
     term: '',
@@ -138,16 +112,17 @@ export default {
       mdiLinkOff,
       mdiSwapHorizontal,
       mdiSetSplit,
-      mdiViewGridPlus,
-      mdiHelpCircleOutline,
-      mdiCheckBold,
-      mdiArrowRightCircle,
-      mdiMicrophone,
-      mdiMicrophoneOutline
+      mdiViewGridPlus
     }
   },
 
   computed: {
+    // all shown entries are selected
+    allSelected() {
+      const shown = this.content.filter((el) => this.shown(el))
+      return shown.length > 0 && shown.every((el) => this.selected.has(el))
+    },
+
     checkedCount() {
       return this.content.filter((el) => this.selected.has(el)).length
     },
@@ -158,16 +133,12 @@ export default {
 
     keeps() {
       return this.content.some((el) => !this.shown(el))
-        ? Math.max(this.content.length, 30)
-        : 30
+        ? Math.max(this.content.length, VIRTUAL_KEEPS)
+        : VIRTUAL_KEEPS
     }
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     add(item, idx) {
       const entry = item.id
         ? this.entry('reference', { refid: item.id })
@@ -213,17 +184,6 @@ export default {
       this.clipboard.set('page-content', list)
     },
 
-    createMarkdown(el) {
-      if (el.type === 'text') {
-        return el.data.text || ''
-      } else if (el.type === 'code') {
-        return `\`\`\`${el.data.lang || ''}\n${el.data.text || ''}\n\`\`\``
-      } else if (el.type === 'heading') {
-        return `${'#'.repeat(Number(el.data.level) || 1)} ${el.data.title || ''}`
-      }
-      return ''
-    },
-
     cut(idx) {
       const list = this.selection(idx)
 
@@ -250,7 +210,11 @@ export default {
 
     fields(type) {
       if (!this.schemas.content[type]?.fields) {
-        console.warn(`No definition of fields for "${type}" schemas`)
+        // called while rendering, so each missing type is only reported once
+        if (type && !warned.has(type)) {
+          warned.add(type)
+          console.warn(`No definition of fields for "${type}" schemas`)
+        }
         return []
       }
 
@@ -263,8 +227,7 @@ export default {
     },
 
     merge() {
-      const types = ['text', 'code', 'heading']
-      const entries = this.selection().filter((el) => types.includes(el.type))
+      const entries = this.selection().filter((el) => MARKDOWN_TYPES.includes(el.type))
 
       if (entries.length === 0) {
         return
@@ -272,7 +235,7 @@ export default {
 
       // the first merged entry is the topmost one, so its index is the same without the entries
       const idx = this.content.indexOf(entries[0])
-      const text = entries.map((el) => this.createMarkdown(el) + '\n\n').join('')
+      const text = entries.map((el) => toMarkdown(el) + '\n\n').join('')
       const list = this.without(entries)
 
       list.splice(idx, 0, this.entry('text', { data: { text }, _changed: true }))
@@ -345,64 +308,6 @@ export default {
       this.$emit('update:content', this.without(this.selection()))
     },
 
-    record() {
-      this.dictation.toggle((text) => (this.chat = text))
-    },
-
-    refine() {
-      if (!this.user.can('page:refine')) return this.messages.denied()
-
-      const prompt = this.chat.trim()
-
-      if (!this.chat) {
-        return
-      }
-
-      this.refining = true
-
-      this.$apollo
-        .mutate({
-          mutation: REFINE_CONTENT,
-          variables: {
-            prompt: prompt,
-            content: JSON.stringify(this.content),
-            type: 'content',
-            context: null,
-            lang: this.item.lang,
-            pagetype: this.item.type
-          }
-        })
-        .then((result) => {
-          const content = safeParse(result.data?.refine || '[]', [])
-
-          if (content.length) {
-            const map = {}
-            for (const item of this.content) map[item.id] = item
-
-            content.forEach((item) => {
-              item.group = this.section
-
-              if (JSON.stringify(item) !== JSON.stringify(map[item.id] || {})) {
-                item._changed = true
-              }
-            })
-
-            this.$emit('update:content', content)
-          }
-
-          this.refining = null
-          this.chat = ''
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error refining content'), error)
-        })
-        .finally(() => {
-          setTimeout(() => {
-            this.refining = false
-          }, 3000)
-        })
-    },
-
     remove(idx) {
       this.$emit('update:content', this.without([this.content[idx]]))
     },
@@ -445,56 +350,6 @@ export default {
         : [this.content[idx]]
     },
 
-    share(idx) {
-      if (!this.user.can('element:add')) return this.messages.denied()
-
-      const entry = this.content[idx]
-
-      if (!entry) {
-        this.messages.add(this.$gettext('Element not found'), 'error')
-        return
-      }
-
-      if (entry.type === 'reference') {
-        this.messages.add(this.$gettext('Element is already shared'), 'error')
-        return
-      }
-
-      this.$apollo
-        .mutate({
-          mutation: ADD_ELEMENT,
-          variables: {
-            input: {
-              type: entry.type,
-              lang: this.item.lang,
-              name: this.title(entry),
-              data: JSON.stringify(entry.data || {})
-            }
-          }
-        })
-        .then((result) => {
-          const element = result.data.addElement
-
-          const files = (element.files || []).map(normalizeFile)
-
-          element.data = frozenParse(element.data)
-          element.files = Object.freeze(files)
-
-          this.$emit('add-assets', Object.fromEntries(files.map((file) => [file.id, file])))
-          this.$emit('add-elements', { [element.id]: element })
-          invalidateList('elements')
-
-          // the content may have changed while waiting for the response
-          if (this.content.includes(entry)) {
-            const ref = this.entry('reference', { refid: element.id })
-            this.$emit('update:content', this.content.map((el) => (el === entry ? ref : el)))
-          }
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Unable to make element shared'), error, idx)
-        })
-    },
-
     async showError() {
       const el = this.content.find((el) => el._error && this.shown(el))
 
@@ -528,40 +383,9 @@ export default {
         return
       }
 
-      const [{ fromMarkdown }, { toString }, { toMarkdown }] = await Promise.all([
-        import('mdast-util-from-markdown'),
-        import('mdast-util-to-string'),
-        import('mdast-util-to-markdown')
-      ])
-
-      const list = []
-      const ast = fromMarkdown(this.content[idx].data?.text || '')
-
-      for (const node of ast.children) {
-        switch (node.type) {
-          case 'code':
-            list.push(this.entry('code', { data: { lang: node.lang || null, text: node.value.trim() } }))
-            break
-          case 'heading':
-            list.push(this.entry('heading', { data: { title: toString(node).trim(), level: String(node.depth) } }))
-            break
-          case 'table': {
-            const rows = node.children
-              .map((row) =>
-                row.children
-                  .map((cell) => cell.children.map((c) => c.value || '').join(''))
-                  .join(';')
-              )
-              .join('\n')
-            list.push(this.entry('table', { data: { text: rows.trim() } }))
-            break
-          }
-          default:
-            list.push(this.entry('text', { data: { text: toMarkdown(node).trim() } }))
-        }
-      }
-
+      const list = (await fromMarkdown(this.content[idx].data?.text || '')).map(({ type, data }) => this.entry(type, { data }))
       const content = [...this.content]
+
       content.splice(idx, 1, ...list)
       this.$emit('update:content', content)
     },
@@ -589,37 +413,15 @@ export default {
       return itemTitle(el.data) || this.typeLabel(el.type) || ''
     },
 
+    // selects all shown entries if one is unselected, otherwise clears their selection
     toggle() {
+      const all = this.allSelected
+
       this.content.forEach((el) => {
         if (this.shown(el)) {
-          this.select(el)
+          all ? this.selected.delete(el) : this.selected.add(el)
         }
       })
-    },
-
-    unshare(idx) {
-      if (!this.content[idx]) {
-        this.messages.add(this.$gettext('Content element not found'), 'error')
-        return
-      }
-
-      const entry = this.content[idx]
-
-      if (entry.type !== 'reference' || !this.elements[entry.refid]) {
-        this.messages.add(this.$gettext('Element is not shared'), 'error')
-        return
-      }
-
-      const element = this.elements[entry.refid]
-      const copy = {
-        ...entry,
-        type: element.type || null,
-        data: { ...(element.data || {}) },
-        refid: undefined
-      }
-
-      this.$emit('add-assets', Object.fromEntries((element.files || []).map((file) => [file.id, file])))
-      this.$emit('update:content', this.content.map((el, i) => (i === idx ? copy : el)))
     },
 
     update(el, values) {
@@ -648,7 +450,7 @@ export default {
   },
 
   beforeUnmount() {
-    this.dictation.stop()
+    this.stored.cancel()
   },
 
   watch: {
@@ -657,7 +459,6 @@ export default {
       handler(list) {
         const current = new Set(list)
 
-        this.checked = false
         this.selected.forEach((el) => !current.has(el) && this.selected.delete(el))
 
         if (this.term) {
@@ -672,8 +473,8 @@ export default {
     },
 
     panel(val) {
-      if (Array.isArray(val) && val.length > 3) {
-        this.panel = val.slice(-3)
+      if (Array.isArray(val) && val.length > MAX_PANELS) {
+        this.panel = val.slice(-MAX_PANELS)
       }
     }
   }
@@ -682,62 +483,28 @@ export default {
 
 <template>
   <div ref="root" v-visible="store">
-    <v-textarea
+    <AiPrompt
       v-if="user.can('page:refine')"
       v-model="chat"
-      :loading="refining"
+      :busy="refining"
+      :done="refined"
       :placeholder="$gettext('Describe the task you want to perform')"
-      variant="outlined"
-      class="prompt"
-      rounded="lg"
-      hide-details
-      auto-grow
-      clearable
-      rows="1"
+      :send-title="refining ? $gettext('Refining ...') : $gettext('Refine content based on prompt')"
+      type="content"
+      @submit="refine()"
     >
-      <template #prepend>
-        <v-btn
-          @click="help = !help"
-          :icon="mdiHelpCircleOutline"
-          class="no-rtl"
-          :title="help ? $gettext('Hide help') : $gettext('Show help')"
-          :aria-expanded="help"
-          aria-controls="content-help"
-          variant="text"
-        />
-      </template>
-      <template #append>
-        <v-btn
-          v-if="chat"
-          @click="refining || refine()"
-          @keydown.enter="refining || refine()"
-          :icon="refining === false ? mdiArrowRightCircle : refining === null ? mdiCheckBold : null"
-          :title="refining ? $gettext('Refining ...') : $gettext('Refine content based on prompt')"
-          :loading="refining"
-          variant="text"
-        />
-
-        <v-btn
-          v-else-if="user.can('audio:transcribe')"
-          @click="record()"
-          :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
-          :title="$gettext('Dictate')"
-          :class="{ dictating: dictation.active() }"
-          :loading="dictation.busy()"
-          variant="text"
-        />
-      </template>
-    </v-textarea>
-    <div v-if="help" id="content-help" class="help">
-      <ul :aria-label="$gettext('Help')">
-        <li>{{ $gettext('AI can add or improve content based on your input') }}</li>
-        <li>{{ $gettext('It can take a long time depending on the task and content size') }}</li>
-      </ul>
-    </div>
+      <li>{{ $gettext('AI can add or improve content based on your input') }}</li>
+      <li>{{ $gettext('It can take a long time depending on the task and content size') }}</li>
+    </AiPrompt>
 
     <div class="header">
       <div v-if="user.can('page:save')" class="bulk">
-        <v-checkbox-btn v-model="checked" @click.stop="toggle()" :aria-label="$gettext('Toggle selection')" />
+        <v-checkbox-btn
+          :model-value="allSelected"
+          :indeterminate="checkedCount > 0 && !allSelected"
+          @click.stop="toggle()"
+          :aria-label="$gettext('Toggle selection')"
+        />
         <ActionMenu>
           <template #activator="{ props, label }">
             <v-btn
@@ -758,8 +525,8 @@ export default {
           <ActionItem v-if="clipboard.get('page-content')" :prepend-icon="mdiContentPaste" @click="paste()">
             {{ $gettext('Paste') }} ({{ clipCount }})
           </ActionItem>
-          <ActionItem >
-            1" :prepend-icon="mdiSetMerge" @click="merge()"> {{ $gettext('Merge') }}
+          <ActionItem v-if="checkedCount > 1" :prepend-icon="mdiSetMerge" @click="merge()">
+            {{ $gettext('Merge') }}
           </ActionItem>
           <ActionItem v-if="checkedCount" :prepend-icon="mdiDelete" @click="purge()">
             {{ $gettext('Remove') }}
@@ -877,8 +644,8 @@ export default {
                 <ActionItem v-if="el.type === 'text'" :prepend-icon="mdiSetSplit" @click="split(idx)">
                   {{ $pgettext('text element', 'Split') }}
                 </ActionItem>
-                <ActionItem >
-                  1" :prepend-icon="mdiSetMerge" @click="merge()" > {{ $gettext('Merge') }}
+                <ActionItem v-if="selected.has(el) && checkedCount > 1" :prepend-icon="mdiSetMerge" @click="merge()">
+                  {{ $gettext('Merge') }}
                 </ActionItem>
               </ActionMenu>
             </span>
@@ -945,15 +712,6 @@ export default {
 </template>
 
 <style scoped>
-.prompt {
-  margin-bottom: 16px;
-}
-
-.v-input--horizontal :deep(.v-input__prepend),
-.v-input--horizontal :deep(.v-input__append) {
-  margin: 0;
-}
-
 .v-input.search {
   max-width: 30rem;
   flex-grow: 1;

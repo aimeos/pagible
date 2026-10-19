@@ -6,7 +6,7 @@ import { invalidateList } from '../graphql'
 import { previewUrl } from '../files'
 import { useMessageStore } from '../stores'
 import { fileurl } from '../urls'
-import { safeParse } from '../utils'
+import { safeParse } from '../json'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
 
 const SAVE_FILE_PREVIEW = gql`
@@ -73,6 +73,11 @@ export default {
         return this.messages.add(this.$gettext('No video element found'), 'error')
       }
 
+      // no frame available before the video metadata is loaded
+      if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !video.videoWidth || !video.videoHeight) {
+        return
+      }
+
       const filename = this.item.path
         .replace(/\.[A-Za-z0-9]+$/, '.png')
         .split('/')
@@ -80,27 +85,38 @@ export default {
       const canvas = document.createElement('canvas')
       const context = canvas.getContext('2d')
 
+      const msg = this.$gettext('Error saving video cover')
+
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
-      context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
 
-      canvas.toBlob(
-        (blob) => {
-          canvas.width = 0
-          canvas.height = 0
+      try {
+        // throws a SecurityError for cross-origin videos without CORS headers
+        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
 
-          this.cover(
-            new File([blob], filename, { type: 'image/png' }),
-            this.$gettext('Error saving video cover')
-          )
-        },
-        'image/png',
-        1
-      )
+        canvas.toBlob(
+          (blob) => {
+            canvas.width = 0
+            canvas.height = 0
+
+            if (!blob) {
+              return this.messages.add(msg, 'error')
+            }
+
+            this.cover(new File([blob], filename, { type: 'image/png' }), msg)
+          },
+          'image/png',
+          1
+        )
+      } catch (error) {
+        canvas.width = 0
+        canvas.height = 0
+        this.messages.error(msg, error)
+      }
     },
 
     // saves the uploaded cover image or removes the cover if "preview" is false
-    cover(preview, error) {
+    cover(preview, msg) {
       this.loading.cover = true
 
       return this.$apollo
@@ -117,7 +133,7 @@ export default {
             this.$emit('sync', { previews: safeParse(latest.data)?.previews || {}, updated_at: latest.created_at })
           }
         })
-        .catch((err) => this.messages.error(error, err))
+        .catch((error) => this.messages.error(msg, error))
         .finally(() => {
           this.loading.cover = false
         })
@@ -126,14 +142,17 @@ export default {
     removeCover() {
       if (this.readonly) return this.messages.denied()
 
-      this.$emit('sync', { previews: {} })
-      this.cover(false, this.$gettext('Error removing video cover'))
+      // the previews are synced from the response after the cover is removed
+      return this.cover(false, this.$gettext('Error removing video cover'))
     },
 
     uploadCover(ev) {
       if (this.readonly) return this.messages.denied()
 
       const file = ev.target.files[0]
+
+      // allows selecting the same file again, e.g. after a failed upload
+      ev.target.value = ''
 
       if (!file) {
         return this.messages.add(this.$gettext('No file selected'), 'error')
