@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Database\Factories\FileFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Aimeos\Cms\Casts\AsString;
 use Aimeos\Cms\Concerns\FilePreviews;
 use Aimeos\Cms\Concerns\StoresFiles;
@@ -47,6 +49,8 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
  */
 class File extends Base
 {
+    /** @use HasFactory<FileFactory> */
+    use HasFactory;
     use FilePreviews;
     use StoresFiles;
     use Referenced;
@@ -401,5 +405,14 @@ class File extends Base
             'path' => $version->data->path,
             'mime' => $version->data->mime,
         ];
+    }
+
+
+    /**
+     * Returns the factory creating the items through the facade.
+     */
+    protected static function newFactory() : FileFactory
+    {
+        return FileFactory::new();
     }
 }

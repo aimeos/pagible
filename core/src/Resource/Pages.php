@@ -91,6 +91,7 @@ class Pages
             $page = new PageView();
             $page->setUniqueIds();
             $page->fill( $input );
+            $page->status = 0; // disabled until published because the live columns come from the draft
             $page->editor = $editor;
 
             // Inserts the page with its draft version so the draft (latest=true) row is indexed
