@@ -181,11 +181,12 @@ class AiToolsTest extends AiTestAbstract
     public function testFilesChecksUser()
     {
         $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $ids = ['00000000-0000-0000-0000-000000000000'];
 
-        $this->assertThrows( fn() => \Aimeos\Cms\Ai::files( ['missing'], null ), \Aimeos\Cms\Exceptions\PermissionException::class );
-        $this->assertThrows( fn() => \Aimeos\Cms\Ai::files( ['missing'], $user ), \Aimeos\Cms\Exceptions\PermissionException::class );
-        $this->assertSame( [], \Aimeos\Cms\Ai::files( ['missing'], $this->user ) );
-        $this->assertSame( [], \Aimeos\Cms\Permission::system( fn() => \Aimeos\Cms\Ai::files( ['missing'], null ) ) );
+        $this->assertThrows( fn() => \Aimeos\Cms\Ai::files( $ids, null ), \Aimeos\Cms\Exceptions\PermissionException::class );
+        $this->assertThrows( fn() => \Aimeos\Cms\Ai::files( $ids, $user ), \Aimeos\Cms\Exceptions\PermissionException::class );
+        $this->assertSame( [], \Aimeos\Cms\Ai::files( $ids, $this->user ) );
+        $this->assertSame( [], \Aimeos\Cms\Permission::system( fn() => \Aimeos\Cms\Ai::files( $ids, null ) ) );
     }
 
 
