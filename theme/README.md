@@ -228,6 +228,10 @@ public function boot(): void
 ```
 
 - Pages of type `blog` use the first existing layout of `mytheme::layouts.blog`, `cms::layouts.blog` and `cms::layouts.page`, and the core layouts extend `mytheme::layouts.main`
+- Main layouts render `<x-cms::head :page="$page" :nav="$nav" />` (charset, viewport, theme color, CSRF token, CSP, title, canonical URL, meta elements, favicon and the `--pico-*` variables of the `theme` config) in `<head>` and `cms::layouts.foot` at the end of `<body>`, `cms::elements` renders a list of content elements in sections
+- The theme color is the configured or default background color, `theme-color="#0B1530"` sets a fixed one
+- The `--pico-*` variables are pushed to the `head` stack, so the layout must render `@stack('head')` after its stylesheets
+- Themes with light and dark mode define a `theme-dark` config with the dark colors, the colors of the `theme` config then only apply to the light mode
 - Views with the name of a core element (e.g. `hero.blade.php`) replace it for pages using the theme
 - `cmstheme( $page, 'hero.css' )` returns the versioned URL of the theme asset and falls back to the core theme file
 - `Database\Seeders\MythemeDemo` extends `Database\Seeders\AbstractDemo` and provides the demo pages created by `cms:demo`
@@ -261,8 +265,68 @@ The command exits with code 1 if errors are found, so it can run in your CI pipe
 
 | Directive | Description |
 |-----------|-------------|
+| `@element($page, $item)` | Renders a content element or a reference to a shared element with the view of the page theme for its type (falling back to `cms::<type>` and `cms::invalid`), passing its data, the page files and the result of its schema action |
 | `@localDate($date, $format)` | Formats a date in the current locale: no format for day and month (e.g. "October 5"), `short`, `medium`, `long` or `full` for ICU date styles, otherwise a Carbon `isoFormat` pattern |
 | `@markdown($text)` | Converts Markdown to HTML using GitHub-flavored CommonMark |
+
+## Blade Components
+
+`<x-cms::image>` renders a responsive `<picture>` with `srcset`, lazy loading and the alt text in the page language:
+
+```blade
+<x-cms::image :page="$page" :file="$file" />
+<x-cms::image :page="$page" :file="$bg" main class="background" sizes="(min-width: 768px) 50vw, 100vw" />
+```
+
+| Attribute | Description |
+|-----------|-------------|
+| `page` | Current page, used for the language and the URLs of private files |
+| `file` | File from `$files` (e.g. `cms($files, $data->file?->id ?? null)`) |
+| `main` | Main image of the page, loaded eagerly with high priority (default: `false`) |
+| `sizes` | Value of the `sizes` attribute (default: `100vw`) |
+| `class` | CSS class string or array |
+
+Other attributes like `id` or `data-*` are added to the `<picture>` element. The `cms::pic` partial is kept for existing themes and renders the same component.
+
+`<x-cms::video>` renders a `<video>` with the title in the page language and the last preview image as poster. Without `autoplay`, it shows the player controls and loads nothing until played; with `autoplay`, it plays muted in a loop like an animated image. The slot is the fallback content for browsers without video support:
+
+```blade
+<x-cms::video :page="$page" :file="$file">{{ __('Download file') }}</x-cms::video>
+<x-cms::video :page="$page" :file="$file" autoplay />
+```
+
+`<x-cms::buttons>` renders the buttons of an element (`label`, `url` and `url-rel` each) as links within `<div class="actions">` and skips buttons without a valid URL. Nothing is rendered if the list is empty:
+
+```blade
+<x-cms::buttons :buttons="$data->buttons ?? []" />
+```
+
+The layout components build the page header from the current `$page` and the `$nav` navigation passed to the layout:
+
+```blade
+<nav>
+    <ul>
+        <li class="brand"><x-cms::brand :page="$page" :nav="$nav" /></li>
+    </ul>
+    <ul>
+        <x-cms::menu :page="$page" :nav="$nav" />
+        <x-cms::languages :page="$page" :nav="$nav" />
+    </ul>
+</nav>
+<x-cms::breadcrumb :page="$page" :nav="$nav" />
+<x-cms::search :page="$page" />
+```
+
+Add `<x-cms::csp :page="$page" />` to the `<head>` of the layout.
+
+| Component | Output |
+|-----------|--------|
+| `brand` | Link to the home page with the logo of the nearest page that has one, or the website title. `alternative` prefers the alternative logo (for dark headers), `name` replaces the website title and other attributes like `class` are added to the link |
+| `menu` | One `<li>` per menu item, with a dropdown for items with sub-pages. Active links get the `active` class and the current page gets `aria-current="page"`. `:dropdown="false"` renders top-level links only, `parent` adds the parent page as first dropdown link, `highlight="contact"` adds the class `contact` to the item with that path and `link-class` adds a class to all links |
+| `languages` | `<li class="languages">` with a dropdown linking all published language variants of the page, only rendered if there are at least two |
+| `breadcrumb` | Breadcrumb navigation of the ancestors below the root page, only rendered for pages below the first level |
+| `search` | Search dialog `#modal-search` used by the search script of the theme |
+| `csp` | Content-Security-Policy `<meta>` tag for the `<head>` built from the `cms.theme.csp.*` settings and the hashes of the custom styles and scripts of the page, omitted if `app.debug` is enabled |
 
 ## License
 

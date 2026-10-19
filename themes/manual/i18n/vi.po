@@ -74,3 +74,9 @@ msgstr "Giấy phép phần mềm hiển thị ở chân trang, ví dụ MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Giao diện"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Giao diện tối"

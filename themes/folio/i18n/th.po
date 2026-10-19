@@ -104,3 +104,9 @@ msgstr "ลิงก์ไปยังโปรไฟล์ของคุณ �
 msgctxt "st"
 msgid "folio::theme"
 msgstr "ธีม"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "ธีมสีเข้ม"

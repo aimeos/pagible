@@ -8,11 +8,12 @@
     @if($file = cms(cms($item, 'files'), data_get(collect((array) ($property->files ?? []))
         ->map( fn( $fileId ) => (object) ['id' => is_scalar( $fileId ) ? (string) $fileId : data_get( $fileId, 'id' )] )
         ->first(), 'id', $property->file?->id ?? null)))
-        @include('cms::pic', [
-            'file' => $file,
-            'main' => (bool) ($featured ?? false),
-            'sizes' => '(max-width: 768px) 100vw, 45vw',
-        ])
+        <x-cms::image
+            :page="$page"
+            :file="$file"
+            :main="(bool) ($featured ?? false)"
+            sizes="(max-width: 768px) 100vw, 45vw"
+        />
     @else
         <div class="property-image-empty">
             <span class="property-image-empty-brand" aria-hidden="true">Estate</span>

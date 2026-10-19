@@ -104,3 +104,9 @@ msgstr "តំណទៅប្រវត្តិរូបរបស់អ្នក
 msgctxt "st"
 msgid "folio::theme"
 msgstr "រចនាប័ទ្ម"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "រចនាប័ទ្មងងឹត"

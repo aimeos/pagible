@@ -158,3 +158,9 @@ msgstr "Notă scurtă afișată în subsol, de ex. certificat SOC 2 Type II, dat
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Temă"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Temă întunecată"

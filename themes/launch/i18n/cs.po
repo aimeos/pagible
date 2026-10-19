@@ -158,3 +158,9 @@ msgstr "Krátká poznámka v zápatí, např. certifikace SOC 2 Type II, data ho
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Vzhled"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tmavý vzhled"

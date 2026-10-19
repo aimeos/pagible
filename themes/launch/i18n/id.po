@@ -158,3 +158,9 @@ msgstr "Catatan singkat yang ditampilkan di footer, mis. tersertifikasi SOC 2 Ty
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tema gelap"

@@ -157,3 +157,9 @@ msgstr ""
 msgctxt "st"
 msgid "launch::theme"
 msgstr ""
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr ""

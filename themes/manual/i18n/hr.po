@@ -74,3 +74,9 @@ msgstr "Licenca softvera prikazana u podnožju, npr. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Tamna tema"

@@ -74,3 +74,9 @@ msgstr "页脚中显示的软件许可证，例如 MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "主题"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "深色主题"

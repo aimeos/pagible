@@ -158,3 +158,9 @@ msgstr "ملاحظة قصيرة تظهر في التذييل، مثل معتمد
 msgctxt "st"
 msgid "launch::theme"
 msgstr "المظهر"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "المظهر الداكن"

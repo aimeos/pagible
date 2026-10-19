@@ -83,6 +83,87 @@ class Theme
 
 
     /**
+     * Renders a CMS element or a reference to a shared element with the first existing view.
+     *
+     * @param array<string, mixed> $vars Variables of the parent view
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @param object $item The CMS element or a reference to a shared element
+     * @return string The rendered CMS element
+     */
+    public static function element( array $vars, \Aimeos\Cms\Models\PageView $page, object $item ) : string
+    {
+        $item = cmsref( $page, $item );
+        $names = [...self::names( $page, $item ), 'cms::invalid'];
+        $files = cms( $page, 'files', collect() );
+
+        if( $item instanceof \Aimeos\Cms\Models\Element ) {
+            $files = $files->union( cms( $item, 'files', collect() ) );
+            $item = (object) ['id' => cms($item, 'id'), 'type' => cms($item, 'type'), 'name' => cms($item, 'name'), 'data' => cms($item, 'data')];
+        }
+
+        $data = ['files' => $files];
+
+        if( $action = Schema::action( $item->type ?? '' ) ) {
+            $data['action'] = app()->call( $action, ['page' => $page, 'item' => $item] );
+        }
+
+        return View::first( $names, $data + (array) $item, $vars )->render();
+    }
+
+
+    /**
+     * Returns the CSP hash of the given inline text.
+     *
+     * @param string $text Inline style or script text
+     * @return string Hash like "'sha256-...'" or empty string if the text is empty
+     */
+    public static function hash( string $text ) : string
+    {
+        return $text !== '' ? "'sha256-" . base64_encode( hash( 'sha256', $text, true ) ) . "'" : '';
+    }
+
+
+    /**
+     * Returns the CSP hashes of the page texts stored in the config of the page and its ancestors.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @param string $key Config key of the texts, e.g. "config.styles.data.text"
+     * @return string Space separated hashes like "'sha256-...'"
+     */
+    public static function hashes( \Aimeos\Cms\Models\PageView $page, string $key ) : string
+    {
+        return $page->ancestorsAndSelf->map( fn( $item ) => self::hash( (string) cms( $item, $key ) ) )->filter()->implode( ' ' );
+    }
+
+
+    /**
+     * Returns the headings of the content items with the item IDs used as anchors.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @param iterable<object> $items Content items including references to shared elements
+     * @param array<int, int> $levels Heading levels to return, all if empty
+     * @return array<int, array{id: string, level: int, title: string}> Headings in content order
+     */
+    public static function headings( \Aimeos\Cms\Models\PageView $page, iterable $items, array $levels = [] ) : array
+    {
+        $list = [];
+
+        foreach( $items as $item )
+        {
+            $el = cmsref( $page, $item );
+            $level = (int) ( $el->data->level ?? 1 );
+            $title = (string) ( $el->data->title ?? '' );
+
+            if( ( $el->type ?? null ) === 'heading' && $title !== '' && ( !$levels || in_array( $level, $levels, true ) ) ) {
+                $list[] = ['id' => (string) ( $item->id ?? '' ), 'level' => $level, 'title' => $title];
+            }
+        }
+
+        return $list;
+    }
+
+
+    /**
      * Sets the application locale for rendering pages in the given language.
      *
      * @param string $locale Language tag like "de" or "de-CH"
@@ -91,6 +172,58 @@ class Theme
     {
         App::setLocale( $locale );
         self::translations( $locale );
+    }
+
+
+    /**
+     * Returns the view names to try for a CMS element, based on its type and the page theme.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @param object $item The CMS element with references already resolved
+     * @return array<int, string> View names in the order they are tried, without the "cms::invalid" fallback
+     */
+    public static function names( \Aimeos\Cms\Models\PageView $page, object $item ) : array
+    {
+        if( !isset( $item->type ) ) {
+            return [];
+        }
+
+        $type = (string) $item->type;
+
+        [$theme, $type] = str_contains( $type, '::' )
+            ? explode( '::', $type, 2 )
+            : [cms( $page, 'theme' ) ?: 'cms', $type];
+
+        return $theme === 'cms'
+            ? ['cms::' . $type]
+            : [$theme . '::' . $type, 'cms::' . $type];
+    }
+
+
+    /**
+     * Returns the CSS rules of the theme variables configured for the page and its ancestors.
+     *
+     * Variables also defined by the "theme-dark" config of the page theme are applied
+     * to the light mode only and the "theme-dark" values to the dark mode, all other
+     * variables to both modes. The rules must be placed after the theme stylesheets.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @return string CSS rules or empty string if no variables are configured
+     */
+    public static function style( \Aimeos\Cms\Models\PageView $page ) : string
+    {
+        $vars = self::vars( $page );
+        $modes = self::entry( $page, 'theme-dark' )[1];
+        $css = self::rule( ':root:root', array_diff_key( $vars, $modes ) );
+
+        foreach( ['light' => array_intersect_key( $vars, $modes ), 'dark' => self::vars( $page, 'theme-dark' )] as $mode => $list )
+        {
+            if( $rule = self::rule( ':root:not([data-theme=' . ( $mode === 'dark' ? 'light' : 'dark' ) . '])', $list ) ) {
+                $css .= '@media (prefers-color-scheme: ' . $mode . '){' . $rule . '}' . self::rule( ':root[data-theme=' . $mode . ']', $list );
+            }
+        }
+
+        return $css;
     }
 
 
@@ -113,6 +246,50 @@ class Theme
         if( $base !== $locale && empty( $loader->load( $locale, '*', '*' ) ) && !empty( $loader->load( $base, '*', '*' ) ) ) {
             $translator->setLocale( $base );
         }
+    }
+
+
+    /**
+     * Returns the validated theme variables configured for the page and its ancestors.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @param string $name Config entry of the page theme, e.g. "theme" or "theme-dark"
+     * @param bool $defaults TRUE to include the schema defaults of variables not configured
+     * @return array<string, string> CSS variable names as keys and their values, nearest page wins
+     */
+    public static function vars( \Aimeos\Cms\Models\PageView $page, string $name = 'theme', bool $defaults = false ) : array
+    {
+        [$key, $fields] = self::entry( $page, $name );
+        $list = $page->ancestorsAndSelf->map( fn( $item ) => (array) cms( $item, 'config.' . $key . '.data' ) );
+        $vars = [];
+
+        if( $defaults ) {
+            $list->prepend( array_map( fn( $field ) => $field['default'] ?? null, $fields ) );
+        }
+
+        foreach( $list as $data )
+        {
+            foreach( $data as $var => $value )
+            {
+                $type = $fields[$var]['type'] ?? null;
+                $value = is_string( $value ) ? trim( $value ) : '';
+
+                if( !$type || $value === '' || !preg_match( '/^--[a-z0-9-]+$/', (string) $var )
+                    || ( $type === 'color' ? !preg_match( '/^#[0-9A-Fa-f]{3,8}$/', $value ) : preg_match( '#[<>{};\\\\\r\n]|/\*#', $value ) )
+                ) {
+                    continue;
+                }
+
+                // the breadcrumb divider is used as content and must be a CSS string
+                if( $var === '--pico-nav-breadcrumb-divider' && !preg_match( '/^([\'"]).*\1$/', $value ) ) {
+                    $value = '"' . str_replace( '"', '', $value ) . '"';
+                }
+
+                $vars[$var] = $value;
+            }
+        }
+
+        return $vars;
     }
 
 
@@ -170,6 +347,36 @@ class Theme
         View::getFinder()->replaceNamespace( $name, $dir . '/views' );
 
         return $name;
+    }
+
+
+    /**
+     * Returns the config key and fields of a config entry of the page theme.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page
+     * @param string $name Config entry name without theme prefix
+     * @return array{0: string, 1: array<string, array<string, mixed>>} Config key and field definitions
+     */
+    private static function entry( \Aimeos\Cms\Models\PageView $page, string $name ) : array
+    {
+        $theme = cms( $page, 'theme' ) ?: 'cms';
+        $key = $theme === 'cms' ? $name : $theme . '::' . $name;
+
+        return [$key, (array) ( Schema::get( $theme )['config'][$key]['fields'] ?? [] )];
+    }
+
+
+    /**
+     * Returns a CSS rule for the given variables.
+     *
+     * @param string $selector CSS selector
+     * @param array<string, string> $vars CSS variable names as keys and their values
+     * @return string CSS rule or empty string if no variables are passed
+     */
+    private static function rule( string $selector, array $vars ) : string
+    {
+        $list = array_map( fn( $var, $value ) => $var . ':' . $value, array_keys( $vars ), $vars );
+        return $list ? $selector . '{' . implode( ';', $list ) . '}' : '';
     }
 
 

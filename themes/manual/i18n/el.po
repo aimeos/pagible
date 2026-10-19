@@ -74,3 +74,9 @@ msgstr "Άδεια του λογισμικού στο υποσέλιδο, π.χ.
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Θέμα"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Σκούρο θέμα"

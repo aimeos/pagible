@@ -90,7 +90,7 @@ class TonicDemoTest extends ThemeTestAbstract
         $response->assertSee( 'class="list-item"', false );
         $response->assertSee( 'Old fashioned over a large ice cube' );
         $response->assertDontSee( '<summary class="active">Bar notes</summary>', false );
-        $response->assertSee( '<a href="http://localhost/bar-notes" class="active">', false );
+        $response->assertSee( '<a href="http://localhost/bar-notes" class="active" aria-current="page">', false );
     }
 
 

@@ -115,3 +115,9 @@ msgstr ""
 msgctxt "st"
 msgid "aura::theme"
 msgstr ""
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "aura::theme-dark"
+msgstr ""

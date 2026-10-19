@@ -81,7 +81,7 @@ class ManeDemoTest extends ThemeTestAbstract
         $response->assertOk();
         $response->assertSee( 'class="list-item"', false );
         $response->assertSee( 'How to Care for Curly Hair' );
-        $response->assertSee( '<a href="http://localhost/hair-tips" class="active">', false );
+        $response->assertSee( '<a href="http://localhost/hair-tips" class="active" aria-current="page">', false );
     }
 
 

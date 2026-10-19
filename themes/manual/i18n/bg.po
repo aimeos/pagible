@@ -74,3 +74,9 @@ msgstr "Лиценз на софтуера в долния колонтитул,
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Тема"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Тъмна тема"

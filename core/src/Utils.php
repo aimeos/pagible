@@ -266,6 +266,18 @@ class Utils
 
 
     /**
+     * Returns the text direction of the given language.
+     *
+     * @param string|null $lang Language tag like "ar" or "ar-EG"
+     * @return string "rtl" for right-to-left languages, otherwise "ltr"
+     */
+    public static function textDir( ?string $lang ) : string
+    {
+        return in_array( strtok( (string) $lang, '-_' ), ['ar', 'dv', 'fa', 'he', 'ku', 'ur'], true ) ? 'rtl' : 'ltr';
+    }
+
+
+    /**
      * Generates a unique ID for the page content element.
      *
      * This ID is a 6-character string that starts with a letter (A-Z, a-z) and is followed by 5 alphanumeric characters.

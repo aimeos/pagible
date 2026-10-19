@@ -104,3 +104,9 @@ msgstr "Посилання на ваш профіль, наприклад https:
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Тема оформлення"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Темна тема оформлення"

@@ -104,3 +104,9 @@ msgstr "Връзка към профила ви, напр. https://github.com/le
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Тема"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Тъмна тема"
