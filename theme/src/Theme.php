@@ -154,7 +154,7 @@ class Theme
             $level = (int) ( $el->data->level ?? 2 );
             $title = (string) ( $el->data->title ?? '' );
 
-            if( $title !== '' && in_array( $level, $levels, true ) ) {
+            if( $title !== '' && ( !$levels || in_array( $level, $levels, true ) ) ) {
                 $list[] = ['id' => (string) ( $item->id ?? '' ), 'level' => $level, 'title' => $title];
             }
         }
