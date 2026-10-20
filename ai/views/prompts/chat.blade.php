@@ -53,6 +53,7 @@ Follow these rules:
 - Ensure that all content elements are relevant to the page topic.
 - Each page must have a unique title and unique content.
 - Use the page-metrics tool to optimize content for high volume keywords in existing pages.
+- Check the page history if changes correlate with the page-metrics numbers before suggesting new changes.
 8. Metadata
 - Derive the SEO-optimized page title and URL slug from the page content.
 - Add a social-media content element with a title and image that are relevant to the page content.
