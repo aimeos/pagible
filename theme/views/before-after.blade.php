@@ -16,8 +16,8 @@
 @endif
 @if(($before = cms($files, $data->before?->id ?? null)) && ($after = cms($files, $data->after?->id ?? null)))
 	<div class="compare">
-		@include('cms::pic', ['file' => $after, 'class' => 'after', 'main' => $data->main ?? false, 'sizes' => $sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'])
-		@include('cms::pic', ['file' => $before, 'class' => 'before', 'main' => $data->main ?? false, 'sizes' => $sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'])
+		<x-cms::image :page="$page" :file="$after" class="after" :main="$data->main ?? false" :sizes="$sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'" />
+		<x-cms::image :page="$page" :file="$before" class="before" :main="$data->main ?? false" :sizes="$sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'" />
 		<span class="label label-before" aria-hidden="true">{{ __('Before') }}</span>
 		<span class="label label-after" aria-hidden="true">{{ __('After') }}</span>
 		<span class="handle" aria-hidden="true"></span>

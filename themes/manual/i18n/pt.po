@@ -74,3 +74,9 @@ msgstr "Licença do software apresentada no rodapé, p. ex. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Tema escuro"

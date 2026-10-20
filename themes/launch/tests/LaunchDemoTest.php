@@ -58,7 +58,7 @@ class LaunchDemoTest extends ThemeTestAbstract
 
         $response->assertOk();
         $response->assertSee( 'On-Call Without Burnout: Seven Changes That Make Rotations Fair' );
-        $response->assertSee( '<a href="http://localhost/blog" class="active">', false );
+        $response->assertSee( '<a href="http://localhost/blog" class="active" aria-current="page">', false );
     }
 
 

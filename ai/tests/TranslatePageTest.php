@@ -175,6 +175,8 @@ class TranslatePageTest extends AiTestAbstract
     {
         $this->assertInstanceOf( \Closure::class, Ai::translator( $this->user ) );
         $this->assertNull( Ai::translator( $this->user( ['page:save', 'page:add'] ) ) );
+        $this->assertNull( Ai::translator( null ) );
+        $this->assertInstanceOf( \Closure::class, \Aimeos\Cms\Permission::system( fn() => Ai::translator( null ) ) );
 
         config( ['cms.ai.translate.provider' => null] );
         $this->assertNull( Ai::translator( $this->user ) );
@@ -195,6 +197,32 @@ class TranslatePageTest extends AiTestAbstract
         $this->assertEquals( Sync::EDITOR, $de->latest->editor );
         $this->assertEquals( '[de] Title', $de->latest->data->title );
         $this->assertFalse( (bool) $de->stale );
+    }
+
+
+    public function testJobSystem()
+    {
+        $page = $this->page();
+        $fake = $this->fake( $page );
+
+        // jobs queued inside Permission::system() run without user in the queue worker
+        $job = \Aimeos\Cms\Permission::system( fn() => new TranslatePage( $page->id, 'de', Tenancy::value(), null ) );
+        $job = unserialize( serialize( $job ) )->withFakeQueueInteractions();
+        $job->handle();
+
+        $job->assertNotFailed();
+        $de = PageView::language( 'de' )->with( 'latest' )->findOrFail( $page->id );
+
+        $this->assertCount( 1, $fake->calls() );
+        $this->assertEquals( Sync::EDITOR, $de->latest->editor );
+        $this->assertEquals( '[de] Title', $de->latest->data->title );
+
+        // jobs without user queued outside Permission::system() fail
+        $job = ( new TranslatePage( $page->id, 'fr', Tenancy::value(), null ) )->withFakeQueueInteractions();
+        $job->handle();
+
+        $job->assertFailedWith( \Aimeos\Cms\Exceptions\PermissionException::class );
+        $this->assertFalse( PageVariant::where( 'page_id', $page->id )->where( 'lang', 'fr' )->exists() );
     }
 
 

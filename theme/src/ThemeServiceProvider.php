@@ -65,6 +65,7 @@ class ThemeServiceProvider extends Provider
         if( $this->app->runningInConsole() )
         {
             $this->commands( [
+                \Aimeos\Cms\Commands\CheckSchema::class,
                 \Aimeos\Cms\Commands\Demo::class,
                 \Aimeos\Cms\Commands\InstallTheme::class,
             ] );
@@ -84,6 +85,10 @@ class ThemeServiceProvider extends Provider
 
     protected function loadBladeDirectives(): void
     {
+        Blade::directive( 'element', function( $expression ) {
+            return "<?php echo \\Aimeos\\Cms\\Theme::element( \\Illuminate\\Support\\Arr::except( get_defined_vars(), ['__data', '__path'] ), $expression ); ?>";
+        } );
+
         Blade::directive( 'localDate', function( $expression ) {
             // Style names and the default use ICU, other formats are Carbon isoFormat() patterns
             return "<?php

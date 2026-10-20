@@ -128,34 +128,22 @@ Then install PagibleAI CMS:
 ```bash
 composer req aimeos/pagible
 php artisan cms:install
-php artisan migrate
 ```
 
-Fresh Laravel applications contain a static `public/robots.txt` file. Web servers
-serve that file before Laravel receives the request. If it contains custom rules,
-first copy them into the `robots.txt` configuration element on the root page and
-publish the change. Then remove the static file to enable Pagible's dynamic route:
+The `cms:install` command publishes the files, migrates the database and adds the commands
+updating the published CMS files after each `composer update` to the `post-update-cmd` script
+in your `composer.json`.
 
-```bash
-rm public/robots.txt
-```
+Fresh Laravel applications contain a static `public/robots.txt` file which web servers serve
+before Laravel receives the request. `cms:install` removes it if it contains the default rules
+of Laravel, so Pagible's dynamic route serves the published rules together with the generated
+sitemap URLs. If the file contains custom rules, copy them into the `robots.txt` configuration
+element of the root page, publish the change and remove the file afterwards.
 
-The dynamic route serves the published rules together with the generated sitemap
-and news sitemap URLs. Alternatively, configure the web server to pass
-`/robots.txt` to Laravel even when the static file exists.
-
-Now, adapt the `.env` file of your application and change the `APP_URL` setting to your domain. If you are using `php artisan serve` for testing, add the port of the internal web server (`APP_URL=http://localhost:8000`). Otherwise, the uploading files will fail because they wouldn't be loaded!
-
-Add a line in the "post-update-cmd" section of your `composer.json` file to update the admin backend files after each update:
-
-```json
-"post-update-cmd": [
-    "@php artisan vendor:publish --force --tag=cms-admin --tag=cms-graphql",
-    "@php artisan vendor:publish --tag=cms-theme",
-    "@php artisan migrate",
-    ...
-],
-```
+Change the `APP_URL` setting in the `.env` file of your application to your domain. If you are
+using `php artisan cms:serve` for testing, add the port of the internal web server
+(`APP_URL=http://localhost:8000`), otherwise uploaded files won't be loaded. `cms:install`
+warns you if the port is missing.
 
 ### Authorization
 

@@ -170,7 +170,7 @@ class Merge
             [$merged['content'], $xd] = self::content( (array) ( $base->aux->content ?? [] ), $latestContent, (array) ( $merged['content'] ?? [] ) );
 
             $cd = null;
-            if( Permission::can( 'page:config', $user ) ) {
+            if( Permission::allowed( 'page:config', $user ) ) {
                 [$merged['config'], $cd] = self::structured( (array) ( $base->aux->config ?? [] ), $latestConfig, (array) ( $merged['config'] ?? [] ) );
             } else {
                 $merged['config'] = $latestConfig;

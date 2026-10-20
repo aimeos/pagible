@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Jobs;
 
+use Aimeos\Cms\Utils;
+
 
 /**
  * Routes the CMS jobs to the configured queue connection and name.
@@ -18,6 +20,6 @@ trait RoutesQueue
      */
     protected function routeQueue() : void
     {
-        $this->onConnection( config( 'cms.queue.connection' ) ?: null )->onQueue( config( 'cms.queue.name' ) ?: null );
+        $this->onConnection( Utils::queue() )->onQueue( config( 'cms.queue.name' ) ?: null );
     }
 }

@@ -158,3 +158,9 @@ msgstr "Kratko obvestilo v nogi, npr. certificirano SOC 2 Type II, podatki gosto
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Temna tema"

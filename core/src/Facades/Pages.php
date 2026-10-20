@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Facades;
 
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Resource\Acting;
 use Aimeos\Cms\Resource\BulkResult;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -40,6 +41,20 @@ use Illuminate\Support\Facades\Facade;
  */
 class Pages extends Facade
 {
+    /**
+     * Calls the pages methods for the given user, e.g. Pages::as( $user )->publish( $id ).
+     *
+     * @param Authenticatable|null $user User the methods are called for, NULL for anonymous calls
+     * @return Acting<\Aimeos\Cms\Resource\Pages> Resource methods without the user argument
+     */
+    public static function as( ?Authenticatable $user ) : Acting
+    {
+        /** @var \Aimeos\Cms\Resource\Pages $resource */
+        $resource = static::getFacadeRoot();
+        return new Acting( $resource, $user );
+    }
+
+
     protected static function getFacadeAccessor() : string
     {
         return \Aimeos\Cms\Resource\Pages::class;

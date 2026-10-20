@@ -104,3 +104,9 @@ msgstr "Ссылка на ваш профиль, например https://github
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Тема оформления"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Тёмная тема оформления"

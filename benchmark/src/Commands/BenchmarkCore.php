@@ -17,6 +17,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
@@ -260,7 +261,7 @@ class BenchmarkCore extends Command
         config( ['cms.locales' => array_unique( [...(array) $locales, $lang] )] );
 
         try {
-            $this->variantBenchmarks( $root, $domain, $tries, $lang, $translated, $missing );
+            Permission::system( fn() => $this->variantBenchmarks( $root, $domain, $tries, $lang, $translated, $missing ) );
         } finally {
             config( ['cms.locales' => $locales] );
         }

@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\SearchQuery;
@@ -68,7 +69,7 @@ class VariantSearchTest extends CoreTestAbstract
         $source = (string) $page->lang;
         config( ['cms.locales' => [$source, 'de', 'fr']] );
 
-        $variant = Variants::add( $page->id, 'de' );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'fr'], $doc['langs'] ?? null );
@@ -77,7 +78,7 @@ class VariantSearchTest extends CoreTestAbstract
         Scout::sync( PageView::class, [(string) $page->id] );
         $this->assertSame( ['de'], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
 
-        Variants::drop( $page->id, 'de' );
+        Permission::system( fn() => Variants::drop( $page->id, 'de' ) );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'de', 'fr'], $doc['langs'] ?? null );
@@ -85,7 +86,7 @@ class VariantSearchTest extends CoreTestAbstract
         $this->assertSame( [], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
         $this->assertSame( ['de'], $this->engine->documents[$variant->variant_id]['langs_trashed'] ?? null );
 
-        Variants::purgeMany( [$page->id], 'de' );
+        Permission::system( fn() => Variants::purgeMany( [$page->id], 'de' ) );
 
         $doc = $this->engine->documents[$page->variant_id] ?? [];
         $this->assertEqualsCanonicalizing( [$source, 'de', 'fr'], $doc['langs_trashed'] ?? null );
@@ -98,13 +99,13 @@ class VariantSearchTest extends CoreTestAbstract
         $source = (string) $page->lang;
         config( ['cms.locales' => [$source, 'de', 'de-CH']] );
 
-        $variant = Variants::add( $page->id, 'de' );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
 
         // the variants of all languages are reindexed because "de-CH" falls back to "de"
         $this->assertSame( ['de', 'de-CH'], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
         $this->assertSame( [$source], $this->engine->documents[$page->variant_id]['langs'] ?? null );
 
-        Variants::drop( $page->id, 'de' );
+        Permission::system( fn() => Variants::drop( $page->id, 'de' ) );
 
         $this->assertSame( [], $this->engine->documents[$variant->variant_id]['langs'] ?? null );
         $this->assertSame( ['de', 'de-CH'], $this->engine->documents[$variant->variant_id]['langs_trashed'] ?? null );
@@ -123,9 +124,9 @@ class VariantSearchTest extends CoreTestAbstract
 
         foreach( $ids as $id )
         {
-            Variants::add( $id, 'de' );
-            Variants::add( $id, 'de-CH' );
-            Variants::add( $id, 'fr' );
+            Permission::system( fn() => Variants::add( $id, 'de' ) );
+            Permission::system( fn() => Variants::add( $id, 'de-CH' ) );
+            Permission::system( fn() => Variants::add( $id, 'fr' ) );
         }
 
         $variants = PageVariant::withTrashed()->whereIn( 'page_id', $ids )->whereNotIn( 'id', $pages->pluck( 'variant_id' ) )->pluck( 'lang', 'id' );
@@ -165,7 +166,7 @@ class VariantSearchTest extends CoreTestAbstract
     public function testSyncIndexesAllVariantsOfThePages(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $variant = Variants::add( $page->id, 'de' );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
         $this->engine->documents = [];
 
         Scout::sync( PageView::class, [(string) $page->id] );
@@ -177,10 +178,10 @@ class VariantSearchTest extends CoreTestAbstract
     public function testBulkAndPublishIndexOnlyTheChangedVariants(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $variant = Variants::add( $page->id, 'de' );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
         $this->engine->updates = [];
 
-        Variants::bulk( [$page->id], 'de', ['title' => 'Blog DE'], null );
+        Permission::system( fn() => Variants::bulk( [$page->id], 'de', ['title' => 'Blog DE'] ) );
         $this->assertSame( [$variant->variant_id], $this->engine->updates );
 
         $this->engine->updates = [];
@@ -188,7 +189,7 @@ class VariantSearchTest extends CoreTestAbstract
         \Illuminate\Support\Facades\Queue::fake();
 
         try {
-            Variants::publishMany( [$page->id], 'de', null );
+            Permission::system( fn() => Variants::publishMany( [$page->id], 'de' ) );
         } finally {
             config( ['scout.queue' => false] );
         }
@@ -201,12 +202,12 @@ class VariantSearchTest extends CoreTestAbstract
     public function testBulkVariantRestoreReindexesTheVariantsOfThePages(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        $de = Variants::add( $page->id, 'de' );
-        $fr = Variants::add( $page->id, 'fr' );
-        Variants::drop( $page->id, 'de' );
+        $de = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
+        $fr = Permission::system( fn() => Variants::add( $page->id, 'fr' ) );
+        Permission::system( fn() => Variants::drop( $page->id, 'de' ) );
 
         $this->engine->updates = [];
-        Variants::restoreMany( [$page->id], 'de', fields: ['name'] );
+        Permission::system( fn() => Variants::restoreMany( [$page->id], 'de', fields: ['name'] ) );
 
         // the source variant isn't listed for "de" any more, the languages of "fr" don't change
         $this->assertEqualsCanonicalizing( [$page->variant_id, $de->variant_id], array_values( array_unique( $this->engine->updates ) ) );
@@ -217,7 +218,7 @@ class VariantSearchTest extends CoreTestAbstract
     public function testCopiesAreIndexedOnceWithTheirAccess(): void
     {
         $root = PageView::where( 'path', 'blog' )->firstOrFail();
-        $page = Pages::add( ['lang' => 'en', 'name' => 'Copy', 'path' => 'copy-page'], parent: $root->id );
+        $page = Permission::system( fn() => Pages::add( ['lang' => 'en', 'name' => 'Copy', 'path' => 'copy-page'], parent: $root->id ) );
 
         \Aimeos\Cms\Models\PageAccess::query()->toBase()->insert( [
             'page_id' => $page->id, 'tenant_id' => 'test', 'value' => '', 'editor' => 'test', 'created_at' => now(), 'updated_at' => now(),
@@ -225,17 +226,17 @@ class VariantSearchTest extends CoreTestAbstract
 
         // single page, no bulk inserts
         $this->engine->updates = [];
-        $copy = Pages::copy( $page->id, parent: $root->id );
+        $copy = Permission::system( fn() => Pages::copy( $page->id, parent: $root->id ) );
 
         $this->assertSame( [$copy->variant_id], $this->engine->updates );
         $this->assertTrue( $this->engine->documents[$copy->variant_id]['restricted'] ?? null );
 
         // subtree with bulk inserted variants
-        Variants::add( $copy->id, 'de' );
-        Pages::add( ['lang' => 'en', 'name' => 'Child', 'path' => 'copy-child'], parent: $copy->id );
+        Permission::system( fn() => Variants::add( $copy->id, 'de' ) );
+        Permission::system( fn() => Pages::add( ['lang' => 'en', 'name' => 'Child', 'path' => 'copy-child'], parent: $copy->id ) );
 
         $this->engine->updates = [];
-        $tree = Pages::copy( $copy->id, parent: $root->id );
+        $tree = Permission::system( fn() => Pages::copy( $copy->id, parent: $root->id ) );
         $keys = \Aimeos\Cms\Models\PageVariant::whereIn( 'page_id', PageView::where( 'parent_id', $tree->id )->pluck( 'id' )->push( $tree->id ) )
             ->pluck( 'id' )->map( strval( ... ) )->all();
 
@@ -254,14 +255,14 @@ class VariantSearchTest extends CoreTestAbstract
         Scout::sync( PageView::class, [$id] );
 
         $steps = [
-            'add fr' => fn() => Variants::add( $id, 'fr' ),
-            'add de' => fn() => Variants::add( $id, 'de' ),
-            'add de-CH' => fn() => Variants::add( $id, 'de-CH' ),
-            'drop de' => fn() => Variants::drop( $id, 'de' ),
-            'source fr' => fn() => Variants::setSource( $id, 'fr' ),
-            'restore de' => fn() => Variants::restoreMany( [$id], 'de' ),
-            'drop de-CH' => fn() => Variants::drop( $id, 'de-CH' ),
-            'purge de-CH' => fn() => Variants::purgeMany( [$id], 'de-CH' ),
+            'add fr' => fn() => Permission::system( fn() => Variants::add( $id, 'fr' ) ),
+            'add de' => fn() => Permission::system( fn() => Variants::add( $id, 'de' ) ),
+            'add de-CH' => fn() => Permission::system( fn() => Variants::add( $id, 'de-CH' ) ),
+            'drop de' => fn() => Permission::system( fn() => Variants::drop( $id, 'de' ) ),
+            'source fr' => fn() => Permission::system( fn() => Variants::setSource( $id, 'fr' ) ),
+            'restore de' => fn() => Permission::system( fn() => Variants::restoreMany( [$id], 'de' ) ),
+            'drop de-CH' => fn() => Permission::system( fn() => Variants::drop( $id, 'de-CH' ) ),
+            'purge de-CH' => fn() => Permission::system( fn() => Variants::purgeMany( [$id], 'de-CH' ) ),
         ];
 
         // only the affected variants are reindexed, so the others must still be listed correctly
@@ -278,12 +279,12 @@ class VariantSearchTest extends CoreTestAbstract
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
         config( ['cms.locales' => [(string) $page->lang, 'de', 'de-CH', 'fr']] );
 
-        $de = Variants::add( $page->id, 'de' );
-        $fr = Variants::add( $page->id, 'fr' );
+        $de = Permission::system( fn() => Variants::add( $page->id, 'de' ) );
+        $fr = Permission::system( fn() => Variants::add( $page->id, 'fr' ) );
         $this->engine->updates = [];
 
         // "de-CH" falls back to "de", so the variants of "fr" keep their languages
-        $variant = Variants::add( $page->id, 'de-CH' );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de-CH' ) );
 
         $this->assertEqualsCanonicalizing( [$page->variant_id, $de->variant_id, $variant->variant_id], array_unique( $this->engine->updates ) );
         $this->assertSame( ['de'], $this->engine->documents[$de->variant_id]['langs'] ?? null );
@@ -298,7 +299,7 @@ class VariantSearchTest extends CoreTestAbstract
         $locales = [(string) $page->lang, 'de', 'de-CH', 'fr'];
         config( ['cms.locales' => $locales] );
 
-        $de = Variants::add( $id, 'de' );
+        $de = Permission::system( fn() => Variants::add( $id, 'de' ) );
         PageVariant::findOrFail( $de->variant_id )->forceFill( ['lang' => 'fr'] )->save();
 
         // "de" and "de-CH" fall back to the source variant again
@@ -311,13 +312,13 @@ class VariantSearchTest extends CoreTestAbstract
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
         config( ['cms.locales' => [(string) $page->lang, 'de', 'de-CH', 'fr'], 'scout.soft_delete' => false] );
 
-        Variants::add( $page->id, 'de' );
-        $variant = Variants::add( $page->id, 'de-CH' );
+        Permission::system( fn() => Variants::add( $page->id, 'de' ) );
+        $variant = Permission::system( fn() => Variants::add( $page->id, 'de-CH' ) );
         $this->engine->updates = [];
 
         // the dropped variant is removed from the index and must not be added again
-        Variants::drop( $page->id, 'de-CH' );
-        Variants::add( $page->id, 'fr' );
+        Permission::system( fn() => Variants::drop( $page->id, 'de-CH' ) );
+        Permission::system( fn() => Variants::add( $page->id, 'fr' ) );
 
         $this->assertNotContains( $variant->variant_id, $this->engine->updates );
     }

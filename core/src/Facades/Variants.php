@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Facades;
 
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Resource\Acting;
 use Aimeos\Cms\Resource\BulkResult;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -43,6 +44,20 @@ use Illuminate\Support\Facades\Facade;
  */
 class Variants extends Facade
 {
+    /**
+     * Calls the variants methods for the given user, e.g. Variants::as( $user )->publish( $id ).
+     *
+     * @param Authenticatable|null $user User the methods are called for, NULL for anonymous calls
+     * @return Acting<\Aimeos\Cms\Resource\Variants> Resource methods without the user argument
+     */
+    public static function as( ?Authenticatable $user ) : Acting
+    {
+        /** @var \Aimeos\Cms\Resource\Variants $resource */
+        $resource = static::getFacadeRoot();
+        return new Acting( $resource, $user );
+    }
+
+
     protected static function getFacadeAccessor() : string
     {
         return \Aimeos\Cms\Resource\Variants::class;

@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Translation\Hashes;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
@@ -312,7 +313,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
 
         $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
-        $fr = Variants::translate( $page->id, 'fr' );
+        $fr = Permission::system( fn() => Variants::translate( $page->id, 'fr' ) );
 
         $this->assertSame( array_column( (array) $page->content, 'id' ), array_column( (array) $fr->latest->aux->content, 'id' ) );
     }

@@ -37,9 +37,10 @@ class Demo extends Command
     {
         if( $this->option( 'all' ) )
         {
-            foreach( array_keys( Schema::all() ) as $theme )
+            foreach( Schema::all() as $theme => $data )
             {
-                if( $theme === 'cms' ) {
+                // schemas without page types only add content elements
+                if( $theme === 'cms' || empty( $data['types'] ) ) {
                     continue;
                 }
 

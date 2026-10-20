@@ -8,12 +8,4 @@
     <div class="cms-text">@markdown($data->text)</div>
 @endif
 
-@if($data->buttons ?? null)
-    <div class="actions">
-        @foreach($data->buttons as $button)
-            @if($url = cmslink($button->url ?? null))
-                <a class="btn" href="{{ $url }}" rel="{{ $button->{'url-rel'} ?? '' }}">{{ $button->label ?? '' }}</a>
-            @endif
-        @endforeach
-    </div>
-@endif
+<x-cms::buttons :buttons="$data->buttons ?? []" />

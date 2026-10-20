@@ -104,3 +104,9 @@ msgstr "رابط حسابك، مثل https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "المظهر"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "المظهر الداكن"

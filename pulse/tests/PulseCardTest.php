@@ -88,6 +88,7 @@ class PulseCardTest extends PulseTestCase
             'jsonapi',
             'graphql',
             'mcp',
+            'cdn',
         ], array_keys( CmsMetricCard::available() ) );
     }
 

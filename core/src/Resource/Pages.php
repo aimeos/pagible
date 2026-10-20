@@ -44,7 +44,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
  *
  * Each method checks the permission of its action for the passed user, e.g. "page:save" for
  * save(), and throws a PermissionException if it's missing. Without user (NULL), the call is
- * trusted like in commands and jobs and no permissions are checked.
+ * anonymous and throws too unless it runs inside Permission::system(), e.g. in commands or jobs.
  *
  * Use it via the Aimeos\Cms\Facades\Pages facade, which resolves the instance from the container.
  * Applications can replace it by a subclass overriding the public or protected methods, e.g. with
@@ -91,6 +91,7 @@ class Pages
             $page = new PageView();
             $page->setUniqueIds();
             $page->fill( $input );
+            $page->status = 0; // disabled until published because the live columns come from the draft
             $page->editor = $editor;
 
             // Inserts the page with its draft version so the draft (latest=true) row is indexed

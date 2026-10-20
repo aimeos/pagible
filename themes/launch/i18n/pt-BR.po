@@ -158,3 +158,9 @@ msgstr "Breve nota exibida no rodapé, por exemplo: Certificado SOC 2 Tipo II, d
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tema escuro"

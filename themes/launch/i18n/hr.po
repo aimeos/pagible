@@ -158,3 +158,9 @@ msgstr "Kratka napomena prikazana u podnožju, npr. certificirano prema SOC 2 Ti
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tamna tema"

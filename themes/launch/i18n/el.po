@@ -158,3 +158,9 @@ msgstr "Σύντομη σημείωση στο υποσέλιδο, π.χ. πισ
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Θέμα"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Σκούρο θέμα"

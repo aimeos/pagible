@@ -158,3 +158,9 @@ msgstr "Lưu ý ngắn hiển thị ở phần chân trang, ví dụ: đạt ch�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Giao diện"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Giao diện tối"

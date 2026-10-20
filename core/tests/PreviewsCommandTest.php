@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Commands\Previews;
@@ -162,7 +163,7 @@ class PreviewsCommandTest extends CoreTestAbstract
     {
         config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720], ['width' => 960]]] );
 
-        $file = Files::add( UploadedFile::fake()->image( 'small.jpg', 600, 300 ) );
+        $file = Permission::system( fn() => Files::add( UploadedFile::fake()->image( 'small.jpg', 600, 300 ) ) );
 
         // the 720 and 960 sizes result in the same width because the image is smaller and share one preview
         $this->assertEquals( [480, 600], array_keys( (array) $file->previews ) );
@@ -301,10 +302,10 @@ class PreviewsCommandTest extends CoreTestAbstract
     {
         config( ['cms.image.preview-sizes' => [['width' => 960]]] );
 
-        $file = Files::add(
+        $file = Permission::system( fn() => Files::add(
             UploadedFile::fake()->createWithContent( 'document.txt', 'text' ),
             preview: UploadedFile::fake()->image( 'preview.jpg', 1200, 600 ),
-        );
+        ) );
 
         config( ['cms.image.preview-sizes' => [['width' => 480], ['width' => 720]]] );
 
@@ -460,7 +461,7 @@ class PreviewsCommandTest extends CoreTestAbstract
 
     protected function file( bool $published = true ): File
     {
-        $file = Files::add( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ) );
+        $file = Permission::system( fn() => Files::add( UploadedFile::fake()->image( 'photo.jpg', 1200, 600 ) ) );
 
         return $published ? $this->publish( $file ) : $file;
     }

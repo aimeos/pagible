@@ -7,6 +7,8 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Database\Factories\PageFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Concerns\MapsReferences;
 use Aimeos\Cms\Concerns\PageAttributes;
@@ -82,11 +84,14 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
  * @method static PageQuery<static> allVariants(bool $trashed = false)
  * @method static PageQuery<static> fallback(string $lang, bool $trashed = false)
  * @method static PageQuery<static> visible(string $lang)
+ * @method static PageQuery<static> live(\Illuminate\Contracts\Auth\Authenticatable|null $user = null, string|null $lang = null)
  * @method static PageQuery<static> localized(string $lang, bool $editor)
  * @phpstan-type VariantState array{id: string|null, lang: string, source: bool, state: string, published: bool}
  */
 class PageView extends Base
 {
+    /** @use HasFactory<PageFactory> */
+    use HasFactory;
     use MapsReferences;
     use PageAttributes;
     use PageRestrictions;
@@ -683,5 +688,14 @@ class PageView extends Base
             'config' => $version->aux->config ?? new \stdClass(),
             'meta' => $version->aux->meta ?? new \stdClass(),
         ];
+    }
+
+
+    /**
+     * Returns the factory creating the items through the facade.
+     */
+    protected static function newFactory() : PageFactory
+    {
+        return PageFactory::new();
     }
 }

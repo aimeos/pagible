@@ -25,7 +25,9 @@ use Aimeos\Cms\Commands\InstallCore;
 use Aimeos\Cms\Commands\Previews;
 use Aimeos\Cms\Commands\Publish;
 use Aimeos\Cms\Commands\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Scout\Builder;
 
@@ -55,6 +57,7 @@ class CoreServiceProvider extends Provider
         $this->userCasts();
         $this->schedule();
         $this->console();
+        $this->gate();
         $this->scout();
     }
 
@@ -154,6 +157,15 @@ class CoreServiceProvider extends Provider
                 User::class,
             ] );
         }
+    }
+
+    protected function gate() : void
+    {
+        // CMS actions like "page:publish" work with can(), @can, authorize() and "can:" middleware,
+        // returning NULL for other abilities keeps the gates and policies of the application
+        Gate::before( function( Authenticatable $user, string $ability ) {
+            return Permission::has( $ability ) ? Permission::can( $ability, $user ) : null;
+        } );
     }
 
     protected function scout() : void

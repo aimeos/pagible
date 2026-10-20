@@ -52,7 +52,7 @@
             'files' => $files,
         ])
     @elseif($file = cms($files, $data->file?->id ?? null))
-        @include('cms::pic', ['file' => $file, 'main' => true, 'class' => 'cover', 'sizes' => '(max-width: 1280px) 100vw, 1280px'])
+        <x-cms::image :page="$page" :file="$file" main class="cover" sizes="(max-width: 1280px) 100vw, 1280px" />
     @else
         <div class="property-gallery-empty">
             <span class="property-gallery-empty-brand" aria-hidden="true">Estate</span>
@@ -67,7 +67,7 @@
                 @foreach($slideshowFiles as $item)
                     @if($galleryFile = cms($files, $item->id))
                         <figure>
-                            @include('cms::pic', ['file' => $galleryFile, 'sizes' => '(max-width: 767px) 100vw, 50vw'])
+                            <x-cms::image :page="$page" :file="$galleryFile" sizes="(max-width: 767px) 100vw, 50vw" />
                             @if($caption = cms($galleryFile, 'description')?->{cms($page, 'lang')})
                                 <figcaption>{{ $caption }}</figcaption>
                             @endif

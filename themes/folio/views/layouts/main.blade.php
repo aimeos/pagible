@@ -1,45 +1,9 @@
 <!DOCTYPE html>
-<html class="no-js" lang="{{ cms($page, 'lang') }}" dir="{{ in_array(strtok((string) cms($page, 'lang'), '-_'), ['ar', 'dv', 'fa', 'he', 'ku', 'ur']) ? 'rtl' : 'ltr' }}">
+<html class="no-js" lang="{{ cms($page, 'lang') }}" dir="{{ \Aimeos\Cms\Utils::textDir(cms($page, 'lang')) }}">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        @auth
-            <meta name="csrf-token" content="{{ csrf_token() }}">
-        @endauth
-        @if(!config('app.debug'))
-            <meta http-equiv="Content-Security-Policy" content="
-                base-uri 'self';
-                default-src 'self';
-                frame-src 'self' {{ config('cms.theme.csp.frame-src') }};
-                connect-src 'self' {{ config('cms.theme.csp.connect-src') }};
-                img-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
-                media-src 'self' data: blob: {{ config('cms.theme.csp.media-src') }};
-                style-src 'self' {{ config('cms.theme.csp.style-src') }} {!! cmshashes($page, 'config.styles.data.text') !!};
-                script-src 'self' {{ config('cms.theme.csp.script-src') }} {!! cmshashes($page, 'config.javascript.data.text') !!};
-                font-src 'self';
-            ">
-        @endif
+        <x-cms::head :page="$page" :nav="$nav" />
 
         <meta name="color-scheme" content="light dark">
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="{{ cms($page, 'config.theme.data.--pico-background-color') ?: '#FBFAF8' }}">
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0F0E0C">
-
-        <title>{{ cms($page, 'title') }}</title>
-
-        @unless(collect(cms($page, 'meta', []))->contains('type', 'canonical'))
-            @include('cms::canonical', ['data' => (object) ['url' => cmsroute($page)]])
-        @endunless
-
-        @foreach(cms($page, 'meta', []) as $item)
-            @includeFirst(cmsviews($page, $item), cmsdata($page, $item))
-        @endforeach
-
-        @foreach($page->ancestorsAndSelf->reverse() as $navItem)
-            @if($fileId = cms($navItem, 'config.icon.data.file.id'))
-                <link rel="icon" type="{{ cmsfile($navItem, $fileId)?->mime }}" href="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}">
-                @break
-            @endif
-        @endforeach
 
         <script src="{{ cmstheme($page, 'folio.js') }}"></script>
         <link href="{{ cmstheme($page, 'pico.min.css') }}" rel="stylesheet">
@@ -113,34 +77,13 @@
     </head>
     <body class="theme-folio type-{{ cms($page, 'type') ?: 'page' }}">
         <a href="#main" class="skip-link">{{ __('Skip to main content') }}</a>
-        <dialog id="modal-search" class="search">
-            <article>
-                <header>
-                    <form action="{{ cmsroute('cms.search', ['q' => '_term_', 'locale' => cms($page, 'lang')]) }}" toolname="search" tooldescription="{{ __('Search the website and return matching pages with their titles and links') }}" toolautosubmit>
-                        <input id="modal-search-input" placeholder="{{ __('Search website') }}" aria-label="{{ __('Search website') }}" name="q" minlength="{{ config('cms.theme.min-search') }}" required toolparamdescription="{{ __('Words or phrase to search for in the website content') }}">
-                        <button type="reset" aria-label="{{ __('Close') }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
-                            </svg>
-                        </button>
-                    </form>
-                </header>
-                <div class="results" data-load-more="{{ __('Load more') }}" data-no-results="{{ __('No results found') }}" data-failed="{{ __('Search failed') }}">
-                </div>
-            </article>
-        </dialog>
+        <x-cms::search :page="$page" />
 
         <header>
             <nav role="navigation" aria-label="{{ __('Main navigation') }}">
                 <ul>
                     <li class="brand">
-                        <a href="{{ cmsroute($nav->ancestors()->first() ?? $page) }}">
-                            @if(($navItem = $page->ancestorsAndSelf->reverse()->first(fn($item) => cms($item, 'config.logo.data.file.id'))) && ($fileId = cms($navItem, 'config.logo.data.file.id')))
-                                <img src="{{ cmsasset($navItem, cmsfile($navItem, $fileId)) }}" alt="{{ $profile->name ?? cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}">
-                            @else
-                                {{ $profile->name ?? cmsconfig($page, 'website.data.title', cms($page->ancestorsAndSelf->first() ?? $page, 'name')) }}
-                            @endif
-                        </a>
+                        <x-cms::brand :page="$page" :nav="$nav" :name="$profile->name ?? null" />
                     </li>
                     <li class="menu-close">
                         <button aria-label="{{ __('Close navigation') }}">
@@ -151,13 +94,7 @@
                     </li>
                 </ul>
                 <ul class="menu">
-                    @foreach($nav->items() as $item)
-                        <li>
-                            <a href="{{ cmsroute($item) }}" class="{{ $page->isSelfOrDescendantOf($item) ? 'active' : '' }}" @if($page->id === $item->id) aria-current="page" @endif>
-                                {{ cms($item, 'name') }}
-                            </a>
-                        </li>
-                    @endforeach
+                    <x-cms::menu :page="$page" :nav="$nav" :dropdown="false" />
                 </ul>
                 <ul class="tools">
                     <li>
@@ -177,6 +114,7 @@
                             </svg>
                         </button>
                     </li>
+                    <x-cms::languages :page="$page" :nav="$nav" />
                     @if(Route::has('login'))
                         <li class="login">
                             <a href="{{ route('login') }}" title="{{ __('Login') }}" aria-label="{{ __('Login') }}">

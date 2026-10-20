@@ -74,3 +74,9 @@ msgstr "頁尾所示軟體的授權條款，例如 MIT 授權"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "主題"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "深色主題"

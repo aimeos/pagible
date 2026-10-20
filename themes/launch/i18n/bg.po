@@ -158,3 +158,9 @@ msgstr "Кратка бележка във футъра, напр. сертиф�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Тема"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Тъмна тема"

@@ -74,3 +74,9 @@ msgstr "Ліцензія програми в підвалі, наприклад 
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Тема оформлення"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Темна тема оформлення"

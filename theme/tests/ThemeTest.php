@@ -785,25 +785,25 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
-	public function testCmsDataIncludesSharedElementFiles() : void
+	public function testElementIncludesSharedElementFiles() : void
 	{
+		$dir = sys_get_temp_dir() . '/cms-theme-test';
+		@mkdir( $dir );
+		file_put_contents( $dir . '/files.blade.php', "{{ \$files->keys()->implode(',') }}|{{ \$type }}|{{ \$name }}" );
+		\Illuminate\Support\Facades\View::addNamespace( 'test', $dir );
+
 		$page = ( new PageView() )->forceFill( ['id' => 'page'] );
-		$pageFile = ( new File() )->forceFill( ['id' => 'page-file'] );
-		$elementFile = ( new File() )->forceFill( ['id' => 'element-file'] );
-		$element = ( new Element() )->forceFill( [
-			'id' => 'element',
-			'type' => 'cards',
-			'name' => 'Shared footer',
-			'data' => ['cards' => []],
-		] );
+		$pageFile = ( new File() )->forceFill( ['id' => 'PAGE-FILE'] );
+		$elementFile = ( new File() )->forceFill( ['id' => 'ELEMENT-FILE'] );
+		$element = ( new Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'test::files', 'name' => 'Shared footer', 'data' => []] );
 
-		$page->setRelation( 'files', collect( [$pageFile] ) );
-		$element->setRelation( 'files', collect( [$elementFile] ) );
+		$page->setRelation( 'files', collect( [$pageFile->id => $pageFile] ) );
+		$page->setRelation( 'elements', collect( ['ELEMENT' => $element] ) );
+		$element->setRelation( 'files', collect( [$elementFile->id => $elementFile] ) );
 
-		$data = cmsdata( $page, $element );
+		$html = Theme::element( [], $page, (object) ['type' => 'reference', 'refid' => 'ELEMENT'] );
 
-		$this->assertSame( [$pageFile->id, $elementFile->id], $data['files']->keys()->all() );
-		$this->assertSame( 'cards', $data['type'] );
+		$this->assertSame( 'PAGE-FILE,ELEMENT-FILE|test::files|Shared footer', trim( $html ) );
 	}
 
 
@@ -1232,6 +1232,9 @@ class ThemeTest extends ThemeTestAbstract
 			$this->assertStringNotContainsString( '$icon', $view, $path );
 			$this->assertStringNotContainsString( '$logo', $view, $path );
 			$this->assertStringNotContainsString( '$website', $view, $path );
+			$this->assertStringContainsString( '<x-cms::head :page="$page" :nav="$nav"', $view, $path );
+			$this->assertStringContainsString( "@include('cms::layouts.foot')", $view, $path );
+			$this->assertStringNotContainsString( '<meta name="theme-color"', $view, $path );
 			$this->assertStringContainsString( "cmsconfig(\$page, 'website.data.title'", $view, $path );
 			$this->assertStringNotContainsString( 'cmswebsite(', $view, $path );
 			$this->assertStringNotContainsString( 'function_exists(', $view, $path );
@@ -1348,5 +1351,161 @@ class ThemeTest extends ThemeTestAbstract
 		file_put_contents( $path . '/schema.json', json_encode( $data ) );
 
 		return $path;
+	}
+
+
+	public function testHeadings() : void
+	{
+		$page = ( new PageView() )->forceFill( ['id' => 'page'] );
+		$element = ( new Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => 'Shared']] );
+		$page->setRelation( 'elements', collect( ['ELEMENT' => $element] ) );
+
+		$items = [
+			(object) ['id' => 'h1', 'type' => 'heading', 'data' => (object) ['level' => 1, 'title' => 'Top']],
+			(object) ['id' => 'ref', 'type' => 'reference', 'refid' => 'ELEMENT'],
+			(object) ['id' => 'text', 'type' => 'text', 'data' => (object) ['text' => 'Text']],
+			(object) ['id' => 'h3', 'type' => 'heading', 'data' => (object) ['level' => 3, 'title' => 'Sub']],
+			(object) ['id' => 'empty', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => '']],
+		];
+
+		$this->assertSame( [
+			['id' => 'ref', 'level' => 2, 'title' => 'Shared'],
+			['id' => 'h3', 'level' => 3, 'title' => 'Sub'],
+		], \Aimeos\Cms\Theme::headings( $page, $items, [2, 3] ) );
+		$this->assertCount( 3, \Aimeos\Cms\Theme::headings( $page, $items ) );
+	}
+
+
+	public function testStyle() : void
+	{
+		$root = ( new PageView() )->forceFill( ['config' => (object) ['theme' => (object) ['type' => 'theme', 'files' => [], 'data' => (object) ['--pico-primary' => '#111111', '--pico-color' => '#222222']]]] );
+		$page = ( new PageView() )->forceFill( ['config' => (object) ['theme' => (object) ['type' => 'theme', 'files' => [], 'data' => (object) [
+			'--pico-primary' => '#333333',
+			'--pico-secondary' => 'red',
+			'--pico-font-family-sans-serif' => 'x}body{color:red',
+			'--pico-border-radius' => ' 0 ',
+			'--pico-nav-breadcrumb-divider' => '›',
+			'--evil' => '#444444',
+		]]]] );
+		$page->setRelation( 'ancestors', collect( [$root] ) );
+
+		$this->assertSame( ':root:root{--pico-primary:#333333;--pico-color:#222222;--pico-border-radius:0;--pico-nav-breadcrumb-divider:"›"}', Theme::style( $page ) );
+		$this->assertSame( '#333333', Theme::vars( $page )['--pico-primary'] );
+	}
+
+
+	public function testStyleDarkMode() : void
+	{
+		Schema::register( dirname( __DIR__, 2 ) . '/themes/aura', 'aura' );
+
+		$page = ( new PageView() )->forceFill( ['theme' => 'aura', 'config' => (object) [
+			'aura::theme' => (object) ['type' => 'aura::theme', 'files' => [], 'data' => (object) ['--pico-primary' => '#111111', '--pico-border-radius' => '0']],
+			'aura::theme-dark' => (object) ['type' => 'aura::theme-dark', 'files' => [], 'data' => (object) ['--pico-primary' => '#222222', '--pico-border-radius' => '1rem']],
+		]] );
+		$page->setRelation( 'ancestors', collect() );
+
+		$this->assertSame( ':root:root{--pico-border-radius:0}'
+			. '@media (prefers-color-scheme: light){:root:not([data-theme=dark]){--pico-primary:#111111}}:root[data-theme=light]{--pico-primary:#111111}'
+			. '@media (prefers-color-scheme: dark){:root:not([data-theme=light]){--pico-primary:#222222}}:root[data-theme=dark]{--pico-primary:#222222}',
+			Theme::style( $page ) );
+		$this->assertSame( '#F7F6FB', Theme::vars( $page, 'theme', defaults: true )['--pico-background-color'] );
+		$this->assertSame( '#222222', Theme::vars( $page, 'theme-dark', defaults: true )['--pico-primary'] );
+
+		$html = Blade::render( '<x-cms::head :page="$page" />', ['page' => $page] );
+
+		$this->assertStringContainsString( '<meta name="theme-color" media="(prefers-color-scheme: light)" content="#F7F6FB">', $html );
+		$this->assertStringContainsString( '<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#08080D">', $html );
+	}
+
+
+	public function testStyleEmpty() : void
+	{
+		$page = ( new PageView() )->setRelation( 'ancestors', collect() );
+
+		$this->assertSame( '', Theme::style( $page ) );
+	}
+
+
+	public function testToc() : void
+	{
+		$page = ( new PageView() )->forceFill( ['id' => 'page', 'content' => [
+			['id' => 'before', 'type' => 'heading', 'data' => ['level' => 2, 'title' => 'Before']],
+			['id' => 'toc', 'type' => 'toc', 'data' => []],
+			['id' => 'ref', 'type' => 'reference', 'refid' => 'ELEMENT'],
+			['id' => 'sub', 'type' => 'heading', 'data' => ['level' => 3, 'title' => 'Sub']],
+		]] );
+		$element = ( new Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => 'Shared']] );
+		$page->setRelation( 'elements', collect( ['ELEMENT' => $element] ) );
+
+		$tree = ( new \Aimeos\Cms\Actions\Toc() )( request(), $page, (object) ['id' => 'toc'] );
+
+		$this->assertSame( [['id' => 'ref', 'title' => 'Shared', 'children' => [['id' => 'sub', 'title' => 'Sub', 'children' => []]]]], $tree );
+	}
+
+
+	public function testNames()
+	{
+		$page = new \Aimeos\Cms\Models\PageView();
+		$item = (object) ['type' => 'heading'];
+
+		$views = \Aimeos\Cms\Theme::names( $page, $item );
+
+		$this->assertEquals( ['cms::heading'], $views );
+	}
+
+
+	public function testNamesWithTheme()
+	{
+		$page = new \Aimeos\Cms\Models\PageView();
+		$page->theme = 'mytheme';
+		$item = (object) ['type' => 'mytheme::card'];
+
+		$views = \Aimeos\Cms\Theme::names( $page, $item );
+
+		$this->assertEquals( ['mytheme::card', 'cms::card'], $views );
+	}
+
+
+	public function testNamesIgnoresPageThemeForNamespacedType()
+	{
+		$page = new \Aimeos\Cms\Models\PageView();
+		$page->theme = 'cms';
+		$item = (object) ['type' => 'style::hero'];
+
+		$views = \Aimeos\Cms\Theme::names( $page, $item );
+
+		$this->assertEquals( ['style::hero', 'cms::hero'], $views );
+	}
+
+
+	public function testNamesWithPageThemeOverride()
+	{
+		$page = new \Aimeos\Cms\Models\PageView();
+		$page->theme = 'mytheme';
+		$item = (object) ['type' => 'hero'];
+
+		$views = \Aimeos\Cms\Theme::names( $page, $item );
+
+		$this->assertEquals( ['mytheme::hero', 'cms::hero'], $views );
+	}
+
+
+	public function testNamesIncludesMissingPageThemeFallback()
+	{
+		$page = new \Aimeos\Cms\Models\PageView();
+		$page->theme = 'missingtheme';
+		$item = (object) ['type' => 'hero'];
+
+		$views = \Aimeos\Cms\Theme::names( $page, $item );
+
+		$this->assertEquals( ['missingtheme::hero', 'cms::hero'], $views );
+	}
+
+
+	public function testNamesNoType()
+	{
+		$page = new \Aimeos\Cms\Models\PageView();
+
+		$this->assertEquals( [], \Aimeos\Cms\Theme::names( $page, (object) [] ) );
 	}
 }

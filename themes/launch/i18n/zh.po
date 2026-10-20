@@ -158,3 +158,9 @@ msgstr "显示在页脚的简短提示，例如通过SOC 2 Type II认证，数�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "主题"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "深色主题"

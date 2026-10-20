@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Facades;
 
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Resource\Acting;
 use Aimeos\Cms\Resource\BulkResult;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\UploadedFile;
@@ -41,6 +42,20 @@ use Illuminate\Support\Facades\Facade;
  */
 class Files extends Facade
 {
+    /**
+     * Calls the files methods for the given user, e.g. Files::as( $user )->publish( $id ).
+     *
+     * @param Authenticatable|null $user User the methods are called for, NULL for anonymous calls
+     * @return Acting<\Aimeos\Cms\Resource\Files> Resource methods without the user argument
+     */
+    public static function as( ?Authenticatable $user ) : Acting
+    {
+        /** @var \Aimeos\Cms\Resource\Files $resource */
+        $resource = static::getFacadeRoot();
+        return new Acting( $resource, $user );
+    }
+
+
     protected static function getFacadeAccessor() : string
     {
         return \Aimeos\Cms\Resource\Files::class;

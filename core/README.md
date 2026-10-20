@@ -191,6 +191,8 @@ Variants::save( $page->id, 'de', ['title' => 'Über uns'], $user );
 Variants::publish( $page->id, 'de', $user );
 ```
 
+New pages are inactive until they are published, the `status` passed to `Pages::add()` is stored in the draft and applied by `publish()`.
+
 `Pages::save()`, `bulk()` and `publish()` change the variant in the source language of the pages, the methods with the same names in `Variants` change the variant in the passed language. `Variants::revert()` saves the content of an old version like `save()` and marks the translation as outdated.
 
 The facades resolve the instances of the classes in `Aimeos\Cms\Resource` from the container. To change the behavior everywhere (admin, GraphQL, MCP, AI, commands), bind your own subclass overriding the public or protected methods in your service provider:
@@ -198,6 +200,28 @@ The facades resolve the instances of the classes in `Aimeos\Cms\Resource` from t
 ```php
 $this->app->singleton( \Aimeos\Cms\Resource\Pages::class, \App\Cms\MyPages::class );
 ```
+
+### Input fields
+
+`Pages::add()`, `save()` and `bulk()` as well as `Variants::save()` and `bulk()` accept these keys, all optional:
+
+| Key | Content |
+|-----|---------|
+| `lang` | ISO language code of the page, e.g. `en` or `en-GB` (`add()` only, defaults to the app locale) |
+| `name` | Short name shown in the navigation |
+| `title` | Page title for the browser and search engines |
+| `path` | URL path of the page, unique per domain |
+| `domain` | Domain the page belongs to, empty for all domains |
+| `to` | URL the page redirects to |
+| `tag` | Tag to find a page, e.g. as starting point of a navigation |
+| `theme` | Theme name, empty for the default `cms` theme |
+| `type` | Page type of the theme, e.g. `page`, `blog` or `docs` |
+| `status` | `0` = inactive, `1` = visible, `2` = hidden in navigation |
+| `cache` | Cache lifetime in minutes |
+| `content` | List of content elements, e.g. `['type' => 'text', 'group' => 'main', 'data' => ['text' => 'Hello']]`; `id` and `group` are generated if missing and the element types and their `data` are validated against the `schema.json` of the themes |
+| `meta`, `config` | Meta and configuration entries keyed by their type, e.g. `['meta-tags' => ['type' => 'meta-tags', 'data' => [...]]]` |
+
+`Elements::add()` takes `type`, `name`, `lang` and `data`, while `Files::add()` stores an uploaded file and `Files::save()` accepts `name`, `lang`, `description` and `transcription` (both keyed by language). Invalid values and unknown element types throw an `InvalidInputException`.
 
 ### Single and multiple items
 
@@ -207,9 +231,57 @@ $this->app->singleton( \Aimeos\Cms\Resource\Pages::class, \App\Cms\MyPages::clas
 
 The user is passed directly after the required arguments. Optional arguments like `at`, `ref` or `parent` are best passed as named arguments.
 
+To avoid passing the same user to several calls, use `as()` of the facades:
+
+```php
+$pages = Pages::as( $request->user() );
+
+$page = $pages->add( ['name' => 'About', 'path' => 'about'], parent: $rootId );
+$page = $pages->publish( $page->id, at: '2030-01-01 00:00:00' );
+
+Variants::as( $request->user() )->add( $page->id, 'de' );
+```
+
+It calls the methods of the resource with the user as named `user` argument, so optional arguments must be named too. Calls with `as( null )` are anonymous and throw a `PermissionException` unless they run inside `Permission::system()`. Mocks created by `shouldReceive()` receive the user like in direct calls.
+
 ### Permissions
 
-Each method checks the permission of its action for the passed user, e.g. `page:save` for `Pages::save()` or `file:relocate` for `Files::relocate()`, and throws a `PermissionException` if the user lacks it. If no user is passed (`null`), the call is trusted and no permissions are checked, which is meant for commands, jobs and seeders only. Always pass the authenticated user when handling requests.
+Each method checks the permission of its action for the passed user, e.g. `page:save` for `Pages::save()` or `file:relocate` for `Files::relocate()`, and throws a `PermissionException` if the user lacks it. If no user is passed (`null`), the call is anonymous and throws a `PermissionException` too. For system changes in commands, jobs, seeders or payment webhooks, wrap the calls in `Permission::system()`:
+
+```php
+use Aimeos\Cms\Permission;
+
+Permission::system( fn() => Pages::publish( $pageId ) );
+```
+
+Inside `system()`, calls without user aren't checked and their changes are recorded with `system` as editor, while users passed explicitly are still checked. For your own write operations, `Permission::check( $action, $user )` throws the same way and `Permission::allowed( $action, $user )` returns the result instead, while `Permission::can( $action, $user )` is always `false` without user.
+
+`system()` only applies to the current process. Queued AI translations started inside `system()` without user run as system in the queue worker too, but your own queued jobs must wrap the CMS calls in `handle()` with `Permission::system()` themselves.
+
+Every call without user inside `system()` is trusted, including those of event listeners and synchronous jobs it triggers, and may also change the page `config`. Therefore:
+
+- Keep the callbacks small and only wrap the CMS calls that need it
+- Never pass `$request->user()` or `Auth::user()` inside `system()` because guests would become the system user
+- Only pass fixed or validated values, e.g. a page ID from your own database instead of the payload of a payment webhook
+- Calls without user aren't bound to a tenant, so initialize the tenant first in commands and jobs, e.g. `Tenancy::run( $tenantId, fn() => Permission::system( ... ) )`
+
+`Permission::set( $user, $entries )` assigns roles and permissions without checking the acting user, so check whether the current user may manage permissions before calling it from your own controllers.
+
+Write operations only use the passed user. Read operations decide about previews of unpublished drafts by the authenticated user (`Auth::user()`), so queued jobs must log in the user (`Auth::setUser()`) to read drafts as editor.
+
+The actions are also Laravel Gate abilities, so the CMS roles, deny entries and tenant checks apply to your application code too:
+
+```php
+$request->user()->can( 'page:publish' );
+$this->authorize( 'page:save' );
+Route::post( '/reports', ReportController::class )->middleware( 'can:page:view' );
+```
+
+```blade
+@can('page:publish') … @endcan
+```
+
+The CMS decides these abilities before your own gates and policies, while all other abilities are left to them.
 
 ### Exceptions
 
@@ -295,38 +367,110 @@ It accepts one or more action names (`added`, `saved`, `moved`, `published`, `dr
 
 `Bulk` contains the `contentType` (`type()` returns the enum case), the changed `ids`, the new `latest` version IDs by item ID, the shared `data`, the `editor`, the `action` (`saved` for `bulk()` calls, otherwise `published`, `dropped`, `translated`, etc.) and the page variant languages by page ID in `langs`. Single item events and `Bulk` events are broadcast as `{contentType}.{action}`, e.g. `page.saved`, and `Bulk` payloads contain `ids` instead of `id`. `PageInvalidated` contains the `tenant`, `domain` and the URL `paths`, and `FilesRemoved` contains the `tenant` and the storage `paths`.
 
-### Testing
+### Reading content
 
-The CMS operations work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). Pass `null` as user to skip the permission checks, or a user whose permissions are assigned by `Permission::set()` to test them:
+Pages are read through the `Aimeos\Cms\Models\PageView` model, which combines the page tree with one language variant per page. Its query methods choose the variant:
+
+| Method | Returns |
+|--------|---------|
+| `language( ?string $lang )` | The variant of the language, pages without it are skipped; `null` uses the source language (default) |
+| `fallback( string $lang )` | The variant of the language or of its fallback languages (e.g. `de-CH` → `de`, see `cms.translate.chains`), else the source variant |
+| `visible( string $lang )` | Like `fallback()`, but only published variants whose status isn't `0`, which is what visitors see. New variants are inactive until you save them with `status` `1` or `2` and publish them |
+| `localized( string $lang, bool $editor )` | `fallback()` for editors and `visible()` for visitors |
+| `allVariants()` | All variants, so each page is returned once per language |
+
+The model attributes contain the **published** content. To show pages to visitors, use `live()`, which selects the variant like `visible()`, skips inactive pages (also for editors, unlike the `Status` scope) and pages the frontend user can't access, and loads the files and elements of the content:
 
 ```php
-use Aimeos\Cms\Events\Change;
+use Aimeos\Cms\Models\PageView;
+
+$page = PageView::live( $request->user() )->whereKey( $pageId )->firstOrFail();
+
+$page->title;   // published title of the variant
+$page->lang;    // language of the variant, differs from the requested one for fallbacks
+$page->content; // list of content element objects with id, type, group and data
+$page->files;   // files referenced by the content
+```
+
+Without user, only public pages are returned, and the language defaults to the current locale, e.g. `PageView::live( $user, 'de' )` for German pages.
+
+Every variant has its own URL path, e.g. `about` and `ueber-uns`, so look up pages by their URL with `allVariants()->where( 'path', $path )` like the theme package does. Use the page ID or `tag` to get the same page in different languages.
+
+Drafts are stored in the latest version: `$page->latest?->data` contains the page properties and `$page->latest?->aux` the `content`, `meta` and `config` of the draft. Pages are nested sets, so `children`, `ancestors` and `descendants` as well as the query methods of [aimeos/laravel-nestedset](https://github.com/aimeos/laravel-nestedset) are available too. The `Aimeos\Cms\Models\Element` and `Aimeos\Cms\Models\File` models of shared elements and files also contain the published data and their draft in `latest`. The theme package renders the pages, see [Pagible Theme](../theme/README.md) to change the output.
+
+### Testing
+
+The CMS operations work against any database supported by Laravel, so tests can use an in-memory SQLite database with the `RefreshDatabase` trait (or Orchestra Testbench for packages). The factories of `PageView`, `Element` and `File` create the items through the facades as system user, so they get versions, search index entries and events like items created by editors:
+
+```php
+use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\PageView;
+use Illuminate\Http\UploadedFile;
+
+$root = PageView::factory()->published()->create( ['name' => 'Home', 'path' => ''] );
+$page = PageView::factory()->for( $root, 'parent' )->published()->create( ['content' => [
+    ['type' => 'text', 'data' => ['text' => 'Hello']],
+]] );
+
+PageView::factory()->count( 3 )->hidden()->create( ['parent_id' => $root->id] );
+Element::factory()->published()->create( ['data' => ['type' => 'text', 'text' => 'Shared']] );
+File::factory()->private()->create( ['file' => UploadedFile::fake()->createWithContent( 'doc.pdf', '%PDF-1.4' )] );
+```
+
+Without `published()`, only the draft is created and pages stay inactive on the live site. Pages are visible by default after publishing, `hidden()` hides them in the navigation and `inactive()` disables them. Files are fake 100x100 PNG images unless an uploaded file or URL is passed in `file`.
+
+Add the `HasCmsPermissions` traits to the user model and its factory to create editors in tests:
+
+```php
+class User extends Authenticatable
+{
+    use \Aimeos\Cms\Concerns\HasCmsPermissions;
+}
+
+class UserFactory extends Factory
+{
+    use \Aimeos\Cms\Database\Factories\HasCmsPermissions;
+}
+
+// test
+$editor = User::factory()->cms( 'editor', '!page:drop' )->create();
+
+$this->actingAs( $editor )->post( '/reports' )->assertOk();
+$this->assertTrue( $editor->can( 'page:save' ) );
+$this->assertEquals( ['editor', '!page:drop'], $editor->cmsPermissions() );
+```
+
+`cms()` stores the roles, permissions and deny entries directly, while `$user->setCmsPermissions( $entries )` validates them like `Permission::set()`. Wrap the facade calls in `Permission::system()` to skip the permission checks or pass an editor to test them:
+
+```php
 use Aimeos\Cms\Events\Published;
 use Aimeos\Cms\Exceptions\PermissionException;
-use Aimeos\Cms\Permission;
 use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Permission;
 use Illuminate\Support\Facades\Event;
 
 public function testPublish() : void
 {
-    $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] );
+    $page = PageView::factory()->create();
 
     Event::fake( [Published::class] );
 
-    Pages::publish( $page->id );
+    Permission::system( fn() => Pages::publish( $page->id ) );
 
     Event::assertDispatched( Published::class, fn( Published $event ) => $event->id === $page->id );
 }
 
 public function testPermission() : void
 {
-    $page = Pages::add( ['name' => 'About', 'path' => 'about', 'lang' => 'en'] );
-    Permission::set( $user = User::factory()->create(), ['editor'] );
+    $page = PageView::factory()->create();
 
     $this->expectException( PermissionException::class );
-    Pages::publish( $page->id, $user );
+    Pages::publish( $page->id, User::factory()->cms( 'editor' )->create() );
 }
 ```
+
+For a complete page tree, `$this->artisan( 'cms:demo' )` of the theme package creates published demo pages.
 
 Events are only dispatched if `cms.broadcast` is enabled, listeners for them are registered or `Event::fake()` is used. Alternatively, register a listener by `Change::listen()` and collect the passed `Change` objects. `Bulk` events are dispatched instead of the per-item events if several items are changed at once, e.g. by `publishMany()`.
 

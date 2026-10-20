@@ -73,3 +73,9 @@ msgstr ""
 msgctxt "st"
 msgid "manual::theme"
 msgstr ""
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr ""

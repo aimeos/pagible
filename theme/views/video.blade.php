@@ -7,16 +7,10 @@
 @endPushOnce
 
 @if($file = cms($files, $data->file?->id ?? null))
-	<video preload="none" controls playsinline
-		title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
-		src="{{ cmsasset($page, $file) }}"
-		@if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-			poster="{{ cmsasset($page, $file, $preview) }}"
-		@endif
-	>
+	<x-cms::video :page="$page" :file="$file">
 		{{ __('Download file') }}: <a href="{{ cmsasset($page, $file) }}">{{ cmsasset($page, $file) }}</a>
 		<div class="transcription" lang="{{ cms($page, 'lang') }}">{{ cms($file, 'transcription')?->{cms($page, 'lang')} ?? '' }}</div>
-	</video>
+	</x-cms::video>
 	<div class="caption"></div>
 
 	<script type="application/ld+json">{
@@ -24,7 +18,7 @@
 		"@@type": "VideoObject",
 		"name": {!! cmsjson((string) cms($file, 'name')) !!},
 		"contentUrl": {!! cmsjson(cmsasset($page, $file)) !!},
-		"thumbnailUrl": {!! cmsjson(cmsasset($page, $file, $preview)) !!},
+		"thumbnailUrl": {!! cmsjson(cmsasset($page, $file, current(array_reverse((array) cms($file, 'previews', []))) ?: null)) !!},
 		"uploadDate": {!! cmsjson($file->created_at?->toIso8601String()) !!},
 		"description": {!! cmsjson(trim((string) (cms($file, 'description')?->{cms($page, 'lang')} ?? ''))) !!},
 		"transcript": {!! cmsjson(trim((string) (cms($file, 'transcription')?->{cms($page, 'lang')} ?? ''))) !!}

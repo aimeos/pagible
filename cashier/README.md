@@ -331,6 +331,22 @@ for a one-time refund or chargeback is exhausted, permanent access may require
 manual revocation. Mollie installations must still run Laravel's scheduler for
 Cashier Mollie's normal `cashier:run` subscription billing command.
 
+## Using payment roles in your application
+
+The roles granted by payments are part of the frontend access grants, so your own pages and APIs can check them, e.g. to show premium features:
+
+```php
+use Aimeos\Cms\Access;
+
+$roles = app( Access::class )->allowed( $request->user() );
+
+if( in_array( 'premium-members', $roles, true ) ) {
+    // ...
+}
+```
+
+`allowed()` returns all access values of the user in the current tenant, i.e. active payment roles and other grants of the configured access catalog, and is memoized for the request. Payment roles count only if they are part of the catalog. Don't read `users.access` directly, it contains revoked and expired sources too.
+
 ## License
 
 MIT

@@ -55,6 +55,9 @@ final class Hooks
     /** @var array<string, array<string, mixed>> Registered themes */
     public array $themes = [];
 
+    /** Whether calls without user skip the permission checks, see Permission::system() */
+    public bool $system = false;
+
     /** @var array<string, array{ids?: array<string, bool>, langs?: array<string, bool>}> Page IDs and changed languages per tenant whose variants must be reindexed after the commit */
     public array $variants = [];
 

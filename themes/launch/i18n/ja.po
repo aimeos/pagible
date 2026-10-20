@@ -158,3 +158,9 @@ msgstr "フッターに表示される短い注記、例：SOC 2 Type II認証�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "テーマ"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "ダークテーマ"

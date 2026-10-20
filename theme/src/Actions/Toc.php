@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Actions;
 
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Theme;
 use Illuminate\Http\Request;
 
 
@@ -23,25 +24,18 @@ class Toc
      */
     public function __invoke( Request $request, PageView $page, object $item ): array
     {
-        $headings = [];
-        $found = false;
+        $content = array_values( (array) cms( $page, 'content' ) );
 
-        foreach( (array) cms( $page, 'content' ) as $el )
+        foreach( $content as $idx => $el )
         {
             $el = cmsref( $page, $el );
 
-            if( !$found ) {
-                $found = ($el->type ?? null) === 'toc' && ($el->id ?? null) === ($item->id ?? null);
-                continue;
-            }
-
-            if( ($el->type ?? null) === 'heading' && ($el->data->title ?? null) ) {
-                /** @phpstan-ignore property.notFound */
-                $headings[] = ['id' => $el->id ?? '', 'level' => (int) ( $el->data->level ?? 1 ), 'title' => $el->data->title];
+            if( ( $el->type ?? null ) === 'toc' && ( $el->id ?? null ) === ( $item->id ?? null ) ) {
+                return $this->tree( Theme::headings( $page, array_slice( $content, $idx + 1 ) ) );
             }
         }
 
-        return $this->tree( $headings );
+        return [];
     }
 
 

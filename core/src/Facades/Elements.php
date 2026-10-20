@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Facades;
 
 use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Resource\Acting;
 use Aimeos\Cms\Resource\BulkResult;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -38,6 +39,20 @@ use Illuminate\Support\Facades\Facade;
  */
 class Elements extends Facade
 {
+    /**
+     * Calls the elements methods for the given user, e.g. Elements::as( $user )->publish( $id ).
+     *
+     * @param Authenticatable|null $user User the methods are called for, NULL for anonymous calls
+     * @return Acting<\Aimeos\Cms\Resource\Elements> Resource methods without the user argument
+     */
+    public static function as( ?Authenticatable $user ) : Acting
+    {
+        /** @var \Aimeos\Cms\Resource\Elements $resource */
+        $resource = static::getFacadeRoot();
+        return new Acting( $resource, $user );
+    }
+
+
     protected static function getFacadeAccessor() : string
     {
         return \Aimeos\Cms\Resource\Elements::class;

@@ -158,3 +158,9 @@ msgstr "Ayaqnotda göstərilən qısa qeyd, məsələn: SOC 2 Tip II sertifikatl
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Mövzu"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tünd mövzu"
