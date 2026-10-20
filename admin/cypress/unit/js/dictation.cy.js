@@ -37,6 +37,33 @@ describe('toMp3()', () => {
 
     cy.wrap(toMp3('/audio.mp3').then(() => 'converted', (error) => error.message)).should('contain', '404')
   })
+
+  it('rejects and terminates the worker if encoding fails', () => {
+    const terminate = cy.stub()
+
+    cy.stub(window, 'Worker').callsFake(function () {
+      this.terminate = terminate
+      this.postMessage = () => setTimeout(() => this.onmessage({ data: { error: 'encoding failed' } }))
+    })
+
+    const buffer = new AudioBuffer({ length: 100, numberOfChannels: 1, sampleRate: 16000 })
+
+    cy.wrap(toMp3(buffer).then(() => 'converted', (error) => error.message)).should('equal', 'encoding failed')
+    cy.then(() => expect(terminate).to.have.been.calledOnce)
+  })
+
+  it('resolves the encoded MP3 posted by the worker', () => {
+    const mp3 = new Blob(['mp3'], { type: 'audio/mpeg' })
+
+    cy.stub(window, 'Worker').callsFake(function () {
+      this.terminate = cy.stub()
+      this.postMessage = () => setTimeout(() => this.onmessage({ data: { mp3 } }))
+    })
+
+    const buffer = new AudioBuffer({ length: 100, numberOfChannels: 1, sampleRate: 16000 })
+
+    cy.wrap(toMp3(buffer)).should('equal', mp3)
+  })
 })
 
 describe('dictate()', () => {
@@ -64,6 +91,20 @@ describe('dictate()', () => {
     cy.wrap(busy).should('have.been.calledWith', false)
     cy.then(() => {
       expect(busy).to.have.been.calledWith(true)
+      expect(done).not.to.have.been.called
+    })
+  })
+
+  it('reports a recording that fails to stop', () => {
+    const busy = cy.stub()
+    const done = cy.stub()
+    const error = cy.stub(useMessageStore(), 'error')
+
+    dictate(Promise.resolve({ stop: () => Promise.reject(new Error('encoding failed')) }), busy, done)
+
+    cy.wrap(busy).should('have.been.calledWith', false)
+    cy.then(() => {
+      expect(error).to.have.been.calledWithMatch('Error recording audio')
       expect(done).not.to.have.been.called
     })
   })

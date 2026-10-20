@@ -68,6 +68,9 @@ export const useDirtyStore = defineStore('dirty', {
       try {
         if (action) await action()
         ok = true
+      } catch (error) {
+        // called from event handlers, the caller of confirm() gets false instead
+        console.error('Pending action failed', error)
       } finally {
         resolve?.(ok)
       }
@@ -90,7 +93,7 @@ export const useDirtyStore = defineStore('dirty', {
     async saveAndLeave() {
       // the view in front is saved first
       for (const entry of [...this.targets()].reverse()) {
-        if (entry.dirty && entry.save && (await entry.save(true)) === false) {
+        if (entry.dirty && entry.save && !(await entry.save(true))) {
           return
         }
       }

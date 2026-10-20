@@ -4,15 +4,8 @@
 
 import gql from 'graphql-tag'
 import { useLanguageStore, useTranslationStore } from './stores'
+import { ADD_PAGE_VARIANT } from './pages'
 import { translatePages } from './translate'
-
-const ADD_VARIANT = gql`
-  mutation ($id: ID!, $lang: String!) {
-    addPageVariant(id: $id, lang: $lang) {
-      id
-    }
-  }
-`
 
 const IGNORE_CHANGES = gql`
   mutation ($id: [ID!]!, $lang: String!) {
@@ -208,7 +201,7 @@ export const pageVariants = {
 
     // marks the variants in the current language as up to date without changing their content
     ignore(stat = null) {
-      const list = this.user.can('page:save') ? this.targets(stat, (page) => this.isStale(page)) : []
+      const list = this.allowed('save') ? this.targets(stat, (page) => this.isStale(page)) : []
 
       if (!list.length) {
         return
@@ -390,7 +383,10 @@ export const detailVariants = {
 
       try {
         if (entry.state === 'missing') {
-          await this.$apollo.mutate({ mutation: ADD_VARIANT, variables: { id: this.item.id, lang: entry.code } })
+          await this.$apollo.mutate({
+            mutation: ADD_PAGE_VARIANT,
+            variables: { id: this.item.id, lang: entry.code, access: this.user.can('page:access') }
+          })
           this.invalidate()
         }
       } catch (error) {
@@ -409,6 +405,8 @@ export const detailVariants = {
         ).catch((error) => this.messages.error(this.$gettext('Error translating page'), error))
       }
 
+      const prev = this.variantLang
+
       this.variantLang = entry.code
       this.vhistory = false
 
@@ -416,7 +414,18 @@ export const detailVariants = {
         this.$router?.replace({ query: { ...this.$route?.query, lang: entry.code } })
       }
 
-      return this.refresh().finally(() => {
+      return this.refresh().then((ok) => {
+        // the editor still contains the previous variant if loading failed or was discarded
+        // because of edits made meanwhile, so saving must not write it into the new language
+        if (!ok) {
+          this.variantLang = prev
+
+          if (!this.stacked) {
+            this.$router?.replace({ query: { ...this.$route?.query, lang: prev || undefined } })
+          }
+        }
+        return ok
+      }).finally(() => {
         this.switching = false
       })
     },
@@ -460,8 +469,7 @@ export const detailVariants = {
         // the store keeps polling if the editor is closed and reports the result
         polling = this.translationStore.add(
           batch,
-          { ids: [id], langs: [lang], success: this.$gettext('Translation saved as draft, review the changes') },
-          this.$apollo
+          { ids: [id], langs: [lang], success: this.$gettext('Translation saved as draft, review the changes') }
         )
       } catch (error) {
         this.messages.error(this.$gettext('Error translating page'), error)

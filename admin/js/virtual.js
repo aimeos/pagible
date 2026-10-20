@@ -2,7 +2,7 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { nextTick } from 'vue'
+import { nextTick, toRaw } from 'vue'
 import { uid } from './utils'
 
 const keys = new WeakMap()
@@ -15,11 +15,25 @@ export function key(item) {
     return item
   }
 
-  if (!keys.has(item)) {
-    keys.set(item, uid())
+  // reactive proxies and their raw objects share the same key
+  const raw = toRaw(item)
+
+  if (!keys.has(raw)) {
+    keys.set(raw, uid())
   }
 
-  return keys.get(item)
+  return keys.get(raw)
+}
+
+/**
+ * Passes the fallback identity of an item on to its replacement, e.g. a changed copy.
+ */
+export function rekey(from, to) {
+  if (from && to && typeof from === 'object' && typeof to === 'object') {
+    keys.set(toRaw(to), key(from))
+  }
+
+  return to
 }
 
 /**

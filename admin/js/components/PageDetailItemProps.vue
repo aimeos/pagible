@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { domain } from '../rules'
 import { useAppStore, useUserStore, useSchemaStore } from '../stores'
 import { cacheItems, localeItems, statusItems } from '../options'
-import { debounce, slugify } from '../utils'
+import { debounce, INPUT_DELAY, REQUEST_DELAY, slugify } from '../utils'
 
 const REDIRECT_REGEX = /^((https?:)?\/\/([^\s/:@]+(:[^\s/:@]+)?@)?([0-9a-z]+(\.|-))*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/[^\s]*)?$/
 
@@ -28,7 +28,10 @@ export default {
 
   data: () => ({
     errors: {},
-    fieldMessages: {}
+    fieldMessages: {},
+    // sequence numbers of the latest path check and validation
+    pathSeq: 0,
+    validateSeq: 0
   }),
 
   setup() {
@@ -40,11 +43,14 @@ export default {
   },
 
   created() {
-    // sequence numbers of the latest path check and validation
-    this.pathSeq = 0
-    this.validateSeq = 0
-    this.debouncedCheckPath = debounce(this.checkPath, 500)
-    this.validated = debounce(() => this.validate(true), 300)
+    this.debouncedCheckPath = debounce(this.checkPath, REQUEST_DELAY)
+    this.validated = debounce(() => this.validate(true), INPUT_DELAY)
+    this.defaultLanguage()
+  },
+
+  mounted() {
+    // the form shows its errors when it opens, the field refs exist from now on
+    this.validated()
   },
 
   beforeUnmount() {
@@ -124,6 +130,13 @@ export default {
       return this.pathCheck || []
     },
 
+    // sets the only configured language if none is chosen
+    defaultLanguage() {
+      if (!this.item.lang && this.defaultLang && !this.readonly) {
+        this.update('lang', this.defaultLang)
+      }
+    },
+
     reset() {
       this.errors = {}
     },
@@ -175,18 +188,13 @@ export default {
   },
 
   watch: {
-    validatedValues: {
-      immediate: true,
-      handler() { this.validated?.() }
+    validatedValues() {
+      this.validated()
     },
-    'item.lang': {
-      immediate: true,
-      handler(lang) {
-        if (!lang && this.defaultLang && !this.readonly) {
-          this.update('lang', this.defaultLang)
-        }
-        this.validated?.()
-      }
+
+    'item.lang'() {
+      this.defaultLanguage()
+      this.validated()
     }
   }
 }

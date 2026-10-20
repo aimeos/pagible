@@ -80,3 +80,13 @@ describe('Text (CKEditor)', () => {
     cy.get('@error').should('have.been.calledWith', true)
   })
 })
+
+describe('Text (CKEditor) translations', () => {
+  it('renders the editor once the translations are loaded or failed to load', () => {
+    mountText({ modelValue: 'text' }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(TextField).vm
+      vm.show(true)
+    })
+    cy.get('.ck-editor-stub').should('exist')
+  })
+})

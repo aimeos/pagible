@@ -112,12 +112,22 @@ describe('AUTH_STATUS', () => {
 })
 
 describe('retry()', () => {
-  it('does not retry HTTP 419 errors', () => {
-    expect(retry({ statusCode: 419 })).to.equal(false)
+  const query = { query: { definitions: [{ kind: 'OperationDefinition', operation: 'query' }] } }
+  const mutation = { query: { definitions: [{ kind: 'OperationDefinition', operation: 'mutation' }] } }
+
+  it('does not retry authentication errors', () => {
+    expect(retry({ statusCode: 419 }, query)).to.equal(false)
+    expect(retry({ statusCode: 401 }, query)).to.equal(false)
   })
 
-  it('retries other transport errors', () => {
-    expect(retry(new Error('Network failure'))).to.equal(true)
+  it('retries other transport errors of queries', () => {
+    expect(retry(new Error('Network failure'), query)).to.equal(true)
+    expect(retry({ statusCode: 502 }, query)).to.equal(true)
+  })
+
+  it('does not retry mutations', () => {
+    expect(retry(new Error('Network failure'), mutation)).to.equal(false)
+    expect(retry({ statusCode: 502 }, mutation)).to.equal(false)
   })
 })
 

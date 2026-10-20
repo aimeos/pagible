@@ -1,5 +1,6 @@
 import FileDetailItem from '../../../js/components/FileDetailItem.vue'
 import { useMessageStore, useUserStore } from '../../../js/stores'
+import { apolloClient } from '../../../js/graphql'
 
 const stubs = {
   FileAiDialog: { template: '<div class="ai-dialog-stub" />' },
@@ -179,6 +180,19 @@ describe('FileDetailItem', () => {
     cy.get('input').first().should('not.have.attr', 'readonly')
   })
 
+  it('offers clearing the description and transcription only with file:save permission', () => {
+    const texts = { item: { mime: 'video/mp4', description: { en: 'Text' }, transcription: { en: 'WEBVTT' } } }
+
+    mountDetail(texts)
+    cy.get('.description textarea').first().should('have.value', 'Text')
+    cy.get('.description .v-field__clearable').should('not.exist')
+    cy.get('.transcription .v-field__clearable').should('not.exist')
+
+    mountDetail(texts, { 'file:save': true })
+    cy.get('.description .v-field__clearable').should('exist')
+    cy.get('.transcription .v-field__clearable').should('exist')
+  })
+
   it('emits description updates for frozen file metadata', () => {
     const description = Object.freeze({ en: 'Original description' })
 
@@ -224,6 +238,44 @@ describe('FileDetailItem', () => {
       return wrapper.vm.translateMap({ en: '', de: null }).then((texts) => {
         expect(texts).to.deep.equal({})
         expect(wrapper.vm.loading.translate).not.to.equal(true)
+      })
+    })
+  })
+
+  it('keeps translations whose first part is empty', () => {
+    cy.stub(apolloClient, 'mutate').resolves({ data: { translate: ['', 'Tschüss'] } })
+
+    mountDetail({}, { 'file:save': true, 'text:translate': true }).then(() => {
+      const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
+      wrapper.vm.txLocaleItems = () => [{ code: 'de' }]
+
+      return wrapper.vm.translateMap({ en: 'Hm\nBye' }, (text) => text.split('\n'), (result) => result.join('\n'))
+        .then((texts) => expect(texts).to.deep.equal({ de: '\nTschüss' }))
+    })
+  })
+
+  it('translates only the cue texts and keeps the WebVTT structure', () => {
+    const vtt = 'WEBVTT\n\nNOTE keep this\n\ncue-1\n00:00:01.000 --> 00:00:02.000 align:start\nHello\nworld\n\n00:00:03.000 --> 00:00:04.000\nBye'
+
+    mountDetail({ item: { mime: 'video/mp4', transcription: { en: vtt } } }, { 'file:save': true, 'text:translate': true }).then(() => {
+      const wrapper = Cypress.vueWrapper.findComponent(FileDetailItem)
+      const parts = []
+
+      wrapper.vm.translateMap = (map, split, join) => {
+        parts.push(...split(map.en))
+        return Promise.resolve({ de: join(parts.map((text) => text.toUpperCase())) })
+      }
+
+      wrapper.vm.translateVTT({ en: vtt })
+
+      cy.wrap(null).should(() => {
+        expect(parts).to.deep.equal(['Hello\nworld', 'Bye'])
+        expect(wrapper.emitted('patch')?.[0]?.[0]).to.deep.equal({
+          transcription: {
+            en: vtt,
+            de: 'WEBVTT\n\nNOTE keep this\n\ncue-1\n00:00:01.000 --> 00:00:02.000 align:start\nHELLO\nWORLD\n\n00:00:03.000 --> 00:00:04.000\nBYE'
+          }
+        })
       })
     })
   })

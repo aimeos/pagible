@@ -3,8 +3,8 @@
 <script>
 import gql from 'graphql-tag'
 import { invalidateList } from '../graphql'
-import { previewUrl } from '../files'
-import { useMessageStore } from '../stores'
+import { canvasBlob, previewUrl } from '../files'
+import { useConfirmStore, useMessageStore } from '../stores'
 import { fileurl } from '../urls'
 import { safeParse } from '../json'
 import { mdiTooltipImage, mdiImagePlus } from '@mdi/js'
@@ -14,6 +14,8 @@ const SAVE_FILE_PREVIEW = gql`
     saveFile(id: $id, input: {}, preview: $preview) {
       id
       latest {
+        id
+        published
         data
         created_at
       }
@@ -26,6 +28,8 @@ const REMOVE_FILE_PREVIEW = gql`
     saveFile(id: $id, input: {}, preview: $preview) {
       id
       latest {
+        id
+        published
         data
         created_at
       }
@@ -49,9 +53,10 @@ export default {
   },
 
   setup() {
+    const confirm = useConfirmStore()
     const messages = useMessageStore()
 
-    return { messages, fileurl, previewUrl, mdiTooltipImage, mdiImagePlus }
+    return { confirm, messages, fileurl, previewUrl, mdiTooltipImage, mdiImagePlus }
   },
 
   beforeUnmount() {
@@ -66,6 +71,8 @@ export default {
   methods: {
     addCover() {
       if (this.readonly) return this.messages.denied()
+      // another cover is still saved, e.g. after a double click
+      if (this.loading.cover) return
 
       const video = this.$refs.video
 
@@ -75,7 +82,7 @@ export default {
 
       // no frame available before the video metadata is loaded
       if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !video.videoWidth || !video.videoHeight) {
-        return
+        return this.messages.add(this.$gettext('Video not loaded yet'), 'info')
       }
 
       const filename = this.item.path
@@ -90,27 +97,26 @@ export default {
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
 
+      // blocks further clicks while the frame is converted, before cover() saves it
+      this.loading.cover = true
+
       try {
-        // throws a SecurityError for cross-origin videos without CORS headers
         context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight)
 
-        canvas.toBlob(
-          (blob) => {
-            canvas.width = 0
-            canvas.height = 0
-
-            if (!blob) {
-              return this.messages.add(msg, 'error')
-            }
-
-            this.cover(new File([blob], filename, { type: 'image/png' }), msg)
-          },
-          'image/png',
-          1
-        )
+        canvasBlob(canvas, 'image/png', 1).then((blob) => {
+          this.cover(new File([blob], filename, { type: 'image/png' }), msg)
+        }).catch((error) => {
+          // the canvas is tainted by a cross-origin video or too large to encode
+          this.loading.cover = false
+          this.messages.error(msg, error)
+        }).finally(() => {
+          canvas.width = 0
+          canvas.height = 0
+        })
       } catch (error) {
         canvas.width = 0
         canvas.height = 0
+        this.loading.cover = false
         this.messages.error(msg, error)
       }
     },
@@ -130,7 +136,13 @@ export default {
           const latest = response.data?.saveFile?.latest
 
           if (latest) {
-            this.$emit('sync', { previews: safeParse(latest.data)?.previews || {}, updated_at: latest.created_at })
+            // the new version is the base of the next save, which would otherwise report a conflict
+            this.$emit('sync', {
+              previews: safeParse(latest.data)?.previews || {},
+              latestId: latest.id,
+              published: latest.published,
+              updated_at: latest.created_at
+            })
           }
         })
         .catch((error) => this.messages.error(msg, error))
@@ -139,8 +151,16 @@ export default {
         })
     },
 
-    removeCover() {
+    async removeCover() {
       if (this.readonly) return this.messages.denied()
+      if (this.loading.cover) return
+
+      if (!(await this.confirm.ask(this.$gettext('Remove cover image'), this.$gettext('Remove the cover image of this video?')))) {
+        return
+      }
+
+      // another cover change may have started while the dialog was open
+      if (this.loading.cover) return
 
       // the previews are synced from the response after the cover is removed
       return this.cover(false, this.$gettext('Error removing video cover'))
@@ -153,6 +173,8 @@ export default {
 
       // allows selecting the same file again, e.g. after a failed upload
       ev.target.value = ''
+
+      if (this.loading.cover) return
 
       if (!file) {
         return this.messages.add(this.$gettext('No file selected'), 'error')
@@ -175,13 +197,17 @@ export default {
     ></video>
 
     <div v-if="!readonly" class="toolbar">
-      <img
-        v-if="Object.values(item.previews).length"
-        class="video-preview"
-        :src="previewUrl(item)"
-        :alt="item.name"
+      <button
+        v-if="Object.values(item.previews || {}).length"
+        :aria-label="$gettext('Remove cover image')"
+        :title="$gettext('Remove cover image')"
+        :disabled="loading.cover"
+        class="btn-cover-remove"
+        type="button"
         @click="removeCover()"
-      />
+      >
+        <img class="video-preview" :src="previewUrl(item)" :alt="item.name" />
+      </button>
       <div v-else>
         <v-btn
           :icon="mdiTooltipImage"
@@ -198,7 +224,7 @@ export default {
           @click="$refs.coverInput.click()"
         >
           <v-icon :icon="mdiImagePlus" />
-          <input ref="coverInput" type="file" class="cover-input" @change="uploadCover($event)" />
+          <input ref="coverInput" type="file" accept="image/*" class="cover-input" @change="uploadCover($event)" />
         </v-btn>
       </div>
     </div>
@@ -215,9 +241,22 @@ export default {
   max-height: 100%;
 }
 
+.btn-cover-remove {
+  display: inline-flex;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+
+.btn-cover-remove:focus-visible {
+  outline: 2px solid rgb(var(--v-theme-primary));
+  outline-offset: 2px;
+}
+
 img.video-preview {
   width: 100px;
-  cursor: pointer;
   border-radius: 8px;
 }
 

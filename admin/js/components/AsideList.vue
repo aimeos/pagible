@@ -91,7 +91,11 @@ export default {
           :key="idx"
           rounded="lg"
         >
-          <v-btn @click="toggle(item)" :prepend-icon="item.icon" variant="text"
+          <v-btn
+            @click="toggle(item)"
+            :aria-pressed="String(active(item))"
+            :prepend-icon="item.icon"
+            variant="text"
             >{{ item.title }}<span v-if="item.count != null" class="count">{{ item.count }}</span></v-btn
           >
         </v-list-item>

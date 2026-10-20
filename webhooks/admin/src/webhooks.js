@@ -19,7 +19,8 @@ export function reasonText($pgettext, reason, status = null) {
     connection_failed: $pgettext("webhooks", "Connection failed"),
     destination_not_allowed: $pgettext("webhooks", "Access denied"),
     invalid_encryption: $pgettext("webhooks", "Secret can't be decrypted, rotate it"),
-    invalid_policy: $pgettext("webhooks", "Blocked by server configuration"),
+    invalid_policy: $pgettext("webhooks", "Invalid list of denied networks"),
+    invalid_queue: $pgettext("webhooks", "Queue unavailable"),
     invalid_url: $pgettext("webhooks", "Not a valid URL"),
     queue_failed: $pgettext("webhooks", "Queue unavailable"),
     resolution_failed: $pgettext("webhooks", "Host not found"),
@@ -32,7 +33,9 @@ export function reasonText($pgettext, reason, status = null) {
     ? $pgettext("webhooks", "Redirects aren't followed")
     : reasons[reason] || $pgettext("webhooks", "Delivery failed");
 
-  return status ? `${text} (${status})` : text;
+  return status
+    ? $pgettext("webhooks", "%{reason} (%{status})", { reason: text, status })
+    : text;
 }
 
 // deliveries fail until the secret is rotated

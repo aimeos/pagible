@@ -54,7 +54,10 @@ export default {
   data: () => ({
     panel: [...OPEN_PANELS],
     versions: [],
-    references: {}
+    references: {},
+    // number of the latest request, older responses are ignored; set up here because the
+    // immediate item watcher runs before created()
+    seq: 0
   }),
 
   setup() {
@@ -62,11 +65,6 @@ export default {
     const viewStack = useViewStack()
     const user = useUserStore()
     return { messages, mdiLock, user, viewStack }
-  },
-
-  created() {
-    // number of the latest request, older responses are ignored
-    this.seq = 0
   },
 
   methods: {
@@ -92,15 +90,16 @@ export default {
   },
 
   watch: {
-    item: {
+    // the parent replaces the item object on every save, only another item needs new references
+    'item.id': {
       immediate: true,
-      handler(item) {
+      handler(id) {
         const seq = ++this.seq
 
         this.references = {}
         this.versions = []
 
-        if (!item.id || !this.user.can(this.type + ':view')) {
+        if (!id || !this.user.can(this.type + ':view')) {
           return
         }
 
@@ -109,7 +108,7 @@ export default {
             query: query(this.type),
             fetchPolicy: 'no-cache',
             variables: {
-              id: item.id
+              id
             }
           })
           .then((result) => {
@@ -132,7 +131,7 @@ export default {
           })
           .catch((error) => {
             if (seq === this.seq) {
-              this.messages.error(this.$gettext('Error fetching references'), error, item)
+              this.messages.error(this.$gettext('Error fetching references'), error, this.item)
             }
           })
       }
@@ -157,7 +156,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in references.bypages" :key="v.id" @click="open('Page', v)">
+                <tr v-for="v in references.bypages" :key="v.id" tabindex="0" @click="open('Page', v)" @keydown.enter="open('Page', v)">
                   <td>{{ v.id }}</td>
                   <td>{{ '/' + v.path }}</td>
                   <td>
@@ -187,7 +186,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in references.byelements" :key="v.id" @click="open('Element', v)">
+                <tr v-for="v in references.byelements" :key="v.id" tabindex="0" @click="open('Element', v)" @keydown.enter="open('Element', v)">
                   <td>{{ v.id }}</td>
                   <td>{{ v.type }}</td>
                   <td>{{ v.name }}</td>
@@ -209,7 +208,7 @@ export default {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="v in versions" :key="v.key" @click="open(v.type, { id: v.id })">
+                <tr v-for="v in versions" :key="v.key" tabindex="0" @click="open(v.type, { id: v.id })" @keydown.enter="open(v.type, { id: v.id })">
                   <td>{{ v.id }}</td>
                   <td>{{ v.type }}</td>
                   <td>{{ v.published }}</td>

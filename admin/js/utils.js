@@ -44,6 +44,13 @@ export function clone(value) {
   return copy
 }
 
+// Delay before server requests triggered by typing (searches, lookups, validation requests)
+export const REQUEST_DELAY = 500
+// Delay before local updates triggered by typing or repeated events
+export const INPUT_DELAY = 300
+// Duration of drag and drop reorder animations
+export const DRAG_ANIMATION = 300
+
 /**
  * Creates a debounced version of a function that returns a Promise. All calls of one burst
  * share the result of the final invocation and the returned function exposes a cancel()
@@ -54,6 +61,35 @@ export function clone(value) {
  * @param {number} delay Delay in milliseconds
  * @returns {Function} Debounced function (with cancel() and flush() methods) that returns a Promise
  */
+/**
+ * Checks if the key event belongs to the input of an input method editor, e.g. Enter confirming a CJK word
+ *
+ * Safari sends the confirming keydown after the composition ended, only recognizable by its key code.
+ *
+ * @param {KeyboardEvent} ev Keyboard event
+ * @returns {Boolean} TRUE if the event is part of the composition
+ */
+export function composing(ev) {
+  return ev.isComposing || ev.keyCode === 229
+}
+
+/**
+ * Direction of moving an entry by Alt + arrow key as keyboard alternative to dragging
+ *
+ * @param {KeyboardEvent} ev Keyboard event
+ * @param {Boolean} horizontal Use the left/right instead of the up/down arrow keys
+ * @param {Boolean} rtl Right-to-left layout which reverses the left/right direction
+ * @returns {Number} -1 for backward, 1 for forward and 0 for other keys
+ */
+export function moveStep(ev, horizontal = false, rtl = false) {
+  if (!ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) {
+    return 0
+  }
+
+  const step = (horizontal ? { ArrowLeft: -1, ArrowRight: 1 } : { ArrowUp: -1, ArrowDown: 1 })[ev.key] || 0
+  return horizontal && rtl ? -step : step
+}
+
 export function debounce(func, delay) {
   let timer
   let invoke = null // runs the pending invocation

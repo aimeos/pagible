@@ -1,6 +1,7 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { previewUrl } from '../files'
 import { filepairs, lineRows, tableRows, words } from '../history'
 import { fileurl, filesrcset } from '../urls'
 import CmsDialog from './Dialog.vue'
@@ -14,7 +15,7 @@ export default {
     type: { type: String, default: '' }
   },
 
-  setup() { return { fileurl, filesrcset } },
+  setup() { return { fileurl, filesrcset, previewUrl } },
   data: () => ({ preview: null, activator: null, failed: {} }),
 
   computed: {
@@ -53,11 +54,6 @@ export default {
 
     changed(row, column) {
       return JSON.stringify(row.before?.[column]) !== JSON.stringify(row.after?.[column])
-    },
-
-    // URL of the first preview image or of the file itself if there's no preview
-    previewUrl(file) {
-      return fileurl(file, Object.values(file.previews || {})[0] ?? file.path)
     },
 
     name(file) {

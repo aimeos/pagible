@@ -21,13 +21,13 @@ import {
 } from '@mdi/js'
 import VirtualList from 'vue-virtual-sortable'
 import { required, minEntries, maxEntries } from '../rules'
+import ActionItem from '../components/ActionItem.vue'
 import ActionMenu from '../components/ActionMenu.vue'
-import FieldActions from '../components/FieldActions.vue'
+import FieldRow from '../components/FieldRow.vue'
 import { useClipboardStore } from '../stores'
-import { TEXT_TYPES, fieldBase, fieldLabel } from '../field'
-import { hintTypes, protectTypes, toName } from '../fieldtypes'
-import { clone, itemTitle, uid } from '../utils'
-import { key, reveal, scrollParent } from '../virtual'
+import { fieldBase, fieldLabel } from '../field'
+import { DRAG_ANIMATION, clone, itemTitle, uid } from '../utils'
+import { key, rekey, reveal, scrollParent } from '../virtual'
 
 export default {
   extends: fieldBase,
@@ -35,8 +35,9 @@ export default {
   inheritAttrs: false,
 
   components: {
+    ActionItem,
     ActionMenu,
-    FieldActions,
+    FieldRow,
     VirtualList
   },
 
@@ -70,12 +71,14 @@ export default {
       mdiArrowUp,
       mdiArrowDown,
       mdiViewGridPlus,
-      hintTypes,
-      itemTitle,
-      protectTypes,
-      textTypes: TEXT_TYPES,
-      toName
+      DRAG_ANIMATION,
+      itemTitle
     }
+  },
+
+  created() {
+    // last value emitted by the field, the model watcher ignores it when it comes back
+    this.emitted = null
   },
 
   mounted() {
@@ -216,9 +219,10 @@ export default {
       this.change()
     },
 
-    // replaces the changed item, the item objects are shared with the parent's value
+    // replaces the changed item, the item objects are shared with the parent's value;
+    // the copy keeps the key so the panel stays open and the inputs aren't rendered again
     update(idx, code, value) {
-      this.items[idx] = { ...this.items[idx], [code]: value }
+      this.items[idx] = rekey(this.items[idx], { ...this.items[idx], [code]: value })
       this.change()
     }
   },
@@ -252,7 +256,7 @@ export default {
       :disabled="readonly || $vuetify.display.smAndDown"
       handle=".item-handle"
       group="items"
-      :animation="500"
+      :animation="DRAG_ANIMATION"
       lockAxis="x"
     >
       <template #item="{ item, index: idx, key }">
@@ -286,11 +290,7 @@ export default {
                 :key="i"
               >
                 <v-divider v-if="action.divider" />
-                <v-list-item v-else>
-                  <v-btn :prepend-icon="action.icon" variant="text" @click="action.fn()">{{
-                    action.label
-                  }}</v-btn>
-                </v-list-item>
+                <ActionItem v-else :prepend-icon="action.icon" @click="action.fn()">{{ action.label }}</ActionItem>
               </template>
             </ActionMenu>
           </span>
@@ -300,42 +300,22 @@ export default {
 
         <v-expansion-panel-text>
           <div v-for="(field, code) in config.item || {}" :key="code" class="field">
-            <div v-if="!protectTypes.has(toName(field.type))" class="label">
-              {{ label(field, code) }}
-              <div v-if="!readonly && textTypes.includes(field.type)" class="actions">
-                <FieldActions
-                  :code="code"
-                  :field="field"
-                  :value="items[idx]?.[code]"
-                  :context="items[idx]"
-                  :prompt="prompt(item)"
-                  @update="update(idx, code, $event)"
-                />
-              </div>
-            </div>
-            <component
-              :is="toName(field.type)"
+            <FieldRow
+              :field="field"
+              :code="code"
+              :label="label(field, code)"
               :modelValue="items[idx]?.[code]"
-              v-bind="field.rel ? { rel: items[idx]?.[code + '-rel'] } : {}"
-              v-on="field.rel ? { 'update:rel': value => update(idx, code + '-rel', value) } : {}"
+              :rel="items[idx]?.[code + '-rel']"
+              :context="items[idx]"
+              :assets="assets"
+              :readonly="readonly"
+              :prompt="prompt(item)"
               @update:modelValue="update(idx, code, $event)"
+              @update:rel="update(idx, code + '-rel', $event)"
               @error="error(item, code, $event)"
               @addFile="$emit('addFile', $event)"
               @removeFile="$emit('removeFile', $event)"
-              :readonly="readonly"
-              :context="items[idx]"
-              :assets="assets"
-              :config="field"
-              :label="protectTypes.has(toName(field.type)) ? label(field, code) : null"
-            ></component>
-            <div
-              v-if="field.hint && field.type !== 'hidden' && !hintTypes.has(toName(field.type))"
-              class="v-input__details hint"
-            >
-              <div class="v-messages">
-                <div class="v-messages__message">{{ $pgettext('fh', field.hint) }}</div>
-              </div>
-            </div>
+            />
           </div>
         </v-expansion-panel-text>
         </v-expansion-panel>
@@ -375,14 +355,5 @@ export default {
 
 .field {
   margin-bottom: 12px;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-transform: capitalize;
-  font-weight: bold;
-  margin-bottom: 4px;
 }
 </style>

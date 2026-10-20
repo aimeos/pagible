@@ -2,7 +2,7 @@ import { h, reactive } from 'vue'
 import { apolloClient } from '../../../js/graphql'
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { sections } from '../../../js/history'
-import { useTranslationStore, useUserStore } from '../../../js/stores'
+import { useMessageStore, useTranslationStore, useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
 const stubs = {
@@ -22,7 +22,7 @@ const stubs = {
       ])
     },
   },
-  HistoryDialog: { template: '<div class="history-dialog-stub" />' },
+  HistoryDialog: { render: () => h('div', { class: 'history-dialog-stub' }) },
   PageDetailItem: { template: '<div class="page-detail-item-stub" />', methods: { reset() {} } },
   PageDetailEditor: {
     props: { asideVisible: Boolean, previewSize: String },
@@ -586,6 +586,24 @@ describe('PageDetail', () => {
       })
     })
 
+    it('marks the tab of the resolved conflict as changed', () => {
+      mountDetail().then(() => {
+        const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
+        vm.changed = {
+          editor: 'x',
+          data: { title: { previous: 'a', current: 'b', overwritten: 'c' } },
+          meta: { m1: { previous: 'a', current: 'b', overwritten: 'c' } }
+        }
+
+        vm.resolved({ section: 'meta', key: 'm1', value: 'c' })
+        expect(vm.dirty).to.deep.equal({ content: true })
+
+        vm.resolved({ section: 'data', key: 'title', value: 'c' })
+        expect(vm.dirty).to.deep.equal({ content: true, page: true })
+        expect(vm.item.title).to.equal('c')
+      })
+    })
+
     it('hasConflict is true when overwritten exists without resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageDetail).vm
@@ -672,6 +690,52 @@ describe('PageDetail', () => {
       })
     })
 
+    it('keeps the previous language if the switched variant is not loaded', () => {
+      const query = cy.stub()
+      query.onFirstCall().resolves(pageData('en', variants))
+      const mutate = cy.stub()
+
+      mountDetail({ 'page:view': true, 'page:save': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        // the user edits the shown variant while the other one is loaded
+        query.callsFake(() => {
+          vm.dirty = { page: true }
+          return Promise.resolve(pageData('de', variants))
+        })
+
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
+        cy.then(() => vm.switchLang({ code: 'de', state: 'stale' }))
+        cy.then(() => {
+          expect(query.lastCall.args[0].variables.lang).to.equal('de')
+          expect(vm.variantLang).to.equal('en')
+          expect(vm.switching).to.be.false
+        })
+      })
+    })
+
+    it('does not save while switching the language', () => {
+      const query = cy.stub().resolves(pageData('en', variants))
+      const mutate = cy.stub()
+
+      mountDetail({ 'page:view': true, 'page:save': true }, {}, { query, mutate }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageDetail).vm
+
+        cy.wrap(null).should(() => expect(vm.item.variants).to.have.length(2))
+        cy.then(() => {
+          vm.switching = true
+          vm.dirty = { page: true }
+          useMessageStore().queue = []
+          return vm.save(true)
+        }).then((result) => {
+          expect(result).to.equal(false)
+          expect(mutate).not.to.have.been.called
+          // also quiet saves from publishing or the leave dialog tell the user why nothing happens
+          expect(useMessageStore().queue.map((m) => m.text)).to.include('Please wait until the language is switched')
+        })
+      })
+    })
+
     it('creates a missing variant before switching to it', () => {
       const query = cy.stub()
       query.onFirstCall().resolves(pageData('en', variants))
@@ -685,7 +749,7 @@ describe('PageDetail', () => {
         cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
         cy.then(() => {
           expect(mutate).to.have.been.calledOnce
-          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr' })
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr', access: false })
           expect(query.lastCall.args[0].variables.lang).to.equal('fr')
           expect(vm.variantLang).to.equal('fr')
         })
@@ -707,7 +771,7 @@ describe('PageDetail', () => {
         cy.then(() => vm.switchLang({ code: 'fr', state: 'missing' }))
         cy.then(() => {
           expect(mutate).to.have.been.calledTwice
-          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr' })
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: '1', lang: 'fr', access: false })
           expect(mutate.secondCall.args[0].variables).to.deep.equal({ id: ['1'], lang: ['fr'] })
           expect(vm.variantLang).to.equal('fr')
         })
@@ -765,6 +829,8 @@ describe('PageDetail', () => {
 
       function mountVariant(perms, apollo) {
         const query = apollo.query || cy.stub().resolves({ data: { page: variant() } })
+        // the translation store outlives the editor and polls with the default client
+        cy.stub(apolloClient, 'query').callsFake((...args) => query(...args))
         return mountDetail({ 'page:view': true, ...perms }, {}, { ...apollo, query }).then(({ wrapper }) => {
           const vm = wrapper.findComponent(PageDetail).vm
           cy.wrap(null).should(() => expect(vm.item.lang).to.equal('de'))

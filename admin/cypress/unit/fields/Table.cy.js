@@ -189,5 +189,79 @@ describe('Table', () => {
       expect(keys[0]).not.to.equal(keys[1])
     })
   })
-})
 
+  it('keeps the placeholders at both ends when a column is dropped outside of them', () => {
+    const onUpdate = cy.spy().as('update')
+
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b', 'c']], config: {}, 'onUpdate:modelValue': onUpdate },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(TableField).vm
+      const [first, second, third] = vm.cols
+
+      // the sortable list has already moved the last column before the first placeholder
+      vm.columns.splice(0, 0, vm.columns.splice(3, 1)[0])
+      vm.move({ oldIndex: 3, newIndex: 0 })
+
+      expect(vm.columns).to.deep.equal([null, third, first, second, null])
+      expect(vm.table).to.deep.equal([['c', 'a', 'b']])
+
+      // and the first column after the last placeholder
+      vm.columns.push(vm.columns.splice(1, 1)[0])
+      vm.move({ oldIndex: 1, newIndex: 4 })
+
+      expect(vm.columns).to.deep.equal([null, first, second, third, null])
+      expect(vm.table).to.deep.equal([['a', 'b', 'c']])
+    })
+  })
+
+  it('prevents dropping columns onto the placeholder columns', () => {
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b']], config: {} },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(TableField).vm
+      const cells = wrapper.element.querySelectorAll('.col-header > td')
+
+      expect(vm.movable({ related: cells[0] })).to.equal(false)
+      expect(vm.movable({ related: cells[1] })).to.equal(true)
+      expect(vm.movable({ related: cells[cells.length - 1] })).to.equal(false)
+    })
+  })
+
+  it('labels the cells by row and column', () => {
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b'], ['c', 'd']], config: {} },
+    })
+    cy.get('tbody textarea:not(.v-textarea__sizer)').eq(3).should('have.attr', 'aria-label', 'Row 2, column 2')
+  })
+
+  it('moves rows with Alt and the arrow keys', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(TableField, {
+      props: { modelValue: [['a'], ['b']], config: {}, 'onUpdate:modelValue': onUpdate },
+    })
+
+    cy.get('.row-handle').first().focus().trigger('keydown', { key: 'ArrowDown', altKey: true })
+    cy.get('@update').should('have.been.calledOnceWith', [['b'], ['a']])
+    cy.get('.row-handle').last().should('have.focus')
+
+    cy.get('.row-handle').last().trigger('keydown', { key: 'ArrowDown', altKey: true })
+    cy.get('.row-handle').last().trigger('keydown', { key: 'ArrowUp' })
+    cy.get('@update').should('have.been.calledOnce')
+  })
+
+  it('moves columns with Alt and the arrow keys', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(TableField, {
+      props: { modelValue: [['a', 'b'], ['c', 'd']], config: {}, 'onUpdate:modelValue': onUpdate },
+    })
+
+    cy.get('.col-handle').last().focus().trigger('keydown', { key: 'ArrowLeft', altKey: true })
+    cy.get('@update').should('have.been.calledOnceWith', [['b', 'a'], ['d', 'c']])
+    cy.get('.col-handle').first().should('have.focus')
+    cy.get('tbody textarea').first().should('have.value', 'b')
+
+    cy.get('.col-handle').first().trigger('keydown', { key: 'ArrowLeft', altKey: true })
+    cy.get('@update').should('have.been.calledOnce')
+  })
+})

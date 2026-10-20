@@ -139,9 +139,6 @@ export default {
         >
       </template>
     </v-snackbar-queue>
-    <div role="status" aria-live="polite" aria-atomic="true" class="v-sr-only">
-      {{ messages.queue[messages.queue.length - 1]?.text }}
-    </div>
   </v-app>
 </template>
 

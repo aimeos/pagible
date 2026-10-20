@@ -1,5 +1,5 @@
 import { isProxy, reactive } from 'vue'
-import { clone, debounce, uid } from '../../../js/utils'
+import { clone, composing, debounce, uid } from '../../../js/utils'
 
 describe('uid()', () => {
   it('returns a string of length 6', () => {
@@ -30,6 +30,15 @@ describe('uid()', () => {
     const a = uid()
     const b = uid()
     expect(a).to.not.equal(b)
+  })
+})
+
+describe('composing()', () => {
+  it('detects key events of an input method editor', () => {
+    expect(composing(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }))).to.equal(true)
+    // Safari confirms the composed word after the composition ended
+    expect(composing(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 229 }))).to.equal(true)
+    expect(composing(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13 }))).to.equal(false)
   })
 })
 

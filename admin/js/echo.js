@@ -7,9 +7,19 @@ let echoInstance = null
 let idleTimer = null
 let activeChannels = 0
 let tenant = ''
-let unavailable = false // the Echo libraries failed to load
+let failures = 0 // number of consecutive failures to load the Echo libraries
+let retryAt = 0 // time when loading the Echo libraries is tried again
 
 const IDLE_TIMEOUT = 5 * 60 * 1000
+const RETRY_DELAY = 30 * 1000
+const RETRY_MAX = 10 * 60 * 1000
+
+/**
+ * Returns the time to wait before loading the Echo libraries again after the given number of failures
+ */
+export function backoff(count) {
+  return count > 0 ? Math.min(RETRY_DELAY * 2 ** (count - 1), RETRY_MAX) : 0
+}
 
 // Active subscriber callbacks, notified with (null, RECONNECT) after the socket reconnects
 // so views can re-sync state that changed while the connection was down.
@@ -42,10 +52,11 @@ function resetIdleTimer() {
 }
 
 /**
- * Returns if realtime updates are configured and the Echo libraries haven't failed to load.
+ * Returns if realtime updates are configured and the Echo libraries haven't failed to load recently.
+ * After a failure, e.g. a chunk not available during a deployment, loading them is tried again later.
  */
 export function realtime() {
-  return !unavailable && !!reverb()
+  return Date.now() >= retryAt && !!reverb()
 }
 
 function getEcho() {
@@ -56,11 +67,11 @@ function getEcho() {
   idleTimer = null
 
   if (!echoPromise) {
-    echoPromise = Promise.all([import('laravel-echo'), import('pusher-js')])
+    const pending = Promise.all([import('laravel-echo'), import('pusher-js')])
       .then(([{ default: Echo }, pusherModule]) => {
         const Pusher = pusherModule.default || pusherModule
         tenant = config.tenant ?? ''
-        echoInstance = new Echo({
+        const echo = new Echo({
           Pusher,
           broadcaster: 'reverb',
           key: config.key,
@@ -70,16 +81,27 @@ function getEcho() {
           forceTLS: config.scheme === 'https',
           enabledTransports: ['ws', 'wss']
         })
-        bindReconnect(echoInstance)
-        return echoInstance
+        bindReconnect(echo)
+        failures = 0
+
+        // disconnect() closes the instance it waited for, which mustn't become the current one then
+        if (echoPromise === pending) {
+          echoInstance = echo
+        }
+        return echo
       })
       .catch((err) => {
         console.warn('Laravel Echo not available:', err.message)
-        unavailable = true
-        echoPromise = null
-        echoInstance = null
+        retryAt = Date.now() + backoff(++failures)
+
+        if (echoPromise === pending) {
+          echoPromise = null
+          echoInstance = null
+        }
         return null
       })
+
+    echoPromise = pending
   }
 
   return echoPromise
@@ -175,7 +197,8 @@ export function setupEcho(type, onEvent, actions = LIST_ACTIONS, connect = subsc
 
 export async function subscribe(contentType, callback, actions = LIST_ACTIONS) {
   const echo = await getEcho()
-  if (!echo) return null
+  // the connection may have been closed by disconnect() while the libraries were loading
+  if (!echo || echo !== echoInstance) return null
 
   activeChannels++
   const name = channelName(contentType)
@@ -200,9 +223,13 @@ export async function subscribe(contentType, callback, actions = LIST_ACTIONS) {
 
     handlers.forEach(([event, handler]) => channel.stopListening(event, handler))
     subscriptions.delete(callback)
-    activeChannels = Math.max(0, activeChannels - 1)
     leave()
-    resetIdleTimer()
+
+    // disconnect() already reset the counter of a closed connection, a later one isn't affected
+    if (echo === echoInstance) {
+      activeChannels = Math.max(0, activeChannels - 1)
+      resetIdleTimer()
+    }
   }
 }
 

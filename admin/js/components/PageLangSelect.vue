@@ -36,8 +36,14 @@ export default {
   data() {
     return {
       // translation state counts per language
-      states: {}
+      states: {},
+      // number of the latest request, older responses are ignored
+      seq: 0
     }
+  },
+
+  created() {
+    this.destroyed = false
   },
 
   beforeUnmount() {
@@ -72,11 +78,13 @@ export default {
     fetchStates() {
       if (!this.user.can('page:view')) return
 
+      const seq = ++this.seq
+
       return this.$apollo
         .query({ query: FETCH_STATES, fetchPolicy: 'no-cache' })
         .then((result) => {
           if (result.errors) throw result
-          if (this.destroyed) return
+          if (this.destroyed || seq !== this.seq) return
 
           this.states = Object.fromEntries(
             (result.data?.pageTranslationStates || []).map((state) => [state.lang, state])

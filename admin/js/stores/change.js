@@ -2,7 +2,7 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { markRaw } from 'vue'
+import { markRaw, toRaw } from 'vue'
 import { defineStore } from 'pinia'
 
 /**
@@ -30,7 +30,8 @@ export const useChangeStore = defineStore('change', {
 
       const list = this.get(type).filter((entry) => entry.id !== item.id)
 
-      list.push(markRaw(item))
+      // a copy, marking the passed item raw would make it unreactive in the detail view
+      list.push(markRaw({ ...toRaw(item) }))
       this.changed = { ...this.changed, [type]: list }
     },
 

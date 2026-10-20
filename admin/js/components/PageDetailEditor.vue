@@ -137,7 +137,7 @@ export default {
     },
 
     edit() {
-      this.element = this.item.content[this.index] || null
+      this.element = (this.item.content || [])[this.index] || null
       this.$emit('edit', this.element, !!this.element)
     },
 
@@ -152,8 +152,14 @@ export default {
     insert() {
       if (!this.element || this.pos === null) return
 
-      const index = Math.max(0, (this.index ?? -1) + this.pos)
       const content = [...(this.item.content || [])]
+      let index = Math.max(0, (this.index ?? -1) + this.pos)
+
+      // elements unknown to the page (e.g. of empty or inherited sections) are added at the end of the section
+      if (this.index === -1) {
+        const last = content.findLastIndex((entry) => (entry.group || 'main') === this.element.group)
+        index = last === -1 ? content.length : last + 1
+      }
 
       content.splice(index, 0, this.element)
       this.$emit('update:content', content)
@@ -199,12 +205,11 @@ export default {
         case PREVIEW.FOREIGN:
           this.hint('vcontent')
           break
-        default:
-          this.index =
-            typeof msg.data === 'object' && msg.data.id
-              ? this.item.content.findIndex((c) => c.id === msg.data.id)
-              : null
-          this.section = msg.data.section || 'main'
+        default: {
+          const data = msg.data && typeof msg.data === 'object' ? msg.data : {}
+
+          this.index = data.id ? (this.item.content || []).findIndex((c) => c.id === data.id) : null
+          this.section = data.section || 'main'
 
           if (this.index === -1) {
             this.$emit('edit', null)
@@ -212,6 +217,7 @@ export default {
           } else if (this.index !== null) {
             this.edit()
           }
+        }
       }
     },
 
@@ -232,7 +238,7 @@ export default {
     remove() {
       if (this.index === null || this.index < 0) return
 
-      this.$emit('update:content', this.item.content.filter((entry, idx) => idx !== this.index))
+      this.$emit('update:content', (this.item.content || []).filter((entry, idx) => idx !== this.index))
       this.element = null
       this.index = null
 

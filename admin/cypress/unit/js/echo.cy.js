@@ -1,16 +1,29 @@
 import {
+  backoff,
   bindReconnect,
   channelName,
+  disconnect,
   joinChannel,
   realtime,
   resubscribe,
   resync,
   setupEcho,
+  subscribe,
   PATCH_ACTIONS,
   LIST_ACTIONS,
   RECONNECT,
 } from '../../../js/echo'
 import { setupReload } from '../../../js/livesync'
+
+describe('backoff()', () => {
+  it('retries loading the Echo libraries with increasing delays', () => {
+    expect(backoff(0)).to.equal(0)
+    expect(backoff(1)).to.equal(30000)
+    expect(backoff(2)).to.equal(60000)
+    expect(backoff(3)).to.equal(120000)
+    expect(backoff(10)).to.equal(600000)
+  })
+})
 
 describe('bindReconnect()', () => {
   function connection() {
@@ -67,6 +80,47 @@ describe('realtime()', () => {
   it('is enabled with Reverb configuration', () => {
     document.querySelector('#app').dataset.reverb = '{"key":"test"}'
     expect(realtime()).to.equal(true)
+  })
+})
+
+describe('subscribe()', () => {
+  beforeEach(() => {
+    document.querySelector('[data-cy-root]').id = 'app'
+    document.querySelector('#app').dataset.reverb = '{"key":"test","host":"127.0.0.1","port":1,"scheme":"http"}'
+  })
+
+  afterEach(() => {
+    document.querySelector('#app')?.removeAttribute('data-reverb')
+    return disconnect()
+  })
+
+  it('does not subscribe on a connection closed while the libraries were loading', () => {
+    const pending = subscribe('page', cy.stub())
+
+    return disconnect().then(() => pending).then((release) => {
+      expect(release).to.be.null
+    })
+  })
+
+  it('does not count releases of a closed connection for the current one', () => {
+    let stale
+
+    return subscribe('page', cy.stub())
+      .then((release) => {
+        stale = release
+        return disconnect()
+      })
+      .then(() => subscribe('page', cy.stub()))
+      .then((current) => {
+        const timeout = cy.spy(window, 'setTimeout')
+        const idle = () => timeout.getCalls().filter((call) => call.args[1] === 5 * 60 * 1000)
+
+        stale()
+        expect(idle()).to.have.length(0)
+
+        current()
+        expect(idle()).to.have.length(1)
+      })
   })
 })
 

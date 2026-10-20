@@ -1,15 +1,13 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import FieldActions from './FieldActions.vue'
+import FieldRow from './FieldRow.vue'
 import { changedState } from '../merge'
-import { hintTypes, protectTypes, toName } from '../fieldtypes'
-import { TEXT_TYPES, fieldLabel } from '../field'
+import { fieldLabel } from '../field'
 import { hasTrue } from '../utils'
-import { mdiUndoVariant } from '@mdi/js'
 
 export default {
-  components: { FieldActions },
+  components: { FieldRow },
 
   props: {
     data: { type: Object, default: () => ({}) },
@@ -34,12 +32,7 @@ export default {
 
   setup() {
     return {
-      changedState,
-      mdiUndoVariant,
-      hintTypes,
-      protectTypes,
-      textTypes: TEXT_TYPES,
-      toName
+      changedState
     }
   },
 
@@ -148,8 +141,22 @@ export default {
   watch: {
     type: {
       immediate: true,
-      handler(val) {
-        this.errors = {}
+      handler() {
+        // changes of the fields of the previous type don't apply any more
+        this.resetDirty()
+
+        // fields kept for the new type don't report their state again, remounted ones do
+        const errors = {}
+        for (const code in this.fields || {}) {
+          if (code in this.errors) errors[code] = this.errors[code]
+        }
+        this.errors = errors
+
+        const has = hasTrue(errors)
+        if (has !== this.lastError) {
+          this.lastError = has
+          this.$emit('error', has)
+        }
       }
     }
   }
@@ -167,74 +174,31 @@ export default {
       ...changedState(changed, code)
     }"
   >
-    <div
-      v-if="field.type !== 'hidden' && !protectTypes.has(toName(field.type))"
-      class="label"
-    >
-      {{ label(field, code) }}
-      <div
-        v-if="!readonly && (textTypes.includes(field.type) || isDirty(code))"
-        class="actions"
-      >
-        <FieldActions
-          v-if="textTypes.includes(field.type)"
-          :code="code"
-          :field="field"
-          :value="data[code]"
-          :context="data"
-          prompt="Create a suitable text based on the context"
-          @update="update(code, $event)"
-        />
-        <v-btn
-          v-if="isDirty(code)"
-          :title="$gettext('Revert')"
-          @click="resetField(code)"
-          :icon="mdiUndoVariant"
-          variant="text"
-        />
-      </div>
-    </div>
-    <div v-if="changed[code] && !changed[code]?.overwritten" class="merged-value">
-      {{ $gettext('Updated by other editor') }}
-    </div>
-    <div v-if="changed[code]?.overwritten" class="conflict-value">
-      {{ $gettext('Overwritten') }}: {{ typeof changed[code].overwritten === 'object' ? JSON.stringify(changed[code].overwritten) : changed[code].overwritten }}
-    </div>
-    <component
-      :is="toName(field.type)"
-      :key="field.type + '-' + code"
-      :aria-label="label(field, code)"
+    <FieldRow
+      :field="field"
+      :code="code"
+      :label="label(field, code)"
+      :modelValue="data[code]"
+      :rel="data[code + '-rel']"
       :context="data"
       :assets="assets"
-      :config="field"
-      :label="protectTypes.has(toName(field.type)) ? label(field, code) : null"
       :readonly="readonly"
-      :modelValue="data[code]"
-      v-bind="field.rel ? { rel: data[code + '-rel'] } : {}"
-      v-on="field.rel ? { 'update:rel': value => update(code + '-rel', value, code) } : {}"
+      :dirty="isDirty(code)"
+      prompt="Create a suitable text based on the context"
       @addFile="addFile($event)"
       @removeFile="removeFile($event)"
+      @revert="resetField(code)"
       @update:modelValue="update(code, $event)"
+      @update:rel="update(code + '-rel', $event, code)"
       @error="error(code, $event)"
     >
-      <template v-if="protectTypes.has(toName(field.type))" #label>
-        <v-btn
-          v-if="isDirty(code)"
-          :title="$gettext('Revert')"
-          @click="resetField(code)"
-          :icon="mdiUndoVariant"
-          variant="text"
-        />
-      </template>
-    </component>
-    <div
-      v-if="field.hint && field.type !== 'hidden' && !hintTypes.has(toName(field.type))"
-      class="v-input__details hint"
-    >
-      <div class="v-messages">
-        <div class="v-messages__message">{{ $pgettext('fh', field.hint) }}</div>
+      <div v-if="changed[code] && !changed[code]?.overwritten" class="merged-value">
+        {{ $gettext('Updated by other editor') }}
       </div>
-    </div>
+      <div v-if="changed[code]?.overwritten" class="conflict-value">
+        {{ $gettext('Overwritten') }}: {{ typeof changed[code].overwritten === 'object' ? JSON.stringify(changed[code].overwritten) : changed[code].overwritten }}
+      </div>
+    </FieldRow>
   </div>
 </template>
 
@@ -272,14 +236,5 @@ export default {
   font-size: 85%;
   padding: 2px 0 4px;
   word-break: break-word;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-transform: capitalize;
-  font-weight: bold;
-  margin-bottom: 4px;
 }
 </style>

@@ -35,7 +35,9 @@ export default {
 
   methods: {
     update(value) {
-      this.$emit('update:modelValue', this.config.uppercase ? value?.toUpperCase() : value)
+      // clearing emits an empty string so the default value isn't shown again
+      value ??= ''
+      this.$emit('update:modelValue', this.config.uppercase ? value.toUpperCase() : value)
     }
   }
 }

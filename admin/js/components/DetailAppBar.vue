@@ -86,6 +86,10 @@ export default {
     saved: false
   }),
 
+  created() {
+    this.savedTimer = null
+  },
+
   beforeUnmount() {
     clearTimeout(this.savedTimer)
   },

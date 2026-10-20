@@ -131,7 +131,7 @@ export const pageActions = {
         return
       }
 
-      this.mutate('drop', ids, this.$gettext('Error trashing page')).then((ok) => {
+      return this.mutate('drop', ids, this.$gettext('Error trashing page')).then((ok) => {
         if (!ok) {
           return
         }
@@ -172,7 +172,7 @@ export const pageActions = {
         return
       }
 
-      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring page')).then((ok) => {
+      return this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring page')).then((ok) => {
         for (const item of ok ? list : []) {
           const deleted_at = item.data.deleted_at || null
 
@@ -207,7 +207,7 @@ export const pageActions = {
 
       const ids = list.map((item) => item.data.id).reverse()
 
-      this.mutate('purge', ids, this.$gettext('Error purging page')).then((ok) => {
+      return this.mutate('purge', ids, this.$gettext('Error purging page')).then((ok) => {
         for (const item of ok ? this.tops(list) : []) {
           const parent = item.parent
           const removed = (item.data.has || 0) + 1

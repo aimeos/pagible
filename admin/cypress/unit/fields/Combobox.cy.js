@@ -25,6 +25,16 @@ describe('Combobox', () => {
     cy.contains('.v-list-item', 'Dog').should('be.visible')
   })
 
+  it('translates the labels of the static options', () => {
+    cy.mount(Combobox, {
+      props: { config: { options: staticOptions } },
+      global: { mocks: { $pgettext: (ctx, msg) => (ctx === 'op' ? 'T-' + msg : msg) } },
+    })
+    cy.get('.v-combobox').click()
+    cy.contains('.v-list-item', 'T-Cat').should('be.visible')
+    cy.contains('.v-list-item', 'T-Dog').should('be.visible')
+  })
+
   it('allows free-form input not in the option list', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(Combobox, {

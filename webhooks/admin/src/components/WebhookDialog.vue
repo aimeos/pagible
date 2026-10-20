@@ -24,8 +24,8 @@ export default {
     secret: { type: String, default: "" },
     saving: { type: Boolean, default: false },
     testing: { type: Boolean, default: false },
-    // deliveries are enabled by the server configuration
-    enabled: { type: Boolean, default: true },
+    // test events can be sent with the current server configuration
+    testable: { type: Boolean, default: true },
   },
 
   emits: ["update:modelValue", "closed", "save", "test"],
@@ -70,8 +70,17 @@ export default {
         : blank();
     },
 
+    // Enter confirming a word of an input method editor doesn't save the form,
+    // Safari sends it after the composition ended with the key code only
+    submit(ev) {
+      if (ev.isComposing || ev.keyCode === 229) return;
+
+      ev.preventDefault();
+      this.save();
+    },
+
     save() {
-      if (!this.valid) return;
+      if (!this.valid || this.saving || this.testing) return;
 
       this.$emit("save", this.form);
     },
@@ -115,6 +124,7 @@ export default {
       </v-alert>
       <v-text-field
         :model-value="secret"
+        :aria-label="$pgettext('webhooks', 'Webhook secret')"
         class="webhook-secret"
         variant="underlined"
         readonly
@@ -147,6 +157,7 @@ export default {
         variant="underlined"
         maxlength="500"
         autofocus
+        @keydown.enter="submit"
       />
       <template v-else>
         <p class="webhook-current on-surface text-break mt-4 mb-4">{{ webhook.endpoint }}</p>
@@ -175,7 +186,21 @@ export default {
         class="webhook-name"
         variant="underlined"
         maxlength="100"
+        @keydown.enter="submit"
       />
+    </template>
+
+    <!-- sends a test event to the saved destination -->
+    <template v-if="!secret && webhook" #actions-start>
+      <v-btn
+        class="btn-test"
+        variant="outlined"
+        :disabled="saving || !testable"
+        :loading="testing"
+        @click="$emit('test', webhook)"
+        active
+        >{{ $pgettext("webhooks", "Test") }}</v-btn
+      >
     </template>
 
     <template #actions="{ close }">
@@ -188,17 +213,6 @@ export default {
         }}</v-btn>
       </template>
       <template v-else>
-        <!-- sends a test event to the saved destination, placed before the spacer of the dialog -->
-        <v-btn
-          v-if="webhook"
-          class="btn-test order-first"
-          variant="outlined"
-          :disabled="saving || !enabled"
-          :loading="testing"
-          @click="$emit('test', webhook)"
-          active
-          >{{ $pgettext("webhooks", "Test") }}</v-btn
-        >
         <v-btn variant="text" :disabled="saving" @click="close">{{
           $pgettext("webhooks", "Cancel")
         }}</v-btn>

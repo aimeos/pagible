@@ -170,7 +170,7 @@ export async function toMp3(input) {
   return new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
       worker.terminate()
-      resolve(e.data)
+      e.data?.error ? reject(new Error(e.data.error)) : resolve(e.data?.mp3)
     }
     worker.onerror = (e) => {
       worker.terminate()
@@ -208,7 +208,9 @@ export function transcription(list = []) {
         'WEBVTT\n\n' +
         list
           .map((item, i) => {
-            const { start = 0, end = 0, text = '' } = item
+            const { start = 0, end = 0 } = item
+            // blank lines end a cue and "-->" starts its timing line, so both are not allowed in the text
+            const text = String(item.text ?? '').replace(/-->/g, '->').replace(/\n\s*\n/g, '\n').trim()
 
             const formatTime = (s) => {
               const ms = Math.floor((s % 1) * 1000)

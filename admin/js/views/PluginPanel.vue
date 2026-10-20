@@ -1,6 +1,7 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { effectScope } from 'vue'
 import AsideList from '../components/AsideList.vue'
 import ListAppBar from '../components/ListAppBar.vue'
 import Navigation from '../components/Navigation.vue'
@@ -35,7 +36,13 @@ export default {
     return { settings: useSettingStore() }
   },
 
+  created() {
+    // owns the filter watcher, plugins may register their sidebar after they are set up
+    this.filterScope = null
+  },
+
   beforeUnmount() {
+    this.filterScope?.stop()
     this.settings.flush()
   },
 
@@ -47,8 +54,14 @@ export default {
      * @param {Object} defaults Filter values used initially and on reset
      */
     register(content, defaults) {
-      this.aside = { content, defaults, filter: this.settings.filter('plugin:' + this.panel.key, defaults) }
-      return this.aside.filter
+      // detached, so the watcher isn't bound to the calling component and stops with the panel
+      this.filterScope?.stop()
+      this.filterScope = effectScope(true)
+
+      const filter = this.filterScope.run(() => this.settings.filter('plugin:' + this.panel.key, defaults))
+
+      this.aside = { content, defaults, filter }
+      return filter
     },
 
     label(panel) {

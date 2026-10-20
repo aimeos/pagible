@@ -1,3 +1,4 @@
+import { h, ref } from 'vue'
 import Url from '../../../js/fields/Url.vue'
 
 describe('Url', () => {
@@ -244,5 +245,61 @@ describe('Url', () => {
       })
     })
   })
-})
 
+  it('accepts mixed case, localhost and IPv4 hosts with ports', () => {
+    cy.mount(Url, { props: { config: {} } }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+      expect(vm.check('https://Example.com/')).to.equal(true)
+      expect(vm.check('HTTPS://EXAMPLE.COM/Path')).to.equal(true)
+      expect(vm.check('http://localhost:8000/x')).to.equal(true)
+      expect(vm.check('http://127.0.0.1/')).to.equal(true)
+      expect(vm.check('http://192.168.0.1:8080')).to.equal(true)
+    })
+  })
+
+  it('keeps accepting relative URLs and anchors', () => {
+    cy.mount(Url, { props: { config: {} } }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+      expect(vm.check('/internal/page')).to.equal(true)
+      expect(vm.check('#top')).to.equal(true)
+      expect(vm.check('?page=2')).to.equal(true)
+      expect(vm.check('http://exa mple.com')).to.equal(false)
+      expect(vm.check('ftp://example.com')).to.equal(false)
+    })
+  })
+
+  it('accepts schemes configured in upper case', () => {
+    cy.mount(Url, { props: { config: { allowed: ['HTTPS'] } } }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+      expect(vm.check('https://example.com')).to.equal(true)
+      expect(vm.check('http://example.com')).to.equal(false)
+    })
+    cy.mount(Url, { props: { config: { allowed: ['HTTPS'], absolute: true } } }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+      expect(vm.check('https://example.com')).to.equal(true)
+      expect(vm.check('http://example.com')).to.equal(false)
+    })
+  })
+
+  it('emits an empty string on clear so the default is not shown again', () => {
+    const value = ref('https://changed.com')
+    const onUpdate = cy.spy().as('update')
+    const Host = {
+      render: () => h(Url, {
+        modelValue: value.value,
+        config: { default: 'https://default.com' },
+        'onUpdate:modelValue': (v) => { onUpdate(v); value.value = v },
+      })
+    }
+
+    cy.mount(Host)
+    cy.get('.v-field__clearable .v-icon').click({ force: true })
+    cy.get('@update').should('have.been.calledWith', '')
+    cy.get('input[role="combobox"]').first().should('have.value', '')
+  })
+
+  it('has no clear button when readonly', () => {
+    cy.mount(Url, { props: { modelValue: 'https://example.com', config: {}, readonly: true } })
+    cy.get('.v-field__clearable').should('not.exist')
+  })
+})

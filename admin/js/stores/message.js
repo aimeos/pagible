@@ -57,6 +57,12 @@ export const useMessageStore = defineStore('message', {
       this.queue.push(item)
     },
 
+    // removes all queued messages and their actions, e.g. undo actions of the previous user
+    clear() {
+      this.queue = []
+      messageActions.clear()
+    },
+
     action(id) {
       return messageActions.get(id) || null
     },

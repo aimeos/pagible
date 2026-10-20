@@ -2,10 +2,11 @@
 
 <script>
 import { mdiMenuDown, mdiSort } from '@mdi/js'
+import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 
 export default {
-  components: { ActionMenu },
+  components: { ActionItem, ActionMenu },
 
   props: {
     modelValue: { type: Object, default: () => ({}) },
@@ -71,14 +72,13 @@ export default {
           {{ order }}
         </v-btn>
       </template>
-      <v-list-item
+      <ActionItem
         v-for="option in options"
         :key="`${option.column}-${option.order}`"
+        @click="select(option)"
       >
-        <v-btn variant="text" @click="select(option)">
-          {{ labels[option.label] || option.label }}
-        </v-btn>
-      </v-list-item>
+        {{ labels[option.label] || option.label }}
+      </ActionItem>
     </ActionMenu>
   </span>
 </template>

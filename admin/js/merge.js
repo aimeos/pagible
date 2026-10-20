@@ -2,7 +2,6 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-
 /**
  * Handles save result: resets state, applies conflicts or shows success message
  *
@@ -10,13 +9,20 @@
  * @param {Object|null} changed Parsed conflict info from save response
  * @param {string} successMsg Translated success message
  * @param {boolean} quiet If true, suppress success message
+ * @param {boolean} edited If true, the item was edited while saving and stays dirty
+ * @param {Object|null} sent Copy of the item when the save started, protects the fields edited while saving
  */
-export function applyResult(vm, changed, successMsg, quiet) {
+export function applyResult(vm, changed, successMsg, quiet, edited = false, sent = null) {
   vm.item.published = false
-  vm.reset()
+
+  if (edited) {
+    vm.changed = null
+  } else {
+    vm.reset()
+  }
 
   if (changed) {
-    Object.assign(vm.item, changed.latest?.data ?? {})
+    assignMerged(vm.item, changed.latest?.data ?? {}, edited ? sent : null)
     vm.changed = changed
     vm.vchanged = vm.hasConflict
     vm.messages.add(
@@ -28,6 +34,24 @@ export function applyResult(vm, changed, successMsg, quiet) {
   }
 }
 
+/**
+ * Applies the merged data of a save response to the item
+ *
+ * Fields edited while saving (they differ from the sent copy) keep the editor's values and are
+ * sent by the next save, all other fields get the merged values so the next save doesn't revert
+ * the changes of other editors.
+ *
+ * @param {Object} item Item to update
+ * @param {Object} data Merged data from the server
+ * @param {Object|null} sent Copy of the item when the save started or null to apply all fields
+ */
+export function assignMerged(item, data, sent = null) {
+  for (const [key, value] of Object.entries(data || {})) {
+    if (!sent || JSON.stringify(item[key]) === JSON.stringify(sent[key])) {
+      item[key] = value
+    }
+  }
+}
 
 /**
  * Returns merged/conflict CSS class state for a changed entry
@@ -44,7 +68,6 @@ export function changedState(changed, key) {
   }
 }
 
-
 /**
  * Checks if any conflict sections have unresolved entries
  *
@@ -57,7 +80,6 @@ export function hasUnresolved(changed, sections = ['data']) {
     Object.values(changed?.[s] || {}).some((v) => v.overwritten && !v.resolved)
   )
 }
-
 
 /**
  * Applies the chosen value of a conflict to the target and remembers the replaced value
@@ -82,7 +104,6 @@ export function resolveChange(changed, targets, section, key, value) {
   info.chosen = value
 }
 
-
 /**
  * Restores the value replaced by resolveChange() and marks the conflict as unresolved again
  *
@@ -103,7 +124,6 @@ export function unresolveChange(changed, targets, section, key) {
   delete info.resolved
   delete info.chosen
 }
-
 
 // target list or object of the section and the index or key of the entry, no target if not found
 function changeTarget(targets, section, key) {

@@ -1,3 +1,5 @@
+/** @license MIT, https://opensource.org/license/mit */
+
 <script>
 import PageDetailContentList from './PageDetailContentList.vue'
 import { useSchemaStore } from '../stores'

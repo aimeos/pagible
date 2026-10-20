@@ -1,4 +1,4 @@
-import { hasUnresolved, resolveChange, unresolveChange } from '../../../js/merge'
+import { assignMerged, hasUnresolved, resolveChange, unresolveChange } from '../../../js/merge'
 
 function conflicts() {
   return {
@@ -68,6 +68,34 @@ describe('merge', () => {
       expect(changed.data.title).not.to.have.property('resolved')
       expect(changed.data.title).not.to.have.property('snapshot')
       expect(hasUnresolved(changed)).to.equal(true)
+    })
+  })
+
+  describe('assignMerged()', () => {
+    it('applies all merged fields without a sent copy', () => {
+      const item = { name: 'mine', path: 'old' }
+
+      assignMerged(item, { name: 'merged', path: 'new' })
+
+      expect(item).to.deep.equal({ name: 'merged', path: 'new' })
+    })
+
+    it('keeps the fields edited while saving', () => {
+      const sent = { name: 'sent', path: 'old', meta: { a: 1 } }
+      const item = { name: 'edited', path: 'old', meta: { a: 1 } }
+
+      assignMerged(item, { name: 'merged', path: 'new', meta: { a: 2 } }, sent)
+
+      expect(item).to.deep.equal({ name: 'edited', path: 'new', meta: { a: 2 } })
+    })
+
+    it('compares nested values by content', () => {
+      const sent = { content: [{ id: 'a', data: { text: 'x' } }] }
+      const item = { content: [{ id: 'a', data: { text: 'y' } }] }
+
+      assignMerged(item, { content: [] }, sent)
+
+      expect(item.content).to.deep.equal([{ id: 'a', data: { text: 'y' } }])
     })
   })
 })

@@ -8,6 +8,7 @@ import Navigation from '../components/Navigation.vue'
 import AccessUsers from '../components/AccessUsers.vue'
 import CmsDialog from '../components/Dialog.vue'
 import { useConfirmStore, useMessageStore, useUserStore } from '../stores'
+import { composing } from '../utils'
 
 const MAX_LENGTH = 100 // maximum length of an access value
 
@@ -45,6 +46,7 @@ export default {
     const user = useUserStore()
 
     return {
+      composing,
       confirm,
       messages,
       user,
@@ -74,7 +76,8 @@ export default {
 
     activeTab: {
       get() {
-        return this.canManageUsers && this.$route.query?.tab !== 'roles' ? 'users' : 'roles'
+        // users without access to the roles always see the users tab
+        return this.canManageUsers && (!this.canAccess || this.$route.query?.tab !== 'roles') ? 'users' : 'roles'
       },
       set(value) {
         const query = value === 'roles' ? { ...this.$route.query, tab: 'roles' } : { ...this.$route.query }
@@ -86,6 +89,10 @@ export default {
 
         this.$router.replace({ name: this.$route.name, query })
       }
+    },
+
+    selection() {
+      return this.filtered.filter((value) => this.checked.has(value))
     },
 
     filtered() {
@@ -115,11 +122,6 @@ export default {
   },
 
   mounted() {
-    // query-only redirects reuse this instance, so load() must still run to reset the loading state
-    if (this.$route.name === 'access:view' && !this.canAccess && this.canManageUsers) {
-      this.$router.replace({ name: 'access:view', query: { ...this.$route.query, tab: 'users' } })
-    }
-
     this.load()
   },
 
@@ -172,8 +174,9 @@ export default {
       }
     },
 
+    // only the checked values shown for the current search term are purged
     async remove() {
-      const values = Array.from(this.checked)
+      const values = this.selection
 
       if (
         !values.length ||
@@ -197,7 +200,7 @@ export default {
         })
 
         this.items = response.data.deleteAccess
-        this.checked = new Set()
+        this.checked = new Set([...this.checked].filter((value) => !values.includes(value)))
       } catch (error) {
         this.messages.error(this.$gettext('Error purging access values'), error)
       } finally {
@@ -259,7 +262,7 @@ export default {
                     :aria-label="$gettext('Toggle selection')"
                   />
                   <v-btn
-                    v-if="checked.size"
+                    v-if="selection.length"
                     @click="remove()"
                     :title="$gettext('Purge')"
                     :icon="mdiDeleteForever"
@@ -295,7 +298,7 @@ export default {
               <v-progress-linear v-if="loading" indeterminate color="primary" />
 
               <v-list v-else-if="filtered.length" class="items">
-                <v-list-item v-for="item in filtered" :key="item" :value="item">
+                <v-list-item v-for="item in filtered" :key="item">
                   <template v-if="user.can('access:delete')" #prepend>
                     <v-checkbox-btn
                       :model-value="checked.has(item)"
@@ -324,7 +327,7 @@ export default {
         :maxlength="MAX_LENGTH"
         counter
         autofocus
-        @keyup.enter="add()"
+        @keydown.enter="composing($event) || add()"
       />
 
       <template #actions="{ close }">

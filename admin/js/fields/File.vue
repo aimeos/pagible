@@ -99,7 +99,8 @@ export default {
         }
         this.selected = null
 
-        return item ? this.select([item]) : undefined
+        // shows the previous file again if the upload failed
+        return item ? this.select([item]) : this.load()
       })
     },
 
@@ -107,10 +108,16 @@ export default {
       return formatDate(dateStr, this.$vuetify.locale.current)
     },
 
+    // shows the file of the value if it was replaced from outside, e.g. by reverting or restoring a version,
+    // a pending upload has no ID yet and is kept until it's finished
     load() {
-      if (!this.file.path && this.modelValue && this.assets[this.modelValue.id]) {
-        this.file = this.assets[this.modelValue.id]
+      const id = this.modelValue?.id || null
+
+      if (!this.file.uploading && (this.file.id || null) !== id && (!id || this.assets[id])) {
+        revokeBlob(this.file)
+        this.file = id ? this.assets[id] : {}
         this.protect = this.file.disk === 'private'
+        this.protectSet = false
       }
 
       this.$emit('error', !this.rules.every((rule) => rule(this.file) === true))

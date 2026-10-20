@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { invalidateList } from '../graphql'
 import { useMessageStore } from '../stores'
 import { PAGE_BULK_LIMIT } from '../pages'
-import { debounce } from '../utils'
+import { debounce, REQUEST_DELAY } from '../utils'
 
 const FETCH_ACCESS = gql`
   query PageAccessValues($term: String, $first: Int!) {
@@ -72,7 +72,7 @@ export default {
   },
 
   created() {
-    this.search = debounce(this.load, 500)
+    this.search = debounce(this.load, REQUEST_DELAY)
     this.reset()
   },
 
@@ -200,7 +200,7 @@ export default {
       @update:search="search"
     />
 
-    <p v-if="limited || recurseLimited" class="hint">
+    <p v-if="limited || (hasDescendants && recurseLimited)" class="hint">
       {{ $gettext('Page bulk changes are limited to %{count} pages', { count: bulkLimit.toLocaleString($vuetify.locale.current) }) }}
     </p>
 

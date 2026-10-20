@@ -6,6 +6,7 @@ import ActionItem from './ActionItem.vue'
 import ActionMenu from './ActionMenu.vue'
 import CmsDialog from './Dialog.vue'
 import { useUserStore, useMessageStore } from '../stores'
+import { canvasBlob } from '../files'
 import { fileurl } from '../urls'
 import { imageAi } from '../imageai'
 import {
@@ -50,6 +51,8 @@ export default {
       cropLabel: null,
       cropper: null,
       images: [],
+      // URL of an image from the server shown instead of the last edit
+      source: null,
       width: 0,
       height: 0
     }
@@ -80,6 +83,11 @@ export default {
       mdiDownload,
       mdiHistory
     }
+  },
+
+  created() {
+    // cropper.js class, loaded on demand
+    this.Cropper = null
   },
 
   mounted() {
@@ -144,13 +152,16 @@ export default {
     },
 
     crop() {
+      // the result of a running AI operation would replace the edited image
+      if (this.aiBusy) return
+
       this.updateFile()
       this.clear()
     },
 
     download() {
       if (!this.cropper) return
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
+      canvasBlob(this.cropper.getCroppedCanvas()).then((blob) => {
         const url = URL.createObjectURL(blob)
         const link = document.createElement('a')
 
@@ -159,27 +170,31 @@ export default {
         link.click()
 
         URL.revokeObjectURL(url)
+      }).catch(() => {
+        // the canvas was too large to encode
+        this.messages.add(this.$gettext('Error downloading image'), 'error')
       })
     },
 
     flipX() {
-      if (!this.cropper) return
+      if (!this.cropper || this.aiBusy) return
       this.cropper.scaleX(-1)
       this.updateFile()
     },
 
     flipY() {
-      if (!this.cropper) return
+      if (!this.cropper || this.aiBusy) return
       this.cropper.scaleY(-1)
       this.updateFile()
     },
 
+    // returns the image shown in the editor
     image() {
-      if (this.images[0]?.blob) {
-        return Promise.resolve(this.images[0]?.blob)
+      if (!this.source && this.images[0]?.blob) {
+        return Promise.resolve(this.images[0].blob)
       }
 
-      return fetch(this.fileurl(this.item, this.item.path, true), {credentials: 'same-origin'}).then((response) => {
+      return fetch(this.source || this.fileurl(this.item, this.item.path, true), {credentials: 'same-origin'}).then((response) => {
         if (!response.ok) {
           throw new Error('Network error: ' + response.statusText)
         }
@@ -247,7 +262,7 @@ export default {
     },
 
     monochrome() {
-      if (!this.cropper) return
+      if (!this.cropper || this.aiBusy) return
 
       this.clear()
 
@@ -265,15 +280,15 @@ export default {
 
       context.putImageData(imageData, 0, 0)
 
-      canvas.toBlob((blob) => {
-        if (blob) {
-          this.replace(blob)
-        }
+      canvasBlob(canvas).then((blob) => this.replace(blob)).catch(() => {
+        // the canvas was too large to encode
+        this.messages.add(this.$gettext('Error editing image'), 'error')
       })
     },
 
     replace(blob, idx = null) {
-      if (this.destroyed || !this.cropper) return
+      // restoring an earlier edit while an AI operation is running would be overwritten by its result
+      if (this.destroyed || !this.cropper || (idx !== null && this.aiBusy)) return
 
       let file = null
 
@@ -294,6 +309,7 @@ export default {
     remember(blob) {
       const url = URL.createObjectURL(blob)
 
+      this.source = null
       this.images.unshift({ blob: blob, url: url })
       this.images.splice(HISTORY_SIZE).forEach((img) => URL.revokeObjectURL(img.url))
 
@@ -309,7 +325,7 @@ export default {
     },
 
     rotate(deg) {
-      if (!this.cropper) return
+      if (!this.cropper || this.aiBusy) return
 
       this.cropper.rotate(deg)
       this.updateFile()
@@ -342,21 +358,27 @@ export default {
     updateFile() {
       if (this.readonly || this.destroyed || !this.cropper) return
 
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
-        // unmounted while encoding or the canvas was too large to encode
-        if (!blob || this.destroyed || !this.cropper) return
+      canvasBlob(this.cropper.getCroppedCanvas()).then((blob) => {
+        // unmounted while encoding
+        if (this.destroyed || !this.cropper) return
 
         this.cropper.replace(this.remember(blob))
         this.$emit('update:file', this.pngFile(blob))
+      }).catch(() => {
+        // the canvas was too large to encode
+        if (!this.destroyed) {
+          this.messages.add(this.$gettext('Error editing image'), 'error')
+        }
       })
     },
 
     use(items) {
-      if (!items?.length || !this.cropper) {
+      if (!items?.length || !this.cropper || this.aiBusy) {
         return
       }
 
-      this.cropper.replace(this.fileurl(items[0], items[0].path, true))
+      this.source = this.fileurl(items[0], items[0].path, true)
+      this.cropper.replace(this.source)
       this.$emit('update:file', null)
       this.$emit('use', items)
       this.reset()
@@ -371,6 +393,7 @@ export default {
 
       this.images.forEach((img) => URL.revokeObjectURL(img.url))
       this.images = []
+      this.source = null
 
       this.$nextTick(() => {
         if (this.destroyed || !this.Cropper) return
@@ -425,7 +448,7 @@ export default {
 
       <v-btn
         @click="crop()"
-        :disabled="!selected"
+        :disabled="!selected || aiBusy"
         :title="$gettext('Crop selected area')"
         :icon="mdiCrop"
         class="btn-crop no-rtl"
@@ -434,7 +457,7 @@ export default {
       <v-btn
         v-if="user.can('image:erase')"
         @click="erase()"
-        :disabled="!selected"
+        :disabled="!selected || aiBusy"
         :loading="loading['image:erase']"
         :title="$gettext('Erase selected area')"
         :icon="mdiEraser"
@@ -446,6 +469,7 @@ export default {
       >
         <v-btn
           @click="menu['paint'] = true"
+          :disabled="aiBusy"
           :loading="loading['image:inpaint'] || loading['image:repaint']"
           :title="$gettext('Edit image')"
           :icon="mdiImageEdit"
@@ -478,6 +502,7 @@ export default {
       <v-btn
         v-if="user.can('image:isolate')"
         @click="isolate()"
+        :disabled="aiBusy"
         :title="$gettext('Remove background')"
         :loading="loading['image:isolate']"
         :icon="mdiImageFilterBlackWhite"
@@ -487,6 +512,7 @@ export default {
       <template v-if="user.can('image:uncrop')">
         <v-btn
           @click="menu['uncrop'] = true"
+          :disabled="aiBusy"
           :loading="loading['image:uncrop']"
           :title="$gettext('Expand image')"
           :icon="mdiArrowExpandAll"
@@ -529,7 +555,7 @@ export default {
           <v-btn
             v-bind="props"
             :loading="loading['image:upscale']"
-            :disabled="width >= maxUpscaleSize && height >= maxUpscaleSize"
+            :disabled="aiBusy || (width >= maxUpscaleSize && height >= maxUpscaleSize)"
             :title="$gettext('Upscale image')"
             :icon="mdiMagnifyExpand"
             class="btn-upscale no-rtl"
@@ -550,12 +576,14 @@ export default {
       <v-btn
         :icon="mdiRotateLeft"
         class="btn-rotate-ccw no-rtl"
+        :disabled="aiBusy"
         @click="rotate(-90)"
         :title="$gettext('Rotate counter-clockwise')"
       />
       <v-btn
         :icon="mdiRotateRight"
         class="btn-rotate-cw no-rtl"
+        :disabled="aiBusy"
         @click="rotate(90)"
         :title="$gettext('Rotate clockwise')"
       />
@@ -563,12 +591,14 @@ export default {
       <v-btn
         :icon="mdiFlipHorizontal"
         class="btn-flip-h no-rtl"
+        :disabled="aiBusy"
         @click="flipX"
         :title="$gettext('Flip horizontally')"
       />
       <v-btn
         :icon="mdiFlipVertical"
         class="btn-flip-v no-rtl"
+        :disabled="aiBusy"
         @click="flipY"
         :title="$gettext('Flip vertically')"
       />
@@ -576,6 +606,7 @@ export default {
       <v-btn
         :icon="mdiInvertColors"
         class="btn-monochrome no-rtl"
+        :disabled="aiBusy"
         @click="monochrome()"
         :title="$gettext('Convert to monochrome')"
       />
@@ -586,22 +617,18 @@ export default {
         <template #activator="{ props }">
           <v-btn
             v-bind="props"
-            :disabled="!images.length"
+            :disabled="!images.length || aiBusy"
             :title="$gettext('Undo')"
             :icon="mdiHistory"
-            class="no-rtl"
+            class="btn-undo no-rtl"
           />
         </template>
 
-        <v-list-item v-for="(img, idx) in images" :key="img.url">
-          <v-img
-            :src="img.url"
-            :alt="$gettext('Previous edit')"
-            @click="replace(img.blob, idx)"
-          />
+        <v-list-item v-for="(img, idx) in images" :key="img.url" @click="replace(img.blob, idx)">
+          <v-img :src="img.url" :alt="$gettext('Previous edit')" />
         </v-list-item>
-        <v-list-item>
-          <v-img :src="fileurl(item)" :alt="$gettext('Original')" @click="use([item])" />
+        <v-list-item @click="use([item])">
+          <v-img :src="fileurl(item)" :alt="$gettext('Original')" />
         </v-list-item>
       </ActionMenu>
     </div>

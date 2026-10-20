@@ -3,6 +3,7 @@
 <script>
 import router from '../routes'
 import { urllogin } from '../config'
+import { connectionError, loginError, unreachable } from '../graphql'
 import { useMessageStore, useSessionStore, useUserStore } from '../stores'
 import { loginUrl } from '../urls'
 import { browser } from '../utils'
@@ -70,13 +71,21 @@ export default {
 
     this.session
       .isAuthenticated()
-      .catch(() => false)
+      .catch((error) => {
+        // server errors are shown when signing in, being offline is reported right away
+        if (unreachable(error)) {
+          this.error = connectionError()
+          return null
+        }
+        return false
+      })
       .then((result) => {
         if (result) {
           return router.replace(this.next())
         }
 
-        if (this.urllogin) {
+        // the single sign-on page can't be reached while offline either
+        if (this.urllogin && result !== null) {
           return this.sso(true)
         }
 
@@ -92,6 +101,10 @@ export default {
     },
 
     cmslogin() {
+      if (this.loading) {
+        return false
+      }
+
       if (this.autofilled) {
         this.$el.querySelectorAll('input').forEach((input) => {
           if (input.matches('[autocomplete="username"]')) {
@@ -120,7 +133,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.error = error.message
+          this.error = loginError(error)
         })
         .finally(() => {
           this.loading = false
@@ -214,7 +227,7 @@ export default {
           <template v-slot:prepend>
             <v-icon color="error" :icon="mdiAlertOctagon" />
           </template>
-          {{ $gettext('Error') + ': ' + error }}
+          {{ $gettext('Error: %{msg}', { msg: error }) }}
         </v-alert>
       </v-card-text>
 
@@ -222,7 +235,7 @@ export default {
         <v-btn v-if="urllogin" type="submit" variant="tonal">
           {{ $gettext('Sign in') }}
         </v-btn>
-        <v-btn v-else type="submit" variant="tonal" :disabled="form != true && !autofilled">
+        <v-btn v-else type="submit" variant="tonal" :disabled="form != true && !autofilled" :loading="loading">
           {{ $gettext('Login') }}
         </v-btn>
       </v-card-actions>

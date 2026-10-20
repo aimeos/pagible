@@ -13,10 +13,13 @@ import { COPY_PAGE, INSERT_PAGE, MOVE_PAGE } from './pages'
  * Requires the embed prop, the user and messages properties, the tree ref and the allowed(),
  * create(), drop(), fetch(), invalidate() and pages() methods.
  */
+const ARROW_KEYS = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+
 export const pageTree = {
   data() {
     return {
       clip: null,
+      keyOrigin: null,
       origin: null
     }
   },
@@ -171,8 +174,11 @@ export const pageTree = {
 
       const { parent, pos, ref } = this.target(stat, idx)
       const node = this.create(parent ? { theme: parent.data.theme, type: parent.data.type } : {})
+      // collapsed nodes with unloaded children load them incl. the new page after inserting,
+      // otherwise the new page would be added before the children are known
+      const append = idx !== null || stat.open || stat.children?.length > 0
 
-      if (idx === null && !stat.open) {
+      if (idx === null && !stat.open && append) {
         this.load(stat, stat.data)
       }
 
@@ -185,8 +191,10 @@ export const pageTree = {
           node.id = result.data.addPage.id
           node.source = node.lang
 
-          if (idx !== null || stat.open) {
+          if (append) {
             this.$refs.tree.add(node, parent, idx !== null ? pos + idx : 0)
+          } else {
+            this.load(stat, stat.data)
           }
 
           this.updateHas(parent, 1)
@@ -217,8 +225,8 @@ export const pageTree = {
       }
 
       const { parent, pos, ref } = this.target(stat, idx)
-      // collapsed nodes load their children incl. the copy when pasting into them
-      const append = idx !== null || stat.open
+      // collapsed nodes with unloaded children load them incl. the copy when pasting into them
+      const append = idx !== null || stat.open || stat.children?.length > 0
 
       // the server copies the page, its sub-pages and all language variants
       return this.$apollo
@@ -241,6 +249,10 @@ export const pageTree = {
 
           if (item && append) {
             this.$refs.tree.add(item, parent, idx !== null ? pos + idx : 0)
+
+            if (idx === null) {
+              stat.open = true
+            }
           } else if (!append) {
             this.load(stat, stat.data)
           }
@@ -260,6 +272,9 @@ export const pageTree = {
       const clip = this.clip
       const origin = this.position(clip.stat)
       const { parent, pos, ref } = this.target(stat, idx)
+      // collapsed pages with unloaded children load them incl. the moved page, otherwise the
+      // moved page would be their only known child and the other children would never be loaded
+      const append = idx !== null || stat.open || stat.children?.length > 0
 
       return this.movePage(clip.node.id, parent?.data.id ?? null, ref).then((success) => {
         if (!success) {
@@ -272,7 +287,17 @@ export const pageTree = {
         const oldparent = clip.stat.parent
         const moved = (clip.stat.data.has || 0) + 1
 
-        this.$refs.tree.move(clip.stat, parent, index)
+        if (append) {
+          this.$refs.tree.move(clip.stat, parent, index)
+
+          if (idx === null) {
+            stat.open = true
+          }
+        } else {
+          this.$refs.tree.remove(clip.stat)
+          this.load(stat, stat.data)
+        }
+
         delete clip.stat.cut
 
         if (this.clip === clip) {
@@ -332,23 +357,28 @@ export const pageTree = {
       }
     },
 
+    // handles dropped pages only, he-tree also emits "change" for keyboard moves which reorder() saves
+    // and the drag context still contains the last drag then; the dragged node is reset after dropping
     change() {
-      if (!dragContext?.targetInfo) return
+      if (!this.$refs.tree?.dragNode || !dragContext?.targetInfo) return
 
       const origin = this.origin
       this.origin = null
 
-      // the change event is emitted after the node has been moved in the tree
+      // the change event is emitted after the node has been moved in the tree, the drag
+      // context is global and may belong to another drag when the request finishes
       const parent = dragContext.targetInfo.parent
-      const target = this.position(dragContext.startInfo.dragNode)
+      const srcparent = dragContext.startInfo.parent
+      const node = dragContext.startInfo.dragNode
+      const moved = (node.data.has || 0) + 1
+      const target = this.position(node)
 
-      this.movePage(target.id, target.parent, target.ref).then((success) => {
+      return this.movePage(target.id, target.parent, target.ref).then((success) => {
+        // the tree shows the new position already, so restore the saved one
         if (!success) {
+          this.reload(false)
           return
         }
-
-        const srcparent = dragContext.startInfo.parent
-        const moved = (dragContext.startInfo.dragNode.data.has || 0) + 1
 
         this.updateHas(srcparent, -moved)
         this.updateHas(parent, moved)
@@ -356,15 +386,47 @@ export const pageTree = {
       })
     },
 
+    // alt+arrow keys move the focused page in the tree before reorder() runs, so remember where it was
+    reorderStart(event) {
+      if (!ARROW_KEYS.includes(event.key)) return
+
+      const stat = this.$refs.tree?.activeDescendant
+      this.keyOrigin = stat ? { origin: this.position(stat), parent: stat.parent } : null
+    },
+
     reorder(event) {
-      if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return
+      if (!ARROW_KEYS.includes(event.key)) return
+
+      const start = this.keyOrigin
+      this.keyOrigin = null
 
       this.$nextTick(() => {
         const stat = this.$refs.tree.activeDescendant
         if (!stat) return
 
         const target = this.position(stat)
-        this.movePage(target.id, target.parent, target.ref)
+        const origin = start?.origin.id === target.id ? start.origin : null
+
+        // nothing to save if the page couldn't be moved, e.g. up from the first position
+        if (origin && origin.parent === target.parent && origin.ref === target.ref) return
+
+        const parent = stat.parent
+        const moved = (stat.data.has || 0) + 1
+
+        return this.movePage(target.id, target.parent, target.ref).then((success) => {
+          // the tree shows the new position already, so restore the saved one
+          if (!success) {
+            this.reload(false)
+            return
+          }
+
+          if (origin) {
+            this.updateHas(start.parent, -moved)
+            this.updateHas(parent, moved)
+          }
+
+          this.moved(origin)
+        })
       })
     },
 

@@ -16,7 +16,7 @@
 
 import gql from 'graphql-tag'
 import { required } from '../rules'
-import { debounce } from '../utils'
+import { debounce, REQUEST_DELAY } from '../utils'
 import { fieldBase } from '../field'
 
 const DEFAULT_SCHEMES = ['http', 'https']
@@ -39,13 +39,14 @@ export default {
     return {
       relItems: [],
       loading: false,
-      pages: []
+      pages: [],
+      // number of the latest search, older responses are ignored
+      searchSeq: 0
     }
   },
 
   created() {
-    this.debouncedSearch = debounce(this.search, 300)
-    this.searchSeq = 0
+    this.debouncedSearch = debounce(this.search, REQUEST_DELAY)
     this.relItems = [
       { key: '', val: this.$gettext('None') },
       { key: 'sponsored', val: this.$gettext('Sponsored') },
@@ -66,7 +67,7 @@ export default {
     // Only plain alphabetic schemes are allowed into the pattern so a misconfigured
     // schema cannot inject regex metacharacters.
     allowedValid() {
-      return this.allowed.every((s) => /^[a-z]+$/.test(s))
+      return this.allowed.every((s) => /^[a-z]+$/i.test(s))
     },
 
     external() {
@@ -75,11 +76,14 @@ export default {
 
     // Dot-separated labels keep this linear (no nested, ambiguous quantifiers)
     // to avoid catastrophic backtracking (ReDoS) on crafted input.
+    // Hosts are domains, "localhost" or IPv4 addresses, schemes and hosts are case-insensitive.
     regex() {
       const allowed = this.allowedValid ? this.allowed : DEFAULT_SCHEMES
+      const host = '(?:(?:[0-9a-z]+(?:-[0-9a-z]+)*\\.)+[a-z]{2,}|localhost|(?:[0-9]{1,3}\\.){3}[0-9]{1,3})'
 
       return new RegExp(
-        `^(?:(?:${allowed.join('|')})://)?(?:[^/@: ]+(?::[^/@: ]+)?@)?(?:(?:[0-9a-z]+(?:-[0-9a-z]+)*\\.)+[a-z]{2,}(?::[0-9]{1,5})?)?(?:/.*)?$`
+        `^(?:(?:${allowed.join('|')})://)?(?:[^/@: ]+(?::[^/@: ]+)?@)?(?:${host}(?::[0-9]{1,5})?)?(?:/.*)?$`,
+        'i'
       )
     },
 
@@ -102,7 +106,7 @@ export default {
           const url = new URL(v)
           const scheme = url.protocol.slice(0, -1)
 
-          return this.allowed.includes(scheme) && v.toLowerCase().startsWith(`${scheme}://`) && !!url.hostname
+          return this.allowed.some((s) => s.toLowerCase() === scheme) && v.toLowerCase().startsWith(`${scheme}://`) && !!url.hostname
         } catch {
           return false
         }
@@ -157,6 +161,7 @@ export default {
 <template>
   <div class="url-field" :class="{ external }">
     <div class="url-row">
+      <!-- clearing emits an empty string so the default value isn't shown again -->
       <v-combobox
         :hint="config.hint && $pgettext('fh', config.hint)"
         :error="hasError"
@@ -167,13 +172,13 @@ export default {
         :placeholder="config.placeholder || ''"
         :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
         :modelValue="modelValue ?? config.default ?? ''"
-        @update:modelValue="$emit('update:modelValue', $event)"
+        @update:modelValue="$emit('update:modelValue', $event ?? '')"
         @update:search="debouncedSearch($event)"
         density="comfortable"
         hide-details="auto"
         variant="outlined"
         class="url-input ltr"
-        clearable
+        :clearable="!readonly"
       ></v-combobox>
       <v-select
         v-if="external"

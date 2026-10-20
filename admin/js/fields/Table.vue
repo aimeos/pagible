@@ -14,8 +14,8 @@ import {
 import { vDraggable } from 'vue-draggable-plus'
 import ActionItem from '../components/ActionItem.vue'
 import ActionMenu from '../components/ActionMenu.vue'
-import { minColumns, maxColumns } from '../rules'
-import { debounce } from '../utils'
+import { minRows, maxRows } from '../rules'
+import { debounce, moveStep, DRAG_ANIMATION, INPUT_DELAY } from '../utils'
 import { fieldBase } from '../field'
 
 // unique column IDs so moved and inserted columns keep their DOM state
@@ -30,6 +30,7 @@ export default {
 
   setup() {
     return {
+      DRAG_ANIMATION,
       mdiDotsVertical,
       mdiDragHorizontal,
       mdiDragVertical
@@ -49,10 +50,12 @@ export default {
   },
 
   created() {
-    this.updated = debounce(this.update, 500)
+    this.updated = debounce(this.update, INPUT_DELAY)
     // stable keys for the row arrays, they move with the rows when dragging
     this.rowKeys = new WeakMap()
     this.rowSeq = 0
+    // last value emitted by the field, the model watcher ignores it when it comes back
+    this.emitted = null
 
     if (!this.table.length) {
       this.$emit('update:modelValue', this.copy(this.config.default ?? [['']]))
@@ -70,8 +73,8 @@ export default {
 
     rules() {
       return [
-        minColumns(this.$ngettext, this.config.min),
-        maxColumns(this.$ngettext, this.config.max)
+        minRows(this.$ngettext, this.config.min),
+        maxRows(this.$ngettext, this.config.max)
       ]
     }
   },
@@ -128,13 +131,65 @@ export default {
     },
 
     move(ev) {
-      if (ev.oldIndex === ev.newIndex) return
+      const ids = this.columns.filter(Boolean)
+      // the placeholders of the handle and action columns must stay at both ends
+      const from = ev.oldIndex - 1
+      const to = Math.min(Math.max(ev.newIndex - 1, 0), ids.length - 1)
+
+      this.columns.splice(0, this.columns.length, null, ...ids, null)
+
+      if (from === to) return
 
       this.table.forEach((row) => {
-        row.splice(ev.newIndex - 1, 0, row.splice(ev.oldIndex - 1, 1)[0])
+        row.splice(to, 0, row.splice(from, 1)[0])
       })
 
       this.update()
+    },
+
+    // moves the column by keyboard, the handle keeps the focus
+    moveCol(ev, idx) {
+      const step = moveStep(ev, true, this.$vuetify.locale.isRtl)
+
+      if (!step) return
+
+      // Alt+ArrowLeft would navigate back in the browser history otherwise
+      ev.preventDefault()
+
+      const pos = idx + step
+      const target = ev.currentTarget
+
+      if (pos < 0 || pos >= this.cols.length) return
+
+      // the first column entry is the placeholder of the row handle column
+      this.columns.splice(pos + 1, 0, this.columns.splice(idx + 1, 1)[0])
+      this.table.forEach((row) => row.splice(pos, 0, row.splice(idx, 1)[0]))
+
+      this.update()
+      this.$nextTick(() => target.focus())
+    },
+
+    // moves the row by keyboard, the handle keeps the focus
+    moveRow(ev, idx) {
+      const step = moveStep(ev)
+
+      if (!step) return
+
+      ev.preventDefault()
+
+      const pos = idx + step
+      const target = ev.currentTarget
+
+      if (pos < 0 || pos >= this.table.length) return
+
+      this.table.splice(pos, 0, this.table.splice(idx, 1)[0])
+
+      this.update()
+      this.$nextTick(() => target.focus())
+    },
+
+    movable(ev) {
+      return !ev.related?.classList.contains('col-fixed')
     },
 
     rmCol(index) {
@@ -187,10 +242,10 @@ export default {
     <table>
       <thead>
         <tr
-          v-draggable="[columns, { animation: 300, disabled: readonly, handle: '.col-handle', onUpdate: move }]"
+          v-draggable="[columns, { animation: DRAG_ANIMATION, disabled: readonly, handle: '.col-handle', onMove: movable, onUpdate: move }]"
           class="col-header"
         >
-          <td></td>
+          <td class="col-fixed"></td>
 
           <td v-for="(col, idx) in cols" :key="col">
             <v-btn
@@ -198,6 +253,8 @@ export default {
               variant="text"
               class="col-handle cursor-move"
               :aria-label="$gettext('Move column')"
+              aria-keyshortcuts="Alt+ArrowLeft Alt+ArrowRight"
+              @keydown="moveCol($event, idx)"
               :icon="mdiDragHorizontal"
             />
 
@@ -214,16 +271,18 @@ export default {
             </span>
           </td>
 
-          <td></td>
+          <td class="col-fixed"></td>
         </tr>
       </thead>
 
-      <tbody v-draggable="[table, { animation: 300, disabled: readonly, handle: '.row-handle', onUpdate: update }]">
+      <tbody v-draggable="[table, { animation: DRAG_ANIMATION, disabled: readonly, handle: '.row-handle', onUpdate: update }]">
         <tr v-for="(row, rowidx) in table" :key="rowKey(row)">
           <td>
             <v-btn
               v-if="!readonly"
               :aria-label="$gettext('Move row')"
+              aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+              @keydown="moveRow($event, rowidx)"
               variant="text"
               class="row-handle cursor-move"
               :icon="mdiDragVertical"
@@ -233,6 +292,7 @@ export default {
           <td v-for="(col, colidx) in cols" :key="col">
             <v-textarea
               v-model="table[rowidx][colidx]"
+              :aria-label="$gettext('Row %{row}, column %{col}', { row: rowidx + 1, col: colidx + 1 })"
               @input="updated()"
               :readonly="readonly"
               variant="plain"

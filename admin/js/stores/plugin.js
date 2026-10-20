@@ -20,13 +20,13 @@ const PluginError = markRaw({
   render: () => h('div', { class: 'pa-4 plugin-error' }, gettext.$gettext('Failed to load plugin'))
 })
 
-function pluginComponent(def) {
+export function pluginComponent(def) {
   return {
     ...def,
     component: markRaw(defineAsyncComponent({
       loader: () => Promise.all([
         import(/* @vite-ignore */ def.component),
-        import('./plugin')
+        import('../plugin')
       ]).then(([mod, host]) => host.pluginUi(mod.default)),
       errorComponent: PluginError
     }))

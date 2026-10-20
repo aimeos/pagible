@@ -61,9 +61,9 @@ const RELOCATE_FILE = gql`
   }
 `
 
-export const FETCH_FILE_DISKS = gql`
-  query ($id: [ID!]!) {
-    files(filter: { id: $id }, first: 100) {
+const FETCH_FILE_DISKS = gql`
+  query ($id: [ID!]!, $first: Int!) {
+    files(filter: { id: $id }, first: $first) {
       data {
         disk
         id
@@ -73,6 +73,26 @@ export const FETCH_FILE_DISKS = gql`
     }
   }
 `
+
+/**
+ * Fetches the current disk of the files in batches to stay below the query complexity limit
+ *
+ * @param {Object} apollo $apollo of a component or an Apollo client
+ * @param {Array<string>} ids File IDs
+ * @returns {Promise<Array>} Files with disk, id, editor and updated_at
+ */
+export async function fetchFileDisks(apollo, ids) {
+  const size = 100
+  const batches = []
+
+  for (let i = 0; i < ids.length; i += size) {
+    const id = ids.slice(i, i + size)
+    batches.push(apollo.query({ query: FETCH_FILE_DISKS, variables: { id, first: id.length }, fetchPolicy: 'no-cache' }))
+  }
+
+  const responses = await Promise.all(batches)
+  return responses.flatMap((response) => response.data?.files?.data || [])
+}
 
 export function fileMap(entries) {
   const map = {}
@@ -106,7 +126,8 @@ export function previewUrl(file) {
 
 export async function relocateFiles(apollo, ids, disk) {
   const response = await apollo.mutate({ mutation: RELOCATE_FILE, variables: { id: ids, disk } })
-  invalidateList('files')
+  // the files lists of the client which executed the mutation, $apollo of components or an Apollo client
+  invalidateList('files', apollo.getClient?.().cache ?? apollo.cache)
   return response.data?.relocateFile || []
 }
 
@@ -123,6 +144,20 @@ export const AUDIO_MIME_FILTER = { mime: ['audio/mpeg', 'audio/mp4', 'audio/x-m4
 export const VIDEO_MIME_FILTER = { mime: ['video/mp4', 'video/webm', 'video/ogg'] }
 
 export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MIME_FILTER.mime] }
+
+/**
+ * Encodes the canvas content as Blob. canvas.toBlob() passes null if the canvas can't be
+ * encoded, e.g. because it's too large, so the promise is rejected in that case.
+ *
+ * @param {HTMLCanvasElement} canvas Canvas to encode
+ * @param {...any} args MIME type and quality passed to canvas.toBlob()
+ * @returns {Promise<Blob>} Promise resolving to the encoded image
+ */
+export function canvasBlob(canvas, ...args) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('Canvas can not be encoded')), ...args)
+  })
+}
 
 /**
  * Converts a base64-encoded string to a Blob

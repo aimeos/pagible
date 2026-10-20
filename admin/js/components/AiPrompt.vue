@@ -4,6 +4,7 @@
 import { mdiArrowRightCircle, mdiCheckBold, mdiHelpCircleOutline, mdiMicrophone, mdiMicrophoneOutline } from '@mdi/js'
 import { useUserStore } from '../stores'
 import { useDictation } from '../dictation'
+import { composing } from '../utils'
 
 /**
  * AI prompt with help, dictation and send button which emits "submit" on Enter or the arrow.
@@ -60,7 +61,7 @@ export default {
 
   methods: {
     keydown(e) {
-      if (e.isComposing || e.shiftKey) {
+      if (composing(e) || e.shiftKey) {
         return // let IME compose, and Shift+Enter insert a newline instead of opening the chat
       }
       e.preventDefault()
@@ -74,7 +75,8 @@ export default {
     },
 
     record() {
-      this.dictation.toggle((text) => (this.text = text))
+      // dictated text is appended so the existing prompt isn't lost
+      this.dictation.toggle((text) => (this.text = (this.text ? this.text + ' ' : '') + text))
     }
   }
 }
@@ -84,6 +86,7 @@ export default {
   <v-textarea
     v-model="text"
     :placeholder="placeholder || $gettext('What shall I do for you?') + ' ' + $gettext('Press Enter to open the chat')"
+    :aria-label="placeholder || $gettext('What shall I do for you?')"
     :loading="busy"
     @keydown.enter="keydown"
     variant="outlined"
@@ -120,6 +123,7 @@ export default {
         :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
         :title="$gettext('Dictate')"
         :class="{ dictating: dictation.active() }"
+        :aria-pressed="String(dictation.active())"
         :loading="dictation.busy()"
         variant="text"
       />

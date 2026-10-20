@@ -2,9 +2,9 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { defineAsyncComponent } from 'vue'
 import AsideMeta from './components/AsideMeta.vue'
 import DetailAppBar from './components/DetailAppBar.vue'
+import DetailDialogs from './components/DetailDialogs.vue'
 import { setupReload } from './livesync'
 import { invalidateList } from './graphql'
 import { pluginLabel } from './i18n'
@@ -85,9 +85,8 @@ export function useDetail(type) {
 export const detailBase = {
   components: {
     AsideMeta,
-    ChangesDialog: defineAsyncComponent(() => import('./components/ChangesDialog.vue')),
     DetailAppBar,
-    HistoryDialog: defineAsyncComponent(() => import('./components/HistoryDialog.vue'))
+    DetailDialogs
   },
 
   // the view edits its own copy of the initial item, so the opener's object stays untouched
@@ -109,6 +108,8 @@ export const detailBase = {
       changed: null,
       destroyed: false,
       dirty: false,
+      // number of edits, detects changes made while saving
+      edits: 0,
       error: false,
       loading: true,
       publishAt: null,
@@ -117,6 +118,8 @@ export const detailBase = {
       saving: false,
       tab: this.type,
       vchanged: false,
+      // snapshot of the current state compared with old versions in the history dialog
+      historyData: null,
       vhistory: false
     }
   },
@@ -125,6 +128,13 @@ export const detailBase = {
     // stacked views register on top of the view below, which gets its state back on close
     this.dirtySave = () => this.save(true)
     this.dirtyStore.register(this.dirtySave)
+
+    // non-reactive state of the running and queued save requests, not used for rendering
+    this.saveQueued = null
+    this.saveQuiet = false
+    this.saveRun = null
+    this.saveRunning = null
+    this.unsubscribe = null
 
     if (!this.item?.id || !this.user.can(`${this.type}:view`)) {
       this.loading = false
@@ -180,6 +190,24 @@ export const detailBase = {
       }
     },
 
+    // shared props and listeners of the DetailDialogs
+    dialogs() {
+      return {
+        history: this.vhistory,
+        changes: this.vchanged,
+        changed: this.changed,
+        current: this.historyData,
+        readonly: !this.user.can(`${this.type}:save`),
+        load: () => this.versions(this.item.id),
+        'onUpdate:history': (value) => (this.vhistory = value),
+        'onUpdate:changes': (value) => (this.vchanged = value),
+        onApply: this.apply,
+        onUse: this.use,
+        onResolve: this.resolved,
+        onUnresolve: this.unresolveChange
+      }
+    },
+
     hasChanged() {
       return this.dirty
     },
@@ -205,12 +233,24 @@ export const detailBase = {
     // applies the changed fields sent by the child components to the own item
     itemUpdated(patch) {
       Object.assign(this.item, patch)
+      this.markChanged()
+    },
+
+    // marks the item as changed and counts the edit, so edits made while saving stay unsaved
+    markChanged() {
+      this.edits++
       this.dirty = true
     },
 
     // applies a conflict resolution chosen in the changes dialog to the item
     resolveChange({ section, key, value }) {
       resolveChange(this.changed, this.changeTargets, section, key, value)
+    },
+
+    // applies the resolution and marks the item as changed
+    resolved(event) {
+      this.resolveChange(event)
+      this.markChanged()
     },
 
     unresolveChange({ section, key }) {
@@ -252,7 +292,13 @@ export const detailBase = {
 
       this.save(true)
         .then((valid) => {
-          if (!valid || this.changed) return
+          if (!valid) return
+
+          // edits made while saving and unresolved conflicts mustn't be marked as published
+          if (this.hasConflict || this.hasChanged) {
+            this.messages.add(this.$gettext('Not published, please review the changes and publish again'), 'info')
+            return
+          }
 
           return this.$apollo
             .mutate({
@@ -300,7 +346,7 @@ export const detailBase = {
      * Loads the latest version of the item and applies it
      *
      * The per-model field mapping is done by apply(model), which receives the queried item
-     * (model.latest is the version). Resolves true on success so the caller can defer its
+     * (model.latest is the version), the state of the version is copied afterwards. Resolves true on success so the caller can defer its
      * websocket subscription until the load completed.
      *
      * @param {object} query GraphQL query document
@@ -321,7 +367,7 @@ export const detailBase = {
           const model = result.data?.[this.type]
 
           if (!model) throw new Error(this.$gettext('No data available'))
-          if (!model.latest) throw new Error('No version data available')
+          if (!model.latest) throw new Error(this.$gettext('No version data available'))
 
           // the fetch is async: re-check now that applying is still safe - the user may have started
           // editing while it was in flight, and reset()+apply would silently wipe those edits
@@ -329,6 +375,10 @@ export const detailBase = {
 
           this.reset()
           apply(model)
+
+          this.item.published = model.latest.published
+          this.item.editor = model.latest.editor
+          this.item.updated_at = model.latest.created_at
           this.loading = false
           return true
         })
@@ -348,6 +398,63 @@ export const detailBase = {
       this.error = false
     },
 
+    /**
+     * Runs one save at a time, a save requested while another one is running waits for it and
+     * saves the edits made in the meantime afterwards
+     *
+     * All requests during a running save share one follow-up save, which does nothing if the
+     * item wasn't changed meanwhile. If the running save fails, the follow-up save only runs
+     * when the item was edited since, otherwise the same failing save would be repeated.
+     *
+     * @param {(quiet: boolean) => Promise<boolean>} fcn Saves the item
+     * @param {boolean} quiet If true, suppress the success message
+     * @returns {Promise<boolean>}
+     */
+    saveOnce(fcn, quiet = false) {
+      if (!this.saveRunning) {
+        const run = { edits: this.edits }
+
+        // the fields apply their changes in the next tick, so they are counted before saving
+        this.saveRun = run
+        this.saveRunning = this.$nextTick()
+          .then(() => {
+            run.edits = this.edits
+            return fcn(quiet)
+          })
+          .finally(() => {
+            this.saveRunning = null
+          })
+
+        return this.saveRunning
+      }
+
+      // the shared follow-up save is only quiet if all waiting callers asked for it
+      this.saveQuiet = this.saveQueued ? this.saveQuiet && quiet : quiet
+
+      if (!this.saveQueued) {
+        const run = this.saveRun
+
+        this.saveQueued = this.saveRunning
+          .catch(() => false)
+          .then((ok) => {
+            this.saveQueued = null
+            return ok || this.edits !== run.edits ? this.saveOnce(fcn, this.saveQuiet) : false
+          })
+      }
+
+      return this.saveQueued
+    },
+
+    /**
+     * Saves the item, see saveOnce() for concurrent saves
+     *
+     * @param {boolean} quiet If true, suppress the success message
+     * @returns {Promise<boolean>}
+     */
+    save(quiet = false) {
+      return this.saveOnce((quiet) => this.saveItem(quiet), quiet)
+    },
+
     // checks the permission and the field errors before saving
     saveable() {
       if (!this.user.can(`${this.type}:save`)) return this.messages.denied()
@@ -362,6 +469,45 @@ export const detailBase = {
       }
 
       return true
+    },
+
+    /**
+     * Saves the changed item by the mutation returned from options()
+     *
+     * @param {() => object} options Returns the mutate() options, runs before the sent item is copied
+     * @param {(result: object, edited: boolean, sent: object) => void} done Applies the result,
+     *   edited is true if the item was changed while saving and sent is the copy of the saved item
+     * @param {string} message Translated error message
+     * @returns {Promise<boolean>}
+     */
+    saveWith(options, done, message) {
+      if (!this.saveable()) {
+        return Promise.resolve(false)
+      }
+
+      if (!this.hasChanged) {
+        return Promise.resolve(true)
+      }
+
+      const opts = options()
+      const edits = this.edits
+      // copy of the sent item, protects the fields edited while saving from merged values
+      const sent = clone(this.item)
+      this.saving = true
+
+      return this.$apollo
+        .mutate(opts)
+        .then((result) => {
+          done(result, this.edits !== edits, sent)
+          return true
+        })
+        .catch((error) => {
+          this.messages.error(message, error)
+          return false
+        })
+        .finally(() => {
+          this.saving = false
+        })
     },
 
     // applies the saved version to the item and notifies the lists
@@ -402,6 +548,10 @@ export const detailBase = {
   watch: {
     hasChanged(value) {
       this.dirtyStore.set(value, this.dirtySave)
+    },
+
+    vhistory(val) {
+      if (val) this.historyData = this.historyCurrent()
     }
   }
 }
