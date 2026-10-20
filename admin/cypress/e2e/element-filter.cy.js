@@ -108,6 +108,22 @@ function visitElements(elements = [], meResponse = ME_ADMIN) {
   cy.wait('@gql') // elements query
 }
 
+/**
+ * Waits for the elements query matching the passed variables check, skipping earlier
+ * requests (e.g. the me query or an elements query sent before the filter changed).
+ */
+function waitForElements(match, tries = 5) {
+  return cy.wait('@gql').then(({ request }) => {
+    const ops = Array.isArray(request.body) ? request.body : [request.body]
+    const elementsOp = ops.find((op) => (op.query || '').includes('elements') && match(op.variables || {}))
+
+    if (!elementsOp && tries > 1) {
+      return waitForElements(match, tries - 1)
+    }
+    expect(elementsOp).to.exist
+  })
+}
+
 /** At desktop viewport (>=960px) the aside drawer auto-opens on mount. */
 function ensureAsideVisible() {
   cy.get('.v-navigation-drawer--right').should('be.visible')
@@ -209,12 +225,7 @@ describe('Element Filter Sidebar', () => {
     visitElements([makeElement()])
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('Only trashed').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const elementsOp = ops.find((op) => (op.query || '').includes('elements'))
-      expect(elementsOp).to.exist
-      expect(elementsOp.variables.trashed).to.equal('ONLY')
-    })
+    waitForElements((vars) => vars.trashed === 'ONLY')
   })
 
   it('selecting "Published" sends publish filter in GQL request', () => {
@@ -222,12 +233,7 @@ describe('Element Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const elementsOp = ops.find((op) => (op.query || '').includes('elements'))
-      expect(elementsOp).to.exist
-      expect(elementsOp.variables.publish).to.equal('PUBLISHED')
-    })
+    waitForElements((vars) => vars.publish === 'PUBLISHED')
   })
 })
 
