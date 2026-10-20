@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 
 class Utils
 {
-    private static int $counter = 0;
     private static ?\HTMLPurifier $purifier = null;
 
 
@@ -278,30 +277,24 @@ class Utils
 
 
     /**
-     * Generates a unique ID for the page content element.
+     * Generates a random ID for the page content element.
      *
-     * This ID is a 6-character string that starts with a letter (A-Z, a-z) and is followed by 5 alphanumeric characters.
-     * The first character is chosen from the first 52 characters of the base64 encoding,
-     * while the remaining characters can be any of the 64 base64 characters.
-     * The ID is based on the current time in milliseconds since a fixed epoch (2025-01-01T00:00:00Z),
-     * ensuring that IDs are unique and non-repeating for approximately 70 years.
+     * This ID is a 6-character string that starts with a letter (A-Z, a-z) and is followed by 5 base64url characters.
+     * The IDs are only unique within a page, so 6 random characters are enough to make collisions very unlikely
+     * even if many IDs are generated at once, e.g. when saving or importing a page.
      *
-     * @return string A unique 6-character ID for the page content element
+     * @return string A random 6-character ID for the page content element
      */
     public static function uid(): string
     {
         $base64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-        $epoch = strtotime( '2025-01-01T00:00:00Z' ) * 1000;
+        $bytes = random_bytes( 6 );
 
-        $value = ( ( (int) ( ( microtime( true ) * 1000 - $epoch ) / 4096 ) ) << 7 ) | self::$counter;
-        self::$counter = ( self::$counter + 1 ) & 0b01111111;
+        // First character: only A-Z/a-z, others: full 64-character set
+        $id = $base64[ord( $bytes[0] ) % 52];
 
-        $id = '';
-        for( $i = 0; $i < 6; $i++ )
-        {
-            // First character: only A-Z/a-z (index % 52), others: full 64-character set
-            $index = ($value >> 6 * (5 - $i)) & 63;
-            $id .= $base64[$i === 0 ? $index % 52 : $index];
+        for( $i = 1; $i < 6; $i++ ) {
+            $id .= $base64[ord( $bytes[$i] ) & 63];
         }
 
         return $id;
