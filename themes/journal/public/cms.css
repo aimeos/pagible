@@ -580,7 +580,7 @@ body > footer.bottom .container {
     justify-content: center;
 }
 
-body > footer.bottom img.brand {
+body > footer.bottom .brand img {
     max-height: 2rem;
     max-width: 14rem;
 }

@@ -74,3 +74,9 @@ msgstr "רישיון התוכנה המוצג בכותרת התחתונה, למש
 msgctxt "st"
 msgid "manual::theme"
 msgstr "ערכת נושא"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "ערכת נושא כהה"

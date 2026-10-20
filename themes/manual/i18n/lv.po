@@ -74,3 +74,9 @@ msgstr "Programmatūras licence kājenē, piem., MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tēma"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Tumšā tēma"

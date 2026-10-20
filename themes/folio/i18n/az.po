@@ -104,3 +104,9 @@ msgstr "Profilinizə keçid, məsələn: https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Mövzu"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Tünd mövzu"

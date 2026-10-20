@@ -158,3 +158,9 @@ msgstr "یادداشت کوتاه نمایش داده شده در پاورقی،
 msgctxt "st"
 msgid "launch::theme"
 msgstr "پوسته"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "پوسته تیره"

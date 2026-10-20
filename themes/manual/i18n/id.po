@@ -74,3 +74,9 @@ msgstr "Lisensi perangkat lunak di footer, mis. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Tema gelap"

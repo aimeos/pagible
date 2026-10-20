@@ -158,3 +158,9 @@ msgstr "កំណត់ចំណាំខ្លីដែលបង្ហាញន
 msgctxt "st"
 msgid "launch::theme"
 msgstr "រចនាប័ទ្ម"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "រចនាប័ទ្មងងឹត"

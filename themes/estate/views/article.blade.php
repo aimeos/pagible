@@ -5,7 +5,7 @@
 @if($file = cms($files, data_get($data, 'files.0.id') ?? data_get($data, 'file.id')))
     <div class="article-cover">
         <h1 class="title">{{ cms($page, 'title') }}</h1>
-        @include('cms::pic', ['file' => $file, 'main' => true, 'class' => 'cover', 'sizes' => '(max-width: 960px) 100vw, 960px'])
+        <x-cms::image :page="$page" :file="$file" main class="cover" sizes="(max-width: 960px) 100vw, 960px" />
     </div>
 @else
     <h1 class="title">{{ cms($page, 'title') }}</h1>

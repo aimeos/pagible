@@ -106,25 +106,6 @@ class HelpersTest extends CoreTestAbstract
     }
 
 
-    public function testCmsSrcset()
-    {
-        $page = ( new \Aimeos\Cms\Models\PageView() )->forceFill( ['id' => 'page-id'] );
-        $file = ( new \Aimeos\Cms\Models\File() )->forceFill( [
-            'id' => 'file-id', 'disk' => 'public',
-            'path' => 'not/exists.jpg', 'previews' => [1 => 'not/exists.jpg'],
-        ] );
-
-        $this->assertEquals( '/storage/not/exists.jpg 1w', cmssrcset( $page, $file ) );
-    }
-
-
-    public function testCmsUrl()
-    {
-        $this->assertEquals( '/storage/not/exists.jpg', cmsurl( 'not/exists.jpg' ) );
-        $this->assertEquals( 'https://example.com/not/exists.jpg', cmsurl( 'https://example.com/not/exists.jpg' ) );
-    }
-
-
     public function testCmstheme()
     {
         $page = new \Aimeos\Cms\Models\PageView();
@@ -160,74 +141,5 @@ class HelpersTest extends CoreTestAbstract
         $this->assertEquals( '"Grüße"', cmsjson( 'Grüße' ) );
         $this->assertEquals( '{"name":"Tÿpe"}', cmsjson( ['name' => 'Tÿpe'] ) );
         $this->assertEquals( 'null', cmsjson( null ) );
-    }
-
-
-    public function testCmsviews()
-    {
-        $page = new \Aimeos\Cms\Models\PageView();
-        $item = (object) ['type' => 'heading'];
-
-        $views = cmsviews( $page, $item );
-
-        $this->assertCount( 2, $views );
-        $this->assertEquals( 'cms::heading', $views[0] );
-        $this->assertEquals( 'cms::invalid', $views[1] );
-    }
-
-
-    public function testCmsviewsWithTheme()
-    {
-        $page = new \Aimeos\Cms\Models\PageView();
-        $page->theme = 'mytheme';
-        $item = (object) ['type' => 'mytheme::card'];
-
-        $views = cmsviews( $page, $item );
-
-        $this->assertEquals( ['mytheme::card', 'cms::card', 'cms::invalid'], $views );
-    }
-
-
-    public function testCmsviewsIgnoresPageThemeForNamespacedType()
-    {
-        $page = new \Aimeos\Cms\Models\PageView();
-        $page->theme = 'cms';
-        $item = (object) ['type' => 'style::hero'];
-
-        $views = cmsviews( $page, $item );
-
-        $this->assertEquals( ['style::hero', 'cms::hero', 'cms::invalid'], $views );
-    }
-
-
-    public function testCmsviewsWithPageThemeOverride()
-    {
-        $page = new \Aimeos\Cms\Models\PageView();
-        $page->theme = 'mytheme';
-        $item = (object) ['type' => 'hero'];
-
-        $views = cmsviews( $page, $item );
-
-        $this->assertEquals( ['mytheme::hero', 'cms::hero', 'cms::invalid'], $views );
-    }
-
-
-    public function testCmsviewsIncludesMissingPageThemeFallback()
-    {
-        $page = new \Aimeos\Cms\Models\PageView();
-        $page->theme = 'missingtheme';
-        $item = (object) ['type' => 'hero'];
-
-        $views = cmsviews( $page, $item );
-
-        $this->assertEquals( ['missingtheme::hero', 'cms::hero', 'cms::invalid'], $views );
-    }
-
-
-    public function testCmsviewsNoType()
-    {
-        $page = new \Aimeos\Cms\Models\PageView();
-
-        $this->assertEquals( ['cms::invalid'], cmsviews( $page, (object) [] ) );
     }
 }

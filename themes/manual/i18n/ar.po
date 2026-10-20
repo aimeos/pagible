@@ -74,3 +74,9 @@ msgstr "ترخيص البرنامج المعروض في التذييل، مثل 
 msgctxt "st"
 msgid "manual::theme"
 msgstr "المظهر"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "المظهر الداكن"

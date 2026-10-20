@@ -158,3 +158,9 @@ msgstr "Nota breve mostrada en el pie de página, p. ej. certificado SOC 2 Type 
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tema oscuro"

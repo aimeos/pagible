@@ -158,3 +158,9 @@ msgstr "Courte remarque affichée dans le pied de page, par ex. certifié SOC 2 
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Thème"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Thème sombre"

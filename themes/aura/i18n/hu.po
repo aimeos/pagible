@@ -116,3 +116,9 @@ msgstr "Link a profilodra, pl. https://github.com/lena"
 msgctxt "st"
 msgid "aura::theme"
 msgstr "Téma"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "aura::theme-dark"
+msgstr "Sötét téma"

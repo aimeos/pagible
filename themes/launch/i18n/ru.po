@@ -158,3 +158,9 @@ msgstr "Короткое примечание в подвале сайта, на
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Тема оформления"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Тёмная тема оформления"

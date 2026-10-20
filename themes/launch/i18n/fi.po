@@ -158,3 +158,9 @@ msgstr "Lyhyt huomautus alatunnisteessa, esim. SOC 2 Type II -sertifioitu, data 
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Teema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tumma teema"

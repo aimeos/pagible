@@ -74,3 +74,9 @@ msgstr "Licenza del software mostrata nel piè di pagina, ad es. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Tema scuro"

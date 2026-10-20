@@ -12,7 +12,7 @@
 			<blockquote class="cms-text">@text($item->text ?? '')</blockquote>
 			<figcaption>
 				@if($file = cms($files, $item->file?->id ?? null))
-					@include('cms::pic', ['file' => $file, 'class' => 'avatar', 'sizes' => '4rem'])
+					<x-cms::image :page="$page" :file="$file" class="avatar" sizes="4rem" />
 				@endif
 				<span class="person">
 					@if($item->name ?? null)

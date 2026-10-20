@@ -74,3 +74,9 @@ msgstr "Alt bilgide gösterilen yazılım lisansı, örn. MIT"
 msgctxt "st"
 msgid "manual::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "Koyu tema"

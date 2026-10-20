@@ -13,6 +13,16 @@ use PHPUnit\Framework\Attributes\Group;
 
 class UtilsTest extends CoreTestAbstract
 {
+    public function testTextDir()
+    {
+        $this->assertEquals( 'rtl', Utils::textDir( 'ar' ) );
+        $this->assertEquals( 'rtl', Utils::textDir( 'ar-EG' ) );
+        $this->assertEquals( 'rtl', Utils::textDir( 'fa_IR' ) );
+        $this->assertEquals( 'ltr', Utils::textDir( 'en' ) );
+        $this->assertEquals( 'ltr', Utils::textDir( null ) );
+    }
+
+
     public function testEditor()
     {
         $this->assertSame( 'editor@example.com', Utils::editor( (object) ['email' => 'editor@example.com'] ) );

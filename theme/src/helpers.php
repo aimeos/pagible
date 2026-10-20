@@ -81,7 +81,8 @@ if( !function_exists( 'cmsasset' ) )
         $path = $found ? $previews[$key] : cms( $file, 'path' );
 
         if( cms( $file, 'disk', 'public' ) !== 'private' ) {
-            return cmsurl( is_string( $path ) ? $path : null );
+            $path = is_string( $path ) ? $path : '';
+            return !$path || str_starts_with( $path, 'http' ) ? $path : \Aimeos\Cms\FileStorage::disk( 'public' )->url( $path );
         }
 
         return \Aimeos\Cms\FileResponse::url( $page, (string) cms( $file, 'id' ), $found ? (int) $key : null );
@@ -130,35 +131,6 @@ if( !function_exists( 'cmsattr' ) )
 }
 
 
-if( !function_exists( 'cmsdata' ) )
-{
-    /**
-     * Get the data for a CMS element.
-     *
-     * @param \Aimeos\Cms\Models\PageView $page The CMS page
-     * @param object $item The CMS element
-     * @return array<string, mixed> The data for the CMS element
-     */
-    function cmsdata( \Aimeos\Cms\Models\PageView $page, object $item ) : array
-    {
-        $files = cms( $page, 'files', collect() );
-
-        if( $item instanceof \Aimeos\Cms\Models\Element ) {
-            $files = $files->union( cms( $item, 'files', collect() ) );
-            $item = (object) ['id' => cms($item, 'id'), 'type' => cms($item, 'type'), 'name' => cms($item, 'name'), 'data' => cms($item, 'data')];
-        }
-
-        $data = ['files' => $files];
-
-        if( $action = \Aimeos\Cms\Schema::action( $item->type ?? '' ) ) {
-            $data['action'] = app()->call( $action, ['page' => $page, 'item' => $item] );
-        }
-
-        return $data + (array) $item;
-    }
-}
-
-
 if( !function_exists( 'cmsfile' ) )
 {
     /**
@@ -171,33 +143,6 @@ if( !function_exists( 'cmsfile' ) )
     function cmsfile( \Aimeos\Cms\Models\PageView $page, string $fileId ) : ?object
     {
         return cms( cms( $page, 'files' ), $fileId );
-    }
-}
-
-
-if( !function_exists( 'cmshashes' ) )
-{
-    /**
-     * Build the space-separated CSP hash source list for the inline blocks stored
-     * at the given config path on the page and its ancestors.
-     *
-     * Each inline <style>/<script> the layout emits from this same config path is
-     * allowed by its SHA-256 hash, so pages need no per-request CSP nonce and stay
-     * byte-identical and cacheable. The layout MUST emit the block content raw and
-     * with no surrounding whitespace inside the tags, otherwise the browser-computed
-     * hash will not match the value returned here.
-     *
-     * @param \Aimeos\Cms\Models\PageView $page The CMS page
-     * @param string $path Config path of the inline text, e.g. "config.styles.data.text"
-     * @return string Space-separated 'sha256-...' source expressions for the CSP
-     */
-    function cmshashes( \Aimeos\Cms\Models\PageView $page, string $path ) : string
-    {
-        return $page->ancestorsAndSelf
-            ->map( fn( $item ) => cms( $item, $path ) )
-            ->filter()
-            ->map( fn( $text ) => "'sha256-" . base64_encode( hash( 'sha256', (string) $text, true ) ) . "'" )
-            ->implode( ' ' );
     }
 }
 
@@ -309,28 +254,6 @@ if( !function_exists( 'cmsroute' ) )
 }
 
 
-if( !function_exists( 'cmssrcset' ) )
-{
-    /**
-     * Generate a srcset for a page-aware CMS File.
-     *
-     * @param \Aimeos\Cms\Models\PageView $page Page containing the File
-     * @param object|null $file File associated with the page
-     * @return string Comma-separated preview URLs and width descriptors
-     */
-    function cmssrcset( \Aimeos\Cms\Models\PageView $page, ?object $file ) : string
-    {
-        $list = [];
-
-        foreach( (array) cms( $file, 'previews', [] ) as $width => $path ) {
-            $list[] = cmsasset( $page, $file, (int) $width ) . ' ' . $width . 'w';
-        }
-
-        return implode( ',', $list );
-    }
-}
-
-
 if( !function_exists( 'cmstheme' ) )
 {
     /**
@@ -352,25 +275,6 @@ if( !function_exists( 'cmstheme' ) )
 
         $public = public_path( $path );
         return asset( $path ) . ( $version && file_exists( $public ) ? '?v=' . filemtime( $public ) : '' );
-    }
-}
-
-
-if( !function_exists( 'cmsurl' ) )
-{
-    /**
-     * Generate a public-disk URL while preserving remote hot-links.
-     *
-     * @param string|null $path Public storage path or remote URL
-     * @return string Resolved public URL, preserved remote URL, or an empty string
-     */
-    function cmsurl( ?string $path ) : string
-    {
-        if( !$path || str_starts_with( $path, 'http' ) ) {
-            return $path ?? '';
-        }
-
-        return \Aimeos\Cms\FileStorage::disk( 'public' )->url( $path );
     }
 }
 
@@ -402,33 +306,5 @@ if( !function_exists( 'cmslink' ) )
         }
 
         return $url;
-    }
-}
-
-
-if( !function_exists( 'cmsviews' ) )
-{
-    /**
-     * Get the list of view names to try for a CMS element, based on its type and the page theme.
-     *
-     * @param \Aimeos\Cms\Models\PageView $page The CMS page
-     * @param object $item The CMS element for which to get the view names
-     * @return array<int, string> An array of view names to try when rendering the element
-     */
-    function cmsviews( \Aimeos\Cms\Models\PageView $page, object $item ) : array
-    {
-        if( !isset( $item->type ) ) {
-            return ['cms::invalid'];
-        }
-
-        $type = (string) $item->type;
-
-        [$theme, $type] = str_contains( $type, '::' )
-            ? explode( '::', $type, 2 )
-            : [cms( $page, 'theme' ) ?: 'cms', $type];
-
-        return $theme === 'cms'
-            ? ['cms::' . $type, 'cms::invalid']
-            : [$theme . '::' . $type, 'cms::' . $type, 'cms::invalid'];
     }
 }

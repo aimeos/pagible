@@ -7,7 +7,9 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Schema;
+use Aimeos\Cms\Theme;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\View;
 
@@ -161,12 +163,12 @@ class CheckSchema extends Command
 
 
     /**
-     * Tests if a view exists for the schema in the same order as cmsviews() resolves them.
+     * Tests if one of the views Theme::names() resolves for the schema exists.
      */
     protected function view( string $theme, string $key ) : bool
     {
-        $type = str_contains( $key, '::' ) ? explode( '::', $key, 2 )[1] : $key;
+        $names = Theme::names( new PageView( ['theme' => $theme] ), (object) ['type' => $key] );
 
-        return View::exists( 'cms::' . $type ) || $theme !== 'cms' && View::exists( $theme . '::' . $type );
+        return collect( $names )->contains( fn( $name ) => View::exists( $name ) );
     }
 }

@@ -158,3 +158,9 @@ msgstr "Kurzer Hinweis in der Fußzeile, z. B. SOC 2 Type II zertifiziert, Daten
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Design"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Dunkles Design"

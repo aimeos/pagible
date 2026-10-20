@@ -116,3 +116,9 @@ msgstr "Σύνδεσμος προς το προφίλ σας, π.χ. https://git
 msgctxt "st"
 msgid "aura::theme"
 msgstr "Θέμα"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "aura::theme-dark"
+msgstr "Σκούρο θέμα"

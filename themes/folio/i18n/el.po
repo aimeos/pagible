@@ -104,3 +104,9 @@ msgstr "Σύνδεσμος προς το προφίλ σας, π.χ. https://git
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Θέμα"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Σκούρο θέμα"

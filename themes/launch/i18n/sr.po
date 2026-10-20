@@ -158,3 +158,9 @@ msgstr "Кратка напомена приказана у подножју, н
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Тема"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Тамна тема"

@@ -158,3 +158,9 @@ msgstr "הערה קצרה המוצגת בכותרת התחתונה, לדוגמה
 msgctxt "st"
 msgid "launch::theme"
 msgstr "ערכת נושא"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "ערכת נושא כהה"

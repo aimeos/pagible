@@ -104,3 +104,9 @@ msgstr "Liên kết đến hồ sơ của bạn, ví dụ https://github.com/len
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Giao diện"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Giao diện tối"

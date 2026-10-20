@@ -105,7 +105,7 @@ class TorqueDemoTest extends ThemeTestAbstract
 
         $response->assertOk();
         $response->assertSee( 'Dashboard Warning Lights: Stop Now or Drive On?' );
-        $response->assertSee( '<a href="http://localhost/tips" class="active">', false );
+        $response->assertSee( '<a href="http://localhost/tips" class="active" aria-current="page">', false );
     }
 
 
