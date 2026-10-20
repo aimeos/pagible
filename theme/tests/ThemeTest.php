@@ -793,17 +793,17 @@ class ThemeTest extends ThemeTestAbstract
 		\Illuminate\Support\Facades\View::addNamespace( 'test', $dir );
 
 		$page = ( new PageView() )->forceFill( ['id' => 'page'] );
-		$pageFile = ( new File() )->forceFill( ['id' => 'page-file'] );
-		$elementFile = ( new File() )->forceFill( ['id' => 'element-file'] );
-		$element = ( new Element() )->forceFill( ['id' => 'element', 'type' => 'test::files', 'name' => 'Shared footer', 'data' => []] );
+		$pageFile = ( new File() )->forceFill( ['id' => 'PAGE-FILE'] );
+		$elementFile = ( new File() )->forceFill( ['id' => 'ELEMENT-FILE'] );
+		$element = ( new Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'test::files', 'name' => 'Shared footer', 'data' => []] );
 
 		$page->setRelation( 'files', collect( [$pageFile->id => $pageFile] ) );
-		$page->setRelation( 'elements', collect( ['element' => $element] ) );
+		$page->setRelation( 'elements', collect( ['ELEMENT' => $element] ) );
 		$element->setRelation( 'files', collect( [$elementFile->id => $elementFile] ) );
 
-		$html = Theme::element( [], $page, (object) ['type' => 'reference', 'refid' => 'element'] );
+		$html = Theme::element( [], $page, (object) ['type' => 'reference', 'refid' => 'ELEMENT'] );
 
-		$this->assertSame( 'page-file,element-file|test::files|Shared footer', trim( $html ) );
+		$this->assertSame( 'PAGE-FILE,ELEMENT-FILE|test::files|Shared footer', trim( $html ) );
 	}
 
 
@@ -1357,12 +1357,12 @@ class ThemeTest extends ThemeTestAbstract
 	public function testHeadings() : void
 	{
 		$page = ( new PageView() )->forceFill( ['id' => 'page'] );
-		$element = ( new Element() )->forceFill( ['id' => 'element', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => 'Shared']] );
-		$page->setRelation( 'elements', collect( ['element' => $element] ) );
+		$element = ( new Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => 'Shared']] );
+		$page->setRelation( 'elements', collect( ['ELEMENT' => $element] ) );
 
 		$items = [
 			(object) ['id' => 'h1', 'type' => 'heading', 'data' => (object) ['level' => 1, 'title' => 'Top']],
-			(object) ['id' => 'ref', 'type' => 'reference', 'refid' => 'element'],
+			(object) ['id' => 'ref', 'type' => 'reference', 'refid' => 'ELEMENT'],
 			(object) ['id' => 'text', 'type' => 'text', 'data' => (object) ['text' => 'Text']],
 			(object) ['id' => 'h3', 'type' => 'heading', 'data' => (object) ['level' => 3, 'title' => 'Sub']],
 			(object) ['id' => 'empty', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => '']],
@@ -1431,11 +1431,11 @@ class ThemeTest extends ThemeTestAbstract
 		$page = ( new PageView() )->forceFill( ['id' => 'page', 'content' => [
 			['id' => 'before', 'type' => 'heading', 'data' => ['level' => 2, 'title' => 'Before']],
 			['id' => 'toc', 'type' => 'toc', 'data' => []],
-			['id' => 'ref', 'type' => 'reference', 'refid' => 'element'],
+			['id' => 'ref', 'type' => 'reference', 'refid' => 'ELEMENT'],
 			['id' => 'sub', 'type' => 'heading', 'data' => ['level' => 3, 'title' => 'Sub']],
 		]] );
-		$element = ( new Element() )->forceFill( ['id' => 'element', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => 'Shared']] );
-		$page->setRelation( 'elements', collect( ['element' => $element] ) );
+		$element = ( new Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'heading', 'data' => (object) ['level' => 2, 'title' => 'Shared']] );
+		$page->setRelation( 'elements', collect( ['ELEMENT' => $element] ) );
 
 		$tree = ( new \Aimeos\Cms\Actions\Toc() )( request(), $page, (object) ['id' => 'toc'] );
 

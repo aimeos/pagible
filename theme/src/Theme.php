@@ -151,10 +151,10 @@ class Theme
         foreach( $items as $item )
         {
             $el = cmsref( $page, $item );
-            $level = (int) ( $el->data->level ?? 1 );
+            $level = (int) ( $el->data->level ?? 2 );
             $title = (string) ( $el->data->title ?? '' );
 
-            if( ( $el->type ?? null ) === 'heading' && $title !== '' && ( !$levels || in_array( $level, $levels, true ) ) ) {
+            if( $title !== '' && in_array( $level, $levels, true ) ) {
                 $list[] = ['id' => (string) ( $item->id ?? '' ), 'level' => $level, 'title' => $title];
             }
         }

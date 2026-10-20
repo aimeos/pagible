@@ -228,7 +228,7 @@ public function boot(): void
 ```
 
 - Pages of type `blog` use the first existing layout of `mytheme::layouts.blog`, `cms::layouts.blog` and `cms::layouts.page`, and the core layouts extend `mytheme::layouts.main`
-- Main layouts render `<x-cms::head :page="$page" :nav="$nav" />` (charset, viewport, theme color, CSRF token, CSP, title, canonical URL, meta elements, favicon and the `--pico-*` variables of the `theme` config) in `<head>` and `cms::layouts.foot` at the end of `<body>`, `cms::elements` renders a list of content elements in sections
+- Main layouts render `<x-cms::head :page="$page" :nav="$nav" />` (charset, viewport, theme color, CSRF token, Content-Security-Policy (built from the `cms.theme.csp.*` settings and the hashes of the custom styles and scripts of the page, omitted if `app.debug` is enabled), title, canonical URL, meta elements, favicon and the `--pico-*` variables of the `theme` config) in `<head>` and `cms::layouts.foot` at the end of `<body>`, `cms::elements` renders a list of content elements in sections
 - The theme color is the configured or default background color, `theme-color="#0B1530"` sets a fixed one
 - The `--pico-*` variables are pushed to the `head` stack, so the layout must render `@stack('head')` after its stylesheets
 - Themes with light and dark mode define a `theme-dark` config with the dark colors, the colors of the `theme` config then only apply to the light mode
@@ -317,8 +317,6 @@ The layout components build the page header from the current `$page` and the `$n
 <x-cms::search :page="$page" />
 ```
 
-Add `<x-cms::csp :page="$page" />` to the `<head>` of the layout.
-
 | Component | Output |
 |-----------|--------|
 | `brand` | Link to the home page with the logo of the nearest page that has one, or the website title. `alternative` prefers the alternative logo (for dark headers), `name` replaces the website title and other attributes like `class` are added to the link |
@@ -326,7 +324,6 @@ Add `<x-cms::csp :page="$page" />` to the `<head>` of the layout.
 | `languages` | `<li class="languages">` with a dropdown linking all published language variants of the page, only rendered if there are at least two |
 | `breadcrumb` | Breadcrumb navigation of the ancestors below the root page, only rendered for pages below the first level |
 | `search` | Search dialog `#modal-search` used by the search script of the theme |
-| `csp` | Content-Security-Policy `<meta>` tag for the `<head>` built from the `cms.theme.csp.*` settings and the hashes of the custom styles and scripts of the page, omitted if `app.debug` is enabled |
 
 ## License
 

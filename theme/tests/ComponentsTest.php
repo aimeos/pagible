@@ -28,13 +28,13 @@ class ComponentsTest extends CoreTestAbstract
     public function testBrandLogo()
     {
         $page = $this->node( 'page-id', 'Page', 1, 2 )->forceFill( ['config' => (object) [
-            'logo' => (object) ['type' => 'logo', 'files' => ['logo-id'], 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'logo-id']]],
-            'logo-alternative' => (object) ['type' => 'logo-alternative', 'files' => ['alt-id'], 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'alt-id']]],
+            'logo' => (object) ['type' => 'logo', 'files' => ['LOGO-ID'], 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'LOGO-ID']]],
+            'logo-alternative' => (object) ['type' => 'logo-alternative', 'files' => ['ALT-ID'], 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'ALT-ID']]],
         ]] );
         $page->setRelation( 'ancestors', collect() );
         $page->setRelation( 'files', collect( [
-            'logo-id' => $this->file()->forceFill( ['id' => 'logo-id', 'path' => 'cms/logo.svg'] ),
-            'alt-id' => $this->file()->forceFill( ['id' => 'alt-id', 'path' => 'cms/alt.svg'] ),
+            'LOGO-ID' => $this->file()->forceFill( ['id' => 'LOGO-ID', 'path' => 'cms/logo.svg'] ),
+            'ALT-ID' => $this->file()->forceFill( ['id' => 'ALT-ID', 'path' => 'cms/alt.svg'] ),
         ] ) );
 
         $html = $this->squish( Blade::render( '<x-cms::brand :page="$page" :nav="$nav" name="Brand" />', ['page' => $page, 'nav' => $this->nav()] ) );
@@ -161,7 +161,7 @@ class ComponentsTest extends CoreTestAbstract
         config( ['app.debug' => false, 'cms.theme.csp.frame-src' => 'https://www.youtube.com'] );
         $page = $this->page()->forceFill( ['config' => (object) ['javascript' => (object) ['type' => 'javascript', 'files' => [], 'data' => (object) ['text' => 'alert(1)']]]] );
         $page->setRelation( 'ancestors', collect() );
-        $html = $this->squish( Blade::render( '<x-cms::csp :page="$page" />', ['page' => $page] ) );
+        $html = $this->squish( Blade::render( '<x-cms::head :page="$page" />', ['page' => $page] ) );
         $hash = base64_encode( hash( 'sha256', 'alert(1)', true ) );
 
         $this->assertStringContainsString( '<meta http-equiv="Content-Security-Policy" content=" base-uri \'self\'; default-src \'self\';', $html );
@@ -184,9 +184,9 @@ class ComponentsTest extends CoreTestAbstract
     public function testElements()
     {
         $page = $this->page()->setRelation( 'files', collect() );
-        $page->setRelation( 'elements', collect( ['element' => ( new \Aimeos\Cms\Models\Element() )->forceFill( ['id' => 'element', 'type' => 'notexist', 'data' => []] )->setRelation( 'files', collect() )] ) );
+        $page->setRelation( 'elements', collect( ['ELEMENT' => ( new \Aimeos\Cms\Models\Element() )->forceFill( ['id' => 'ELEMENT', 'type' => 'notexist', 'data' => []] )->setRelation( 'files', collect() )] ) );
 
-        $html = $this->squish( Blade::render( "@include('cms::elements', ['items' => \$items])", ['page' => $page, 'items' => [(object) ['id' => 'ref', 'type' => 'reference', 'refid' => 'element']]] ) );
+        $html = $this->squish( Blade::render( "@include('cms::elements', ['items' => \$items])", ['page' => $page, 'items' => [(object) ['id' => 'ref', 'type' => 'reference', 'refid' => 'ELEMENT']]] ) );
 
         $this->assertStringContainsString( '<div id="ref" class="notexist"> <div class="container"> <!-- Invalid content element of type "notexist" -->', $html );
     }
@@ -196,23 +196,25 @@ class ComponentsTest extends CoreTestAbstract
     {
         config( ['app.debug' => true] );
 
-        $this->assertSame( '', trim( Blade::render( '<x-cms::csp :page="$page" />', ['page' => $this->page()] ) ) );
+        $page = $this->page()->setRelation( 'ancestors', collect() );
+
+        $this->assertStringNotContainsString( 'Content-Security-Policy', Blade::render( '<x-cms::head :page="$page" />', ['page' => $page] ) );
     }
 
 
     public function testHead()
     {
         config( ['app.debug' => false] );
-        $file = $this->file()->forceFill( ['mime' => 'image/png', 'path' => 'cms/icon.png'] );
+        $file = $this->file()->forceFill( ['id' => 'FILE-ID', 'mime' => 'image/png', 'path' => 'cms/icon.png'] );
         $page = $this->page()->forceFill( [
             'title' => 'Title <x>',
             'meta' => (object) ['canonical' => (object) ['type' => 'canonical', 'files' => [], 'data' => (object) ['url' => 'https://example.com/page']]],
             'config' => (object) [
-                'icon' => (object) ['type' => 'icon', 'files' => ['file-id'], 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'file-id']]],
+                'icon' => (object) ['type' => 'icon', 'files' => ['FILE-ID'], 'data' => (object) ['file' => (object) ['type' => 'file', 'id' => 'FILE-ID']]],
                 'theme' => (object) ['type' => 'theme', 'files' => [], 'data' => (object) ['--pico-primary' => '#123456']],
             ],
         ] );
-        $page->setRelation( 'files', collect( ['file-id' => $file] ) )->setRelation( 'ancestors', collect() );
+        $page->setRelation( 'files', collect( ['FILE-ID' => $file] ) )->setRelation( 'ancestors', collect() );
 
         $html = $this->squish( Blade::render( '<x-cms::head :page="$page" />@stack(\'head\')', ['page' => $page] ) );
         $hash = base64_encode( hash( 'sha256', ':root:root{--pico-primary:#123456}', true ) );
