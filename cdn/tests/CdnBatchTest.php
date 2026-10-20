@@ -26,6 +26,9 @@ class CdnBatchTest extends CdnTestCase
         ]] );
         Queue::fake();
 
+        // a second boundary passed before travelling would shorten the remaining delay
+        $this->freezeSecond();
+
         // URLs changed during the delay are collected and purged together
         Cdn::purge( ['https://example.com/a'] );
         Cdn::purge( ['https://example.com/b', 'https://example.com/a'] );
