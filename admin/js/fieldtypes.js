@@ -2,6 +2,8 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
+import { ucfirst } from './utils'
+
 // Lazy glob of all field SFCs. The keys (paths) are available synchronously
 // without importing the components, so they can be used to build the registry
 // and the allowlist below at module-evaluation time.
@@ -24,7 +26,7 @@ export const fieldComponents = Object.fromEntries(
  * them. Used to allowlist the dynamic `<component :is="...">` field rendering so
  * an unknown or hostile field type cannot resolve to a native HTML element.
  */
-export const fieldTypes = new Set(Object.keys(fieldComponents))
+const fieldTypes = new Set(Object.keys(fieldComponents))
 
 /** Field components supporting private file storage controlled by page access. */
 export const protectTypes = new Set(['Audio', 'File', 'Image', 'Images', 'Media', 'Video'])
@@ -48,6 +50,6 @@ export const aiContext = (field, code, data) => [
 
 /** Registered field component name for the schema field type, "Hidden" for unknown types. */
 export const toName = (type) => {
-  const name = type ? type.charAt(0).toUpperCase() + type.slice(1) : ''
+  const name = ucfirst(type)
   return fieldTypes.has(name) ? name : 'Hidden'
 }

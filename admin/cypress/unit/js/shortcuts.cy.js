@@ -1,7 +1,8 @@
 import { computed } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { useUserStore } from '../../../js/stores'
-import { available, command, commands, execute, has, hint, keydown, register, routes, run, setNavigate, shortcuts, trigger } from '../../../js/shortcuts'
+import { commands, hint, routes } from '../../../js/commands'
+import { available, command, execute, has, keydown, register, run, setNavigate, shortcuts, trigger } from '../../../js/shortcuts'
 
 describe('shortcuts', () => {
   const key = (key, opts = {}) => {
@@ -175,6 +176,20 @@ describe('shortcuts', () => {
     expect(shortcuts.sheet).to.equal(false)
   })
 
+  it('does not open the shortcut sheet on top of a dialog or menu', () => {
+    overlay('v-overlay v-dialog v-overlay--active', () => {
+      const e = key('?')
+      expect(e.defaultPrevented).to.equal(false)
+    })
+    overlay('v-overlay v-menu v-overlay--active', () => key('?'))
+    expect(shortcuts.sheet).to.equal(false)
+
+    // the open sheet is a dialog itself and closes with the same key
+    shortcuts.sheet = true
+    overlay('v-overlay v-dialog v-overlay--active', () => key('?'))
+    expect(shortcuts.sheet).to.equal(false)
+  })
+
   it('navigates with g followed by p, m, e or u', () => {
     const navigate = cy.stub()
     setNavigate(navigate)
@@ -195,6 +210,22 @@ describe('shortcuts', () => {
       'access:view'
     ])
     setNavigate(null)
+  })
+
+  it('handles single keys the same if Caps Lock is on', () => {
+    const navigate = cy.stub()
+    const create = cy.stub()
+    const off = register({ create })
+    setNavigate(navigate)
+
+    key('N')
+    key('G')
+    key('P')
+
+    expect(create).to.have.been.calledOnce
+    expect(navigate).to.have.been.calledOnceWith('page:view')
+    setNavigate(null)
+    off()
   })
 
   it('swallows the key after g and ignores late or unknown keys', () => {

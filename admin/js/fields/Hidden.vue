@@ -7,10 +7,14 @@ export default {
   extends: fieldBase,
 
   props: {
-    modelValue: { type: String, default: '' }
+    modelValue: null
   },
 
   created() {
+    if (this.config?.value === undefined) {
+      return
+    }
+
     if (this.modelValue !== this.config?.value) {
       this.$emit('update:modelValue', this.config?.value)
     }

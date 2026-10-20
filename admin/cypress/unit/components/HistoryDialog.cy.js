@@ -46,6 +46,16 @@ describe('HistoryDialog', () => {
     })
   })
 
+  it('uses the first preview image of files and the file itself without previews', () => {
+    mountMedia().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(HistoryField).vm
+
+      expect(vm.previewUrl({ path: 'https://cdn.test/file.svg' })).to.equal('https://cdn.test/file.svg')
+      expect(vm.previewUrl({ path: 'https://cdn.test/file.svg', previews: { 500: 'https://cdn.test/small.svg' } }))
+        .to.equal('https://cdn.test/small.svg')
+    })
+  })
+
   it('preserves unchanged nested fields and blocks when restoring without a current snapshot', () => {
     const content = [textBlock('keep', 'Keep this block')]
     const latest = { id: 'latest', data: { content, meta: { seo: { title: 'Latest title', description: 'Keep description' } } } }
@@ -123,6 +133,15 @@ describe('HistoryDialog', () => {
     cy.get('.diff-group[aria-label="value"] .raw-value .change-new pre').should('have.text', '1')
     cy.get('.diff-group[aria-label="value"] .raw-value .change-old pre').should('have.text', '"1"')
   })
+  it('resolves no field schema for sections without schemas', () => {
+    mountDialog({ schemas: { meta: undefined } }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(HistoryDialog).vm
+      const card = { after: { data: { meta: { seo: { type: 'seo', data: { title: 'A' } } } } }, before: { data: {} } }
+
+      expect(() => vm.schema(card, { path: ['meta', 'seo', 'data', 'title'] })).not.to.throw()
+    })
+  })
+
   it('shows only previews and filenames when file metadata changes', () => {
     const file = { id: 'photo', name: 'Team.jpg', path: 'team.jpg', mime: 'image/jpeg', previews: { 320: 'small.jpg', 640: 'medium.jpg' } }
     const saved = { ...file, name: 'Team portrait.png', mime: 'image/png', previews: { 320: 'small.jpg', 960: 'large.jpg' } }

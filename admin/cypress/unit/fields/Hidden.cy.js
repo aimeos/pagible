@@ -30,4 +30,22 @@ describe('Hidden', () => {
     })
     cy.get('@update').should('not.have.been.called')
   })
+
+  it('does not emit when config.value is undefined', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.mount(Hidden, {
+      props: { modelValue: 'kept', config: {}, 'onUpdate:modelValue': onUpdate },
+    })
+    cy.get('@update').should('not.have.been.called')
+  })
+
+  it('emits non-string config values without prop type warnings', () => {
+    const onUpdate = cy.spy().as('update')
+    cy.window().then((win) => cy.spy(win.console, 'warn').as('warn'))
+    cy.mount(Hidden, {
+      props: { modelValue: 1, config: { value: 2 }, 'onUpdate:modelValue': onUpdate },
+    })
+    cy.get('@update').should('have.been.calledWith', 2)
+    cy.get('@warn').should('not.have.been.calledWithMatch', /Invalid prop/)
+  })
 })

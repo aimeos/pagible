@@ -427,12 +427,19 @@ describe('Element List', () => {
   })
 
   it('bulk actions menu shows Publish, Delete, Restore, Purge', () => {
-    const el = makeElement({
-      deleted_at: '2026-01-15 00:00:00',
-      latest: { ...makeElement().latest, published: false },
-    })
-    visitElements([el])
-    cy.get('.items .v-list-item .item-check').first().click()
+    // Need both a trashed and non-trashed item for all options to appear
+    const elements = [
+      makeElement({
+        id: '1',
+        latest: { ...makeElement().latest, published: false },
+      }),
+      makeElement({
+        id: '2', deleted_at: '2026-01-15 00:00:00',
+        latest: { ...makeElement().latest, id: '20', published: false },
+      }),
+    ]
+    visitElements(elements)
+    cy.get('.header .bulk .v-checkbox-btn').click()
     cy.get('.header .bulk .btn-actions .v-btn').first().click()
     cy.get('.v-card .v-list').should('contain', 'Publish')
     cy.get('.v-card .v-list').should('contain', 'Delete')

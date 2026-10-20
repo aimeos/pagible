@@ -2,7 +2,8 @@
 
 <script>
 import { useDirtyStore, useDrawerStore, useUserStore, useViewStack } from '../stores'
-import { commands, hint, useShortcuts } from '../shortcuts'
+import { commands, hint } from '../commands'
+import { useShortcuts } from '../shortcuts'
 import {
   mdiCheck,
   mdiChevronLeft,
@@ -14,6 +15,8 @@ import {
 } from '@mdi/js'
 
 const allowedMinutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+// milliseconds the "saved" state is shown after saving
+const SAVED_DURATION = 1600
 
 export default {
   name: 'DetailAppBar',
@@ -83,6 +86,10 @@ export default {
     saved: false
   }),
 
+  created() {
+    this.savedTimer = null
+  },
+
   beforeUnmount() {
     clearTimeout(this.savedTimer)
   },
@@ -97,7 +104,7 @@ export default {
       if (old && !value && !this.dirty && !this.error) {
         clearTimeout(this.savedTimer)
         this.saved = true
-        this.savedTimer = setTimeout(() => (this.saved = false), 1600)
+        this.savedTimer = setTimeout(() => (this.saved = false), SAVED_DURATION)
       }
     }
   },

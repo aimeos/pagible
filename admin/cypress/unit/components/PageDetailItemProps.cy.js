@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import PageDetailItemProps from '../../../js/components/PageDetailItemProps.vue'
 import { useAppStore, useLanguageStore, useUserStore, useSchemaStore } from '../../../js/stores'
 
@@ -51,8 +52,11 @@ function mountProps(props = {}, perms = {}, apollo = {}) {
 
 // mounts the component with the permissions and languages already set when it's created
 function mountLangs(available, props = {}, perms = { 'page:save': true }) {
+  // the page applies the patches to its item
+  const value = reactive({ ...item, ...props.item })
+
   return cy.mount(PageDetailItemProps, {
-    props: { item: { ...item }, ...props },
+    props: { ...props, item: value, onPatch: (patch) => Object.assign(value, patch) },
     global: {
       mocks: { $apollo: { query: () => Promise.resolve({ data: { pages: { data: [] } } }) } },
       provide: { debounce: (fn) => fn },
@@ -73,7 +77,7 @@ describe('PageDetailItemProps', () => {
     it('fills in the only language automatically and hides the selector', () => {
       mountLangs(['de'], { item: { ...item, lang: '' } }).then((comp) => {
         expect(comp.vm.item.lang).to.equal('de')
-        expect(comp.emitted('change')).to.have.length(1)
+        expect(comp.emitted('patch')).to.deep.equal([[{ lang: 'de' }]])
       })
       cy.get('.v-select').contains('Language').should('not.exist')
     })
@@ -81,7 +85,7 @@ describe('PageDetailItemProps', () => {
     it('does not fill in the language without permission', () => {
       mountLangs(['de'], { item: { ...item, lang: '' } }, {}).then((comp) => {
         expect(comp.vm.item.lang).to.equal('')
-        expect(comp.emitted('change')).to.equal(undefined)
+        expect(comp.emitted('patch')).to.equal(undefined)
       })
       cy.get('.v-select').contains('Language').should('exist')
     })
@@ -89,7 +93,7 @@ describe('PageDetailItemProps', () => {
     it('shows the selector if the page uses a language which is not configured', () => {
       mountLangs(['de'], { item: { ...item, lang: 'en' } }).then((comp) => {
         expect(comp.vm.item.lang).to.equal('en')
-        expect(comp.emitted('change')).to.equal(undefined)
+        expect(comp.emitted('patch')).to.equal(undefined)
       })
       cy.get('.v-select').contains('Language').should('exist')
     })
@@ -163,7 +167,7 @@ describe('PageDetailItemProps', () => {
             domain: 'dev.example',
           },
         })
-        expect(component.vm.messages.path).to.deep.equal([])
+        expect(component.vm.fieldMessages.path).to.deep.equal([])
       })
     })
   })
@@ -175,10 +179,44 @@ describe('PageDetailItemProps', () => {
       const component = wrapper.findComponent(PageDetailItemProps)
 
       return component.vm.checkPath().then(() => {
-        expect(component.vm.messages.path).to.deep.equal([
+        expect(component.vm.fieldMessages.path).to.deep.equal([
           'The path is already in use by another page',
         ])
       })
     })
+  })
+
+  it('ignores the results of older path checks', () => {
+    const resolvers = []
+    const query = () => new Promise((resolve) => resolvers.push(resolve))
+
+    mountProps({}, { 'page:save': true }, { query }).then(({ wrapper }) => {
+      const component = wrapper.findComponent(PageDetailItemProps)
+      const start = resolvers.length
+      const first = component.vm.checkPath()
+      const second = component.vm.checkPath()
+
+      resolvers[start + 1]({ data: { pages: { data: [] } } })
+      resolvers[start]({ data: { pages: { data: [{ id: 'another-page' }] } } })
+
+      return Promise.all([first, second]).then(() => {
+        expect(component.vm.fieldMessages.path).to.deep.equal([])
+      })
+    })
+  })
+
+  it('validates the form when it opens', () => {
+    const onError = cy.stub()
+
+    mountProps({ item: { ...item, title: '' }, onError }, { 'page:save': true })
+    cy.wrap(onError).should('have.been.calledWith', true)
+    cy.get('.v-input--error').should('exist')
+  })
+
+  it('reports no error when the opened form is valid', () => {
+    const onError = cy.stub()
+
+    mountProps({ onError }, { 'page:save': true })
+    cy.wrap(onError).should('have.been.calledWith', false)
   })
 })

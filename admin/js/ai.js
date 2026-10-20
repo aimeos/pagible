@@ -7,7 +7,8 @@ import gettext from './i18n'
 import { apolloClient } from './graphql'
 import { toMp3, transcription } from './audio'
 import { useUserStore, useMessageStore } from './stores'
-import { safeParse, url } from './utils'
+import { url } from './urls'
+import { safeParse } from './json'
 
 const TRANSCRIBE = gql`
   mutation ($file: Upload!) {
@@ -75,14 +76,14 @@ export function transcribe(input) {
  * @param {string} to Target language code (e.g. 'DE', 'FR')
  * @param {string|null} from Source language code or null for auto-detection
  * @param {string|null} context Additional context to improve translation quality
- * @returns {Promise<string[]>|false} Translated texts or false if permission denied
+ * @returns {Promise<string[]|false|undefined>} Translated texts, false if permission denied or undefined on error
  */
 export function translate(texts, to, from = null, context = null) {
   const user = useUserStore()
   const messages = useMessageStore()
   const { $gettext } = gettext
 
-  if (!user.can('text:translate')) return messages.denied()
+  if (!user.can('text:translate')) return Promise.resolve(messages.denied())
 
   if (!Array.isArray(texts)) {
     texts = [texts].filter((v) => !!v)
@@ -122,14 +123,14 @@ export function translate(texts, to, from = null, context = null) {
  * @param {string} prompt Instructions for text generation
  * @param {string|string[]} context Additional context strings joined with newlines
  * @param {string[]} files File URLs to include as context for the AI
- * @returns {Promise<string>|false} Generated text or false if permission denied
+ * @returns {Promise<string|false|undefined>} Generated text, false if permission denied or undefined on error
  */
 export function write(prompt, context = [], files = []) {
   const user = useUserStore()
   const messages = useMessageStore()
   const { $gettext } = gettext
 
-  if (!user.can('text:write')) return messages.denied()
+  if (!user.can('text:write')) return Promise.resolve(messages.denied())
 
   prompt = String(prompt).trim()
 

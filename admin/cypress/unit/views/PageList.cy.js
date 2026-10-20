@@ -1,12 +1,13 @@
+import { h } from 'vue'
 import PageList from '../../../js/views/PageList.vue'
-import { useChangeStore, useDrawerStore, useLanguageStore, useUserStore } from '../../../js/stores'
+import { useChangeStore, useDrawerStore, useLanguageStore, useSettingStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   PageListItems: { template: '<div class="page-list-items-stub" />' },
   PageDetail: { template: '<div class="page-detail-stub" />' },
   Navigation: { template: '<div class="navigation-stub" />' },
   AsideList: { template: '<div class="aside-list-stub" />' },
-  User: { template: '<div class="user-stub" />' },
+  User: { render: () => h('div', { class: 'user-stub' }) },
 }
 
 function mountPageList(perms = {}) {
@@ -136,7 +137,7 @@ describe('PageList', () => {
       const query = cy.stub().resolves({ data: { pageTranslationStates: [{ stale: 0, missing: 0, ai: 0 }] } })
 
       mountLangs(query).then(() => {
-        useUserStore().saveData('page', 'lang', 'en')
+        useSettingStore().saveData('page', 'lang', 'en')
         cy.wrap(null).should(() => {
           expect(query).to.have.been.calledWithMatch({ variables: { langs: ['en'] } })
         })
@@ -149,7 +150,7 @@ describe('PageList', () => {
       mountLangs(query, false).then(() => {
         const vm = Cypress.vueWrapper.findComponent(PageList).vm
 
-        useUserStore().saveData('page', 'lang', 'en')
+        useSettingStore().saveData('page', 'lang', 'en')
         cy.wait(600).then(() => {
           expect(query).not.to.have.been.called
           expect(vm.outdated).to.equal(true)

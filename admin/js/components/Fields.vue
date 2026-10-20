@@ -1,76 +1,38 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import ActionMenu from './ActionMenu.vue'
-import { useUserStore, useMessageStore } from '../stores'
+import FieldRow from './FieldRow.vue'
 import { changedState } from '../merge'
-import { aiContext, hintTypes, protectTypes, toName } from '../fieldtypes'
-import { dictate, hasTrue, txlocales } from '../utils'
-import {
-  mdiTranslate,
-  mdiArrowRightThin,
-  mdiCreation,
-  mdiMicrophoneOutline,
-  mdiMicrophone,
-  mdiUndoVariant
-} from '@mdi/js'
+import { fieldLabel } from '../field'
+import { hasTrue } from '../utils'
 
 export default {
-  components: { ActionMenu },
+  components: { FieldRow },
 
   props: {
-    data: { type: Object, default: () => {} },
+    data: { type: Object, default: () => ({}) },
     files: { type: Array, default: () => [] },
-    assets: { type: Object, default: () => {} },
+    assets: { type: Object, default: () => ({}) },
     changed: { type: Object, default: () => ({}) },
     readonly: { type: Boolean, default: false },
     fields: { type: Object, required: true },
     type: { type: String, default: '' }
   },
 
-  emits: ['change', 'error', 'update:data', 'update:files'],
-
-  inject: ['write', 'translate'],
+  emits: ['add-assets', 'change', 'error', 'update:data', 'update:files'],
 
   data() {
     return {
       dirty: new Set(),
       original: {},
-      translating: {},
-      dictating: {},
-      composing: {},
       errors: {},
-      lastError: false,
-      audio: {}
+      lastError: false
     }
   },
 
   setup() {
-    const messages = useMessageStore()
-    const user = useUserStore()
-
     return {
-      user,
-      messages,
-      changedState,
-      mdiTranslate,
-      mdiArrowRightThin,
-      mdiCreation,
-      mdiMicrophoneOutline,
-      mdiMicrophone,
-      mdiUndoVariant,
-      hintTypes,
-      protectTypes,
-      toName,
-      txlocales
-    }
-  },
-
-  beforeUnmount() {
-    for (const key of Object.keys(this.audio)) {
-      if (this.audio[key]) {
-        this.audio[key].then((rec) => rec?.stop?.()).catch(() => {})
-      }
+      changedState
     }
   },
 
@@ -78,7 +40,7 @@ export default {
     addFile(value) {
       const files = new Set(this.files)
       const items = Array.isArray(value) ? value : [value]
-      let valid = false
+      const assets = {}
 
       for (const item of items) {
         if (!item?.id) {
@@ -87,11 +49,11 @@ export default {
         }
 
         files.add(item.id)
-        this.assets[item.id] = item
-        valid = true
+        assets[item.id] = item
       }
 
-      if (valid) {
+      if (Object.keys(assets).length) {
+        this.$emit('add-assets', assets)
         this.$emit('update:files', [...files])
       }
     },
@@ -103,12 +65,6 @@ export default {
         this.lastError = has
         this.$emit('error', has)
       }
-    },
-
-    record(code) {
-      if (this.readonly) return this.messages.denied()
-
-      this.audio[code] = dictate(this.audio[code], (busy) => (this.dictating[code] = busy), (text) => this.update(code, text))
     },
 
     removeFile(id) {
@@ -127,16 +83,8 @@ export default {
       this.$emit('update:files', files)
     },
 
-    translateText(code, lang) {
-      this.translating[code] = true
-
-      this.translate([this.data[code]], lang)
-        .then((result) => {
-          this.update(code, result[0] || '')
-        })
-        .finally(() => {
-          this.translating[code] = false
-        })
+    label(field, code) {
+      return fieldLabel(this, field, code)
     },
 
     isDirty(code) {
@@ -187,28 +135,28 @@ export default {
       this.dirty.add(dirty)
       this.$emit('update:data', { ...this.data, [code]: value })
       this.$emit('change', value)
-    },
-
-    writeText(code) {
-      const context = aiContext(this.fields[code], code, this.data)
-
-      this.composing[code] = true
-
-      this.write(this.data[code] || 'Create a suitable text based on the context', context)
-        .then((result) => {
-          this.update(code, result)
-        })
-        .finally(() => {
-          this.composing[code] = false
-        })
     }
   },
 
   watch: {
     type: {
       immediate: true,
-      handler(val) {
-        this.errors = {}
+      handler() {
+        // changes of the fields of the previous type don't apply any more
+        this.resetDirty()
+
+        // fields kept for the new type don't report their state again, remounted ones do
+        const errors = {}
+        for (const code in this.fields || {}) {
+          if (code in this.errors) errors[code] = this.errors[code]
+        }
+        this.errors = errors
+
+        const has = hasTrue(errors)
+        if (has !== this.lastError) {
+          this.lastError = has
+          this.$emit('error', has)
+        }
       }
     }
   }
@@ -226,111 +174,31 @@ export default {
       ...changedState(changed, code)
     }"
   >
-    <div
-      v-if="field.type !== 'hidden' && !protectTypes.has(toName(field.type))"
-      class="label"
-    >
-      {{ $pgettext('fn', field.label || code).replace(/-|_/g, ' ') }}
-      <div
-        v-if="!readonly && (['markdown', 'plaintext', 'string', 'text'].includes(field.type) || isDirty(code))"
-        class="actions"
-      >
-        <template v-if="['markdown', 'plaintext', 'string', 'text'].includes(field.type)">
-          <span class="btn-translate">
-            <ActionMenu
-              v-if="user.can('text:translate')"
-              :title="$gettext('Translate')"
-              location="end center"
-            >
-              <template #activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  :title="$gettext('Translate')"
-                  :loading="translating[code]"
-                  :icon="mdiTranslate"
-                  variant="text"
-                />
-              </template>
-
-              <v-list-item v-for="lang in txlocales()" :key="lang.code">
-                <v-btn
-                  @click="translateText(code, lang.code)"
-                  :prepend-icon="mdiArrowRightThin"
-                  variant="text"
-                  >{{ lang.name }}</v-btn
-                >
-              </v-list-item>
-            </ActionMenu>
-          </span>
-          <v-btn
-            v-if="user.can('text:write')"
-            :title="$gettext('Generate text')"
-            :loading="composing[code]"
-            @click="writeText(code)"
-            :icon="mdiCreation"
-            class="btn-generate"
-            variant="text"
-          />
-          <v-btn
-            v-if="user.can('audio:transcribe')"
-            @click="record(code)"
-            :class="['btn-dictate', { dictating: audio[code] }]"
-            :icon="audio[code] ? mdiMicrophoneOutline : mdiMicrophone"
-            :title="$gettext('Dictate')"
-            :loading="dictating[code]"
-            variant="text"
-          />
-        </template>
-        <v-btn
-          v-if="isDirty(code)"
-          :title="$gettext('Revert')"
-          @click="resetField(code)"
-          :icon="mdiUndoVariant"
-          variant="text"
-        />
-      </div>
-    </div>
-    <div v-if="changed[code] && !changed[code]?.overwritten" class="merged-value">
-      {{ $gettext('Updated by other editor') }}
-    </div>
-    <div v-if="changed[code]?.overwritten" class="conflict-value">
-      {{ $gettext('Overwritten') }}: {{ typeof changed[code].overwritten === 'object' ? JSON.stringify(changed[code].overwritten) : changed[code].overwritten }}
-    </div>
-    <component
-      :is="toName(field.type)"
-      :key="field.type + '-' + code"
-      :aria-label="$pgettext('fn', field.label || code).replace(/-|_/g, ' ')"
+    <FieldRow
+      :field="field"
+      :code="code"
+      :label="label(field, code)"
+      :modelValue="data[code]"
+      :rel="data[code + '-rel']"
       :context="data"
       :assets="assets"
-      :config="field"
-      :label="protectTypes.has(toName(field.type)) ? $pgettext('fn', field.label || code).replace(/-|_/g, ' ') : null"
       :readonly="readonly"
-      :modelValue="data[code]"
-      v-bind="field.rel ? { rel: data[code + '-rel'] } : {}"
-      v-on="field.rel ? { 'update:rel': value => update(code + '-rel', value, code) } : {}"
+      :dirty="isDirty(code)"
+      prompt="Create a suitable text based on the context"
       @addFile="addFile($event)"
       @removeFile="removeFile($event)"
+      @revert="resetField(code)"
       @update:modelValue="update(code, $event)"
+      @update:rel="update(code + '-rel', $event, code)"
       @error="error(code, $event)"
     >
-      <template v-if="protectTypes.has(toName(field.type))" #label>
-        <v-btn
-          v-if="isDirty(code)"
-          :title="$gettext('Revert')"
-          @click="resetField(code)"
-          :icon="mdiUndoVariant"
-          variant="text"
-        />
-      </template>
-    </component>
-    <div
-      v-if="field.hint && field.type !== 'hidden' && !hintTypes.has(toName(field.type))"
-      class="v-input__details hint"
-    >
-      <div class="v-messages">
-        <div class="v-messages__message">{{ $pgettext('fh', field.hint) }}</div>
+      <div v-if="changed[code] && !changed[code]?.overwritten" class="merged-value">
+        {{ $gettext('Updated by other editor') }}
       </div>
-    </div>
+      <div v-if="changed[code]?.overwritten" class="conflict-value">
+        {{ $gettext('Overwritten') }}: {{ typeof changed[code].overwritten === 'object' ? JSON.stringify(changed[code].overwritten) : changed[code].overwritten }}
+      </div>
+    </FieldRow>
   </div>
 </template>
 
@@ -368,14 +236,5 @@ export default {
   font-size: 85%;
   padding: 2px 0 4px;
   word-break: break-word;
-}
-
-.label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-transform: capitalize;
-  font-weight: bold;
-  margin-bottom: 4px;
 }
 </style>

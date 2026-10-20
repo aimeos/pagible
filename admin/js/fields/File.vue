@@ -2,9 +2,9 @@
 
 <script>
 import { mdiFileOutline } from '@mdi/js'
-import { createFile, relocateFiles, revokeBlob } from '../files'
-import { invalidateList } from '../graphql'
-import { AUDIO_MIME_FILTER, IMAGE_MIME_FILTER, MEDIA_MIME_FILTER, VIDEO_MIME_FILTER, fileurl } from '../utils'
+import { AUDIO_MIME_FILTER, IMAGE_MIME_FILTER, MEDIA_MIME_FILTER, revokeBlob, VIDEO_MIME_FILTER } from '../files'
+import { fileurl } from '../urls'
+import { formatDate } from '../utils'
 import FileField, { components, useFileField } from '../filefield'
 
 const profiles = {
@@ -85,39 +85,39 @@ export default {
     add(file) {
       if (!this.user.can('file:add')) return this.messages.denied()
 
-      if (!file) {
+      // only one upload at a time, a second one would race the first
+      if (!file || this.file.uploading) {
         return
       }
 
-      const path = URL.createObjectURL(file)
-      const disk = this.protect ? 'private' : 'public'
-      this.file = { disk, path: path, uploading: true }
+      const { pending, promise } = this.upload(file)
+      this.file = pending
 
-      return createFile(this.$apollo, { disk, file })
-        .then((item) => {
-          invalidateList('files')
-          return this.select([item])
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext(`Error adding file %{path}`, { path: file.name }), error, file)
-        })
-        .finally(() => {
-          if (this.file.path === path) {
-            this.file = {}
-          }
-          URL.revokeObjectURL(path)
-          this.selected = null
-        })
+      return promise.then((item) => {
+        if (this.file.path === pending.path) {
+          this.file = {}
+        }
+        this.selected = null
+
+        // shows the previous file again if the upload failed
+        return item ? this.select([item]) : this.load()
+      })
     },
 
     formatDate(dateStr) {
-      return new Date(dateStr).toLocaleString()
+      return formatDate(dateStr, this.$vuetify.locale.current)
     },
 
+    // shows the file of the value if it was replaced from outside, e.g. by reverting or restoring a version,
+    // a pending upload has no ID yet and is kept until it's finished
     load() {
-      if (!this.file.path && this.modelValue && this.assets[this.modelValue.id]) {
-        this.file = this.assets[this.modelValue.id]
+      const id = this.modelValue?.id || null
+
+      if (!this.file.uploading && (this.file.id || null) !== id && (!id || this.assets[id])) {
+        revokeBlob(this.file)
+        this.file = id ? this.assets[id] : {}
         this.protect = this.file.disk === 'private'
+        this.protectSet = false
       }
 
       this.$emit('error', !this.rules.every((rule) => rule(this.file) === true))
@@ -158,7 +158,7 @@ export default {
       return item
     },
 
-    setProtect(value) {
+    async setProtect(value) {
       this.protect = Boolean(value)
 
       if (!this.file.id) {
@@ -172,21 +172,15 @@ export default {
         return
       }
 
-      this.protecting = true
+      const { items } = await this.relocate([this.file], this.protect)
 
-      return relocateFiles(this.$apollo, [this.file.id], this.protect ? 'private' : 'public')
-        .then((items) => {
-          this.file = { ...this.file, ...items[0] }
-          this.$emit('addFile', this.file)
-        })
-        .catch((error) => {
-          this.protect = previous
-          this.messages.error(this.$gettext(`Error saving file`), error, this.file)
-        })
-        .finally(() => {
-          this.protecting = false
-          this.protectSet = false
-        })
+      if (items[0]) {
+        this.file = { ...this.file, ...items[0] }
+        this.$emit('addFile', this.file)
+      }
+
+      this.protect = this.file.disk === 'private'
+      this.protectSet = false
     }
   },
 
@@ -215,10 +209,10 @@ export default {
     <slot name="label" />
   </FileProtect>
 
-  <v-row class="file-field" :class="{ 'field-columns': file.path }">
+  <v-row class="file-field" :class="{ 'field-columns': file.path && !file.uploading }">
     <v-col cols="12" md="6">
       <div class="files" :class="{ readonly: readonly }">
-        <div v-if="file.id" class="file">
+        <div v-if="file.id || file.uploading" class="file">
           <v-progress-linear
             v-if="file.uploading"
             color="primary"
@@ -332,7 +326,7 @@ export default {
         </div>
       </div>
     </v-col>
-    <v-col cols="12" md="6" v-if="file.path" class="meta">
+    <v-col cols="12" md="6" v-if="file.path && !file.uploading" class="meta">
       <v-row
         v-for="row in [
           [$gettext('name'), file.name],

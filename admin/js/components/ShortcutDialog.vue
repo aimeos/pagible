@@ -2,7 +2,8 @@
 
 <script>
 import CmsDialog from './Dialog.vue'
-import { allowed, commands, routes, shortcuts } from '../shortcuts'
+import { commands, routes } from '../commands'
+import { allowed, shortcuts } from '../shortcuts'
 import { useUserStore } from '../stores'
 
 export default {

@@ -1,8 +1,9 @@
 import { createPinia, setActivePinia } from 'pinia'
 import router from '../../../js/routes'
-import { useUserStore } from '../../../js/stores'
+import { useSessionStore, useUserStore } from '../../../js/stores'
 import { Observable } from '@apollo/client/core'
-import { apolloClient, graphqlFetch, handleError, invalidateList, listFetchPolicy, retry } from '../../../js/graphql'
+import { AUTH_STATUS, apolloClient, graphqlFetch, handleError, invalidateList, listFetchPolicy, retry } from '../../../js/graphql'
+import '../../../js/session'
 
 describe('handleError()', () => {
   beforeEach(() => {
@@ -31,7 +32,7 @@ describe('handleError()', () => {
     const forward = cy.stub().returns(Observable.of({ data: { ok: true } }))
     const push = cy.stub(router, 'push').resolves()
     let resolve = null
-    cy.stub(user, 'reauth').returns(new Promise((res) => { resolve = res }))
+    cy.stub(useSessionStore(), 'reauth').returns(new Promise((res) => { resolve = res }))
 
     const observable = handleError({ graphQLErrors: [{ message: 'Unauthenticated.' }], operation, forward })
 
@@ -55,7 +56,7 @@ describe('handleError()', () => {
     user.me = { email: 'editor@example.com' }
 
     const forward = cy.stub()
-    cy.stub(user, 'reauth').rejects(new Error('Unauthenticated'))
+    cy.stub(useSessionStore(), 'reauth').rejects(new Error('Unauthenticated'))
 
     const observable = handleError({
       networkError: { statusCode: 419 },
@@ -77,7 +78,7 @@ describe('handleError()', () => {
   it('ignores errors of the re-login requests', () => {
     const user = useUserStore()
     user.me = { email: 'editor@example.com' }
-    const reauth = cy.stub(user, 'reauth')
+    const reauth = cy.stub(useSessionStore(), 'reauth')
 
     const result = handleError({
       graphQLErrors: [{ message: 'Unauthenticated.' }],
@@ -90,13 +91,43 @@ describe('handleError()', () => {
   })
 })
 
-describe('retry()', () => {
-  it('does not retry HTTP 419 errors', () => {
-    expect(retry({ statusCode: 419 })).to.equal(false)
+describe('AUTH_STATUS', () => {
+  it('contains the status codes of expired sessions', () => {
+    expect(AUTH_STATUS).to.deep.equal([401, 419])
+    expect(Object.isFrozen(AUTH_STATUS)).to.be.true
   })
 
-  it('retries other transport errors', () => {
-    expect(retry(new Error('Network failure'))).to.equal(true)
+  it('treats HTTP 401 errors as expired sessions', () => {
+    setActivePinia(createPinia())
+    const user = useUserStore()
+    user.me = { id: 'user-1' }
+
+    cy.stub(apolloClient, 'clearStore').resolves()
+    cy.stub(router, 'push').resolves()
+
+    handleError({ networkError: { statusCode: 401 } })
+
+    expect(user.me).to.equal(false)
+  })
+})
+
+describe('retry()', () => {
+  const query = { query: { definitions: [{ kind: 'OperationDefinition', operation: 'query' }] } }
+  const mutation = { query: { definitions: [{ kind: 'OperationDefinition', operation: 'mutation' }] } }
+
+  it('does not retry authentication errors', () => {
+    expect(retry({ statusCode: 419 }, query)).to.equal(false)
+    expect(retry({ statusCode: 401 }, query)).to.equal(false)
+  })
+
+  it('retries other transport errors of queries', () => {
+    expect(retry(new Error('Network failure'), query)).to.equal(true)
+    expect(retry({ statusCode: 502 }, query)).to.equal(true)
+  })
+
+  it('does not retry mutations', () => {
+    expect(retry(new Error('Network failure'), mutation)).to.equal(false)
+    expect(retry({ statusCode: 502 }, mutation)).to.equal(false)
   })
 })
 

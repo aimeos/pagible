@@ -34,6 +34,9 @@ import DOMPurify from 'dompurify'
 
 import 'vuetify/styles'
 
+// shared layout variable from js/assets/base.css, the whole stylesheet would change the component layouts
+document.documentElement.style.setProperty('--cms-detail-height', 'calc(100vh - 96px)')
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

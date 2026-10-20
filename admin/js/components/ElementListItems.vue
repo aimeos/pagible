@@ -3,15 +3,19 @@
 <script>
 import { markRaw } from 'vue'
 import gql from 'graphql-tag'
-import ActionItem from './ActionItem.vue'
-import ActionMenu from './ActionMenu.vue'
+import ListBulkMenu from './ListBulkMenu.vue'
+import ListItemMenu from './ListItemMenu.vue'
+import ListReload from './ListReload.vue'
+import ListSearch from './ListSearch.vue'
 import ListStatus from './ListStatus.vue'
 import SchemaDialog from './SchemaDialog.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
 import ListSort from './ListSort.vue'
 import { FILE_FIELDS, normalizeFile } from '../files'
 import { listBase, useList } from '../lists'
-import { frozenParse, safeParse } from '../utils'
+import { frozenParse, safeParse } from '../json'
+import { formatDate } from '../utils'
+import { versionMeta } from '../pages'
 
 const ADD_ELEMENT = gql`
   mutation ($input: ElementInput!) {
@@ -93,8 +97,10 @@ export default {
   extends: listBase,
 
   components: {
-    ActionItem,
-    ActionMenu,
+    ListBulkMenu,
+    ListItemMenu,
+    ListReload,
+    ListSearch,
     ListStatus,
     SchemaDialog,
     EditBulkDialog,
@@ -110,6 +116,7 @@ export default {
   setup() {
     return {
       ...useList('element', FETCH_ELEMENTS, (vm) => (vm.vschemas = true)),
+      formatDate,
       sortOptions: SORT_OPTIONS
     }
   },
@@ -143,7 +150,7 @@ export default {
           return data
         })
         .catch((error) => {
-          this.$log(`ElementListItems::add(): Error adding shared element`, error)
+          this.messages.error(this.$gettext('Error adding shared element'), error, item)
         })
     },
 
@@ -175,11 +182,7 @@ export default {
         id: entry.id,
         deleted_at: entry.deleted_at,
         created_at: entry.created_at,
-        updated_at: entry.latest?.created_at || entry.updated_at,
-        editor: entry.latest?.editor || entry.editor,
-        published: entry.latest?.published ?? true,
-        publish_at: entry.latest?.publish_at || null,
-        latest_id: entry.latest?.id || null,
+        ...versionMeta(entry),
         files: Object.freeze((latest?.files || entry.files || []).map(normalizeFile))
       })
     }
@@ -191,48 +194,26 @@ export default {
   <div class="header">
     <div class="bulk">
       <v-checkbox-btn
-        :model-value="checked.size > 0"
+        :model-value="allChecked"
+        :indeterminate="isChecked && !allChecked"
         @click.stop="toggle()"
         :aria-label="$gettext('Toggle selection')"
       />
 
-      <span class="btn-actions">
-        <ActionMenu>
-          <template #activator="{ props, label }">
-            <v-btn
-              v-bind="props"
-              :disabled="!isChecked || embed || !user.can('element:add')"
-              :title="label"
-              :icon="mdiDotsVertical"
-              variant="text"
-            />
-          </template>
-          <ActionItem
-            v-show="counts.draft && user.can('element:publish')"
-            :prepend-icon="mdiPublish"
-            @click="publish()"
-            >{{ $gettext('Publish') }} ({{ counts.draft }})</ActionItem
-          >
-          <ActionItem v-show="isChecked && user.can('element:save')" :prepend-icon="mdiPencil" @click="edit()">
-            {{ $gettext('Edit properties') }} ({{ counts.all }})
-          </ActionItem>
-          <ActionItem v-show="counts.live && user.can('element:drop')" :prepend-icon="mdiDelete" @click="drop()">
-            {{ $gettext('Delete') }} ({{ counts.live }})
-          </ActionItem>
-          <ActionItem
-            v-show="counts.trashed && user.can('element:keep')"
-            :prepend-icon="mdiDeleteRestore"
-            @click="keep()"
-            >{{ $gettext('Restore') }} ({{ counts.trashed }})</ActionItem
-          >
-          <ActionItem v-show="isChecked && user.can('element:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
-            {{ $gettext('Purge') }} ({{ counts.all }})
-          </ActionItem>
-        </ActionMenu>
-      </span>
+      <ListBulkMenu
+        type="element"
+        :counts="counts"
+        :selected="isChecked"
+        :disabled="!isChecked || embed"
+        @publish="publish()"
+        @edit="edit()"
+        @drop="drop()"
+        @keep="keep()"
+        @purge="purge()"
+      />
 
       <v-btn
-        v-if="!this.embed && this.user.can('element:add')"
+        v-if="!embed && user.can('element:add')"
         @click="vschemas = true"
         :title="$gettext('Add element')"
         :disabled="loading"
@@ -243,40 +224,10 @@ export default {
       />
     </div>
 
-    <div class="search">
-      <v-text-field
-        ref="search"
-        v-model="term"
-        :prepend-inner-icon="mdiMagnify"
-        variant="underlined"
-        :label="$gettext('Search for')"
-        hide-details
-        clearable
-      ></v-text-field>
-    </div>
+    <ListSearch ref="search" v-model="term" />
 
     <div class="layout">
-      <v-btn
-        v-if="outdated"
-        @click="reload()"
-        :prepend-icon="mdiRefresh"
-        :title="$gettext('Updated by another user')"
-        color="warning"
-        variant="tonal"
-        size="small"
-        rounded="lg"
-        class="btn-outdated"
-        >{{ $gettext('Refresh') }}</v-btn
-      >
-
-      <v-btn
-        @click="reload()"
-        :loading="loading"
-        :title="$gettext('Reload elements')"
-        :icon="mdiRefresh"
-        class="btn-reload"
-        variant="text"
-      />
+      <ListReload :loading="loading" :outdated="outdated" :title="$gettext('Reload elements')" @reload="reload()" />
 
       <ListSort v-model="sort" :options="sortOptions" />
     </div>
@@ -288,53 +239,21 @@ export default {
         <v-checkbox-btn
           :model-value="checked.has(item.id)"
           @update:model-value="toggleCheck(item)"
+          :aria-label="$gettext('Toggle selection')"
           :class="{ draft: !item.published }"
           class="item-check"
         />
 
         <span class="btn-actions">
-          <ActionMenu>
-            <template #activator="{ props, label }">
-              <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
-            </template>
-            <ActionItem
-              v-show="!item.deleted_at && !item.published && this.user.can('element:publish')"
-              :prepend-icon="mdiPublish"
-              @click="publish(item)"
-              >{{ $gettext('Publish') }}</ActionItem
-            >
-
-            <v-divider
-              v-if="
-                !item.deleted_at &&
-                !item.published &&
-                user.can('element:publish') &&
-                user.can('element:save')
-              "
-            ></v-divider>
-
-            <ActionItem v-if="user.can('element:save')" :prepend-icon="mdiPencil" @click="edit(item)">
-              {{ $gettext('Edit properties') }}
-            </ActionItem>
-
-            <v-divider v-if="user.can('element:save')"></v-divider>
-
-            <ActionItem
-              v-if="!item.deleted_at && this.user.can('element:drop')"
-              :prepend-icon="mdiDelete"
-              @click="drop(item)"
-              >{{ $gettext('Delete') }}</ActionItem
-            >
-            <ActionItem
-              v-if="item.deleted_at && this.user.can('element:keep')"
-              :prepend-icon="mdiDeleteRestore"
-              @click="keep(item)"
-              >{{ $gettext('Restore') }}</ActionItem
-            >
-            <ActionItem v-if="this.user.can('element:purge')" :prepend-icon="mdiDeleteForever" @click="purge(item)">
-              {{ $gettext('Purge') }}
-            </ActionItem>
-          </ActionMenu>
+          <ListItemMenu
+            type="element"
+            :item="item"
+            @publish="publish(item)"
+            @edit="edit(item)"
+            @drop="drop(item)"
+            @keep="keep(item)"
+            @purge="purge(item)"
+          />
         </span>
       </div>
 
@@ -357,7 +276,7 @@ export default {
         <div class="item-aux">
           <div class="item-editor">{{ item.editor }}</div>
           <div class="item-modified item-subtitle">
-            {{ new Date(item.updated_at).toLocaleString() }}
+            {{ formatDate(item.updated_at, $vuetify.locale.current) }}
           </div>
         </div>
       </a>
@@ -374,7 +293,7 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <div v-if="!this.embed && this.user.can('element:add')" class="btn-group">
+  <div v-if="!embed && user.can('element:add')" class="btn-group">
     <v-btn
       @click="vschemas = true"
       :title="$gettext('Add element')"

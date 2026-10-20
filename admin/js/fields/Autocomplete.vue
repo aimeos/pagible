@@ -4,7 +4,8 @@
 import gql from 'graphql-tag'
 import { VAutocomplete } from 'vuetify/components/VAutocomplete'
 import { maxEntries, required } from '../rules'
-import { debounce, safeParse } from '../utils'
+import { safeParse } from '../json'
+import { debounce, REQUEST_DELAY } from '../utils'
 import { fieldBase } from '../field'
 
 /**
@@ -28,19 +29,26 @@ export default {
   extends: fieldBase,
 
   props: {
-    modelValue: { type: [Object, String, Number, Boolean, null] }
+    modelValue: { type: [Array, Object, String, Number, Boolean, null], default: undefined }
   },
 
   data() {
     return {
-      list: this.config.options || [],
-      loading: false
+      list: this.options(),
+      loading: false,
+      // number of the latest request, older responses are ignored
+      seq: 0
     }
   },
 
   created() {
-    this.graphql = debounce(this.graphql, 500)
-    this.rest = debounce(this.rest, 500)
+    this.debouncedGraphql = debounce(this.graphql, REQUEST_DELAY)
+    this.debouncedRest = debounce(this.rest, REQUEST_DELAY)
+  },
+
+  beforeUnmount() {
+    this.debouncedGraphql.cancel()
+    this.debouncedRest.cancel()
   },
 
   computed: {
@@ -76,12 +84,17 @@ export default {
       // so it stays a single value token and cannot alter the trusted query structure.
       const query = this.config.query.replace(/_term_/g, value ? JSON.stringify(value) : '""')
 
+      const seq = ++this.seq
+
       this.loading = true
-      this.$apollo
-        .query({
-          query: gql(query)
-        })
+      // invalid configured queries must be handled like failed requests
+      Promise.resolve()
+        .then(() => this.$apollo.query({ query: gql(query) }))
         .then((result) => {
+          if (seq !== this.seq) {
+            return
+          }
+
           // parse the latest data if available
           const list = this.toList(result.data).map((item) => {
             if (typeof item !== 'object' || item === null) {
@@ -92,10 +105,14 @@ export default {
           })
 
           this.list = this.items(list)
-          this.loading = false
         })
         .catch((error) => {
           this.$log('Autocomplete::graphql(): Error fetching data', value, error)
+        })
+        .finally(() => {
+          if (seq === this.seq) {
+            this.loading = false
+          }
         })
     },
 
@@ -124,6 +141,8 @@ export default {
         return
       }
 
+      const seq = ++this.seq
+
       this.loading = true
       fetch(this.config.url.replace(/_term_/g, encodeURIComponent(value || '')), {
         mode: 'cors'
@@ -135,21 +154,34 @@ export default {
           return response.json()
         })
         .then((result) => {
-          this.list = this.items(this.toList(result))
-          this.loading = false
+          if (seq === this.seq) {
+            this.list = this.items(this.toList(result))
+          }
         })
         .catch((error) => {
           this.$log('Autocomplete::rest(): Error fetching data', value, error)
         })
+        .finally(() => {
+          if (seq === this.seq) {
+            this.loading = false
+          }
+        })
+    },
+
+    // fixed entries from the schema with translated labels, search results are shown as returned
+    options() {
+      return (this.config.options || []).map((item) =>
+        typeof item === 'object' && item !== null && item.label ? { ...item, label: this.$pgettext('op', item.label) } : item
+      )
     },
 
     search(value) {
       switch (this.config?.['api-type']) {
         case 'GQL':
-          this.graphql(value)
+          this.debouncedGraphql(value)
           break
         case 'REST':
-          this.rest(value)
+          this.debouncedRest(value)
           break
       }
     },
@@ -162,6 +194,7 @@ export default {
 </script>
 
 <template>
+  <!-- the default only applies to new values, a cleared selection stays empty -->
   <component
     :is="tag"
     :hint="config.hint && $pgettext('fh', config.hint)"
@@ -180,10 +213,10 @@ export default {
     :return-object="returnObject"
     :multiple="config.multiple"
     :chips="config.multiple"
-    :modelValue="modelValue ?? config.default ?? null"
+    :modelValue="modelValue === undefined ? config.default ?? null : modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
     @update:search="search($event)"
-    @update:menu="search('')"
+    @update:menu="$event && search('')"
     density="comfortable"
     hide-details="auto"
     variant="outlined"

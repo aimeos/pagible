@@ -107,4 +107,92 @@ describe('Autocomplete', () => {
     cy.mount(Autocomplete, { props: { config: { options: staticOptions }, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
   })
+
+  it('resets loading after a failed request', () => {
+    cy.mount(Autocomplete, {
+      props: { config: { 'api-type': 'GQL', query: 'query{access}' } },
+      global: { mocks: { $apollo: { query: () => Promise.reject(new Error('failed')) } } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Autocomplete).vm
+      vm.graphql('a')
+      expect(vm.loading).to.equal(true)
+      cy.wrap(vm).its('loading').should('equal', false)
+    })
+  })
+
+  it('resets loading for an invalid configured query', () => {
+    const query = cy.stub()
+
+    cy.mount(Autocomplete, {
+      props: { config: { 'api-type': 'GQL', query: 'query{' } },
+      global: { mocks: { $apollo: { query }, $log: cy.stub().as('log') } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Autocomplete).vm
+
+      expect(() => vm.graphql('a')).not.to.throw()
+      cy.wrap(vm).its('loading').should('equal', false)
+      cy.get('@log').should('have.been.called').then(() => {
+        expect(query).not.to.have.been.called
+      })
+    })
+  })
+
+  it('ignores stale responses of older requests', () => {
+    const resolvers = []
+    cy.mount(Autocomplete, {
+      props: { config: { 'api-type': 'GQL', query: 'query{access}', 'list-key': 'access' } },
+      global: {
+        mocks: { $apollo: { query: () => new Promise((resolve) => resolvers.push(resolve)) } }
+      }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Autocomplete).vm
+      vm.graphql('a')
+      vm.graphql('ab')
+
+      cy.wrap(resolvers).should('have.length', 2).then(() => resolvers[1]({ data: { access: ['new'] } }))
+      cy.wrap(vm).its('list').should('deep.equal', ['new']).then(() => {
+        resolvers[0]({ data: { access: ['old'] } })
+      })
+      cy.wrap(vm).its('loading').should('equal', false)
+      cy.wrap(vm).its('list').should('deep.equal', ['new'])
+    })
+  })
+
+  it('accepts an array as modelValue without prop warnings', () => {
+    cy.window().then((win) => cy.spy(win.console, 'warn').as('warn'))
+    cy.mount(Autocomplete, {
+      props: { modelValue: [staticOptions[0]], config: { options: staticOptions, multiple: true } }
+    })
+    cy.get('@warn').should((spy) => {
+      expect(spy.getCalls().some((call) => String(call.args[0]).includes('Invalid prop'))).to.equal(false)
+    })
+  })
+
+  it('searches only when the menu opens', () => {
+    cy.mount(Autocomplete, {
+      props: { config: { 'api-type': 'GQL', query: 'query{access}' } },
+      global: { mocks: { $apollo: { query: () => Promise.resolve({ data: {} }) } } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Autocomplete).vm
+      const spy = cy.spy().as('search')
+      spy.cancel = () => {}
+      vm.debouncedGraphql = spy
+
+      const field = wrapper.findComponent({ name: 'VAutocomplete' })
+      field.vm.$emit('update:menu', false)
+      expect(spy).not.to.have.been.called
+      field.vm.$emit('update:menu', true)
+      expect(spy).to.have.been.calledOnceWith('')
+    })
+  })
+
+  it('uses config.default only when no value is set', () => {
+    cy.mount(Autocomplete, { props: { config: { options: staticOptions, default: 'paris' } } })
+    cy.get('.v-autocomplete').should('contain', 'Paris')
+  })
+
+  it('keeps a cleared selection empty instead of showing the default', () => {
+    cy.mount(Autocomplete, { props: { modelValue: null, config: { options: staticOptions, default: 'paris' } } })
+    cy.get('.v-autocomplete').should('not.contain', 'Paris')
+  })
 })

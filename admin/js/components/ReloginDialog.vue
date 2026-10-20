@@ -1,29 +1,32 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiAlertOctagon, mdiEye, mdiEyeOff, mdiOpenInNew } from '@mdi/js'
+import { mdiAlertOctagon, mdiOpenInNew } from '@mdi/js'
 import { urllogin } from '../config'
+import { loginError } from '../graphql'
 import router from '../routes'
-import { useUserStore } from '../stores'
-import { loginUrl } from '../utils'
+import { useSessionStore, useUserStore } from '../stores'
+import { loginUrl } from '../urls'
 import CmsDialog from './Dialog.vue'
+import PasswordField from './PasswordField.vue'
 
 export default {
   components: {
-    CmsDialog
+    CmsDialog,
+    PasswordField
   },
 
   data: () => ({
     error: null,
     loading: false,
     password: '',
-    show: false,
     urllogin: urllogin
   }),
 
   setup() {
+    const session = useSessionStore()
     const user = useUserStore()
-    return { user, mdiAlertOctagon, mdiEye, mdiEyeOff, mdiOpenInNew }
+    return { session, user, mdiAlertOctagon, mdiOpenInNew }
   },
 
   mounted() {
@@ -35,11 +38,11 @@ export default {
   },
 
   watch: {
-    'user.expired'(expired) {
+    'session.expired'(expired) {
       if (!expired) {
         this.error = null
         this.password = ''
-        this.show = false
+        this.$refs.password?.hide()
       }
     }
   },
@@ -56,7 +59,7 @@ export default {
       const content = this.$refs.form?.closest('.v-overlay__content')
 
       if (
-        !this.user.expired ||
+        !this.session.expired ||
         !content?.contains(event.target) ||
         content.contains(event.relatedTarget)
       ) {
@@ -71,7 +74,7 @@ export default {
     },
 
     async logout() {
-      await this.user.expire()
+      await this.session.expire()
       router.push({ name: 'login' })
     },
 
@@ -88,15 +91,15 @@ export default {
       this.error = null
       this.loading = true
 
-      this.user
+      this.session
         .resume()
         .then((resumed) => {
-          if (!resumed && this.user.expired) {
+          if (!resumed && this.session.expired) {
             this.error = this.$gettext('You are not signed in yet')
           }
         })
         .catch((error) => {
-          this.error = error?.message || this.$gettext('Login failed')
+          this.error = loginError(error)
         })
         .finally(() => {
           this.loading = false
@@ -115,10 +118,10 @@ export default {
       this.error = null
       this.loading = true
 
-      this.user
+      this.session
         .relogin(this.password)
         .catch((error) => {
-          this.error = error?.message || this.$gettext('Login failed')
+          this.error = loginError(error)
         })
         .finally(() => {
           this.loading = false
@@ -130,7 +133,7 @@ export default {
 
 <template>
   <CmsDialog
-    :model-value="user.expired"
+    :model-value="session.expired"
     :title="$gettext('Session expired')"
     :close-label="$gettext('Logout')"
     :card-loading="loading"
@@ -176,25 +179,7 @@ export default {
           variant="underlined"
           readonly
         />
-        <v-text-field
-          ref="password"
-          v-model="password"
-          :type="show ? 'text' : 'password'"
-          :label="$gettext('Password')"
-          autocomplete="current-password"
-          variant="underlined"
-          autofocus
-        >
-          <template #append-inner>
-            <v-btn
-              @click="show = !show"
-              :aria-label="show ? $gettext('Hide password') : $gettext('Show password')"
-              :icon="show ? mdiEyeOff : mdiEye"
-              density="compact"
-              variant="text"
-            />
-          </template>
-        </v-text-field>
+        <PasswordField ref="password" v-model="password" autofocus />
       </template>
 
       <v-alert v-if="error" color="error" :icon="mdiAlertOctagon" class="relogin-error">

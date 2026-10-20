@@ -3,11 +3,20 @@
 <script>
 import { defineAsyncComponent } from 'vue'
 import LoadingSpinner from './LoadingSpinner.vue'
-import { useAppStore, useUserStore, useMessageStore } from '../stores'
+import { useUserStore, useMessageStore } from '../stores'
+import { pageUrl } from '../urls'
 import { trigger } from '../shortcuts'
 import { uid } from '../utils'
 
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
+const HINT_DURATION = 3000 // ms the preview hints are shown
+
+// status codes sent by the preview page
+const PREVIEW = Object.freeze({
+  UNSELECT: 0, // element unselected
+  DENIED: -1, // editing not allowed
+  FOREIGN: -2 // no CMS content
+})
 
 export default {
   components: {
@@ -27,7 +36,7 @@ export default {
     }
   },
 
-  emits: ['change', 'edit'],
+  emits: ['change', 'edit', 'add-elements', 'update:content'],
 
   provide() {
     return {
@@ -39,10 +48,7 @@ export default {
   setup() {
     const messages = useMessageStore()
     const user = useUserStore()
-    const app = useAppStore()
-
     return {
-      app,
       user,
       messages
     }
@@ -61,19 +67,12 @@ export default {
       vschemas: false,
       vpreview: false,
       visible: false,
-      timers: []
+      timers: {}
     }
   },
 
   mounted() {
     window.addEventListener('message', this.message)
-
-    this.iframeLoad = () => {
-      if (this.origin) {
-        this.$refs.iframe?.contentWindow?.postMessage('init', this.origin)
-      }
-    }
-    this.$refs.iframe?.addEventListener('load', this.iframeLoad)
 
     if (this.user.can('page:save')) {
       this.messages.add(this.$gettext('Double-click to edit'), 'info')
@@ -82,13 +81,12 @@ export default {
 
   beforeUnmount() {
     window.removeEventListener('message', this.message)
-    this.$refs.iframe?.removeEventListener('load', this.iframeLoad)
 
     if (this.$refs.iframe) {
       this.$refs.iframe.src = 'about:blank'
     }
 
-    this.timers.forEach((id) => clearTimeout(id))
+    Object.values(this.timers).forEach((id) => clearTimeout(id))
   },
 
   computed: {
@@ -97,19 +95,7 @@ export default {
         return null
       }
 
-      const domain = this.saved.domain || ''
-      let url = this.app.urlpage
-
-      if (!domain) {
-        url = url
-          .replace(/^[a-z][a-z\d+.-]*:\/\/_domain_/i, '')
-          .replace(/\/_domain_(?=\/|$)/, '')
-      }
-
-      return url
-        .replace(/_domain_/, domain)
-        .replace(/_path_/, this.saved.path || '')
-        .replace(/([^:/])\/+$/, '$1')
+      return pageUrl(this.saved)
     },
 
     origin() {
@@ -131,7 +117,7 @@ export default {
       this.vschemas = false
 
       if (item.id) {
-        this.elements[item.id] = item
+        this.$emit('add-elements', { [item.id]: item })
         this.element = { id: uid(), group: group, type: 'reference', refid: item.id }
       } else {
         this.element = { id: uid(), group: group, type: item.type, data: {} }
@@ -151,15 +137,32 @@ export default {
     },
 
     edit() {
-      this.element = this.item.content[this.index] || null
+      this.element = (this.item.content || [])[this.index] || null
       this.$emit('edit', this.element, !!this.element)
+    },
+
+    // shows the preview hint of the given data key for a few seconds
+    hint(key) {
+      clearTimeout(this.timers[key])
+
+      this[key] = true
+      this.timers[key] = setTimeout(() => (this[key] = false), HINT_DURATION)
     },
 
     insert() {
       if (!this.element || this.pos === null) return
 
-      const index = Math.max(0, (this.index ?? -1) + this.pos)
-      this.item.content.splice(index, 0, this.element)
+      const content = [...(this.item.content || [])]
+      let index = Math.max(0, (this.index ?? -1) + this.pos)
+
+      // elements unknown to the page (e.g. of empty or inherited sections) are added at the end of the section
+      if (this.index === -1) {
+        const last = content.findLastIndex((entry) => (entry.group || 'main') === this.element.group)
+        index = last === -1 ? content.length : last + 1
+      }
+
+      content.splice(index, 0, this.element)
+      this.$emit('update:content', content)
       this.index = index
       this.pos = null
 
@@ -191,32 +194,22 @@ export default {
         case 'publish':
           trigger(msg.data)
           break
-        // unselect element
-        case 0:
+        case PREVIEW.UNSELECT:
           this.index = null
           this.element = null
           this.$emit('edit', null)
           break
-        // not allowed
-        case -1:
-          this.vpreview = true
-          this.timers.push(setTimeout(() => {
-            this.vpreview = false
-          }, 3000))
+        case PREVIEW.DENIED:
+          this.hint('vpreview')
           break
-        // not cms content
-        case -2:
-          this.vcontent = true
-          this.timers.push(setTimeout(() => {
-            this.vcontent = false
-          }, 3000))
+        case PREVIEW.FOREIGN:
+          this.hint('vcontent')
           break
-        default:
-          this.index =
-            typeof msg.data === 'object' && msg.data.id
-              ? this.item.content.findIndex((c) => c.id === msg.data.id)
-              : null
-          this.section = msg.data.section || 'main'
+        default: {
+          const data = msg.data && typeof msg.data === 'object' ? msg.data : {}
+
+          this.index = data.id ? (this.item.content || []).findIndex((c) => c.id === data.id) : null
+          this.section = data.section || 'main'
 
           if (this.index === -1) {
             this.$emit('edit', null)
@@ -224,6 +217,15 @@ export default {
           } else if (this.index !== null) {
             this.edit()
           }
+        }
+      }
+    },
+
+    loaded() {
+      this.loading = false
+
+      if (this.origin) {
+        this.$refs.iframe?.contentWindow?.postMessage('init', this.origin)
       }
     },
 
@@ -236,17 +238,24 @@ export default {
     remove() {
       if (this.index === null || this.index < 0) return
 
-      this.item.content.splice(this.index, 1)
+      this.$emit('update:content', (this.item.content || []).filter((entry, idx) => idx !== this.index))
       this.element = null
       this.index = null
 
       this.$emit('edit', null)
       this.$emit('change', 'content')
-      this.save.fcn(true).then(() => this.reload())
+      // saving increments save.count which reloads the preview
+      this.save.fcn(true)
     }
   },
 
   watch: {
+    url(url) {
+      if (url) {
+        this.loading = true
+      }
+    },
+
     'save.count': function () {
       if (this.save.count > 0) {
         this.saved = { domain: this.item.domain, path: this.item.path }
@@ -278,7 +287,7 @@ export default {
         is escapable and gives no real isolation, so it would only add a misleading
         warning. The actual trust boundary is the strict source/origin check in message().
       -->
-      <iframe ref="iframe" :src="url" @load="loading = false"></iframe>
+      <iframe ref="iframe" :src="url" @load="loaded()"></iframe>
 
       <SchemaDialog v-model="vschemas" :attach="$refs.preview" :lang="item.lang" @add="add($event)" />
     </div>
@@ -288,7 +297,7 @@ export default {
 <style>
 .page-preview-stage {
   box-sizing: border-box;
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
   width: 100%;
 }
 

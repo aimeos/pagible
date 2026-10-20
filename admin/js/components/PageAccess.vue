@@ -4,7 +4,8 @@
 import gql from 'graphql-tag'
 import { invalidateList } from '../graphql'
 import { useMessageStore } from '../stores'
-import { debounce, PAGE_BULK_LIMIT } from '../utils'
+import { PAGE_BULK_LIMIT } from '../pages'
+import { debounce, REQUEST_DELAY } from '../utils'
 
 const FETCH_ACCESS = gql`
   query PageAccessValues($term: String, $first: Int!) {
@@ -18,6 +19,8 @@ const SET_PAGE_ACCESS = gql`
   }
 `
 
+const ACCESS_LIMIT = 50 // maximum number of access roles suggested while searching
+
 export default {
   props: {
     ids: { type: Array, required: true },
@@ -30,7 +33,7 @@ export default {
   setup() {
     const messages = useMessageStore()
 
-    return { messages }
+    return { messages, bulkLimit: PAGE_BULK_LIMIT }
   },
 
   data() {
@@ -39,6 +42,7 @@ export default {
       mode: null,
       values: [],
       loading: false,
+      loadSeq: 0,
       saving: false
     }
   },
@@ -68,10 +72,8 @@ export default {
   },
 
   created() {
-    this.search = debounce(this.load, 500)
+    this.search = debounce(this.load, REQUEST_DELAY)
     this.reset()
-
-    if (this.mode === 'restricted') this.load()
   },
 
   beforeUnmount() {
@@ -87,7 +89,7 @@ export default {
       this.saving = true
 
       try {
-        const response = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: SET_PAGE_ACCESS,
           variables: {
             id: this.ids,
@@ -109,20 +111,28 @@ export default {
      * Loads matching catalog values while preserving currently selected roles.
      */
     async load(term = '') {
+      // responses of older searches are ignored
+      const seq = ++this.loadSeq
       this.loading = true
 
       try {
         const response = await this.$apollo.query({
           query: FETCH_ACCESS,
-          variables: { term: term || '', first: 50 },
+          variables: { term: term || '', first: ACCESS_LIMIT },
           fetchPolicy: 'network-only'
         })
 
-        this.items = [...new Set([...this.values, ...(response.data.access || [])])].sort()
+        if (seq === this.loadSeq) {
+          this.items = [...new Set([...this.values, ...(response.data.access || [])])].sort()
+        }
       } catch (error) {
-        this.messages.error(this.$gettext('Error fetching access roles'), error)
+        if (seq === this.loadSeq) {
+          this.messages.error(this.$gettext('Error fetching access roles'), error)
+        }
       } finally {
-        this.loading = false
+        if (seq === this.loadSeq) {
+          this.loading = false
+        }
       }
     },
 
@@ -139,6 +149,7 @@ export default {
       } else {
         this.mode = 'restricted'
         this.values = [...this.access]
+        this.select(this.mode)
       }
     },
 
@@ -189,8 +200,8 @@ export default {
       @update:search="search"
     />
 
-    <p v-if="limited || recurseLimited" class="hint">
-      {{ $gettext('Page bulk changes are limited to 1,000 pages') }}
+    <p v-if="limited || (hasDescendants && recurseLimited)" class="hint">
+      {{ $gettext('Page bulk changes are limited to %{count} pages', { count: bulkLimit.toLocaleString($vuetify.locale.current) }) }}
     </p>
 
     <div class="actions">

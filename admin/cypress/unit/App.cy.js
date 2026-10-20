@@ -1,7 +1,10 @@
 import App from '../../js/App.vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { isReactive } from 'vue'
-import { slugify, toBlob, debounce, locales, txlocales, url } from '../../js/utils'
+import { localeItems, txLocaleItems } from '../../js/options'
+import { url } from '../../js/urls'
+import { toBlob } from '../../js/files'
+import { slugify, debounce } from '../../js/utils'
 import { write, translate, transcribe } from '../../js/ai'
 import { useAppStore, useUserStore, useMessageStore, useLanguageStore, useViewStack } from '../../js/stores'
 
@@ -13,6 +16,22 @@ describe('App', () => {
       },
     })
     cy.get('.v-application').should('exist')
+  })
+
+  it('restores the stored theme when the user is loaded', () => {
+    cy.mount(App, {
+      global: {
+        mocks: { $route: { path: '/' } },
+      },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(App).vm
+
+      useUserStore().me = { permission: {}, settings: { app: { theme: 'dark' } } }
+
+      return vm.$nextTick().then(() => {
+        expect(vm.theme.global.name.value).to.equal('dark')
+      })
+    })
   })
 })
 
@@ -129,13 +148,14 @@ describe('viewStack', () => {
     expect(viewStack.stack).to.have.length(before)
   })
 
-  it('keeps mutable detail items reactive in stacked views', () => {
+  it('passes the props to stacked views unchanged', () => {
     const viewStack = useViewStack()
-    const item = { id: 'page-1', content: [] }
+    const initial = { id: 'page-1', content: [] }
 
-    viewStack.openView({ render() { return 'test' } }, { item, stacked: true })
+    viewStack.openView({ render() { return 'test' } }, { initial, stacked: true })
 
-    expect(isReactive(viewStack.stack[0].props.item)).to.be.true
+    expect(viewStack.stack[0].props.initial).to.equal(initial)
+    expect(isReactive(viewStack.stack[0].props.initial)).to.be.false
   })
 
   it('closeView() pops the last view', () => {
@@ -148,13 +168,13 @@ describe('viewStack', () => {
   })
 })
 
-describe('locales()', () => {
+describe('localeItems()', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
   it('returns an array of locale entries', () => {
-    const list = locales()
+    const list = localeItems()
     expect(list).to.be.an('array')
     expect(list.length).to.be.greaterThan(0)
     expect(list[0]).to.have.property('value')
@@ -162,23 +182,23 @@ describe('locales()', () => {
   })
 
   it('prepends a None entry when none=true', () => {
-    const list = locales(true)
+    const list = localeItems(true)
     expect(list[0].value).to.be.null
     expect(list[0].title).to.be.a('string')
   })
 })
 
-describe('txlocales()', () => {
+describe('txLocaleItems()', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
   it('returns an array', () => {
-    expect(txlocales()).to.be.an('array')
+    expect(txLocaleItems()).to.be.an('array')
   })
 
   it('excludes the current locale', () => {
-    const list = txlocales('en')
+    const list = txLocaleItems('en')
     expect(list.every(item => item.code !== 'en')).to.be.true
   })
 })

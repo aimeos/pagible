@@ -1,4 +1,4 @@
-import { h } from 'vue'
+import { h, ref, nextTick } from 'vue'
 import Fields from '../../../js/components/Fields.vue'
 import { useUserStore } from '../../../js/stores'
 
@@ -39,7 +39,7 @@ function mountFields(props = {}, perms = {}) {
         write: () => Promise.resolve(''),
         translate: () => Promise.resolve(['']),
         transcribe: () => Promise.resolve({ asText: () => '' }),
-        txlocales: () => [],
+        txLocaleItems: () => [],
       },
       plugins: [{
         install() {
@@ -112,6 +112,7 @@ describe('Fields', () => {
       '2': { id: '2', disk: 'public' },
     }
     const onUpdate = cy.spy()
+    const onAssets = cy.spy()
 
     mountFields({
       fields: { gallery: { type: 'images', label: 'Gallery' } },
@@ -121,6 +122,7 @@ describe('Fields', () => {
       files: ['1', '2'],
       assets,
       'onUpdate:files': onUpdate,
+      onAddAssets: onAssets,
     }).then(({ wrapper }) => {
       wrapper.findComponent(Fields).vm.addFile([
         { id: '1', disk: 'private' },
@@ -128,8 +130,13 @@ describe('Fields', () => {
       ])
 
       expect(onUpdate).to.have.been.calledOnceWith(['1', '2'])
-      expect(assets['1'].disk).to.equal('private')
-      expect(assets['2'].disk).to.equal('private')
+      expect(onAssets).to.have.been.calledOnceWith({
+        '1': { id: '1', disk: 'private' },
+        '2': { id: '2', disk: 'private' },
+      })
+      // the assets prop is left to the owner
+      expect(assets['1'].disk).to.equal('public')
+      expect(assets['2'].disk).to.equal('public')
     })
   })
 
@@ -189,6 +196,94 @@ describe('Fields', () => {
     cy.get('.item.error').should('not.exist')
   })
 
+  function mountTyped(onError, fieldsRef, type, extra = {}) {
+    const Host = {
+      render: () => h(Fields, { fields: fieldsRef.value, data: { title: 'Hello', body: 'World' }, type: type.value, onError })
+    }
+
+    return cy.mount(Host, {
+      global: {
+        stubs: { ...stubs, ...extra },
+        provide: {
+          write: () => Promise.resolve(''),
+          translate: () => Promise.resolve(['']),
+          transcribe: () => Promise.resolve({ asText: () => '' }),
+          txLocaleItems: () => [],
+        },
+      },
+    }).then(({ wrapper }) => wrapper.findComponent(Fields).vm)
+  }
+
+  it('drops the errors and changes of fields not used by the new type', () => {
+    const onError = cy.spy().as('error')
+    const fieldsRef = ref(fields)
+    const type = ref('heading')
+
+    mountTyped(onError, fieldsRef, type).then((vm) => {
+      vm.error('title', true)
+      vm.update('title', 'Changed')
+      expect(onError.lastCall.args[0]).to.equal(true)
+      expect(vm.isDirty('title')).to.equal(true)
+
+      fieldsRef.value = { body: fields.body }
+      type.value = 'text'
+
+      return nextTick().then(() => {
+        expect(onError.lastCall.args[0]).to.equal(false)
+        expect(vm.lastError).to.equal(false)
+        expect(vm.errors).to.deep.equal({})
+        expect(vm.isDirty('title')).to.equal(false)
+        expect(vm.original).to.deep.equal({})
+      })
+    })
+  })
+
+  it('keeps the error of a field used unchanged by the new type', () => {
+    const onError = cy.spy().as('error')
+    const fieldsRef = ref(fields)
+    const type = ref('heading')
+
+    mountTyped(onError, fieldsRef, type).then((vm) => {
+      vm.error('title', true)
+      vm.update('title', 'Changed')
+      const calls = onError.callCount
+
+      fieldsRef.value = { title: fields.title }
+      type.value = 'text'
+
+      return nextTick().then(() => {
+        expect(onError.callCount).to.equal(calls)
+        expect(vm.lastError).to.equal(true)
+        expect(vm.errors).to.deep.equal({ title: true })
+        expect(vm.isDirty('title')).to.equal(false)
+      })
+    })
+  })
+
+  it('uses the state reported by fields remounted for the new type', () => {
+    const onError = cy.spy().as('error')
+    const fieldsRef = ref(fields)
+    const type = ref('heading')
+    const remounted = {
+      emits: ['error'],
+      created() { this.$emit('error', false) },
+      render: () => h('div', { class: 'field-number' })
+    }
+
+    mountTyped(onError, fieldsRef, type, { Number: remounted }).then((vm) => {
+      vm.error('title', true)
+
+      fieldsRef.value = { title: { type: 'number', label: 'Title' } }
+      type.value = 'text'
+
+      return nextTick().then(() => {
+        expect(onError.lastCall.args[0]).to.equal(false)
+        expect(vm.lastError).to.equal(false)
+        expect(vm.errors).to.deep.equal({ title: false })
+      })
+    })
+  })
+
   it('emits change when field value is updated', () => {
     const onChange = cy.spy().as('change')
     cy.mount(Fields, {
@@ -203,7 +298,7 @@ describe('Fields', () => {
           write: () => Promise.resolve(''),
           translate: () => Promise.resolve(['']),
           transcribe: () => Promise.resolve({ asText: () => '' }),
-          txlocales: () => [],
+          txLocaleItems: () => [],
         },
       },
     })

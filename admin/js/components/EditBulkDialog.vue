@@ -2,7 +2,7 @@
 
 <script>
 import CmsDialog from './Dialog.vue'
-import { locales } from '../utils'
+import { localeItems } from '../options'
 
 export default {
   components: {
@@ -23,7 +23,7 @@ export default {
   },
 
   setup() {
-    return { locales }
+    return { localeItems }
   },
 
   methods: {
@@ -66,7 +66,7 @@ export default {
     </p>
 
     <v-select
-      :items="locales()"
+      :items="localeItems()"
       v-model="lang"
       :label="$gettext('Language') + ' ‒ ' + $gettext('Language of the content')"
       variant="underlined"

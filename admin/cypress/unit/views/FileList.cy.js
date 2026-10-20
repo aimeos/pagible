@@ -1,5 +1,6 @@
+import { h } from 'vue'
 import FileList from '../../../js/views/FileList.vue'
-import { useUserStore } from '../../../js/stores'
+import { useSettingStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   FileListItems: {
@@ -9,7 +10,7 @@ const stubs = {
   FileDetail: { template: '<div class="file-detail-stub" />' },
   Navigation: { template: '<div class="navigation-stub" />' },
   AsideList: { template: '<div class="aside-list-stub" />' },
-  User: { template: '<div class="user-stub" />' },
+  User: { render: () => h('div', { class: 'user-stub' }) },
 }
 
 function mountFileList(perms = {}, filter = {}) {
@@ -154,7 +155,7 @@ describe('FileList', () => {
       const vm = Cypress.vueWrapper.findComponent(FileList).vm
       expect(vm.filter.publish).to.equal('DRAFT')
       expect(vm.filter.lang).to.equal('de')
-      expect(useUserStore().getData('file', 'filter')).to.include({ publish: 'DRAFT', lang: 'de' })
+      expect(useSettingStore().getData('file', 'filter')).to.include({ publish: 'DRAFT', lang: 'de' })
     })
   })
 

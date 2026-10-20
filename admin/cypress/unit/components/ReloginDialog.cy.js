@@ -1,6 +1,6 @@
 import ReloginDialog from '../../../js/components/ReloginDialog.vue'
 import router from '../../../js/routes'
-import { useUserStore } from '../../../js/stores'
+import { useSessionStore, useUserStore } from '../../../js/stores'
 
 describe('ReloginDialog', () => {
   let user
@@ -10,7 +10,7 @@ describe('ReloginDialog', () => {
     cy.mount(ReloginDialog).then(() => {
       user = useUserStore()
       user.me = { email: 'editor@example.com', permission: {}, settings: {} }
-      user.expired = true
+      useSessionStore().expired = true
     })
   })
 
@@ -33,9 +33,9 @@ describe('ReloginDialog', () => {
 
   it('signs in again with the entered password', () => {
     cy.then(() => {
-      cy.stub(user, 'relogin')
+      cy.stub(useSessionStore(), 'relogin')
         .callsFake(() => {
-          user.expired = false
+          useSessionStore().expired = false
           return Promise.resolve()
         })
         .as('relogin')
@@ -48,7 +48,7 @@ describe('ReloginDialog', () => {
 
   it('shows the error if signing in fails', () => {
     cy.then(() => {
-      cy.stub(user, 'relogin').rejects(new Error('Invalid credentials'))
+      cy.stub(useSessionStore(), 'relogin').rejects(new Error('Invalid credentials'))
     })
 
     cy.get('.v-dialog:visible input[type=password]').type('wrong{enter}')
@@ -57,9 +57,9 @@ describe('ReloginDialog', () => {
 
   it('logs out and redirects to the login page', () => {
     cy.then(() => {
-      cy.stub(user, 'expire')
+      cy.stub(useSessionStore(), 'expire')
         .callsFake(() => {
-          user.expired = false
+          useSessionStore().expired = false
           return Promise.resolve()
         })
         .as('expire')
@@ -103,9 +103,9 @@ describe('ReloginDialog', () => {
 
     it('continues after the user signed in', () => {
       cy.then(() => {
-        cy.stub(user, 'resume')
+        cy.stub(useSessionStore(), 'resume')
           .callsFake(() => {
-            user.expired = false
+            useSessionStore().expired = false
             return Promise.resolve(true)
           })
           .as('resume')
@@ -117,7 +117,7 @@ describe('ReloginDialog', () => {
     })
 
     it('tells the user if not signed in yet', () => {
-      cy.then(() => cy.stub(user, 'resume').resolves(false))
+      cy.then(() => cy.stub(useSessionStore(), 'resume').resolves(false))
 
       cy.contains('.v-dialog:visible .v-card-actions .v-btn', 'Continue').click()
       cy.contains('.v-dialog:visible .v-alert', 'You are not signed in yet').should('exist')

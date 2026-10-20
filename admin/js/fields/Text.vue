@@ -80,6 +80,8 @@ export default {
     return {
       destroyed: false,
       editor: markRaw(ClassicEditor),
+      // CKEditor reads the translations only on creation, so it's rendered after loading them
+      ready: false,
       visible: false,
       translations: undefined
     }
@@ -95,14 +97,19 @@ export default {
         delete translationCache[keys[0]]
       }
 
-      const mod = await import(`ckeditor5/translations/${locale}.js`)
-
-      translationCache[locale] = [mod.default]
+      try {
+        const mod = await import(`ckeditor5/translations/${locale}.js`)
+        translationCache[locale] = [mod.default]
+      } catch (error) {
+        // the editor falls back to English and the failed import is retried next time
+        this.$log(`Text::created(): Failed to load editor translations for "${locale}"`, error)
+      }
     }
 
     if (this.destroyed) return
 
     this.translations = translationCache[locale]
+    this.ready = true
   },
 
   beforeUnmount() {
@@ -150,7 +157,7 @@ export default {
 
 <template>
   <div v-visible="show">
-    <div v-if="visible">
+    <div v-if="visible && ready">
       <ckeditor
         :config="ckconfig"
         :editor="editor"

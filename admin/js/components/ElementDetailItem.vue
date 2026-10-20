@@ -3,7 +3,8 @@
 <script>
 import Fields from './Fields.vue'
 import { useSchemaStore, useUserStore } from '../stores'
-import { locales } from '../utils'
+import { localeItems } from '../options'
+import { schemaFields } from '../field'
 
 export default {
   components: {
@@ -12,16 +13,16 @@ export default {
 
   props: {
     item: { type: Object, required: true },
-    assets: { type: Object, default: () => {} }
+    assets: { type: Object, default: () => ({}) }
   },
 
-  emits: ['update:item', 'error'],
+  emits: ['patch', 'add-assets', 'error'],
 
   setup() {
     const schemas = useSchemaStore()
     const user = useUserStore()
 
-    return { user, schemas, locales }
+    return { user, schemas, localeItems }
   },
 
   computed: {
@@ -32,21 +33,11 @@ export default {
 
   methods: {
     fields(type) {
-      if (!type) {
-        return []
-      }
-
-      if (!this.schemas.content[type]?.fields) {
-        console.warn(`No definition of fields for "${type}" schemas`)
-        return []
-      }
-
-      return this.schemas.content[type]?.fields
+      return schemaFields(this, this.schemas, 'content', type)
     },
 
     update(what, value) {
-      this.item[what] = value
-      this.$emit('update:item', this.item)
+      this.$emit('patch', { [what]: value })
     }
   }
 }
@@ -71,7 +62,7 @@ export default {
         <v-col cols="12" md="6">
           <v-select
             ref="lang"
-            :items="locales(true)"
+            :items="localeItems(true)"
             :readonly="readonly"
             :modelValue="item.lang"
             @update:modelValue="update('lang', $event)"
@@ -84,14 +75,16 @@ export default {
         <v-col cols="12">
           <Fields
             ref="field"
-            v-model:data="item.data"
-            v-model:files="item.files"
+            :data="item.data"
+            :files="item.files"
             :fields="fields(item.type)"
             :readonly="readonly"
             :assets="assets"
             :type="item.type"
+            @update:data="update('data', $event)"
+            @update:files="update('files', $event)"
+            @add-assets="$emit('add-assets', $event)"
             @error="$emit('error', $event)"
-            @change="$emit('update:item', item)"
           />
         </v-col>
       </v-row>
@@ -101,6 +94,6 @@ export default {
 
 <style scoped>
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 </style>

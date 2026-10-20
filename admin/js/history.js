@@ -7,6 +7,10 @@ import { empty } from './utils'
 
 const SECTIONS = ['meta', 'config', 'content']
 const METADATA = ['previews', 'editor']
+// Milliseconds until a diff is given up and both values are shown as removed and added
+const DIFF_TIMEOUT = 50
+// Maximum length of changed words which are compared character by character
+const REFINE_LENGTH = 120
 const graphemes = new Intl.Segmenter(undefined, { granularity: 'grapheme' })
 const segments = new Intl.Segmenter(undefined, { granularity: 'word' })
 const same = (a, b) => equal(a, b) || (empty(a) && empty(b))
@@ -129,23 +133,35 @@ export function sections(before = {}, after = {}) {
   return result
 }
 
-// Diffs both lists and pairs the removed and added values of each changed hunk side by side
-function pairs(before, after, comparator) {
-  const parts = diffArrays(before, after, { comparator, timeout: 50 })
-    || [{ value: before, removed: true }, { value: after, added: true }]
-  const rows = []
-
+// Groups the diff parts into unchanged parts and hunks of consecutive removed and added parts
+function* hunks(parts) {
   for (let i = 0; i < parts.length; i++) {
     if (!parts[i].added && !parts[i].removed) {
-      parts[i].value.forEach(value => rows.push({ before: value, after: value }))
+      yield { part: parts[i] }
       continue
     }
 
-    const changed = []
-    while (i < parts.length && (parts[i].added || parts[i].removed)) changed.push(parts[i++])
+    const run = []
+    while (i < parts.length && (parts[i].added || parts[i].removed)) run.push(parts[i++])
     i--
-    const removed = changed.filter(part => part.removed).flatMap(part => part.value)
-    const added = changed.filter(part => part.added).flatMap(part => part.value)
+    yield { run, removed: run.filter(part => part.removed), added: run.filter(part => part.added) }
+  }
+}
+
+// Diffs both lists and pairs the removed and added values of each changed hunk side by side
+function pairs(before, after, comparator) {
+  const parts = diffArrays(before, after, { comparator, timeout: DIFF_TIMEOUT })
+    || [{ value: before, removed: true }, { value: after, added: true }]
+  const rows = []
+
+  for (const hunk of hunks(parts)) {
+    if (!hunk.run) {
+      hunk.part.value.forEach(value => rows.push({ before: value, after: value }))
+      continue
+    }
+
+    const removed = hunk.removed.flatMap(part => part.value)
+    const added = hunk.added.flatMap(part => part.value)
     for (let index = 0; index < Math.max(removed.length, added.length); index++) {
       rows.push({ before: removed[index], after: added[index], changed: true })
     }
@@ -319,17 +335,14 @@ export function plaintext(value) {
 
 export function words(before, after) {
   const split = value => [...segments.segment(value)].map(item => item.segment)
-  const tokens = diffArrays(split(before), split(after), { timeout: 50 })
+  const tokens = diffArrays(split(before), split(after), { timeout: DIFF_TIMEOUT })
   const parts = tokens?.map(part => ({ ...part, value: part.value.join('') })) || [{ value: before, removed: true }, { value: after, added: true }]
   const result = []
-  for (let i = 0; i < parts.length; i++) {
-    if (!parts[i].added && !parts[i].removed) { result.push(parts[i]); continue }
-    const run = []
-    while (i < parts.length && (parts[i].added || parts[i].removed)) run.push(parts[i++])
-    i--
-    const a = run.filter(part => part.removed).map(part => part.value).join('')
-    const b = run.filter(part => part.added).map(part => part.value).join('')
-    if (a && b && a.length <= 120 && b.length <= 120) {
+  for (const { part, run, removed, added } of hunks(parts)) {
+    if (!run) { result.push(part); continue }
+    const a = removed.map(part => part.value).join('')
+    const b = added.map(part => part.value).join('')
+    if (a && b && a.length <= REFINE_LENGTH && b.length <= REFINE_LENGTH) {
       const split = value => [...graphemes.segment(value)].map(item => item.segment)
       const old = split(a), next = split(b)
       let start = 0, end = 0

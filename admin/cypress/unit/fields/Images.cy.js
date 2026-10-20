@@ -1,3 +1,5 @@
+import { h, ref } from 'vue'
+import { VueDraggable } from 'vue-draggable-plus'
 import ImagesField from '../../../js/fields/Images.vue'
 import { useUserStore } from '../../../js/stores'
 
@@ -115,6 +117,69 @@ describe('Images', () => {
     })
   })
 
+  it('moves images added during a running protection change afterwards', () => {
+    const assets = { '1': { ...imageAssets['1'] } }
+    const resolvers = []
+    const mutate = cy.stub().callsFake(({ variables }) => new Promise((resolve) => {
+      resolvers.push(() => resolve({
+        data: { relocateFile: variables.id.map((id) => ({ id, disk: variables.disk })) },
+      }))
+    }))
+
+    mountImages(
+      { modelValue: [{ id: '1', type: 'file' }], assets },
+      { 'file:relocate': true },
+      { mutate },
+    ).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ImagesField).vm
+      const first = vm.setProtect(true)
+
+      vm.images.push({ ...imageAssets['2'] })
+      vm.setProtect(true)
+      expect(mutate).to.have.been.calledOnce
+
+      resolvers[0]()
+
+      cy.wrap(mutate).should('have.been.calledTwice').then(() => {
+        expect(mutate.secondCall.args[0].variables).to.deep.equal({ id: ['2'], disk: 'private' })
+        resolvers[1]()
+      })
+      cy.wrap(first).then(() => {
+        expect(vm.images.every((item) => item.disk === 'private')).to.equal(true)
+      })
+    })
+  })
+
+  it('keeps the public state for images added while making them public', () => {
+    const assets = { '1': { ...imageAssets['1'], disk: 'private' } }
+    const resolvers = []
+    const mutate = cy.stub().callsFake(({ variables }) => new Promise((resolve) => {
+      resolvers.push(() => resolve({
+        data: { relocateFile: variables.id.map((id) => ({ id, disk: variables.disk })) },
+      }))
+    }))
+
+    mountImages(
+      { modelValue: [{ id: '1', type: 'file' }], assets },
+      { 'file:relocate': true },
+      { mutate },
+    ).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ImagesField).vm
+      const move = vm.setProtect(false)
+
+      // the files are still private until the move finishes
+      vm.select({ ...imageAssets['2'], id: '3', disk: 'private' })
+      expect(vm.protect).to.equal(false)
+
+      resolvers[0]()
+
+      cy.wrap(move).then(() => {
+        expect(vm.protect).to.equal(false)
+        expect(mutate).to.have.been.calledOnce
+      })
+    })
+  })
+
   it('reloads every image after a partly failed protection change', () => {
     const assets = {
       '1': { ...imageAssets['1'] },
@@ -146,7 +211,7 @@ describe('Images', () => {
 
       return vm.setProtect(true).then(() => {
         expect(query).to.have.been.calledOnce
-        expect(query.firstCall.args[0].variables).to.deep.equal({ id: ['1', '2'] })
+        expect(query.firstCall.args[0].variables).to.deep.equal({ id: ['1', '2'], first: 2 })
         expect(vm.images.map((item) => item.disk)).to.deep.equal(['private', 'public'])
         expect(vm.images.map((item) => item.path)).to.deep.equal(['/files/a.jpg', '/files/b.jpg'])
         expect(vm.protect).to.equal(false)
@@ -185,6 +250,62 @@ describe('Images', () => {
     cy.get('.image').should('have.length', 2)
   })
 
+  it('shows the images of a value replaced from outside', () => {
+    const value = ref([{ id: '1', type: 'file' }])
+    const onUpdate = cy.spy().as('update')
+    const Host = {
+      render: () => h(ImagesField, { modelValue: value.value, config: {}, assets: imageAssets, 'onUpdate:modelValue': onUpdate })
+    }
+
+    cy.mount(Host)
+    cy.get('.image').should('have.length', 1)
+    cy.then(() => { value.value = [{ id: '2', type: 'file' }, { id: '1', type: 'file' }] })
+    cy.get('.image').should('have.length', 2)
+    cy.then(() => { value.value = [] })
+    cy.get('.image').should('have.length', 0)
+    cy.get('@update').should('not.have.been.called')
+  })
+
+  it('persists images dragged from another images field', () => {
+    const onUpdate = cy.spy().as('update')
+    const onAddFile = cy.spy().as('addFile')
+
+    mountImages({
+      modelValue: [{ id: '1', type: 'file' }],
+      assets: imageAssets,
+      'onUpdate:modelValue': onUpdate,
+      onAddFile
+    }).then(({ wrapper }) => {
+      const field = wrapper.findComponent(ImagesField)
+
+      // vue-draggable-plus updates the list before the add event is emitted
+      field.vm.images.push(imageAssets['2'])
+      field.findComponent(VueDraggable).vm.$emit('add', { newDraggableIndex: 1 })
+    })
+    cy.get('@addFile').should('have.been.calledWith', imageAssets['2'])
+    cy.get('@update').should('have.been.calledWith', [{ id: '1', type: 'file' }, { id: '2', type: 'file' }])
+  })
+
+  it('persists images dragged to another images field', () => {
+    const onUpdate = cy.spy().as('update')
+    const onRemoveFile = cy.spy().as('removeFile')
+
+    mountImages({
+      modelValue: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
+      assets: imageAssets,
+      'onUpdate:modelValue': onUpdate,
+      onRemoveFile
+    }).then(({ wrapper }) => {
+      const field = wrapper.findComponent(ImagesField)
+
+      field.vm.images.splice(0, 1)
+      field.findComponent(VueDraggable).vm.$emit('remove', { oldDraggableIndex: 0 })
+    })
+    cy.get('@update').should('have.been.calledWith', [{ id: '2', type: 'file' }])
+    // the file may still be used by the other field
+    cy.get('@removeFile').should('not.have.been.called')
+  })
+
   it('renders v-img for each loaded image', () => {
     mountImages({
       modelValue: [{ id: '1', type: 'file' }],
@@ -217,6 +338,17 @@ describe('Images', () => {
         expect(revokeObjectURL).to.have.been.calledOnceWith('blob:upload')
         expect(vm.images).to.deep.equal([])
       })
+    })
+  })
+
+  it('emits only uploaded images without pending uploads', () => {
+    mountImages({ modelValue: [{ id: '1', type: 'file' }], assets: imageAssets }).then(({ wrapper }) => {
+      const comp = wrapper.findComponent(ImagesField)
+
+      comp.vm.images.push({ disk: 'public', path: 'blob:pending', uploading: true })
+      comp.vm.change()
+
+      expect(comp.emitted('update:modelValue').at(-1)[0]).to.deep.equal([{ id: '1', type: 'file' }])
     })
   })
 
@@ -287,5 +419,95 @@ describe('Images', () => {
       onError,
     })
     cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('keeps value IDs whose files are not loaded yet', () => {
+    const onUpdate = cy.spy().as('update')
+
+    mountImages({
+      modelValue: [{ id: '1', type: 'file' }, { id: '3', type: 'file' }, { id: '2', type: 'file' }],
+      assets: imageAssets,
+      'onUpdate:modelValue': onUpdate
+    }).then(({ wrapper }) => {
+      expect(wrapper.findComponent(ImagesField).vm.missing).to.deep.equal(['3'])
+      wrapper.findComponent(ImagesField).vm.remove(0)
+    })
+
+    cy.get('.image').should('have.length', 1)
+    cy.get('@update').should('have.been.calledWith', [{ id: '3', type: 'file' }, { id: '2', type: 'file' }])
+  })
+
+  it('keeps not loaded files after the image preceding them', () => {
+    const onUpdate = cy.spy().as('update')
+
+    mountImages({
+      modelValue: [{ id: '1', type: 'file' }, { id: '3', type: 'file' }, { id: '2', type: 'file' }],
+      assets: imageAssets,
+      'onUpdate:modelValue': onUpdate
+    })
+
+    cy.get('.image .image-preview').first().focus().trigger('keydown', { key: 'ArrowRight', altKey: true })
+    cy.get('@update').should('have.been.calledOnceWith', [
+      { id: '2', type: 'file' }, { id: '1', type: 'file' }, { id: '3', type: 'file' }
+    ])
+  })
+
+  it('shows files when their assets are loaded later', () => {
+    const assets = ref({ '1': imageAssets['1'] })
+    const onUpdate = cy.spy().as('update')
+    const value = [{ id: '1', type: 'file' }, { id: '2', type: 'file' }]
+    const Host = {
+      render: () => h(ImagesField, { modelValue: value, config: {}, assets: assets.value, 'onUpdate:modelValue': onUpdate })
+    }
+
+    cy.mount(Host)
+    cy.get('.image').should('have.length', 1)
+    cy.then(() => { assets.value = imageAssets })
+    cy.get('.image').should('have.length', 2)
+    cy.get('@update').should('not.have.been.called')
+  })
+
+  it('moves images with Alt and the arrow keys', () => {
+    const onUpdate = cy.spy().as('update')
+
+    mountImages({
+      modelValue: [{ id: '1', type: 'file' }, { id: '2', type: 'file' }],
+      assets: imageAssets,
+      'onUpdate:modelValue': onUpdate,
+    })
+
+    cy.get('.image .image-preview').first().should('have.attr', 'aria-keyshortcuts', 'Alt+ArrowLeft Alt+ArrowRight Alt+ArrowUp Alt+ArrowDown')
+      .focus().trigger('keydown', { key: 'ArrowRight', altKey: true })
+    cy.get('@update').should('have.been.calledOnceWith', [{ id: '2', type: 'file' }, { id: '1', type: 'file' }])
+    cy.get('.image .image-preview').last().should('have.focus')
+
+    // the first image can't move further back
+    cy.get('.image .image-preview').first().trigger('keydown', { key: 'ArrowLeft', altKey: true })
+    cy.get('.image .image-preview').first().trigger('keydown', { key: 'ArrowRight' })
+    cy.get('@update').should('have.been.calledOnce')
+  })
+
+  it('moves images by a row of the grid with Alt and the up/down keys', () => {
+    const onUpdate = cy.spy().as('update')
+    const assets = {}
+    const value = []
+
+    for (let i = 1; i <= 12; i++) {
+      assets[i] = { ...imageAssets['1'], id: String(i), path: `/files/${i}.jpg` }
+      value.push({ id: String(i), type: 'file' })
+    }
+
+    mountImages({ modelValue: value, assets, 'onUpdate:modelValue': onUpdate })
+
+    cy.get('.image').then(($images) => {
+      const perRow = [...$images].filter((el) => el.offsetTop === $images[0].offsetTop).length
+      expect(perRow).to.be.lessThan(12)
+
+      cy.get('.image .image-preview').first().focus().trigger('keydown', { key: 'ArrowDown', altKey: true })
+      cy.get('@update').should('have.been.calledOnce').then(() => {
+        const ids = onUpdate.firstCall.args[0].map((entry) => entry.id)
+        expect(ids.indexOf('1')).to.equal(perRow)
+      })
+    })
   })
 })

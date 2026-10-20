@@ -1,6 +1,7 @@
 import { reactive } from 'vue'
 import WebhookList from '../../../src/views/WebhookList.vue'
 import BuiltWebhookList from '../../../dist/WebhookList.js'
+import { validUrl } from '../../../src/webhooks'
 import { pluginUi } from '@/plugin'
 import '@/assets/base.css'
 
@@ -12,9 +13,11 @@ function messageStub() {
 // component state like "this" in the view, methods are bound unless a test replaces them
 function vm(data = {}) {
   const state = {
-    $pgettext: (context, value) => value,
+    $pgettext: (context, value, params = {}) => value.replace(/%\{(\w+)\}/g, (match, name) => params[name] ?? match),
     confirm: { purge: cy.stub().resolves(true) },
     messages: messageStub(),
+    changes: 0,
+    loadSeq: 0,
     saving: false,
     ...data
   }
@@ -57,7 +60,8 @@ describe('WebhookList', () => {
     $pgettext(context, value, params = {}) {
       const text = {
         'Access denied': 'Zugriff verweigert',
-        'Blocked by server configuration': 'Durch Serverkonfiguration blockiert',
+        'All deliveries are blocked by the server configuration: %{reason}': 'Alle Zustellungen sind durch die Serverkonfiguration blockiert: %{reason}',
+        'Invalid list of denied networks': 'Ungültige Liste gesperrter Netzwerke',
         'Connection failed': 'Verbindung fehlgeschlagen',
         'Delivery failed': 'Zustellung fehlgeschlagen',
         'Host not found': 'Host nicht gefunden',
@@ -68,13 +72,35 @@ describe('WebhookList', () => {
         'Response too large': 'Antwort zu groß',
         'Secret can\'t be decrypted, rotate it': 'Geheimnis nicht entschlüsselbar, erneuern',
         'Secure connection failed': 'Sichere Verbindung fehlgeschlagen',
-        'Test event delivered': 'Testereignis zugestellt',
-        'Test event failed': 'Testereignis fehlgeschlagen'
+        'Test event delivered (%{status})': 'Testereignis zugestellt (%{status})',
+        'Test event failed': 'Testereignis fehlgeschlagen',
+        'Test event failed: %{reason}': 'Testereignis fehlgeschlagen: %{reason}'
       }[value] || value
 
       return text.replace(/%\{(\w+)\}/g, (match, name) => params[name] ?? match)
     }
   }
+
+  it('shows the reloaded webhook in the open dialog', async () => {
+    const stale = fixture({ last_error: { reason: 'timeout' } })
+    const fresh = fixture({ last_error: null, last_success_at: '2026-09-15T12:00:00.000000Z' })
+    const query = cy.stub().resolves({ data: { cmsWebhooks: [fresh], cmsWebhookEvents: [], cmsWebhookServer: {} } })
+    const state = vm({ apollo: { query }, items: [stale], selected: stale })
+
+    await state.load()
+
+    expect(state.selected).to.equal(fresh)
+  })
+
+  it('skips the test event while saving', async () => {
+    const mutate = cy.stub()
+    const state = vm({ apollo: { mutate }, saving: true, testing: false })
+
+    await state.ping({ id: 'first' })
+
+    expect(mutate).not.to.have.been.called
+    expect(state.testing).to.be.false
+  })
 
   it('translates stored delivery failure reasons', () => {
     const { errorText } = vm(german)
@@ -87,7 +113,8 @@ describe('WebhookList', () => {
     expect(errorText({ last_error: { reason: 'http_error', status: 301 } })).to.equal('Weiterleitungen werden nicht befolgt (301)')
     expect(errorText({ last_error: { reason: 'http_error', status: 410 } })).to.equal('Zustellung fehlgeschlagen (410)')
     expect(errorText({ last_error: { reason: 'invalid_url' } })).to.equal('Keine gültige URL')
-    expect(errorText({ last_error: { reason: 'invalid_policy' } })).to.equal('Durch Serverkonfiguration blockiert')
+    expect(errorText({ last_error: { reason: 'invalid_policy' } })).to.equal('Ungültige Liste gesperrter Netzwerke')
+    expect(errorText({ last_error: { reason: 'invalid_queue' } })).to.equal('Warteschlange nicht verfügbar')
     expect(errorText({ last_error: { reason: 'queue_failed' } })).to.equal('Warteschlange nicht verfügbar')
     expect(errorText({ last_error: { reason: 'invalid_encryption' } })).to.equal('Geheimnis nicht entschlüsselbar, erneuern')
     expect(errorText({ last_error: { reason: 'unexpected_reason', status: 503 } })).to.equal('Zustellung fehlgeschlagen (503)')
@@ -108,6 +135,7 @@ describe('WebhookList', () => {
     const state = vm({
       ...german,
       apollo: { mutate },
+      load: cy.stub(),
       items: Object.freeze([
         Object.freeze({ id: 'first', paused_until: paused }),
         Object.freeze({ id: 'second', paused_until: paused })
@@ -119,6 +147,7 @@ describe('WebhookList', () => {
 
     expect(state.messages.add).to.have.been.calledWith('Testereignis fehlgeschlagen: Zugriff verweigert', 'error')
     expect(state.items[0].paused_until).to.equal(paused)
+    expect(state.changes).to.equal(0)
 
     // a successful test event resumes the paused deliveries
     mutate.resolves({ data: { pingWebhook: { success: true, status: 204, reason: null } } })
@@ -127,6 +156,10 @@ describe('WebhookList', () => {
     expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: 'first' })
     expect(state.messages.add).to.have.been.calledWith('Testereignis zugestellt (204)', 'success')
     expect(state.items).to.deep.equal([{ id: 'first', paused_until: null }, { id: 'second', paused_until: paused }])
+    // a refresh started before the test event mustn't restore the pause
+    expect(state.changes).to.equal(1)
+    // the server doesn't record test events, so the list isn't reloaded
+    expect(state.load).not.to.have.been.called
 
     mutate.rejects(new Error('offline'))
     await state.ping({ id: 'first' })
@@ -139,14 +172,18 @@ describe('WebhookList', () => {
     const serverText = (server) => WebhookList.computed.serverText.call(vm({ ...german, server }))
 
     expect(serverText({ enabled: true, blocked: null })).to.equal('')
+    // every reason the server reports for blocked deliveries has its own text
     expect(serverText({ enabled: true, blocked: 'invalid_policy' }))
-      .to.equal('All deliveries are blocked by the server configuration')
+      .to.equal('Alle Zustellungen sind durch die Serverkonfiguration blockiert: Ungültige Liste gesperrter Netzwerke')
+    expect(serverText({ enabled: true, blocked: 'invalid_queue' }))
+      .to.equal('Alle Zustellungen sind durch die Serverkonfiguration blockiert: Warteschlange nicht verfügbar')
     expect(serverText({ enabled: false, blocked: 'invalid_queue' }))
       .to.equal('Webhooks are disabled by the server configuration, no events are sent')
   })
 
   it('shows the server status and paused destinations', () => {
     const paused = '2026-09-15T12:05:00.000000Z'
+    cy.clock(new Date('2026-09-15T12:00:00.000000Z'), ['Date'])
     const query = cy.stub().resolves({
       data: {
         cmsWebhooks: [fixture({
@@ -161,9 +198,11 @@ describe('WebhookList', () => {
 
     mount(WebhookList, { query })
 
-    cy.get('.webhook-server').should('contain', 'All deliveries are blocked by the server configuration')
+    cy.get('.webhook-server').should('contain', 'All deliveries are blocked by the server configuration: Invalid list of denied networks')
     cy.get('[role="listitem"] .webhook-paused')
       .should('contain', `Paused until: ${new Date(paused).toLocaleString('en')}`)
+      // inline because the plugin's scoped styles aren't loaded by the admin
+      .and('have.attr', 'style').and('contain', 'color-mix')
     cy.get('[role="listitem"]').should('contain', 'Request timed out')
   })
 
@@ -178,19 +217,19 @@ describe('WebhookList', () => {
     const original = Object.freeze({ id: 'first', status: false })
     const updated = Object.freeze({ id: 'first', status: true })
     const webhooks = Object.freeze([original])
-    const names = Object.freeze(['page.published'])
+    const events = Object.freeze(['page.published'])
     const state = vm({
-      apollo: { query: cy.stub().resolves({ data: { cmsWebhooks: webhooks, cmsWebhookEvents: names, cmsWebhookServer: { enabled: true, blocked: null } } }) },
+      apollo: { query: cy.stub().resolves({ data: { cmsWebhooks: webhooks, cmsWebhookEvents: events, cmsWebhookServer: { enabled: true, blocked: null } } }) },
       checked: new Set(['old']),
       items: [],
       loading: false,
-      names: []
+      events: []
     })
 
     await state.load()
 
     expect(state.items).to.equal(webhooks)
-    expect(state.names).to.equal(names)
+    expect(state.events).to.equal(events)
     expect(state.server).to.deep.equal({ enabled: true, blocked: null })
 
     state.put(updated)
@@ -209,13 +248,12 @@ describe('WebhookList', () => {
       apollo: { mutate },
       checked: new Set(),
       dialog: true,
-      form: { url: 'https://example.com/hook', name: ' Orders ', events: ['page.published'], status: true },
       items: webhooks,
       secret: '',
       selected: null
     })
 
-    await state.save()
+    await state.save({ url: 'https://example.com/hook', name: ' Orders ', events: ['page.published'], status: true })
 
     expect(mutate.firstCall.args[0].variables.input).to.deep.equal({
       url: 'https://example.com/hook',
@@ -229,6 +267,129 @@ describe('WebhookList', () => {
     expect(state.dialog).to.equal(true)
   })
 
+  it('reopens the dialog to show the secret if it was closed while adding', async () => {
+    const webhook = Object.freeze({ id: 'new' })
+    const state = vm({
+      apollo: { mutate: cy.stub().resolves({ data: { addWebhook: { secret: 'secret', webhook } } }) },
+      checked: new Set(),
+      dialog: false,
+      items: [],
+      secret: '',
+      selected: null
+    })
+
+    await state.save({ url: 'https://example.com/hook', name: 'Orders', events: ['page.published'], status: true })
+
+    expect(state.secret).to.equal('secret')
+    expect(state.dialog).to.equal(true)
+  })
+
+  it('ignores outdated list responses and keeps webhooks changed while loading', async () => {
+    const resolvers = []
+    const response = (id) => ({ data: { cmsWebhooks: [{ id }], cmsWebhookEvents: [], cmsWebhookServer: { enabled: true, blocked: null } } })
+    const state = vm({
+      apollo: { query: () => new Promise((resolve) => resolvers.push(resolve)) },
+      checked: new Set(),
+      items: [],
+      loading: false,
+      events: []
+    })
+
+    const first = state.load()
+    const second = state.load()
+
+    resolvers[1](response('new'))
+    resolvers[0](response('old'))
+    await Promise.all([first, second])
+
+    expect(state.items).to.deep.equal([{ id: 'new' }])
+    expect(state.loading).to.equal(false)
+
+    const third = state.load()
+    state.put(Object.freeze({ id: 'new', status: true }))
+    resolvers[2](response('stale'))
+    await new Promise((resolve) => setTimeout(resolve))
+
+    // the outdated response is dropped and the list is loaded again
+    expect(resolvers).to.have.length(4)
+    expect(state.items).to.deep.equal([{ id: 'new', status: true }])
+    expect(state.loading).to.equal(true)
+
+    resolvers[3](response('fresh'))
+    await third
+
+    expect(state.items).to.deep.equal([{ id: 'fresh' }])
+    expect(state.loading).to.equal(false)
+  })
+
+  it('shows an error instead of an empty list if loading fails', () => {
+    const query = cy.stub()
+    query.onFirstCall().rejects(new Error('offline'))
+    query.onSecondCall().resolves({
+      data: { cmsWebhooks: [], cmsWebhookEvents: [], cmsWebhookServer: { enabled: true, blocked: null } }
+    })
+
+    const messages = mount(WebhookList, { query })
+
+    cy.wrap(messages.add).should('have.been.calledWith', 'Error fetching webhooks:\nError: offline', 'error')
+    cy.get('.load-error').should('contain', 'Error fetching webhooks')
+    cy.contains('No webhooks configured.').should('not.exist')
+
+    cy.get('.load-error .btn-retry').click()
+    cy.wrap(query).should('have.been.calledTwice')
+    cy.get('.load-error').should('not.exist')
+    cy.contains('No webhooks configured.').should('exist')
+  })
+
+  it('ignores a failed load after leaving the page', async () => {
+    let fail
+    const state = vm({ apollo: { query: () => new Promise((resolve, reject) => (fail = reject)) }, timer: null })
+
+    const loading = state.load()
+    WebhookList.beforeUnmount.call(state)
+    fail(new Error('offline'))
+    await loading
+
+    expect(state.messages.add).not.to.have.been.called
+    expect(state.failed).not.to.equal(true)
+  })
+
+  it('saves the dialog with Enter in the text fields', () => {
+    // component tests don't center dialogs, so their top edge is at half the viewport height
+    cy.viewport(1280, 1200)
+
+    const query = cy.stub().resolves({
+      data: { cmsWebhooks: [], cmsWebhookEvents: ['page.published'], cmsWebhookServer: { enabled: true, blocked: null } }
+    })
+    const mutate = cy.stub().returns(new Promise(() => {}))
+
+    mount(WebhookList, { query, mutate })
+
+    cy.get('.btn-add').first().click()
+    cy.get('.v-dialog:visible .v-select').click()
+    cy.get('.v-overlay-container .v-list-item').contains('page.published').click()
+    cy.get('body').type('{esc}')
+
+    // incomplete forms aren't saved
+    cy.get('.v-dialog:visible .webhook-name input').type('Orders{enter}')
+    cy.get('.v-dialog:visible .v-text-field input').first().type('https://example.com/hook')
+
+    // Enter confirming a word of an input method editor
+    cy.get('.v-dialog:visible .webhook-name input')
+      .trigger('keydown', { eventConstructor: 'KeyboardEvent', key: 'Enter', isComposing: true })
+    // Safari sends it after the composition ended
+    cy.get('.v-dialog:visible .webhook-name input')
+      .trigger('keydown', { eventConstructor: 'KeyboardEvent', key: 'Enter', keyCode: 229 })
+    cy.wrap(mutate).should('not.have.been.called')
+
+    cy.get('.v-dialog:visible .v-text-field input').first().type('{enter}')
+    cy.wrap(mutate).should('have.been.calledOnce')
+  })
+
+  it('declares the panel passed by the admin plugin panel', () => {
+    expect(WebhookList.props).to.have.property('panel')
+  })
+
   it('saves the name of an existing webhook', async () => {
     const webhook = Object.freeze({ id: 'first', name: 'Orders' })
     const mutate = cy.stub().resolves({ data: { saveWebhook: webhook } })
@@ -236,12 +397,11 @@ describe('WebhookList', () => {
       apollo: { mutate },
       checked: new Set(),
       dialog: true,
-      form: { name: ' Orders ', events: ['page.published'], status: false },
       items: [],
       selected: { id: 'first' }
     })
 
-    await state.save()
+    await state.save({ name: ' Orders ', events: ['page.published'], status: false })
 
     expect(mutate.firstCall.args[0].variables).to.deep.equal({
       id: 'first',
@@ -252,8 +412,6 @@ describe('WebhookList', () => {
   })
 
   it('accepts only https endpoint URLs', () => {
-    const validUrl = WebhookList.methods.validUrl
-
     expect(validUrl('https://example.com/hook')).to.equal(true)
     expect(validUrl(' https://example.com/hook?x=1 ')).to.equal(true)
     expect(validUrl('http://example.com/hook')).to.equal(false)
@@ -310,7 +468,7 @@ describe('WebhookList', () => {
     })
     cy.get('.v-dialog:visible').should('have.length', 1)
     cy.contains('.v-dialog:visible .v-toolbar-title', 'Webhook secret').should('exist')
-    cy.get('.v-dialog:visible .webhook-secret input').should('have.value', 'one-time-secret')
+    cy.get('.v-dialog:visible .webhook-secret input').should('have.value', 'one-time-secret').and('have.attr', 'aria-label', 'Webhook secret')
     cy.get('.v-dialog:visible .webhook-status').should('not.exist')
     cy.get('.v-dialog:visible .v-card-actions').contains('.v-btn', 'Copy secret').should('exist')
     cy.get('.v-list.items > .v-list-item').should('have.length', 1)
@@ -343,6 +501,53 @@ describe('WebhookList', () => {
     confirm.ask.resolves(true)
     await state.rotate(item)
     expect(state.change).to.have.been.calledOnce
+  })
+
+  it('shows the rotated secret for the rotated webhook', async () => {
+    const webhook = { id: 'first', name: 'Shop', endpoint: 'https://example.com/' }
+    const mutate = cy.stub().resolves({ data: { rotateWebhook: { secret: 'secret', webhook } } })
+    const state = vm({
+      apollo: { mutate },
+      change: (fn) => fn(),
+      confirm: { ask: cy.stub().resolves(true) },
+      put: cy.stub(),
+      selected: { id: 'second' },
+    })
+
+    await state.rotate(webhook)
+    expect(state.selected).to.equal(webhook)
+    expect(state.secret).to.equal('secret')
+    expect(state.dialog).to.equal(true)
+  })
+
+  it('tells to rotate again if the secret arrives after leaving the page', async () => {
+    const webhook = { id: 'first', name: 'Shop', endpoint: 'https://example.com/' }
+    const mutate = cy.stub().resolves({ data: { rotateWebhook: { secret: 'secret', webhook } } })
+    const state = vm({
+      apollo: { mutate },
+      change: (fn) => fn(),
+      confirm: { ask: cy.stub().resolves(true) },
+      put: cy.stub(),
+      left: true,
+      secret: '',
+      dialog: false,
+    })
+
+    await state.rotate(webhook)
+    expect(state.secret).to.equal('')
+    expect(state.dialog).to.equal(false)
+    expect(state.messages.add).to.have.been.calledOnceWith(
+      'The new webhook secret could not be shown after leaving the page, please rotate it to get a new one',
+      'warning',
+    )
+  })
+
+  it('does not open the edit dialog while saving', () => {
+    const state = vm({ saving: true, selected: null, dialog: false })
+
+    state.openEdit({ id: 'first' })
+    expect(state.selected).to.equal(null)
+    expect(state.dialog).to.equal(false)
   })
 
   it('restores all results when the search field is cleared', () => {
@@ -387,6 +592,21 @@ describe('WebhookList', () => {
     state.put({ id: 'first' })
 
     expect([...state.checked]).to.deep.equal(['second'])
+  })
+
+  it('selects all webhooks if one is unchecked, otherwise unchecks all', () => {
+    const filtered = [{ id: 'first' }, { id: 'second' }]
+    const state = vm({ checked: new Set(['first']), filtered })
+    Object.defineProperty(state, 'allChecked', { get: () => WebhookList.computed.allChecked.call(state) })
+
+    expect(state.allChecked).to.equal(false)
+
+    state.toggle()
+    expect([...state.checked]).to.deep.equal(['first', 'second'])
+    expect(state.allChecked).to.equal(true)
+
+    state.toggle()
+    expect(state.checked.size).to.equal(0)
   })
 
   it('selects and purges several webhooks in one mutation', async () => {
@@ -465,7 +685,7 @@ describe('WebhookList', () => {
   })
 
   // mounts the view with a named webhook and one whose secret can't be decrypted
-  function mountList(pluginAside = null) {
+  function mountList(pluginAside = null, server = { enabled: true, blocked: null }) {
     // dialogs show the current destination and warnings, which don't fit into a lower viewport
     // component tests don't center dialogs, so their top edge is at half the viewport height
     cy.viewport(1280, 1200)
@@ -493,7 +713,7 @@ describe('WebhookList', () => {
           })
         ],
         cmsWebhookEvents: ['page.published', 'page.dropped'],
-        cmsWebhookServer: { enabled: true, blocked: null }
+        cmsWebhookServer: server
       }
     })
 
@@ -621,6 +841,90 @@ describe('WebhookList', () => {
     })
     cy.wrap(messages.add).should('have.been.calledWith', 'Test event delivered (204)', 'success')
     cy.get('.v-dialog:visible').should('exist')
+  })
+
+  it('disables the test event if the server blocks all deliveries', () => {
+    mountList(null, { enabled: true, blocked: 'invalid_policy' })
+
+    cy.contains('[role="listitem"] .item-content', 'https://example.com/orders/').click()
+    cy.get('.v-dialog:visible .v-card-actions .btn-test').should('be.disabled')
+  })
+
+  it('allows test events if only the delivery queue is unavailable', () => {
+    // test events are sent directly without the queue
+    mountList(null, { enabled: true, blocked: 'invalid_queue' })
+
+    cy.get('.webhook-server').should('contain', 'Queue unavailable')
+    cy.contains('[role="listitem"] .item-content', 'https://example.com/orders/').click()
+    cy.get('.v-dialog:visible .v-card-actions .btn-test').should('not.be.disabled')
+  })
+
+  it('disables adding webhooks until the events are loaded', () => {
+    const query = cy.stub()
+    query.onFirstCall().rejects(new Error('offline'))
+    query.onSecondCall().resolves({
+      data: { cmsWebhooks: [], cmsWebhookEvents: ['page.published'], cmsWebhookServer: { enabled: true, blocked: null } }
+    })
+
+    mount(WebhookList, { query })
+
+    cy.get('.load-error').should('exist')
+    cy.get('.btn-add').should('have.length', 2).each((button) => cy.wrap(button).should('be.disabled'))
+
+    cy.get('.load-error .btn-retry').click()
+    cy.get('.btn-add').should('have.length', 2).each((button) => cy.wrap(button).should('not.be.disabled'))
+  })
+
+  it('hides the pause when it is over', () => {
+    const paused = '2026-09-15T12:05:00.000000Z'
+    const query = cy.stub().resolves({
+      data: {
+        cmsWebhooks: [fixture({ paused_until: paused })],
+        cmsWebhookEvents: ['page.published'],
+        cmsWebhookServer: { enabled: true, blocked: null }
+      }
+    })
+
+    cy.clock(new Date('2026-09-15T12:04:30.000000Z'), ['Date', 'setInterval', 'clearInterval'])
+    mount(WebhookList, { query })
+
+    cy.get('[role="listitem"] .webhook-paused').should('exist')
+    cy.tick(60000)
+    cy.get('[role="listitem"] .webhook-paused').should('not.exist')
+  })
+
+  it('only updates the time for ending pauses if there are paused webhooks', () => {
+    cy.clock(new Date('2026-09-15T12:00:00.000000Z'), ['Date', 'setInterval', 'clearInterval'])
+
+    cy.then(() => {
+      const state = reactive(vm({ items: [fixture()], now: 0, load: cy.stub() }))
+
+      WebhookList.mounted.call(state)
+      cy.tick(60000).then(() => {
+        expect(state.now).to.equal(0)
+        state.items = [fixture({ paused_until: '2026-09-15T12:05:00.000000Z' })]
+      })
+      cy.tick(60000).then(() => {
+        expect(state.now).to.equal(new Date('2026-09-15T12:02:00.000000Z').getTime())
+        WebhookList.beforeUnmount.call(state)
+      })
+    })
+  })
+
+  it('hides pauses which are over when loading', () => {
+    const query = cy.stub().resolves({
+      data: {
+        cmsWebhooks: [fixture({ paused_until: '2026-09-15T12:05:00.000000Z' })],
+        cmsWebhookEvents: ['page.published'],
+        cmsWebhookServer: { enabled: true, blocked: null }
+      }
+    })
+
+    cy.clock(new Date('2026-09-15T13:00:00.000000Z'), ['Date'])
+    mount(WebhookList, { query })
+
+    cy.get('[role="listitem"]').should('have.length', 1)
+    cy.get('.webhook-paused').should('not.exist')
   })
 
   it('mounts the production bundle with host UI components', () => {

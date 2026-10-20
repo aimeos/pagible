@@ -1,3 +1,4 @@
+import { reactive } from 'vue'
 import AsideList from '../../../js/components/AsideList.vue'
 
 const content = [
@@ -70,22 +71,51 @@ describe('AsideList', () => {
     cy.contains('.v-btn', 'Draft').should('exist')
   })
 
+  it('tells which filter is selected', () => {
+    mountList({ publish: 'PUBLISHED' })
+    cy.get('.v-list-group').first().find('.v-list-item').first().click({ force: true })
+    cy.contains('.v-btn', 'Published').should('have.attr', 'aria-pressed', 'true')
+    cy.contains('.v-btn', 'Draft').should('have.attr', 'aria-pressed', 'false')
+  })
+
   it('restores the initial filter when reset is clicked after changes', () => {
-    const filter = { status: 'PUBLISHED', publish: null }
-    cy.mount(AsideList, { props: { content, filter } })
+    const filter = reactive({ status: 'PUBLISHED', publish: null })
+    const onUpdate = cy.spy((patch) => Object.assign(filter, patch)).as('update')
+
+    cy.mount(AsideList, { props: { content, filter, 'onUpdate:filter': onUpdate } })
     cy.get('.v-list-group').first().find('.v-list-item').first().click({ force: true })
     cy.contains('.v-btn', 'Draft').click({ force: true })
+    cy.get('@update').should('have.been.calledWith', { publish: 'DRAFT' })
     cy.wrap(filter).should('deep.equal', { status: 'PUBLISHED', publish: 'DRAFT' })
     cy.contains('.v-btn', 'Reset').click({ force: true })
+    cy.get('@update').should('have.been.calledWith', { status: 'PUBLISHED', publish: null })
     cy.wrap(filter).should('deep.equal', { status: 'PUBLISHED', publish: null })
   })
 
-  it('resets the filter object in place', () => {
+  it('sends the defaults to the owner without changing the filter itself', () => {
     const filter = { status: 'PUBLISHED', publish: 'DRAFT' }
+    const onUpdate = cy.spy().as('update')
+
     cy.mount(AsideList, {
-      props: { content, filter, defaults: { status: null, publish: null } },
+      props: { content, filter, defaults: { status: null, publish: null }, 'onUpdate:filter': onUpdate },
     })
     cy.contains('.v-btn', 'Reset').click({ force: true })
-    cy.wrap(filter).should('deep.equal', { status: null, publish: null })
+    cy.get('@update').should('have.been.calledOnceWith', { status: null, publish: null })
+    cy.wrap(filter).should('deep.equal', { status: 'PUBLISHED', publish: 'DRAFT' })
+  })
+
+  it('marks only groups whose filter differs from the defaults as active', () => {
+    const filter = { status: 'PUBLISHED', trashed: 'WITHOUT' }
+
+    cy.mount(AsideList, {
+      props: { content, filter, defaults: { status: null, trashed: 'WITHOUT' } },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(AsideList).vm
+      expect(vm.has('status')).to.equal(true)
+      expect(vm.has('trashed')).to.equal(false)
+      expect(vm.has('missing')).to.equal(false)
+    })
+    cy.get('.v-list-group').first().find('.v-list-item.active').should('exist')
+    cy.get('.v-list-group').eq(1).find('.v-list-item.active').should('not.exist')
   })
 })

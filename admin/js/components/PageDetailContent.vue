@@ -1,3 +1,5 @@
+/** @license MIT, https://opensource.org/license/mit */
+
 <script>
 import PageDetailContentList from './PageDetailContentList.vue'
 import { useSchemaStore } from '../stores'
@@ -16,7 +18,7 @@ export default {
     elements: { type: Object, required: true }
   },
 
-  emits: ['change', 'error'],
+  emits: ['change', 'error', 'update:content', 'patch-entry', 'add-assets', 'add-elements'],
 
   data: () => ({
     dirty: {},
@@ -74,9 +76,14 @@ export default {
   },
 
   methods: {
-    contentUpdated(section, event) {
-      this.update(section, event)
+    markChanged(section) {
+      this.dirty[section] = true
       this.$emit('change', 'content')
+    },
+
+    contentUpdated(section, list) {
+      this.$emit('update:content', Object.values({ ...this.sections, [section]: list }).flat())
+      this.markChanged(section)
     },
 
     error(what, value) {
@@ -88,15 +95,9 @@ export default {
       }
     },
 
-    mainContentUpdated(event) {
-      this.item.content = event
+    mainContentUpdated(list) {
+      this.$emit('update:content', list)
       this.$emit('change', 'content')
-    },
-
-    flush() {
-      Array.isArray(this.$refs.content)
-        ? this.$refs.content.forEach((ref) => ref.flush())
-        : this.$refs.content?.flush()
     },
 
     reset() {
@@ -122,15 +123,6 @@ export default {
       } else {
         await this.$refs.content?.showError()
       }
-    },
-
-    update(section, list) {
-      const sections = this.sections
-      sections[section] = list
-
-      this.item.content = Object.values(sections).flat()
-
-      this.dirty[section] = true
     }
   }
 }
@@ -164,6 +156,10 @@ export default {
               :content="list"
               :elements="elements"
               @error="error(section, $event)"
+              @change="markChanged(section)"
+              @patch-entry="(entry, values) => $emit('patch-entry', entry, values)"
+              @add-assets="$emit('add-assets', $event)"
+              @add-elements="$emit('add-elements', $event)"
               @update:content="contentUpdated(section, $event)"
             />
           </v-window-item>
@@ -180,6 +176,10 @@ export default {
           :content="item.content || []"
           :elements="elements"
           @error="error('main', $event)"
+          @change="$emit('change', 'content')"
+          @patch-entry="(entry, values) => $emit('patch-entry', entry, values)"
+          @add-assets="$emit('add-assets', $event)"
+          @add-elements="$emit('add-elements', $event)"
           @update:content="mainContentUpdated"
         />
       </div>
@@ -194,7 +194,7 @@ export default {
 }
 
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 
 .subtabs {

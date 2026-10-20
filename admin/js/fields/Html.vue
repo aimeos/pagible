@@ -31,14 +31,15 @@ export default {
   <v-textarea
     :hint="config.hint && $pgettext('fh', config.hint)"
     :rules="rules"
+    :error="hasError"
     :readonly="readonly"
     :placeholder="config.placeholder || ''"
     :modelValue="modelValue ?? config.default ?? ''"
-    @update:modelValue="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event ?? '')"
     density="comfortable"
     hide-details="auto"
     variant="outlined"
     class="ltr"
-    clearable
+    :clearable="!readonly"
   ></v-textarea>
 </template>

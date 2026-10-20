@@ -5,10 +5,14 @@ import gql from 'graphql-tag'
 import { markRaw } from 'vue'
 import CmsDialog from './Dialog.vue'
 import FileListItems from './FileListItems.vue'
-import { createFile, revokeBlob } from '../files'
+import { createFile, IMAGE_MIME_FILTER, revokeBlob, toBlob } from '../files'
 import { useUserStore, useMessageStore } from '../stores'
-import { dictate, fileurl, IMAGE_MIME_FILTER, toBlob } from '../utils'
+import { useDictation } from '../dictation'
+import { fileurl } from '../urls'
 import { mdiMicrophoneOutline, mdiMicrophone, mdiDelete } from '@mdi/js'
+
+// maximum length of the file name generated from the prompt
+const MAX_NAME_LENGTH = 250
 
 const IMAGINE = gql`
   mutation ($prompt: String!, $context: String, $files: [String!]) {
@@ -25,8 +29,7 @@ export default {
   props: {
     modelValue: { type: Boolean, required: true },
     context: { type: [Object, null], default: null },
-    disk: { type: String, default: 'public' },
-    files: { type: Array, default: () => [] }
+    disk: { type: String, default: 'public' }
   },
 
   emits: ['update:modelValue', 'add'],
@@ -48,12 +51,14 @@ export default {
 
   data() {
     return {
-      audio: null,
       chat: '',
+      dictation: useDictation(),
       items: [],
       used: [],
       loading: false,
-      dictating: false
+      uploading: false,
+      // bumped when closing so late image responses are dropped
+      seq: 0
     }
   },
 
@@ -66,10 +71,14 @@ export default {
           this.chat = [this.context?.title, this.context?.text, this.context?.description]
             .filter(Boolean)
             .join('\n')
-          this.used = [...(this.files || [])]
+          this.used = []
           return
         }
 
+        // a running recording would continue unseen and fill the prompt later
+        this.dictation.stop()
+        this.seq++
+        this.loading = false
         this.items.forEach(revokeBlob)
         this.items = []
         this.used = []
@@ -79,10 +88,8 @@ export default {
   },
 
   beforeUnmount() {
-    if (this.audio) {
-      this.audio.then((rec) => rec?.stop?.()).catch(() => {})
-      this.audio = null
-    }
+    this.dictation.stop()
+    this.seq++
 
     this.items.forEach(revokeBlob)
     this.items = []
@@ -97,7 +104,10 @@ export default {
         return
       }
 
-      this.loading = true
+      // one upload at a time, otherwise double clicks create duplicate files
+      if (this.uploading) return
+
+      this.uploading = true
 
       const filename = 'ai-image_' + new Date().toISOString().replace(/[^0-9]/g, '') + '.png'
 
@@ -107,16 +117,19 @@ export default {
         file: new File([item.blob], filename, { type: item.mime })
       })
         .then((data) => {
+          // the server path replaces the object URL which can't be revoked afterwards
+          revokeBlob(item)
           Object.assign(item, data)
 
-          this.$refs.filelist.invalidate()
+          // the list isn't rendered any more if the dialog has been closed during the upload
+          this.$refs.filelist?.invalidate()
           this.$emit('add', [item])
         })
         .catch((error) => {
           this.messages.error(this.$gettext(`Error adding file %{path}`, { path: item?.path }), error)
         })
         .finally(() => {
-          this.loading = false
+          this.uploading = false
         })
     },
 
@@ -127,6 +140,8 @@ export default {
         return
       }
 
+      const seq = ++this.seq
+      const prompt = this.chat
       this.loading = true
 
       this.$apollo
@@ -139,30 +154,46 @@ export default {
           }
         })
         .then((response) => {
-          if (response.data.imagine) {
-            const blob = toBlob(response.data.imagine)
-
-            this.items.unshift({
-              path: URL.createObjectURL(blob),
-              blob: markRaw(blob),
-              name: this.chat.slice(
-                0,
-                this.chat.length > 250 ? this.chat.lastIndexOf(' ', 250) : 250
-              ),
-              mime: 'image/png'
-            })
+          // dialog closed in the meantime
+          if (seq !== this.seq || !response.data.imagine) {
+            return
           }
+
+          const blob = toBlob(response.data.imagine)
+
+          this.items.unshift({
+            path: URL.createObjectURL(blob),
+            blob: markRaw(blob),
+            name: this.filename(prompt),
+            mime: 'image/png'
+          })
         })
         .catch((error) => {
-          this.messages.error(this.$gettext('Error creating file'), error)
+          if (seq === this.seq) {
+            this.messages.error(this.$gettext('Error creating file'), error)
+          }
         })
         .finally(() => {
-          this.loading = false
+          if (seq === this.seq) {
+            this.loading = false
+          }
         })
     },
 
+    // shortens the prompt at a word boundary to the maximum file name length
+    filename(prompt) {
+      if (prompt.length <= MAX_NAME_LENGTH) {
+        return prompt
+      }
+
+      const idx = prompt.lastIndexOf(' ', MAX_NAME_LENGTH)
+      return prompt.slice(0, idx > 0 ? idx : MAX_NAME_LENGTH)
+    },
+
     record() {
-      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
+      this.dictation.toggle((text) => {
+        this.chat = (this.chat ? this.chat + ' ' : '') + text
+      })
     },
 
     remove(idx) {
@@ -187,7 +218,7 @@ export default {
   <CmsDialog
     :model-value="modelValue"
     :title="$gettext('Create image')"
-    :card-loading="loading ? 'primary' : false"
+    :card-loading="loading || uploading ? 'primary' : false"
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
   >
@@ -195,10 +226,10 @@ export default {
       <v-btn
         v-if="user.can('audio:transcribe')"
         @click="record()"
-        :class="{ dictating: audio }"
-        :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
+        :class="{ dictating: dictation.active() }"
+        :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
         :aria-label="$gettext('Dictate')"
-        :loading="dictating"
+        :loading="dictation.busy()"
       />
     </template>
 
@@ -258,7 +289,7 @@ export default {
     </div>
 
     <h3 class="section-title text-button">{{ $gettext('Select images') }}</h3>
-    <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" />
+    <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" embed />
   </CmsDialog>
 </template>
 

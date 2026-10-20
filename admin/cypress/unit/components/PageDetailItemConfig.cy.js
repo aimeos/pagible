@@ -97,10 +97,13 @@ describe('PageDetailItemSection (config)', () => {
   it('adds canonical config items without a group', () => {
     const page = { id: '1', config: {} }
 
-    mountConfig({ item: page }, { 'page:save': true, 'page:config': true }).then(({ wrapper }) => {
+    const onPatch = cy.spy()
+
+    mountConfig({ item: page, onPatch }, { 'page:save': true, 'page:config': true }).then(({ wrapper }) => {
       wrapper.findComponent(PageDetailItemSection).vm.add({ type: 'tracking' })
 
-      expect(page.config.tracking).to.deep.equal({
+      expect(page.config).to.deep.equal({})
+      expect(onPatch.lastCall.args[0].config.tracking).to.deep.equal({
         type: 'tracking',
         data: {},
         files: [],

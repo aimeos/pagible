@@ -6,20 +6,21 @@ import { mdiUndoVariant } from '@mdi/js'
 import CmsDialog from './Dialog.vue'
 import { fields, words } from '../history'
 import { itemTitle, stringify } from '../utils'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
 
 export default {
+  mixins: [typeLabelMixin],
+
   components: {
     CmsDialog
   },
 
   props: {
     modelValue: { type: Boolean, default: false },
-    changed: { type: Object, default: null },
-    targets: { type: Object, default: () => ({}) }
+    changed: { type: Object, default: null }
   },
 
-  emits: ['update:modelValue', 'resolve'],
+  emits: ['update:modelValue', 'resolve', 'unresolve'],
 
   setup() {
     return { mdiUndoVariant, stringify }
@@ -94,6 +95,17 @@ export default {
       return map
     },
 
+    // conflicts by section with their changes, so the template doesn't look them up repeatedly
+    sections() {
+      return Object.entries(this.conflicts).map(([name, section]) => ({
+        name,
+        entries: Object.entries(section).map(([key, info]) => {
+          const id = `${name}.${key}`
+          return { id, key, info, change: this.changes[id] || {} }
+        })
+      }))
+    },
+
     totalConflicts() {
       return Object.values(this.conflicts).reduce((sum, s) => sum + Object.keys(s).length, 0)
     },
@@ -130,10 +142,6 @@ export default {
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     // field word diffs for objects, line diffs with word highlights for other values
     diff(a, b, isObj) {
       if (isObj) {
@@ -178,7 +186,7 @@ export default {
       }))
     },
 
-    label(name, key, info) {
+    label(key, info) {
       const block = info.current || info.overwritten
 
       return block?.type
@@ -194,30 +202,10 @@ export default {
       this.resolve(section, key, merged)
     },
 
+    // the owner applies the value to its item and marks the conflict as resolved
     resolve(section, key, value) {
-      const info = this.changed[section][key]
-      const [target, idx] = this.target(section, key)
-
-      if (target) {
-        info.snapshot = target[idx]
-        target[idx] = value
-      }
-
-      info.resolved = value
+      this.$emit('resolve', { section, key, value })
       this.resolved.add(`${section}.${key}`)
-      this.$emit('resolve')
-    },
-
-    // target list or object of the section and the index or key of the entry, no target if not found
-    target(section, key) {
-      const target = this.targets[section]
-
-      if (Array.isArray(target)) {
-        const idx = target.findIndex((b) => (b.id || b.refid) === key)
-        return idx >= 0 ? [target, idx] : [null, -1]
-      }
-
-      return [target, key]
     },
 
     title(block) {
@@ -226,16 +214,7 @@ export default {
     },
 
     unresolve(section, key) {
-      const info = this.changed[section][key]
-      const [target, idx] = this.target(section, key)
-
-      if (target && 'snapshot' in info) {
-        target[idx] = info.snapshot
-      }
-
-      delete info.snapshot
-
-      delete info.resolved
+      this.$emit('unresolve', { section, key })
       this.resolved.delete(`${section}.${key}`)
     },
 
@@ -258,21 +237,21 @@ export default {
         {{ $gettext('%{count} / %{total}', { count: resolved.size, total: totalConflicts }) }}
       </span>
     </template>
-    <template v-for="(section, name) in conflicts" :key="name">
+    <template v-for="{ name, entries } in sections" :key="name">
       <h3 class="section-header">
         <v-chip size="small" label>{{ labels[name] || name }}</v-chip>
       </h3>
       <v-card
-        v-for="(info, key) in section"
-        :key="key"
+        v-for="{ id, key, info, change } in entries"
+        :key="id"
         variant="outlined"
         class="conflict-card mb-3"
-        :class="{ solved: resolved.has(`${name}.${key}`) }"
+        :class="{ solved: resolved.has(id) }"
       >
         <v-card-title class="conflict-title text-body-1">
-          <span class="conflict-key">{{ label(name, key, info) }}</span>
+          <span class="conflict-key">{{ label(key, info) }}</span>
           <v-btn
-            v-if="resolved.has(`${name}.${key}`)"
+            v-if="resolved.has(id)"
             size="small"
             variant="text"
             :prepend-icon="mdiUndoVariant"
@@ -280,12 +259,12 @@ export default {
           >{{ $gettext('Revert') }}</v-btn>
         </v-card-title>
         <v-card-text class="pt-0">
-          <div class="conflict-diff" :class="{ 'field-diff': changes[`${name}.${key}`]?.isObj }" role="group" :aria-label="$gettext('Changes')">
-            <template v-if="changes[`${name}.${key}`]?.mineDiff || changes[`${name}.${key}`]?.isObj">
-              <template v-for="side in changes[`${name}.${key}`].sides" :key="side.css">
+          <div class="conflict-diff" :class="{ 'field-diff': change.isObj }" role="group" :aria-label="$gettext('Changes')">
+            <template v-if="change.mineDiff || change.isObj">
+              <template v-for="side in change.sides" :key="side.css">
                 <template v-for="(entry, idx) in side.diff" :key="idx">
                   <span class="diff-symbol">{{ side.symbol }}</span>
-                  <span v-if="changes[`${name}.${key}`].isObj" class="diff-label">{{ entry.label }}</span>
+                  <span v-if="change.isObj" class="diff-label">{{ entry.label }}</span>
                   <div v-if="entry.words" :class="side.css"><span
                     v-for="(word, wi) in entry.words" :key="wi"
                     :class="{ 'highlight-removed': word.removed, 'highlight-added': word.added }"
@@ -296,7 +275,7 @@ export default {
               </template>
             </template>
             <template v-else>
-              <template v-for="(entry, idx) in changes[`${name}.${key}`]?.theirsDiff" :key="idx">
+              <template v-for="(entry, idx) in change.theirsDiff" :key="idx">
                 <template v-if="entry.removed">
                   <span class="diff-symbol">−</span>
                   <div class="removed" :aria-label="$gettext('Removed')"><span
@@ -313,14 +292,14 @@ export default {
                 </template>
               </template>
             </template>
-            <template v-for="(field, idx) in changes[`${name}.${key}`]?.merged" :key="'g' + idx">
+            <template v-for="(field, idx) in change.merged" :key="'g' + idx">
               <span class="diff-symbol">⇒</span>
-              <span v-if="changes[`${name}.${key}`].isObj" class="diff-label">{{ field.label }}</span>
+              <span v-if="change.isObj" class="diff-label">{{ field.label }}</span>
               <div class="merged">{{ field.value }}</div>
             </template>
           </div>
         </v-card-text>
-        <v-card-actions v-if="!resolved.has(`${name}.${key}`)" class="justify-center">
+        <v-card-actions v-if="!resolved.has(id)" class="justify-center">
           <v-btn
             color="error"
             class="option"
@@ -334,7 +313,7 @@ export default {
             @click="resolve(name, key, info.current)"
           >{{ $gettext('Keep mine') }}</v-btn>
           <v-btn
-            v-if="changes[`${name}.${key}`]?.merge != null"
+            v-if="change.merge != null"
             color="primary"
             class="option"
             variant="tonal"

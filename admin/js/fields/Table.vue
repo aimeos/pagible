@@ -12,53 +12,58 @@ import {
   mdiTableRowPlusAfter
 } from '@mdi/js'
 import { vDraggable } from 'vue-draggable-plus'
+import ActionItem from '../components/ActionItem.vue'
 import ActionMenu from '../components/ActionMenu.vue'
-import { minColumns, maxColumns } from '../rules'
-import { debounce } from '../utils'
+import { minRows, maxRows } from '../rules'
+import { debounce, moveStep, DRAG_ANIMATION, INPUT_DELAY } from '../utils'
+import { fieldBase } from '../field'
+
+// unique column IDs so moved and inserted columns keep their DOM state
+let columnId = 0
 
 export default {
-  components: { ActionMenu },
+  extends: fieldBase,
+
+  components: { ActionItem, ActionMenu },
 
   directives: { draggable: vDraggable },
 
   setup() {
     return {
+      DRAG_ANIMATION,
       mdiDotsVertical,
       mdiDragHorizontal,
-      mdiDragVertical,
-      mdiTableColumnPlusBefore,
-      mdiTableColumnPlusAfter,
-      mdiDelete,
-      mdiTableRowPlusBefore,
-      mdiTableRowPlusAfter,
-      debounce
+      mdiDragVertical
     }
   },
 
   props: {
-    modelValue: { type: Array, default: () => [] },
-    config: { type: Object, default: () => ({}) },
-    readonly: { type: Boolean, default: false },
-    context: { type: Object }
+    modelValue: { type: Array, default: () => [] }
   },
-
-  emits: ['update:modelValue', 'error'],
 
   data() {
     return {
       columns: this.header(),
-      lastError: null,
-      table: this.modelValue
+      // own working copy of the rows, the modelValue prop is never changed in place
+      table: this.copy(this.modelValue)
     }
   },
 
   created() {
-    this.validated = this.debounce(this.validate, 500)
-    this.updated = this.debounce(this.update, 500)
+    this.updated = debounce(this.update, INPUT_DELAY)
+    // stable keys for the row arrays, they move with the rows when dragging
+    this.rowKeys = new WeakMap()
+    this.rowSeq = 0
+    // last value emitted by the field, the model watcher ignores it when it comes back
+    this.emitted = null
 
     if (!this.table.length) {
-      this.$emit('update:modelValue', this.config.default ?? [['']])
+      this.$emit('update:modelValue', this.copy(this.config.default ?? [['']]))
     }
+  },
+
+  beforeUnmount() {
+    this.updated.flush() // don't lose the last edit
   },
 
   computed: {
@@ -68,17 +73,36 @@ export default {
 
     rules() {
       return [
-        minColumns(this.$ngettext, this.config.min),
-        maxColumns(this.$ngettext, this.config.max)
+        minRows(this.$ngettext, this.config.min),
+        maxRows(this.$ngettext, this.config.max)
       ]
     }
   },
 
   methods: {
+    // entries of the column action menu
+    colActions(idx) {
+      return [
+        { icon: mdiTableColumnPlusBefore, label: this.$gettext('Insert before'), fn: () => this.addCol(idx) },
+        { icon: mdiTableColumnPlusAfter, label: this.$gettext('Insert after'), fn: () => this.addCol(idx + 1) },
+        { icon: mdiDelete, label: this.$gettext('Remove'), fn: () => this.rmCol(idx), hide: this.cols.length <= 1 }
+      ].filter((action) => !action.hide)
+    },
+
+    // entries of the row action menu
+    rowActions(idx) {
+      return [
+        { icon: mdiTableRowPlusBefore, label: this.$gettext('Insert before'), fn: () => this.addRow(idx) },
+        { icon: mdiTableRowPlusAfter, label: this.$gettext('Insert after'), fn: () => this.addRow(idx + 1) },
+        { icon: mdiDelete, label: this.$gettext('Remove'), fn: () => this.rmRow(idx), hide: this.table.length <= 1 }
+      ].filter((action) => !action.hide)
+    },
+
     addCol(index) {
-      this.columns.splice(index + 1, 0, true)
+      // the first column entry is the placeholder of the row handle column
+      this.columns.splice(index + 1, 0, ++columnId)
       this.table.forEach((row) => row.splice(index, 0, ''))
-      this.$emit('update:modelValue', this.table)
+      this.update()
     },
 
     addRow(index) {
@@ -87,63 +111,125 @@ export default {
         0,
         this.cols.map(() => '')
       )
-      this.$emit('update:modelValue', this.table)
+      this.update()
+    },
+
+    copy(table) {
+      return (table || []).map((row) => [...row])
     },
 
     header() {
       const size = this.modelValue.reduce((max, row) => Math.max(max, row.length), 0)
-      const cols = Array(size).fill(true)
+      // keep the IDs of the existing columns, otherwise all cells are re-created after each update
+      const ids = (this.columns || []).filter(Boolean).slice(0, size)
 
-      cols.unshift(null)
-      cols.push(null)
+      while (ids.length < size) {
+        ids.push(++columnId)
+      }
 
-      return cols
+      return [null, ...ids, null]
     },
 
     move(ev) {
-      if (ev.oldIndex === ev.newIndex) return
+      const ids = this.columns.filter(Boolean)
+      // the placeholders of the handle and action columns must stay at both ends
+      const from = ev.oldIndex - 1
+      const to = Math.min(Math.max(ev.newIndex - 1, 0), ids.length - 1)
+
+      this.columns.splice(0, this.columns.length, null, ...ids, null)
+
+      if (from === to) return
 
       this.table.forEach((row) => {
-        row.splice(ev.newIndex - 1, 0, row.splice(ev.oldIndex - 1, 1)[0])
+        row.splice(to, 0, row.splice(from, 1)[0])
       })
 
-      this.$emit('update:modelValue', this.table)
+      this.update()
+    },
+
+    // moves the column by keyboard, the handle keeps the focus
+    moveCol(ev, idx) {
+      const step = moveStep(ev, true, this.$vuetify.locale.isRtl)
+
+      if (!step) return
+
+      // Alt+ArrowLeft would navigate back in the browser history otherwise
+      ev.preventDefault()
+
+      const pos = idx + step
+      const target = ev.currentTarget
+
+      if (pos < 0 || pos >= this.cols.length) return
+
+      // the first column entry is the placeholder of the row handle column
+      this.columns.splice(pos + 1, 0, this.columns.splice(idx + 1, 1)[0])
+      this.table.forEach((row) => row.splice(pos, 0, row.splice(idx, 1)[0]))
+
+      this.update()
+      this.$nextTick(() => target.focus())
+    },
+
+    // moves the row by keyboard, the handle keeps the focus
+    moveRow(ev, idx) {
+      const step = moveStep(ev)
+
+      if (!step) return
+
+      ev.preventDefault()
+
+      const pos = idx + step
+      const target = ev.currentTarget
+
+      if (pos < 0 || pos >= this.table.length) return
+
+      this.table.splice(pos, 0, this.table.splice(idx, 1)[0])
+
+      this.update()
+      this.$nextTick(() => target.focus())
+    },
+
+    movable(ev) {
+      return !ev.related?.classList.contains('col-fixed')
     },
 
     rmCol(index) {
       if (this.cols.length <= 1) return
 
-      this.columns.splice(index, 1)
+      // the first column entry is the placeholder of the row handle column
+      this.columns.splice(index + 1, 1)
       this.table.forEach((row) => row.splice(index, 1))
 
-      this.$emit('update:modelValue', this.table)
+      this.update()
+    },
+
+    rowKey(row) {
+      if (!this.rowKeys.has(row)) {
+        this.rowKeys.set(row, ++this.rowSeq)
+      }
+
+      return this.rowKeys.get(row)
     },
 
     rmRow(index) {
       if (this.table.length <= 1) return
 
       this.table.splice(index, 1)
-      this.$emit('update:modelValue', this.table)
+      this.update()
     },
 
+    // emits a copy so the parent's value and the working copy never share rows
     update() {
-      this.$emit('update:modelValue', this.table)
-    },
-
-    validate(val) {
-      const hasError = !this.rules.every((rule) => rule(val) === true)
-      if (hasError !== this.lastError) {
-        this.lastError = hasError
-        this.$emit('error', hasError)
-      }
+      this.emitted = this.copy(this.table)
+      this.$emit('update:modelValue', this.emitted)
     }
   },
 
   watch: {
     modelValue: {
       handler(val) {
-        this.table = val
-        this.validated(val)
+        if (val !== this.emitted) {
+          this.table = this.copy(val)
+        }
         this.columns = this.header()
       }
     }
@@ -156,16 +242,19 @@ export default {
     <table>
       <thead>
         <tr
-          v-draggable="[columns, { animation: 300, handle: '.col-handle', onUpdate: move }]"
+          v-draggable="[columns, { animation: DRAG_ANIMATION, disabled: readonly, handle: '.col-handle', onMove: movable, onUpdate: move }]"
           class="col-header"
         >
-          <td></td>
+          <td class="col-fixed"></td>
 
-          <td v-for="(col, idx) in cols" :key="idx">
+          <td v-for="(col, idx) in cols" :key="col">
             <v-btn
+              v-if="!readonly"
               variant="text"
               class="col-handle cursor-move"
               :aria-label="$gettext('Move column')"
+              aria-keyshortcuts="Alt+ArrowLeft Alt+ArrowRight"
+              @keydown="moveCol($event, idx)"
               :icon="mdiDragHorizontal"
             />
 
@@ -175,41 +264,37 @@ export default {
                   <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
                 </template>
 
-                <v-list-item
-                  v-for="item in [
-                    { icon: mdiTableColumnPlusBefore, label: $gettext('Insert before'), fn: () => addCol(idx) },
-                    { icon: mdiTableColumnPlusAfter, label: $gettext('Insert after'), fn: () => addCol(idx + 1) },
-                    { icon: mdiDelete, label: $gettext('Remove'), fn: () => rmCol(idx), hide: cols.length <= 1 }
-                  ].filter((item) => !item.hide)"
-                  :key="item.icon"
-                >
-                  <v-btn :prepend-icon="item.icon" variant="text" @click="item.fn()">{{
-                    item.label
-                  }}</v-btn>
-                </v-list-item>
+                <ActionItem v-for="action in colActions(idx)" :key="action.icon" :prepend-icon="action.icon" @click="action.fn()">
+                  {{ action.label }}
+                </ActionItem>
               </ActionMenu>
             </span>
           </td>
 
-          <td></td>
+          <td class="col-fixed"></td>
         </tr>
       </thead>
 
-      <tbody v-draggable="[table, { animation: 300, handle: '.row-handle', onUpdate: update }]">
-        <tr v-for="(row, rowidx) in table" :key="rowidx">
+      <tbody v-draggable="[table, { animation: DRAG_ANIMATION, disabled: readonly, handle: '.row-handle', onUpdate: update }]">
+        <tr v-for="(row, rowidx) in table" :key="rowKey(row)">
           <td>
             <v-btn
+              v-if="!readonly"
               :aria-label="$gettext('Move row')"
+              aria-keyshortcuts="Alt+ArrowUp Alt+ArrowDown"
+              @keydown="moveRow($event, rowidx)"
               variant="text"
               class="row-handle cursor-move"
               :icon="mdiDragVertical"
             />
           </td>
 
-          <td v-for="(col, colidx) in cols" :key="colidx">
+          <td v-for="(col, colidx) in cols" :key="col">
             <v-textarea
               v-model="table[rowidx][colidx]"
+              :aria-label="$gettext('Row %{row}, column %{col}', { row: rowidx + 1, col: colidx + 1 })"
               @input="updated()"
+              :readonly="readonly"
               variant="plain"
               rows="1"
               auto-grow
@@ -224,18 +309,9 @@ export default {
                   <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
                 </template>
 
-                <v-list-item
-                  v-for="item in [
-                    { icon: mdiTableRowPlusBefore, label: $gettext('Insert before'), fn: () => addRow(rowidx) },
-                    { icon: mdiTableRowPlusAfter, label: $gettext('Insert after'), fn: () => addRow(rowidx + 1) },
-                    { icon: mdiDelete, label: $gettext('Remove'), fn: () => rmRow(rowidx), hide: table.length <= 1 }
-                  ].filter((item) => !item.hide)"
-                  :key="item.icon"
-                >
-                  <v-btn :prepend-icon="item.icon" variant="text" @click="item.fn()">{{
-                    item.label
-                  }}</v-btn>
-                </v-list-item>
+                <ActionItem v-for="action in rowActions(rowidx)" :key="action.icon" :prepend-icon="action.icon" @click="action.fn()">
+                  {{ action.label }}
+                </ActionItem>
               </ActionMenu>
             </span>
           </td>

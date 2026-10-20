@@ -1,6 +1,7 @@
 import ShortcutDialog from '../../../js/components/ShortcutDialog.vue'
 import { useUserStore } from '../../../js/stores'
-import { commands, routes, shortcuts } from '../../../js/shortcuts'
+import { commands, routes } from '../../../js/commands'
+import { shortcuts } from '../../../js/shortcuts'
 
 describe('ShortcutDialog', () => {
   const all = Object.fromEntries(

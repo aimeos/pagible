@@ -4,7 +4,8 @@
 import gql from 'graphql-tag'
 import { domain } from '../rules'
 import { useAppStore, useUserStore, useSchemaStore } from '../stores'
-import { cacheItems, debounce, locales, slugify, statusItems } from '../utils'
+import { cacheItems, localeItems, statusItems } from '../options'
+import { debounce, INPUT_DELAY, REQUEST_DELAY, slugify } from '../utils'
 
 const REDIRECT_REGEX = /^((https?:)?\/\/([^\s/:@]+(:[^\s/:@]+)?@)?([0-9a-z]+(\.|-))*[0-9a-z]+\.[a-z]{2,}(:[0-9]{1,5})?)?(\/[^\s]*)?$/
 
@@ -23,11 +24,14 @@ export default {
     item: { type: Object, required: true }
   },
 
-  emits: ['change', 'error'],
+  emits: ['patch', 'error'],
 
   data: () => ({
     errors: {},
-    messages: {}
+    fieldMessages: {},
+    // sequence numbers of the latest path check and validation
+    pathSeq: 0,
+    validateSeq: 0
   }),
 
   setup() {
@@ -35,15 +39,32 @@ export default {
     const user = useUserStore()
     const app = useAppStore()
 
-    return { app, user, schemas, debounce, slugify, locales, cacheItems: cacheItems(), statusItems: statusItems() }
+    return { app, user, schemas, slugify, localeItems, cacheItems: cacheItems(), statusItems: statusItems() }
   },
 
   created() {
-    this.checkPathd = this.debounce(this.checkPath, 500)
-    this.validated = this.debounce(() => this.validate(true), 300)
+    this.debouncedCheckPath = debounce(this.checkPath, REQUEST_DELAY)
+    this.validated = debounce(() => this.validate(true), INPUT_DELAY)
+    this.defaultLanguage()
+  },
+
+  mounted() {
+    // the form shows its errors when it opens, the field refs exist from now on
+    this.validated()
+  },
+
+  beforeUnmount() {
+    this.debouncedCheckPath.cancel()
+    this.validated.cancel()
   },
 
   computed: {
+    // values whose changes revalidate the form
+    validatedValues() {
+      const { title, path, domain, status, theme, type, to, cache, tag, name } = this.item
+      return [title, path, domain, status, theme, type, to, cache, tag, name]
+    },
+
     domainRules() {
       return [...this.requiredRules, domain(this.$gettext)]
     },
@@ -75,40 +96,50 @@ export default {
 
     // the only configured language, there's nothing to choose from then
     defaultLang() {
-      const list = this.locales()
+      const list = this.localeItems()
       return list.length === 1 ? list[0].value : null
     }
   },
 
   methods: {
+    // resolves to the messages of the latest path check, older responses wait for the latest one
     checkPath() {
-      return (
-        this.$apollo
-          ?.query({
-            query: CHECK_PATH,
-            variables: {
-              filter: {
-                path: this.item.path || '',
-                domain: this.item.domain || ''
-              }
-            }
-          })
-          .then((result) => {
-            if (
-              result?.data?.pages?.data?.some((page) => page.id !== this.item.id)
-            ) {
-              this.messages.path = [this.$gettext('The path is already in use by another page')]
-            } else {
-              this.messages.path = []
-            }
+      const seq = ++this.pathSeq
 
-            this.$emit('error', !!this.messages.path.length)
-            return this.messages.path
-          })
-          .catch((error) => {
-            this.$log('PageDetailItemProps::checkPath: Error checking path', error)
-          }) || []
-      )
+      this.pathCheck = this.$apollo
+        ?.query({
+          query: CHECK_PATH,
+          variables: {
+            filter: {
+              path: this.item.path || '',
+              domain: this.item.domain || ''
+            }
+          }
+        })
+        .then((result) => {
+          if (seq !== this.pathSeq) {
+            return this.pathCheck
+          }
+
+          this.fieldMessages.path = result?.data?.pages?.data?.some((page) => page.id !== this.item.id)
+            ? [this.$gettext('The path is already in use by another page')]
+            : []
+
+          return this.fieldMessages.path
+        })
+        .catch((error) => {
+          this.$log('PageDetailItemProps::checkPath: Error checking path', error)
+          return []
+        })
+
+      return this.pathCheck || []
+    },
+
+    // sets the only configured language if none is chosen
+    defaultLanguage() {
+      if (!this.item.lang && this.defaultLang && !this.readonly) {
+        this.update('lang', this.defaultLang)
+      }
     },
 
     reset() {
@@ -127,23 +158,24 @@ export default {
       const types = this.schemas.themes[event || 'cms']?.types || { page: '' }
 
       if (!types[this.item.type]) {
-        this.item.type = ''
+        this.update('type', '')
       }
     },
 
     update(what, value) {
-      this.item[what] = typeof value === 'string' ? value.trim() : value
-      this.$emit('change', true)
+      this.$emit('patch', { [what]: typeof value === 'string' ? value.trim() : value })
     },
 
     updatePath(value) {
       this.update('path', this.slugify(value))
-      this.checkPath()
+      this.validate()
     },
 
+    // emits the combined error state of the latest validation
     async validate(lazy = false) {
+      const seq = ++this.validateSeq
       await this.$nextTick()
-      const list = [lazy ? this.checkPathd() : this.checkPath()]
+      const list = [lazy ? this.debouncedCheckPath() : this.checkPath()]
 
       Object.values(this.$refs).filter(field => field).forEach((field) => {
         list.push(field.validate())
@@ -151,61 +183,23 @@ export default {
 
       return Promise.all(list).then((result) => {
         const res = result.reduce((sum, r) => sum + (r?.length || 0), 0)
-        this.$emit('error', !!res)
+
+        if (seq === this.validateSeq) {
+          this.$emit('error', !!res)
+        }
         return res || true
       })
     }
   },
 
   watch: {
-    'item.title': {
-      immediate: true,
-      handler() { this.validated?.() }
+    validatedValues() {
+      this.validated()
     },
-    'item.path': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.domain': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.status': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.lang': {
-      immediate: true,
-      handler(lang) {
-        if (!lang && this.defaultLang && !this.readonly) {
-          this.update('lang', this.defaultLang)
-        }
-        this.validated?.()
-      }
-    },
-    'item.theme': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.type': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.to': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.cache': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.tag': {
-      immediate: true,
-      handler() { this.validated?.() }
-    },
-    'item.name': {
-      immediate: true,
-      handler() { this.validated?.() }
+
+    'item.lang'() {
+      this.defaultLanguage()
+      this.validated()
     }
   }
 }
@@ -231,7 +225,7 @@ export default {
         <v-col v-if="!defaultLang || item.lang !== defaultLang" cols="12" md="6">
           <v-select
             ref="lang"
-            :items="locales()"
+            :items="localeItems()"
             :rules="requiredRules"
             :readonly="readonly || item.variants?.some((v) => v.id && v.lang !== item.lang)"
             :modelValue="item.lang"
@@ -272,8 +266,8 @@ export default {
             ref="path"
             class="path"
             :rules="pathRules"
-            :error="!!(messages.path || []).length"
-            :error-messages="messages.path"
+            :error="!!(fieldMessages.path || []).length"
+            :error-messages="fieldMessages.path"
             :readonly="readonly"
             :modelValue="item.path"
             :label="$gettext('URL path') + ' ‒ ' + $gettext('Part of the page URL after the domain, e.g. about-us')"

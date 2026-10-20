@@ -278,7 +278,7 @@ describe('File List', () => {
     visitFiles([file])
     cy.get('.layout .v-btn.btn-grid').click()
     cy.get('.items.grid').should('exist')
-    cy.get('.layout .v-btn.btn-list').click()
+    cy.get('.layout .v-btn.btn-grid').click()
     cy.get('.items.list').should('exist')
   })
 

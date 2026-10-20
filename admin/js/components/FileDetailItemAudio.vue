@@ -1,7 +1,7 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { fileurl } from '../utils'
+import { fileurl } from '../urls'
 
 export default {
   props: {

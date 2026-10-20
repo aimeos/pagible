@@ -3,23 +3,27 @@
 <script>
 import gql from 'graphql-tag'
 import {
-  mdiFormatListBulletedSquare,
   mdiLock,
   mdiMusic,
-  mdiPlusLock,
   mdiTranslate,
   mdiViewGridOutline,
   mdiYoutube
 } from '@mdi/js'
 import ActionItem from './ActionItem.vue'
-import ActionMenu from './ActionMenu.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
+import FileUploadButtons from './FileUploadButtons.vue'
+import ListBulkMenu from './ListBulkMenu.vue'
+import ListItemMenu from './ListItemMenu.vue'
+import ListReload from './ListReload.vue'
+import ListSearch from './ListSearch.vue'
 import ListStatus from './ListStatus.vue'
 import ListSort from './ListSort.vue'
-import { createFile, FILE_FIELDS, normalizeFile } from '../files'
+import { createFile, FILE_FIELDS, normalizeFile, previewUrl } from '../files'
 import { listBase, useList } from '../lists'
 import { useLanguageStore } from '../stores'
-import { fileurl, filesrcset } from '../utils'
+import { filesrcset } from '../urls'
+import { formatDate } from '../utils'
+import { versionMeta } from '../pages'
 
 const FILE_LIST_FIELDS = `...CmsFileFields
         latest {
@@ -81,13 +85,22 @@ const SORT_OPTIONS = Object.freeze([
   { column: 'BYVERSIONS_COUNT', order: 'ASC', label: 'Usage' }
 ])
 
+// the server accepts at most 100 files and 10 languages per translation request,
+// smaller file chunks keep the requests short and show the progress more often
+const TRANSLATE_FILES_CHUNK = 10
+const TRANSLATE_LANGS_CHUNK = 10
+
 export default {
   extends: listBase,
 
   components: {
     ActionItem,
-    ActionMenu,
+    ListBulkMenu,
+    ListItemMenu,
     EditBulkDialog,
+    FileUploadButtons,
+    ListReload,
+    ListSearch,
     ListStatus,
     ListSort
   },
@@ -98,7 +111,7 @@ export default {
 
   data() {
     return {
-      vgrid: this.user.getData('file', 'grid') ?? this.grid,
+      vgrid: this.settings.getData('file', 'grid') ?? this.grid,
       // progress of the running translation as { done, total } or null
       translating: null
     }
@@ -109,24 +122,32 @@ export default {
       ...useList('file', FETCH_FILES, (vm) => vm.$refs.upload?.click()),
       languages: useLanguageStore(),
       mdiViewGridOutline,
-      mdiFormatListBulletedSquare,
       mdiLock,
       mdiMusic,
-      mdiPlusLock,
       mdiTranslate,
       mdiYoutube,
       sortOptions: SORT_OPTIONS,
-      fileurl,
-      filesrcset
+      filesrcset,
+      formatDate,
+      previewUrl
     }
   },
 
   methods: {
+    upload(disk) {
+      this.$refs[disk === 'private' ? 'uploadPrivate' : 'upload']?.click()
+    },
+
     add(ev, disk = 'public') {
       if (this.embed || !this.user.can('file:add')) return this.messages.denied()
 
       const promises = []
-      const files = ev.target.files || ev.dataTransfer.files || []
+      const files = [...(ev.target.files || ev.dataTransfer?.files || [])]
+
+      // allows selecting the same files again, e.g. after a failed upload
+      if (ev.target.files) {
+        ev.target.value = ''
+      }
 
       if (!files.length) {
         return
@@ -177,62 +198,68 @@ export default {
     },
 
     hydrate(entry) {
-      const latest = entry.latest
-
       return Object.assign(normalizeFile(entry), {
         disk: entry.disk,
         id: entry.id,
         deleted_at: entry.deleted_at,
         created_at: entry.created_at,
-        updated_at: latest?.created_at || entry.updated_at,
-        editor: latest?.editor || entry.editor,
-        published: latest?.published ?? true,
-        publish_at: latest?.publish_at || null,
-        latest_id: latest?.id || null,
+        ...versionMeta(entry),
         usage: entry.byversions_count
       })
     },
 
     // fills in the missing descriptions in all languages as file drafts; the server translates each
-    // language sequentially, so small chunks keep the requests short and the action label shows the progress.
-    // The server accepts at most 100 files and 10 languages per request
+    // language sequentially, so small chunks keep the requests short and the action label shows the progress
     async translate(item = null) {
-      const list = this.canTranslate() ? (item ? [item] : this.selected()).filter((item) => !item.deleted_at) : []
+      const list = this.canTranslate() ? this.targets(item).filter((item) => !item.deleted_at) : []
 
       if (!list.length || this.translating) {
         return
       }
 
       const ids = list.map((item) => item.id)
-      const total = ids.length
-      const langs = this.languages.available
-      const size = 10
+
+      this.translating = { done: 0, total: ids.length }
+
+      const { files, failure } = await this.translateChunks(ids, this.languages.available)
+      const done = this.translating.done
+
+      this.translating = null
+      this.translated(files, failure, ids, done)
+    },
+
+    // translates the descriptions chunk by chunk and resolves to the latest drafts and the error if one failed
+    async translateChunks(ids, langs) {
       // the latest draft of each file, later language groups add to the drafts of the earlier ones
       const files = new Map()
-      let failure = null
-
-      this.translating = { done: 0, total }
 
       try {
-        for (let i = 0; i < total; i += size) {
-          for (let j = 0; j < langs.length; j += 10) {
+        for (let i = 0; i < ids.length; i += TRANSLATE_FILES_CHUNK) {
+          for (let j = 0; j < langs.length; j += TRANSLATE_LANGS_CHUNK) {
             const result = await this.$apollo.mutate({
               mutation: TRANSLATE_FILES,
-              variables: { id: ids.slice(i, i + size), lang: langs.slice(j, j + 10) }
+              variables: {
+                id: ids.slice(i, i + TRANSLATE_FILES_CHUNK),
+                lang: langs.slice(j, j + TRANSLATE_LANGS_CHUNK)
+              }
             })
 
             for (const entry of result.data?.translateFiles || []) {
               files.set(entry.id, entry)
             }
           }
-          this.translating.done = Math.min(i + size, total)
+          this.translating.done = Math.min(i + TRANSLATE_FILES_CHUNK, ids.length)
         }
       } catch (error) {
-        failure = error
+        return { files, failure: error }
       }
 
-      const done = this.translating.done
-      this.translating = null
+      return { files, failure: null }
+    },
+
+    // updates the translated files and reports the result
+    translated(files, failure, ids, done) {
+      const total = ids.length
 
       // results of the chunks processed before a failure are kept
       if (files.size) {
@@ -254,7 +281,7 @@ export default {
           failure,
           ids.slice(done)
         )
-      } else if (!files.length) {
+      } else if (!files.size) {
         this.messages.add(this.$gettext('No missing descriptions to translate'), 'info')
       }
     }
@@ -262,7 +289,7 @@ export default {
 
   watch: {
     vgrid(val) {
-      this.user.saveData('file', 'grid', val)
+      this.settings.saveData('file', 'grid', val)
     }
   }
 }
@@ -272,124 +299,55 @@ export default {
   <div class="header">
     <div class="bulk">
       <v-checkbox-btn
-        :model-value="checked.size > 0"
+        :model-value="allChecked"
+        :indeterminate="isChecked && !allChecked"
         @click.stop="toggle()"
         :aria-label="$gettext('Toggle selection')"
       />
 
-      <span class="btn-actions">
-        <ActionMenu>
-          <template #activator="{ props, label }">
-            <v-btn
-              v-bind="props"
-              :disabled="!isChecked || embed || !user.can('file:add')"
-              :title="label"
-              :icon="mdiDotsVertical"
-              variant="text"
-            />
-          </template>
-          <ActionItem v-if="counts.draft && user.can('file:publish')" :prepend-icon="mdiPublish" @click="publish()">
-            {{ $gettext('Publish') }} ({{ counts.draft }})
-          </ActionItem>
-          <ActionItem v-if="isChecked && user.can('file:save')" :prepend-icon="mdiPencil" @click="edit()">
-            {{ $gettext('Edit properties') }} ({{ counts.all }})
-          </ActionItem>
-          <ActionItem
-            v-if="counts.live && canTranslate()"
-            :prepend-icon="mdiTranslate"
-            :disabled="translating"
-            class="action-translate"
-            @click="translate()"
-          >
-            {{ $gettext('Translate descriptions') }}
-            ({{ translating ? translating.done + '/' + translating.total : counts.live }})
-          </ActionItem>
-          <ActionItem v-if="counts.live && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop()">
-            {{ $gettext('Delete') }} ({{ counts.live }})
-          </ActionItem>
-          <ActionItem v-if="counts.trashed && user.can('file:keep')" :prepend-icon="mdiDeleteRestore" @click="keep()">
-            {{ $gettext('Restore') }} ({{ counts.trashed }})
-          </ActionItem>
-          <ActionItem v-if="isChecked && user.can('file:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
-            {{ $gettext('Purge') }} ({{ counts.all }})
-          </ActionItem>
-        </ActionMenu>
-      </span>
+      <ListBulkMenu
+        type="file"
+        :counts="counts"
+        :selected="isChecked"
+        :disabled="!isChecked || embed"
+        @publish="publish()"
+        @edit="edit()"
+        @drop="drop()"
+        @keep="keep()"
+        @purge="purge()"
+      >
+        <ActionItem
+          v-if="counts.live && canTranslate()"
+          :prepend-icon="mdiTranslate"
+          :disabled="translating"
+          class="action-translate"
+          @click="translate()"
+        >
+          {{ $gettext('Translate descriptions') }}
+          ({{ translating ? translating.done + '/' + translating.total : counts.live }})
+        </ActionItem>
+      </ListBulkMenu>
 
-      <div v-if="!this.embed && user.can('file:add')" class="upload-actions">
+      <template v-if="!embed && user.can('file:add')">
         <input @change="add($event, 'public')" ref="upload" type="file" multiple hidden />
         <input @change="add($event, 'private')" ref="uploadPrivate" type="file" multiple hidden />
-        <v-btn
-          @click="$refs.upload.click()"
-          :title="$gettext('Add files')"
-          :disabled="loading"
-          :icon="mdiPlus"
-          class="btn-add"
-          color="primary"
-          variant="tonal"
-        />
-        <v-btn
-          v-if="user.can('file:relocate')"
-          @click="$refs.uploadPrivate.click()"
-          :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
-          :disabled="loading"
-          :icon="mdiPlusLock"
-          class="btn-add-private"
-          color="primary"
-          variant="tonal"
-        />
-      </div>
+        <FileUploadButtons :disabled="loading" @upload="upload" />
+      </template>
     </div>
 
-    <div class="search">
-      <v-text-field
-        ref="search"
-        v-model="term"
-        :label="$gettext('Search for')"
-        :prepend-inner-icon="mdiMagnify"
-        variant="underlined"
-        hide-details
-        clearable
-      ></v-text-field>
-    </div>
+    <ListSearch ref="search" v-model="term" />
 
     <div class="layout">
-      <v-btn
-        v-if="outdated"
-        @click="reload()"
-        :prepend-icon="mdiRefresh"
-        :title="$gettext('Updated by another user')"
-        color="warning"
-        variant="tonal"
-        size="small"
-        rounded="lg"
-        class="btn-outdated"
-        >{{ $gettext('Refresh') }}</v-btn
-      >
+      <ListReload :loading="loading" :outdated="outdated" :title="$gettext('Reload files')" @reload="reload()" />
 
+      <!-- one button keeps the focus when switching the view -->
       <v-btn
-        @click="reload()"
-        :loading="loading"
-        :title="$gettext('Reload files')"
-        :icon="mdiRefresh"
-        class="btn-reload"
-        variant="text"
-      />
-
-      <v-btn
-        v-if="!vgrid"
-        @click="vgrid = true"
+        @click="vgrid = !vgrid"
+        :aria-pressed="String(vgrid)"
         :title="$gettext('Grid view')"
         :icon="mdiViewGridOutline"
+        :active="vgrid"
         class="btn-grid"
-        variant="text"
-      />
-      <v-btn
-        v-if="vgrid"
-        @click="vgrid = false"
-        :title="$gettext('List view')"
-        :icon="mdiFormatListBulletedSquare"
-        class="btn-list"
         variant="text"
       />
 
@@ -406,36 +364,22 @@ export default {
       <v-checkbox-btn
         :model-value="checked.has(item.id)"
         @update:model-value="toggleCheck(item)"
+        :aria-label="$gettext('Toggle selection')"
         :class="{ draft: !item.published }"
         class="item-check"
       />
 
-      <ActionMenu :location="vgrid ? 'start' : 'end center'">
-        <template #activator="{ props, label }">
-          <v-btn
-            v-bind="props"
-            :title="label"
-            :icon="mdiDotsVertical"
-            class="btn-actions item-menu"
-            variant="text"
-          />
-        </template>
-        <ActionItem
-          v-show="!item.deleted_at && !item.published && user.can('file:publish')"
-          :prepend-icon="mdiPublish"
-          @click="publish(item)"
-          >{{ $gettext('Publish') }}</ActionItem
-        >
-
-        <v-divider
-          v-if="
-            !item.deleted_at && !item.published && user.can('file:publish') && user.can('file:save')
-          "
-        ></v-divider>
-
-        <ActionItem v-if="user.can('file:save')" :prepend-icon="mdiPencil" @click="edit(item)">
-          {{ $gettext('Edit properties') }}
-        </ActionItem>
+      <ListItemMenu
+        type="file"
+        :item="item"
+        :location="vgrid ? 'start' : 'end center'"
+        activator-class="btn-actions item-menu"
+        @publish="publish(item)"
+        @edit="edit(item)"
+        @drop="drop(item)"
+        @keep="keep(item)"
+        @purge="purge(item)"
+      >
         <ActionItem
           v-if="!item.deleted_at && canTranslate()"
           :prepend-icon="mdiTranslate"
@@ -446,22 +390,7 @@ export default {
           {{ $gettext('Translate descriptions') }}
           <template v-if="translating">({{ translating.done }}/{{ translating.total }})</template>
         </ActionItem>
-
-        <v-divider v-if="user.can('file:save')"></v-divider>
-
-        <ActionItem v-if="!item.deleted_at && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop(item)">
-          {{ $gettext('Delete') }}
-        </ActionItem>
-        <ActionItem
-          v-if="item.deleted_at && user.can('file:keep')"
-          :prepend-icon="mdiDeleteRestore"
-          @click="keep(item)"
-          >{{ $gettext('Restore') }}</ActionItem
-        >
-        <ActionItem v-if="user.can('file:purge')" :prepend-icon="mdiDeleteForever" @click="purge(item)">
-          {{ $gettext('Purge') }}
-        </ActionItem>
-      </ActionMenu>
+      </ListItemMenu>
 
       <a
         href="#"
@@ -475,8 +404,8 @@ export default {
 
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img
-          v-if="item.mime?.startsWith('image/') || (item.mime?.startsWith('video/') && Object.values(item.previews).length)"
-          :src="fileurl(item, Object.values(item.previews)[0] ?? item.path)"
+          v-if="item.mime?.startsWith('image/') || (item.mime?.startsWith('video/') && Object.values(item.previews || {}).length)"
+          :src="previewUrl(item)"
           :srcset="filesrcset(item)"
           :title="item.name"
           :alt="item.name"
@@ -534,7 +463,7 @@ export default {
         <div class="item-aux">
           <div class="item-editor">{{ item.editor }}</div>
           <div class="item-modified item-subtitle">
-            {{ new Date(item.updated_at).toLocaleString() }}
+            {{ formatDate(item.updated_at, $vuetify.locale.current) }}
           </div>
         </div>
       </a>
@@ -551,37 +480,12 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <div v-if="!this.embed && user.can('file:add')" class="btn-group upload-actions">
-    <v-btn
-      @click="$refs.upload.click()"
-      :title="$gettext('Add files')"
-      :disabled="loading"
-      :icon="mdiPlus"
-      class="btn-add"
-      color="primary"
-      variant="tonal"
-    />
-    <v-btn
-      v-if="user.can('file:relocate')"
-      @click="$refs.uploadPrivate.click()"
-      :title="$gettext('Add files') + ': ' + $gettext('Protect access')"
-      :disabled="loading"
-      :icon="mdiPlusLock"
-      class="btn-add-private"
-      color="primary"
-      variant="tonal"
-    />
-  </div>
+  <FileUploadButtons v-if="!embed && user.can('file:add')" :disabled="loading" class="btn-group" @upload="upload" />
 
   <EditBulkDialog v-model="editDialog" :count="editIds.length" @apply="save" />
 </template>
 
 <style scoped>
-.upload-actions {
-  display: flex;
-  gap: 8px;
-}
-
 .layout .v-list-item {
   text-transform: uppercase;
 }
@@ -673,7 +577,7 @@ a.item-usage {
 }
 
 .items.grid .v-list-item .item-check {
-  left: 0;
+  inset-inline-start: 0;
 }
 
 .items.grid .item-usage {
@@ -684,7 +588,7 @@ a.item-usage {
   background: rgba(var(--v-theme-surface-variant), 0.8);
   color: rgb(var(--v-theme-on-surface-variant));
   border-radius: 50%;
-  right: 0;
+  inset-inline-end: 0;
 }
 
 .items.grid .item-preview {

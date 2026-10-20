@@ -1,3 +1,5 @@
+import PageBulkMenu from '../../../js/components/PageBulkMenu.vue'
+import PageLangSelect from '../../../js/components/PageLangSelect.vue'
 import PageListItems from '../../../js/components/PageListItems.vue'
 import { apolloClient } from '../../../js/graphql'
 import { isMac } from '../../../js/commands'
@@ -13,6 +15,12 @@ const stubs = {
 }
 
 function mountList(props = {}, perms = {}, apollo = {}, lang = null) {
+  if (apollo.query) {
+    // the translation store polls the progress with the default client
+    const stub = apolloClient.query.restore ? apolloClient.query : cy.stub(apolloClient, 'query')
+    stub.callsFake((...args) => apollo.query(...args))
+  }
+
   return cy.mount(PageListItems, {
     props: {
       ...props,
@@ -113,6 +121,16 @@ describe('PageListItems', () => {
   it('hides add button without page:add permission', () => {
     mountList({}, { 'page:view': true })
     cy.get('button.btn-add').should('not.exist')
+  })
+
+  it('returns an empty page list without the view permission', () => {
+    mountList({}, {}).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      return vm.pages({}, 1, 10).then((result) => {
+        expect(result).to.deep.equal({ data: [], currentPage: 1, lastPage: 1 })
+      })
+    })
   })
 
   it('shows no entries message when not loading and items are empty', () => {
@@ -305,6 +323,33 @@ describe('PageListItems', () => {
     })
   })
 
+  it('reloads the pages if clearing the cache fails', () => {
+    const query = cy.stub().resolves({
+      data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
+    })
+    const clearStore = cy.stub().rejects(new Error('busy'))
+
+    mountList({ filter: { view: 'list' } }, { 'page:view': true }, {
+      query,
+      provider: { defaultClient: { clearStore } },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      vm.$log = cy.stub()
+
+      return vm.reload().then(() => {
+        expect(vm.$log).to.have.been.calledOnce
+        expect(query).to.have.been.calledTwice
+      })
+    })
+  })
+
+  it('shows the refresh button while the pages are outdated', () => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+      wrapper.findComponent(PageListItems).vm.outdated = true
+    })
+    cy.get('button.btn-outdated').should('contain', 'Refresh')
+  })
+
   it('removes every page list query', () => {
     const evict = cy.stub(apolloClient.cache, 'evict')
     const gc = cy.stub(apolloClient.cache, 'gc')
@@ -406,6 +451,25 @@ describe('PageListItems', () => {
         expect(query.thirdCall.args[0].variables.filter).to.deep.equal({ status: 0, parent_id: 'parent' })
         expect(vm.items[0].children.map((item) => item.id)).to.deep.equal(['child'])
         expect(parent.open).to.equal(true)
+      })
+    })
+  })
+
+  it('updates the bulk menu after toggling the selection', () => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const menu = () => wrapper.findComponent(PageBulkMenu)
+
+      vm.$refs.tree.statsFlat = [{ _checked: false, data: { id: 'page-1' } }]
+
+      return vm.$nextTick().then(() => {
+        expect(menu().props('selected')).to.equal(false)
+
+        vm.toggle()
+        return vm.$nextTick()
+      }).then(() => {
+        expect(vm.$refs.tree.statsFlat[0]._checked).to.equal(true)
+        expect(menu().props('selected')).to.equal(true)
       })
     })
   })
@@ -719,6 +783,70 @@ describe('PageListItems', () => {
     })
   })
 
+  it('pastes copied pages only with page:add and cut pages only with page:move', () => {
+    mountList({}, { 'page:view': true, 'page:add': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const stat = { data: { id: 'page-1' } }
+
+      vm.paste = cy.stub()
+      vm.move = cy.stub()
+
+      vm.clip = { type: 'copy', node: { id: 'page-2' }, stat: {} }
+      expect(vm.menus.map((menu) => menu.label)).to.deep.equal(['Paste', 'Insert'])
+      vm.pasteKey(stat)
+      expect(vm.paste).to.have.been.calledOnceWith(stat, 1)
+
+      vm.clip = { type: 'cut', node: { id: 'page-2' }, stat: {} }
+      expect(vm.pasteAction).to.equal(null)
+      expect(vm.menus.map((menu) => menu.label)).to.deep.equal(['Insert'])
+      vm.pasteKey(stat)
+      expect(vm.move).not.to.have.been.called
+    })
+  })
+
+  it('moves the reordered page before its next sibling', () => {
+    const mutate = cy.stub().resolves({ data: { movePage: { id: 'page-1' } } })
+
+    mountList({}, { 'page:view': true, 'page:move': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+      const parent = { data: { id: 'page-0' } }
+      const first = { data: { id: 'page-1' }, parent }
+      const second = { data: { id: 'page-2' }, parent }
+
+      vm.$refs.tree.getSiblings = () => [first, second]
+      vm.$refs.tree.activeDescendant = first
+
+      vm.reorder({ key: 'ArrowUp' })
+
+      return vm.$nextTick().then(() => {
+        expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: 'page-1', parent: 'page-0', ref: 'page-2' })
+      })
+    })
+  })
+
+  it('tracks the selection state of the tree reactively', () => {
+    mountList({}, { 'page:view': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      expect(vm.isChecked).to.equal(false)
+      expect(vm.allChecked).to.equal(false)
+
+      vm.$refs.tree.statsFlat = [
+        { _checked: true, data: { id: 'page-1' } },
+        { _checked: false, data: { id: 'page-2' } }
+      ]
+      expect(vm.isChecked).to.equal(true)
+      expect(vm.allChecked).to.equal(false)
+
+      vm.$refs.tree.statsFlat[1]._checked = true
+      expect(vm.allChecked).to.equal(true)
+
+      vm.$refs.tree.statsFlat.forEach((stat) => (stat._checked = false))
+      expect(vm.isChecked).to.equal(false)
+      expect(vm.allChecked).to.equal(false)
+    })
+  })
+
   it('clears the selected page subtree with cache:clear permission', () => {
     const mutate = cy.stub().resolves({ data: { clearCache: 3 } })
 
@@ -857,7 +985,7 @@ describe('PageListItems', () => {
       mountList({}, { 'page:view': true }, {}, 'fr').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
         expect(vm.$.proxy.lang).to.equal('fr')
-        expect(vm.langs.map((l) => l.value)).to.deep.equal(['en', 'de', 'fr'])
+        expect(wrapper.findComponent(PageLangSelect).vm.items.map((l) => l.value)).to.deep.equal(['en', 'de', 'fr'])
       })
       cy.get('.lang-select').should('exist')
     })
@@ -1410,7 +1538,7 @@ describe('PageListItems', () => {
       ))
 
       mountList({}, { 'page:view': true }, { query }, 'de').then(({ wrapper }) => {
-        const vm = wrapper.findComponent(PageListItems).vm
+        const vm = wrapper.findComponent(PageLangSelect).vm
 
         cy.get('.lang-select .v-field').click()
         cy.get('.v-overlay .v-list-item').should('have.length', 3)
@@ -1419,7 +1547,7 @@ describe('PageListItems', () => {
         cy.get('.v-overlay .v-list-item').eq(2).should('contain', 'AI draft: 2')
         cy.then(() => {
           expect(query.getCalls().filter((call) => call.args[0].fetchPolicy === 'no-cache' && !call.args[0].variables)).to.have.length(1)
-          expect(vm.langStates.de).to.deep.include({ stale: 3, missing: 1 })
+          expect(vm.states.de).to.deep.include({ stale: 3, missing: 1 })
         })
       })
     })
@@ -1428,7 +1556,7 @@ describe('PageListItems', () => {
       const query = cy.stub().resolves({ data: { pageTranslationStates: [] } })
 
       mountList({}, {}, { query }, 'de').then(({ wrapper }) => {
-        const vm = wrapper.findComponent(PageListItems).vm
+        const vm = wrapper.findComponent(PageLangSelect).vm
         query.resetHistory()
         vm.fetchStates()
         expect(query).not.to.have.been.called

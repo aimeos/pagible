@@ -33,6 +33,8 @@ describe('Range', () => {
     // The slider uses config.default internally for thumb positions
     cy.get('.v-range-slider [role="slider"]').first().should('have.attr', 'aria-valuenow', '30')
     cy.get('.v-range-slider [role="slider"]').last().should('have.attr', 'aria-valuenow', '70')
+    cy.get('.v-range-slider .v-input__prepend').should('have.text', '30')
+    cy.get('.v-range-slider .v-input__append').should('have.text', '70')
   })
 
   it('shows empty prepend/append when modelValue is not set', () => {

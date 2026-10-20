@@ -1,10 +1,11 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiMagnify, mdiRefresh } from '@mdi/js'
-import { useMessageStore, useSchemaStore, useUserStore } from '../stores'
+import { useMessageStore, useSchemaStore, useSettingStore } from '../stores'
+import ListReload from './ListReload.vue'
+import ListSearch from './ListSearch.vue'
 import ListSort from './ListSort.vue'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
 
 const SORT_OPTIONS = Object.freeze([
   { column: 'POSITION', order: 'ASC', label: 'Position' },
@@ -13,8 +14,12 @@ const SORT_OPTIONS = Object.freeze([
 
 export default {
   components: {
+    ListReload,
+    ListSearch,
     ListSort
   },
+
+  mixins: [typeLabelMixin],
 
   props: {
     type: { type: String, required: true }
@@ -25,7 +30,7 @@ export default {
   data() {
     return {
       loading: false,
-      sort: this.user.setting('schema', 'sort', { column: 'POSITION', order: 'ASC' }),
+      sort: this.settings.setting('schema', 'sort', { column: 'POSITION', order: 'ASC' }),
       tab: 'basic',
       term: ''
     }
@@ -34,9 +39,9 @@ export default {
   setup() {
     const messages = useMessageStore()
     const schemas = useSchemaStore()
-    const user = useUserStore()
+    const settings = useSettingStore()
 
-    return { messages, schemas, user, mdiMagnify, mdiRefresh, sortOptions: SORT_OPTIONS }
+    return { messages, schemas, settings, sortOptions: SORT_OPTIONS }
   },
 
   computed: {
@@ -65,7 +70,7 @@ export default {
         return list
       }
 
-      const collator = new Intl.Collator(this.$language?.current)
+      const collator = new Intl.Collator(this.$vuetify?.locale?.current)
 
       return list
         .map((item) => [this.label(item), item])
@@ -95,10 +100,6 @@ export default {
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     add(item) {
       this.$emit('add', { type: item.type })
     },
@@ -138,26 +139,10 @@ export default {
 
 <template>
   <div class="header">
-    <div class="search">
-      <v-text-field
-        v-model="term"
-        :prepend-inner-icon="mdiMagnify"
-        :label="$gettext('Search for')"
-        variant="underlined"
-        hide-details
-        clearable
-      ></v-text-field>
-    </div>
+    <ListSearch v-model="term" />
 
     <div class="layout">
-      <v-btn
-        @click="reload()"
-        :loading="loading"
-        :title="$gettext('Reload elements')"
-        :icon="mdiRefresh"
-        class="btn-reload"
-        variant="text"
-      />
+      <ListReload :loading="loading" :title="$gettext('Reload elements')" @reload="reload()" />
 
       <ListSort v-model="sort" :options="sortOptions" />
     </div>

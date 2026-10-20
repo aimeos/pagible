@@ -1,5 +1,6 @@
+import { h } from 'vue'
 import ElementList from '../../../js/views/ElementList.vue'
-import { useUserStore } from '../../../js/stores'
+import { useSettingStore, useUserStore } from '../../../js/stores'
 
 const stubs = {
   ElementListItems: {
@@ -9,7 +10,7 @@ const stubs = {
   ElementDetail: { template: '<div class="element-detail-stub" />' },
   Navigation: { template: '<div class="navigation-stub" />' },
   AsideList: { template: '<div class="aside-list-stub" />' },
-  User: { template: '<div class="user-stub" />' },
+  User: { render: () => h('div', { class: 'user-stub' }) },
 }
 
 function mountElementList(perms = {}, filter = {}) {
@@ -153,7 +154,7 @@ describe('ElementList', () => {
       const vm = Cypress.vueWrapper.findComponent(ElementList).vm
       expect(vm.filter.publish).to.equal('DRAFT')
       expect(vm.filter.lang).to.equal('de')
-      expect(useUserStore().getData('element', 'filter')).to.include({ publish: 'DRAFT', lang: 'de' })
+      expect(useSettingStore().getData('element', 'filter')).to.include({ publish: 'DRAFT', lang: 'de' })
     })
   })
 

@@ -7,7 +7,11 @@ import FileDetailItem from '../components/FileDetailItem.vue'
 import { applyResult, hasUnresolved } from '../merge'
 import { detailBase, useDetail } from '../detail'
 import { markRaw } from 'vue'
-import { safeParse } from '../utils'
+import { safeParse } from '../json'
+import { clone } from '../utils'
+
+// fields the user edits, which are kept if they were changed while saving
+const EDITABLE = ['description', 'lang', 'name', 'transcription']
 
 const FETCH_FILE = gql`
   query ($id: ID!) {
@@ -78,7 +82,7 @@ export default {
 
   data: () => ({
     file: null,
-    initial: null
+    savedPreviews: null
   }),
 
   setup() {
@@ -86,18 +90,21 @@ export default {
   },
 
   created() {
-    this.initial = this.previewsJson()
-  },
-
-  beforeUnmount() {
-    this.file = null
+    this.savedPreviews = this.previewsJson()
   },
 
   computed: {
-    hasConflict() {
-      return hasUnresolved(this.changed, ['data', 'aux'])
+    changeTargets() {
+      return markRaw({ data: this.item, aux: this.item })
     },
 
+    hasConflict() {
+      return hasUnresolved(this.changed, ['data', 'aux'])
+    }
+  },
+
+  methods: {
+    // the state compared in the history dialog, taken when it opens like in the page view
     historyCurrent() {
       const item = this.item
       return markRaw({
@@ -108,15 +115,13 @@ export default {
           mime: item.mime,
           path: item.path,
           previews: item.previews,
-          description: item.description,
-          transcription: item.transcription
+          description: clone(item.description),
+          transcription: clone(item.transcription)
         }),
         files: this.media(item)
       })
-    }
-  },
+    },
 
-  methods: {
     // loads the latest version into the open editor; resolves true on success so the caller
     // can defer the websocket subscription until the initial load completed
     reload() {
@@ -126,22 +131,26 @@ export default {
         Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
         this.item.disk = file.disk
         this.item.latestId = latest?.id
-        this.item.published = latest?.published
-        this.item.updated_at = latest?.created_at
-        this.item.editor = latest?.editor
-        this.initial = this.previewsJson()
+        this.savedPreviews = this.previewsJson()
       }, () => !this.dirty)
     },
 
     apply(changes) {
       Object.assign(this.item, changes)
-      this.dirty = true
+      this.markChanged()
       this.vhistory = false
+    },
+
+    // applies changes that are already saved without making the item dirty
+    itemSynced(patch) {
+      Object.assign(this.item, patch)
+      // the next save only sends the previews if they were changed afterwards
+      if ('previews' in patch) this.savedPreviews = this.previewsJson()
     },
 
     fileUpdated(event) {
       this.file = event
-      this.dirty = true
+      this.markChanged()
     },
 
     media(data) {
@@ -165,68 +174,66 @@ export default {
       return JSON.stringify(this.item?.previews || {})
     },
 
-    save(quiet = false) {
-      if (!this.saveable()) {
-        return Promise.resolve(false)
-      }
-
-      if (!this.dirty) {
-        return Promise.resolve(true)
-      }
-
-      this.saving = true
+    saveItem(quiet) {
+      const upload = this.file
       const previews = this.previewsJson()
 
-      return this.$apollo
-        .mutate({
-          mutation: SAVE_FILE,
-          variables: {
-            id: this.item.id,
-            input: {
-              transcription: JSON.stringify(this.item.transcription || {}),
-              description: JSON.stringify(this.item.description || {}),
-              // keep previews updated in the meantime (e.g. by cms:previews) if unchanged
-              ...(previews !== this.initial ? { previews } : {}),
-              path: this.item.path,
-              name: this.item.name,
-              lang: this.item.lang
-            },
-            file: this.file,
-            latestId: this.item.latestId
+      return this.saveWith(() => ({
+        mutation: SAVE_FILE,
+        variables: {
+          id: this.item.id,
+          input: {
+            transcription: JSON.stringify(this.item.transcription || {}),
+            description: JSON.stringify(this.item.description || {}),
+            // keep previews updated in the meantime (e.g. by cms:previews) if unchanged
+            ...(previews !== this.savedPreviews ? { previews } : {}),
+            path: this.item.path,
+            name: this.item.name,
+            lang: this.item.lang
           },
-          context: {
-            hasUpload: true
-          }
-        })
-        .then((result) => {
-          const file = result.data?.saveFile
-          const latest = file?.latest
-          const changed = file?.changed ? markRaw(safeParse(file.changed)) : null
+          file: upload,
+          latestId: this.item.latestId
+        },
+        context: {
+          hasUpload: true
+        }
+      }), (result, edited, sent) => {
+        const file = result.data?.saveFile
+        const latest = file?.latest
+        const changed = file?.changed ? markRaw(safeParse(file.changed)) : null
+        const data = { ...safeParse(latest?.data), ...safeParse(latest?.aux) }
 
-          Object.assign(this.item, safeParse(latest?.data), safeParse(latest?.aux))
-          this.item.latestId = latest?.id
-          this.initial = this.previewsJson()
+        // fields edited while saving are kept and sent by the next save
+        if (edited) {
+          EDITABLE.forEach((key) => delete data[key])
+        }
 
-          applyResult(this, changed, this.$gettext('File saved successfully'), quiet)
+        Object.assign(this.item, data)
+        this.item.latestId = latest?.id
+        this.savedPreviews = this.previewsJson()
 
-          this.saved(latest)
-          this.onSaved?.()
+        // the uploaded image is saved now, later saves must not upload it again
+        if (this.file === upload) {
+          this.file = null
+        }
 
-          return true
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error saving file'), error)
-        })
-        .finally(() => {
-          this.saving = false
-        })
+        applyResult(this, changed, this.$gettext('File saved successfully'), quiet, edited, sent)
+
+        this.saved(latest)
+        this.onSaved?.()
+      }, this.$gettext('Error saving file'))
     },
 
     use(version, clean = false) {
       Object.assign(this.item, version.data)
       this.vhistory = false
-      this.dirty = true
-      if (clean) this.reset()
+      this.markChanged()
+
+      // discarding the changes also drops the file which would be uploaded by the next save
+      if (clean) {
+        this.file = null
+        this.reset()
+      }
     },
 
     versions(id) {
@@ -249,7 +256,7 @@ export default {
     <v-progress-linear v-if="loading" indeterminate color="primary" />
     <v-form v-else ref="form" @submit.prevent>
       <v-tabs class="detail-tabs" fixed-tabs hide-slider v-model="tab">
-        <v-tab value="file" :class="{ changed: dirty, error: error }">{{
+        <v-tab value="file" :class="{ changed: dirty }">{{
           $gettext('File')
         }}</v-tab>
         <v-tab value="refs">{{ $gettext('Used by') }}</v-tab>
@@ -261,9 +268,9 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="file">
           <FileDetailItem
-            @update:item="itemUpdated"
+            @patch="itemUpdated"
+            @sync="itemSynced"
             @update:file="fileUpdated"
-            @error="error = $event"
             :item="item"
           />
         </v-window-item>
@@ -281,19 +288,5 @@ export default {
 
   <AsideMeta :item="item" />
 
-  <Teleport to="body">
-    <HistoryDialog
-      v-if="vhistory"
-      v-model="vhistory"
-      :readonly="!user.can('file:save')"
-      :current="historyCurrent"
-      :load="() => versions(item.id)"
-      @apply="apply"
-      @use="use"
-    />
-    <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="{ data: item, aux: item }"
-      @resolve="dirty = true"
-    />
-  </Teleport>
+  <DetailDialogs v-bind="dialogs" />
 </template>

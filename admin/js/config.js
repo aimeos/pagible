@@ -31,3 +31,11 @@ export const locales = safeParse(dataset.locales, ['en'])
 export const locale = dataset.locale || ''
 export const plugins = safeParse(dataset.plugins, {})
 export const theme = safeParse(dataset.theme, {})
+
+/**
+ * Reverb connection settings or null if realtime updates aren't configured. Read on each call
+ * instead of once like the other values, so it reflects the current page state.
+ */
+export function reverb() {
+  return safeParse(document.querySelector('#app')?.dataset?.reverb, null)
+}

@@ -8,6 +8,13 @@ export default {
 
   props: {
     modelValue: { type: Number }
+  },
+
+  computed: {
+    // the labels must show the same value as the slider position
+    value() {
+      return this.modelValue ?? this.config.default ?? 0
+    }
   }
 }
 </script>
@@ -20,7 +27,7 @@ export default {
     :max="config.max ?? 100"
     :min="config.min ?? 0"
     :readonly="readonly"
-    :modelValue="modelValue ?? config.default ?? 0"
+    :modelValue="value"
     @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
   >
@@ -28,7 +35,7 @@ export default {
       <span></span>
     </template>
     <template #append>
-      <span>{{ modelValue }}</span>
+      <span>{{ value }}</span>
     </template>
   </v-slider>
 </template>
