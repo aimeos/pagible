@@ -38,7 +38,7 @@ class TranscribeAudio extends Tool
             'file.required' => 'You must specify the UUID of the audio file to transcribe.',
         ] );
 
-        $audio = Ai::files( [$v['file']], Audio::class )[0]
+        $audio = Ai::files( [$v['file']], $request->user(), Audio::class )[0]
             ?? throw new \Aimeos\Cms\Exception( 'Audio file not found or not an audio file.' );
 
         return Response::structured( ['segments' => Ai::transcribe( $audio )] );

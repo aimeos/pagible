@@ -158,3 +158,9 @@ msgstr "Nota breu que apareix al peu de pàgina, p. ex. certificat SOC 2 de tipu
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Tema fosc"

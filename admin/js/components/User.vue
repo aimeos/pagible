@@ -5,7 +5,7 @@ import { useTheme } from 'vuetify'
 import { useGettext } from 'vue3-gettext'
 import ActionMenu from './ActionMenu.vue'
 import { switchLanguage } from '../locale'
-import { useLanguageStore, useMessageStore, useSessionStore, useSettingStore, useUserStore } from '../stores'
+import { useDirtyStore, useLanguageStore, useMessageStore, useSessionStore, useSettingStore, useUserStore } from '../stores'
 import {
   mdiWhiteBalanceSunny,
   mdiWeatherNight,
@@ -18,6 +18,7 @@ export default {
   components: { ActionMenu },
 
   setup() {
+    const dirty = useDirtyStore()
     const languages = useLanguageStore()
     const messages = useMessageStore()
     const settings = useSettingStore()
@@ -27,6 +28,7 @@ export default {
     const theme = useTheme()
 
     return {
+      dirty,
       session,
       settings,
       user,
@@ -72,7 +74,12 @@ export default {
       this.settings.saveData('app', 'theme', this.theme.global.name.value)
     },
 
-    logout() {
+    async logout() {
+      // logging out resets the unsaved changes before the login route guard could ask for them
+      if (this.dirty.dirty && !(await this.dirty.confirm())) {
+        return
+      }
+
       return this.session
         .logout()
         .catch((error) => {
@@ -104,7 +111,7 @@ export default {
         <v-btn v-bind="props" :title="$gettext('Switch language')" :icon="mdiWeb" variant="text" />
       </template>
 
-      <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" @click="change(code)">
+      <v-list-item v-for="(_, code) in i18n.available" :key="code" role="option" :aria-selected="code === i18n.current" @click="change(code)">
         {{ languages.translate(code) }} ({{ code }})
       </v-list-item>
     </ActionMenu>
@@ -135,6 +142,5 @@ export default {
   width: 100%;
   padding: 0;
   text-align: start;
-  text-transform: capitalize;
 }
 </style>

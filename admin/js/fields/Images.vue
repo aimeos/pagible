@@ -4,6 +4,7 @@
 import { VueDraggable } from 'vue-draggable-plus'
 import { IMAGE_MIME_FILTER, revokeBlob } from '../files'
 import { required, minEntries, maxEntries } from '../rules'
+import { moveStep, DRAG_ANIMATION } from '../utils'
 import FileField, { components, useFileField } from '../filefield'
 
 /**
@@ -27,12 +28,16 @@ export default {
   },
 
   setup() {
-    return { ...useFileField(), IMAGE_MIME_FILTER }
+    return { ...useFileField(), DRAG_ANIMATION, IMAGE_MIME_FILTER }
   },
 
   data() {
     return {
-      images: []
+      images: [],
+      // IDs of the value whose files aren't loaded yet, kept in the value until they are known
+      missing: [],
+      // IDs of the last loaded value, keeps the position of the missing files
+      order: []
     }
   },
 
@@ -52,6 +57,11 @@ export default {
         maxEntries(this.$ngettext, this.config.max)
       ]
     }
+  },
+
+  created() {
+    // set if the protection changed while files were moved, they are moved again afterwards
+    this.protectPending = false
   },
 
   beforeUnmount() {
@@ -91,14 +101,91 @@ export default {
     },
 
     change() {
-      this.$emit(
-        'update:modelValue',
-        this.images.map((item) => ({ id: item.id, type: 'file' }))
-      )
+      this.$emit('update:modelValue', this.ids().map((id) => ({ id, type: 'file' })))
+    },
+
+    // IDs of the shown images and the missing files, each missing one stays after the image which
+    // preceded it in the loaded value; pending uploads have no ID yet and are added after they are finished
+    ids() {
+      const list = this.images.filter((item) => item.id).map((item) => item.id)
+
+      for (const id of this.missing) {
+        const before = this.order.slice(0, this.order.indexOf(id))
+        const prev = before.findLast((other) => list.includes(other))
+        list.splice(prev ? list.indexOf(prev) + 1 : 0, 0, id)
+      }
+
+      return list
+    },
+
+    // moves the image by keyboard, the image keeps the focus
+    move(ev, idx) {
+      const step = this.readonly ? 0 : moveStep(ev, true, this.$vuetify.locale.isRtl) || moveStep(ev) * this.perRow(ev.currentTarget)
+
+      if (!step) return
+
+      // Alt+ArrowLeft would navigate back in the browser history otherwise
+      ev.preventDefault()
+
+      const pos = idx + step
+      const target = ev.currentTarget
+
+      if (pos < 0 || pos >= this.images.length) return
+
+      this.images.splice(pos, 0, this.images.splice(idx, 1)[0])
+
+      this.change()
+      this.$nextTick(() => target.focus())
+    },
+
+    // number of images in the first row of the wrapping grid
+    perRow(el) {
+      const images = [...(el.closest('.images')?.querySelectorAll('.image') || [])]
+      return Math.max(images.filter((image) => image.offsetTop === images[0].offsetTop).length, 1)
+    },
+
+    // moved here from another images field, the file may not be known by this element yet
+    dropped(event) {
+      const item = this.images[event.newDraggableIndex ?? event.newIndex]
+
+      if (item?.id) {
+        this.$emit('addFile', item)
+      }
+
+      this.change()
     },
 
     description(file) {
       return Object.values(file.description || {}).shift()
+    },
+
+    // shows the images of the value if it was replaced from outside, e.g. by reverting or restoring a version,
+    // and ignores the values emitted by this field which list the same images; files that aren't loaded
+    // yet stay in the value and are shown when they are added to the assets
+    load(list, force = false) {
+      const ids = (list || []).map((entry) => entry?.id).filter(Boolean)
+      const current = this.images.filter((item) => item.id)
+      const shown = this.ids()
+
+      if (!force && ids.length === shown.length && ids.every((id, idx) => id === shown[idx])) {
+        return
+      }
+
+      const known = new Map(current.map((item) => [item.id, item]))
+      const images = []
+      const missing = []
+
+      for (const id of ids) {
+        const item = known.get(id) || this.assets[id]
+        item ? images.push(item) : missing.push(id)
+      }
+
+      current.filter((item) => !images.includes(item)).forEach(revokeBlob)
+      // pending uploads are kept and added to the value when they are finished
+      this.images = [...images, ...this.images.filter((item) => !item.id)]
+      this.missing = missing
+      this.order = ids
+      this.protect = this.allPrivate
     },
 
     remove(idx) {
@@ -129,18 +216,26 @@ export default {
 
       if (this.protect) {
         this.setProtect(true)
-      } else {
+      } else if (!this.protecting) {
+        // a running move to public keeps its target state, the moved files aren't private anymore
         this.protect = this.allPrivate
       }
     },
 
     async setProtect(value) {
       const protect = Boolean(value)
+
+      this.protect = protect
+
+      // overlapping moves could finish in any order, files added meanwhile are moved afterwards
+      if (this.protecting) {
+        this.protectPending = true
+        return
+      }
+
       const files = this.images.filter(
         (item) => item.id && (item.disk === 'private') !== protect
       )
-
-      this.protect = protect
 
       if (!files.length) {
         return
@@ -151,7 +246,11 @@ export default {
       this.sync(files, items)
 
       if (failed) {
+        this.protectPending = false
         this.protect = this.allPrivate
+      } else if (this.protectPending) {
+        this.protectPending = false
+        return this.setProtect(this.protect)
       }
     },
 
@@ -178,18 +277,16 @@ export default {
   },
 
   watch: {
+    assets() {
+      if (this.missing.length) {
+        this.load(this.modelValue, true)
+      }
+    },
+
     modelValue: {
       immediate: true,
       handler(list) {
-        if (!this.images.length) {
-          for (const entry of list || []) {
-            if (this.assets[entry.id]) {
-              this.images.push(this.assets[entry.id])
-            }
-          }
-
-          this.protect = this.allPrivate
-        }
+        this.load(list)
 
         this.$emit(
           'error',
@@ -221,14 +318,16 @@ export default {
     v-model="images"
     :disabled="readonly"
     @update="change()"
+    @add="dropped($event)"
+    @remove="change()"
     draggable=".image"
     group="images"
     class="images"
-    animation="500"
+    :animation="DRAG_ANIMATION"
   >
     <div
       v-for="(item, idx) in images"
-      :key="idx"
+      :key="item.id || item.path"
       :class="{ readonly: readonly }"
       class="image checkered"
       :title="description(item)"
@@ -239,8 +338,10 @@ export default {
         type="button"
         class="image-preview"
         :aria-label="$gettext('Edit')"
+        :aria-keyshortcuts="readonly ? undefined : 'Alt+ArrowLeft Alt+ArrowRight Alt+ArrowUp Alt+ArrowDown'"
         :disabled="!item.id"
         @click="open(item)"
+        @keydown="move($event, idx)"
       >
         <v-img
           :srcset="filesrcset(item)"

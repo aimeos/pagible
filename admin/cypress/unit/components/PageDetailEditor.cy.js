@@ -169,6 +169,21 @@ describe('PageDetailEditor', () => {
     })
   })
 
+  it('ignores preview messages without element data', () => {
+    mountEditor({ item: { ...item, content: undefined } }, { 'page:save': true }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      const message = (data) => editor.vm.message({ source: editor.vm.$refs.iframe.contentWindow, origin: editor.vm.origin, data })
+
+      message(null)
+      message({ section: 'footer' })
+
+      expect(editor.vm.index).to.equal(null)
+      expect(editor.vm.section).to.equal('footer')
+      expect(editor.vm.vschemas).to.equal(false)
+      expect(editor.emitted('edit')).to.equal(undefined)
+    })
+  })
+
   it('inserts a chosen element and keeps it open for sidebar editing', () => {
     const save = cy.stub().resolves(true)
 
@@ -188,6 +203,34 @@ describe('PageDetailEditor', () => {
       expect(editor.emitted('change')).to.deep.equal([['content']])
       expect(editor.emitted('edit').at(-1)).to.deep.equal([list[0], true])
       expect(save).not.to.have.been.called
+    })
+  })
+
+  it('adds elements for unknown preview elements at the end of their section', () => {
+    const content = [
+      { id: 'a', group: 'main', type: 'text' },
+      { id: 'b', group: 'footer', type: 'text' },
+      { id: 'c', group: 'main', type: 'text' },
+    ]
+
+    mountEditor({ item: { ...item, content } }, { 'page:save': true }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      const message = (data) => editor.vm.message({ source: editor.vm.$refs.iframe.contentWindow, origin: editor.vm.origin, data })
+
+      message({ id: 'unknown', section: 'footer' })
+      editor.vm.add({ type: 'heading' })
+
+      let [list] = editor.emitted('update:content').at(-1)
+      expect(list.map((entry) => entry.id).slice(0, 2)).to.deep.equal(['a', 'b'])
+      expect(list[2]).to.include({ type: 'heading', group: 'footer' })
+      expect(editor.vm.index).to.equal(2)
+
+      message({ id: 'unknown', section: 'header' })
+      editor.vm.add({ type: 'heading' })
+
+      list = editor.emitted('update:content').at(-1)[0]
+      expect(list).to.have.length(4)
+      expect(list[3]).to.include({ type: 'heading', group: 'header' })
     })
   })
 

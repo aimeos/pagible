@@ -27,7 +27,7 @@
                     <a href="{{ cmsroute('cms.page', ['path' => $item->path], $item->domain ?? null) }}" class="list-item">
                         @if(($article = collect(cms($item, 'content'))->firstWhere('type', 'article')) && ($file = cms(cms($item, 'files'), data_get($article, 'data.files.0.id') ?? data_get($article, 'data.file.id'))))
                             <span class="cover">
-                                @include('cms::pic', ['file' => $file, 'sizes' => '(max-width: 768px) 100vw, 33vw'])
+                                <x-cms::image :page="$page" :file="$file" sizes="(max-width: 768px) 100vw, 33vw" />
                             </span>
                         @endif
                         <span class="meta">

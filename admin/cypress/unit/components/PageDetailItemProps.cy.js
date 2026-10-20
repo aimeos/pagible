@@ -204,4 +204,19 @@ describe('PageDetailItemProps', () => {
       })
     })
   })
+
+  it('validates the form when it opens', () => {
+    const onError = cy.stub()
+
+    mountProps({ item: { ...item, title: '' }, onError }, { 'page:save': true })
+    cy.wrap(onError).should('have.been.calledWith', true)
+    cy.get('.v-input--error').should('exist')
+  })
+
+  it('reports no error when the opened form is valid', () => {
+    const onError = cy.stub()
+
+    mountProps({ onError }, { 'page:save': true })
+    cy.wrap(onError).should('have.been.calledWith', false)
+  })
 })

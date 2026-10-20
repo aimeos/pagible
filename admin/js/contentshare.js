@@ -36,6 +36,11 @@ const ADD_ELEMENT = gql`
 export const contentShare = {
   emits: ['add-assets', 'add-elements', 'update:content'],
 
+  created() {
+    // content elements whose shared element is being created
+    this.sharing = new Set()
+  },
+
   methods: {
     share(idx) {
       if (!this.user.can('element:add')) return this.messages.denied()
@@ -52,7 +57,16 @@ export const contentShare = {
         return
       }
 
-      this.$apollo
+      // a second click before the response would create another, orphaned element
+      const key = entry.id ?? entry
+
+      if (this.sharing.has(key)) {
+        return
+      }
+
+      this.sharing.add(key)
+
+      return this.$apollo
         .mutate({
           mutation: ADD_ELEMENT,
           variables: {
@@ -77,13 +91,17 @@ export const contentShare = {
           invalidateList('elements')
 
           // the content may have changed while waiting for the response
+          // the reference keeps the element ID, so the translations and the preview still find it
           if (this.content.includes(entry)) {
-            const ref = this.entry('reference', { refid: element.id })
+            const ref = { ...this.entry('reference', { refid: element.id }), id: entry.id }
             this.$emit('update:content', this.content.map((el) => (el === entry ? ref : el)))
           }
         })
         .catch((error) => {
           this.messages.error(this.$gettext('Unable to make element shared'), error, idx)
+        })
+        .finally(() => {
+          this.sharing.delete(key)
         })
     },
 

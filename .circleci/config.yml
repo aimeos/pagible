@@ -14,6 +14,27 @@ parameters:
   run_admin:
     type: boolean
     default: false
+  tests:
+    type: string
+    default: "ALL"
+  admin_tests:
+    type: string
+    default: "ALL"
+
+commands:
+  skip-without-tests:
+    steps:
+      - run:
+          name: Skip if no tests are affected
+          command: if [ -z "<< pipeline.parameters.tests >>" ]; then circleci-agent step halt; fi
+  skip-without-perf:
+    steps:
+      - run:
+          name: Skip if no benchmarks are affected
+          command: if [ "<< pipeline.parameters.run_perf >>" != "true" ]; then circleci-agent step halt; fi
+  phpunit:
+    steps:
+      - run: TESTS="<< pipeline.parameters.tests >>"; ./vendor/bin/phpunit ${TESTS#ALL}
 
 jobs:
   "php82-sqlite3":
@@ -23,6 +44,7 @@ jobs:
           DB_DRIVER: sqlite
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}
@@ -30,7 +52,7 @@ jobs:
       - save_cache:
           key: php82-{{ checksum "composer.json" }}
           paths: [./vendor]
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php82-mariadb10":
     docker:
@@ -50,6 +72,7 @@ jobs:
           MARIADB_DATABASE: cms
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}
@@ -58,7 +81,7 @@ jobs:
           key: php82-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php82-mysql8":
     docker:
@@ -78,6 +101,7 @@ jobs:
           MYSQL_DATABASE: cms
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}
@@ -86,7 +110,7 @@ jobs:
           key: php82-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php82-pgsql14":
     docker:
@@ -105,6 +129,7 @@ jobs:
           POSTGRES_DB: cms
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}
@@ -113,7 +138,7 @@ jobs:
           key: php82-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php82-mssql17":
     docker:
@@ -131,6 +156,7 @@ jobs:
           ACCEPT_EULA: Y
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}
@@ -139,7 +165,7 @@ jobs:
           key: php82-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: echo "CREATE DATABASE cms;" > sqlserver.sql; for i in `seq 1 10`; do /opt/mssql-tools/bin/sqlcmd -S 127.0.0.1 -U SA -P 'S3c0r3P4ss' -i sqlserver.sql && exit 0; sleep 3; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php85-sqlite":
     docker:
@@ -148,6 +174,7 @@ jobs:
           DB_DRIVER: sqlite
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -155,7 +182,7 @@ jobs:
       - save_cache:
           key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php85-mariadb":
     docker:
@@ -175,6 +202,7 @@ jobs:
           MARIADB_DATABASE: cms
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -183,7 +211,7 @@ jobs:
           key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php85-mysql":
     docker:
@@ -203,6 +231,7 @@ jobs:
           MYSQL_DATABASE: cms
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -211,7 +240,7 @@ jobs:
           key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 3306 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php85-pgsql":
     docker:
@@ -230,6 +259,7 @@ jobs:
           POSTGRES_DB: cms
     steps:
       - checkout
+      - skip-without-tests
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -238,7 +268,7 @@ jobs:
           key: php85-{{ checksum "composer.json" }}
           paths: [./vendor]
       - run: for i in `seq 1 10`; do nc -z 127.0.0.1 5432 && echo OK && exit 0; echo -n .; sleep 1; done
-      - run: ./vendor/bin/phpunit
+      - phpunit
 
   "php85-phpstan":
     docker:
@@ -347,6 +377,26 @@ jobs:
     steps:
       - checkout:
           path: ~/project
+      - run:
+          name: Select component tests
+          command: |
+            case $CIRCLE_NODE_INDEX in
+              0) DIRS="fields" ;;
+              1) DIRS="components" ;;
+              2) DIRS="root assets js views webhooks" ;;
+            esac
+            SPECS=""
+            for d in $DIRS; do
+              case " << pipeline.parameters.admin_tests >> " in " ALL "|*" $d "*) ;; *) continue ;; esac
+              case $d in
+                root) p="cypress/unit/*.cy.{js,ts}" ;;
+                webhooks) p="../webhooks/admin/cypress/unit/**/*.cy.{js,ts}" ;;
+                *) p="cypress/unit/$d/**/*.cy.{js,ts}" ;;
+              esac
+              SPECS="${SPECS:+$SPECS,}$p"
+            done
+            if [ -z "$SPECS" ]; then circleci-agent step halt; fi
+            echo "export SPECS='$SPECS'" >> "$BASH_ENV"
       - restore_cache:
           keys:
             - admin-{{ checksum "package-lock.json" }}
@@ -358,13 +408,7 @@ jobs:
             - ~/.cache/Cypress
       - run:
           name: Run component tests
-          command: |
-            case $CIRCLE_NODE_INDEX in
-              0) SPECS="cypress/unit/fields/**/*.cy.{js,ts}" ;;
-              1) SPECS="cypress/unit/components/**/*.cy.{js,ts}" ;;
-              2) SPECS="cypress/unit/*.cy.{js,ts},cypress/unit/js/**/*.cy.{js,ts},cypress/unit/views/**/*.cy.{js,ts},../webhooks/admin/cypress/unit/**/*.cy.{js,ts}" ;;
-            esac
-            npx cypress run --component --spec "$SPECS"
+          command: npx cypress run --component --spec "$SPECS"
 
   "admin-e2e":
     docker:
@@ -403,6 +447,7 @@ jobs:
           DB_DRIVER: sqlite
     steps:
       - checkout
+      - skip-without-perf
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -430,6 +475,7 @@ jobs:
           MARIADB_DATABASE: cms
     steps:
       - checkout
+      - skip-without-perf
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -460,6 +506,7 @@ jobs:
           MYSQL_DATABASE: cms
     steps:
       - checkout
+      - skip-without-perf
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -487,6 +534,7 @@ jobs:
           POSTGRES_DB: cms
     steps:
       - checkout
+      - skip-without-perf
       - restore_cache:
           keys:
             - php85-{{ checksum "composer.json" }}
@@ -513,6 +561,7 @@ jobs:
           ACCEPT_EULA: Y
     steps:
       - checkout
+      - skip-without-perf
       - restore_cache:
           keys:
             - php82-{{ checksum "composer.json" }}

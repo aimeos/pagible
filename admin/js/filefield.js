@@ -12,7 +12,7 @@ import {
 import { defineAsyncComponent } from 'vue'
 import { useMessageStore, useUserStore, useViewStack } from './stores'
 import { filesrcset } from './urls'
-import { createFile, FETCH_FILE_DISKS, previewUrl, relocateFiles } from './files'
+import { createFile, fetchFileDisks, previewUrl, relocateFiles } from './files'
 import { invalidateList } from './graphql'
 import FileActionMenu from './components/FileActionMenu.vue'
 import FileProtect from './components/FileProtect.vue'
@@ -27,6 +27,26 @@ export const components = {
   FileDialog: defineAsyncComponent(() => import('./components/FileDialog.vue')),
   FileProtect,
   FileUrlDialog: defineAsyncComponent(() => import('./components/FileUrlDialog.vue'))
+}
+
+/**
+ * Returns if the file matches the accept pattern of file inputs, e.g. "image/*,video/mp4,.pdf"
+ *
+ * @param {File} file Dropped or selected file
+ * @param {string} accept Comma separated MIME types, wildcard MIME types or file extensions
+ * @returns {boolean} TRUE if the file is accepted
+ */
+export function accepts(file, accept) {
+  const types = String(accept || '*').split(',').map((type) => type.trim().toLowerCase()).filter(Boolean)
+  const mime = (file?.type || '').toLowerCase()
+  const name = (file?.name || '').toLowerCase()
+
+  return types.some((type) => {
+    if (type === '*' || type === '*/*') return true
+    if (type.startsWith('.')) return name.endsWith(type)
+    if (type.endsWith('/*')) return mime.startsWith(type.slice(0, -1))
+    return mime === type
+  })
 }
 
 /**
@@ -80,13 +100,25 @@ export default {
     }
   },
 
+  computed: {
+    // accepted file types like in the file inputs of the File and Images fields
+    accept() {
+      return this.config.accept || this.profile?.accept || (this.images ? 'image/*' : '*')
+    }
+  },
+
   methods: {
     drop(event) {
       this.dragging = false
 
-      const files = event.dataTransfer?.files
+      const dropped = Array.from(event.dataTransfer?.files || [])
+      const files = dropped.filter((file) => accepts(file, this.accept))
 
-      if (files?.length) {
+      if (files.length < dropped.length) {
+        this.messages.add(this.$gettext('Unsupported file type'), 'error')
+      }
+
+      if (files.length) {
         this.add(this.images ? files : files[0])
       }
     },
@@ -124,13 +156,7 @@ export default {
         this.messages.error(this.$gettext(`Error saving file`), error)
 
         try {
-          const response = await this.$apollo.query({
-            query: FETCH_FILE_DISKS,
-            variables: { id: ids },
-            fetchPolicy: 'no-cache'
-          })
-
-          return { items: response.data?.files?.data || [], failed: true }
+          return { items: await fetchFileDisks(this.$apollo, ids), failed: true }
         } catch (reloadError) {
           this.$log(`FileField::relocate(): Error reloading files`, reloadError)
           return { items: [], failed: true }

@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { useAppStore } from '../../../js/stores'
-import { pageUrl } from '../../../js/urls'
+import { pageUrl, url } from '../../../js/urls'
 
 describe('pageUrl()', () => {
   let app
@@ -56,5 +56,37 @@ describe('pageUrl()', () => {
   it('uses the root path for absolute URLs without path', () => {
     app.urlpage = '/_path_'
     expect(pageUrl({}, true)).to.equal(window.location.origin + '/')
+  })
+
+  it('inserts paths containing replacement patterns literally', () => {
+    app.urlpage = '/_path_'
+    expect(pageUrl({ path: "a$&b$'c" })).to.equal("/a$&b$'c")
+    expect(pageUrl({ path: 'x$`y' }, true)).to.equal(window.location.origin + '/x$%60y')
+  })
+})
+
+describe('url()', () => {
+  let app
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    app = useAppStore()
+    app.urlfile = '/storage/'
+    app.urlproxy = '/proxy?url=_url_'
+  })
+
+  it('keeps absolute and blob URLs', () => {
+    expect(url('https://example.com/a.jpg')).to.equal('https://example.com/a.jpg')
+    expect(url('HTTP://example.com/a.jpg')).to.equal('HTTP://example.com/a.jpg')
+    expect(url('blob:abc')).to.equal('blob:abc')
+  })
+
+  it('treats relative paths starting with "http" as files', () => {
+    expect(url('httpdocs/a.jpg')).to.equal('/storage/httpdocs/a.jpg')
+    expect(url('httpdocs/a.jpg', true)).to.equal('/storage/httpdocs/a.jpg')
+  })
+
+  it('routes absolute URLs through the proxy', () => {
+    expect(url('https://example.com/a.jpg', true)).to.equal('/proxy?url=' + encodeURIComponent('https://example.com/a.jpg'))
   })
 })

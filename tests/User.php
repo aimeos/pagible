@@ -11,6 +11,7 @@ namespace App\Models;
 class User extends \Illuminate\Foundation\Auth\User
 {
     use \Aimeos\Cms\Concerns\CashierAccess;
+    use \Aimeos\Cms\Concerns\HasCmsPermissions;
 
     protected $attributes = [
         'name' => '',

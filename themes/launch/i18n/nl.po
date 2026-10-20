@@ -158,3 +158,9 @@ msgstr "Korte mededeling in de footer, bijv. SOC 2 Type II gecertificeerd, data 
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Thema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Donker thema"

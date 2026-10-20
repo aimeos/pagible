@@ -158,3 +158,9 @@ msgstr "Alt bilgide gösterilen kısa not, örn. SOC 2 Type II sertifikalı, ver
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Koyu tema"

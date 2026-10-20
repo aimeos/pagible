@@ -239,7 +239,7 @@ class PageController extends Controller
         $content = collect( (array) $value )->groupBy( 'group' );
         $theme = Theme::views( cms( $page, 'theme' ) ?: 'cms' );
         $type = cms( $page, 'type' ) ?: 'page';
-        $views = [$theme . '::layouts.' . $type, 'cms::layouts.' . $type, 'cms::layouts.page'];
+        $views = [...Theme::names( $page, (object) ['type' => 'layouts.' . $type] ), 'cms::layouts.page'];
         $nav = new Navigation( $page, $user );
 
         return view()->first( $views, compact( 'page', 'content', 'theme', 'nav' ) )->render();

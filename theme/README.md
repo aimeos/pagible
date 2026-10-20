@@ -123,6 +123,121 @@ CSP directives are configured under the `csp` key, with defaults for hCaptcha an
 | `csp.script-src` | `CMS_CSP_SCRIPT_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
 | `csp.connect-src` | `CMS_CSP_CONNECT_SRC` | `https://hcaptcha.com https://*.hcaptcha.com` |
 
+## Custom content elements
+
+Your application can add its own element types next to the bundled ones. Describe them in a `schema.json` file, e.g. `resources/cms/schema.json`:
+
+```json
+{
+    "label": "App",
+    "content": {
+        "promo": {
+            "label": "Promotion",
+            "group": "app",
+            "fields": {
+                "title": {"type": "string", "label": "Title", "required": true, "max": 100},
+                "text": {"type": "markdown", "label": "Text"},
+                "file": {"type": "image", "label": "Image"},
+                "action": {"type": "hidden", "value": "\\App\\Cms\\Promotions"}
+            }
+        }
+    }
+}
+```
+
+Register the schema and its views in the `boot()` method of a service provider:
+
+```php
+use Aimeos\Cms\Schema;
+use Illuminate\Support\Facades\View;
+
+Schema::register( resource_path( 'cms' ), 'app' );
+View::addNamespace( 'app', resource_path( 'cms/views' ) );
+```
+
+Element types are stored with the schema name as prefix (`app::promo`) and rendered by the first existing view of `app::promo`, `cms::promo` and `cms::invalid`. The view `resources/cms/views/promo.blade.php` gets:
+
+| Variable | Content |
+|----------|---------|
+| `$data` | Element fields as object, e.g. `$data->title` |
+| `$files` | Files of the page keyed by ID, e.g. `cms( $files, $data->file?->id ?? null )` |
+| `$action` | Return value of the action class or `null` |
+| `$page`, `$theme`, `$nav` | Current page, theme name and navigation of the layout |
+
+```blade
+<section class="promo">
+    <h2>{{ $data->title }}</h2>
+    @markdown($data->text ?? '')
+</section>
+```
+
+Available field types are `audio`, `autocomplete`, `checkbox`, `color`, `combobox`, `date`, `file`, `hidden`, `html`, `image`, `images`, `items`, `map`, `markdown`, `media`, `number`, `plaintext`, `radio`, `range`, `select`, `slider`, `string`, `switch`, `table`, `text`, `url` and `video`. Fields accept `label`, `hint`, `required`, `default`, `min`, `max`, `step`, `pattern`, `options`, `multiple` and `translate` (`false` excludes the field from AI translation), while `items` fields contain their nested fields in `item`. See `theme/schema.json` for examples.
+
+Fields with unknown types aren't shown in the admin panel, so check your schemas after changing them:
+
+```bash
+php artisan cms:schema:check app
+```
+
+The class of the hidden `action` field is resolved by `app()->call()` with the `page` and the element `item`, so the content can come from your application:
+
+```php
+namespace App\Cms;
+
+use Aimeos\Cms\Models\PageView;
+
+class Promotions
+{
+    public function __invoke( PageView $page, object $item ): array
+    {
+        return \App\Models\Promotion::active()->limit( 3 )->get()->all();
+    }
+}
+```
+
+Anonymous responses are stored in the page cache for the `cache` minutes of the page, so set `cache` to `0` for pages whose action results must always be current.
+
+A schema without `types` only adds elements and isn't offered as theme in the admin panel.
+
+## Building a theme
+
+A theme is a Composer package with a `schema.json` that also defines the page `types` and their content `sections`:
+
+```
+my-theme/
+├── composer.json        PSR-4 autoload and Laravel provider discovery
+├── schema.json          label, types, content, meta and config definitions
+├── public/              CSS, JS and images, published to public/vendor/cms/mytheme/
+├── views/
+│   ├── layouts/main.blade.php   Main layout, extended by all page type layouts
+│   └── hero.blade.php           Overrides the core hero element
+├── database/seeders/MythemeDemo.php   Optional demo content for cms:demo
+└── src/MythemeServiceProvider.php
+```
+
+```php
+public function boot(): void
+{
+    $basedir = dirname( __DIR__ );
+
+    Schema::register( $basedir, 'mytheme' );
+    View::addNamespace( 'mytheme', $basedir . '/views' );
+
+    $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/mytheme' )], 'cms-theme' );
+}
+```
+
+- Pages of type `blog` use the first existing layout of `mytheme::layouts.blog`, `cms::layouts.blog` and `cms::layouts.page`, and the core layouts extend `mytheme::layouts.main`
+- Main layouts render `<x-cms::head :page="$page" :nav="$nav" />` (charset, viewport, theme color, CSRF token, Content-Security-Policy (built from the `cms.theme.csp.*` settings and the hashes of the custom styles and scripts of the page, omitted if `app.debug` is enabled), title, canonical URL, meta elements, favicon and the `--pico-*` variables of the `theme` config) in `<head>` and `cms::layouts.foot` at the end of `<body>`, `cms::elements` renders a list of content elements in sections
+- The theme color is the configured or default background color, `theme-color="#0B1530"` sets a fixed one
+- The `--pico-*` variables are pushed to the `head` stack, so the layout must render `@stack('head')` after its stylesheets
+- Themes with light and dark mode define a `theme-dark` config with the dark colors, the colors of the `theme` config then only apply to the light mode
+- Views with the name of a core element (e.g. `hero.blade.php`) replace it for pages using the theme
+- `cmstheme( $page, 'hero.css' )` returns the versioned URL of the theme asset and falls back to the core theme file
+- `Database\Seeders\MythemeDemo` extends `Database\Seeders\AbstractDemo` and provides the demo pages created by `cms:demo`
+
+The bundled themes in `themes/` are complete examples.
+
 ## Commands
 
 ### cms:install:theme
@@ -135,12 +250,80 @@ php artisan cms:install:theme
 
 Publishes theme files and adds hCaptcha configuration to `config/services.php`. Requires `HCAPTCHA_SITEKEY` and `HCAPTCHA_SECRET` environment variables for contact form spam protection.
 
+### cms:schema:check
+
+Checks the schemas of the registered themes, or only of the given ones, for unknown field types, `select` and `radio` fields without options, `autocomplete` fields without data source, missing action classes and element types without view.
+
+```bash
+php artisan cms:schema:check
+php artisan cms:schema:check app estate
+```
+
+The command exits with code 1 if errors are found, so it can run in your CI pipeline.
+
 ## Blade Directives
 
 | Directive | Description |
 |-----------|-------------|
+| `@element($page, $item)` | Renders a content element or a reference to a shared element with the view of the page theme for its type (falling back to `cms::<type>` and `cms::invalid`), passing its data, the page files and the result of its schema action |
 | `@localDate($date, $format)` | Formats a date in the current locale: no format for day and month (e.g. "October 5"), `short`, `medium`, `long` or `full` for ICU date styles, otherwise a Carbon `isoFormat` pattern |
 | `@markdown($text)` | Converts Markdown to HTML using GitHub-flavored CommonMark |
+
+## Blade Components
+
+`<x-cms::image>` renders a responsive `<picture>` with `srcset`, lazy loading and the alt text in the page language:
+
+```blade
+<x-cms::image :page="$page" :file="$file" />
+<x-cms::image :page="$page" :file="$bg" main class="background" sizes="(min-width: 768px) 50vw, 100vw" />
+```
+
+| Attribute | Description |
+|-----------|-------------|
+| `page` | Current page, used for the language and the URLs of private files |
+| `file` | File from `$files` (e.g. `cms($files, $data->file?->id ?? null)`) |
+| `main` | Main image of the page, loaded eagerly with high priority (default: `false`) |
+| `sizes` | Value of the `sizes` attribute (default: `100vw`) |
+| `class` | CSS class string or array |
+
+Other attributes like `id` or `data-*` are added to the `<picture>` element. The `cms::pic` partial is kept for existing themes and renders the same component.
+
+`<x-cms::video>` renders a `<video>` with the title in the page language and the last preview image as poster. Without `autoplay`, it shows the player controls and loads nothing until played; with `autoplay`, it plays muted in a loop like an animated image. The slot is the fallback content for browsers without video support:
+
+```blade
+<x-cms::video :page="$page" :file="$file">{{ __('Download file') }}</x-cms::video>
+<x-cms::video :page="$page" :file="$file" autoplay />
+```
+
+`<x-cms::buttons>` renders the buttons of an element (`label`, `url` and `url-rel` each) as links within `<div class="actions">` and skips buttons without a valid URL. Nothing is rendered if the list is empty:
+
+```blade
+<x-cms::buttons :buttons="$data->buttons ?? []" />
+```
+
+The layout components build the page header from the current `$page` and the `$nav` navigation passed to the layout:
+
+```blade
+<nav>
+    <ul>
+        <li class="brand"><x-cms::brand :page="$page" :nav="$nav" /></li>
+    </ul>
+    <ul>
+        <x-cms::menu :page="$page" :nav="$nav" />
+        <x-cms::languages :page="$page" :nav="$nav" />
+    </ul>
+</nav>
+<x-cms::breadcrumb :page="$page" :nav="$nav" />
+<x-cms::search :page="$page" />
+```
+
+| Component | Output |
+|-----------|--------|
+| `brand` | Link to the home page with the logo of the nearest page that has one, or the website title. `alternative` prefers the alternative logo (for dark headers), `name` replaces the website title and other attributes like `class` are added to the link |
+| `menu` | One `<li>` per menu item, with a dropdown for items with sub-pages. Active links get the `active` class and the current page gets `aria-current="page"`. `:dropdown="false"` renders top-level links only, `parent` adds the parent page as first dropdown link, `highlight="contact"` adds the class `contact` to the item with that path and `link-class` adds a class to all links |
+| `languages` | `<li class="languages">` with a dropdown linking all published language variants of the page, only rendered if there are at least two |
+| `breadcrumb` | Breadcrumb navigation of the ancestors below the root page, only rendered for pages below the first level |
+| `search` | Search dialog `#modal-search` used by the search script of the theme |
 
 ## License
 

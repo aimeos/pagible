@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -232,7 +233,7 @@ class SitemapControllerTest extends ThemeTestAbstract
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
         Access::using( fn() => [] );
-        PageAccess::set( [$page->id], [] );
+        Permission::system( fn() => PageAccess::set( [$page->id], [] ) );
 
         $controller = new \Aimeos\Cms\Controllers\SitemapController();
 

@@ -20,7 +20,7 @@
 			@endif
 
 			@if($file = cms($files, $item->file?->id ?? null))
-				@include('cms::pic', ['file' => $file, 'class' => 'pricing-image', 'sizes' => '(max-width: 576px) 100vw, 33vw'])
+				<x-cms::image :page="$page" :file="$file" class="pricing-image" sizes="(max-width: 576px) 100vw, 33vw" />
 			@endif
 
 			<div class="pricing-header">

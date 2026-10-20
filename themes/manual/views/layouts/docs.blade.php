@@ -47,15 +47,7 @@
         </header>
 
         <div class="cms-content" data-section="main">
-            @foreach($content['main'] ?? [] as $item)
-                @if($el = cmsref($page, $item))
-                    <div id="{{ cmsattr($item->id ?? '') }}" class="{{ cmsattr($el->type ?? '') }}">
-                        <div class="container">
-                            @includeFirst(cmsviews($page, $el), cmsdata($page, $el))
-                        </div>
-                    </div>
-                @endif
-            @endforeach
+            @include('cms::elements', ['items' => $content['main'] ?? []])
         </div>
 
         @if($section && ($pages = collect([$section])->concat($nav->items(1)->flatMap(fn($item) => collect([$item])->concat($item->children)))->values()) && ($pos = $pages->search(fn($item) => $item->id === $page->id)) !== false)
@@ -80,13 +72,13 @@
         @endif
     </article>
 
-    @if(($outline = collect($content['main'] ?? [])->map(fn($item) => ['id' => $item->id ?? '', 'el' => cmsref($page, $item)])->filter(fn($entry) => ($entry['el']->type ?? '') === 'heading' && in_array((int) ($entry['el']->data->level ?? 0), [2, 3])))->count())
+    @if(count($outline = \Aimeos\Cms\Theme::headings($page, $content['main'] ?? [], [2, 3])))
         <aside class="outline" aria-label="{{ __('On this page') }}">
             <p>{{ __('On this page') }}</p>
             <ul>
                 @foreach($outline as $entry)
-                    <li class="level-{{ (int) $entry['el']->data->level }}">
-                        <a href="#{{ cmsattr($entry['id']) }}">{{ $entry['el']->data->title ?? '' }}</a>
+                    <li class="level-{{ $entry['level'] }}">
+                        <a href="#{{ cmsattr($entry['id']) }}">{{ $entry['title'] }}</a>
                     </li>
                 @endforeach
             </ul>
@@ -97,14 +89,6 @@
 
 @section('footer')
     <footer class="cms-content" data-section="footer">
-        @foreach($content['footer'] ?? [] as $item)
-            @if($el = cmsref($page, $item))
-                <div id="{{ cmsattr($item->id ?? '') }}" class="{{ cmsattr($el->type ?? '') }}">
-                    <div class="container">
-                        @includeFirst(cmsviews($page, $el), cmsdata($page, $el))
-                    </div>
-                </div>
-            @endif
-        @endforeach
+        @include('cms::elements', ['items' => $content['footer'] ?? []])
     </footer>
 @endsection

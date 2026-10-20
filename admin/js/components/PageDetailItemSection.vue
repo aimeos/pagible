@@ -1,15 +1,15 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { defineAsyncComponent } from 'vue'
 import Fields from './Fields.vue'
-import SchemaDialog from './SchemaDialog.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
 import { hasTrue, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
 import { typeLabelMixin } from '../i18n'
+import { schemaFields } from '../field'
 
-// types without field definitions which have been reported already
-const warned = new Set()
+const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 export default {
   components: {
@@ -69,23 +69,20 @@ export default {
       this.vschemas = false
     },
 
+    // updates the error state of the entry and reports if any entry is invalid
     error(code, value) {
-      this.errors[code] = value
+      if (value) {
+        this.errors[code] = value
+      } else {
+        delete this.errors[code]
+      }
+
       this.$emit('error', hasTrue(this.errors))
       this.store()
     },
 
     fields(type) {
-      if (!this.schemas[this.section]?.[type]?.fields) {
-        // called while rendering, so each missing type is only reported once
-        if (type && !warned.has(type)) {
-          warned.add(type)
-          console.warn(`No definition of fields for "${type}" available`)
-        }
-        return []
-      }
-
-      return this.schemas[this.section][type].fields
+      return schemaFields(this, this.schemas, this.section, type)
     },
 
     // sends the new entries of the section to the owner of the item
@@ -96,16 +93,9 @@ export default {
     remove(code) {
       const { [code]: removed, ...entries } = this.entries
 
-      delete this.errors[code]
       this.panel = this.panel.filter((open) => open !== code)
       this.patch(entries)
-      this.store()
-
-      this.$nextTick(() => {
-        this.validate().then((valid) => {
-          this.$emit('error', !valid)
-        })
-      })
+      this.error(code, false)
     },
 
     reset() {
@@ -155,7 +145,7 @@ export default {
         }
       }
 
-      this.side.store = { type: types, state: state }
+      this.side.store = Object.freeze({ type: Object.freeze(types), state: Object.freeze(state) })
     },
 
     title(el) {
@@ -165,18 +155,6 @@ export default {
     update(code, values) {
       this.patch({ ...this.entries, [code]: { ...this.entries[code], ...values, _changed: true } })
       this.store()
-    },
-
-    validate() {
-      const list = []
-
-      this.$refs.field?.filter(field => field).forEach((field) => {
-        list.push(field.validate())
-      })
-
-      return Promise.all(list).then((result) => {
-        return result.every((r) => r)
-      })
     }
   }
 }

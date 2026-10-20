@@ -74,3 +74,9 @@ msgstr "สัญญาอนุญาตของซอฟต์แวร์ท
 msgctxt "st"
 msgid "manual::theme"
 msgstr "ธีม"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "ธีมสีเข้ม"

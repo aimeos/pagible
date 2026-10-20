@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import { VAutocomplete } from 'vuetify/components/VAutocomplete'
 import { maxEntries, required } from '../rules'
 import { safeParse } from '../json'
-import { debounce } from '../utils'
+import { debounce, REQUEST_DELAY } from '../utils'
 import { fieldBase } from '../field'
 
 /**
@@ -29,21 +29,21 @@ export default {
   extends: fieldBase,
 
   props: {
-    modelValue: { type: [Object, String, Number, Boolean, null] }
+    modelValue: { type: [Array, Object, String, Number, Boolean, null], default: undefined }
   },
 
   data() {
     return {
-      list: this.config.options || [],
-      loading: false
+      list: this.options(),
+      loading: false,
+      // number of the latest request, older responses are ignored
+      seq: 0
     }
   },
 
   created() {
-    // number of the latest request, older responses are ignored
-    this.seq = 0
-    this.debouncedGraphql = debounce(this.graphql, 500)
-    this.debouncedRest = debounce(this.rest, 500)
+    this.debouncedGraphql = debounce(this.graphql, REQUEST_DELAY)
+    this.debouncedRest = debounce(this.rest, REQUEST_DELAY)
   },
 
   beforeUnmount() {
@@ -87,10 +87,9 @@ export default {
       const seq = ++this.seq
 
       this.loading = true
-      this.$apollo
-        .query({
-          query: gql(query)
-        })
+      // invalid configured queries must be handled like failed requests
+      Promise.resolve()
+        .then(() => this.$apollo.query({ query: gql(query) }))
         .then((result) => {
           if (seq !== this.seq) {
             return
@@ -169,6 +168,13 @@ export default {
         })
     },
 
+    // fixed entries from the schema with translated labels, search results are shown as returned
+    options() {
+      return (this.config.options || []).map((item) =>
+        typeof item === 'object' && item !== null && item.label ? { ...item, label: this.$pgettext('op', item.label) } : item
+      )
+    },
+
     search(value) {
       switch (this.config?.['api-type']) {
         case 'GQL':
@@ -188,6 +194,7 @@ export default {
 </script>
 
 <template>
+  <!-- the default only applies to new values, a cleared selection stays empty -->
   <component
     :is="tag"
     :hint="config.hint && $pgettext('fh', config.hint)"
@@ -206,10 +213,10 @@ export default {
     :return-object="returnObject"
     :multiple="config.multiple"
     :chips="config.multiple"
-    :modelValue="modelValue ?? config.default ?? null"
+    :modelValue="modelValue === undefined ? config.default ?? null : modelValue"
     @update:modelValue="$emit('update:modelValue', $event)"
     @update:search="search($event)"
-    @update:menu="search('')"
+    @update:menu="$event && search('')"
     density="comfortable"
     hide-details="auto"
     variant="outlined"

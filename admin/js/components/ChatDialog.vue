@@ -14,6 +14,7 @@ import {
 } from '@mdi/js'
 import { useUserStore } from '../stores'
 import { useDictation } from '../dictation'
+import { composing } from '../utils'
 import { appendChunk, finishStream, streamMessage } from '../blockstream'
 import { chat } from '../chat'
 import CmsDialog from './Dialog.vue'
@@ -79,12 +80,22 @@ export default {
 
   watch: {
     open(val) {
+      // a running recording would continue unseen and fill the input later
+      if (!val) {
+        this.dictation.stop()
+      }
+
       // Closing the dialog mid-stream aborts the request so the server stops generating and frees
       // the per-user lock, instead of leaving it running unseen.
       if (!val && this.busy) {
         this.stop()
       }
     }
+  },
+
+  created() {
+    this.controller = null
+    this.scrollPending = false
   },
 
   beforeUnmount() {
@@ -114,7 +125,7 @@ export default {
     },
 
     keydown(e) {
-      if (e.isComposing) {
+      if (composing(e)) {
         return // don't submit while an IME candidate is being composed (CJK input)
       }
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
@@ -129,6 +140,15 @@ export default {
 
     recall(e, offset) {
       if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) {
+        return
+      }
+
+      // the arrow keys move the caret within multi-line input unless it's already on the first/last line
+      const { value = '', selectionStart, selectionEnd } = e.target || {}
+
+      if (typeof selectionStart === 'number' && (offset < 0
+        ? value.slice(0, selectionStart).includes('\n')
+        : value.slice(selectionEnd).includes('\n'))) {
         return
       }
 
@@ -326,6 +346,7 @@ export default {
             v-if="m.role === 'assistant' && m.content && !m.streaming"
             :icon="mdiContentCopy"
             :title="$pgettext('clipboard', 'Copy')"
+            :aria-label="$pgettext('clipboard', 'Copy')"
             @click="copy(m.content)"
             size="x-small"
             variant="text"
@@ -340,6 +361,7 @@ export default {
         <v-textarea
           v-model="input"
           :placeholder="$gettext('Send a message ...')"
+          :aria-label="$gettext('Chat message')"
           @keydown="keydown"
           variant="outlined"
           color="primary"
@@ -444,7 +466,7 @@ export default {
   padding: 11px 15px;
   border: 1px solid rgba(var(--v-theme-primary), 0.16);
   border-radius: 16px;
-  border-top-left-radius: 4px;
+  border-start-start-radius: 4px;
   background-color: rgba(var(--v-theme-primary), 0.06);
   color: rgb(var(--v-theme-on-surface));
 }
@@ -452,7 +474,7 @@ export default {
 .chat-row.user .chat-bubble {
   border: 0;
   border-radius: 16px;
-  border-top-right-radius: 4px;
+  border-start-end-radius: 4px;
   background-color: rgb(var(--v-theme-primary));
   box-shadow: 0 6px 18px -6px rgba(var(--v-theme-primary), 0.45);
   color: rgb(var(--v-theme-on-primary));
@@ -541,7 +563,7 @@ export default {
 .chat-md :deep(td) {
   padding: 4px 8px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  text-align: left;
+  text-align: start;
 }
 
 .chat-md :deep(th) {
@@ -609,7 +631,7 @@ export default {
   display: inline-block;
   width: 7px;
   height: 1em;
-  margin-left: 2px;
+  margin-inline-start: 2px;
   vertical-align: text-bottom;
   background-color: currentColor;
   animation: chat-blink 1s steps(2, start) infinite;
@@ -624,7 +646,7 @@ export default {
 .chat-copy {
   position: absolute;
   top: 2px;
-  right: 2px;
+  inset-inline-end: 2px;
   opacity: 0;
   transition: opacity 0.2s;
 }

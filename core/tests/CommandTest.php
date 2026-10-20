@@ -245,7 +245,7 @@ class CoreCommandTest extends CoreTestAbstract
         $data = ['lang' => 'en', 'name' => 'Scheduled'];
         $pageVersion = $page->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
         $elementVersion = $element->versions()->forceCreate( ['data' => $data, 'publish_at' => now()->subMinute(), 'editor' => 'test'] );
-        $file = Files::save( $file->id, ['name' => 'Scheduled'] );
+        $file = Permission::system( fn() => Files::save( $file->id, ['name' => 'Scheduled'] ) );
         $fileVersion = $file->latest()->firstOrFail();
         $fileVersion->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
         $page->variant->update( ['latest_id' => $pageVersion->id] );

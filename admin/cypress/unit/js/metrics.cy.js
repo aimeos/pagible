@@ -7,7 +7,8 @@ describe('metrics', () => {
   })
 
   it('shortens large numbers', () => {
-    expect(compact(999)).to.equal(999)
+    expect(compact(999)).to.equal('999')
+    expect(compact(12.5, 'de')).to.equal('12,5')
     expect(compact(1500)).to.equal('1.50K')
     expect(compact(2500000)).to.equal('2.50M')
     expect(compact(3e9)).to.equal('3.00B')
@@ -28,7 +29,8 @@ describe('metrics', () => {
   it('returns the weekly sum or the daily average of insight columns', () => {
     const data = Array.from({ length: 7 }, () => ({ value: 2000 }))
     expect(insightValue({ data })).to.equal('14.00K')
-    expect(insightValue({ data, average: true, suffix: '%' })).to.equal('2000.0%')
+    expect(insightValue({ data, average: true, suffix: '%' }, 'en')).to.equal('2,000.0%')
+    expect(insightValue({ data: [{ value: 21 }], average: true }, 'de')).to.equal('3,0')
   })
 
   it('returns QUERY_PAGE_SIZE items per page', () => {
@@ -42,9 +44,22 @@ describe('metrics', () => {
   it('sorts rows by value and shortens the values', () => {
     expect(ranked([{ key: 'a', value: 5 }, { key: 'b', value: 1200 }])).to.deep.equal([
       { key: 'b', value: '1.20K' },
-      { key: 'a', value: 5 }
+      { key: 'a', value: '5' }
     ])
     expect(ranked(null)).to.deep.equal([])
+  })
+
+  it('does not change the passed rows when ranking them', () => {
+    const rows = [{ key: 'a', value: 5 }, { key: 'b', value: 1200 }]
+    ranked(rows)
+    expect(rows).to.deep.equal([{ key: 'a', value: 5 }, { key: 'b', value: 1200 }])
+  })
+
+  it('does not change the passed rows when creating a timeline', () => {
+    const formatter = { format: (date) => date.toISOString().slice(5, 10) }
+    const rows = [{ key: '2026-01-02', value: 120 }, { key: '2026-01-01', value: 60 }]
+    timeline(rows, formatter, toMinutes)
+    expect(rows).to.deep.equal([{ key: '2026-01-02', value: 120 }, { key: '2026-01-01', value: 60 }])
   })
 
   it('rates values by their thresholds', () => {

@@ -158,3 +158,9 @@ msgstr "Коротка примітка у футері, напр. сертиф�
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Тема оформлення"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Темна тема оформлення"

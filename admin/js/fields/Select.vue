@@ -8,7 +8,7 @@ export default {
   extends: fieldBase,
 
   props: {
-    modelValue: { type: [String, Array] }
+    modelValue: { type: [String, Number, Array] }
   },
 
   computed: {
@@ -39,7 +39,7 @@ export default {
     :placeholder="config.placeholder || ''"
     :multiple="config.multiple"
     :chips="config.multiple"
-    :modelValue="modelValue ?? config.default ?? ''"
+    :modelValue="modelValue ?? config.default ?? (config.multiple ? [] : '')"
     @update:modelValue="$emit('update:modelValue', $event)"
     density="comfortable"
     hide-details="auto"

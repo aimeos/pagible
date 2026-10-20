@@ -168,4 +168,35 @@ describe('PageDetailMetrics', () => {
       })
     })
   })
+
+  it('removes the metrics of the previous time range if loading fails', () => {
+    mountMetrics().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailMetrics).vm
+      const metrics = {
+        views: [{ key: '2026-10-01', value: 5 }],
+        queries: [{ key: 'old', impressions: 1 }],
+        pagespeed: [{ key: 'lcp', value: 1200 }]
+      }
+
+      vm.$apollo.mutate = () => Promise.resolve({ data: { metrics } })
+
+      return vm.metrics().then(() => {
+        expect(vm.views).to.have.length(1)
+        expect(vm.queries).to.have.length(1)
+        expect(vm.pagespeed).to.deep.equal({ lcp: 1200 })
+
+        vm.querypage = 2
+        vm.$apollo.mutate = () => Promise.reject(new Error('Network down'))
+
+        return vm.metrics()
+      }).then(() => {
+        expect(vm.errors).to.deep.equal(['Error fetching metrics'])
+        expect(vm.views).to.deep.equal([])
+        expect(vm.queries).to.deep.equal([])
+        expect(vm.pagespeed).to.be.null
+        expect(vm.querypage).to.equal(1)
+        expect(vm.loading).to.be.false
+      })
+    })
+  })
 })

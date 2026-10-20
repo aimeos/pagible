@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\Events\Bulk;
@@ -652,8 +653,8 @@ class VariantTest extends CoreTestAbstract
         app()->forgetScopedInstances();
 
         try {
-            $root = Pages::add( ['lang' => 'en', 'name' => 'Other', 'title' => 'Other', 'path' => 'other'] );
-            $child = Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'other-child'], parent: $root->id );
+            $root = Permission::system( fn() => Pages::add( ['lang' => 'en', 'name' => 'Other', 'title' => 'Other', 'path' => 'other'] ) );
+            $child = Permission::system( fn() => Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child', 'path' => 'other-child'], parent: $root->id ) );
         } finally {
             \Aimeos\Cms\Tenancy::valueUsing( fn() => 'test' );
             app()->forgetScopedInstances();
@@ -798,10 +799,10 @@ class VariantTest extends CoreTestAbstract
         $count = PageView::withTrashed()->count();
 
         $ids = \Aimeos\Cms\Tenancy::run( 'other', function() {
-            $root = Pages::add( ['name' => 'Root', 'path' => 'other-root'] );
-            $child = Pages::add( ['name' => 'Child', 'path' => 'other-child'], parent: $root->id );
-            $sub = Pages::add( ['name' => 'Sub', 'path' => 'other-sub'], parent: $child->id );
-            Pages::dropMany( [$child->id] );
+            $root = Permission::system( fn() => Pages::add( ['name' => 'Root', 'path' => 'other-root'] ) );
+            $child = Permission::system( fn() => Pages::add( ['name' => 'Child', 'path' => 'other-child'], parent: $root->id ) );
+            $sub = Permission::system( fn() => Pages::add( ['name' => 'Sub', 'path' => 'other-sub'], parent: $child->id ) );
+            Permission::system( fn() => Pages::dropMany( [$child->id] ) );
 
             return [$root->id, $child->id, $sub->id];
         } );
@@ -1048,8 +1049,8 @@ class VariantTest extends CoreTestAbstract
         Access::using( fn() => ['admins', 'members'] );
 
         try {
-            PageAccess::set( [$page->id], ['members'] );
-            PageAccess::set( [$child->id], ['admins', 'members'] );
+            Permission::system( fn() => PageAccess::set( [$page->id], ['members'] ) );
+            Permission::system( fn() => PageAccess::set( [$child->id], ['admins', 'members'] ) );
         } finally {
             Access::using( null );
         }

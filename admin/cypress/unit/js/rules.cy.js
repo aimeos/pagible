@@ -3,8 +3,9 @@ import {
   maxEntries,
   minChars,
   maxChars,
-  minColumns,
-  maxColumns,
+  minRows,
+  maxRows,
+  domain,
   required
 } from '../../../js/rules'
 
@@ -15,6 +16,20 @@ const ngettext = (singular, plural, n, params) =>
 const gettext = (msgid) => msgid
 
 describe('rules', () => {
+  describe('domain', () => {
+    it('accepts ASCII, punycode and uppercase domains', () => {
+      for (const value of ['', 'example.com', 'Example.COM', 'a.b.co.uk', 'xn--mnchen-3ya.de', 'example.xn--p1ai']) {
+        expect(domain(gettext)(value), value).to.equal(true)
+      }
+    })
+
+    it('rejects invalid domains', () => {
+      for (const value of ['nodot', '-bad.com', 'bad-.com', 'a..com', 'x.c', '1.2.3.4']) {
+        expect(domain(gettext)(value), value).to.equal('Domain name is invalid')
+      }
+    })
+  })
+
   describe('required', () => {
     it('is disabled if not configured', () => {
       expect(required(gettext, undefined)('')).to.equal(true)
@@ -48,18 +63,18 @@ describe('rules', () => {
     it('accepts values with at least the minimum length', () => {
       expect(minChars(ngettext, 3)('abc')).to.equal(true)
       expect(minEntries(ngettext, 2)([1, 2, 3])).to.equal(true)
-      expect(minColumns(ngettext, '2')([1, 2])).to.equal(true)
+      expect(minRows(ngettext, '2')([1, 2])).to.equal(true)
     })
 
     it('returns the singular message for a limit of one', () => {
       expect(minEntries(ngettext, 1)([])).to.equal('At least 1 entry is required')
-      expect(minColumns(ngettext, 1)([])).to.equal('At least 1 column is required')
+      expect(minRows(ngettext, 1)([])).to.equal('At least 1 row is required')
     })
 
     it('returns the plural message for other limits', () => {
       expect(minEntries(ngettext, 2)([1])).to.equal('At least 2 entries are required')
       expect(minChars(ngettext, '4')('abc')).to.equal('At least 4 characters are required')
-      expect(minColumns(ngettext, 3)([1])).to.equal('At least 3 columns are required')
+      expect(minRows(ngettext, 3)([1])).to.equal('At least 3 rows are required')
     })
 
     it('accepts empty values for character limits', () => {
@@ -69,7 +84,7 @@ describe('rules', () => {
 
     it('fails for missing entries and columns', () => {
       expect(minEntries(ngettext, 1)(undefined)).to.equal('At least 1 entry is required')
-      expect(minColumns(ngettext, 2)([])).to.equal('At least 2 columns are required')
+      expect(minRows(ngettext, 2)([])).to.equal('At least 2 rows are required')
     })
   })
 
@@ -82,19 +97,19 @@ describe('rules', () => {
     it('accepts values up to the maximum length', () => {
       expect(maxChars(ngettext, 3)('abc')).to.equal(true)
       expect(maxEntries(ngettext, 2)([1])).to.equal(true)
-      expect(maxColumns(ngettext, '2')([1, 2])).to.equal(true)
+      expect(maxRows(ngettext, '2')([1, 2])).to.equal(true)
     })
 
     it('returns the singular message for a limit of one', () => {
       expect(maxEntries(ngettext, 1)([1, 2])).to.equal('At most 1 entry is allowed')
       expect(maxChars(ngettext, 1)('ab')).to.equal('At most 1 character is allowed')
-      expect(maxColumns(ngettext, 1)([1, 2])).to.equal('At most 1 column is allowed')
+      expect(maxRows(ngettext, 1)([1, 2])).to.equal('At most 1 row is allowed')
     })
 
     it('returns the plural message for other limits', () => {
       expect(maxEntries(ngettext, 2)([1, 2, 3])).to.equal('At most 2 entries are allowed')
       expect(maxChars(ngettext, '3')('abcd')).to.equal('At most 3 characters are allowed')
-      expect(maxColumns(ngettext, 2)([1, 2, 3])).to.equal('At most 2 columns are allowed')
+      expect(maxRows(ngettext, 2)([1, 2, 3])).to.equal('At most 2 rows are allowed')
     })
   })
 })

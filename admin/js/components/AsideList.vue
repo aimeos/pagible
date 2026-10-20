@@ -27,9 +27,10 @@ export default {
 
   created() {
     this.initial = { ...(this.defaults || this.filter) }
+    // groups with a filter value, including non-null defaults like the view, start expanded
     this.open = this.content
       .map((group, index) => {
-        return group.open || this.has(group.key) ? index : false
+        return group.open || (this.filter[group.key] ?? null) !== null ? index : false
       })
       .filter((idx) => idx !== false)
   },
@@ -91,7 +92,11 @@ export default {
           :key="idx"
           rounded="lg"
         >
-          <v-btn @click="toggle(item)" :prepend-icon="item.icon" variant="text"
+          <v-btn
+            @click="toggle(item)"
+            :aria-pressed="String(active(item))"
+            :prepend-icon="item.icon"
+            variant="text"
             >{{ item.title }}<span v-if="item.count != null" class="count">{{ item.count }}</span></v-btn
           >
         </v-list-item>

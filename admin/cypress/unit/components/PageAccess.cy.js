@@ -196,4 +196,12 @@ describe('PageAccess', () => {
     mountAccess([], { ids: ['page-1', 'page-2'], descendants: 3 })
     cy.get('.btn-apply-access-recursive').should('not.exist')
   })
+
+  it('shows no bulk limit hint for multiple roots without a recursive action', () => {
+    mountAccess([], { ids: ['page-1', 'page-2'], descendants: 1000 })
+
+    cy.get('.btn-apply-access-recursive').should('not.exist')
+    cy.get('.btn-apply-access').should('be.enabled')
+    cy.contains('Page bulk changes are limited to 1,000 pages').should('not.exist')
+  })
 })

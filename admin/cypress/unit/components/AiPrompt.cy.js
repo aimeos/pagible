@@ -25,6 +25,13 @@ describe('AiPrompt', () => {
     cy.get('@submit').should('not.have.been.called')
   })
 
+  it('does not emit submit on Enter confirming an input method word', () => {
+    mountPrompt()
+    cy.get('.prompt textarea').first()
+      .trigger('keydown', { eventConstructor: 'KeyboardEvent', key: 'Enter', keyCode: 229, force: true })
+    cy.get('@submit').should('not.have.been.called')
+  })
+
   it('ignores submits while busy', () => {
     mountPrompt({ busy: true })
     cy.get('.prompt textarea').first().type('{enter}', { force: true })
@@ -45,6 +52,7 @@ describe('AiPrompt', () => {
   it('uses the passed placeholder', () => {
     mountPrompt({ placeholder: 'Describe it' })
     cy.get('.prompt textarea').first().should('have.attr', 'placeholder', 'Describe it')
+      .and('have.attr', 'aria-label', 'Describe it')
   })
 
   it('toggles the help', () => {
@@ -52,5 +60,17 @@ describe('AiPrompt', () => {
     cy.get('#test-help').should('not.exist')
     cy.get('.prompt .v-input__prepend .v-btn').click()
     cy.contains('#test-help li', 'Help text').should('exist')
+  })
+
+  it('appends dictated text to the prompt', () => {
+    const onUpdate = cy.spy().as('update')
+
+    mountPrompt({ 'onUpdate:modelValue': onUpdate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(AiPrompt).vm
+      cy.stub(vm.dictation, 'toggle').callsFake((done) => done('now'))
+
+      vm.record()
+      expect(onUpdate).to.have.been.calledWith('Do it now')
+    })
   })
 })

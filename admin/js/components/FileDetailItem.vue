@@ -15,7 +15,36 @@ import { fileurl } from '../urls'
 const FileDetailItemImage = defineAsyncComponent(() => import('./FileDetailItemImage.vue'))
 const FileDetailItemVideo = defineAsyncComponent(() => import('./FileDetailItemVideo.vue'))
 
-const VTT_TIMECODE_RE = /^\d{2}:\d{2}:\d{2}\.\d{3} --\> \d{2}:\d{2}:\d{2}\.\d{3}(?: .*)?$/
+// splits WebVTT content into blocks which are kept as they are (header, NOTE, STYLE, REGION)
+// and cues whose identifier and timing line are kept while their text is translated
+function parseVTT(text) {
+  return text
+    .replace(/\r\n?/g, '\n')
+    .split(/\n[ \t]*\n/)
+    .filter((block) => block.trim() !== '')
+    .map((block) => {
+      const lines = block.split('\n')
+      const idx = lines.findIndex((line) => line.includes('-->'))
+
+      if (idx < 0 || /^(WEBVTT|NOTE|STYLE|REGION)\b/.test(lines[0])) {
+        return { keep: block }
+      }
+
+      return { head: lines.slice(0, idx + 1).join('\n'), text: lines.slice(idx + 1).join('\n') }
+    })
+}
+
+// rebuilds the WebVTT content with the translated texts of the cues which have a text
+function buildVTT(blocks, texts) {
+  let idx = 0
+
+  return blocks
+    .map((block) => {
+      if (block.keep !== undefined) return block.keep
+      return block.text ? `${block.head}\n${texts[idx++] ?? block.text}` : block.head
+    })
+    .join('\n\n')
+}
 
 const DESCRIBE_FILE = gql`
   mutation ($file: String!, $lang: String!) {
@@ -239,7 +268,8 @@ export default {
     },
 
     // resolves to the translations of the first non-empty text keyed by language, or an empty object
-    async translateMap(map) {
+    // the text can be split into several parts which are translated separately and joined again
+    async translateMap(map, split = (text) => [text], join = (result) => result[0]) {
       if (this.readonly || !this.user.can('text:translate')) {
         this.messages.denied()
         return {}
@@ -259,15 +289,15 @@ export default {
       try {
         const ai = await import('../ai')
         const texts = {}
+        const parts = split(text)
 
         await Promise.all(
           this.txLocaleItems(lang).map(({ code }) =>
-            ai
-              .translate(text, code)
+            ai.translate(parts, code)
               .then((result) => {
                 // translate() reports its own errors and returns no array then
-                if (Array.isArray(result) && result[0]) {
-                  texts[code] = result[0]
+                if (Array.isArray(result) && result.length === parts.length && result.some(Boolean)) {
+                  texts[code] = join(result)
                 }
               })
               .catch((error) => {
@@ -293,33 +323,23 @@ export default {
         return
       }
 
-      const texts = { ...map }
+      const [, source] = Object.entries(map).find(([, text]) => text) || []
+      const blocks = source ? parseVTT(source) : []
+      const cues = blocks.filter((block) => block.keep === undefined && block.text)
 
-      for (const [lang, text] of Object.entries(texts)) {
-        if (text) {
-          texts[lang] = text
-            .split('\n')
-            .map((line) => line.startsWith('WEBVTT') || VTT_TIMECODE_RE.test(line) ? `<x>${line}</x>` : line)
-            .filter((line) => line.trim() !== '')
-            .join('')
-        }
-      }
+      if (!cues.length) return
 
-      this.translateMap(texts).then((texts) => {
+      // the other languages are translated from the first non-empty one, which translateMap() picks too
+      this.translateMap(
+        map,
+        () => cues.map((block) => block.text),
+        (result) => buildVTT(blocks, result)
+      ).then((texts) => {
         if (!Object.keys(texts).length) {
           return
         }
 
-        const transcription = { ...this.item.transcription }
-
-        for (const [lang, text] of Object.entries(texts)) {
-          if (text) {
-            transcription[lang] = text
-              .replaceAll(/\<x\>/g, '\n\n')
-              .replaceAll(/\<\/x\>/g, '\n')
-              .trim()
-          }
-        }
+        const transcription = { ...this.item.transcription, ...texts }
 
         this.update('transcription', transcription)
       })
@@ -451,6 +471,7 @@ export default {
                 v-if="user.can('audio:transcribe')"
                 @click="record()"
                 :class="{ dictating: dictation.active() }"
+                :aria-pressed="String(dictation.active())"
                 :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
                 :title="$gettext('Dictate')"
                 :loading="dictation.busy()"
@@ -467,7 +488,7 @@ export default {
           <v-window v-model="tabdesc" :touch="false">
             <v-window-item v-for="entry in localeItems()" :key="entry.value" :value="entry.value">
               <v-textarea
-                    @update:modelValue="descriptionUpdated(entry.value, $event)"
+                @update:modelValue="descriptionUpdated(entry.value, $event)"
                 :label="$gettext('Description (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Alternative text for screen readers and search engines, also used as caption')"
                 :modelValue="item.description?.[entry.value] || ''"
                 :readonly="readonly"
@@ -475,7 +496,7 @@ export default {
                 counter="500"
                 rows="2"
                 auto-grow
-                clearable
+                :clearable="!readonly"
               ></v-textarea>
             </v-window-item>
           </v-window>
@@ -516,14 +537,14 @@ export default {
           <v-window v-model="tabtrans" :touch="false">
             <v-window-item v-for="entry in localeItems()" :key="entry.value" :value="entry.value">
               <v-textarea
-                    @update:modelValue="transcriptionUpdated(entry.value, $event)"
+                @update:modelValue="transcriptionUpdated(entry.value, $event)"
                 :label="$gettext('Transcription (%{lang})', { lang: entry.value }) + ' ‒ ' + $gettext('Spoken text in WebVTT format, shown as subtitles and transcript')"
                 :modelValue="item.transcription?.[entry.value] || ''"
                 :readonly="readonly"
                 variant="underlined"
                 rows="10"
                 auto-grow
-                clearable
+                :clearable="!readonly"
               ></v-textarea>
             </v-window-item>
           </v-window>

@@ -12,7 +12,7 @@
 </header>
 
 @if($file = cms($files, data_get($data, 'files.0.id') ?? data_get($data, 'file.id')))
-    @include('cms::pic', ['file' => $file, 'main' => true, 'class' => 'cover', 'sizes' => '(max-width: 860px) 100vw, 860px'])
+    <x-cms::image :page="$page" :file="$file" main class="cover" sizes="(max-width: 860px) 100vw, 860px" />
 @endif
 
 <script type="application/ld+json">{
@@ -22,7 +22,7 @@
     "datePublished": "{{ $page->created_at?->toIso8601String() }}",
     "dateModified": "{{ $page->updated_at?->toIso8601String() }}"
     @if($author = array_filter([
-        'name' => trim((string) ($data->{'author-name'} ?? '')) ?: (string) cms($page->ancestorsAndSelf->reverse()->first(fn($item) => cms($item, 'config.folio::profile.data')), 'config.folio::profile.data.name'),
+        'name' => trim((string) ($data->{'author-name'} ?? '')) ?: (string) cmsconfig($page, 'folio::profile.data.name'),
         'url' => trim((string) ($data->{'author-url'} ?? '')),
     ]))
         , "author": {!! cmsjson(['@@type' => 'Person'] + $author) !!}

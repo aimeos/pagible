@@ -21,11 +21,15 @@ class Utils
      * Returns the editor identifier for the current user.
      *
      * @param object|null $user The authenticated user object
-     * @return string The user's email or the request IP address
+     * @return string The user's email, "system" for calls without user inside Permission::system() or the request IP address
      */
     public static function editor( ?object $user = null ) : string
     {
-        return (string) ( $user && isset( $user->email ) ? $user->email : request()->ip() );
+        if( $user && isset( $user->email ) ) {
+            return (string) $user->email;
+        }
+
+        return !$user && Hooks::get()->system ? 'system' : (string) request()->ip();
     }
 
 
@@ -236,6 +240,15 @@ class Utils
 
 
     /**
+     * Returns the name of the queue connection used by the CMS jobs.
+     */
+    public static function queue() : string
+    {
+        return (string) ( config( 'cms.queue.connection' ) ?: config( 'queue.default' ) );
+    }
+
+
+    /**
      * Generates a slug from the given title.
      *
      * @param string $title The title to generate a slug from
@@ -248,6 +261,18 @@ class Utils
         $title = (string) preg_replace( '/^-|-$/', '', $title );
 
         return mb_strtolower( trim( $title, '-' ) );
+    }
+
+
+    /**
+     * Returns the text direction of the given language.
+     *
+     * @param string|null $lang Language tag like "ar" or "ar-EG"
+     * @return string "rtl" for right-to-left languages, otherwise "ltr"
+     */
+    public static function textDir( ?string $lang ) : string
+    {
+        return in_array( strtok( (string) $lang, '-_' ), ['ar', 'dv', 'fa', 'he', 'ku', 'ur'], true ) ? 'rtl' : 'ltr';
     }
 
 

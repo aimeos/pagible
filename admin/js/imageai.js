@@ -3,7 +3,8 @@
  */
 
 import gql from 'graphql-tag'
-import { toBlob } from './files'
+import { canvasBlob, toBlob } from './files'
+import { hasTrue } from './utils'
 
 const ERASE_IMAGE = gql`
   mutation ($file: Upload!, $mask: Upload!) {
@@ -45,8 +46,8 @@ const UPSCALE_IMAGE = gql`
  * AI operations on the image shown in the image editor: erasing, inpainting, repainting,
  * isolating, uncropping and upscaling the image or the selected area
  *
- * Requires the item and readonly props, the cropper, width, height, user and messages properties
- * and the clear(), image() and replace() methods.
+ * Requires the item and readonly props, the cropper, selected, width, height, user and messages
+ * properties and the clear(), image() and replace() methods.
  */
 export const imageAi = {
   data() {
@@ -59,11 +60,17 @@ export const imageAi = {
         left: 0
       },
       loading: {},
-      menu: {}
+      menu: {},
+      preparing: false
     }
   },
 
   computed: {
+    // only one AI operation at a time, the last result would replace the others otherwise
+    aiBusy() {
+      return this.preparing || hasTrue(this.loading)
+    },
+
     edges() {
       const hint = ' ‒ ' + this.$gettext('Number of pixels added at this side of the image')
 
@@ -84,33 +91,29 @@ export const imageAi = {
 
   methods: {
     erase() {
-      if (!this.cropper) return
-      this.masked().then((files) => {
-        this.mutate('image:erase', ERASE_IMAGE, files, this.$gettext('Error erasing image part'))
-      })
+      if (!this.cropper || this.aiBusy) return
+      return this.run('image:erase', ERASE_IMAGE, this.$gettext('Error erasing image part'), () => this.masked())
     },
 
     inpaint() {
-      if (!this.cropper || !this.edittext?.trim()) {
+      if (!this.cropper || this.aiBusy || !this.edittext?.trim()) {
         return
       }
 
-      this.masked().then((files) => {
-        const vars = { ...files, prompt: this.edittext }
-        this.mutate('image:inpaint', INPAINT_IMAGE, vars, this.$gettext('Error editing image part'))
-      })
+      return this.run('image:inpaint', INPAINT_IMAGE, this.$gettext('Error editing image part'), () =>
+        this.masked().then((files) => ({ ...files, prompt: this.edittext }))
+      )
     },
 
     isolate() {
-      if (!this.cropper) return
+      if (!this.cropper || this.aiBusy) return
 
+      // without a crop box, the whole image is used
       this.clear()
 
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate('image:isolate', ISOLATE_IMAGE, {
-          file: new File([blob], 'image.png', { type: 'image/png' })
-        }, this.$gettext('Error removing background'))
-      })
+      return this.run('image:isolate', ISOLATE_IMAGE, this.$gettext('Error removing background'), () =>
+        this.croppedFile().then((file) => ({ file }))
+      )
     },
 
     mask() {
@@ -143,11 +146,23 @@ export const imageAi = {
       return canvas
     },
 
+    // returns the cropped area or the whole image as PNG upload file
+    croppedFile() {
+      return canvasBlob(this.cropper.getCroppedCanvas()).then((blob) =>
+        new File([blob], 'image.png', { type: 'image/png' })
+      )
+    },
+
+    // edited images are PNG files while the original keeps its own type
+    imageFile(blob) {
+      return new File([blob], 'image', { type: blob.type || this.item.mime })
+    },
+
     // returns the image and the mask of the selected area as upload files
     masked() {
       return this.image().then((blob) =>
-        new Promise((resolve) => this.mask().toBlob(resolve)).then((mask) => ({
-          file: new File([blob], 'image', { type: this.item.mime }),
+        canvasBlob(this.mask()).then((mask) => ({
+          file: this.imageFile(blob),
           mask: new File([mask], 'mask', { type: 'image/png' })
         }))
       )
@@ -160,7 +175,15 @@ export const imageAi = {
         return this.clear()
       }
 
+      // only one operation at a time, run() resets the preparing state before calling this method
+      if (this.aiBusy) {
+        return Promise.resolve()
+      }
+
       this.loading[action] = true
+
+      // restoring another version meanwhile makes the result obsolete
+      const path = this.item.path
 
       return this.$apollo
         .mutate({
@@ -168,7 +191,11 @@ export const imageAi = {
           variables,
           context: { hasUpload: true }
         })
-        .then((response) => this.replace(toBlob(response.data?.[action.split(':')[1]])))
+        .then((response) => {
+          if (this.item.path === path) {
+            this.replace(toBlob(response.data?.[action.split(':')[1]]))
+          }
+        })
         .catch((error) => this.messages.error(msg, error))
         .finally(() => {
           this.loading[action] = false
@@ -182,34 +209,62 @@ export const imageAi = {
     },
 
     repaint() {
-      if (!this.edittext?.trim()) {
+      if (this.aiBusy || !this.edittext?.trim()) {
         return
       }
 
-      this.image().then((blob) => {
-        this.mutate('image:repaint', REPAINT_IMAGE, {
-          file: new File([blob], 'image', { type: this.item.mime }),
+      return this.run('image:repaint', REPAINT_IMAGE, this.$gettext('Error editing image'), () =>
+        this.image().then((blob) => ({
+          file: this.imageFile(blob),
           prompt: this.edittext
-        }, this.$gettext('Error editing image'))
-      })
+        }))
+      )
+    },
+
+    /**
+     * Prepares the upload files and runs the AI mutation
+     *
+     * Preparing the image counts as running operation too, so no other one can start meanwhile.
+     *
+     * @param {string} action Permission and loading key of the operation, e.g. "image:erase"
+     * @param {object} mutation GraphQL mutation document
+     * @param {string} msg Translated, user-facing error message
+     * @param {() => Promise<object>} prepare Returns the mutation variables
+     * @returns {Promise<void>} Resolves when the operation finished, errors are reported
+     */
+    run(action, mutation, msg, prepare) {
+      this.preparing = true
+
+      // a synchronous error in prepare() must reset the preparing state too
+      return Promise.resolve()
+        .then(prepare)
+        .then((variables) => {
+          this.preparing = false
+          return this.mutate(action, mutation, variables, msg)
+        })
+        .catch((error) => this.messages.error(msg, error))
+        .finally(() => {
+          this.preparing = false
+        })
     },
 
     uncrop() {
-      if (!this.cropper || (!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left)) {
+      if (!this.cropper || this.aiBusy || (!this.extend.top && !this.extend.right && !this.extend.bottom && !this.extend.left)) {
         return
       }
 
+      // without a crop box, the whole image is used
       this.clear()
 
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate('image:uncrop', UNCROP_IMAGE, {
-          file: new File([blob], 'image.png', { type: 'image/png' }),
+      return this.run('image:uncrop', UNCROP_IMAGE, this.$gettext('Error uncropping image'), () =>
+        this.croppedFile().then((file) => ({
+          file,
           top: this.extend.top ?? 0,
           right: this.extend.right ?? 0,
           bottom: this.extend.bottom ?? 0,
           left: this.extend.left ?? 0
-        }, this.$gettext('Error uncropping image'))
-      })
+        }))
+      )
     },
 
     uncropped() {
@@ -218,16 +273,14 @@ export const imageAi = {
     },
 
     upscale(factor) {
-      if (!this.cropper) return
+      if (!this.cropper || this.aiBusy) return
 
+      // without a crop box, the whole image is used
       this.clear()
 
-      this.cropper.getCroppedCanvas().toBlob((blob) => {
-        this.mutate('image:upscale', UPSCALE_IMAGE, {
-          file: new File([blob], 'image.png', { type: 'image/png' }),
-          factor: factor
-        }, this.$gettext('Error upscaling image'))
-      })
+      return this.run('image:upscale', UPSCALE_IMAGE, this.$gettext('Error upscaling image'), () =>
+        this.croppedFile().then((file) => ({ file, factor }))
+      )
     }
   }
 }

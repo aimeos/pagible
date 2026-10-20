@@ -70,7 +70,7 @@ export default {
         return list
       }
 
-      const collator = new Intl.Collator(this.$language?.current)
+      const collator = new Intl.Collator(this.$vuetify?.locale?.current)
 
       return list
         .map((item) => [this.label(item), item])

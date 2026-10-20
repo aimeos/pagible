@@ -104,3 +104,9 @@ msgstr "您的个人主页链接，例如 https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "主题"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "深色主题"

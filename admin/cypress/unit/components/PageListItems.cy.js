@@ -123,6 +123,16 @@ describe('PageListItems', () => {
     cy.get('button.btn-add').should('not.exist')
   })
 
+  it('returns an empty page list without the view permission', () => {
+    mountList({}, {}).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageListItems).vm
+
+      return vm.pages({}, 1, 10).then((result) => {
+        expect(result).to.deep.equal({ data: [], currentPage: 1, lastPage: 1 })
+      })
+    })
+  })
+
   it('shows no entries message when not loading and items are empty', () => {
     mountList({}, { 'page:view': true })
     cy.contains('No entries found').should('exist')

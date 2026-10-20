@@ -650,7 +650,7 @@ body > footer.bottom .container {
     justify-content: center;
 }
 
-body > footer.bottom img.brand {
+body > footer.bottom .brand img {
     filter: grayscale(1) brightness(0) invert(1);
     max-height: 2rem;
     max-width: 14rem;

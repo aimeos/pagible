@@ -171,6 +171,16 @@ export default {
       })
     },
 
+    // removes the fetched metrics
+    clear() {
+      for (const key of ['conversions', 'countries', 'durations', 'referrers', 'impressions', 'queries', 'ctrs', 'clicks', 'visits', 'views']) {
+        this[key] = []
+      }
+
+      this.pagespeed = null
+      this.querypage = 1
+    },
+
     async metrics() {
       const request = ++this.request
 
@@ -223,7 +233,10 @@ export default {
         this.errors = stats.errors || []
       } catch (e) {
         if (request === this.request) {
-          this.errors.push(e.message || String(e))
+          // don't show the charts of the previous time range next to the error
+          this.clear()
+          this.errors.push(this.$gettext('Error fetching metrics'))
+          this.$log('PageDetailMetrics::metrics(): Error fetching metrics', e)
         }
       } finally {
         if (request === this.request) {
@@ -418,7 +431,7 @@ export default {
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-actions v-if="queries.length > 10" class="justify-center">
+            <v-card-actions v-if="queries.length > QUERY_PAGE_SIZE" class="justify-center">
               <v-pagination v-model="querypage" :length="Math.ceil(queries.length / QUERY_PAGE_SIZE)" />
             </v-card-actions>
           </v-card>

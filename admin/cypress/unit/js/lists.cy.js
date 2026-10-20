@@ -11,6 +11,7 @@ function list(props = {}) {
     loading: false,
     outdated: true,
     last: 1,
+    searchSeq: 0,
     user: { can: () => true },
     messages: { add: cy.stub(), error: cy.stub(), denied: cy.stub() },
     $gettext: (msg) => msg,
@@ -76,6 +77,30 @@ describe('listBase', () => {
     return vm.search().then(() => {
       expect(vm.loading).to.be.false
       expect(vm.messages.error).to.have.been.calledWith('Error search')
+    })
+  })
+
+  it('stops loading without searching or a message if the user can not view the items', () => {
+    const query = cy.stub()
+    const vm = list({ loading: true, user: { can: () => false }, $apollo: { query } })
+
+    return vm.search().then((items) => {
+      expect(items).to.deep.equal([])
+      expect(vm.loading).to.be.false
+      expect(query).not.to.have.been.called
+      expect(vm.messages.denied).not.to.have.been.called
+    })
+  })
+
+  it('goes back to the last page if the current page has no items any more', () => {
+    const vm = list({
+      page: 3,
+      $apollo: { query: cy.stub().resolves({ data: { files: { data: [], paginatorInfo: { lastPage: 2 } } } }) }
+    })
+
+    return vm.search().then(() => {
+      expect(vm.last).to.equal(2)
+      expect(vm.page).to.equal(2)
     })
   })
 
@@ -146,6 +171,25 @@ describe('listBase', () => {
     methods.toggle.call(vm)
     expect(vm.checked.size).to.equal(0)
     expect(vm.allChecked).to.be.false
+  })
+
+  it('keeps only the selected items still shown after changing the language of a single item', () => {
+    const vm = list({
+      editIds: ['3'],
+      editSelected: false,
+      checked: new Set(['1', '2']),
+      $apollo: { mutate: cy.stub().resolves({}) },
+      invalidate: cy.stub()
+    })
+    vm.search = cy.stub().callsFake(() => {
+      vm.items = [{ id: '3' }, { id: '2' }]
+      vm.checked = new Set()
+      return Promise.resolve(vm.items)
+    })
+
+    return methods.save.call(vm, 'de').then(() => {
+      expect([...vm.checked]).to.deep.equal(['2'])
+    })
   })
 
   it('shows the trash message with undo after dropping', () => {

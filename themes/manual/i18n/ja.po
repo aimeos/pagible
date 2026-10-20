@@ -74,3 +74,9 @@ msgstr "フッターに表示されるソフトウェアのライセンス（例
 msgctxt "st"
 msgid "manual::theme"
 msgstr "テーマ"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "ダークテーマ"

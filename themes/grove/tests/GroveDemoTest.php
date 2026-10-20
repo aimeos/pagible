@@ -95,7 +95,7 @@ class GroveDemoTest extends ThemeTestAbstract
 
         $response->assertOk();
         $response->assertSee( 'A Greener Lawn Without Chemicals: Our Year-Round Guide' );
-        $response->assertSee( '<a href="http://localhost/journal" class="active">', false );
+        $response->assertSee( '<a href="http://localhost/journal" class="active" aria-current="page">', false );
     }
 
 

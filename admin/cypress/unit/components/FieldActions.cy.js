@@ -26,7 +26,7 @@ describe('FieldActions', () => {
     mountActions()
     cy.get('.btn-translate button').should('exist')
     cy.get('button.btn-generate').should('exist')
-    cy.get('button.btn-dictate').should('exist')
+    cy.get('button.btn-dictate').should('have.attr', 'aria-pressed', 'false')
   })
 
   it('hides the AI buttons without permissions', () => {
@@ -34,6 +34,15 @@ describe('FieldActions', () => {
     cy.get('.btn-translate button').should('not.exist')
     cy.get('button.btn-generate').should('not.exist')
     cy.get('button.btn-dictate').should('not.exist')
+  })
+
+  it('appends dictated text to the field value', () => {
+    mountActions().then((wrapper) => {
+      cy.stub(wrapper.vm.dictation, 'toggle').callsFake((done) => done('world'))
+
+      wrapper.vm.record()
+      expect(wrapper.emitted('update')).to.deep.equal([['Hello world']])
+    })
   })
 
   it('emits the generated text', () => {

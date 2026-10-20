@@ -116,3 +116,9 @@ msgstr "Profilinizə keçid, məsələn: https://github.com/lena"
 msgctxt "st"
 msgid "aura::theme"
 msgstr "Mövzu"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "aura::theme-dark"
+msgstr "Tünd mövzu"

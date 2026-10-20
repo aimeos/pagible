@@ -7,11 +7,7 @@ import ActionItem from '../components/ActionItem.vue'
 import ActionMenu from '../components/ActionMenu.vue'
 import ChatDialog from '../components/ChatDialog.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
-
-const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
-const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
-const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
-import { applyResult, hasUnresolved } from '../merge'
+import { applyResult, assignMerged, hasUnresolved } from '../merge'
 import { detailVariants } from '../variants'
 import { detailBase, focusInvalid, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
@@ -29,6 +25,9 @@ import {
   mdiTranslate
 } from '@mdi/js'
 
+const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
+const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
+const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
 
 // copy of the element without the internal "_" properties
@@ -170,17 +169,14 @@ export default {
       latest: null,
       // changes restored from an old version, which marks translations as outdated
       restored: false,
-      savecnt: 0,
-      historyData: null
+      savecnt: 0
     }
   },
 
   computed: {
+    // instructions for the AI model, not translated like those of the element and file lists
     chatContext() {
-      return this.$gettext(
-        'The user is viewing the page with ID "%{id}". When they refer to "this page", use get-page with that ID.',
-        { id: this.item.id }
-      )
+      return `The user is viewing the page with ID "${this.item.id}". When they refer to "this page", use get-page with that ID.`
     },
 
     hasChanged() {
@@ -232,9 +228,6 @@ export default {
         this.item.variants = page.variants || []
         this.item.has = page.has
         this.item.restricted = page.restricted
-        this.item.published = this.latest?.published
-        this.item.editor = this.latest?.editor
-        this.item.updated_at = this.latest?.created_at
 
         const aux = safeParse(this.latest?.aux)
         this.item.content = aux.content ?? []
@@ -271,8 +264,8 @@ export default {
       }
 
       Object.assign(this.item, changes)
-      this.dirty.page = true
-      if (changes.content) this.dirty.content = true
+      this.markChanged('page')
+      if (changes.content) this.markChanged('content')
       this.restored = true
       this.vhistory = false
     },
@@ -389,7 +382,7 @@ export default {
           config: this.clean(item.config, 'config'),
           content: this.clean(item.content, 'content')
         }),
-        elements: Object.values(this.elements).filter(element => item.content.some(block => block.refid === element.id)),
+        elements: Object.values(this.elements).filter(element => (item.content || []).some(block => block.refid === element.id)),
         files: markRaw(files)
       })
     },
@@ -418,12 +411,24 @@ export default {
 
     contentUpdated(list) {
       this.item.content = list
-      this.dirty.content = true
+      this.markChanged('content')
     },
 
     pageUpdated(event) {
       Object.assign(this.item, event)
-      this.dirty.page = true
+      this.markChanged('page')
+    },
+
+    // marks the content or page tab as changed and counts the edit, so edits made while saving stay unsaved
+    markChanged(key) {
+      this.edits++
+      this.dirty[key] = true
+    },
+
+    // content, meta and config are edited in the content tab, all other sections in the page tab
+    resolved(event) {
+      this.resolveChange(event)
+      this.markChanged(['content', 'meta', 'config'].includes(event.section) ? 'content' : 'page')
     },
 
     // child components send the changes of content elements, the page owns them
@@ -491,85 +496,78 @@ export default {
       this.$nextTick(() => this.$refs.chat?.send(this.$gettext('Rate this page and suggest improvements')))
     },
 
-    async save(quiet = false) {
-      await this.$nextTick()
-
-      if (!this.saveable()) {
-        return false
+    save(quiet = false) {
+      // the editor still holds the content of the previous language until the switch is done
+      // and all saves are started by the user, also the quiet ones from publishing or leaving the page
+      if (this.switching) {
+        this.messages.add(this.$gettext('Please wait until the language is switched'), 'info')
+        return Promise.resolve(false)
       }
 
-      if (!this.hasChanged) {
-        return true
-      }
+      return this.saveOnce((quiet) => this.saveItem(quiet), quiet)
+    },
 
-      this.saving = true
+    saveItem(quiet) {
+      return this.saveWith(() => ({
+        mutation: SAVE_PAGE,
+        variables: {
+          id: this.item.id,
+          input: {
+            cache: this.item.cache || 0,
+            domain: this.item.domain || '',
+            lang: this.item.lang || '',
+            name: this.item.name || '',
+            path: this.item.path || '',
+            status: this.item.status || 0,
+            title: this.item.title || '',
+            tag: this.item.tag || '',
+            to: this.item.to || '',
+            type: this.item.type || '',
+            theme: this.item.theme || '',
+            meta: JSON.stringify(this.clean(this.item.meta || {}, 'meta')),
+            config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
+            content: JSON.stringify(this.clean(this.item.content || [], 'content'))
+          },
+          latestId: this.latest?.id,
+          lang: this.variantLang,
+          restore: this.restored
+        }
+      }), (response, edited, sent) => {
+        const page = response.data?.savePage
 
-      return this.$apollo
-        .mutate({
-          mutation: SAVE_PAGE,
-          variables: {
-            id: this.item.id,
-            input: {
-              cache: this.item.cache || 0,
-              domain: this.item.domain || '',
-              lang: this.item.lang || '',
-              name: this.item.name || '',
-              path: this.item.path || '',
-              status: this.item.status || 0,
-              title: this.item.title || '',
-              tag: this.item.tag || '',
-              to: this.item.to || '',
-              type: this.item.type || '',
-              theme: this.item.theme || '',
-              meta: JSON.stringify(this.clean(this.item.meta || {}, 'meta')),
-              config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
-              content: JSON.stringify(this.clean(this.item.content || [], 'content'))
-            },
-            latestId: this.latest?.id,
-            lang: this.variantLang,
-            restore: this.restored
-          }
-        })
-        .then((response) => {
-          const page = response.data?.savePage
+        // a version restored while saving is sent by the next save
+        if (!edited) {
           this.restored = false
+        }
 
-          if (this.isTranslation && page?.stale && !this.item.stale) {
-            this.setVariantState(true)
-          }
-          const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
+        if (this.isTranslation && page?.stale && !this.item.stale) {
+          this.setVariantState(true)
+        }
+        const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
 
-          if (changed?.latest?.id || page?.latest?.id) {
-            this.latest = { id: changed?.latest?.id ?? page.latest.id }
-          }
+        if (changed?.latest?.id || page?.latest?.id) {
+          this.latest = { id: changed?.latest?.id ?? page.latest.id }
+        }
 
-          applyResult(this, changed, this.$gettext('Page saved successfully'), quiet)
+        applyResult(this, changed, this.$gettext('Page saved successfully'), quiet, edited, sent)
 
-          if (changed) {
-            const aux = changed.latest?.aux
-            this.item.content = aux?.content ?? this.item.content
-            this.item.config = aux?.config ?? this.item.config
-            this.item.meta = aux?.meta ?? this.item.meta
-          }
+        if (changed) {
+          const aux = changed.latest?.aux || {}
+          const merged = Object.fromEntries(['content', 'config', 'meta'].filter((key) => aux[key]).map((key) => [key, aux[key]]))
+          assignMerged(this.item, merged, edited ? sent : null)
+        }
 
-          this.savecnt++
-          this.saved(page?.latest)
-
-          return true
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error saving page'), error)
-        })
-        .finally(() => {
-          this.saving = false
-        })
+        this.savecnt++
+        this.saved(page?.latest)
+      }, this.$gettext('Error saving page'))
     },
 
     use(version, clean = false) {
       Object.assign(this.item, version.data)
       this.assign(version.elements || [], Object.values(version.files || {}))
 
-      Object.assign(this.dirty, { content: true, page: true })
+      this.markChanged('content')
+      this.markChanged('page')
       this.vhistory = false
       // discarding unsaved changes returns to the latest version instead of an old one
       if (clean) this.reset()
@@ -597,10 +595,6 @@ export default {
   watch: {
     asidePage(newAside) {
       this.aside = newAside
-    },
-
-    vhistory(val) {
-      if (val) this.historyData = this.historyCurrent()
     }
   }
 }
@@ -708,7 +702,7 @@ export default {
             :item="item"
             :elements="elements"
             :preview-size="previewSize"
-            @change="dirty.content = true"
+            @change="markChanged('content')"
             @edit="editElement"
             @add-elements="addElements"
             @update:content="contentUpdated"
@@ -723,7 +717,7 @@ export default {
             :changed="changed?.content"
             :elements="elements"
             @error="errors.content = $event"
-            @change="dirty.content = true"
+            @change="markChanged('content')"
             @patch-entry="patchEntry"
             @add-assets="addAssets"
             @add-elements="addElements"
@@ -767,29 +761,16 @@ export default {
     :save-count="savecnt"
     @add-after="editorAction('addAfter')"
     @add-before="editorAction('addBefore')"
-    @change="dirty.content = true"
+    @change="markChanged('content')"
     @patch-entry="patchEntry"
     @add-assets="addAssets"
     @remove="editorAction('remove')"
     @update:preview-size="previewSize = $event"
   />
 
-  <Teleport to="body">
+  <DetailDialogs v-bind="dialogs">
     <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" @done="chatDone" />
-    <HistoryDialog
-      v-if="vhistory"
-      v-model="vhistory"
-      :readonly="!user.can('page:save')"
-      :current="historyData"
-      :load="() => versions(item.id)"
-      @apply="apply"
-      @use="use"
-    />
-    <ChangesDialog v-model="vchanged" :changed="changed"
-      @resolve="resolveChange($event); dirty.page = true"
-      @unresolve="unresolveChange"
-    />
-  </Teleport>
+  </DetailDialogs>
 </template>
 
 <style scoped>

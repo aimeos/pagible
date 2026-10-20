@@ -3,8 +3,8 @@
 <script>
 import { markRaw } from 'vue'
 import gql from 'graphql-tag'
-import ActionItem from './ActionItem.vue'
-import ActionMenu from './ActionMenu.vue'
+import ListBulkMenu from './ListBulkMenu.vue'
+import ListItemMenu from './ListItemMenu.vue'
 import ListReload from './ListReload.vue'
 import ListSearch from './ListSearch.vue'
 import ListStatus from './ListStatus.vue'
@@ -97,8 +97,8 @@ export default {
   extends: listBase,
 
   components: {
-    ActionItem,
-    ActionMenu,
+    ListBulkMenu,
+    ListItemMenu,
     ListReload,
     ListSearch,
     ListStatus,
@@ -200,40 +200,17 @@ export default {
         :aria-label="$gettext('Toggle selection')"
       />
 
-      <span class="btn-actions">
-        <ActionMenu>
-          <template #activator="{ props, label }">
-            <v-btn
-              v-bind="props"
-              :disabled="!isChecked || embed || !user.can('element:add')"
-              :title="label"
-              :icon="mdiDotsVertical"
-              variant="text"
-            />
-          </template>
-          <ActionItem
-            v-show="counts.draft && user.can('element:publish')"
-            :prepend-icon="mdiPublish"
-            @click="publish()"
-            >{{ $gettext('Publish') }} ({{ counts.draft }})</ActionItem
-          >
-          <ActionItem v-show="isChecked && user.can('element:save')" :prepend-icon="mdiPencil" @click="edit()">
-            {{ $gettext('Edit properties') }} ({{ counts.all }})
-          </ActionItem>
-          <ActionItem v-show="counts.live && user.can('element:drop')" :prepend-icon="mdiDelete" @click="drop()">
-            {{ $gettext('Delete') }} ({{ counts.live }})
-          </ActionItem>
-          <ActionItem
-            v-show="counts.trashed && user.can('element:keep')"
-            :prepend-icon="mdiDeleteRestore"
-            @click="keep()"
-            >{{ $gettext('Restore') }} ({{ counts.trashed }})</ActionItem
-          >
-          <ActionItem v-show="isChecked && user.can('element:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
-            {{ $gettext('Purge') }} ({{ counts.all }})
-          </ActionItem>
-        </ActionMenu>
-      </span>
+      <ListBulkMenu
+        type="element"
+        :counts="counts"
+        :selected="isChecked"
+        :disabled="!isChecked || embed"
+        @publish="publish()"
+        @edit="edit()"
+        @drop="drop()"
+        @keep="keep()"
+        @purge="purge()"
+      />
 
       <v-btn
         v-if="!embed && user.can('element:add')"
@@ -262,53 +239,21 @@ export default {
         <v-checkbox-btn
           :model-value="checked.has(item.id)"
           @update:model-value="toggleCheck(item)"
+          :aria-label="$gettext('Toggle selection')"
           :class="{ draft: !item.published }"
           class="item-check"
         />
 
         <span class="btn-actions">
-          <ActionMenu>
-            <template #activator="{ props, label }">
-              <v-btn v-bind="props" :title="label" :icon="mdiDotsVertical" variant="text" />
-            </template>
-            <ActionItem
-              v-show="!item.deleted_at && !item.published && user.can('element:publish')"
-              :prepend-icon="mdiPublish"
-              @click="publish(item)"
-              >{{ $gettext('Publish') }}</ActionItem
-            >
-
-            <v-divider
-              v-if="
-                !item.deleted_at &&
-                !item.published &&
-                user.can('element:publish') &&
-                user.can('element:save')
-              "
-            ></v-divider>
-
-            <ActionItem v-if="user.can('element:save')" :prepend-icon="mdiPencil" @click="edit(item)">
-              {{ $gettext('Edit properties') }}
-            </ActionItem>
-
-            <v-divider v-if="user.can('element:save')"></v-divider>
-
-            <ActionItem
-              v-if="!item.deleted_at && user.can('element:drop')"
-              :prepend-icon="mdiDelete"
-              @click="drop(item)"
-              >{{ $gettext('Delete') }}</ActionItem
-            >
-            <ActionItem
-              v-if="item.deleted_at && user.can('element:keep')"
-              :prepend-icon="mdiDeleteRestore"
-              @click="keep(item)"
-              >{{ $gettext('Restore') }}</ActionItem
-            >
-            <ActionItem v-if="user.can('element:purge')" :prepend-icon="mdiDeleteForever" @click="purge(item)">
-              {{ $gettext('Purge') }}
-            </ActionItem>
-          </ActionMenu>
+          <ListItemMenu
+            type="element"
+            :item="item"
+            @publish="publish(item)"
+            @edit="edit(item)"
+            @drop="drop(item)"
+            @keep="keep(item)"
+            @purge="purge(item)"
+          />
         </span>
       </div>
 

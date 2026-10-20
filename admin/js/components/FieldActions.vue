@@ -74,7 +74,8 @@ export default {
     },
 
     record() {
-      this.dictation.toggle((text) => this.$emit('update', text))
+      // dictated text is appended so the existing content isn't lost
+      this.dictation.toggle((text) => this.$emit('update', (this.value ? this.value + ' ' : '') + text))
     },
 
     translateTo(lang) {
@@ -128,6 +129,7 @@ export default {
     v-if="user.can('audio:transcribe')"
     @click="record()"
     :class="['btn-dictate', { dictating: dictation.active() }]"
+    :aria-pressed="String(dictation.active())"
     :icon="dictation.active() ? mdiMicrophoneOutline : mdiMicrophone"
     :title="$gettext('Dictate')"
     :loading="dictation.busy()"

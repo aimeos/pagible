@@ -116,3 +116,9 @@ msgstr "Ссылка на ваш профиль, например https://github
 msgctxt "st"
 msgid "aura::theme"
 msgstr "Тема оформления"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "aura::theme-dark"
+msgstr "Тёмная тема оформления"

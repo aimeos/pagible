@@ -41,7 +41,7 @@ trait HandlesMedia
             'latest_id.required' => 'You must pass the latest_id returned by get-file, add-file, or a previous save-file so concurrent edits are detected.',
         ] );
 
-        $base64 = $edit( $this->image( $v['file'] ), $v );
+        $base64 = $edit( $this->image( $v['file'], $request->user() ), $v );
 
         $result = $this->upload( $base64, 'image', function( UploadedFile $upload ) use ( $v, $request ) {
 
@@ -70,13 +70,14 @@ trait HandlesMedia
      * Loads a stored image file and returns it as a Prisma image object.
      *
      * @param string $id UUID of the image file
+     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User loading the file
      * @param string $label Label used in the error message, e.g. "Image" or "Mask"
      * @return Image Prisma image
      * @throws \Aimeos\Cms\Exception If the file is missing or not an image
      */
-    protected function image( string $id, string $label = 'Image' ) : Image
+    protected function image( string $id, ?\Illuminate\Contracts\Auth\Authenticatable $user, string $label = 'Image' ) : Image
     {
-        return Ai::files( [$id], Image::class )[0]
+        return Ai::files( [$id], $user, Image::class )[0]
             ?? throw new \Aimeos\Cms\Exception( "$label file not found or not an image." );
     }
 

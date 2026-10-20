@@ -6,17 +6,20 @@ import gql from 'graphql-tag'
 import { reactive, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { apolloClient } from '../graphql'
+import { urlgraphql } from '../config'
+import { postHeaders } from '../http'
 import gettext from '../i18n'
 import { useMessageStore } from './message'
 import { useUserStore } from './user'
 
-const SAVE_SETTINGS = gql`
+const SAVE_QUERY = `
   mutation ($settings: JSON!) {
     setUser(settings: $settings) {
       id
     }
   }
 `
+const SAVE_SETTINGS = gql(SAVE_QUERY)
 
 // Delay in milliseconds to collect setting changes before they are saved in one request
 const SAVE_DELAY = 60000
@@ -89,7 +92,12 @@ export const useSettingStore = defineStore('setting', {
       this.saveTimer = setTimeout(() => this.flush(), SAVE_DELAY)
     },
 
-    flush() {
+    /**
+     * Saves the pending changes
+     *
+     * @param {Boolean} unload TRUE if the page is closed or hidden, so the request must outlive it
+     */
+    flush(unload = false) {
       const settings = useUserStore().me?.settings
 
       if (!this.saveTimer || !settings) return
@@ -97,26 +105,45 @@ export const useSettingStore = defineStore('setting', {
       clearTimeout(this.saveTimer)
       this.saveTimer = null
 
-      const messages = useMessageStore()
+      const variables = { settings: JSON.stringify(settings) }
+      const save = () => {
+        apolloClient.mutate({ mutation: SAVE_SETTINGS, variables }).catch((error) => {
+          useMessageStore().error(gettext.$gettext('Failed to save user settings'), error)
+        })
+      }
 
-      apolloClient.mutate({
-        mutation: SAVE_SETTINGS,
-        variables: {
-          settings: JSON.stringify(settings)
-        }
-      }).catch((error) => {
-        messages.error(gettext.$gettext('Failed to save user settings'), error)
+      if (!unload) {
+        return save()
+      }
+
+      // batched Apollo requests are sent delayed and are cancelled when the page is closed
+      fetch(urlgraphql, {
+        method: 'POST',
+        keepalive: true,
+        credentials: 'include',
+        headers: postHeaders(),
+        body: JSON.stringify({ query: SAVE_QUERY, variables })
       })
+        .then((response) => {
+          // e.g. expired session or server error, so the Apollo request handles it
+          if (!response.ok) throw new Error(`HTTP ${response.status}`)
+          return response.json()
+        })
+        .then((result) => {
+          // GraphQL errors are returned with status 200
+          if (result?.errors?.length) throw new Error(result.errors[0]?.message)
+        })
+        .catch(save) // e.g. keepalive requests are limited to 64KB
     }
   }
 })
 
 // saves the pending changes before the page is closed or hidden (may not be shown again)
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  window.addEventListener('pagehide', () => useSettingStore().flush())
+  window.addEventListener('pagehide', () => useSettingStore().flush(true))
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
-      useSettingStore().flush()
+      useSettingStore().flush(true)
     }
   })
 }

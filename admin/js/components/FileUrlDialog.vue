@@ -4,6 +4,7 @@
 import { createFile } from '../files'
 import { invalidateList } from '../graphql'
 import { useAppStore, useMessageStore } from '../stores'
+import { composing } from '../utils'
 import { mdiCheck, mdiDelete } from '@mdi/js'
 import CmsDialog from './Dialog.vue'
 
@@ -25,7 +26,7 @@ export default {
     const messages = useMessageStore()
     const app = useAppStore()
 
-    return { app, messages, maxUrlLength: MAX_URL_LENGTH, mdiCheck, mdiDelete }
+    return { app, composing, messages, maxUrlLength: MAX_URL_LENGTH, mdiCheck, mdiDelete }
   },
 
   data() {
@@ -42,7 +43,8 @@ export default {
     add() {
       const items = Object.values(this.items)
 
-      if (!items.length) {
+      // a second click or Ctrl+Enter while adding would create the files twice
+      if (!items.length || this.loading) {
         return
       }
 
@@ -189,7 +191,14 @@ export default {
     max-width="1200"
   >
     <template #toolbar-actions>
-      <v-btn v-if="Object.keys(items).length" variant="tonal" color="primary" @click="add()" data-confirm>
+      <v-btn
+        v-if="Object.keys(items).length"
+        :loading="loading"
+        variant="tonal"
+        color="primary"
+        @click="add()"
+        data-confirm
+      >
         {{ multiple ? $gettext('Add files') : $gettext('Add file') }}
       </v-btn>
     </template>
@@ -198,7 +207,7 @@ export default {
       v-if="multiple"
       ref="input"
       v-model="input"
-      @keyup.enter="update()"
+      @keydown.enter="composing($event) || update()"
       @click:appendInner="update()"
       @click:clear="errors = []"
       :error-messages="errors"
@@ -215,7 +224,7 @@ export default {
       v-else
       ref="input"
       v-model="input"
-      @keyup.enter="update()"
+      @keydown.enter="composing($event) || update()"
       @click:appendInner="update()"
       @click:clear="errors = []"
       :error-messages="errors"

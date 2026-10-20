@@ -129,6 +129,22 @@ function visitFiles(files = [], meResponse = ME_ADMIN) {
   cy.wait('@files')
 }
 
+/**
+ * Waits for the files query matching the passed variables check, skipping
+ * files queries sent before the filter changed.
+ */
+function waitForFiles(match, tries = 5) {
+  return cy.wait('@files').then(({ request }) => {
+    const ops = Array.isArray(request.body) ? request.body : [request.body]
+    const filesOp = ops.find((op) => (op.query || '').includes('files') && match(op.variables || {}))
+
+    if (!filesOp && tries > 1) {
+      return waitForFiles(match, tries - 1)
+    }
+    expect(filesOp).to.exist
+  })
+}
+
 /** At desktop viewport (>=960px) the aside drawer auto-opens on mount. */
 function ensureAsideVisible() {
   cy.get('.v-navigation-drawer--right').should('be.visible')
@@ -230,12 +246,7 @@ describe('File Filter Sidebar', () => {
     visitFiles([makeFile()])
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('Only trashed').click()
-    cy.wait('@files').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const filesOp = ops.find((op) => (op.query || '').includes('files'))
-      expect(filesOp).to.exist
-      expect(filesOp.variables.trashed).to.equal('ONLY')
-    })
+    waitForFiles((vars) => vars.trashed === 'ONLY')
   })
 
   it('selecting "Published" sends publish filter in GQL request', () => {
@@ -243,12 +254,7 @@ describe('File Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@files').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const filesOp = ops.find((op) => (op.query || '').includes('files'))
-      expect(filesOp).to.exist
-      expect(filesOp.variables.publish).to.equal('PUBLISHED')
-    })
+    waitForFiles((vars) => vars.publish === 'PUBLISHED')
   })
 })
 

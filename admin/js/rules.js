@@ -14,8 +14,11 @@
 // 0 and false are values, empty lists are not
 const empty = (v) => v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length)
 
+// labels incl. punycode ones (xn--) and alphabetic or punycode TLDs, case insensitive
+const DOMAIN_RE = /^(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:[a-z]{2,}|xn--[a-z0-9-]+)$/i
+
 export const domain = ($gettext) => (v) =>
-  !v || /^([0-9a-z]+[.-])*[0-9a-z]+\.[a-z]{2,}$/.test(v) || $gettext('Domain name is invalid')
+  !v || DOMAIN_RE.test(v) || $gettext('Domain name is invalid')
 
 export const required = ($gettext, flag) => (v) =>
   !flag || !empty(v) || $gettext('Value is required')
@@ -52,16 +55,17 @@ export const maxChars = ($ngettext, max) => (v) =>
     num: max
   })
 
-export const minColumns = ($ngettext, min) => (v) =>
+// the table rules count the rows of the table like the server side minItems/maxItems
+export const minRows = ($ngettext, min) => (v) =>
   !min ||
   +v?.length >= +min ||
-  $ngettext('At least %{num} column is required', 'At least %{num} columns are required', +min, {
+  $ngettext('At least %{num} row is required', 'At least %{num} rows are required', +min, {
     num: min
   })
 
-export const maxColumns = ($ngettext, max) => (v) =>
+export const maxRows = ($ngettext, max) => (v) =>
   !max ||
   +v?.length <= +max ||
-  $ngettext('At most %{num} column is allowed', 'At most %{num} columns are allowed', +max, {
+  $ngettext('At most %{num} row is allowed', 'At most %{num} rows are allowed', +max, {
     num: max
   })

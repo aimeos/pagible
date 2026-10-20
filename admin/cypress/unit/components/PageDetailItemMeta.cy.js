@@ -133,6 +133,34 @@ describe('PageDetailItemSection (meta)', () => {
     })
   })
 
+  it('keeps the error state of the remaining entries when removing an entry', () => {
+    const page = reactive({
+      id: '1',
+      meta: {
+        seo: { type: 'seo', data: {}, files: [] },
+        social: { type: 'social', data: {}, files: [] },
+      },
+    })
+    const onError = cy.spy().as('error')
+    const consoleError = cy.spy(console, 'error')
+
+    mountMeta({ item: page, onError, onPatch: (entries) => Object.assign(page, entries) }, { 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailItemSection).vm
+      vm.error('social', true)
+      vm.remove('seo')
+      expect(onError.lastCall.args[0]).to.equal(true)
+
+      vm.remove('social')
+      expect(onError.lastCall.args[0]).to.equal(false)
+    })
+
+    // no deferred validation may run (and fail) after removing an entry
+    cy.wait(50).then(() => {
+      expect(onError.lastCall.args[0]).to.equal(false)
+      expect(consoleError).not.to.have.been.calledWithMatch(/validate/)
+    })
+  })
+
   it('adds canonical meta items without a group', () => {
     const page = { id: '1', meta: {} }
 

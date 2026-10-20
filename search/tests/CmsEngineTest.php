@@ -383,26 +383,26 @@ class CmsEngineTest extends SearchTestAbstract
 
     public function testPublishIndexesLoadedModels(): void
     {
-        $element = Elements::add( [
+        $element = Permission::system( fn() => Elements::add( [
             'lang' => 'en',
             'type' => 'text',
             'name' => 'publicationelementtoken',
             'data' => ['text' => 'publicationelementtoken'],
-        ] );
-        Elements::publishMany( [$element->id] );
+        ] ) );
+        Permission::system( fn() => Elements::publishMany( [$element->id] ) );
 
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
-        Pages::save( $page->id, ['content' => [[
+        Permission::system( fn() => Pages::save( $page->id, ['content' => [[
             'id' => Utils::uid(),
             'type' => 'reference',
             'refid' => $element->id,
             'group' => 'main',
-        ]]] );
-        Pages::publishMany( [$page->id] );
+        ]]] ) );
+        Permission::system( fn() => Pages::publishMany( [$page->id] ) );
 
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
-        Files::save( $file->id, ['name' => 'publicationfiletoken'] );
-        Files::publishMany( [$file->id] );
+        Permission::system( fn() => Files::save( $file->id, ['name' => 'publicationfiletoken'] ) );
+        Permission::system( fn() => Files::publishMany( [$file->id] ) );
         $this->waitIndex();
 
         $this->assertTrue( Element::search( 'publicationelementtoken' )

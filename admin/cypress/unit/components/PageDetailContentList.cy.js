@@ -339,6 +339,38 @@ describe('PageDetailContentList', () => {
     })
   })
 
+  it('copies cut elements to the clipboard without their IDs', () => {
+    mountList({}, { 'page:save': true }).then(({ owner, vm }) => {
+      vm.cut(0)
+      expect(vm.clipboard.get('page-content')).to.deep.equal([{ ...content[0], data: { ...content[0].data }, id: null }])
+      expect(owner.content.map((el) => el.id)).to.deep.equal(['c2'])
+    })
+  })
+
+  it('marks an element as changed after changing its type', () => {
+    mountList({}, { 'page:save': true }).then(({ owner, vm }) => {
+      vm.changeTo({ type: 'text' }, 0)
+      expect(owner.content[0]).to.include({ id: 'c1', type: 'text', _changed: true })
+      expect(vm.vchange).to.equal(false)
+    })
+  })
+
+  it('replaces the split element where it is after the content changed meanwhile', () => {
+    const list = [{ id: 'c1', type: 'text', group: 'main', data: { text: '# Title\n\nParagraph' } }]
+
+    mountList({ content: list }, { 'page:save': true }).then(({ owner, vm }) => {
+      const done = vm.split(0)
+      owner.content = [{ id: 'c0', type: 'heading', group: 'main', data: { title: 'First' } }, ...owner.content]
+
+      return done.then(() => {
+        expect(owner.content.map((el) => el.type)).to.deep.equal(['heading', 'heading', 'text'])
+        expect(owner.content[0].id).to.equal('c0')
+        expect(owner.content[1].data.title).to.equal('Title')
+        expect(owner.content[2].data.text).to.equal('Paragraph')
+      })
+    })
+  })
+
   it('shows no count in the context menu of an unselected element', () => {
     mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0, 2))
     cy.get('.v-expansion-panel-title .btn-actions button').eq(1).click()
@@ -481,7 +513,26 @@ describe('PageDetailContentList', () => {
       expect(value['element-1'].files[0].path).to.equal('draft.jpg')
       expect(value['element-1'].files[0].previews).to.deep.equal({ 500: 'draft-500.webp' })
       expect(owner.assets['file-1']).to.deep.equal(value['element-1'].files[0])
-      expect(owner.content[0]).to.deep.include({ type: 'reference', refid: 'element-1' })
+      expect(owner.content[0]).to.deep.include({ id: 'c1', type: 'reference', refid: 'element-1' })
+    })
+  })
+
+  it('creates only one shared element if sharing is requested twice', () => {
+    let resolve
+    const mutate = cy.stub().returns(new Promise((r) => { resolve = r }))
+    const item = { id: 'c1', type: 'heading', group: 'main', data: {} }
+
+    mountList({ content: [item] }, { 'element:add': true }, { mutate }).then((mounted) => {
+      const pending = mounted.vm.share(0)
+
+      expect(mounted.vm.share(0)).to.be.undefined
+      expect(mutate).to.have.been.calledOnce
+
+      resolve({ data: { addElement: { id: 'element-1', data: '{}', files: [] } } })
+
+      return pending.then(() => {
+        expect(mounted.vm.sharing.size).to.equal(0)
+      })
     })
   })
 

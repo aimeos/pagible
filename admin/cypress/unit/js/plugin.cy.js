@@ -1,4 +1,5 @@
 import { pluginComponents, pluginUi } from '../../../js/plugin'
+import { pluginComponent } from '../../../js/stores/plugin'
 
 describe('pluginUi', () => {
   const common = [
@@ -100,5 +101,32 @@ describe('pluginUi', () => {
       'VTimePicker',
       'VTimeline'
     ])
+  })
+})
+
+describe('pluginComponent', () => {
+  function moduleUrl(code) {
+    return URL.createObjectURL(new Blob([code], { type: 'text/javascript' }))
+  }
+
+  it('loads the plugin module and adds the host UI surface', () => {
+    const url = moduleUrl(
+      "export default { name: 'Panel', render() { return this.$options.components.CmsDialog ? 'plugin wrapped' : 'plugin plain' } }"
+    )
+    const def = pluginComponent({ key: 'panel', component: url })
+
+    expect(def.key).to.equal('panel')
+
+    cy.mount(def.component)
+    cy.contains('plugin wrapped').should('exist')
+    cy.get('.plugin-error').should('not.exist')
+    cy.then(() => URL.revokeObjectURL(url))
+  })
+
+  it('shows a fallback if the plugin module fails to load', () => {
+    const def = pluginComponent({ component: moduleUrl('export default ;') })
+
+    cy.mount(def.component)
+    cy.get('.plugin-error').should('exist')
   })
 })

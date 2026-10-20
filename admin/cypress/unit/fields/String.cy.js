@@ -1,3 +1,4 @@
+import { h, ref } from 'vue'
 import StringField from '../../../js/fields/String.vue'
 import '../../../js/assets/base.css'
 
@@ -111,5 +112,27 @@ describe('String (textarea)', () => {
   it('is readonly when readonly prop is true', () => {
     cy.mount(StringField, { props: { config: {}, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
+  })
+
+  it('emits an empty string on clear so the default is not shown again', () => {
+    const value = ref('Changed')
+    const onUpdate = cy.spy().as('update')
+    const Host = {
+      render: () => h(StringField, {
+        modelValue: value.value,
+        config: { default: 'Default' },
+        'onUpdate:modelValue': (v) => { onUpdate(v); value.value = v },
+      })
+    }
+
+    cy.mount(Host)
+    cy.get('.v-field__clearable .v-icon').click({ force: true })
+    cy.get('@update').should('have.been.calledWith', '')
+    cy.get('textarea').first().should('have.value', '')
+  })
+
+  it('has no clear button when readonly', () => {
+    cy.mount(StringField, { props: { modelValue: 'Text', config: {}, readonly: true } })
+    cy.get('.v-field__clearable').should('not.exist')
   })
 })

@@ -4,17 +4,7 @@
 
 import gql from 'graphql-tag'
 import { getCurrentInstance } from 'vue'
-import {
-  mdiDotsVertical,
-  mdiPublish,
-  mdiDelete,
-  mdiDeleteRestore,
-  mdiDeleteForever,
-  mdiPlus,
-  mdiClockOutline,
-  mdiPencil,
-  mdiCloseCircleOutline
-} from '@mdi/js'
+import { mdiPlus, mdiClockOutline } from '@mdi/js'
 import { setupEcho } from './echo'
 import { listEcho } from './livesync'
 import { invalidateList, listFetchPolicy } from './graphql'
@@ -27,7 +17,7 @@ import {
   useSettingStore,
   useUserStore
 } from './stores'
-import { debounce, ucfirst } from './utils'
+import { debounce, REQUEST_DELAY, ucfirst } from './utils'
 
 /**
  * Returns the number of items in total and those affected by publishing, deleting and restoring
@@ -148,15 +138,8 @@ export function useList(type, query, create) {
     changes: useChangeStore(),
     confirm: useConfirmStore(),
     messages: useMessageStore(),
-    mdiDotsVertical,
-    mdiPublish,
-    mdiDelete,
-    mdiDeleteRestore,
-    mdiDeleteForever,
     mdiPlus,
-    mdiClockOutline,
-    mdiPencil,
-    mdiCloseCircleOutline
+    mdiClockOutline
   }
 }
 
@@ -186,12 +169,15 @@ export const listBase = {
       editIds: [],
       editSelected: false,
       loading: true,
-      outdated: false
+      outdated: false,
+      // sequence number which discards responses of outdated searches
+      searchSeq: 0
     }
   },
 
   created() {
-    this.debouncedSearch = debounce(this.search, 500)
+    this.debouncedSearch = debounce(this.search, REQUEST_DELAY)
+    this.unsubscribe = null
     this.search()
     this.$watch(() => this.changes.changed[this.type], () => this.sync())
 
@@ -206,9 +192,8 @@ export const listBase = {
   beforeUnmount() {
     this.debouncedSearch.cancel()
     this.unsubscribe?.()
-
-    this.items = null
-    this.checked = null
+    // responses of running searches are discarded
+    this.searchSeq++
   },
 
   activated() {
@@ -445,8 +430,9 @@ export const listBase = {
           this.invalidate()
 
           return this.search().then(() => {
+            // the edited item may have re-ordered the list, keep only the selected items still shown
             if (selected) {
-              this.checked = selected
+              this.checked = new Set(this.items.filter((item) => selected.has(item.id)).map((item) => item.id))
             }
           })
         })
@@ -456,23 +442,30 @@ export const listBase = {
     },
 
     search() {
-      if (!this.allowed('view')) {
+      // the list stays empty without showing a message for each search
+      if (!this.user.can(this.type + ':view')) {
+        this.loading = false
         return Promise.resolve([])
       }
 
       // only the response of the latest request is applied
-      const seq = (this.searchSeq = (this.searchSeq || 0) + 1)
+      const seq = ++this.searchSeq
       this.loading = true
 
       return this.$apollo
         .query(this.options())
         .then((result) => {
-          if (seq !== this.searchSeq || !this.items) return this.items
+          if (seq !== this.searchSeq) return this.items
 
           const list = result.data[this.type + 's'] || {}
 
           this.last = list.paginatorInfo?.lastPage || 1
           this.items = (list.data || []).map((entry) => this.hydrate(entry))
+
+          // the page watcher fetches the new last page if the items of the last page were removed
+          if (this.page > this.last) {
+            this.page = this.last
+          }
           this.checked = new Set()
           this.outdated = false
 

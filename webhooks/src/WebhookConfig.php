@@ -7,9 +7,9 @@
 
 namespace Aimeos\Cms;
 
+use Aimeos\Cms\Events\Change;
 use Aimeos\Cms\Jobs\BaseDelivery;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Illuminate\Support\Facades\Cache;
 
 
 /**
@@ -36,9 +36,6 @@ class WebhookConfig
 
     /** @var list<string> */
     private const KEYS = ['url', 'secret', 'events'];
-
-    /** Seconds until the same configuration problem is logged again */
-    private const LOG_INTERVAL = 600;
 
 
     public function __construct( private WebhookClient $client )
@@ -82,6 +79,21 @@ class WebhookConfig
         }
 
         return $this->target( $this->validate( $name, $endpoints[$name] ), $event );
+    }
+
+
+    /**
+     * Sets the callback adding fields of the application to the changes in the payloads.
+     *
+     * The callback receives all changes of an event and the event name like "page.published" and returns
+     * the fields per change ID, which are added as "extra" to the data of the changes. NULL removes the callback.
+     *
+     * @param (\Closure(list<Change>, string): array<string, array<string, mixed>>)|null $callback
+     */
+    public static function payload( ?\Closure $callback ) : void
+    {
+        // Bound to the container, so the callback doesn't leak between applications in long-running workers
+        $callback ? app()->instance( 'cms.webhooks.payload', $callback ) : app()->forgetInstance( 'cms.webhooks.payload' );
     }
 
 
@@ -173,17 +185,7 @@ class WebhookConfig
      */
     public function warn( string $message, array $fields ) : void
     {
-        try {
-            // Values from the configuration may contain invalid UTF-8 which json_encode() can't distinguish
-            $key = hash( 'sha256', $message . serialize( $fields ) );
-            $new = Cache::add( 'cms-webhooks-warn:' . $key, true, self::LOG_INTERVAL );
-        } catch( \Throwable ) {
-            $new = true;
-        }
-
-        if( $new ) {
-            Watch::warn( $message, $fields );
-        }
+        Watch::warnOnce( $message, $fields );
     }
 
 

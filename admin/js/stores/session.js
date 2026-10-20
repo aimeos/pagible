@@ -4,7 +4,7 @@
 
 import gql from 'graphql-tag'
 import { defineStore } from 'pinia'
-import { AUTH_STATUS, apolloClient, clearUploadLink } from '../graphql'
+import { AUTH_STATUS, apolloClient, clearUploadLink, unreachable } from '../graphql'
 import { disconnect, resubscribe } from '../echo'
 import gettext from '../i18n'
 import { safeParse } from '../json'
@@ -14,6 +14,7 @@ import { useChangeStore } from './change'
 import { useClipboardStore } from './clipboard'
 import { useConfirmStore } from './confirm'
 import { useDirtyStore } from './dirty'
+import { useMessageStore } from './message'
 import { useDrawerStore } from './drawer'
 import { useSchemaStore } from './schema'
 import { useSettingStore } from './setting'
@@ -61,6 +62,8 @@ let reauthListener = null
 let sessionTimer = null
 // Refreshes the media proxy token before it expires
 let tokenTimer = null
+// Delay until the next try after refreshing the proxy token failed
+let tokenRetry = 30000
 
 function reauthListen(fn) {
   if (reauthListener) {
@@ -126,9 +129,12 @@ async function resetStores() {
   dirty.unregister()
   dirty.$reset()
   useDrawerStore().$reset()
+  useMessageStore().clear()
   useSchemaStore().clear()
   useSettingStore().clear()
   useSideStore().$reset()
+  // stops polling the translation batches of the previous user
+  useTranslationStore().clear()
   useViewStack().$reset()
   clearUploadLink()
 
@@ -157,6 +163,7 @@ export const useSessionStore = defineStore('session', {
 
       clearTimeout(tokenTimer)
       tokenTimer = null
+      tokenRetry = 30000
 
       await resetStores()
     },
@@ -185,6 +192,11 @@ export const useSessionStore = defineStore('session', {
         return
       }
 
+      // a malformed expiry would schedule the refresh immediately and loop
+      if (!Number.isFinite(expires)) {
+        return
+      }
+
       const delay = Math.min(Math.max(expires - Date.now() - 60000, 10000), 0x7fffffff)
       tokenTimer = setTimeout(() => this.refreshToken(), delay)
     },
@@ -195,12 +207,23 @@ export const useSessionStore = defineStore('session', {
       if (!user.me) return
 
       fetchMe(false).then((response) => {
-        if (response.data?.me?.token) {
+        tokenRetry = 30000
+
+        // the user may have signed out meanwhile
+        if (user.me && response.data?.me?.token) {
           user.me.token = response.data.me.token
           this.applyProxyToken()
         }
       }).catch((error) => {
         console.error('Failed to refresh proxy token', error)
+
+        // the media can't be loaded anymore after the token expired, an expired session
+        // gets a new token when it's resumed
+        if (user.me && !AUTH_STATUS.includes(error?.networkError?.statusCode)) {
+          clearTimeout(tokenTimer)
+          tokenTimer = setTimeout(() => this.refreshToken(), tokenRetry)
+          tokenRetry = Math.min(tokenRetry * 2, 300000)
+        }
       })
     },
 
@@ -217,6 +240,12 @@ export const useSessionStore = defineStore('session', {
         this.applyProxyToken()
       }).catch((error) => {
         console.error('Failed to fetch user data', error)
+
+        // only a rejected session means signed out, e.g. being offline is checked again next time
+        if (!AUTH_STATUS.includes(error?.networkError?.statusCode)) {
+          throw error
+        }
+
         user.me = false
       })
 
@@ -233,6 +262,12 @@ export const useSessionStore = defineStore('session', {
             email: email,
             password: password
           }
+        }).catch((error) => {
+          // the state stays unknown if the server wasn't reachable and is fetched again next time
+          if (!unreachable(error)) {
+            user.me = false
+          }
+          throw error
         }).then((response) => {
           if (!response.data.cmsLogin) {
             user.me = false
@@ -249,9 +284,6 @@ export const useSessionStore = defineStore('session', {
               authChannel?.postMessage('login')
               return user.me
             })
-        }).catch((error) => {
-          user.me = false
-          throw error
         })
       })
     },
@@ -266,7 +298,6 @@ export const useSessionStore = defineStore('session', {
         return response.data.cmsLogout || false
       }).finally(() => {
         useUserStore().me = null
-        useTranslationStore().clear()
         return this.clear()
       })
     },
@@ -299,9 +330,7 @@ export const useSessionStore = defineStore('session', {
           variables: { email: useUserStore().me?.email, password },
           context: { relogin: true }
         })
-      }).then((response) => {
-        return this.resume()
-      }).then((resumed) => {
+      }).then(() => this.resume()).then((resumed) => {
         // not resumed but no longer expired: another tab renewed the session meanwhile
         if (!resumed && this.expired) {
           throw new Error(gettext.$gettext('Login failed'))

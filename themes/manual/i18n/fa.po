@@ -74,3 +74,9 @@ msgstr "مجوز نرم‌افزاری که در پاورقی نمایش داد�
 msgctxt "st"
 msgid "manual::theme"
 msgstr "پوسته"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "manual::theme-dark"
+msgstr "پوسته تیره"

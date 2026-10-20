@@ -8,6 +8,7 @@ import { commands, routes } from '../commands'
 import { available, execute, shortcuts } from '../shortcuts'
 import { usePluginStore, useUserStore } from '../stores'
 import { safeParse } from '../json'
+import { composing } from '../utils'
 import { mdiFileDocumentOutline, mdiFileImageOutline, mdiPuzzleOutline, mdiShareVariant } from '@mdi/js'
 
 const LIMIT = 5
@@ -192,7 +193,7 @@ export default {
           this.move(count ? (this.active - 1 + count) % count : 0)
           break
         case 'Enter':
-          if (!ev.isComposing && this.items[this.active]) {
+          if (!composing(ev) && this.items[this.active]) {
             ev.preventDefault()
             this.select(this.items[this.active])
           }

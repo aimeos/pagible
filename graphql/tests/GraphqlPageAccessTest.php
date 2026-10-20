@@ -60,8 +60,8 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
         $authenticated = PageView::where( 'path', 'hidden' )->firstOrFail();
         $restricted = PageView::where( 'path', 'blog' )->firstOrFail();
 
-        PageAccess::set( [$authenticated->id], [] );
-        PageAccess::set( [$restricted->id], ['beta', 'alpha'] );
+        Permission::system( fn() => PageAccess::set( [$authenticated->id], [] ) );
+        Permission::system( fn() => PageAccess::set( [$restricted->id], ['beta', 'alpha'] ) );
 
         $response = $this->actingAs( $this->user )->graphQL( '
             query($id: [ID!]) {
@@ -86,7 +86,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
     public function testAccessValuesRequirePageAccessPermission(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], ['member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['member'] ) );
         $this->user->cmsperms = ['page:view', 'access:view'];
 
         $response = $this->actingAs( $this->user )->graphQL( '
@@ -104,7 +104,7 @@ class GraphqlPageAccessTest extends GraphqlTestAbstract
     public function testRestrictedFieldDoesNotRequirePageAccessPermission(): void
     {
         $page = PageView::where( 'path', 'hidden' )->firstOrFail();
-        PageAccess::set( [$page->id], ['member'] );
+        Permission::system( fn() => PageAccess::set( [$page->id], ['member'] ) );
         $this->user->cmsperms = ['page:view'];
 
         $response = $this->actingAs( $this->user )->graphQL( '

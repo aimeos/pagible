@@ -20,11 +20,13 @@ export function url(path, proxy = false) {
 
   const app = useAppStore()
 
-  if (proxy && path.startsWith('http')) {
+  const absolute = /^https?:\/\//i.test(path)
+
+  if (proxy && absolute) {
     return app.urlproxy.replace(/_url_/, encodeURIComponent(path))
   }
 
-  if (path.startsWith('http') || path.startsWith('blob:')) {
+  if (absolute || path.startsWith('blob:')) {
     return path
   }
 
@@ -42,11 +44,13 @@ export function pageUrl(page, absolute = false) {
   let url = useAppStore().urlpage
   const domain = page?.domain || ''
 
+  // function replacers, so "$" in paths or domains isn't treated as replacement pattern
+
   if (absolute) {
     const result = new URL(
       url
-        .replace(/_domain_/, domain || window.location.hostname)
-        .replace(/_path_/, page?.path || '/')
+        .replace(/_domain_/, () => domain || window.location.hostname)
+        .replace(/_path_/, () => page?.path || '/')
         .replace(/\/{2,}$/, '/'),
       window.location.origin
     )
@@ -62,8 +66,8 @@ export function pageUrl(page, absolute = false) {
   }
 
   return url
-    .replace(/_domain_/, domain)
-    .replace(/_path_/, page?.path || '')
+    .replace(/_domain_/, () => domain)
+    .replace(/_path_/, () => page?.path || '')
     .replace(/([^:/])\/+$/, '$1')
 }
 

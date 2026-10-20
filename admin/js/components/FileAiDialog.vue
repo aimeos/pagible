@@ -29,8 +29,7 @@ export default {
   props: {
     modelValue: { type: Boolean, required: true },
     context: { type: [Object, null], default: null },
-    disk: { type: String, default: 'public' },
-    files: { type: Array, default: () => [] }
+    disk: { type: String, default: 'public' }
   },
 
   emits: ['update:modelValue', 'add'],
@@ -57,6 +56,7 @@ export default {
       items: [],
       used: [],
       loading: false,
+      uploading: false,
       // bumped when closing so late image responses are dropped
       seq: 0
     }
@@ -71,10 +71,12 @@ export default {
           this.chat = [this.context?.title, this.context?.text, this.context?.description]
             .filter(Boolean)
             .join('\n')
-          this.used = [...(this.files || [])]
+          this.used = []
           return
         }
 
+        // a running recording would continue unseen and fill the prompt later
+        this.dictation.stop()
         this.seq++
         this.loading = false
         this.items.forEach(revokeBlob)
@@ -103,9 +105,9 @@ export default {
       }
 
       // one upload at a time, otherwise double clicks create duplicate files
-      if (this.loading) return
+      if (this.uploading) return
 
-      this.loading = true
+      this.uploading = true
 
       const filename = 'ai-image_' + new Date().toISOString().replace(/[^0-9]/g, '') + '.png'
 
@@ -119,14 +121,15 @@ export default {
           revokeBlob(item)
           Object.assign(item, data)
 
-          this.$refs.filelist.invalidate()
+          // the list isn't rendered any more if the dialog has been closed during the upload
+          this.$refs.filelist?.invalidate()
           this.$emit('add', [item])
         })
         .catch((error) => {
           this.messages.error(this.$gettext(`Error adding file %{path}`, { path: item?.path }), error)
         })
         .finally(() => {
-          this.loading = false
+          this.uploading = false
         })
     },
 
@@ -188,7 +191,9 @@ export default {
     },
 
     record() {
-      this.dictation.toggle((text) => (this.chat = text))
+      this.dictation.toggle((text) => {
+        this.chat = (this.chat ? this.chat + ' ' : '') + text
+      })
     },
 
     remove(idx) {
@@ -213,7 +218,7 @@ export default {
   <CmsDialog
     :model-value="modelValue"
     :title="$gettext('Create image')"
-    :card-loading="loading ? 'primary' : false"
+    :card-loading="loading || uploading ? 'primary' : false"
     @update:model-value="$emit('update:modelValue', $event)"
     max-width="1200"
   >
@@ -284,7 +289,7 @@ export default {
     </div>
 
     <h3 class="section-title text-button">{{ $gettext('Select images') }}</h3>
-    <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" />
+    <FileListItems ref="filelist" :filter="IMAGE_MIME_FILTER" @select="use($event)" embed />
   </CmsDialog>
 </template>
 

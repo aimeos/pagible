@@ -158,3 +158,9 @@ msgstr "Kort nota wat in die voetskrif vertoon word, bv. SOC 2 Tipe II-gesertifi
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Donker tema"

@@ -12,7 +12,7 @@
 @endif
 
 @if($bg = cms($files, $data->background?->id ?? null))
-    @include('cms::pic', ['file' => $bg, 'main' => true, 'class' => array_filter(['background', $data->{'background-animation'} ?? null]), 'sizes' => '100vw'])
+    <x-cms::image :page="$page" :file="$bg" main :class="array_filter(['background', $data->{'background-animation'} ?? null])" sizes="100vw" />
 @endif
 
 <div class="first">
@@ -28,15 +28,7 @@
         <div class="cms-text">@markdown($data->text)</div>
     @endif
 
-    @if($data->buttons ?? null)
-        <div class="actions">
-            @foreach($data->buttons as $button)
-                @if($url = cmslink($button->url ?? null))
-                    <a class="btn" href="{{ $url }}" rel="{{ $button->{'url-rel'} ?? '' }}">{{ $button->label ?? '' }}</a>
-                @endif
-            @endforeach
-        </div>
-    @endif
+    <x-cms::buttons :buttons="$data->buttons ?? []" />
 </div>
 
 @if($heroFiles)
@@ -48,20 +40,14 @@
                     @if($file = cms($files, data_get($item, 'id')))
                         <div class="hero-slide">
                             @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
-                                <video autoplay muted loop playsinline preload="metadata"
-                                    title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
-                                    src="{{ cmsasset($page, $file) }}"
-                                    @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-                                        poster="{{ cmsasset($page, $file, $preview) }}"
-                                    @endif
-                                >
-                                </video>
+                                <x-cms::video :page="$page" :file="$file" autoplay />
                             @else
-                                @include('cms::pic', [
-                                    'file' => $file,
-                                    'main' => $idx === 0,
-                                    'sizes' => '(min-width: 768px) 50vw, 100vw',
-                                ])
+                                <x-cms::image
+                                    :page="$page"
+                                    :file="$file"
+                                    :main="$idx === 0"
+                                    sizes="(min-width: 768px) 50vw, 100vw"
+                                />
                             @endif
                         </div>
                     @endif
@@ -76,20 +62,14 @@
             @foreach($heroFiles as $idx => $item)
                 @if($file = cms($files, data_get($item, 'id')))
                     @if(str_starts_with(cms($file, 'mime') ?? '', 'video/'))
-                        <video autoplay muted loop playsinline preload="metadata"
-                            title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
-                            src="{{ cmsasset($page, $file) }}"
-                            @if($preview = current(array_reverse((array) cms($file, 'previews', []))))
-                                poster="{{ cmsasset($page, $file, $preview) }}"
-                            @endif
-                        >
-                        </video>
+                        <x-cms::video :page="$page" :file="$file" autoplay />
                     @else
-                        @include('cms::pic', [
-                            'file' => $file,
-                            'main' => $idx === 0,
-                            'sizes' => '50vw',
-                        ])
+                        <x-cms::image
+                            :page="$page"
+                            :file="$file"
+                            :main="$idx === 0"
+                            sizes="50vw"
+                        />
                     @endif
                 @endif
             @endforeach

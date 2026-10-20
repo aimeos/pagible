@@ -52,7 +52,7 @@ import { pageActions } from '../pageactions'
 import { ADD_PAGE_VARIANT, FETCH_PAGES, INSERT_PAGE, hydrate, patchData } from '../pages'
 import { pageTree } from '../pagetree'
 import { pageVariants, translateNew } from '../variants'
-import { debounce, formatDate } from '../utils'
+import { debounce, formatDate, INPUT_DELAY, uid } from '../utils'
 import { pageUrl } from '../urls'
 import { setupEcho } from '../echo'
 import { listEcho } from '../livesync'
@@ -70,7 +70,6 @@ const SORT_OPTIONS = Object.freeze([
 
 const CACHE_MINUTES = 5 // default cache lifetime of new pages
 const MAX_TO_LENGTH = 50 // characters of redirect targets shown in the list
-const RANDOM_PATH_RANGE = 10000 // upper bound of the random suffix of temporary page paths
 
 export default {
   components: {
@@ -163,7 +162,7 @@ export default {
   },
 
   created() {
-    this.debouncedReload = debounce(() => this.reload(false), 300)
+    this.debouncedReload = debounce(() => this.reload(false), INPUT_DELAY)
 
     const initial = this.refresh()
 
@@ -260,7 +259,7 @@ export default {
     create(attr = {}) {
       return Object.assign(
         {
-          path: '_' + Math.floor(Math.random() * RANDOM_PATH_RANGE),
+          path: '_' + uid(),
           lang: this.lang,
           status: 0,
           cache: CACHE_MINUTES
@@ -356,7 +355,7 @@ export default {
     // queries the pages matching the list filters and the given filter values
     pages(values, page, limit, sort, msg, trashed = null) {
       if (!this.allowed('view')) {
-        return Promise.resolve([])
+        return Promise.resolve({ data: [], currentPage: 1, lastPage: 1 })
       }
 
       const filter = this.listFilter(values)
@@ -510,6 +509,10 @@ export default {
 
     sync: listBase.methods.sync,
 
+    scheduled(item) {
+      return this.$gettext('Scheduled for %{date}', { date: formatDate(item.publish_at, this.$vuetify.locale.current, false) })
+    },
+
     title(item) {
       const list = []
 
@@ -518,7 +521,7 @@ export default {
       }
 
       if (item.publish_at) {
-        list.push(this.$gettext('Scheduled for %{date}', { date: formatDate(item.publish_at, this.$vuetify.locale.current, false) }))
+        list.push(this.scheduled(item))
       }
 
       if (item.theme) {
@@ -672,6 +675,7 @@ export default {
     v-model="items"
     @change="change()"
     @before-drag-start="origin = position($event)"
+    @keydown.alt.capture="reorderStart"
     @keydown.alt="reorder"
     @keydown.right.exact="expand"
     @keydown="treeKey"
@@ -712,7 +716,11 @@ export default {
           variant="text"
         />
 
-        <v-checkbox-btn v-model="stat._checked" :class="{ draft: !node.published }" />
+        <v-checkbox-btn
+          v-model="stat._checked"
+          :class="{ draft: !node.published }"
+          :aria-label="$gettext('Toggle selection')"
+        />
 
         <span class="btn-actions">
           <ActionMenu list-class="page-action-menu">
@@ -768,11 +776,9 @@ export default {
                   <v-btn :prepend-icon="mdiContentPaste" variant="text">{{ menu.label }}</v-btn>
                 </v-list-item>
               </template>
-              <v-list-item v-for="place in places" :key="place.label">
-                <v-btn :prepend-icon="place.icon" variant="text" @click="menu.fn(stat, place.idx)">{{
-                  place.label
-                }}</v-btn>
-              </v-list-item>
+              <ActionItem v-for="place in places" :key="place.label" :prepend-icon="place.icon" @click="menu.fn(stat, place.idx)">
+                {{ place.label }}
+              </ActionItem>
             </v-list-group>
 
             <v-divider></v-divider>
@@ -865,14 +871,24 @@ export default {
               :icon="mdiTranslate"
               :aria-label="translatingLabel(node)"
             />
-            <v-icon v-if="node.publish_at" class="publish-at" :icon="mdiClockOutline" />
+            <v-icon
+              v-if="node.publish_at"
+              class="publish-at"
+              :icon="mdiClockOutline"
+              :aria-label="scheduled(node)"
+            />
             <v-icon
               v-if="node.restricted"
               class="item-access"
               :icon="mdiLock"
               :title="accessTitle(node.access)"
             />
-            <v-icon v-if="node.status > 1" class="item-status" :icon="mdiEyeOffOutline" />
+            <v-icon
+              v-if="node.status > 1"
+              class="item-status"
+              :icon="mdiEyeOffOutline"
+              :aria-label="$gettext('Hidden in navigation')"
+            />
             <span class="item-title">{{ node.name || $gettext('New') }}</span>
           </div>
           <div v-if="node.title" class="item-subtitle">{{ node.title }}</div>

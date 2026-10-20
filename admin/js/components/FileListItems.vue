@@ -3,7 +3,6 @@
 <script>
 import gql from 'graphql-tag'
 import {
-  mdiFormatListBulletedSquare,
   mdiLock,
   mdiMusic,
   mdiTranslate,
@@ -11,17 +10,18 @@ import {
   mdiYoutube
 } from '@mdi/js'
 import ActionItem from './ActionItem.vue'
-import ActionMenu from './ActionMenu.vue'
 import EditBulkDialog from './EditBulkDialog.vue'
 import FileUploadButtons from './FileUploadButtons.vue'
+import ListBulkMenu from './ListBulkMenu.vue'
+import ListItemMenu from './ListItemMenu.vue'
 import ListReload from './ListReload.vue'
 import ListSearch from './ListSearch.vue'
 import ListStatus from './ListStatus.vue'
 import ListSort from './ListSort.vue'
-import { createFile, FILE_FIELDS, normalizeFile } from '../files'
+import { createFile, FILE_FIELDS, normalizeFile, previewUrl } from '../files'
 import { listBase, useList } from '../lists'
 import { useLanguageStore } from '../stores'
-import { fileurl, filesrcset } from '../urls'
+import { filesrcset } from '../urls'
 import { formatDate } from '../utils'
 import { versionMeta } from '../pages'
 
@@ -95,7 +95,8 @@ export default {
 
   components: {
     ActionItem,
-    ActionMenu,
+    ListBulkMenu,
+    ListItemMenu,
     EditBulkDialog,
     FileUploadButtons,
     ListReload,
@@ -121,15 +122,14 @@ export default {
       ...useList('file', FETCH_FILES, (vm) => vm.$refs.upload?.click()),
       languages: useLanguageStore(),
       mdiViewGridOutline,
-      mdiFormatListBulletedSquare,
       mdiLock,
       mdiMusic,
       mdiTranslate,
       mdiYoutube,
       sortOptions: SORT_OPTIONS,
-      fileurl,
       filesrcset,
-      formatDate
+      formatDate,
+      previewUrl
     }
   },
 
@@ -305,44 +305,28 @@ export default {
         :aria-label="$gettext('Toggle selection')"
       />
 
-      <span class="btn-actions">
-        <ActionMenu>
-          <template #activator="{ props, label }">
-            <v-btn
-              v-bind="props"
-              :disabled="!isChecked || embed || !user.can('file:add')"
-              :title="label"
-              :icon="mdiDotsVertical"
-              variant="text"
-            />
-          </template>
-          <ActionItem v-if="counts.draft && user.can('file:publish')" :prepend-icon="mdiPublish" @click="publish()">
-            {{ $gettext('Publish') }} ({{ counts.draft }})
-          </ActionItem>
-          <ActionItem v-if="isChecked && user.can('file:save')" :prepend-icon="mdiPencil" @click="edit()">
-            {{ $gettext('Edit properties') }} ({{ counts.all }})
-          </ActionItem>
-          <ActionItem
-            v-if="counts.live && canTranslate()"
-            :prepend-icon="mdiTranslate"
-            :disabled="translating"
-            class="action-translate"
-            @click="translate()"
-          >
-            {{ $gettext('Translate descriptions') }}
-            ({{ translating ? translating.done + '/' + translating.total : counts.live }})
-          </ActionItem>
-          <ActionItem v-if="counts.live && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop()">
-            {{ $gettext('Delete') }} ({{ counts.live }})
-          </ActionItem>
-          <ActionItem v-if="counts.trashed && user.can('file:keep')" :prepend-icon="mdiDeleteRestore" @click="keep()">
-            {{ $gettext('Restore') }} ({{ counts.trashed }})
-          </ActionItem>
-          <ActionItem v-if="isChecked && user.can('file:purge')" :prepend-icon="mdiDeleteForever" @click="purge()">
-            {{ $gettext('Purge') }} ({{ counts.all }})
-          </ActionItem>
-        </ActionMenu>
-      </span>
+      <ListBulkMenu
+        type="file"
+        :counts="counts"
+        :selected="isChecked"
+        :disabled="!isChecked || embed"
+        @publish="publish()"
+        @edit="edit()"
+        @drop="drop()"
+        @keep="keep()"
+        @purge="purge()"
+      >
+        <ActionItem
+          v-if="counts.live && canTranslate()"
+          :prepend-icon="mdiTranslate"
+          :disabled="translating"
+          class="action-translate"
+          @click="translate()"
+        >
+          {{ $gettext('Translate descriptions') }}
+          ({{ translating ? translating.done + '/' + translating.total : counts.live }})
+        </ActionItem>
+      </ListBulkMenu>
 
       <template v-if="!embed && user.can('file:add')">
         <input @change="add($event, 'public')" ref="upload" type="file" multiple hidden />
@@ -356,20 +340,14 @@ export default {
     <div class="layout">
       <ListReload :loading="loading" :outdated="outdated" :title="$gettext('Reload files')" @reload="reload()" />
 
+      <!-- one button keeps the focus when switching the view -->
       <v-btn
-        v-if="!vgrid"
-        @click="vgrid = true"
+        @click="vgrid = !vgrid"
+        :aria-pressed="String(vgrid)"
         :title="$gettext('Grid view')"
         :icon="mdiViewGridOutline"
+        :active="vgrid"
         class="btn-grid"
-        variant="text"
-      />
-      <v-btn
-        v-if="vgrid"
-        @click="vgrid = false"
-        :title="$gettext('List view')"
-        :icon="mdiFormatListBulletedSquare"
-        class="btn-list"
         variant="text"
       />
 
@@ -386,36 +364,22 @@ export default {
       <v-checkbox-btn
         :model-value="checked.has(item.id)"
         @update:model-value="toggleCheck(item)"
+        :aria-label="$gettext('Toggle selection')"
         :class="{ draft: !item.published }"
         class="item-check"
       />
 
-      <ActionMenu :location="vgrid ? 'start' : 'end center'">
-        <template #activator="{ props, label }">
-          <v-btn
-            v-bind="props"
-            :title="label"
-            :icon="mdiDotsVertical"
-            class="btn-actions item-menu"
-            variant="text"
-          />
-        </template>
-        <ActionItem
-          v-show="!item.deleted_at && !item.published && user.can('file:publish')"
-          :prepend-icon="mdiPublish"
-          @click="publish(item)"
-          >{{ $gettext('Publish') }}</ActionItem
-        >
-
-        <v-divider
-          v-if="
-            !item.deleted_at && !item.published && user.can('file:publish') && user.can('file:save')
-          "
-        ></v-divider>
-
-        <ActionItem v-if="user.can('file:save')" :prepend-icon="mdiPencil" @click="edit(item)">
-          {{ $gettext('Edit properties') }}
-        </ActionItem>
+      <ListItemMenu
+        type="file"
+        :item="item"
+        :location="vgrid ? 'start' : 'end center'"
+        activator-class="btn-actions item-menu"
+        @publish="publish(item)"
+        @edit="edit(item)"
+        @drop="drop(item)"
+        @keep="keep(item)"
+        @purge="purge(item)"
+      >
         <ActionItem
           v-if="!item.deleted_at && canTranslate()"
           :prepend-icon="mdiTranslate"
@@ -426,22 +390,7 @@ export default {
           {{ $gettext('Translate descriptions') }}
           <template v-if="translating">({{ translating.done }}/{{ translating.total }})</template>
         </ActionItem>
-
-        <v-divider v-if="user.can('file:save')"></v-divider>
-
-        <ActionItem v-if="!item.deleted_at && user.can('file:drop')" :prepend-icon="mdiDelete" @click="drop(item)">
-          {{ $gettext('Delete') }}
-        </ActionItem>
-        <ActionItem
-          v-if="item.deleted_at && user.can('file:keep')"
-          :prepend-icon="mdiDeleteRestore"
-          @click="keep(item)"
-          >{{ $gettext('Restore') }}</ActionItem
-        >
-        <ActionItem v-if="user.can('file:purge')" :prepend-icon="mdiDeleteForever" @click="purge(item)">
-          {{ $gettext('Purge') }}
-        </ActionItem>
-      </ActionMenu>
+      </ListItemMenu>
 
       <a
         href="#"
@@ -455,8 +404,8 @@ export default {
 
       <div class="item-preview" @click="$emit('select', item)" :title="title(item)">
         <v-img
-          v-if="item.mime?.startsWith('image/') || (item.mime?.startsWith('video/') && Object.values(item.previews).length)"
-          :src="fileurl(item, Object.values(item.previews)[0] ?? item.path)"
+          v-if="item.mime?.startsWith('image/') || (item.mime?.startsWith('video/') && Object.values(item.previews || {}).length)"
+          :src="previewUrl(item)"
           :srcset="filesrcset(item)"
           :title="item.name"
           :alt="item.name"
@@ -628,7 +577,7 @@ a.item-usage {
 }
 
 .items.grid .v-list-item .item-check {
-  left: 0;
+  inset-inline-start: 0;
 }
 
 .items.grid .item-usage {
@@ -639,7 +588,7 @@ a.item-usage {
   background: rgba(var(--v-theme-surface-variant), 0.8);
   color: rgb(var(--v-theme-on-surface-variant));
   border-radius: 50%;
-  right: 0;
+  inset-inline-end: 0;
 }
 
 .items.grid .item-preview {

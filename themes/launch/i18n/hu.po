@@ -158,3 +158,9 @@ msgstr "Rövid megjegyzés a lábjegyzetben, pl. SOC 2 Type II tanúsítvánnyal
 msgctxt "st"
 msgid "launch::theme"
 msgstr "Téma"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "launch::theme-dark"
+msgstr "Sötét téma"

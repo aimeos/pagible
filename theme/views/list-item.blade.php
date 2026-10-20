@@ -4,7 +4,7 @@
         @php($article = $element->data)
         @php($fileId = $article->file?->id ?? collect((array) ($element->files ?? []))->first())
         @if($file = cms(cms($item, 'files'), $fileId))
-            @include('cms::pic', ['file' => $file])
+            <x-cms::image :page="$page" :file="$file" />
         @endif
         <div class="content">
             @if($date ?? true)

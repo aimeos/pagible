@@ -40,6 +40,12 @@ describe('transcription()', () => {
       expect(vtt).to.contain('1\n00:00:00.000 --> 00:00:01.500\nHello')
     })
 
+    it('removes blank lines and arrows from the cue text', () => {
+      const list = [{ start: 0, end: 1, text: 'One\n\n\nTwo --> Three\n' }, { start: 1, end: 2, text: null }]
+      const vtt = transcription(list).asVTT()
+      expect(vtt).to.equal('WEBVTT\n\n1\n00:00:00.000 --> 00:00:01.000\nOne\nTwo -> Three\n\n2\n00:00:01.000 --> 00:00:02.000\n\n')
+    })
+
     it('formats timestamps for long durations correctly', () => {
       const list = [{ start: 3661.123, end: 7322.456, text: 'Long' }]
       const vtt = transcription(list).asVTT()

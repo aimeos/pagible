@@ -15,12 +15,17 @@ import {
 } from "@mdi/js";
 import WebhookDialog from "../components/WebhookDialog.vue";
 import { ADD, LIST, PING, PURGE, ROTATE, SAVE } from "../graphql";
-import { PURGE_BATCH, reasonText } from "../webhooks";
+import { PURGE_BATCH, reasonText as formatReason } from "../webhooks";
 
 export default {
   name: "WebhookList",
 
   components: { WebhookDialog },
+
+  props: {
+    // plugin panel definition passed by the admin
+    panel: { type: Object, default: null },
+  },
 
   inject: {
     apollo: {},
@@ -36,6 +41,7 @@ export default {
     return {
       dialog: false,
       loading: true,
+      failed: false,
       saving: false,
       testing: false,
       items: [],
@@ -49,6 +55,10 @@ export default {
       // counts local changes and list requests to ignore outdated responses
       changes: 0,
       loadSeq: 0,
+      // the page was left, e.g. while a request was running
+      left: false,
+      // current time to hide pauses which are over
+      now: Date.now(),
     };
   },
 
@@ -61,15 +71,25 @@ export default {
       mdiRefresh,
       // shared props of the activator buttons of the action menus
       menuButton: { icon: mdiDotsVertical, variant: "text" },
+      pausedColor:
+        "color-mix(in srgb, rgb(var(--v-theme-warning)) 85%, rgb(var(--v-theme-on-surface)))",
     };
   },
 
   computed: {
+    allChecked() {
+      return (
+        this.filtered.length > 0 &&
+        this.filtered.every((item) => this.checked.has(item.id))
+      );
+    },
+
     // props of the "Add webhook" buttons above and below the list
     addButton() {
       return {
         title: this.$pgettext("webhooks", "Add webhook"),
-        disabled: this.loading,
+        // webhooks can't be saved without the available events
+        disabled: this.loading || !this.events.length,
         icon: mdiPlus,
         class: "btn-add",
         color: "primary",
@@ -88,7 +108,8 @@ export default {
       if (this.server.blocked) {
         return this.$pgettext(
           "webhooks",
-          "All deliveries are blocked by the server configuration",
+          "All deliveries are blocked by the server configuration: %{reason}",
+          { reason: this.reasonText(this.server.blocked) },
         );
       }
 
@@ -140,6 +161,8 @@ export default {
   },
 
   created() {
+    this.timer = null;
+
     // the selection may contain webhooks which aren't shown anymore
     this.$watch(
       () => [this.filter.status, this.term],
@@ -149,6 +172,17 @@ export default {
 
   mounted() {
     this.load();
+    // only re-render when there are pauses which can end
+    this.timer = setInterval(() => {
+      if (this.items.some((item) => item.paused_until)) this.now = Date.now();
+    }, 60000);
+  },
+
+  beforeUnmount() {
+    clearInterval(this.timer);
+    // responses of running requests are ignored after leaving the page
+    this.loadSeq++;
+    this.left = true;
   },
 
   methods: {
@@ -175,7 +209,12 @@ export default {
       if (!error) return this.$pgettext("webhooks", "None");
 
       const text = this.reasonText(error.reason, error.status);
-      return error.at ? `${text} · ${this.dateText(error.at)}` : text;
+      return error.at
+        ? this.$pgettext("webhooks", "%{reason} · %{date}", {
+            reason: text,
+            date: this.dateText(error.at),
+          })
+        : text;
     },
 
     async load() {
@@ -192,14 +231,23 @@ export default {
         if (seq !== this.loadSeq) return;
 
         // the list is outdated if webhooks were changed while it was loading
-        if (changes === this.changes) {
-          this.items = data.cmsWebhooks;
-          this.checked = new Set();
+        if (changes !== this.changes) return this.load();
+
+        this.items = data.cmsWebhooks;
+        this.now = Date.now();
+        this.checked = new Set();
+        this.failed = false;
+
+        // the open dialog shows the reloaded webhook
+        if (this.selected) {
+          this.selected =
+            this.items.find((entry) => entry.id === this.selected.id) || this.selected;
         }
         this.events = data.cmsWebhookEvents;
         this.server = data.cmsWebhookServer;
       } catch (error) {
         if (seq === this.loadSeq) {
+          this.failed = true;
           this.messages.error(this.$pgettext("webhooks", "Error fetching webhooks"), error);
         }
       } finally {
@@ -216,12 +264,16 @@ export default {
     },
 
     openEdit(item) {
+      // a running rotate opens the dialog with the secret of its own webhook
+      if (this.saving) return;
       this.selected = item;
       this.secret = "";
       this.dialog = true;
     },
 
     async ping(item) {
+      // change() skips the test event while saving, which mustn't show the test as running
+      if (this.saving) return;
       this.testing = true;
 
       try {
@@ -238,16 +290,18 @@ export default {
               this.items = this.items.map((entry) =>
                 entry.id === item.id ? { ...entry, paused_until: null } : entry,
               );
+              this.changes++;
               this.messages.add(
-                this.$pgettext("webhooks", "Test event delivered") +
-                  ` (${result.status})`,
+                this.$pgettext("webhooks", "Test event delivered (%{status})", {
+                  status: result.status,
+                }),
                 "success",
               );
             } else {
               this.messages.add(
-                this.$pgettext("webhooks", "Test event failed") +
-                  ": " +
-                  this.reasonText(result.reason, result.status),
+                this.$pgettext("webhooks", "Test event failed: %{reason}", {
+                  reason: this.reasonText(result.reason, result.status),
+                }),
                 "error",
               );
             }
@@ -308,8 +362,30 @@ export default {
       this.changes++;
     },
 
+    // deliveries are resumed by the server after the pause
+    paused(item) {
+      return !!item.paused_until && new Date(item.paused_until).getTime() > this.now;
+    },
+
     reasonText(reason, status) {
-      return reasonText(this.$pgettext, reason, status);
+      return formatReason(this.$pgettext, reason, status);
+    },
+
+    // shows the one-time secret, which is lost if the page was left before the server responded
+    reveal(secret) {
+      if (this.left) {
+        this.messages.add(
+          this.$pgettext(
+            "webhooks",
+            "The new webhook secret could not be shown after leaving the page, please rotate it to get a new one",
+          ),
+          "warning",
+        );
+        return;
+      }
+
+      this.secret = secret;
+      this.dialog = true;
     },
 
     async rotate(item) {
@@ -335,8 +411,8 @@ export default {
           });
           // shows the one-time secret in the webhook dialog
           this.put(data.rotateWebhook.webhook);
-          this.secret = data.rotateWebhook.secret;
-          this.dialog = true;
+          this.selected = data.rotateWebhook.webhook;
+          this.reveal(data.rotateWebhook.secret);
         },
         this.$pgettext("webhooks", "Error rotating webhook secret"),
       );
@@ -365,8 +441,7 @@ export default {
             });
             // keep (or reopen) the dialog to show the one-time secret
             this.put(data.addWebhook.webhook);
-            this.secret = data.addWebhook.secret;
-            this.dialog = true;
+            this.reveal(data.addWebhook.secret);
           }
         },
         this.$pgettext("webhooks", "Error saving webhook"),
@@ -384,8 +459,9 @@ export default {
       return { name: item.name || item.endpoint, info: item.name ? item.endpoint : "" };
     },
 
+    // checks all webhooks if one is unchecked, otherwise unchecks all
     toggle() {
-      this.checked = this.checked.size
+      this.checked = this.allChecked
         ? new Set()
         : new Set(this.filtered.map((item) => item.id));
     },
@@ -423,7 +499,8 @@ export default {
       <div class="header">
         <div class="bulk">
           <v-checkbox-btn
-            :model-value="checked.size > 0"
+            :model-value="allChecked"
+            :indeterminate="checked.size > 0 && !allChecked"
             @click.stop="toggle"
             :aria-label="$pgettext('webhooks', 'Toggle selection')"
           />
@@ -442,9 +519,11 @@ export default {
                 :disabled="saving"
                 variant="text"
                 @click="purge()"
-                >{{ $pgettext("webhooks", "Purge") }} ({{
-                  checked.size
-                }})</v-btn
+                >{{
+                  $pgettext("webhooks", "Purge (%{count})", {
+                    count: checked.size,
+                  })
+                }}</v-btn
               >
             </v-list-item>
           </CmsActionMenu>
@@ -502,6 +581,7 @@ export default {
                 <v-list-item>
                   <v-btn
                     :prepend-icon="mdiPencil"
+                    :disabled="saving"
                     variant="text"
                     @click="openEdit(item)"
                     >{{ $pgettext("webhooks", "Edit") }}</v-btn
@@ -530,7 +610,13 @@ export default {
               </CmsActionMenu>
             </div>
 
-            <a href="#" class="item-content" @click.prevent="openEdit(item)">
+            <a
+              href="#"
+              class="item-content"
+              :aria-disabled="saving"
+              :style="saving ? { opacity: 0.6, cursor: 'default' } : null"
+              @click.prevent="openEdit(item)"
+            >
               <div class="item-text">
                 <div class="item-head">
                   <span class="item-title">{{
@@ -557,19 +643,30 @@ export default {
                   </v-chip>
                 </div>
                 <div class="item-subtitle">
-                  {{ $pgettext("webhooks", "Last success") }}:
-                  {{ successText(item) }}
+                  {{
+                    $pgettext("webhooks", "Last success: %{date}", {
+                      date: successText(item),
+                    })
+                  }}
                 </div>
                 <div class="item-subtitle">
-                  {{ $pgettext("webhooks", "Last error") }}:
-                  {{ errorText(item) }}
+                  {{
+                    $pgettext("webhooks", "Last error: %{reason}", {
+                      reason: errorText(item),
+                    })
+                  }}
                 </div>
+                <!-- blended with the text color to keep AA contrast on hovered and focused list items -->
                 <div
-                  v-if="item.paused_until"
+                  v-if="paused(item)"
                   class="item-subtitle webhook-paused"
+                  :style="{ color: pausedColor }"
                 >
-                  {{ $pgettext("webhooks", "Paused until") }}:
-                  {{ dateText(item.paused_until) }}
+                  {{
+                    $pgettext("webhooks", "Paused until: %{date}", {
+                      date: dateText(item.paused_until),
+                    })
+                  }}
                 </div>
               </div>
             </a>
@@ -580,6 +677,12 @@ export default {
       <p v-if="loading" class="loading">
         {{ $pgettext("webhooks", "Loading") }}
         <CmsLoadingSpinner width="32" height="32" />
+      </p>
+      <p v-else-if="failed && !items.length" class="notfound load-error">
+        {{ $pgettext("webhooks", "Error fetching webhooks") }}
+        <v-btn class="btn-retry" variant="text" @click="load">{{
+          $pgettext("webhooks", "Refresh")
+        }}</v-btn>
       </p>
       <p v-else-if="!filtered.length" class="notfound">
         {{
@@ -602,16 +705,10 @@ export default {
     :secret="secret"
     :saving="saving"
     :testing="testing"
-    :enabled="server.enabled"
+    :testable="server.enabled && server.blocked !== 'invalid_policy'"
     @closed="secret = ''"
     @save="save($event)"
     @test="ping($event)"
   />
 </template>
 
-<style scoped>
-/* Blended with the text color to keep AA contrast on hovered and focused list items */
-.webhook-paused {
-  color: color-mix(in srgb, rgb(var(--v-theme-warning)) 85%, rgb(var(--v-theme-on-surface)));
-}
-</style>

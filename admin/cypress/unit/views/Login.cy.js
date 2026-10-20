@@ -1,9 +1,9 @@
 import Login from '../../../js/views/Login.vue'
-import { useUserStore } from '../../../js/stores'
+import { useSessionStore, useUserStore } from '../../../js/stores'
 import { browser } from '../../../js/utils'
 
 describe('Login', () => {
-  function mountLogin(opts = {}, props = {}) {
+  function mountLogin(opts = {}, props = {}, authenticated = null) {
     return cy.mount(Login, {
       props,
       global: {
@@ -11,6 +11,7 @@ describe('Login', () => {
           install() {
             const user = useUserStore()
             user.me = false // prevent real Apollo call in created()
+            authenticated && cy.stub(useSessionStore(), 'isAuthenticated').callsFake(authenticated)
           }
         }],
         ...opts,
@@ -60,6 +61,27 @@ describe('Login', () => {
     cy.get('.v-alert').should('not.be.visible')
   })
 
+  it('shows the error message in the alert', () => {
+    mountLogin().then(({ wrapper }) => {
+      wrapper.findComponent(Login).vm.error = 'Invalid credentials'
+      cy.get('.v-alert').should('be.visible').and('contain', 'Error: Invalid credentials')
+    })
+  })
+
+  it('ignores another login while signing in', () => {
+    mountLogin().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Login).vm
+      const login = cy.stub(useSessionStore(), 'login').returns(new Promise(() => {}))
+
+      vm.creds = { email: 'editor@example.com', password: 'secret' }
+      vm.cmslogin()
+      vm.cmslogin()
+
+      expect(login).to.have.been.calledOnce
+      cy.contains('button', 'Login').should('have.class', 'v-btn--loading')
+    })
+  })
+
   describe('with single sign-on', () => {
     const urllogin = 'https://sso.example.com/login?redirect=_url_'
 
@@ -92,6 +114,14 @@ describe('Login', () => {
 
       cy.contains('button', 'Sign in').click()
       cy.get('@assign').should('have.been.calledOnce')
+    })
+
+    it('does not redirect while the server is not reachable', () => {
+      mountLogin({}, { urllogin }, () => Promise.reject(new TypeError('Failed to fetch')))
+
+      cy.get('.login.show').should('exist')
+      cy.contains('.v-alert', 'Connection failed, please try again').should('be.visible')
+      cy.get('@assign').should('not.have.been.called')
     })
 
     it('does not redirect after the user logged out', () => {

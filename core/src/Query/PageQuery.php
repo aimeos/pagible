@@ -7,7 +7,10 @@
 
 namespace Aimeos\Cms\Query;
 
+use Aimeos\Cms\Models\PageAccess;
+use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\QueryBuilder;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -78,6 +81,28 @@ class PageQuery extends QueryBuilder
     public function visible( string $lang ) : static
     {
         $this->base()->variants( 'visible', $lang );
+        return $this;
+    }
+
+
+    /**
+     * Limits the query to the pages visitors see on the live site.
+     *
+     * Uses the published and enabled variants of the language like visible(), skips
+     * inactive pages and pages the user can't access and loads the content files and
+     * elements. Unlike the Status scope, inactive pages are also skipped for editors.
+     *
+     * @param Authenticatable|null $user Frontend user or NULL for anonymous visitors
+     * @param string|null $lang Language code or NULL for the current locale
+     * @return static Same builder for fluent interface
+     */
+    public function live( ?Authenticatable $user = null, ?string $lang = null ) : static
+    {
+        $this->visible( $lang ?? app()->getLocale() )
+            ->whereIn( $this->qualifyColumn( 'status' ), [1, 2] )
+            ->with( PageView::contentRelations() );
+
+        PageAccess::apply( $this, $user );
         return $this;
     }
 

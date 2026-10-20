@@ -535,6 +535,16 @@ class WebhookGraphqlTest extends WebhookTestAbstract
     }
 
 
+    public function testAddWithoutUser() : void
+    {
+        $manager = app( WebhookManager::class );
+        $add = fn() => $manager->add( 'https://example.com/hooks/system', ['page.published'], false, null );
+
+        $this->assertThrows( $add, \Aimeos\Cms\Exceptions\PermissionException::class );
+        $this->assertSame( 'https://example.com/hooks/system', \Aimeos\Cms\Permission::system( $add )['webhook']->refresh()->url );
+    }
+
+
     public function testUndecryptableSubscriptionIsListedRotatedAndPurged() : void
     {
         $webhook = $this->undecryptable( $this->webhook( ['last_error' => ['reason' => 'invalid_encryption']] ) );

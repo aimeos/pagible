@@ -10,6 +10,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/cli
 import { realtime, socketId } from './echo'
 import { urlgraphql } from './config'
 import { xsrfHeaders } from './http'
+import gettext from './i18n'
 
 const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
 
@@ -116,8 +117,26 @@ export function listFetchPolicy() {
   return realtime() ? 'cache-first' : 'network-only'
 }
 
-export function retry(error) {
-  return !!error && error.statusCode !== 419
+// TRUE if the server wasn't reachable at all, e.g. offline, instead of responding with an error
+export function unreachable(error) {
+  return (error?.networkError ?? error) instanceof TypeError
+}
+
+// translated message shown if the server wasn't reachable
+export function connectionError() {
+  return gettext.$gettext('Connection failed, please try again')
+}
+
+// translated message of a failed sign-in, the browser's message of network errors is technical
+export function loginError(error) {
+  return unreachable(error) ? connectionError() : error?.message || gettext.$gettext('Login failed')
+}
+
+// retries failed queries only, mutations may have been executed on the server before the request failed
+// and authentication errors are handled by the error link
+export function retry(error, operation) {
+  const mutation = operation?.query?.definitions?.some((def) => def.operation === 'mutation')
+  return !!error && !mutation && !AUTH_STATUS.includes(error.statusCode)
 }
 
 const lazyUploadLink = new ApolloLink((operation, forward) => {

@@ -48,7 +48,7 @@ class GenerateImage extends Tool
             'prompt.required' => 'You must provide a prompt describing the image to generate.',
         ] );
 
-        $base64 = Ai::imagine( $v['prompt'], Ai::files( $v['files'] ?? [], Image::class ), $v['context'] ?? null );
+        $base64 = Ai::imagine( $v['prompt'], Ai::files( $v['files'] ?? [], $request->user(), Image::class ), $v['context'] ?? null );
 
         $data = array_filter( ['lang' => $v['lang'] ?? null, 'description' => $v['description'] ?? null] );
 

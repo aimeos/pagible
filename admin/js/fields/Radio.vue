@@ -19,6 +19,13 @@ export default {
   },
 
   computed: {
+    items() {
+      return (this.config.options || []).map((item) => ({
+        ...item,
+        label: this.$pgettext('op', item.label)
+      }))
+    },
+
     rules() {
       return [required(this.$gettext, this.config.required)]
     }
@@ -36,7 +43,7 @@ export default {
     @update:modelValue="$emit('update:modelValue', $event)"
     hide-details="auto"
     ><v-radio
-      v-for="(option, idx) in config.options || []"
+      v-for="(option, idx) in items"
       :key="idx"
       :label="option.label"
       :value="option.value"

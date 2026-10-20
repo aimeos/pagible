@@ -24,6 +24,15 @@ describe('Radio', () => {
     cy.contains('.v-radio', 'Green').should('exist')
   })
 
+  it('translates the option labels', () => {
+    cy.mount(Radio, {
+      props: { config: { options } },
+      global: { mocks: { $pgettext: (ctx, msg) => (ctx === 'op' ? 'T-' + msg : msg) } },
+    })
+    cy.contains('.v-radio', 'T-Red').should('exist')
+    cy.contains('.v-radio', 'T-Blue').should('exist')
+  })
+
   it('selects the option matching modelValue', () => {
     cy.mount(Radio, { props: { modelValue: 'blue', config: { options } } })
     cy.contains('.v-radio', 'Blue').find('input').should('be.checked')

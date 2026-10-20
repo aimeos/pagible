@@ -82,4 +82,21 @@ describe('Select', () => {
     cy.mount(Select, { props: { config: { options }, readonly: true } })
     cy.get('.v-input--readonly').should('exist')
   })
+
+  it('uses an empty list as fallback for multiple selections', () => {
+    const onError = cy.spy().as('error')
+    cy.mount(Select, { props: { config: { options, multiple: true }, onError } })
+    cy.get('.v-select').should('exist')
+    cy.get('.v-chip').should('not.exist')
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('accepts numeric option values', () => {
+    cy.window().then((win) => cy.spy(win.console, 'warn').as('warn'))
+    cy.mount(Select, {
+      props: { modelValue: 2, config: { options: [{ label: 'One', value: 1 }, { label: 'Two', value: 2 }] } },
+    })
+    cy.get('.v-select').should('contain', 'Two')
+    cy.get('@warn').should('not.have.been.calledWithMatch', /Invalid prop/)
+  })
 })

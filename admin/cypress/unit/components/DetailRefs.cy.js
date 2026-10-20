@@ -1,3 +1,4 @@
+import { h, nextTick, ref } from 'vue'
 import DetailRefs from '../../../js/components/DetailRefs.vue'
 import { useUserStore, useViewStack } from '../../../js/stores'
 
@@ -58,6 +59,58 @@ for (const type of ['element', 'file']) {
       cy.get('.v-table').should('not.exist')
     })
 
+    it('shows the references fetched for the first item', () => {
+      const bypages = [{ id: 'page-1', path: 'used', name: 'Used page', restricted: false }]
+      const query = Cypress.sinon.stub().resolves({ data: { [type]: { bypages } } })
+
+      cy.mount(DetailRefs, {
+        props: { item: { id: 'item-1' }, type },
+        global: {
+          stubs,
+          mocks: { $apollo: { query } },
+          plugins: [{
+            install() {
+              useUserStore().me = { permission: { [type + ':view']: true, 'page:view': true } }
+            }
+          }],
+        },
+      })
+
+      cy.get('.v-table.pages tbody tr').should('have.length', 1).and('contain', '/used')
+    })
+
+    it('fetches the references again only for another item', () => {
+      const query = Cypress.sinon.stub().resolves({ data: { [type]: {} } })
+
+      const item = ref({ id: 'item-1', name: 'first' })
+      const Host = { render: () => h(DetailRefs, { item: item.value, type }) }
+
+      cy.mount(Host, {
+        global: {
+          stubs,
+          mocks: { $apollo: { query } },
+          plugins: [{
+            install() {
+              useUserStore().me = { permission: { [type + ':view']: true } }
+            }
+          }],
+        },
+      }).then(async () => {
+        expect(query).to.have.been.calledOnce
+        expect(query.firstCall.args[0].variables).to.deep.equal({ id: 'item-1' })
+
+        // the detail view replaces the item object after saving
+        item.value = { id: 'item-1', name: 'saved' }
+        await nextTick()
+        expect(query).to.have.been.calledOnce
+
+        item.value = { id: 'item-2', name: 'other' }
+        await nextTick()
+        expect(query).to.have.been.calledTwice
+        expect(query.secondCall.args[0].variables).to.deep.equal({ id: 'item-2' })
+      })
+    })
+
     it('shows a lock icon only for restricted page references', () => {
       mountRefs(type, {}, { 'page:view': true }).then(({ wrapper }) => {
         wrapper.findComponent(DetailRefs).vm.references = {
@@ -83,6 +136,19 @@ for (const type of ['element', 'file']) {
 
         cy.get('.v-table.pages tbody tr').should('contain', '/page').click()
         cy.get('@open').should('have.been.calledOnceWith', 'Page', page)
+      })
+    })
+
+    it('opens element references with the keyboard', () => {
+      mountRefs(type, {}, { 'element:view': true }).then(({ wrapper }) => {
+        const vm = wrapper.findComponent(DetailRefs).vm
+        const element = { id: 'elem-1', type: 'text', name: 'Element' }
+
+        vm.references = { byelements: [element] }
+        cy.stub(vm, 'open').as('open')
+
+        cy.get('.v-table.elements tbody tr').should('have.attr', 'tabindex', '0').focus().type('{enter}')
+        cy.get('@open').should('have.been.calledOnceWith', 'Element', element)
       })
     })
 

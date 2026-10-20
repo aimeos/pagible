@@ -1,5 +1,5 @@
 import { createPinia, setActivePinia } from 'pinia'
-import { effectScope, nextTick } from 'vue'
+import { effectScope, isReactive, nextTick, reactive } from 'vue'
 import {
   useAppStore,
   useChangeStore,
@@ -229,7 +229,8 @@ describe('useUserStore', () => {
   })
 
   describe('pagehide', () => {
-    it('saves the pending changes when the page is closed', () => {
+    it('saves the pending changes with a request outliving the closed page', () => {
+      const fetch = cy.stub(window, 'fetch').resolves(new Response('{}'))
       const mutate = cy.stub(apolloClient, 'mutate').resolves({})
       const user = useUserStore()
       const settings = useSettingStore()
@@ -237,14 +238,90 @@ describe('useUserStore', () => {
       settings.saveData('page', 'sort', 'name')
       window.dispatchEvent(new Event('pagehide'))
       expect(settings.saveTimer).to.be.null
-      expect(mutate).to.have.been.calledOnce
+      expect(mutate).not.to.have.been.called
+      expect(fetch).to.have.been.calledOnce
+
+      const [url, init] = fetch.firstCall.args
+      const body = JSON.parse(init.body)
+      expect(url).to.equal('/graphql')
+      expect(init).to.include({ method: 'POST', keepalive: true, credentials: 'include' })
+      expect(init.headers).to.include({ 'Content-Type': 'application/json' })
+      expect(body.query).to.contain('setUser(settings: $settings)')
+      expect(JSON.parse(body.variables.settings)).to.deep.equal({ page: { sort: 'name' } })
+    })
+
+    it('saves the pending changes when the page is hidden', () => {
+      const fetch = cy.stub(window, 'fetch').resolves(new Response('{}'))
+      cy.stub(document, 'visibilityState').get(() => 'hidden')
+      const user = useUserStore()
+      const settings = useSettingStore()
+      user.me = { settings: {} }
+      settings.saveData('page', 'sort', 'name')
+      document.dispatchEvent(new Event('visibilitychange'))
+      expect(settings.saveTimer).to.be.null
+      expect(fetch).to.have.been.calledOnce
+      expect(fetch.firstCall.args[1].keepalive).to.be.true
+    })
+
+    it('saves the changes with Apollo if the request can not be sent', () => {
+      cy.stub(window, 'fetch').rejects(new TypeError('Request too large'))
+      const mutate = cy.stub(apolloClient, 'mutate').resolves({})
+      const user = useUserStore()
+      const settings = useSettingStore()
+      user.me = { settings: {} }
+      settings.saveData('page', 'sort', 'name')
+      window.dispatchEvent(new Event('pagehide'))
+      cy.wrap(mutate).should('have.been.calledOnce')
+    })
+
+    it('saves the changes with Apollo if the request fails on the server', () => {
+      cy.stub(window, 'fetch').resolves(new Response('', { status: 419 }))
+      const mutate = cy.stub(apolloClient, 'mutate').resolves({})
+      const user = useUserStore()
+      const settings = useSettingStore()
+      user.me = { settings: {} }
+      settings.saveData('page', 'sort', 'name')
+      window.dispatchEvent(new Event('pagehide'))
+      cy.wrap(mutate).should('have.been.calledOnce')
+      cy.then(() => {
+        expect(JSON.parse(mutate.firstCall.args[0].variables.settings)).to.deep.equal({ page: { sort: 'name' } })
+      })
+    })
+
+    it('saves the changes with Apollo if the request returns GraphQL errors', () => {
+      cy.stub(window, 'fetch').resolves(new Response(JSON.stringify({ errors: [{ message: 'Unauthenticated.' }] })))
+      const mutate = cy.stub(apolloClient, 'mutate').resolves({})
+      const user = useUserStore()
+      const settings = useSettingStore()
+      user.me = { settings: {} }
+      settings.saveData('page', 'sort', 'name')
+      window.dispatchEvent(new Event('pagehide'))
+      cy.wrap(mutate).should('have.been.calledOnce')
+    })
+
+    it('does not save the changes again after a successful request', () => {
+      const fetch = cy.stub(window, 'fetch').resolves(new Response('{}'))
+      const mutate = cy.stub(apolloClient, 'mutate').resolves({})
+      const user = useUserStore()
+      const settings = useSettingStore()
+      user.me = { settings: {} }
+      settings.saveData('page', 'sort', 'name')
+      window.dispatchEvent(new Event('pagehide'))
+      expect(fetch).to.have.been.calledOnce
+
+      // the response is handled after the fetch promise resolves
+      cy.wrap(fetch.firstCall.returnValue).then(() => {
+        expect(mutate).not.to.have.been.called
+      })
     })
 
     it('does nothing without pending changes', () => {
+      const fetch = cy.stub(window, 'fetch').resolves(new Response('{}'))
       const mutate = cy.stub(apolloClient, 'mutate').resolves({})
       useUserStore().me = { settings: {} }
       window.dispatchEvent(new Event('pagehide'))
       expect(mutate).not.to.have.been.called
+      expect(fetch).not.to.have.been.called
     })
   })
 })
@@ -266,7 +343,9 @@ describe('useSessionStore', () => {
       const schema = useSchemaStore()
       const side = useSideStore()
       const views = useViewStack()
+      const translations = useTranslationStore()
       app.urlproxy = '/cmsproxy?token=old'
+      translations.batches = [{ id: 'b1', total: 1, done: 0, failed: 0 }]
       clip.set('page', { id: 'page-1' })
       changes.changed = { page: [{ id: 'page-1' }] }
       dirty.dirty = true
@@ -289,6 +368,7 @@ describe('useSessionStore', () => {
         expect(schema.content).to.deep.equal({})
         expect(side.store).to.deep.equal({})
         expect(views.stack).to.deep.equal([])
+        expect(translations.batches).to.deep.equal([])
         expect(clearStore).to.have.been.calledOnce
       })
     })
@@ -307,6 +387,17 @@ describe('useSessionStore', () => {
       cy.tick(2000).then(() => expect(refresh).to.have.been.calledOnce)
     })
 
+    it('ignores tokens with a malformed expiry', () => {
+      const session = useSessionStore()
+      const refresh = cy.stub(session, 'refreshToken')
+
+      cy.clock(Date.now()).then(() => {
+        useUserStore().me = { token: btoa('soon|uid|hmac') }
+        session.applyProxyToken()
+      })
+      cy.tick(60000).then(() => expect(refresh).not.to.have.been.called)
+    })
+
     it('cancels the refresh when the session is cleared', () => {
       cy.stub(apolloClient, 'clearStore').resolves()
       const session = useSessionStore()
@@ -318,6 +409,72 @@ describe('useSessionStore', () => {
         return session.clear()
       })
       cy.tick(120000).then(() => expect(refresh).not.to.have.been.called)
+    })
+  })
+
+  describe('refreshToken()', () => {
+    it('retries with a growing delay after failures', () => {
+      const query = cy.stub(apolloClient, 'query').rejects(new TypeError('Failed to fetch'))
+      cy.stub(apolloClient, 'clearStore').resolves()
+      cy.stub(console, 'error')
+      const session = useSessionStore()
+
+      cy.clock(Date.now()).then(() => {
+        useUserStore().me = { token: null }
+        session.refreshToken()
+      })
+      cy.tick(30000).then(() => expect(query).to.have.been.calledTwice)
+      cy.tick(30000).then(() => expect(query).to.have.been.calledTwice)
+      cy.tick(30000).then(() => {
+        expect(query).to.have.been.calledThrice
+        return session.clear()
+      })
+    })
+
+    it('ignores the new token after signing out', () => {
+      let respond
+      cy.stub(apolloClient, 'query').returns(new Promise((resolve) => (respond = resolve)))
+      const error = cy.stub(console, 'error')
+      const user = useUserStore()
+
+      user.me = { token: null }
+      useSessionStore().refreshToken()
+      user.me = null
+      respond({ data: { me: { token: 'new' } } })
+
+      cy.wrap(null).then(() => {
+        expect(user.me).to.be.null
+        expect(error).not.to.have.been.called
+      })
+    })
+  })
+
+  describe('isAuthenticated()', () => {
+    it('stays unknown if the server is not reachable', () => {
+      cy.stub(apolloClient, 'query').rejects(new TypeError('Failed to fetch'))
+      cy.stub(console, 'error')
+      const session = useSessionStore()
+      const user = useUserStore()
+      user.me = null
+
+      return session.isAuthenticated().then(() => {
+        throw new Error('not rejected')
+      }, (error) => {
+        expect(error.message).to.equal('Failed to fetch')
+        expect(user.me).to.be.null
+      })
+    })
+
+    it('signs out if the session is rejected', () => {
+      cy.stub(apolloClient, 'query').rejects({ networkError: { statusCode: 401 } })
+      cy.stub(console, 'error')
+      const user = useUserStore()
+      user.me = null
+
+      return useSessionStore().isAuthenticated().then((result) => {
+        expect(result).to.be.false
+        expect(user.me).to.be.false
+      })
     })
   })
 
@@ -356,6 +513,42 @@ describe('useSessionStore', () => {
         expect(authenticated).to.have.been.calledOnceWith(true)
         expect(clear).to.have.been.calledBefore(authenticated)
         expect(result.email).to.equal('editor@example.com')
+      })
+    })
+
+    it('keeps the session state unknown if the user check fails after signing in', () => {
+      cy.stub(window, 'fetch').resolves({ ok: true, json: () => Promise.resolve({}) })
+      cy.stub(apolloClient, 'mutate').resolves({ data: { cmsLogin: { id: 'user-1' } } })
+
+      const user = useUserStore()
+      const session = useSessionStore()
+      cy.stub(session, 'clear').resolves()
+      cy.stub(session, 'isAuthenticated').rejects(new TypeError('Failed to fetch'))
+
+      return session.login('editor@example.com', 'secret').then(() => {
+        throw new Error('not rejected')
+      }, (error) => {
+        expect(error.message).to.equal('Failed to fetch')
+        expect(user.me).to.be.null
+      })
+    })
+
+    it('signs out only if the sign-in is rejected by the server', () => {
+      cy.stub(window, 'fetch').resolves({ ok: true, json: () => Promise.resolve({}) })
+      const mutate = cy.stub(apolloClient, 'mutate').rejects({ networkError: new TypeError('Failed to fetch') })
+
+      const user = useUserStore()
+      const session = useSessionStore()
+      user.me = null
+
+      return session.login('editor@example.com', 'secret').catch(() => {
+        expect(user.me).to.be.null
+
+        mutate.rejects(new Error('Invalid credentials'))
+        return session.login('editor@example.com', 'wrong')
+      }).catch((error) => {
+        expect(error.message).to.equal('Invalid credentials')
+        expect(user.me).to.be.false
       })
     })
   })
@@ -533,6 +726,24 @@ describe('useSessionStore', () => {
         }
       )
     })
+
+    it('removes the messages and undo actions of the previous user', () => {
+      const session = useSessionStore()
+      const messages = useMessageStore()
+      const handler = cy.stub()
+      useUserStore().me = { email: 'editor@example.com', permission: {}, settings: {} }
+      cy.stub(apolloClient, 'clearStore').resolves()
+
+      messages.add('Page deleted', 'success', null, { label: 'Undo', handler })
+      const id = messages.queue[0]['data-action']
+
+      return session.expire().then(() => {
+        expect(messages.queue).to.have.length(0)
+        expect(messages.action(id)).to.equal(null)
+        messages.run(id)
+        expect(handler).not.to.have.been.called
+      })
+    })
   })
 
   describe('intended()', () => {
@@ -705,6 +916,18 @@ describe('useMessageStore', () => {
     expect(msg.action(id)).to.equal(null)
   })
 
+  it('clears the queued messages and their actions', () => {
+    const msg = useMessageStore()
+
+    msg.add('Info')
+    msg.add('Moved', 'success', null, { label: 'Undo', handler: cy.stub() })
+    const id = msg.queue[1]['data-action']
+
+    msg.clear()
+    expect(msg.queue).to.have.length(0)
+    expect(msg.action(id)).to.equal(null)
+  })
+
   it('drops the action when the message is dismissed', () => {
     const msg = useMessageStore()
 
@@ -794,11 +1017,10 @@ describe('useDirtyStore', () => {
   it('resolves false if the action fails', () => {
     const dirty = useDirtyStore()
     const confirmed = dirty.confirm(() => Promise.reject(new Error('failed')))
+    const log = cy.stub(console, 'error')
 
     return dirty.finalize().then(() => {
-      throw new Error('finalize() should fail')
-    }, (error) => {
-      expect(error.message).to.equal('failed')
+      expect(log).to.have.been.calledWith('Pending action failed')
       return confirmed
     }).then((value) => {
       expect(value).to.be.false
@@ -874,6 +1096,37 @@ describe('useDirtyStore', () => {
       expect(dirty.show).to.be.true
       expect(dirty.dirty).to.be.true
     })
+  })
+  it('keeps the confirmation open if saving fails without a result', () => {
+    const dirty = useDirtyStore()
+    const save = cy.stub().resolves(undefined)
+    dirty.register(save)
+    dirty.set(true, save)
+    dirty.confirm()
+
+    return dirty.saveAndLeave().then(() => {
+      expect(dirty.show).to.be.true
+      expect(dirty.dirty).to.be.true
+    })
+  })
+})
+
+describe('useChangeStore', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('keeps the notified item reactive and stores a copy', () => {
+    const changes = useChangeStore()
+    const state = reactive({ item: { id: '1', name: 'old' } })
+
+    changes.notify('page', state.item)
+    state.item.name = 'new'
+
+    // nested objects are wrapped again on access, which marking them raw would prevent
+    expect(isReactive(state.item)).to.be.true
+    expect(changes.get('page')).to.have.length(1)
+    expect(changes.get('page')[0].name).to.equal('old')
   })
 })
 
@@ -1062,6 +1315,32 @@ describe('useTranslationStore', () => {
       expect(query).to.have.been.calledTwice
       expect(progress).to.deep.include({ total: 1, done: 1 })
       expect(store.batches).to.have.length(0)
+    })
+  })
+
+  it('keeps a batch re-added after clearing while the old poll finishes', () => {
+    const store = useTranslationStore()
+    let resolve
+    const stale = { query: cy.stub().returns(new Promise((r) => { resolve = r })) }
+    const fresh = { query: cy.stub().returns(new Promise(() => {})) }
+
+    const old = store.add({ id: 'b1', total: 1 }, { ids: ['p1'], langs: ['de'] }, stale)
+
+    cy.wrap(stale.query).should('have.been.calledOnce').then(() => {
+      store.clear()
+      store.add({ id: 'b1', total: 1 }, { ids: ['p1'], langs: ['de'] }, fresh)
+
+      resolve({ data: { translateProgress: { total: 1, done: 1, failed: 0 } } })
+
+      return old.then((progress) => {
+        // the old poll stops without updating or reporting the re-added batch
+        expect(progress).to.be.null
+        expect(store.batches[0].done).to.equal(0)
+        expect(store.batches).to.have.length(1)
+        // the poll of the re-added batch is still registered, so no new query is started
+        store.poll('b1', fresh)
+        expect(fresh.query).to.have.been.calledOnce
+      })
     })
   })
 

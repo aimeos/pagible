@@ -162,6 +162,47 @@ describe('FileAiDialog', () => {
     })
   })
 
+  it('reports an upload finished after closing the dialog as success', () => {
+    const mutate = cy.stub().resolves({ data: { addFile: { id: '1', path: 'cms/test/file/a.png', previews: '{}' } } })
+
+    mountDialog({}, {}, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileAiDialog).vm
+      const error = cy.stub(vm.messages, 'error')
+      const item = { blob: new Blob(['image'], { type: 'image/png' }), mime: 'image/png', name: 'Image', path: 'blob:generated' }
+
+      vm.add(item)
+      expect(vm.uploading).to.equal(true)
+      // the list isn't rendered after closing the dialog
+      vm.$refs.filelist = undefined
+
+      cy.wrap(vm).its('uploading').should('equal', false).then(() => {
+        expect(error).not.to.have.been.called
+        expect(wrapper.findComponent(FileAiDialog).emitted('add')).to.have.length(1)
+      })
+    })
+  })
+
+  it('stops the dictation when the dialog is closed', () => {
+    mountDialog().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileAiDialog).vm
+      const stop = cy.stub(vm.dictation, 'stop')
+
+      vm.$options.watch.modelValue.handler.call(vm, false)
+      expect(stop).to.have.been.calledOnce
+    })
+  })
+
+  it('appends dictated text to the prompt', () => {
+    mountDialog().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileAiDialog).vm
+      cy.stub(vm.dictation, 'toggle').callsFake((done) => done('blue sky'))
+
+      vm.chat = 'a red ball'
+      vm.record()
+      expect(vm.chat).to.equal('a red ball blue sky')
+    })
+  })
+
   it('shortens long prompts at a word boundary for the file name', () => {
     mountDialog().then(({ wrapper }) => {
       const vm = wrapper.findComponent(FileAiDialog).vm

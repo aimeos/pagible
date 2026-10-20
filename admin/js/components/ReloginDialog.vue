@@ -3,6 +3,7 @@
 <script>
 import { mdiAlertOctagon, mdiOpenInNew } from '@mdi/js'
 import { urllogin } from '../config'
+import { loginError } from '../graphql'
 import router from '../routes'
 import { useSessionStore, useUserStore } from '../stores'
 import { loginUrl } from '../urls'
@@ -98,7 +99,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.error = error?.message || this.$gettext('Login failed')
+          this.error = loginError(error)
         })
         .finally(() => {
           this.loading = false
@@ -120,7 +121,7 @@ export default {
       this.session
         .relogin(this.password)
         .catch((error) => {
-          this.error = error?.message || this.$gettext('Login failed')
+          this.error = loginError(error)
         })
         .finally(() => {
           this.loading = false

@@ -71,6 +71,13 @@ describe('AsideList', () => {
     cy.contains('.v-btn', 'Draft').should('exist')
   })
 
+  it('tells which filter is selected', () => {
+    mountList({ publish: 'PUBLISHED' })
+    cy.get('.v-list-group').first().find('.v-list-item').first().click({ force: true })
+    cy.contains('.v-btn', 'Published').should('have.attr', 'aria-pressed', 'true')
+    cy.contains('.v-btn', 'Draft').should('have.attr', 'aria-pressed', 'false')
+  })
+
   it('restores the initial filter when reset is clicked after changes', () => {
     const filter = reactive({ status: 'PUBLISHED', publish: null })
     const onUpdate = cy.spy((patch) => Object.assign(filter, patch)).as('update')

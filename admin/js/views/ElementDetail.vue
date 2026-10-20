@@ -11,7 +11,7 @@ import { FILE_FIELDS, fileMap } from '../files'
 import { references } from '../history'
 import { markRaw } from 'vue'
 import { frozenParse, safeParse } from '../json'
-import { itemTitle } from '../utils'
+import { clone, itemTitle } from '../utils'
 
 const FETCH_ELEMENT = gql`
   ${FILE_FIELDS}
@@ -89,8 +89,11 @@ export default {
   computed: {
     changeTargets() {
       return markRaw({ data: this.item })
-    },
+    }
+  },
 
+  methods: {
+    // the state compared in the history dialog, taken when it opens like in the page view
     historyCurrent() {
       const item = this.item
       const ids = new Set(item.files || [])
@@ -98,7 +101,7 @@ export default {
 
       return markRaw({
         data: Object.freeze({
-          data: item.data || {},
+          data: clone(item.data || {}),
           scheduled: item.publish_at ? 1 : 0,
           lang: item.lang,
           type: item.type,
@@ -106,10 +109,8 @@ export default {
         }),
         files: markRaw(files)
       })
-    }
-  },
+    },
 
-  methods: {
     // the assets map is raw, so replace it to make the added files visible
     addAssets(map) {
       this.assets = markRaw({ ...this.assets, ...map })
@@ -120,9 +121,6 @@ export default {
     reload() {
       return this.reloadVersion(FETCH_ELEMENT, this.$gettext('Error fetching element'), (element) => {
         Object.assign(this.item, safeParse(element.latest?.data))
-        this.item.published = element.latest?.published
-        this.item.editor = element.latest?.editor
-        this.item.updated_at = element.latest?.created_at
         this.item.latestId = element.latest?.id
 
         const files = element.latest?.files || element.files || []
@@ -132,32 +130,22 @@ export default {
     },
 
     apply(changes, version) {
-      if (version) this.assets = { ...version.files, ...this.assets }
+      if (version) this.assets = markRaw({ ...version.files, ...this.assets })
       Object.assign(this.item, changes)
       if ('data' in changes) this.item.files = references(this.item.data)
-      this.dirty = true
+      this.markChanged()
       this.vhistory = false
     },
 
     files: fileMap,
 
-    save(quiet = false) {
-      if (!this.saveable()) {
-        return Promise.resolve(false)
-      }
+    saveItem(quiet) {
+      return this.saveWith(() => {
+        if (!this.item.name) {
+          this.item.name = itemTitle(this.item.data)
+        }
 
-      if (!this.dirty) {
-        return Promise.resolve(true)
-      }
-
-      if (!this.item.name) {
-        this.item.name = itemTitle(this.item.data)
-      }
-
-      this.saving = true
-
-      return this.$apollo
-        .mutate({
+        return {
           mutation: SAVE_ELEMENT,
           variables: {
             id: this.item.id,
@@ -169,37 +157,29 @@ export default {
             },
             latestId: this.item.latestId
           }
-        })
-        .then((result) => {
-          const el = result.data?.saveElement
-          const changed = el?.changed ? markRaw(safeParse(el.changed)) : null
+        }
+      }, (result, edited, sent) => {
+        const el = result.data?.saveElement
+        const changed = el?.changed ? markRaw(safeParse(el.changed)) : null
 
-          if (changed?.latest?.id || el?.latest?.id) {
-            this.item.latestId = changed?.latest?.id ?? el.latest.id
-          }
+        if (changed?.latest?.id || el?.latest?.id) {
+          this.item.latestId = changed?.latest?.id ?? el.latest.id
+        }
 
-          applyResult(this, changed, this.$gettext('Element saved successfully'), quiet)
+        applyResult(this, changed, this.$gettext('Element saved successfully'), quiet, edited, sent)
 
-          this.saved(el?.latest)
-
-          return true
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error saving element'), error)
-        })
-        .finally(() => {
-          this.saving = false
-        })
+        this.saved(el?.latest)
+      }, this.$gettext('Error saving element'))
     },
 
     use(version, clean = false) {
       Object.assign(this.item, version.data)
 
-      this.assets = version.files || {}
+      this.assets = markRaw({ ...(version.files || {}) })
       this.item.files = Object.keys(version.files || {})
 
       this.vhistory = false
-      this.dirty = true
+      this.markChanged()
       if (clean) this.reset()
     },
 
@@ -256,19 +236,5 @@ export default {
 
   <AsideMeta :item="item" />
 
-  <Teleport to="body">
-    <HistoryDialog
-      v-if="vhistory"
-      v-model="vhistory"
-      :readonly="!user.can('element:save')"
-      :current="historyCurrent"
-      :load="() => versions(item.id)"
-      @apply="apply"
-      @use="use"
-    />
-    <ChangesDialog v-model="vchanged" :changed="changed"
-      @resolve="resolveChange($event); dirty = true"
-      @unresolve="unresolveChange"
-    />
-  </Teleport>
+  <DetailDialogs v-bind="dialogs" />
 </template>

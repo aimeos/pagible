@@ -112,11 +112,15 @@ export const useTranslationStore = defineStore('translation', {
       }
 
       const messages = useMessageStore()
-      const promise = awaitTranslation(apollo, id, {
+      // after clear(), the poll of a re-added batch with the same ID owns the batch
+      // (the first check runs synchronously before the promise is assigned and registered)
+      let promise = null
+      const owner = () => !promise || translationPolls.get(id) === promise
+      promise = awaitTranslation(apollo, id, {
         // batches removed from the store aren't tracked anymore
-        cancelled: () => !this.batches.some((entry) => entry.id === id),
+        cancelled: () => !owner() || !this.batches.some((entry) => entry.id === id),
         onProgress: (progress) => {
-          const batch = this.batches.find((entry) => entry.id === id)
+          const batch = owner() && this.batches.find((entry) => entry.id === id)
 
           if (batch) {
             Object.assign(batch, { total: progress.total, done: progress.done, failed: progress.failed })
@@ -129,6 +133,11 @@ export const useTranslationStore = defineStore('translation', {
           return null
         })
         .then(async (progress) => {
+          // after clear(), a newer poll of a re-added batch owns the batch and its entry
+          if (translationPolls.get(id) !== promise) {
+            return progress
+          }
+
           const batch = this.batches.find((entry) => entry.id === id)
 
           translationPolls.delete(id)

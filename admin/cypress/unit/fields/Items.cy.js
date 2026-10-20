@@ -163,6 +163,26 @@ describe('Items', () => {
     cy.get('@update').should('have.been.called')
   })
 
+  it('keeps the panel open and the input focused while typing without identities', () => {
+    const input = {
+      props: ['modelValue'],
+      emits: ['update:modelValue'],
+      render() {
+        return h('input', {
+          class: 'nested-input',
+          value: this.modelValue,
+          onInput: e => this.$emit('update:modelValue', e.target.value)
+        })
+      }
+    }
+
+    mountItems({ modelValue: [{ title: 'First' }], config: itemConfig }, {}, { String: input })
+    cy.get('.v-expansion-panel-title').first().click()
+    cy.get('.v-expansion-panel--active .nested-input').first().as('input').type('abc')
+    cy.get('.v-expansion-panel--active').should('have.length', 1)
+    cy.get('@input').should('have.value', 'Firstabc').and('have.focus')
+  })
+
   it('generates an identity when an item is added', () => {
     const onUpdate = cy.spy().as('update')
     mountItems({
@@ -323,6 +343,23 @@ describe('Items', () => {
     cy.get('.v-expansion-panel-title').first().click()
     cy.contains('.label', 'Title').should('exist')
     cy.contains('.label', 'Text').should('exist')
+  })
+
+  it('hides the label of hidden sub-fields and names the inputs', () => {
+    const stubs = {
+      String: { render() { return h('input', { class: 'field-string' }) } },
+      Hidden: { render() { return h('input', { class: 'field-hidden', type: 'hidden' }) } }
+    }
+
+    mountItems({
+      modelValue: [{ title: 'Test', secret: 'x' }],
+      config: { item: { title: { type: 'string', label: 'Title' }, secret: { type: 'hidden', label: 'Secret' } } }
+    }, {}, stubs)
+
+    cy.get('.v-expansion-panel-title').first().click()
+    cy.get('.label').should('have.length', 1).and('contain', 'Title')
+    cy.get('.field-string').should('have.attr', 'aria-label', 'Title')
+    cy.get('.field-hidden').should('exist')
   })
 
   it('stores a selected relationship next to a nested URL', () => {

@@ -31,7 +31,7 @@ export function compact(v, locale = undefined) {
     case v >= 1e3:
       return format(v / 1e3, 'K')
   }
-  return v
+  return new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(v)
 }
 
 /**
@@ -39,7 +39,8 @@ export function compact(v, locale = undefined) {
  */
 export function insightValue(col, locale = undefined) {
   return col.average
-    ? Number(weeklySum(col.data) / 7).toFixed(1) + (col.suffix || '')
+    ? new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(weeklySum(col.data) / 7) +
+      (col.suffix || '')
     : compact(weeklySum(col.data), locale)
 }
 
@@ -55,10 +56,7 @@ export function paginate(items, page) {
  * Rows sorted by their value, the highest first, and their values shortened.
  */
 export function ranked(data, locale = undefined) {
-  return (data || []).sort(byValue).map((item) => {
-    item.value = compact(item.value, locale)
-    return item
-  })
+  return [...(data || [])].sort(byValue).map((item) => ({ ...item, value: compact(item.value, locale) }))
 }
 
 /**
@@ -93,14 +91,12 @@ export function sortedByValue(rows) {
  * Rows sorted by their date keys with the keys formatted and the values transformed.
  */
 export function timeline(data, formatter, transform = null) {
-  const arr = (data || []).sort(byDate)
-
-  for (const item of arr) {
-    item.key = formatter.format(new Date(item.key))
+  // copies the rows because transform() changes them in place
+  return [...(data || [])].sort(byDate).map((row) => {
+    const item = { ...row, key: formatter.format(new Date(row.key)) }
     transform?.(item)
-  }
-
-  return arr
+    return item
+  })
 }
 
 /**

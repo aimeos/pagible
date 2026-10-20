@@ -148,7 +148,7 @@ export default {
       } else if (['meta', 'config'].includes(path[0])) {
         const [section, key] = path.splice(0, 2)
         const item = card.after.data?.[section]?.[key] || card.before.data?.[section]?.[key]
-        definitions = this.schemas[section][item?.type || key]?.fields
+        definitions = this.schemas[section]?.[item?.type || key]?.fields
         if (path[0] === 'data') path.shift()
       } else if (path[0] === 'data') {
         definitions = this.schemas.content[card.after.data?.type || card.before.data?.type]?.fields

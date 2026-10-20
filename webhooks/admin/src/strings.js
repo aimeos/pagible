@@ -5,6 +5,6 @@
 // only for translation extraction
 
 /* global $pgettext */
-if ($pgettext) {
-  $pgettext('webhooks', 'Webhooks')
+if (typeof $pgettext !== "undefined") {
+  $pgettext("webhooks", "Webhooks")
 }

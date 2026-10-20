@@ -52,7 +52,8 @@ export default {
 
   computed: {
     current() {
-      const value = this.modelValue ?? this.config.default
+      // the default only applies to new values, a cleared location stays empty
+      const value = this.modelValue === undefined ? this.config.default : this.modelValue
       return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
     },
 
@@ -210,7 +211,7 @@ export default {
     <div
       ref="map"
       class="map"
-      :aria-label="$gettext(readonly ? 'Map location' : 'Click the map to set the location')"
+      :aria-label="readonly ? $gettext('Map location') : $gettext('Click the map to set the location')"
       :aria-invalid="hasError"
     ></div>
     <v-btn
@@ -265,6 +266,7 @@ export default {
   position: absolute;
   z-index: 500;
   top: 10px;
+  /* physical side on purpose: Leaflet doesn't mirror its controls, the zoom buttons stay top left */
   right: 10px;
 }
 

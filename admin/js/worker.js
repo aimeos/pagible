@@ -68,10 +68,14 @@ function encode(pcm, sampleRate) {
   return new Blob(mp3, { type: 'audio/mpeg' })
 }
 
-self.onmessage = async (e) => {
+self.onmessage = (e) => {
   // Expect to receive AudioBuffer channel arrays, length and sampleRate
   const { channels, length, sampleRate } = e.data
-  const mp3 = encode(toMono(channels, length), sampleRate)
 
-  self.postMessage(mp3)
+  // errors are posted back because the caller would wait forever otherwise
+  try {
+    self.postMessage({ mp3: encode(toMono(channels, length), sampleRate) })
+  } catch (error) {
+    self.postMessage({ error: error?.message || String(error) })
+  }
 }

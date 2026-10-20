@@ -5,6 +5,7 @@
 import { getCurrentInstance, onActivated, onBeforeUnmount, onDeactivated, onMounted, reactive, shallowReactive } from 'vue'
 import { commands, isMac, routes } from './commands'
 import { useUserStore } from './stores'
+import { composing } from './utils'
 
 export const shortcuts = reactive({ palette: false, sheet: false })
 
@@ -120,7 +121,7 @@ function normKey(ev) {
 export function command(ev, ...scopes) {
   const mod = ev.ctrlKey || ev.metaKey
 
-  if (ev.isComposing || ev.repeat || ev.altKey || editable(ev.target) || (!mod && ev.target?.tagName === 'BUTTON')) {
+  if (composing(ev) || ev.repeat || ev.altKey || editable(ev.target) || (!mod && ev.target?.tagName === 'BUTTON')) {
     return undefined
   }
 
@@ -219,7 +220,7 @@ function confirm() {
 }
 
 export function keydown(e) {
-  if (e.isComposing) {
+  if (composing(e)) {
     return
   }
 
@@ -250,28 +251,37 @@ export function keydown(e) {
     return
   }
 
+  // same keys if Caps Lock is on but Shift+letter isn't a single key shortcut
+  const key = normKey(e)
+
+  if (e.shiftKey && key !== e.key) {
+    leader = 0
+    return
+  }
+
   if (Date.now() - leader < LEADER_TIMEOUT) {
     leader = 0
 
-    if (routeKeys[e.key] && useUserStore().can(routeKeys[e.key]) && !overlay() && navigate) {
+    if (routeKeys[key] && useUserStore().can(routeKeys[key]) && !overlay() && navigate) {
       e.preventDefault()
-      navigate(routeKeys[e.key])
+      navigate(routeKeys[key])
     }
     return
   }
 
-  if (e.key === 'g' && !e.repeat && !overlay()) {
+  if (key === 'g' && !e.repeat && !overlay()) {
     leader = Date.now()
     return
   }
 
-  if (commands.sheet.key.includes(e.key)) {
+  // closes the open sheet but doesn't open it on top of a menu or dialog
+  if (commands.sheet.key.includes(key) && (shortcuts.sheet || !overlay())) {
     e.preventDefault()
     globals.sheet()
     return
   }
 
-  if (actionKeys[e.key] && !e.repeat && !overlay() && trigger(actionKeys[e.key])) {
+  if (actionKeys[key] && !e.repeat && !overlay() && trigger(actionKeys[key])) {
     e.preventDefault()
   }
 }

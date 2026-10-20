@@ -104,3 +104,9 @@ msgstr "프로필 링크, 예: https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "테마"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "다크 테마"

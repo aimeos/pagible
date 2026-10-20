@@ -38,7 +38,8 @@ export function dictate(audio, busy, done) {
         .then((mod) => mod.transcribe(buffer))
         .then((transcription) => done(transcription.asText()))
     })
-    .catch((error) => console.error('dictate(): Error recording audio', error))
+    // transcribe() reports its own errors, these are from stopping or encoding the recording
+    .catch((error) => useMessageStore().error(gettext.$gettext('Error recording audio'), error))
     .finally(() => busy(false))
 
   return null

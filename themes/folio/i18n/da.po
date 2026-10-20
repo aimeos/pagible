@@ -104,3 +104,9 @@ msgstr "Link til din profil, f.eks. https://github.com/lena"
 msgctxt "st"
 msgid "folio::theme"
 msgstr "Tema"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "folio::theme-dark"
+msgstr "Mørkt tema"

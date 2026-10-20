@@ -5,13 +5,15 @@ import { useLanguageStore, useMessageStore, useUserStore } from '../../../js/sto
 const stubs = {
 }
 
-function mountList(props = {}, perms = {}, apollo = {}) {
+// "early" sets the permissions before mounting, e.g. for the initial search
+function mountList(props = {}, perms = {}, apollo = {}, early = false) {
   return cy.mount(FileListItems, {
     props: {
       ...props,
     },
     global: {
       stubs,
+      plugins: early ? [{ install: () => (useUserStore().me = { permission: perms }) }] : [],
       provide: {
         debounce: (fn) => fn,
         url: (path) => path,
@@ -108,7 +110,7 @@ describe('FileListItems', () => {
 
   it('renders grid/list toggle button', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button.btn-grid, button.btn-list').should('exist')
+    cy.get('button.btn-grid').should('exist')
   })
 
   it('shows add button with file:add permission and not embed', () => {
@@ -309,18 +311,27 @@ describe('FileListItems', () => {
   })
 
   it('shows loading state initially', () => {
-    mountList({}, { 'file:view': true })
+    // the initial search requires the view permission and must not finish
+    mountList({}, { 'file:view': true }, { query: () => new Promise(() => {}) }, true)
     cy.contains('Loading').should('exist')
   })
 
   it('starts in list view by default', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button.btn-grid').should('exist')
+    cy.get('button.btn-grid').should('have.attr', 'aria-pressed', 'false')
+    cy.get('.items.list').should('exist')
   })
 
   it('starts in grid view when grid prop is true', () => {
     mountList({ grid: true }, { 'file:view': true })
-    cy.get('button.btn-list').should('exist')
+    cy.get('button.btn-grid').should('have.attr', 'aria-pressed', 'true')
+  })
+
+  it('keeps the focus on the view toggle', () => {
+    mountList({}, { 'file:view': true })
+    cy.get('button.btn-grid').focus().click()
+    cy.get('button.btn-grid').should('have.focus').and('have.attr', 'aria-pressed', 'true')
+    cy.get('.items.grid').should('exist')
   })
 
   it('edits one item without changing the bulk selection', () => {
@@ -331,6 +342,9 @@ describe('FileListItems', () => {
       const item = { id: 'file-1' }
       vm.items = [item, { id: 'file-2' }]
       vm.checked = new Set(['file-2'])
+
+      // the reloaded list still contains both items
+      cy.stub(vm, 'search').resolves(vm.items)
 
       vm.edit(item)
       expect(vm.editIds).to.deep.equal(['file-1'])
@@ -361,7 +375,7 @@ describe('FileListItems', () => {
     })
 
     press('.items [data-id="file-1"] .item-content', ' ').should('equal', true)
-    cy.get('.items [data-id="file-1"] .item-check input').should('be.checked')
+    cy.get('.items [data-id="file-1"] .item-check input').should('be.checked').and('have.attr', 'aria-label', 'Toggle selection')
 
     press('.items [data-id="file-1"] .item-check input', ' ').should('equal', false) // the checkbox toggles itself
     cy.get('.items [data-id="file-1"] .item-check input').should('be.checked')

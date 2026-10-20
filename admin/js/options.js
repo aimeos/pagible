@@ -75,7 +75,8 @@ export function statusItems() {
 export function languageFilter(allIcon, langIcon) {
   const cache = langs()
 
-  return (cache.filter[allIcon + langIcon] ??= [
+  // the translated "All" entry changes when the catalog is loaded or the admin language is switched
+  return (cache.filter[gettext.current + allIcon + langIcon] ??= [
     { title: gettext.$gettext('All'), icon: allIcon, value: { lang: null } },
     ...cache.locales.map((entry) => ({ title: entry.title, icon: langIcon, value: { lang: entry.value } }))
   ])

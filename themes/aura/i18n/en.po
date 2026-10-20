@@ -116,3 +116,9 @@ msgstr "Link to your profile, e.g. https://github.com/lena"
 msgctxt "st"
 msgid "aura::theme"
 msgstr "Theme"
+
+#. config.theme-dark
+#: schema.json
+msgctxt "st"
+msgid "aura::theme-dark"
+msgstr "Dark theme"

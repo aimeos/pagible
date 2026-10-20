@@ -81,7 +81,7 @@ class GlowDemoTest extends ThemeTestAbstract
         $response->assertOk();
         $response->assertSee( 'class="list-item"', false );
         $response->assertSee( 'Which Facial Is Right for Your Skin?' );
-        $response->assertSee( '<a href="http://localhost/journal" class="active">', false );
+        $response->assertSee( '<a href="http://localhost/journal" class="active" aria-current="page">', false );
     }
 
 

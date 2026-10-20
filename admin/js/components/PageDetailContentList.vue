@@ -22,6 +22,7 @@ import { MARKDOWN_TYPES, fromMarkdown, toMarkdown } from '../markdown'
 import { clone, debounce, itemTitle, uid } from '../utils'
 import { reveal, scrollParent } from '../virtual'
 import { typeLabelMixin } from '../i18n'
+import { schemaFields } from '../field'
 import {
   mdiMenuDown,
   mdiContentCopy,
@@ -44,9 +45,6 @@ import {
 const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 const VIRTUAL_KEEPS = 30 // number of entries the virtual list renders at least
 const MAX_PANELS = 3 // number of element panels open at the same time
-
-// types without field definitions which have been reported already
-const warned = new Set()
 
 export default {
   components: {
@@ -175,7 +173,7 @@ export default {
       }
 
       this.vchange = false
-      this.$emit('patch-entry', this.content[idx], { type: item.type })
+      this.$emit('patch-entry', this.content[idx], { type: item.type, _changed: true })
       this.$emit('change')
     },
 
@@ -188,7 +186,7 @@ export default {
       const list = this.selection(idx)
 
       this.$emit('update:content', this.without(list))
-      this.clipboard.set('page-content', list.map((el) => ({ ...el, id: null })))
+      this.clipboard.set('page-content', list.map((el) => ({ ...clone(el), id: null })))
     },
 
     error(el, value) {
@@ -209,16 +207,7 @@ export default {
     },
 
     fields(type) {
-      if (!this.schemas.content[type]?.fields) {
-        // called while rendering, so each missing type is only reported once
-        if (type && !warned.has(type)) {
-          warned.add(type)
-          console.warn(`No definition of fields for "${type}" schemas`)
-        }
-        return []
-      }
-
-      return this.schemas.content[type]?.fields
+      return schemaFields(this, this.schemas, 'content', type)
     },
 
     insert(idx) {
@@ -361,8 +350,7 @@ export default {
         this.panel.push(el.id)
       }
 
-      reveal(this.$refs.list, el.id, 'auto')
-      await this.$nextTick()
+      await reveal(this.$refs.list, el.id, 'auto')
     },
 
     shown(el) {
@@ -383,10 +371,26 @@ export default {
         return
       }
 
-      const list = (await fromMarkdown(this.content[idx].data?.text || '')).map(({ type, data }) => this.entry(type, { data }))
+      const el = this.content[idx]
+      let list
+
+      try {
+        list = (await fromMarkdown(el.data?.text || '')).map(({ type, data }) => this.entry(type, { data }))
+      } catch (error) {
+        this.messages.error(this.$gettext('Error splitting text'), error)
+        return
+      }
+
+      // the content may have changed while converting, so replace the element where it is now
+      const pos = this.content.findIndex((entry) => entry === el || (el.id && entry.id === el.id))
+
+      if (pos === -1) {
+        return
+      }
+
       const content = [...this.content]
 
-      content.splice(idx, 1, ...list)
+      content.splice(pos, 1, ...list)
       this.$emit('update:content', content)
     },
 
@@ -594,6 +598,7 @@ export default {
               v-if="user.can('page:save')"
               :model-value="selected.has(el)"
               @click.stop="select(el)"
+              :aria-label="$gettext('Toggle selection')"
             />
 
             <span class="btn-actions">

@@ -2,7 +2,7 @@
 
 import { PATCH_ACTIONS, RECONNECT, VARIANT_ACTIONS, setupEcho, subscribe } from './echo'
 import { sanitize } from './json'
-import { debounce } from './utils'
+import { debounce, INPUT_DELAY } from './utils'
 
 // How list and detail views apply the change events received from the per-type channels
 
@@ -62,7 +62,7 @@ export function listEcho(vm, event, name) {
  * not dirty and permitted). The returned disposer also cancels a pending reload.
  */
 export function setupReload(type, id, reload, enabled, connect = subscribe) {
-  const debouncedReload = debounce(reload, 300)
+  const debouncedReload = debounce(reload, INPUT_DELAY)
   // a detail view reloads its own item on any patch action, a bulk change including its id, or reconnect
   const dispose = setupEcho(type, (event, name) => {
     if ((name === RECONNECT || event?.id === id || event?.ids?.includes(id)) && enabled()) {
