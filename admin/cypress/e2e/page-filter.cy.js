@@ -120,6 +120,22 @@ function visitPages(pages = [], meResponse = ME_ADMIN) {
   cy.wait('@gql') // pages query
 }
 
+/**
+ * Waits for the pages query matching the passed variables check, skipping earlier
+ * requests (e.g. the me query or a pages query sent before the filter changed).
+ */
+function waitForPages(match, tries = 5) {
+  return cy.wait('@gql').then(({ request }) => {
+    const ops = Array.isArray(request.body) ? request.body : [request.body]
+    const pagesOp = ops.find((op) => (op.query || '').includes('pages') && match(op.variables || {}))
+
+    if (!pagesOp && tries > 1) {
+      return waitForPages(match, tries - 1)
+    }
+    expect(pagesOp).to.exist
+  })
+}
+
 /** At desktop viewport (≥960px) the aside drawer auto-opens on mount. */
 function ensureAsideVisible() {
   cy.get('.v-navigation-drawer--right').should('be.visible')
@@ -254,12 +270,7 @@ describe('Page Filter Sidebar', () => {
     visitPages([makePage()])
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('Only trashed').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const pagesOp = ops.find((op) => (op.query || '').includes('pages'))
-      expect(pagesOp).to.exist
-      expect(pagesOp.variables.trashed).to.equal('ONLY')
-    })
+    waitForPages((vars) => vars.trashed === 'ONLY')
   })
 
   it('selecting "Published" sends publish filter in GQL request', () => {
@@ -267,12 +278,7 @@ describe('Page Filter Sidebar', () => {
     ensureAsideVisible()
     cy.get('.v-navigation-drawer--right').contains('publish').click()
     cy.get('.v-navigation-drawer--right').contains('Published').click()
-    cy.wait('@gql').its('request.body').should((body) => {
-      const ops = Array.isArray(body) ? body : [body]
-      const pagesOp = ops.find((op) => (op.query || '').includes('pages'))
-      expect(pagesOp).to.exist
-      expect(pagesOp.variables.publish).to.equal('PUBLISHED')
-    })
+    waitForPages((vars) => vars.publish === 'PUBLISHED')
   })
 })
 
