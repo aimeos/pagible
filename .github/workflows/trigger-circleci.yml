@@ -10,50 +10,45 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Detect changed packages
         id: check
         run: |
-          CHANGED=$(git diff --name-only HEAD~1)
+          BASE="${{ github.event.before }}"
+          git cat-file -e "$BASE^{commit}" 2>/dev/null || BASE=HEAD~1
+          CHANGED=$(git diff --name-only "$BASE" HEAD)
 
-          RUN_PHP=false
-          if echo "$CHANGED" | grep -qv "^admin/"; then
-            RUN_PHP=true
-          fi
-          echo "run_php=$RUN_PHP" >> $GITHUB_OUTPUT
+          # Changed packages (or root files) without docs and admin frontend files
+          DIRS=$(echo "$CHANGED" | grep -vE '\.md$|^admin/((js|cypress|dist|i18n|public)/|index\.html$|package|[^/]*\.m?js$)' \
+            | sed -E 's#^(themes/[^/]+|[^/]+)/.*#\1#' | sort -u || true)
 
-          PERF_DIRS="core graphql jsonapi mcp search theme"
-          RUN_PERF=false
-          for dir in $PERF_DIRS; do
-            if echo "$CHANGED" | grep -q "^${dir}/"; then
-              RUN_PERF=true
-              break
-            fi
+          # Optional packages run their own tests from phpunit.xml, everything else runs all
+          TESTS=""
+          for d in $DIRS; do
+            if [ "$d" = core ] || [ "$d" = theme ] || [ ! -f "$d/composer.json" ]; then TESTS=ALL; break; fi
+            if grep -q "<directory>./$d/tests/</directory>" phpunit.xml; then TESTS="${TESTS:+$TESTS }$d/tests"; fi
           done
-          echo "run_perf=$RUN_PERF" >> $GITHUB_OUTPUT
 
-          RUN_ADMIN=false
-          if echo "$CHANGED" | grep -q "^admin/"; then
-            RUN_ADMIN=true
-          fi
-          echo "run_admin=$RUN_ADMIN" >> $GITHUB_OUTPUT
+          echo "run_php=$([ -n "$DIRS" ] && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run_perf=$(echo "$DIRS" | grep -qxE 'core|graphql|jsonapi|mcp|search|theme' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run_admin=$(echo "$CHANGED" | grep -q '^admin/' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "tests=$TESTS" >> $GITHUB_OUTPUT
 
       - name: Trigger CircleCI PHP pipeline
         if: steps.check.outputs.run_php == 'true'
         run: |
-          PARAMS='{"run_php": true}'
-          if [ "$RUN_PERF" = "true" ]; then
-            PARAMS='{"run_php": true, "run_perf": true}'
-          fi
+          jq -n --arg branch "${{ github.ref_name }}" --arg tests "$TESTS" --argjson perf "$RUN_PERF" \
+            '{branch: $branch, parameters: {run_php: true, run_perf: $perf, tests: $tests}}' |
           curl -s -X POST \
             "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
             -H "Circle-Token: $CCI_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"branch\": \"${{ github.ref_name }}\", \"parameters\": $PARAMS}"
+            -d @-
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
           RUN_PERF: ${{ steps.check.outputs.run_perf }}
+          TESTS: ${{ steps.check.outputs.tests }}
 
       - name: Trigger CircleCI admin pipeline
         if: steps.check.outputs.run_admin == 'true'
