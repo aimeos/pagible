@@ -17,6 +17,9 @@ parameters:
   tests:
     type: string
     default: "ALL"
+  admin_tests:
+    type: string
+    default: "ALL"
 
 commands:
   skip-without-tests:
@@ -374,6 +377,26 @@ jobs:
     steps:
       - checkout:
           path: ~/project
+      - run:
+          name: Select component tests
+          command: |
+            case $CIRCLE_NODE_INDEX in
+              0) DIRS="fields" ;;
+              1) DIRS="components" ;;
+              2) DIRS="root assets js views webhooks" ;;
+            esac
+            SPECS=""
+            for d in $DIRS; do
+              case " << pipeline.parameters.admin_tests >> " in " ALL "|*" $d "*) ;; *) continue ;; esac
+              case $d in
+                root) p="cypress/unit/*.cy.{js,ts}" ;;
+                webhooks) p="../webhooks/admin/cypress/unit/**/*.cy.{js,ts}" ;;
+                *) p="cypress/unit/$d/**/*.cy.{js,ts}" ;;
+              esac
+              SPECS="${SPECS:+$SPECS,}$p"
+            done
+            if [ -z "$SPECS" ]; then circleci-agent step halt; fi
+            echo "export SPECS='$SPECS'" >> "$BASH_ENV"
       - restore_cache:
           keys:
             - admin-{{ checksum "package-lock.json" }}
@@ -385,13 +408,7 @@ jobs:
             - ~/.cache/Cypress
       - run:
           name: Run component tests
-          command: |
-            case $CIRCLE_NODE_INDEX in
-              0) SPECS="cypress/unit/fields/**/*.cy.{js,ts}" ;;
-              1) SPECS="cypress/unit/components/**/*.cy.{js,ts}" ;;
-              2) SPECS="cypress/unit/*.cy.{js,ts},cypress/unit/js/**/*.cy.{js,ts},cypress/unit/views/**/*.cy.{js,ts},../webhooks/admin/cypress/unit/**/*.cy.{js,ts}" ;;
-            esac
-            npx cypress run --component --spec "$SPECS"
+          command: npx cypress run --component --spec "$SPECS"
 
   "admin-e2e":
     docker:

@@ -19,8 +19,10 @@ jobs:
           git cat-file -e "$BASE^{commit}" 2>/dev/null || BASE=HEAD~1
           CHANGED=$(git diff --name-only "$BASE" HEAD)
 
-          # Changed packages (or root files) without docs and admin frontend files
-          DIRS=$(echo "$CHANGED" | grep -vE '\.md$|^admin/((js|cypress|dist|i18n|public)/|index\.html$|package|[^/]*\.m?js$)' \
+          # Changed admin frontend files and packages (or root files) without docs and frontend files
+          FRONTEND='^(admin/((js|cypress|dist|i18n|public)/|index\.html$|package|[^/]*\.m?js$)|webhooks/admin/)'
+          ADMIN=$(echo "$CHANGED" | grep -E "$FRONTEND" || true)
+          DIRS=$(echo "$CHANGED" | grep -vE "\.md$|$FRONTEND" \
             | sed -E 's#^(themes/[^/]+|[^/]+)/.*#\1#' | sort -u || true)
 
           # Optional packages run their own tests from phpunit.xml, everything else runs all
@@ -30,10 +32,25 @@ jobs:
             if grep -q "<directory>./$d/tests/</directory>" phpunit.xml; then TESTS="${TESTS:+$TESTS }$d/tests"; fi
           done
 
+          # Admin component test folders, shared frontend code runs all
+          ADMIN_TESTS=""
+          for f in $ADMIN; do
+            case "$f" in
+              admin/dist/*|admin/cypress/e2e/*) continue ;;
+              webhooks/admin/*) a=webhooks ;;
+              admin/js/fields/*|admin/js/components/*|admin/js/views/*) a=$(echo "$f" | cut -d/ -f3) ;;
+              admin/cypress/unit/*/*) a=$(echo "$f" | cut -d/ -f4) ;;
+              admin/cypress/unit/*) a=root ;;
+              *) ADMIN_TESTS=ALL; break ;;
+            esac
+            case " $ADMIN_TESTS " in *" $a "*) ;; *) ADMIN_TESTS="${ADMIN_TESTS:+$ADMIN_TESTS }$a" ;; esac
+          done
+
           echo "run_php=$([ -n "$DIRS" ] && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "run_perf=$(echo "$DIRS" | grep -qxE 'core|graphql|jsonapi|mcp|search|theme' && echo true || echo false)" >> $GITHUB_OUTPUT
-          echo "run_admin=$(echo "$CHANGED" | grep -q '^admin/' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run_admin=$([ -n "$ADMIN" ] && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "tests=$TESTS" >> $GITHUB_OUTPUT
+          echo "admin_tests=$ADMIN_TESTS" >> $GITHUB_OUTPUT
 
       - name: Trigger CircleCI PHP pipeline
         if: steps.check.outputs.run_php == 'true'
@@ -53,10 +70,13 @@ jobs:
       - name: Trigger CircleCI admin pipeline
         if: steps.check.outputs.run_admin == 'true'
         run: |
+          jq -n --arg branch "${{ github.ref_name }}" --arg tests "$ADMIN_TESTS" \
+            '{branch: $branch, parameters: {run_admin: true, admin_tests: $tests}}' |
           curl -s -X POST \
             "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
             -H "Circle-Token: $CCI_TOKEN" \
             -H "Content-Type: application/json" \
-            -d "{\"branch\": \"${{ github.ref_name }}\", \"parameters\": {\"run_admin\": true}}"
+            -d @-
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
+          ADMIN_TESTS: ${{ steps.check.outputs.admin_tests }}
