@@ -1,3 +1,4 @@
+import { h, ref } from 'vue'
 import PageAccess from '../../../js/components/PageAccess.vue'
 import { apolloClient } from '../../../js/graphql'
 
@@ -97,6 +98,42 @@ describe('PageAccess', () => {
     })
   })
 
+  it('ignores the results of older searches', () => {
+    mountAccess(null).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageAccess).vm
+      let resolveOld
+
+      vm.$apollo.query = cy.stub()
+      vm.$apollo.query.onFirstCall().returns(new Promise((resolve) => (resolveOld = resolve)))
+      vm.$apollo.query.onSecondCall().resolves({ data: { access: ['admin'] } })
+
+      const older = vm.load('ad')
+      const newer = vm.load('admin')
+
+      return newer.then(() => {
+        resolveOld({ data: { access: ['adviser'] } })
+        return older
+      }).then(() => {
+        expect(vm.items).to.deep.equal(['admin'])
+        expect(vm.loading).to.equal(false)
+      })
+    })
+  })
+
+  it('loads access values when the access changes to restricted', () => {
+    const access = ref(null)
+    const query = cy.stub().resolves({ data: { access: ['alpha'] } })
+
+    cy.mount({ render: () => h(PageAccess, { ids: ['page-1'], access: access.value }) }, {
+      global: { mocks: { $apollo: { query, mutate: cy.stub() } } }
+    }).then(() => {
+      expect(query).not.to.have.been.called
+      access.value = ['member']
+    })
+
+    cy.wrap(query).should('have.been.calledOnce')
+  })
+
   it('sends an explicit public value', () => {
     mountAccess(null).then(async ({ wrapper }) => {
       const component = wrapper.findComponent(PageAccess)
@@ -158,5 +195,13 @@ describe('PageAccess', () => {
   it('hides descendants for multiple selected roots', () => {
     mountAccess([], { ids: ['page-1', 'page-2'], descendants: 3 })
     cy.get('.btn-apply-access-recursive').should('not.exist')
+  })
+
+  it('shows no bulk limit hint for multiple roots without a recursive action', () => {
+    mountAccess([], { ids: ['page-1', 'page-2'], descendants: 1000 })
+
+    cy.get('.btn-apply-access-recursive').should('not.exist')
+    cy.get('.btn-apply-access').should('be.enabled')
+    cy.contains('Page bulk changes are limited to 1,000 pages').should('not.exist')
   })
 })

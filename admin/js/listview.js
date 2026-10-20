@@ -4,28 +4,21 @@
 
 import {
   mdiAccount,
-  mdiArrowRightCircle,
-  mdiChevronLeft,
-  mdiChevronRight,
   mdiClockOutline,
-  mdiClose,
   mdiDelete,
   mdiDeleteOff,
-  mdiHelpCircleOutline,
-  mdiMenu,
-  mdiMicrophone,
-  mdiMicrophoneOutline,
   mdiPencil,
   mdiPlaylistCheck,
   mdiPublish,
   mdiTranslate
 } from '@mdi/js'
+import AiPrompt from './components/AiPrompt.vue'
 import AsideList from './components/AsideList.vue'
 import ChatDialog from './components/ChatDialog.vue'
+import ListAppBar from './components/ListAppBar.vue'
 import Navigation from './components/Navigation.vue'
-import User from './components/User.vue'
-import { useDrawerStore, useMessageStore, useUserStore } from './stores'
-import { dictate, languageFilter } from './utils'
+import { useDrawerStore, useMessageStore, useSettingStore, useUserStore } from './stores'
+import { languageFilter } from './options'
 
 /**
  * Returns the setup bindings of the page, element and file list views
@@ -35,15 +28,8 @@ export function useListView(type) {
     type,
     drawer: useDrawerStore(),
     messages: useMessageStore(),
-    user: useUserStore(),
-    mdiArrowRightCircle,
-    mdiChevronLeft,
-    mdiChevronRight,
-    mdiClose,
-    mdiHelpCircleOutline,
-    mdiMenu,
-    mdiMicrophone,
-    mdiMicrophoneOutline
+    settings: useSettingStore(),
+    user: useUserStore()
   }
 }
 
@@ -54,20 +40,18 @@ export function useListView(type) {
  */
 export const listViewBase = {
   components: {
+    AiPrompt,
     AsideList,
     ChatDialog,
-    Navigation,
-    User
+    ListAppBar,
+    Navigation
   },
 
   data() {
     return {
-      audio: null,
       chat: '',
       chatOpen: false,
       chatPending: false,
-      dictating: false,
-      help: false,
       scrollTop: 0
     }
   },
@@ -84,7 +68,7 @@ export const listViewBase = {
   },
 
   beforeUnmount() {
-    this.user.flush()
+    this.settings.flush()
   },
 
   computed: {
@@ -142,14 +126,6 @@ export const listViewBase = {
       }
     },
 
-    onEnter(e) {
-      if (e.isComposing || e.shiftKey) {
-        return // let IME compose, and Shift+Enter insert a newline instead of opening the chat
-      }
-      e.preventDefault()
-      this.openChat()
-    },
-
     open(item) {
       this.$router.push({ name: this.type + ':detail', params: { id: item.id } })
     },
@@ -164,10 +140,6 @@ export const listViewBase = {
         this.chat = ''
         this.$nextTick(() => this.$refs.chat?.send(prompt))
       }
-    },
-
-    record() {
-      this.audio = dictate(this.audio, (busy) => (this.dictating = busy), (text) => (this.chat = text))
     }
   },
 

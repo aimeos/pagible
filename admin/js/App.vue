@@ -6,10 +6,21 @@ import ConfirmDialog from './components/ConfirmDialog.vue'
 import ShortcutDialog from './components/ShortcutDialog.vue'
 import ReloginDialog from './components/ReloginDialog.vue'
 import UnsavedDialog from './components/UnsavedDialog.vue'
+import { useTheme } from 'vuetify'
 import { setupEcho } from './echo'
 import { invalidateList } from './graphql'
+import gettext from './i18n'
+import { switchLanguage } from './locale'
 import { keydown, setNavigate } from './shortcuts'
-import { useDirtyStore, useMessageStore, useTranslationStore, useUserStore, useViewStack } from './stores'
+import {
+  useDirtyStore,
+  useMessageStore,
+  useSessionStore,
+  useSettingStore,
+  useTranslationStore,
+  useUserStore,
+  useViewStack
+} from './stores'
 
 const CONTENT_TYPES = ['page', 'element', 'file']
 
@@ -19,10 +30,13 @@ export default {
   setup() {
     const dirtyStore = useDirtyStore()
     const messages = useMessageStore()
+    const session = useSessionStore()
+    const settings = useSettingStore()
     const user = useUserStore()
     const viewStack = useViewStack()
+    const theme = useTheme()
 
-    return { dirtyStore, messages, user, viewStack }
+    return { dirtyStore, messages, session, settings, theme, user, viewStack }
   },
 
   created() {
@@ -49,14 +63,33 @@ export default {
           invalidateList(`${type}s`)
         }) : null
 
-        // shows the progress of translations queued before the tab was reloaded
-        user && useTranslationStore().resume()
+        if (user) {
+          this.restore()
+          // shows the progress of translations queued before the tab was reloaded
+          useTranslationStore().resume()
+        }
       },
       immediate: true
     }
   },
 
   methods: {
+    // applies the theme and language the user has chosen before
+    restore() {
+      const theme = this.settings.getData('app', 'theme')
+      const language = this.settings.getData('app', 'language')
+
+      if (theme) {
+        this.theme.change(theme)
+      }
+
+      if (language && language !== gettext.current) {
+        switchLanguage(language, this.$vuetify).catch((error) => {
+          this.messages.error(this.$gettext('Error switching language'), error)
+        })
+      }
+    },
+
     beforeUnload(e) {
       if (this.dirtyStore.dirty) {
         e.preventDefault()
@@ -72,7 +105,7 @@ export default {
       <transition-group name="slide-stack">
         <v-layout ref="baseview" key="list" class="view" style="z-index: 10">
           <router-view v-slot="{ Component, route }">
-            <keep-alive :key="route.meta.auth ? user.session : 0" :include="['PageList', 'ElementList', 'FileList']">
+            <keep-alive :key="route.meta.auth ? session.id : 0" :include="['PageList', 'ElementList', 'FileList']">
               <component :is="Component" :key="route.path" />
             </keep-alive>
           </router-view>
@@ -106,9 +139,6 @@ export default {
         >
       </template>
     </v-snackbar-queue>
-    <div role="status" aria-live="polite" aria-atomic="true" class="v-sr-only">
-      {{ messages.queue[messages.queue.length - 1]?.text }}
-    </div>
   </v-app>
 </template>
 

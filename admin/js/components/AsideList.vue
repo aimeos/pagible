@@ -11,6 +11,8 @@ export default {
     filter: { type: Object, required: true }
   },
 
+  emits: ['update:filter'],
+
   setup() {
     const drawer = useDrawerStore()
     return { drawer, mdiCloseCircleOutline }
@@ -25,9 +27,10 @@ export default {
 
   created() {
     this.initial = { ...(this.defaults || this.filter) }
+    // groups with a filter value, including non-null defaults like the view, start expanded
     this.open = this.content
       .map((group, index) => {
-        return group.open || this.has(group.key) ? index : false
+        return group.open || (this.filter[group.key] ?? null) !== null ? index : false
       })
       .filter((idx) => idx !== false)
   },
@@ -48,18 +51,17 @@ export default {
       return true
     },
 
+    // a group is active if its filter value differs from the default value
     has(key) {
-      return this.filter[key] !== null ? true : false
+      return (this.filter[key] ?? null) !== (this.initial?.[key] ?? null)
     },
 
     reset() {
-      Object.assign(this.filter, this.initial)
+      this.$emit('update:filter', { ...this.initial })
     },
 
     toggle(item) {
-      for (const key in item.value) {
-        this.filter[key] = item.value[key]
-      }
+      this.$emit('update:filter', { ...item.value })
     }
   }
 }
@@ -90,7 +92,11 @@ export default {
           :key="idx"
           rounded="lg"
         >
-          <v-btn @click="toggle(item)" :prepend-icon="item.icon" variant="text"
+          <v-btn
+            @click="toggle(item)"
+            :aria-pressed="String(active(item))"
+            :prepend-icon="item.icon"
+            variant="text"
             >{{ item.title }}<span v-if="item.count != null" class="count">{{ item.count }}</span></v-btn
           >
         </v-list-item>

@@ -39,7 +39,6 @@ function mountDialog(props = {}) {
     props: {
       modelValue: true,
       changed: changedWithConflicts,
-      targets: {},
       ...props,
     },
   })
@@ -76,8 +75,7 @@ describe('ChangesDialog', () => {
       props: {
         modelValue: true,
         changed: changedWithConflicts,
-        targets: {},
-        'onUpdate:modelValue': onUpdate,
+          'onUpdate:modelValue': onUpdate,
       },
     })
     cy.get('button[aria-label="Close"]').click({ force: true })
@@ -172,62 +170,30 @@ describe('ChangesDialog', () => {
         props: {
           modelValue: true,
           changed: changedWithConflicts,
-          targets: {},
           onResolve,
         },
       }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         vm.resolve('data', 'title', 'My Title')
         expect(vm.resolved.has('data.title')).to.be.true
-        expect(vm.changed.data.title.resolved).to.equal('My Title')
-        cy.get('@resolve').should('have.been.called')
-      })
-    })
-
-    it('updates target object when provided', () => {
-      const target = { title: 'old' }
-      mountDialog({ targets: { data: target } }).then(() => {
-        const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
-        vm.resolve('data', 'title', 'My Title')
-        expect(target.title).to.equal('My Title')
-      })
-    })
-
-    it('updates target array by id match', () => {
-      const target = [
-        { id: 'abc123', type: 'text', data: { text: 'old' } },
-      ]
-      const replacement = { id: 'abc123', type: 'text', data: { text: 'mine' } }
-      mountDialog({ targets: { content: target } }).then(() => {
-        const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
-        vm.resolve('content', 'abc123', replacement)
-        expect(target[0].data.text).to.equal('mine')
+        expect(vm.changed.data.title).to.not.have.property('resolved')
+        expect(onResolve).to.have.been.calledOnceWith({ section: 'data', key: 'title', value: 'My Title' })
       })
     })
   })
 
   describe('unresolve()', () => {
-    it('removes resolved state and updates set', () => {
-      mountDialog().then(() => {
+    it('removes resolved state and emits unresolve event', () => {
+      const onUnresolve = cy.spy()
+
+      mountDialog({ onUnresolve }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         vm.resolve('data', 'title', 'My Title')
         expect(vm.resolved.has('data.title')).to.be.true
 
         vm.unresolve('data', 'title')
         expect(vm.resolved.has('data.title')).to.be.false
-        expect(vm.changed.data.title).to.not.have.property('resolved')
-      })
-    })
-
-    it('restores original target value on unresolve', () => {
-      const target = { title: 'original' }
-      mountDialog({ targets: { data: target } }).then(() => {
-        const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
-        vm.resolve('data', 'title', 'Their Title')
-        expect(target.title).to.equal('Their Title')
-
-        vm.unresolve('data', 'title')
-        expect(target.title).to.equal('original')
+        expect(onUnresolve).to.have.been.calledOnceWith({ section: 'data', key: 'title' })
       })
     })
   })
@@ -260,7 +226,7 @@ describe('ChangesDialog', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         const info = { current: 'value' }
-        const result = vm.label('data', 'title', info)
+        const result = vm.label('title', info)
         expect(result).to.equal('title')
       })
     })
@@ -269,7 +235,7 @@ describe('ChangesDialog', () => {
       mountDialog().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         const info = { current: { type: 'text', data: { title: 'Hello' } } }
-        const result = vm.label('content', 'abc', info)
+        const result = vm.label('abc', info)
         expect(result).to.contain('text')
         expect(result).to.contain('Hello')
       })
@@ -457,16 +423,14 @@ describe('ChangesDialog', () => {
         props: {
           modelValue: true,
           changed: mergeableChanged,
-          targets: {},
-          onResolve,
+              onResolve,
         },
       }).then(() => {
         const vm = Cypress.vueWrapper.findComponent(ChangesDialog).vm
         vm.merge('data', 'description')
         expect(vm.resolved.has('data.description')).to.be.true
-        expect(vm.changed.data.description.resolved).to.contain('Line one changed')
-        expect(vm.changed.data.description.resolved).to.contain('Line seven changed')
-        cy.get('@resolve').should('have.been.called')
+        expect(onResolve.lastCall.args[0].value).to.contain('Line one changed')
+        expect(onResolve.lastCall.args[0].value).to.contain('Line seven changed')
       })
     })
 

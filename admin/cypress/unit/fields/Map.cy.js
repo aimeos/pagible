@@ -104,4 +104,17 @@ describe('Map', () => {
     cy.get('.leaflet-container').click('center')
     cy.get('@update').should('not.have.been.called')
   })
+
+  it('keeps a cleared location empty instead of showing the default', () => {
+    cy.mount(Map, { props: { modelValue: null, config: { default: location } } })
+
+    cy.get('.leaflet-marker-pane .location-marker').should('not.exist')
+    cy.get('.clear-location').should('not.exist')
+  })
+
+  it('shows the default location when no value is set', () => {
+    cy.mount(Map, { props: { config: { default: location } } })
+
+    cy.get('.leaflet-marker-pane .location-marker').should('exist')
+  })
 })

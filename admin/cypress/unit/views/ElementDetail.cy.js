@@ -25,7 +25,7 @@ let schemaLoad
 
 function mountDetail(perms = {}, item = {}, apollo = {}) {
   return cy.mount(ElementDetail, {
-    props: { item: { ...baseItem, ...item } },
+    props: { initial: { ...baseItem, ...item } },
     global: {
       stubs,
       mocks: {
@@ -58,8 +58,8 @@ describe('ElementDetail', () => {
     mountDetail({}, { data }).then(() => {
       const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
       const saved = { name: 'Test Element', type: 'heading', lang: 'en', data, scheduled: 0, editor: 'Another editor' }
-      expect(sections(saved, vm.historyCurrent.data)).to.deep.equal({})
-      expect(vm.historyCurrent.data.data).to.deep.equal(data)
+      expect(sections(saved, vm.historyCurrent().data)).to.deep.equal({})
+      expect(vm.historyCurrent().data.data).to.deep.equal(data)
 
       const file = { id: 'old-file', path: 'old.jpg', previews: {} }
       const image = { type: 'file', id: file.id }
@@ -69,6 +69,97 @@ describe('ElementDetail', () => {
       expect(vm.assets[file.id]).to.deep.equal(file)
       vm.apply({ data })
       expect(vm.item.files).to.deep.equal([])
+    })
+  })
+
+  it('keeps the history snapshot from the time the dialog was opened', () => {
+    mountDetail().then(async () => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+      vm.vhistory = true
+      await vm.$nextTick()
+
+      vm.item.name = 'Renamed'
+      expect(vm.historyData.data.name).to.equal('Test Element')
+    })
+  })
+
+  it('saves through the shared save queue', () => {
+    mountDetail().then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+      const saveItem = cy.stub(vm, 'saveItem').resolves(true)
+
+      return vm.save(true).then((ok) => {
+        expect(ok).to.equal(true)
+        expect(saveItem).to.have.been.calledOnceWith(true)
+      })
+    })
+  })
+
+  it('copies the state of the loaded version', () => {
+    const latest = { id: 'v3', published: true, data: '{"name":"Loaded"}', editor: 'editor@example.com', created_at: '2026-10-20T11:00:00Z', files: [] }
+    const query = cy.stub().resolves({ data: { element: { id: '1', files: [], latest } } })
+
+    mountDetail({ 'element:view': true }, {}, { query }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+
+      return vm.reload().then((ok) => {
+        expect(ok).to.equal(true)
+        expect(vm.item).to.include({
+          name: 'Loaded',
+          latestId: 'v3',
+          published: true,
+          editor: 'editor@example.com',
+          updated_at: '2026-10-20T11:00:00Z',
+        })
+      })
+    })
+  })
+
+  it('names the unnamed element before saving it', () => {
+    const latest = { id: 'v2', published: false, created_at: '2026-10-20T10:00:00Z' }
+    const mutate = cy.stub().resolves({ data: { saveElement: { latest } } })
+
+    mountDetail({ 'element:save': true }, { name: '', data: { title: 'A heading' } }, { mutate }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+      vm.markChanged()
+
+      return vm.save(true).then((ok) => {
+        expect(ok).to.equal(true)
+        expect(mutate.firstCall.args[0].variables.input.name).to.equal('A heading')
+        expect(vm.item.latestId).to.equal('v2')
+        expect(vm.saving).to.equal(false)
+        expect(vm.dirty).to.equal(false)
+      })
+    })
+  })
+
+  it('skips saving an unchanged element', () => {
+    const mutate = cy.stub().resolves({ data: {} })
+
+    mountDetail({ 'element:save': true }, {}, { mutate }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+
+      return vm.save(true).then((ok) => {
+        expect(ok).to.equal(true)
+        expect(mutate).not.to.have.been.called
+      })
+    })
+  })
+
+  it('shows an error and stays changed if saving fails', () => {
+    const mutate = cy.stub().rejects(new Error('offline'))
+
+    mountDetail({ 'element:save': true }, {}, { mutate }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
+      const error = cy.stub(vm.messages, 'error')
+      vm.markChanged()
+
+      return vm.save(true).then((ok) => {
+        expect(ok).to.equal(false)
+        expect(error).to.have.been.calledWith('Error saving element')
+        expect(vm.saving).to.equal(false)
+        expect(vm.dirty).to.equal(true)
+      })
     })
   })
 
@@ -248,7 +339,7 @@ describe('ElementDetail', () => {
     it('shows changes button even when all conflicts are resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
-        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: true, chosen: 'c' } } }
         cy.get('.menu-changed').should('exist')
       })
     })
@@ -265,7 +356,7 @@ describe('ElementDetail', () => {
     it('hasConflict is false when all conflicts are resolved', () => {
       mountDetail().then(() => {
         const vm = Cypress.vueWrapper.findComponent(ElementDetail).vm
-        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: 'c' } } }
+        vm.changed = { editor: 'x', data: { name: { previous: 'a', current: 'b', overwritten: 'c', resolved: true, chosen: 'c' } } }
         expect(vm.hasConflict).to.be.false
       })
     })

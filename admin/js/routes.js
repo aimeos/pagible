@@ -2,20 +2,15 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import { reactive, watch } from 'vue'
+import { watch } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import { useClipboardStore, useDirtyStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
+import { useClipboardStore, useDirtyStore, useSessionStore, useUserStore, useMessageStore, usePluginStore, useViewStack } from './stores'
 import { urladmin } from './config'
+import { connectionError, unreachable } from './graphql'
 import gettext, { pluginLabel } from './i18n'
 
 function itemProps() {
-  let item
-  return route => {
-    if (!item || item.id !== route.params.id) {
-      item = reactive({ id: route.params.id })
-    }
-    return { item }
-  }
+  return route => ({ initial: { id: route.params.id } })
 }
 
 const router = createRouter({
@@ -102,30 +97,52 @@ const router = createRouter({
   ]
 })
 
-export async function guard(to) {
-  const dirty = useDirtyStore()
+// returns the navigation result if the route can't be accessed, undefined otherwise
+async function access(to, from) {
+  let failed = null
+  const authenticated = await useSessionStore().isAuthenticated().catch((error) => {
+    failed = error
+    return false
+  })
 
-  if (dirty.dirty) {
-    const allowed = await dirty.confirm()
-    if (!allowed) return false
-    return
+  // being offline or a server error doesn't mean signed out, the user stays on the current page if there's one
+  if (failed && from?.matched.length) {
+    useMessageStore().add(
+      unreachable(failed) ? connectionError() : gettext.$gettext('Error checking the session, please try again'),
+      'error'
+    )
+    return false
   }
 
-  if (!to.matched.some((record) => record.meta.auth)) return
-
-  const user = useUserStore()
-
-  if (!await user.isAuthenticated()) {
-    user.intended(to.fullPath)
+  if (!authenticated) {
+    useSessionStore().intended(to.fullPath)
     return { name: 'login' }
   }
 
   const permission = to.meta.permission || to.name
-  if (!user.can(permission)) {
+  if (!useUserStore().can(permission)) {
     useMessageStore().add(
       gettext.$gettext('You do not have permission to access %{path}', { path: to.fullPath }),
       'error'
     )
+    return false
+  }
+}
+
+export async function guard(to, from) {
+  // checked first, discarded changes would be lost even if the navigation is cancelled afterwards
+  if (to.matched.some((record) => record.meta.auth)) {
+    const result = await access(to, from)
+
+    if (result !== undefined) {
+      return result
+    }
+  }
+
+  const dirty = useDirtyStore()
+
+  // the redirect to the login page asks for the unsaved changes in its own navigation
+  if (dirty.dirty && !(await dirty.confirm())) {
     return false
   }
 }

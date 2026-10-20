@@ -7,17 +7,14 @@ import ActionItem from '../components/ActionItem.vue'
 import ActionMenu from '../components/ActionMenu.vue'
 import ChatDialog from '../components/ChatDialog.vue'
 import PageDetailContent from '../components/PageDetailContent.vue'
-
-const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
-const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
-const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
-import { applyResult, hasUnresolved } from '../merge'
-import { ignoreChanges, translateNew, translatePages } from '../variants'
-import { detailBase, useDetail } from '../detail'
+import { applyResult, assignMerged, hasUnresolved } from '../merge'
+import { detailVariants } from '../variants'
+import { detailBase, focusInvalid, useDetail } from '../detail'
 import { FILE_FIELDS, fileMap } from '../files'
 import { defineAsyncComponent, markRaw } from 'vue'
-import { focusInvalid, frozenParse, hasTrue, safeParse } from '../utils'
-import { useAppStore, useDrawerStore, useLanguageStore, useSchemaStore, useTranslationStore } from '../stores'
+import { frozenParse, safeParse } from '../json'
+import { hasTrue } from '../utils'
+import { useAppStore, useDrawerStore, useSchemaStore } from '../stores'
 import {
   mdiCreation,
   mdiCheck,
@@ -28,7 +25,9 @@ import {
   mdiTranslate
 } from '@mdi/js'
 
-
+const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
+const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
+const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
 const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
 
 // copy of the element without the internal "_" properties
@@ -102,14 +101,6 @@ const FETCH_PAGE_VERSIONS = gql`
   }
 `
 
-const ADD_PAGE_VARIANT = gql`
-  mutation ($id: ID!, $lang: String!) {
-    addPageVariant(id: $id, lang: $lang) {
-      id
-    }
-  }
-`
-
 const SAVE_PAGE = gql`
   mutation ($id: ID!, $input: PageInput!, $latestId: ID, $lang: String, $restore: Boolean) {
     savePage(id: $id, input: $input, latestId: $latestId, lang: $lang, restore: $restore) {
@@ -123,6 +114,8 @@ const SAVE_PAGE = gql`
 
 export default {
   extends: detailBase,
+
+  mixins: [detailVariants],
 
   components: {
     ...detailBase.components,
@@ -149,9 +142,7 @@ export default {
       ...useDetail('page'),
       app: useAppStore(),
       drawer: useDrawerStore(),
-      languages: useLanguageStore(),
       schemas: useSchemaStore(),
-      translations: useTranslationStore(),
       mdiCreation,
       mdiCheck,
       mdiCheckAll,
@@ -178,31 +169,14 @@ export default {
       latest: null,
       // changes restored from an old version, which marks translations as outdated
       restored: false,
-      translating: false,
-      savecnt: 0,
-      historyData: null,
-      // language of the edited page variant, the source variant if NULL
-      variantLang: (!this.stacked && this.$route?.query?.lang) || null,
-      switching: false
+      savecnt: 0
     }
   },
 
   computed: {
+    // instructions for the AI model, not translated like those of the element and file lists
     chatContext() {
-      return this.$gettext(
-        'The user is viewing the page with ID "%{id}". When they refer to "this page", use get-page with that ID.',
-        { id: this.item.id }
-      )
-    },
-
-    // the variant isn't the source variant and can be updated from it
-    isTranslation() {
-      return !!this.item.source && !!this.item.lang && this.item.lang !== this.item.source
-    },
-
-    // the variant is queued for translation or the translation is requested right now
-    isTranslating() {
-      return this.translating || this.translations.has(this.item.id, this.item.lang)
+      return `The user is viewing the page with ID "${this.item.id}". When they refer to "this page", use get-page with that ID.`
     },
 
     hasChanged() {
@@ -225,19 +199,6 @@ export default {
       return hasTrue(this.errors)
     },
 
-    // all site languages and those of the existing variants with their state
-    langs() {
-      const map = new Map((this.item.variants || []).map((v) => [v.lang, v]))
-      const codes = [...new Set([...this.languages.available, ...map.keys()])]
-
-      return codes.map((code) => ({
-        code,
-        name: this.languages.translate(code),
-        source: !!map.get(code)?.source,
-        state: map.get(code)?.state || 'missing'
-      }))
-    },
-
     changeTargets() {
       const item = this.item
       return markRaw({ data: item, meta: item.meta, config: item.config, content: item.content })
@@ -250,21 +211,6 @@ export default {
 
   created() {
     this.schemas.load()
-  },
-
-  mounted() {
-    this.unlisten = this.translations.listen((batch, progress) => this.translated(batch, progress))
-  },
-
-  beforeUnmount() {
-    this.unlisten?.()
-    this.assets = markRaw({})
-    this.elements = markRaw({})
-    this.editorActions = false
-    this.editorElement = null
-    this.latest = null
-    this.dirty = null
-    this.errors = null
   },
 
   methods: {
@@ -282,9 +228,6 @@ export default {
         this.item.variants = page.variants || []
         this.item.has = page.has
         this.item.restricted = page.restricted
-        this.item.published = this.latest?.published
-        this.item.editor = this.latest?.editor
-        this.item.updated_at = this.latest?.created_at
 
         const aux = safeParse(this.latest?.aux)
         this.item.content = aux.content ?? []
@@ -298,8 +241,8 @@ export default {
 
     apply(changes, version) {
       if (version) {
-        this.elements = { ...this.elems(version.elements || []), ...this.elements }
-        this.assets = { ...version.files, ...this.assets }
+        this.elements = markRaw({ ...this.elems(version.elements || []), ...this.elements })
+        this.assets = markRaw({ ...version.files, ...this.assets })
       }
 
       if (changes.content) {
@@ -321,8 +264,8 @@ export default {
       }
 
       Object.assign(this.item, changes)
-      this.dirty.page = true
-      if (changes.content) this.dirty.content = true
+      this.markChanged('page')
+      if (changes.content) this.markChanged('content')
       this.restored = true
       this.vhistory = false
     },
@@ -439,7 +382,7 @@ export default {
           config: this.clean(item.config, 'config'),
           content: this.clean(item.content, 'content')
         }),
-        elements: Object.values(this.elements).filter(element => item.content.some(block => block.refid === element.id)),
+        elements: Object.values(this.elements).filter(element => (item.content || []).some(block => block.refid === element.id)),
         files: markRaw(files)
       })
     },
@@ -452,12 +395,61 @@ export default {
       return content
     },
 
+    accessUpdated(access) {
+      this.item.access = access
+      this.item.restricted = access !== null
+    },
+
+    // the maps are raw for performance, so they are replaced to update the views
+    addAssets(map) {
+      if (Object.keys(map).length) this.assets = markRaw({ ...this.assets, ...map })
+    },
+
+    addElements(map) {
+      if (Object.keys(map).length) this.elements = markRaw({ ...this.elements, ...map })
+    },
+
+    contentUpdated(list) {
+      this.item.content = list
+      this.markChanged('content')
+    },
+
     pageUpdated(event) {
       Object.assign(this.item, event)
-      this.dirty.page = true
+      this.markChanged('page')
+    },
+
+    // marks the content or page tab as changed and counts the edit, so edits made while saving stay unsaved
+    markChanged(key) {
+      this.edits++
+      this.dirty[key] = true
+    },
+
+    // content, meta and config are edited in the content tab, all other sections in the page tab
+    resolved(event) {
+      this.resolveChange(event)
+      this.markChanged(['content', 'meta', 'config'].includes(event.section) ? 'content' : 'page')
+    },
+
+    // child components send the changes of content elements, the page owns them
+    patchEntry(entry, values) {
+      Object.assign(entry, values)
     },
 
     reset() {
+      const entries = [
+        ...(this.item.content || []),
+        ...Object.values(this.item.meta || {}),
+        ...Object.values(this.item.config || {})
+      ]
+
+      for (const entry of entries) {
+        if (entry?._changed || entry?._error) {
+          delete entry._changed
+          delete entry._error
+        }
+      }
+
       this.$refs.page?.reset()
       this.$refs.content?.reset()
 
@@ -504,208 +496,78 @@ export default {
       this.$nextTick(() => this.$refs.chat?.send(this.$gettext('Rate this page and suggest improvements')))
     },
 
-    async save(quiet = false) {
-      await this.$nextTick()
-      this.$refs.content?.flush()
-
-      if (!this.saveable()) {
-        return false
+    save(quiet = false) {
+      // the editor still holds the content of the previous language until the switch is done
+      // and all saves are started by the user, also the quiet ones from publishing or leaving the page
+      if (this.switching) {
+        this.messages.add(this.$gettext('Please wait until the language is switched'), 'info')
+        return Promise.resolve(false)
       }
 
-      if (!this.hasChanged) {
-        return true
-      }
+      return this.saveOnce((quiet) => this.saveItem(quiet), quiet)
+    },
 
-      this.saving = true
+    saveItem(quiet) {
+      return this.saveWith(() => ({
+        mutation: SAVE_PAGE,
+        variables: {
+          id: this.item.id,
+          input: {
+            cache: this.item.cache || 0,
+            domain: this.item.domain || '',
+            lang: this.item.lang || '',
+            name: this.item.name || '',
+            path: this.item.path || '',
+            status: this.item.status || 0,
+            title: this.item.title || '',
+            tag: this.item.tag || '',
+            to: this.item.to || '',
+            type: this.item.type || '',
+            theme: this.item.theme || '',
+            meta: JSON.stringify(this.clean(this.item.meta || {}, 'meta')),
+            config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
+            content: JSON.stringify(this.clean(this.item.content || [], 'content'))
+          },
+          latestId: this.latest?.id,
+          lang: this.variantLang,
+          restore: this.restored
+        }
+      }), (response, edited, sent) => {
+        const page = response.data?.savePage
 
-      return this.$apollo
-        .mutate({
-          mutation: SAVE_PAGE,
-          variables: {
-            id: this.item.id,
-            input: {
-              cache: this.item.cache || 0,
-              domain: this.item.domain || '',
-              lang: this.item.lang || '',
-              name: this.item.name || '',
-              path: this.item.path || '',
-              status: this.item.status || 0,
-              title: this.item.title || '',
-              tag: this.item.tag || '',
-              to: this.item.to || '',
-              type: this.item.type || '',
-              theme: this.item.theme || '',
-              meta: JSON.stringify(this.clean(this.item.meta || {}, 'meta')),
-              config: JSON.stringify(this.clean(this.item.config || {}, 'config')),
-              content: JSON.stringify(this.clean(this.item.content || [], 'content'))
-            },
-            latestId: this.latest?.id,
-            lang: this.variantLang,
-            restore: this.restored
-          }
-        })
-        .then((response) => {
-          const page = response.data?.savePage
+        // a version restored while saving is sent by the next save
+        if (!edited) {
           this.restored = false
-
-          if (this.isTranslation && page?.stale && !this.item.stale) {
-            this.setVariantState(true)
-          }
-          const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
-
-          if (changed?.latest?.id || page?.latest?.id) {
-            this.latest = { id: changed?.latest?.id ?? page.latest.id }
-          }
-
-          applyResult(this, changed, this.$gettext('Page saved successfully'), quiet)
-
-          if (changed) {
-            const aux = changed.latest?.aux
-            this.item.content = aux?.content ?? this.item.content
-            this.item.config = aux?.config ?? this.item.config
-            this.item.meta = aux?.meta ?? this.item.meta
-          }
-
-          this.savecnt++
-          this.saved(page?.latest)
-
-          return true
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error saving page'), error)
-        })
-        .finally(() => {
-          this.saving = false
-        })
-    },
-
-    // updates the stale state of the edited variant
-    setVariantState(stale) {
-      const state = stale ? 'stale' : 'current'
-
-      this.item.stale = stale
-      this.item.variants = (this.item.variants || []).map((v) => (v.lang === this.item.lang ? { ...v, state } : v))
-    },
-
-    // switches the editor to the variant in the language, missing variants are created as untranslated
-    // copy and translated in the background if the user is allowed to translate pages
-    async switchLang(entry) {
-      if (entry.code === this.variantLang || entry.state === 'trashed' || this.switching) {
-        return
-      }
-
-      if (entry.state === 'missing' && !this.user.can('page:add')) {
-        return this.messages.denied()
-      }
-
-      if (this.hasChanged && !(await this.save(true))) {
-        return
-      }
-
-      this.switching = true
-
-      try {
-        if (entry.state === 'missing') {
-          await this.$apollo.mutate({ mutation: ADD_PAGE_VARIANT, variables: { id: this.item.id, lang: entry.code } })
-          this.invalidate()
-        }
-      } catch (error) {
-        this.switching = false
-        return this.messages.error(this.$gettext('Error adding language'), error, entry.code)
-      }
-
-      // the untranslated copy stays if queueing its translation fails
-      if (entry.state === 'missing') {
-        await translateNew(
-          this.$apollo,
-          this.user,
-          [this.item.id],
-          entry.code,
-          this.$gettext('Translation saved as draft, review the changes')
-        ).catch((error) => this.messages.error(this.$gettext('Error translating page'), error))
-      }
-
-      this.variantLang = entry.code
-      this.vhistory = false
-
-      if (!this.stacked) {
-        this.$router?.replace({ query: { ...this.$route?.query, lang: entry.code } })
-      }
-
-      return this.refresh().finally(() => {
-        this.switching = false
-      })
-    },
-
-    // marks the variant as up to date with the source variant without changing its content
-    ignoreChanges() {
-      if (!this.user.can('page:save')) return this.messages.denied()
-
-      return ignoreChanges(this.$apollo, [this.item.id], this.item.lang)
-        .then(() => {
-          this.setVariantState(false)
-          this.invalidate()
-          this.messages.add(this.$gettext('Marked as up to date'), 'success')
-        })
-        .catch((error) => {
-          this.messages.error(this.$gettext('Error marking as up to date'), error)
-        })
-    },
-
-    // translates the changes of the source variant into a new draft of the variant
-    async translate() {
-      if (!this.user.can('page:save') || !this.user.can('text:translate')) return this.messages.denied()
-
-      if (this.hasChanged && !(await this.save(true))) {
-        return
-      }
-
-      const { id, lang } = this.item
-      let polling
-      this.translating = true
-
-      try {
-        const batch = await translatePages(this.$apollo, [id], [lang])
-
-        // up to date translations and those which are already queued are skipped
-        if (!batch.total) {
-          this.messages.add(this.$gettext('Nothing to translate, the page is up to date or already being translated'), 'info')
-          return
         }
 
-        // the store keeps polling if the editor is closed and reports the result
-        polling = this.translations.add(
-          batch,
-          { ids: [id], langs: [lang], success: this.$gettext('Translation saved as draft, review the changes') },
-          this.$apollo
-        )
-      } catch (error) {
-        this.messages.error(this.$gettext('Error translating page'), error)
-      } finally {
-        this.translating = false
-      }
+        if (this.isTranslation && page?.stale && !this.item.stale) {
+          this.setVariantState(true)
+        }
+        const changed = page?.changed ? markRaw(safeParse(page.changed)) : null
 
-      return polling
-    },
+        if (changed?.latest?.id || page?.latest?.id) {
+          this.latest = { id: changed?.latest?.id ?? page.latest.id }
+        }
 
-    // loads the translated draft if the variant is still shown without unsaved changes
-    translated(batch, progress) {
-      if (!this.item?.id || !batch.ids.includes(this.item.id) || !batch.langs.includes(this.item.lang)) {
-        return
-      }
+        applyResult(this, changed, this.$gettext('Page saved successfully'), quiet, edited, sent)
 
-      this.invalidate()
+        if (changed) {
+          const aux = changed.latest?.aux || {}
+          const merged = Object.fromEntries(['content', 'config', 'meta'].filter((key) => aux[key]).map((key) => [key, aux[key]]))
+          assignMerged(this.item, merged, edited ? sent : null)
+        }
 
-      if (!progress.running && !progress.failed && !this.hasChanged) {
-        return this.refresh()
-      }
+        this.savecnt++
+        this.saved(page?.latest)
+      }, this.$gettext('Error saving page'))
     },
 
     use(version, clean = false) {
       Object.assign(this.item, version.data)
       this.assign(version.elements || [], Object.values(version.files || {}))
 
-      Object.assign(this.dirty, { content: true, page: true })
+      this.markChanged('content')
+      this.markChanged('page')
       this.vhistory = false
       // discarding unsaved changes returns to the latest version instead of an old one
       if (clean) this.reset()
@@ -733,10 +595,6 @@ export default {
   watch: {
     asidePage(newAside) {
       this.aside = newAside
-    },
-
-    vhistory(val) {
-      if (val) this.historyData = this.historyCurrent()
     }
   }
 }
@@ -844,8 +702,10 @@ export default {
             :item="item"
             :elements="elements"
             :preview-size="previewSize"
-            @change="dirty.content = true"
+            @change="markChanged('content')"
             @edit="editElement"
+            @add-elements="addElements"
+            @update:content="contentUpdated"
           />
         </v-window-item>
 
@@ -857,7 +717,11 @@ export default {
             :changed="changed?.content"
             :elements="elements"
             @error="errors.content = $event"
-            @change="dirty.content = true"
+            @change="markChanged('content')"
+            @patch-entry="patchEntry"
+            @add-assets="addAssets"
+            @add-elements="addElements"
+            @update:content="contentUpdated"
           />
         </v-window-item>
 
@@ -866,7 +730,9 @@ export default {
             ref="page"
             :item="item"
             :assets="assets"
-            @update:item="pageUpdated"
+            @patch="pageUpdated"
+            @add-assets="addAssets"
+            @update:access="accessUpdated"
             @update:aside="asidePage = $event"
             @error="errors.page = $event"
           />
@@ -895,27 +761,16 @@ export default {
     :save-count="savecnt"
     @add-after="editorAction('addAfter')"
     @add-before="editorAction('addBefore')"
-    @change="dirty.content = true"
+    @change="markChanged('content')"
+    @patch-entry="patchEntry"
+    @add-assets="addAssets"
     @remove="editorAction('remove')"
     @update:preview-size="previewSize = $event"
   />
 
-  <Teleport to="body">
+  <DetailDialogs v-bind="dialogs">
     <ChatDialog ref="chat" v-model="chatOpen" :context="chatContext" @done="chatDone" />
-    <HistoryDialog
-      v-if="vhistory"
-      v-model="vhistory"
-      :readonly="!user.can('page:save')"
-      :current="historyData"
-      :load="() => versions(item.id)"
-      @apply="apply"
-      @use="use"
-    />
-    <ChangesDialog v-model="vchanged" :changed="changed"
-      :targets="changeTargets"
-      @resolve="dirty.page = true"
-    />
-  </Teleport>
+  </DetailDialogs>
 </template>
 
 <style scoped>

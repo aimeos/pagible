@@ -13,258 +13,70 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/strings.js:9
-msgctxt "webhooks"
-msgid "Webhooks"
-msgstr "Вебхуки"
-
-#: src/views/WebhookList.vue:147
-msgctxt "webhooks"
-msgid "Webhooks are disabled by the server configuration, no events are sent"
-msgstr "Вебхуки вимкнено конфігурацією сервера, події не надсилаються"
-
-#: src/views/WebhookList.vue:154
-msgctxt "webhooks"
-msgid "All deliveries are blocked by the server configuration"
-msgstr "Усі доставки заблоковано конфігурацією сервера"
-
-#: src/views/WebhookList.vue:183
-msgctxt "webhooks"
-msgid "Status"
-msgstr "Статус"
-
-#: src/views/WebhookList.vue:187
-msgctxt "webhooks"
-msgid "All"
-msgstr "Усі"
-
-#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
-#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
-msgctxt "webhooks"
-msgid "Active"
-msgstr "Активний"
-
-#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
-msgctxt "webhooks"
-msgid "Inactive"
-msgstr "Неактивний"
-
-#: src/views/WebhookList.vue:250
-msgctxt "webhooks"
-msgid "Error fetching webhooks"
-msgstr "Помилка під час отримання вебхуків"
-
-#: src/views/WebhookList.vue:314
-msgctxt "webhooks"
-msgid "Error saving webhook"
-msgstr "Помилка під час збереження вебхука"
-
-#: src/views/WebhookList.vue:319
-msgctxt "webhooks"
-msgid ""
-"Rotate the secret of this webhook? Receivers must be updated with the new "
-"secret."
-msgstr "Змінити секрет цього вебхука? Отримувачам потрібно передати новий секрет."
-
-#: src/views/WebhookList.vue:338
-msgctxt "webhooks"
-msgid "Error rotating webhook secret"
-msgstr "Помилка під час зміни секрету вебхука"
-
-#: src/views/WebhookList.vue:358
-msgctxt "webhooks"
-msgid "Test event delivered"
-msgstr "Тестову подію доставлено"
-
-#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
-msgctxt "webhooks"
-msgid "Test event failed"
-msgstr "Помилка тестової події"
-
-#: src/views/WebhookList.vue:412
-msgctxt "webhooks"
-msgid "Error purging webhook"
-msgstr "Помилка під час остаточного видалення вебхука"
-
-#: src/views/WebhookList.vue:420
+#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Секрет скопійовано"
 
-#: src/views/WebhookList.vue:425
+#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Не вдалося скопіювати секрет"
 
-#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
-msgctxt "webhooks"
-msgid "None"
-msgstr "Немає"
-
-#: src/views/WebhookList.vue:447
-msgctxt "webhooks"
-msgid "Connection failed"
-msgstr "Помилка з'єднання"
-
-#: src/views/WebhookList.vue:448
-msgctxt "webhooks"
-msgid "Access denied"
-msgstr "У доступі відмовлено"
-
-#: src/views/WebhookList.vue:449
-msgctxt "webhooks"
-msgid "Secret can't be decrypted, rotate it"
-msgstr "Не вдається розшифрувати секрет, змініть його"
-
-#: src/views/WebhookList.vue:450
-msgctxt "webhooks"
-msgid "Blocked by server configuration"
-msgstr "Заблоковано конфігурацією сервера"
-
-#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
-msgctxt "webhooks"
-msgid "Not a valid URL"
-msgstr "Недійсна URL-адреса"
-
-#: src/views/WebhookList.vue:452
-msgctxt "webhooks"
-msgid "Queue unavailable"
-msgstr "Черга недоступна"
-
-#: src/views/WebhookList.vue:453
-msgctxt "webhooks"
-msgid "Host not found"
-msgstr "Хост не знайдено"
-
-#: src/views/WebhookList.vue:454
-msgctxt "webhooks"
-msgid "Response too large"
-msgstr "Завелика відповідь"
-
-#: src/views/WebhookList.vue:455
-msgctxt "webhooks"
-msgid "Request timed out"
-msgstr "Час очікування запиту вичерпано"
-
-#: src/views/WebhookList.vue:460
-msgctxt "webhooks"
-msgid "Redirects aren't followed"
-msgstr "Перенаправлення не виконуються"
-
-#: src/views/WebhookList.vue:461
-msgctxt "webhooks"
-msgid "Delivery failed"
-msgstr "Помилка доставки"
-
-#: src/views/WebhookList.vue:523
-msgctxt "webhooks"
-msgid "Send signed notifications when published content changes."
-msgstr "Надсилати підписані сповіщення, коли опублікований вміст змінюється."
-
-#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
-msgctxt "webhooks"
-msgid "Toggle selection"
-msgstr "Увімкнути/вимкнути вибір"
-
-#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
-msgctxt "webhooks"
-msgid "Purge"
-msgstr "Видалити назавжди"
-
-#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
-#: src/views/WebhookList.vue:741
-msgctxt "webhooks"
-msgid "Add webhook"
-msgstr "Додати вебхук"
-
-#: src/views/WebhookList.vue:585
-msgctxt "webhooks"
-msgid "Search for"
-msgstr "Шукати"
-
-#: src/views/WebhookList.vue:594
-msgctxt "webhooks"
-msgid "Refresh"
-msgstr "Оновити"
-
-#: src/views/WebhookList.vue:635
-msgctxt "webhooks"
-msgid "Edit"
-msgstr "Редагувати"
-
-#: src/views/WebhookList.vue:645
-msgctxt "webhooks"
-msgid "Rotate"
-msgstr "Змінити"
-
-#: src/views/WebhookList.vue:688
-msgctxt "webhooks"
-msgid "Last success"
-msgstr "Остання успішна доставка"
-
-#: src/views/WebhookList.vue:692
-msgctxt "webhooks"
-msgid "Last error"
-msgstr "Остання помилка"
-
-#: src/views/WebhookList.vue:699
-msgctxt "webhooks"
-msgid "Paused until"
-msgstr "Призупинено до"
-
-#: src/views/WebhookList.vue:709
-msgctxt "webhooks"
-msgid "Loading"
-msgstr "Завантаження"
-
-#: src/views/WebhookList.vue:715
-msgctxt "webhooks"
-msgid "No entries found"
-msgstr "Не знайдено жодного запису"
-
-#: src/views/WebhookList.vue:716
-msgctxt "webhooks"
-msgid "No webhooks configured."
-msgstr "Вебхуки не налаштовані."
-
-#: src/views/WebhookList.vue:738
+#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Секрет вебхука"
 
-#: src/views/WebhookList.vue:740
+#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Редагувати вебхук"
 
-#: src/views/WebhookList.vue:750
+#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "Додати вебхук"
+
+#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Скопіюйте цей секрет зараз. Він більше не відображатиметься."
 
-#: src/views/WebhookList.vue:771
+#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
+#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
+msgctxt "webhooks"
+msgid "Active"
+msgstr "Активний"
+
+#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
 msgstr ""
 "Неактивні вебхуки не отримують події, а їхні доставки в черзі скасовуються"
 
-#: src/views/WebhookList.vue:780
+#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL кінцевої точки HTTPS"
 
-#: src/views/WebhookList.vue:781
+#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr "Адреса, що приймає підписані події, її не можна змінити пізніше"
 
-#: src/views/WebhookList.vue:805
+#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "Недійсна URL-адреса"
+
+#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Події"
 
-#: src/views/WebhookList.vue:806
+#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
@@ -272,12 +84,12 @@ msgstr ""
 "Події, що надсилаються на вебхук, доставки в черзі для видалених подій "
 "скасовуються"
 
-#: src/views/WebhookList.vue:813
+#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Назва"
 
-#: src/views/WebhookList.vue:814
+#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -286,98 +98,243 @@ msgstr ""
 "Необов'язкова назва для розрізнення вебхуків з однаковою кінцевою точкою, "
 "видима всім редакторам вебхуків"
 
-#: src/views/WebhookList.vue:824
-msgctxt "webhooks"
-msgid "Done"
-msgstr "Готово"
-
-#: src/views/WebhookList.vue:827
-msgctxt "webhooks"
-msgid "Copy secret"
-msgstr "Копіювати секрет"
-
-#: src/views/WebhookList.vue:840
+#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Перевірити"
 
-#: src/views/WebhookList.vue:843
+#: src/components/WebhookDialog.vue:209
+msgctxt "webhooks"
+msgid "Done"
+msgstr "Готово"
+
+#: src/components/WebhookDialog.vue:212
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "Копіювати секрет"
+
+#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: src/views/WebhookList.vue:853
+#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Зберегти"
 
-#~ msgctxt "webhooks"
-#~ msgid "Purge this webhook?"
-#~ msgstr "Видалити цей вебхук назавжди?"
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Вебхуки"
 
-#~ msgctxt "webhooks"
-#~ msgid "Secure connection failed"
-#~ msgstr "Помилка захищеного з'єднання"
+#: src/views/WebhookList.vue:102
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr "Вебхуки вимкнено конфігурацією сервера, події не надсилаються"
 
-#~ msgctxt "webhooks"
-#~ msgid ""
-#~ "No queued delivery was processed since %{date}, check the queue worker"
-#~ msgstr ""
-#~ "З %{date} не оброблено жодної доставки з черги, перевірте обробник черги"
+#: src/views/WebhookList.vue:109
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration: %{reason}"
+msgstr "Усі доставки заблоковано конфігурацією сервера: %{reason}"
 
-#~ msgctxt "webhooks"
-#~ msgid "Error replacing webhook destination"
-#~ msgstr "Помилка під час заміни адреси призначення вебхука"
+#: src/views/WebhookList.vue:139
+msgctxt "webhooks"
+msgid "Status"
+msgstr "Статус"
 
-#~ msgctxt "webhooks"
-#~ msgid "Replace"
-#~ msgstr "Замінити"
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "Усі"
 
-#~ msgctxt "webhooks"
-#~ msgid "Replace webhook destination"
-#~ msgstr "Замінити адресу призначення вебхука"
+#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "Неактивний"
 
-#~ msgctxt "webhooks"
-#~ msgid "Current destination"
-#~ msgstr "Поточне призначення"
+#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "None"
+msgstr "Немає"
 
-#~ msgctxt "webhooks"
-#~ msgid ""
-#~ "Replacing the destination rotates the secret and disables the webhook."
-#~ msgstr "Заміна адреси призначення оновлює секрет і вимикає вебхук."
+#: src/views/WebhookList.vue:213
+msgctxt "webhooks"
+msgid "%{reason} · %{date}"
+msgstr "%{reason} · %{date}"
 
-#~ msgctxt "webhooks"
-#~ msgid "Send test event"
-#~ msgstr "Надіслати тестову подію"
+#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "Помилка під час отримання вебхуків"
 
-#~ msgctxt "webhooks"
-#~ msgid ""
-#~ "Receivers still using the previous secret will reject deliveries "
-#~ "immediately. Rotate the secret again?"
-#~ msgstr ""
-#~ "Отримувачі, які досі використовують попередній секрет, одразу "
-#~ "відхилятимуть доставки. Оновити секрет ще раз?"
+#: src/views/WebhookList.vue:295
+msgctxt "webhooks"
+msgid "Test event delivered (%{status})"
+msgstr "Тестову подію доставлено (%{status})"
 
-#~ msgctxt "webhooks"
-#~ msgid "Previous secret valid until"
-#~ msgstr "Попередній секрет дійсний до"
+#: src/views/WebhookList.vue:302
+msgctxt "webhooks"
+msgid "Test event failed: %{reason}"
+msgstr "Помилка тестової події: %{reason}"
 
-#~ msgctxt "webhooks"
-#~ msgid "Value has invalid format"
-#~ msgstr "Значення має недійсний формат"
+#: src/views/WebhookList.vue:309
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "Помилка тестової події"
 
-#~ msgctxt "webhooks"
-#~ msgid "Failures"
-#~ msgstr "Збої"
+#: src/views/WebhookList.vue:349
+msgctxt "webhooks"
+msgid "Error purging webhook"
+msgstr "Помилка під час остаточного видалення вебхука"
 
-#~ msgctxt "webhooks"
-#~ msgid "New webhooks are inactive until you save them as active."
-#~ msgstr "Нові вебхуки неактивні, доки ви не збережете їх як активні."
+#: src/views/WebhookList.vue:378
+msgctxt "webhooks"
+msgid ""
+"The new webhook secret could not be shown after leaving the page, please "
+"rotate it to get a new one"
+msgstr "Новий секрет вебхука не вдалося показати після виходу зі сторінки, оновіть його, щоб отримати новий"
 
-#~ msgctxt "webhooks"
-#~ msgid "Actions"
-#~ msgstr "Дії"
+#: src/views/WebhookList.vue:392
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr ""
+"Змінити секрет цього вебхука? Отримувачам потрібно передати новий секрет."
 
-#~ msgctxt "webhooks"
-#~ msgid "Close"
-#~ msgstr "Закрити"
+#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "Змінити"
+
+#: src/views/WebhookList.vue:417
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "Помилка під час зміни секрету вебхука"
+
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "Помилка під час збереження вебхука"
+
+#: src/views/WebhookList.vue:483
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "Надсилати підписані сповіщення, коли опублікований вміст змінюється."
+
+#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "Увімкнути/вимкнути вибір"
+
+#: src/views/WebhookList.vue:523
+msgctxt "webhooks"
+msgid "Purge (%{count})"
+msgstr "Видалити назавжди (%{count})"
+
+#: src/views/WebhookList.vue:538
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "Шукати"
+
+#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "Оновити"
+
+#: src/views/WebhookList.vue:587
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "Редагувати"
+
+#: src/views/WebhookList.vue:607
+msgctxt "webhooks"
+msgid "Purge"
+msgstr "Видалити назавжди"
+
+#: src/views/WebhookList.vue:647
+msgctxt "webhooks"
+msgid "Last success: %{date}"
+msgstr "Остання успішна доставка: %{date}"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Last error: %{reason}"
+msgstr "Остання помилка: %{reason}"
+
+#: src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "Paused until: %{date}"
+msgstr "Призупинено до: %{date}"
+
+#: src/views/WebhookList.vue:678
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "Завантаження"
+
+#: src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "Не знайдено жодного запису"
+
+#: src/views/WebhookList.vue:691
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "Вебхуки не налаштовані."
+
+#: src/webhooks.js:19
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "Помилка з'єднання"
+
+#: src/webhooks.js:20
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "У доступі відмовлено"
+
+#: src/webhooks.js:21
+msgctxt "webhooks"
+msgid "Secret can't be decrypted, rotate it"
+msgstr "Не вдається розшифрувати секрет, змініть його"
+
+#: src/webhooks.js:22
+msgctxt "webhooks"
+msgid "Invalid list of denied networks"
+msgstr "Недійсний список заборонених мереж"
+
+#: src/webhooks.js:23 src/webhooks.js:25
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "Черга недоступна"
+
+#: src/webhooks.js:26
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "Хост не знайдено"
+
+#: src/webhooks.js:27
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "Завелика відповідь"
+
+#: src/webhooks.js:28
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "Час очікування запиту вичерпано"
+
+#: src/webhooks.js:33
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "Перенаправлення не виконуються"
+
+#: src/webhooks.js:34
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "Помилка доставки"
+
+#: src/webhooks.js:37
+msgctxt "webhooks"
+msgid "%{reason} (%{status})"
+msgstr "%{reason} (%{status})"
+

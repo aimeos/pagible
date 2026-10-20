@@ -1,4 +1,5 @@
-const MAX_CHUNKS = 3000 // ~3 minutes at 44100Hz
+// Maximum recording length in seconds, further audio data is dropped
+const MAX_SECONDS = 180
 
 /**
  * Provides audio recording functionality using the MediaRecorder API.
@@ -11,66 +12,94 @@ export function recording() {
   let node
   let active = false
   let chunks = []
+  let samples = 0
   let blobUrl
+
+  // releases the audio context, the worklet and the microphone
+  async function release() {
+    source?.mediaStream.getTracks().forEach((t) => t.stop())
+    source?.disconnect()
+    node?.disconnect()
+    await audioContext?.close().catch(() => {})
+
+    if (blobUrl) {
+      URL.revokeObjectURL(blobUrl)
+    }
+
+    audioContext = source = node = blobUrl = null
+  }
+
+  // sets up the audio worklet and connects the microphone
+  async function init() {
+    const blob = new Blob(
+      [
+        `
+      class RecorderProcessor extends AudioWorkletProcessor {
+        process(inputs) {
+          const input = inputs[0]
+          if (input && input[0]) this.port.postMessage(input[0])
+          return true
+        }
+      }
+      registerProcessor('recorder-processor', RecorderProcessor)
+    `
+      ],
+      { type: 'application/javascript' }
+    )
+
+    audioContext = new AudioContext()
+    blobUrl = URL.createObjectURL(blob)
+    await audioContext.audioWorklet.addModule(blobUrl)
+
+    node = new AudioWorkletNode(audioContext, 'recorder-processor')
+
+    // the worklet posts render quanta of 128 frames, so the limit is counted in samples
+    const maxSamples = audioContext.sampleRate * MAX_SECONDS
+
+    node.port.onmessage = (e) => {
+      if (samples < maxSamples) {
+        chunks.push(new Float32Array(e.data))
+        samples += e.data.length
+      }
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+    source = audioContext.createMediaStreamSource(stream)
+    source.connect(node)
+  }
 
   return {
     async start() {
-      if (active) return
+      if (active) return this
       active = true
 
-      const blob = new Blob(
-        [
-          `
-        class RecorderProcessor extends AudioWorkletProcessor {
-          process(inputs) {
-            const input = inputs[0]
-            if (input && input[0]) this.port.postMessage(input[0])
-            return true
-          }
-        }
-        registerProcessor('recorder-processor', RecorderProcessor)
-      `
-        ],
-        { type: 'application/javascript' }
-      )
-
-      audioContext = new AudioContext()
-      blobUrl = URL.createObjectURL(blob)
-      await audioContext.audioWorklet.addModule(blobUrl)
-
-      node = new AudioWorkletNode(audioContext, 'recorder-processor')
-
-      node.port.onmessage = (e) => {
-        if (chunks.length < MAX_CHUNKS) {
-          chunks.push(new Float32Array(e.data))
-        }
+      try {
+        await init()
+      } catch (error) {
+        active = false
+        chunks = []
+        samples = 0
+        await release()
+        throw error
       }
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-
-      source = audioContext.createMediaStreamSource(stream)
-      source.connect(node)
 
       return this
     },
 
+    /**
+     * Stops the recording
+     *
+     * @returns {Promise<AudioBuffer|null>} Recorded audio or null if nothing was recorded
+     */
     async stop() {
-      if (!active || !node || !source) return
+      if (!active || !node || !source) return null
       active = false
 
-      source.mediaStream.getTracks().forEach((t) => t.stop())
-      source.disconnect()
-      node.disconnect()
-      await audioContext.close()
-      audioContext = null
+      const sampleRate = audioContext.sampleRate
+      await release()
 
-      if (blobUrl) {
-        URL.revokeObjectURL(blobUrl)
-        blobUrl = null
-      }
-
-      const length = chunks.reduce((a, c) => a + c.length, 0)
-      const buffer = new Float32Array(length)
+      const buffer = new Float32Array(samples)
       let offset = 0
 
       for (const chunk of chunks) {
@@ -79,14 +108,12 @@ export function recording() {
       }
 
       chunks = []
+      samples = 0
 
       if (!buffer.length) return null
 
-      const context = new OfflineAudioContext(1, buffer.length, 44100)
-      const audioBuffer = context.createBuffer(1, buffer.length, 44100)
-
+      const audioBuffer = new AudioBuffer({ length: buffer.length, numberOfChannels: 1, sampleRate })
       audioBuffer.getChannelData(0).set(buffer)
-      context.startRendering().catch(() => {})
 
       return audioBuffer
     }
@@ -103,6 +130,10 @@ export async function toMp3(input) {
   const channels = []
   let audioBuffer
 
+  if (!input) {
+    throw new Error('toMp3(): No audio input')
+  }
+
   if (input instanceof AudioBuffer) {
     audioBuffer = input
   } else {
@@ -111,7 +142,13 @@ export async function toMp3(input) {
       if (input instanceof ArrayBuffer) {
         audioBuffer = await context.decodeAudioData(input)
       } else if (typeof input === 'string' || input instanceof URL) {
-        audioBuffer = await context.decodeAudioData(await (await fetch(input)).arrayBuffer())
+        const response = await fetch(input)
+
+        if (!response.ok) {
+          throw new Error(`toMp3(): Fetching audio failed with status ${response.status}`)
+        }
+
+        audioBuffer = await context.decodeAudioData(await response.arrayBuffer())
       } else if (input instanceof Blob) {
         audioBuffer = await context.decodeAudioData(await input.arrayBuffer())
       } else {
@@ -133,7 +170,7 @@ export async function toMp3(input) {
   return new Promise((resolve, reject) => {
     worker.onmessage = (e) => {
       worker.terminate()
-      resolve(e.data)
+      e.data?.error ? reject(new Error(e.data.error)) : resolve(e.data?.mp3)
     }
     worker.onerror = (e) => {
       worker.terminate()
@@ -171,7 +208,9 @@ export function transcription(list = []) {
         'WEBVTT\n\n' +
         list
           .map((item, i) => {
-            const { start = 0, end = 0, text = '' } = item
+            const { start = 0, end = 0 } = item
+            // blank lines end a cue and "-->" starts its timing line, so both are not allowed in the text
+            const text = String(item.text ?? '').replace(/-->/g, '->').replace(/\n\s*\n/g, '\n').trim()
 
             const formatTime = (s) => {
               const ms = Math.floor((s % 1) * 1000)

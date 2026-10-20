@@ -1,20 +1,20 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { mdiChevronLeft, mdiChevronRight, mdiClose, mdiMenu } from '@mdi/js'
+import { effectScope } from 'vue'
 import AsideList from '../components/AsideList.vue'
+import ListAppBar from '../components/ListAppBar.vue'
 import Navigation from '../components/Navigation.vue'
-import User from '../components/User.vue'
 import { pluginLabel } from '../i18n'
-import { useDrawerStore, useUserStore } from '../stores'
+import { useSettingStore } from '../stores'
 
 export default {
   name: 'PluginPanel',
 
   components: {
     AsideList,
-    Navigation,
-    User
+    ListAppBar,
+    Navigation
   },
 
   props: {
@@ -33,14 +33,17 @@ export default {
   },
 
   setup() {
-    const drawer = useDrawerStore()
-    const user = useUserStore()
+    return { settings: useSettingStore() }
+  },
 
-    return { drawer, user, mdiChevronLeft, mdiChevronRight, mdiClose, mdiMenu }
+  created() {
+    // owns the filter watcher, plugins may register their sidebar after they are set up
+    this.filterScope = null
   },
 
   beforeUnmount() {
-    this.user.flush()
+    this.filterScope?.stop()
+    this.settings.flush()
   },
 
   methods: {
@@ -51,8 +54,14 @@ export default {
      * @param {Object} defaults Filter values used initially and on reset
      */
     register(content, defaults) {
-      this.aside = { content, defaults, filter: this.user.filter('plugin:' + this.panel.key, defaults) }
-      return this.aside.filter
+      // detached, so the watcher isn't bound to the calling component and stops with the panel
+      this.filterScope?.stop()
+      this.filterScope = effectScope(true)
+
+      const filter = this.filterScope.run(() => this.settings.filter('plugin:' + this.panel.key, defaults))
+
+      this.aside = { content, defaults, filter }
+      return filter
     },
 
     label(panel) {
@@ -63,29 +72,7 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
-    <template #prepend>
-      <v-btn
-        @click="drawer.toggle('nav')"
-        :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? mdiClose : mdiMenu"
-      />
-    </template>
-
-    <v-app-bar-title><h1>{{ label(panel) }}</h1></v-app-bar-title>
-
-    <template #append>
-      <User />
-
-      <v-btn
-        v-if="aside"
-        @click="drawer.toggle('aside')"
-        :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
-        class="btn-sidemenu"
-      />
-    </template>
-  </v-app-bar>
+  <ListAppBar :title="label(panel)" :aside="!!aside" />
 
   <Navigation />
 
@@ -96,6 +83,7 @@ export default {
   <AsideList
     v-if="aside"
     :filter="aside.filter"
+    @update:filter="Object.assign(aside.filter, $event)"
     :defaults="aside.defaults"
     :content="aside.content()"
   />

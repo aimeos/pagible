@@ -15,23 +15,29 @@ const MAX_LOCALES = 3
 export async function switchLocale(code) {
   const name = localeMap[code] || code
 
+  let mod
+
   try {
-    const mod = await import(`../node_modules/vuetify/lib/locale/${name}.js`)
-    const msgs = vuetify.locale.messages.value
+    mod = await import(`../node_modules/vuetify/lib/locale/${name}.js`)
+  } catch {
+    // Vuetify has no translations for the language, its components keep the current ones
+    return
+  }
 
-    msgs[code] = mod.default
-    const keys = Object.keys(msgs)
+  const msgs = vuetify.locale.messages.value
 
-    if (keys.length > MAX_LOCALES) {
-      const current = vuetify.locale.current.value
+  msgs[code] = mod.default
+  const keys = Object.keys(msgs)
 
-      for (const key of keys) {
-        if (key !== current && key !== code && key !== 'en' && Object.keys(msgs).length > MAX_LOCALES) {
-          delete msgs[key]
-        }
+  if (keys.length > MAX_LOCALES) {
+    const current = vuetify.locale.current.value
+
+    for (const key of keys) {
+      if (key !== current && key !== code && key !== 'en' && Object.keys(msgs).length > MAX_LOCALES) {
+        delete msgs[key]
       }
     }
-  } catch {}
+  }
 }
 
 const vuetify = createVuetify({

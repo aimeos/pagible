@@ -15,6 +15,12 @@ describe('Slider', () => {
     cy.mount(Slider, { props: { config: { default: 25 } } })
     // The slider uses config.default internally for its position
     cy.get('.v-slider [role="slider"]').should('have.attr', 'aria-valuenow', '25')
+    cy.get('.v-slider .v-input__append').should('have.text', '25')
+  })
+
+  it('shows 0 in the append slot without modelValue and default', () => {
+    cy.mount(Slider, { props: { config: {} } })
+    cy.get('.v-slider .v-input__append').should('have.text', '0')
   })
 
   it('applies config.min and config.max to the slider', () => {

@@ -190,7 +190,7 @@ describe('ElementListItems', () => {
     })
   })
 
-  it('clears the complete Apollo cache before a manual reload', () => {
+  it('drops the cached list before a manual reload', () => {
     const calls = []
     const query = cy.stub().callsFake(() => {
       calls.push('query')
@@ -207,19 +207,20 @@ describe('ElementListItems', () => {
       query,
       provider: {
         defaultClient: {
-          cache: { diff: () => ({ complete: true }), evict() {}, gc() {} },
+          cache: { diff: () => ({ complete: true }), evict: (opts) => calls.push('evict:' + opts.fieldName), gc() {} },
           clearStore,
         },
       },
     }).then(({ wrapper }) => {
       return wrapper.findComponent(ElementListItems).vm.reload().then(() => {
-        expect(calls).to.deep.equal(['clearStore', 'query'])
+        expect(calls).to.deep.equal(['evict:elements', 'query'])
       })
     })
   })
 
   it('shows loading state initially', () => {
-    mountList({}, { 'element:view': true })
+    // the initial search requires the view permission and must not finish
+    mountList({}, { 'element:view': true }, { query: () => new Promise(() => {}) }, true)
     cy.contains('Loading').should('exist')
   })
 
@@ -266,6 +267,9 @@ describe('ElementListItems', () => {
       const item = { id: 'element-1' }
       vm.items = [item, { id: 'element-2' }]
       vm.checked = new Set(['element-2'])
+
+      // the reloaded list still contains both items
+      cy.stub(vm, 'search').resolves(vm.items)
 
       vm.edit(item)
       expect(vm.editIds).to.deep.equal(['element-1'])
@@ -325,7 +329,7 @@ describe('ElementListItems', () => {
       mountList({}, { 'element:view': true }, { query: query() }).then(load)
 
       press('element-2', ' ')
-      cy.get('.items [data-id="element-2"] .item-check input').should('be.checked')
+      cy.get('.items [data-id="element-2"] .item-check input').should('be.checked').and('have.attr', 'aria-label', 'Toggle selection')
       cy.get('.items [data-id="element-1"] .item-check input').should('not.be.checked')
       press('element-2', ' ')
       cy.get('.items [data-id="element-2"] .item-check input').should('not.be.checked')

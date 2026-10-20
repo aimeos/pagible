@@ -16,10 +16,10 @@ export default {
 
   props: {
     item: { type: Object, required: true },
-    assets: { type: Object, default: () => {} }
+    assets: { type: Object, default: () => ({}) }
   },
 
-  emits: ['update:item', 'update:aside', 'error'],
+  emits: ['patch', 'add-assets', 'update:access', 'update:aside', 'error'],
 
   data: () => ({
     changed: {},
@@ -34,11 +34,6 @@ export default {
   },
 
   methods: {
-    accessApplied(access) {
-      this.item.access = access
-      this.item.restricted = access !== null
-    },
-
     error(what, value) {
       this.errors[what] = value
       this.$emit('error', hasTrue(this.errors))
@@ -48,13 +43,13 @@ export default {
       this.changed = {}
       this.errors = {}
 
-      this.$refs.props?.reset()
+      this.$refs.details?.reset()
       this.$refs.meta?.reset()
       this.$refs.config?.reset()
     },
 
     async showError() {
-      const tab = ['details', 'meta', 'config', 'access'].find((key) => this.errors[key])
+      const tab = ['details', 'meta', 'config'].find((key) => this.errors[key])
 
       if (!tab) {
         return
@@ -63,13 +58,14 @@ export default {
       this.tab = tab
       this.$emit('update:aside', tab === 'details' ? 'meta' : 'count')
 
+      // the details are a plain form, only the sections need to open the failed panel
       await this.$nextTick()
       await this.$refs[tab]?.showError?.()
     },
 
-    update(what) {
+    update(what, patch) {
       this.changed[what] = true
-      this.$emit('update:item', this.item)
+      this.$emit('patch', patch)
     }
   }
 }
@@ -112,9 +108,9 @@ export default {
       <v-window v-model="tab" :touch="false">
         <v-window-item value="details">
           <PageDetailItemProps
-            ref="props"
+            ref="details"
             :item="item"
-            @change="update('details')"
+            @patch="update('details', $event)"
             @error="error('details', $event)"
           />
         </v-window-item>
@@ -125,7 +121,8 @@ export default {
             section="meta"
             :item="item"
             :assets="assets"
-            @change="update('meta')"
+            @patch="update('meta', $event)"
+            @add-assets="$emit('add-assets', $event)"
             @error="error('meta', $event)"
           />
         </v-window-item>
@@ -137,7 +134,8 @@ export default {
             permission="page:config"
             :item="item"
             :assets="assets"
-            @change="update('config')"
+            @patch="update('config', $event)"
+            @add-assets="$emit('add-assets', $event)"
             @error="error('config', $event)"
           />
         </v-window-item>
@@ -150,7 +148,7 @@ export default {
             :ids="[item.id]"
             :access="item.access"
             :descendants="item.has || 0"
-            @applied="accessApplied"
+            @applied="$emit('update:access', $event)"
           />
         </v-window-item>
       </v-window>
@@ -165,6 +163,6 @@ export default {
 }
 
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 </style>

@@ -1,42 +1,47 @@
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: et\n"
-"Language-Team: none\n"
-"Last-Translator: Automatically generated\n"
-"MIME-Version: 1.0\n"
-"PO-Revision-Date: \n"
-"POT-Creation-Date: \n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: et\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: js/ai.js:64
+#: js/ai.js:65 js/components/FileDetailItem.vue:251
 msgid "Error transcribing file"
 msgstr "Viga faili transkribeerimisel"
 
-#: js/ai.js:113
+#: js/ai.js:114 js/components/FileDetailItem.vue:304
+#: js/components/FileDetailItem.vue:311
 msgid "Error translating texts"
 msgstr "Viga tekstide tõlkimisel"
 
-#: js/ai.js:137
+#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "Teksti genereerimiseks on vaja viipa"
 
-#: js/ai.js:160
+#: js/ai.js:161
 msgid "Error generating text"
 msgstr "Viga teksti genereerimisel"
 
-#: js/chat.js:34
+#: js/App.vue:88 js/components/User.vue:68
+msgid "Error switching language"
+msgstr "Viga keele vahetamisel"
+
+#: js/chat.js:35
 msgid "The chat assistant is not available."
 msgstr "Vestlusassistent pole saadaval."
 
-#: js/chat.js:71
+#: js/chat.js:72
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Vastus on juba genereerimisel. Palun oodake, kuni see lõpeb."
 
-#: js/chat.js:73
+#: js/chat.js:74
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Liiga palju taotlusi. Palun oodake veidi ja proovige uuesti."
 
@@ -76,8 +81,7 @@ msgstr "Järgmine vahekaart"
 msgid "Show or hide side panel"
 msgstr "Näita või peida külgpaneel"
 
-#: js/commands.js:115
-#: js/components/DetailAppBar.vue:160
+#: js/commands.js:115 js/components/DetailAppBar.vue:167
 msgid "Back to list view"
 msgstr "Tagasi nimekirja vaatesse"
 
@@ -105,12 +109,9 @@ msgstr "Lõika lehekülg"
 msgid "Paste page"
 msgstr "Kleebi lehekülg"
 
-#: js/commands.js:178
-#: js/components/CommandPalette.vue:106
-#: js/components/DetailRefs.vue:128
-#: js/components/Navigation.vue:30
-#: js/views/PageList.vue:267
-#: js/views/PageList.vue:284
+#: js/commands.js:178 js/components/CommandPalette.vue:111
+#: js/components/DetailRefs.vue:150 js/components/Navigation.vue:31
+#: js/views/PageList.vue:266 js/views/PageList.vue:270
 msgid "Pages"
 msgstr "Leheküljed"
 
@@ -118,14 +119,10 @@ msgstr "Leheküljed"
 msgid "Go to pages"
 msgstr "Mine lehekülgedele"
 
-#: js/commands.js:184
-#: js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25
-#: js/components/HistoryDialog.vue:303
-#: js/components/HistoryDialog.vue:305
-#: js/components/Navigation.vue:31
-#: js/views/FileList.vue:51
-#: js/views/FileList.vue:68
+#: js/commands.js:184 js/components/CommandPalette.vue:112
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
+#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
+#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "Meedia"
 
@@ -133,11 +130,9 @@ msgstr "Meedia"
 msgid "Go to media"
 msgstr "Mine meediasse"
 
-#: js/commands.js:190
-#: js/components/CommandPalette.vue:108
-#: js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:51
+#: js/commands.js:190 js/components/CommandPalette.vue:113
+#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
+#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "Jagatud elemendid"
 
@@ -145,9 +140,8 @@ msgstr "Jagatud elemendid"
 msgid "Go to shared elements"
 msgstr "Mine jagatud elementide juurde"
 
-#: js/commands.js:196
-#: js/components/Navigation.vue:33
-#: js/views/AccessList.vue:253
+#: js/commands.js:196 js/components/Navigation.vue:34
+#: js/views/AccessList.vue:239
 msgid "Users"
 msgstr "Kasutajad"
 
@@ -155,454 +149,410 @@ msgstr "Kasutajad"
 msgid "Go to users"
 msgstr "Mine kasutajate juurde"
 
-#: js/components/AccessUsers.vue:220
+#: js/components/AccessUsers.vue:218
 msgid "Access roles updated"
 msgstr "Juurdepääsurollid on uuendatud"
 
-#: js/components/AccessUsers.vue:229
+#: js/components/AccessUsers.vue:218
+msgid "Backend roles updated"
+msgstr "Taustarollid on uuendatud"
+
+#: js/components/AccessUsers.vue:228
 msgid "Error updating access roles"
 msgstr "Juurdepääsurollide uuendamisel tekkis viga"
 
-#: js/components/AccessUsers.vue:230
+#: js/components/AccessUsers.vue:229
 msgid "Error updating CMS permissions"
 msgstr "Viga CMS-i õiguste uuendamisel"
 
-#: js/components/AccessUsers.vue:267
+#: js/components/AccessUsers.vue:264
 msgid "User created"
 msgstr "Kasutaja on loodud"
 
-#: js/components/AccessUsers.vue:273
+#: js/components/AccessUsers.vue:270
 msgid "Error creating user"
 msgstr "Kasutaja loomisel tekkis viga"
 
-#: js/components/AccessUsers.vue:306
-#: js/components/PageAccess.vue:123
-#: js/views/AccessList.vue:142
+#: js/components/AccessUsers.vue:310 js/components/PageAccess.vue:130
+#: js/views/AccessList.vue:141
 msgid "Error fetching access roles"
 msgstr "Viga juurdepääsurollide toomisel"
 
-#: js/components/AccessUsers.vue:336
+#: js/components/AccessUsers.vue:340
 msgid "Error fetching user access roles"
 msgstr "Viga kasutaja juurdepääsurollide toomisel"
 
-#: js/components/AccessUsers.vue:379
-#: js/components/AccessUsers.vue:380
+#: js/components/AccessUsers.vue:383 js/components/AccessUsers.vue:384
 msgid "Create user"
 msgstr "Loo kasutaja"
 
-#: js/components/AccessUsers.vue:387
+#: js/components/AccessUsers.vue:391
 msgid "Email address"
 msgstr "E-posti aadress"
 
-#: js/components/AccessUsers.vue:396
+#: js/components/AccessUsers.vue:400
 msgid "Search user by email"
 msgstr "Kasutaja otsimine e-posti aadressi järgi"
 
-#: js/components/AccessUsers.vue:408
-#: js/components/AccessUsers.vue:409
+#: js/components/AccessUsers.vue:412 js/components/AccessUsers.vue:413
 msgid "Search"
 msgstr "Otsi"
 
-#: js/components/AccessUsers.vue:424
-#: js/components/AccessUsers.vue:425
-#: js/components/DetailAppBar.vue:194
+#: js/components/AccessUsers.vue:428 js/components/AccessUsers.vue:429
+#: js/components/DetailAppBar.vue:201
 msgid "Save"
 msgstr "Salvesta"
 
-#: js/components/AccessUsers.vue:434
+#: js/components/AccessUsers.vue:438
 msgid "Account"
 msgstr "Konto"
 
-#: js/components/AccessUsers.vue:439
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:443 js/components/AccessUsers.vue:450
 msgid "Assigned frontend roles"
 msgstr "Määratud avaliku osa rollid"
 
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:450
 msgid "Roles granting access to restricted pages"
 msgstr "Rollid, mis annavad juurdepääsu piiratud lehekülgedele"
 
-#: js/components/AccessUsers.vue:459
+#: js/components/AccessUsers.vue:463
 msgid "Assigned backend roles"
 msgstr "Määratud haldusliidese rollid"
 
-#: js/components/AccessUsers.vue:463
+#: js/components/AccessUsers.vue:467
 msgid "Custom"
 msgstr "Kohandatud"
 
-#: js/components/AccessUsers.vue:469
+#: js/components/AccessUsers.vue:473
 msgid "Available roles"
 msgstr "Saadaolevad rollid"
 
-#: js/components/AccessUsers.vue:469
+#: js/components/AccessUsers.vue:473
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "Rollid, mis määravad, mida kasutaja saab teha haldusliideses"
 
-#: js/components/AccessUsers.vue:481
-#: js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:196
-#: js/views/AccessList.vue:325
+#: js/components/AccessUsers.vue:485 js/components/ListStatus.vue:36
+#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:311
 msgid "No entries found"
 msgstr "Kirjeid ei leitud"
 
-#: js/components/ActionMenu.vue:25
-#: js/components/CommandPalette.vue:104
+#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:109
 msgid "Actions"
 msgstr "Toimingud"
 
-#: js/components/ActionMenu.vue:60
-#: js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:183
+#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "Sulge"
 
-#: js/components/AsideCount.vue:46
-msgid "Used elements"
-msgstr "Kasutatud elemendid"
-
-#: js/components/AsideList.vue:69
-msgid "Filters"
-msgstr "Filtrid"
-
-#: js/components/AsideList.vue:76
-#: js/components/ListStatus.vue:43
-msgid "Reset"
-msgstr "Lähtesta"
-
-#: js/components/AsideMeta.vue:21
-#: js/components/DetailRefs.vue:133
-#: js/components/DetailRefs.vue:163
-#: js/components/DetailRefs.vue:185
-msgid "ID"
-msgstr "ID"
-
-#: js/components/AsideMeta.vue:25
-#: js/components/ListSort.vue:31
-#: js/fields/File.vue:340
-msgid "MIME"
-msgstr "MIME"
-
-#: js/components/AsideMeta.vue:29
-#: js/fields/File.vue:341
-#: js/listview.js:122
-msgid "editor"
-msgstr "toimetaja"
-
-#: js/components/AsideMeta.vue:33
-msgid "created"
-msgstr "loodud"
-
-#: js/components/AsideMeta.vue:34
-#: js/fields/File.vue:342
-msgid "updated"
-msgstr "uuendatud"
-
-#: js/components/AsideMeta.vue:35
-msgid "deleted"
-msgstr "kustutatud"
-
-#: js/components/AsideMeta.vue:51
-#: js/components/AsideMeta.vue:53
-#: js/components/HistoryDialog.vue:41
-msgid "Meta data"
-msgstr "Metaandmed"
-
-#: js/components/ChangesDialog.vue:58
-#: js/components/ChangesDialog.vue:59
-#: js/components/HistoryDialog.vue:41
-msgid "Fields"
-msgstr "Väljad"
-
-#: js/components/ChangesDialog.vue:60
-msgid "Meta tags"
-msgstr "Metasildid"
-
-#: js/components/ChangesDialog.vue:61
-#: js/components/HistoryDialog.vue:42
-msgid "Configuration"
-msgstr "Seadistused"
-
-#: js/components/ChangesDialog.vue:62
-#: js/components/HistoryDialog.vue:42
-#: js/views/PageDetail.vue:821
-msgid "Content"
-msgstr "Sisu"
-
-#: js/components/ChangesDialog.vue:252
-msgid "Conflicts from %{editor}"
-msgstr "Konfliktid kasutajalt %{editor}"
-
-#: js/components/ChangesDialog.vue:258
-msgid "%{count} / %{total}"
-msgstr "%{count} / %{total}"
-
-#: js/components/ChangesDialog.vue:280
-#: js/components/Fields.vue:286
-#: js/components/Fields.vue:319
-#: js/components/FieldsAside.vue:253
-msgid "Revert"
-msgstr "Ennista"
-
-#: js/components/ChangesDialog.vue:283
-msgid "Changes"
-msgstr "Muudatused"
-
-#: js/components/ChangesDialog.vue:302
-msgid "Removed"
-msgstr "Eemaldatud"
-
-#: js/components/ChangesDialog.vue:309
-msgid "Added"
-msgstr "Lisatud"
-
-#: js/components/ChangesDialog.vue:329
-msgid "Use theirs"
-msgstr "Kasuta nende oma"
-
-#: js/components/ChangesDialog.vue:335
-msgid "Keep mine"
-msgstr "Jäta minu oma"
-
-#: js/components/ChangesDialog.vue:342
-msgid "Merge both"
-msgstr "Ühenda mõlemad"
-
-#: js/components/ChatDialog.vue:253
-msgid "Done"
-msgstr "Valmis"
-
-#: js/components/ChatDialog.vue:263
-msgid "Sorry, something went wrong."
-msgstr "Kahjuks läks midagi valesti."
-
-#: js/components/ChatDialog.vue:310
-msgid "AI Assistant"
-msgstr "AI assistent"
-
-#: js/components/ChatDialog.vue:318
-#: js/components/ChatDialog.vue:319
-msgid "New chat"
-msgstr "Uus vestlus"
-
-#: js/components/ChatDialog.vue:330
-#: js/views/ElementList.vue:74
-#: js/views/FileList.vue:74
-#: js/views/PageList.vue:290
+#: js/components/AiPrompt.vue:87 js/components/AiPrompt.vue:88
+#: js/components/ChatDialog.vue:324
 msgid "What shall I do for you?"
 msgstr "Mida saan teie heaks teha?"
 
-#: js/components/ChatDialog.vue:347
+#: js/components/AiPrompt.vue:87
+msgid "Press Enter to open the chat"
+msgstr "Vestluse avamiseks vajutage sisestusklahvi"
+
+#: js/components/AiPrompt.vue:104
+msgid "Hide help"
+msgstr "Peida abi"
+
+#: js/components/AiPrompt.vue:104
+msgid "Show help"
+msgstr "Näita abi"
+
+#: js/components/AiPrompt.vue:115 js/components/ChatDialog.vue:399
+#: js/components/ChatDialog.vue:400
+msgid "Send"
+msgstr "Saada"
+
+#: js/components/AiPrompt.vue:123 js/components/ChatDialog.vue:378
+#: js/components/ChatDialog.vue:379 js/components/FieldActions.vue:134
+#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:476
+msgid "Dictate"
+msgstr "Dikteeri"
+
+#: js/components/AiPrompt.vue:132
+msgid "Help"
+msgstr "Abi"
+
+#: js/components/AsideCount.vue:60
+msgid "Used elements"
+msgstr "Kasutatud elemendid"
+
+#: js/components/AsideList.vue:70
+msgid "Filters"
+msgstr "Filtrid"
+
+#: js/components/AsideList.vue:77 js/components/ListStatus.vue:43
+msgid "Reset"
+msgstr "Lähtesta"
+
+#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:155
+#: js/components/DetailRefs.vue:185 js/components/DetailRefs.vue:207
+msgid "ID"
+msgstr "ID"
+
+#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
+#: js/fields/File.vue:334
+msgid "MIME"
+msgstr "MIME"
+
+#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
+msgid "editor"
+msgstr "toimetaja"
+
+#: js/components/AsideMeta.vue:34
+msgid "created"
+msgstr "loodud"
+
+#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
+msgid "updated"
+msgstr "uuendatud"
+
+#: js/components/AsideMeta.vue:36
+msgid "deleted"
+msgstr "kustutatud"
+
+#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
+#: js/components/HistoryDialog.vue:46
+msgid "Meta data"
+msgstr "Metaandmed"
+
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:46
+msgid "Fields"
+msgstr "Väljad"
+
+#: js/components/ChangesDialog.vue:61
+msgid "Meta tags"
+msgstr "Metasildid"
+
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
+msgid "Configuration"
+msgstr "Seadistused"
+
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
+#: js/views/PageDetail.vue:707
+msgid "Content"
+msgstr "Sisu"
+
+#: js/components/ChangesDialog.vue:231
+msgid "Conflicts from %{editor}"
+msgstr "Konfliktid kasutajalt %{editor}"
+
+#: js/components/ChangesDialog.vue:237
+msgid "%{count} / %{total}"
+msgstr "%{count} / %{total}"
+
+#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
+#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
+msgid "Revert"
+msgstr "Ennista"
+
+#: js/components/ChangesDialog.vue:262
+msgid "Changes"
+msgstr "Muudatused"
+
+#: js/components/ChangesDialog.vue:281
+msgid "Removed"
+msgstr "Eemaldatud"
+
+#: js/components/ChangesDialog.vue:288
+msgid "Added"
+msgstr "Lisatud"
+
+#: js/components/ChangesDialog.vue:308
+msgid "Use theirs"
+msgstr "Kasuta nende oma"
+
+#: js/components/ChangesDialog.vue:314
+msgid "Keep mine"
+msgstr "Jäta minu oma"
+
+#: js/components/ChangesDialog.vue:321
+msgid "Merge both"
+msgstr "Ühenda mõlemad"
+
+#: js/components/ChatDialog.vue:208
+msgid "Sorry, something went wrong."
+msgstr "Kahjuks läks midagi valesti."
+
+#: js/components/ChatDialog.vue:284
+msgid "Done"
+msgstr "Valmis"
+
+#: js/components/ChatDialog.vue:304
+msgid "AI Assistant"
+msgstr "AI assistent"
+
+#: js/components/ChatDialog.vue:312 js/components/ChatDialog.vue:313
+msgid "New chat"
+msgstr "Uus vestlus"
+
+#: js/components/ChatDialog.vue:341
 msgid "Thinking ..."
 msgstr "Mõtleb ..."
 
-#: js/components/ChatDialog.vue:353
-#: js/components/PageDetailContentList.vue:750
-#: js/components/PageDetailContentList.vue:836
-#: js/components/PageListItems.vue:1793
-#: js/fields/Items.vue:303
+#: js/components/ChatDialog.vue:347 js/components/ChatDialog.vue:348
+#: js/components/PageDetailContentList.vue:524
+#: js/components/PageDetailContentList.vue:611
+#: js/components/PageListItems.vue:770 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopeeri"
 
-#: js/components/ChatDialog.vue:367
+#: js/components/ChatDialog.vue:362
 msgid "Send a message ..."
 msgstr "Saada sõnum..."
 
-#: js/components/ChatDialog.vue:382
-#: js/components/ChatDialog.vue:383
-#: js/components/Fields.vue:279
-#: js/components/FileAiDialog.vue:200
-#: js/components/FileDetailItem.vue:416
-#: js/components/PageDetailContentList.vue:721
-#: js/fields/Items.vue:372
-#: js/views/ElementList.vue:107
-#: js/views/FileList.vue:107
-#: js/views/PageList.vue:323
-msgid "Dictate"
-msgstr "Dikteeri"
+#: js/components/ChatDialog.vue:363
+msgid "Chat message"
+msgstr "Vestluse sõnum"
 
-#: js/components/ChatDialog.vue:393
-#: js/components/ChatDialog.vue:394
+#: js/components/ChatDialog.vue:389 js/components/ChatDialog.vue:390
 msgid "Stop"
 msgstr "Peata"
 
-#: js/components/ChatDialog.vue:403
-#: js/components/ChatDialog.vue:404
-#: js/views/ElementList.vue:100
-#: js/views/FileList.vue:100
-msgid "Send"
-msgstr "Saada"
-
-#: js/components/CommandPalette.vue:105
+#: js/components/CommandPalette.vue:110
 msgid "Go to"
 msgstr "Mine"
 
-#: js/components/CommandPalette.vue:226
-#: js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352
-#: js/components/PageListItems.vue:1907
+#: js/components/CommandPalette.vue:231 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
 msgid "New"
 msgstr "Uus"
 
-#: js/components/CommandPalette.vue:280
-#: js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:77
-#: js/components/ShortcutDialog.vue:38
+#: js/components/CommandPalette.vue:286 js/components/CommandPalette.vue:309
+#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "Käsud"
 
-#: js/components/CommandPalette.vue:289
+#: js/components/CommandPalette.vue:295
 msgid "Type a command or search pages, files and elements"
 msgstr "Sisestage käsk või otsige lehekülgi, faile ja elemente"
 
-#: js/components/CommandPalette.vue:290
+#: js/components/CommandPalette.vue:296
 msgid "Command or search term"
 msgstr "Käsk või otsingusõna"
 
-#: js/components/CommandPalette.vue:322
-#: js/components/ShortcutDialog.vue:98
+#: js/components/CommandPalette.vue:328 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "seejärel"
 
-#: js/components/CommandPalette.vue:329
+#: js/components/CommandPalette.vue:335
 msgid "Search failed, please try again"
 msgstr "Otsing ebaõnnestus, palun proovige uuesti"
 
-#: js/components/CommandPalette.vue:330
+#: js/components/CommandPalette.vue:336
 msgid "No results"
 msgstr "Tulemusi pole"
 
-#: js/components/ConfirmDialog.vue:23
-#: js/components/ConfirmDialog.vue:57
-#: js/components/ElementListItems.vue:229
-#: js/components/ElementListItems.vue:335
-#: js/components/FileListItems.vue:314
-#: js/components/FileListItems.vue:462
-#: js/components/PageListItems.vue:1579
-#: js/components/PageListItems.vue:1821
-#: js/views/AccessList.vue:279
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
+#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
+#: js/views/AccessList.vue:265
 msgid "Purge"
 msgstr "Kustuta jäädavalt"
 
 #: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
-msgid_plural "The following %{num} entries will be permanently deleted and cannot be restored:"
+msgid_plural ""
+"The following %{num} entries will be permanently deleted and cannot be "
+"restored:"
 msgstr[0] "Järgmine kirje kustutatakse jäädavalt ja seda ei saa taastada:"
-msgstr[1] "Järgmised %{num} kirjet kustutatakse jäädavalt ja neid ei saa taastada:"
+msgstr[1] ""
+"Järgmised %{num} kirjet kustutatakse jäädavalt ja neid ei saa taastada:"
 
-#: js/components/ConfirmDialog.vue:55
-#: js/components/FileDetailItemImage.vue:597
-#: js/components/TranslateDialog.vue:99
-#: js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:346
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:422
+#: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
+#: js/views/AccessList.vue:332
 msgid "Cancel"
 msgstr "Tühista"
 
-#: js/components/DetailAppBar.vue:156
-#: js/views/AccessList.vue:231
-#: js/views/ElementList.vue:41
-#: js/views/FileList.vue:41
-#: js/views/PageList.vue:257
-#: js/views/PluginPanel.vue:66
+#: js/components/DetailAppBar.vue:163 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Menüü"
 
-#: js/components/DetailAppBar.vue:177
+#: js/components/DetailAppBar.vue:184
 msgid "View history"
 msgstr "Vaata ajalugu"
 
-#: js/components/DetailAppBar.vue:186
+#: js/components/DetailAppBar.vue:193
 msgid "View merge changes"
 msgstr "Vaata ühendamise muudatusi"
 
-#: js/components/DetailAppBar.vue:210
-#: js/components/DetailAppBar.vue:226
-#: js/components/DetailAppBar.vue:230
-#: js/components/ElementListItems.vue:214
-#: js/components/ElementListItems.vue:304
-#: js/components/FileListItems.vue:292
-#: js/components/FileListItems.vue:427
-#: js/components/PageListItems.vue:1551
-#: js/components/PageListItems.vue:1757
+#: js/components/DetailAppBar.vue:217 js/components/DetailAppBar.vue:233
+#: js/components/DetailAppBar.vue:237 js/components/ListBulkMenu.vue:53
+#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:90
+#: js/components/PageListItems.vue:734
 msgid "Publish"
 msgstr "Avalda"
 
-#: js/components/DetailAppBar.vue:233
+#: js/components/DetailAppBar.vue:240
 msgid "Publish & Close"
 msgstr "Avalda ja sulge"
 
-#: js/components/DetailAppBar.vue:238
-#: js/components/DetailAppBar.vue:264
+#: js/components/DetailAppBar.vue:245 js/components/DetailAppBar.vue:271
 msgid "Schedule"
 msgstr "Ajasta"
 
-#: js/components/DetailAppBar.vue:273
+#: js/components/DetailAppBar.vue:280
 msgid "Schedule & Close"
 msgstr "Ajasta ja sulge"
 
-#: js/components/DetailAppBar.vue:281
-#: js/views/ElementList.vue:59
-#: js/views/FileList.vue:59
-#: js/views/PageList.vue:275
-#: js/views/PluginPanel.vue:83
+#: js/components/DetailAppBar.vue:288 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Lülita külgmenüü"
 
-#: js/components/DetailRefs.vue:70
+#: js/components/DetailRefs.vue:80
 msgid "yes"
 msgstr "jah"
 
-#: js/components/DetailRefs.vue:73
+#: js/components/DetailRefs.vue:83
 msgid "no"
 msgstr "ei"
 
-#: js/components/DetailRefs.vue:134
-#: js/components/FileUrlDialog.vue:219
+#: js/components/DetailRefs.vue:136
+msgid "Error fetching references"
+msgstr "Viga viidete toomisel"
+
+#: js/components/DetailRefs.vue:156 js/components/FileUrlDialog.vue:232
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:135
-#: js/components/DetailRefs.vue:165
-#: js/components/ElementDetailItem.vue:66
-#: js/components/FileDetailItem.vue:326
-#: js/components/ListSort.vue:32
+#: js/components/DetailRefs.vue:157 js/components/DetailRefs.vue:187
+#: js/components/ElementDetailItem.vue:57 js/components/FileDetailItem.vue:384
+#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Nimi"
 
-#: js/components/DetailRefs.vue:147
-#: js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:475
+#: js/components/DetailRefs.vue:169 js/components/PageAccess.vue:187
+#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "Piiratud"
 
-#: js/components/DetailRefs.vue:158
-#: js/views/ElementList.vue:68
+#: js/components/DetailRefs.vue:180 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "Elemendid"
 
-#: js/components/DetailRefs.vue:164
-#: js/components/DetailRefs.vue:186
-#: js/components/ListSort.vue:37
+#: js/components/DetailRefs.vue:186 js/components/DetailRefs.vue:208
+#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "Tüüp"
 
-#: js/components/DetailRefs.vue:180
+#: js/components/DetailRefs.vue:202
 msgid "Versions"
 msgstr "Versioonid"
 
-#: js/components/DetailRefs.vue:187
-#: js/listview.js:106
+#: js/components/DetailRefs.vue:209 js/listview.js:90
 msgid "Published"
 msgstr "Avaldatud"
 
-#: js/components/EditBulkDialog.vue:53
-#: js/components/ElementListItems.vue:217
-#: js/components/ElementListItems.vue:317
-#: js/components/FileListItems.vue:295
-#: js/components/FileListItems.vue:437
-#: js/components/PageBulkDialog.vue:135
-#: js/components/PageListItems.vue:1561
-#: js/components/PageListItems.vue:1778
+#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
+#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:140
+#: js/components/PageBulkMenu.vue:100 js/components/PageListItems.vue:755
 msgid "Edit properties"
 msgstr "Muuda omadusi"
 
@@ -612,13 +562,10 @@ msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Rakenda valitud omadused %{num} kirjele."
 msgstr[1] "Rakenda valitud omadused %{num} kirjele."
 
-#: js/components/EditBulkDialog.vue:71
-#: js/components/ElementDetailItem.vue:79
-#: js/components/FileDetailItem.vue:338
-#: js/components/ListSort.vue:28
-#: js/components/PageDetailItemProps.vue:233
-#: js/components/PageListItems.vue:1647
-#: js/views/PageDetail.vue:749
+#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
+#: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
+#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:635
 msgid "Language"
 msgstr "Keel"
 
@@ -626,830 +573,759 @@ msgstr "Keel"
 msgid "Language of the content"
 msgstr "Sisu keel"
 
-#: js/components/EditBulkDialog.vue:78
-#: js/components/PageAccess.vue:204
-#: js/components/PageBulkDialog.vue:250
+#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
+#: js/components/PageBulkDialog.vue:255
 msgid "Apply"
 msgstr "Rakenda"
 
-#: js/components/ElementDetailItem.vue:66
+#: js/components/ElementDetailItem.vue:57
 msgid "Name to find the shared element in the element list"
 msgstr "Nimi, millega leida jagatud element elementide loendist"
 
-#: js/components/ElementDetailItem.vue:79
+#: js/components/ElementDetailItem.vue:70
 msgid "Language of the element content, choose none if used in all languages"
 msgstr "Elemendi sisu keel, valige „puudub“, kui kasutatakse kõigis keeltes"
 
-#: js/components/ElementListItems.vue:152
+#: js/components/ElementListItems.vue:153
+msgid "Error adding shared element"
+msgstr "Viga jagatud elemendi lisamisel"
+
+#: js/components/ElementListItems.vue:159
 msgid "Error trashing shared element"
 msgstr "Viga jagatud elemendi prügikasti teisaldamisel"
 
-#: js/components/ElementListItems.vue:153
+#: js/components/ElementListItems.vue:160
 msgid "Error restoring shared element"
 msgstr "Viga jagatud elemendi taastamisel"
 
-#: js/components/ElementListItems.vue:154
+#: js/components/ElementListItems.vue:161
 msgid "Error publishing shared element"
 msgstr "Viga jagatud elemendi avaldamisel"
 
-#: js/components/ElementListItems.vue:155
+#: js/components/ElementListItems.vue:162
 msgid "Error purging shared element"
 msgstr "Viga jagatud elemendi jäädaval kustutamisel"
 
-#: js/components/ElementListItems.vue:156
+#: js/components/ElementListItems.vue:163
 msgid "Error saving shared element"
 msgstr "Viga jagatud elemendi salvestamisel"
 
-#: js/components/ElementListItems.vue:157
+#: js/components/ElementListItems.vue:164
 msgid "Error fetching shared elements"
 msgstr "Viga jagatud elementide toomisel"
 
-#: js/components/ElementListItems.vue:196
-#: js/components/FileListItems.vue:277
-#: js/components/PageDetailContentList.vue:737
-#: js/components/PageListItems.vue:1535
-#: js/views/AccessList.vue:274
-#: js/views/AccessList.vue:318
+#: js/components/ElementListItems.vue:200
+#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:305
+#: js/components/FileListItems.vue:367
+#: js/components/PageDetailContentList.vue:510
+#: js/components/PageDetailContentList.vue:601
+#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
+#: js/views/AccessList.vue:260 js/views/AccessList.vue:304
 msgid "Toggle selection"
 msgstr "Lülita valik"
 
-#: js/components/ElementListItems.vue:220
-#: js/components/ElementListItems.vue:326
-#: js/components/FileListItems.vue:308
-#: js/components/FileListItems.vue:453
-#: js/components/PageListItems.vue:1573
-#: js/components/PageListItems.vue:1812
-msgid "Delete"
-msgstr "Kustuta"
-
-#: js/components/ElementListItems.vue:226
-#: js/components/ElementListItems.vue:332
-#: js/components/FileListItems.vue:311
-#: js/components/FileListItems.vue:459
-#: js/components/PageListItems.vue:1576
-#: js/components/PageListItems.vue:1818
-msgid "Restore"
-msgstr "Taasta"
-
-#: js/components/ElementListItems.vue:237
-#: js/components/ElementListItems.vue:380
-#: js/components/PageDetailContentList.vue:924
-#: js/components/PageDetailItemSection.vue:225
-#: js/fields/Items.vue:410
+#: js/components/ElementListItems.vue:218
+#: js/components/ElementListItems.vue:299
+#: js/components/PageDetailContentList.vue:701
+#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Lisa element"
 
-#: js/components/ElementListItems.vue:252
-#: js/components/FileListItems.vue:348
-#: js/components/PageDetailContentList.vue:770
-#: js/components/PageListItems.vue:1656
-#: js/components/SchemaItems.vue:145
-#: js/views/AccessList.vue:303
-msgid "Search for"
-msgstr "Otsi"
-
-#: js/components/ElementListItems.vue:263
-#: js/components/FileListItems.vue:361
-msgid "Updated by another user"
-msgstr "Uuendas teine kasutaja"
-
-#: js/components/ElementListItems.vue:269
-#: js/components/FileListItems.vue:367
-#: js/components/PageListItems.vue:1674
-msgid "Refresh"
-msgstr "Värskenda"
-
-#: js/components/ElementListItems.vue:275
-#: js/components/SchemaItems.vue:156
+#: js/components/ElementListItems.vue:230 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Laadi elemendid uuesti"
 
-#: js/components/Fields.vue:242
-#: js/components/Fields.vue:248
-#: js/components/PageListItems.vue:1591
-#: js/components/PageListItems.vue:1828
-#: js/components/TranslateDialog.vue:66
-#: js/components/TranslateDialog.vue:101
-#: js/fields/Items.vue:337
-#: js/fields/Items.vue:343
-#: js/views/PageDetail.vue:791
+#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
+#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
+#: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
+#: js/views/PageDetail.vue:677
 msgid "Translate"
 msgstr "Tõlgi"
 
-#: js/components/Fields.vue:267
-#: js/fields/Items.vue:361
+#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "Genereeri tekst"
 
-#: js/components/Fields.vue:294
+#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "Uuendas teine toimetaja"
 
-#: js/components/Fields.vue:297
+#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "Üle kirjutatud"
 
-#: js/components/FieldsAside.vue:77
+#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "Mobiil"
 
-#: js/components/FieldsAside.vue:78
+#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "Tahvelarvuti"
 
-#: js/components/FieldsAside.vue:79
+#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "Arvuti"
 
-#: js/components/FieldsAside.vue:79
+#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "Täislaius"
 
-#: js/components/FieldsAside.vue:176
+#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "Sisuelement"
 
-#: js/components/FieldsAside.vue:189
+#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "Lisa element enne"
 
-#: js/components/FieldsAside.vue:197
+#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "Lisa element pärast"
 
-#: js/components/FieldsAside.vue:205
+#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "Eemalda element"
 
-#: js/components/FieldsAside.vue:213
+#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "Kohanduv eelvaade"
 
-#: js/components/FieldsAside.vue:245
-#: js/components/PageDetailContentList.vue:872
+#: js/components/FieldsAside.vue:231
+#: js/components/PageDetailContentList.vue:647
 msgid "Change to"
 msgstr "Muuda tüübiks"
 
-#: js/components/FileActionMenu.vue:36
-#: js/fields/File.vue:233
-#: js/fields/File.vue:234
-#: js/fields/File.vue:258
-#: js/fields/File.vue:259
-#: js/fields/Images.vue:271
+#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
+#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
+#: js/fields/Images.vue:328
 msgid "Edit"
 msgstr "Muuda"
 
-#: js/components/FileActionMenu.vue:39
-#: js/components/FileAiDialog.vue:223
-#: js/components/FileAiDialog.vue:250
-#: js/components/FileUrlDialog.vue:231
-#: js/components/PageDetailContentList.vue:762
-#: js/components/PageDetailContentList.vue:842
-#: js/fields/Items.vue:305
-#: js/fields/Table.vue:182
-#: js/fields/Table.vue:231
+#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:254
+#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:244
+#: js/components/PageDetailContentList.vue:536
+#: js/components/PageDetailContentList.vue:617 js/fields/Items.vue:283
+#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Eemalda"
 
-#: js/components/FileAiDialog.vue:116
-#: js/components/FileListItems.vue:153
-#: js/components/FileUrlDialog.vue:59
-#: js/components/FileUrlDialog.vue:158
-#: js/fields/File.vue:102
-#: js/fields/Images.vue:95
+#: js/components/FileAiDialog.vue:129 js/components/FileListItems.vue:174
+#: js/components/FileUrlDialog.vue:62 js/components/FileUrlDialog.vue:164
+#: js/filefield.js:188
 msgid "Error adding file %{path}"
 msgstr "Viga faili lisamisel %{path}"
 
-#: js/components/FileAiDialog.vue:157
+#: js/components/FileAiDialog.vue:173
 msgid "Error creating file"
 msgstr "Viga faili loomisel"
 
-#: js/components/FileAiDialog.vue:189
+#: js/components/FileAiDialog.vue:220
 msgid "Create image"
 msgstr "Loo pilt"
 
-#: js/components/FileAiDialog.vue:207
+#: js/components/FileAiDialog.vue:238
 msgid "Describe the image content"
 msgstr "Kirjeldage pildi sisu"
 
-#: js/components/FileAiDialog.vue:207
+#: js/components/FileAiDialog.vue:238
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Kirjeldage loodava pildi teemat, stiili ja värve"
 
-#: js/components/FileAiDialog.vue:214
+#: js/components/FileAiDialog.vue:245
 msgid "New image"
 msgstr "Uus pilt"
 
-#: js/components/FileAiDialog.vue:218
+#: js/components/FileAiDialog.vue:249
 msgid "Current images"
 msgstr "Praegused pildid"
 
-#: js/components/FileAiDialog.vue:243
+#: js/components/FileAiDialog.vue:274
 msgid "Images used"
 msgstr "Kasutatud pildid"
 
-#: js/components/FileAiDialog.vue:260
+#: js/components/FileAiDialog.vue:291
 msgid "Select images"
 msgstr "Valige pildid"
 
-#: js/components/FileDetailItem.vue:99
+#: js/components/FileDetailItem.vue:137 js/components/FileDetailItem.vue:146
+msgid "Error copying to clipboard"
+msgstr "Viga lõikelauale kopeerimisel"
+
+#: js/components/FileDetailItem.vue:143
 msgid "Copied to clipboard"
 msgstr "Kopeeritud lõikelauale"
 
-#: js/components/FileDetailItem.vue:126
+#: js/components/FileDetailItem.vue:170
 msgid "Error describing file"
 msgstr "Viga faili kirjeldamisel"
 
-#: js/components/FileDetailItem.vue:174
-#: js/components/FileListItems.vue:169
-#: js/fields/File.vue:184
-#: js/fields/Images.vue:185
-#: js/views/FileDetail.vue:218
+#: js/components/FileDetailItem.vue:219 js/components/FileListItems.vue:190
+#: js/filefield.js:156 js/views/FileDetail.vue:246
 msgid "Error saving file"
 msgstr "Viga faili salvestamisel"
 
-#: js/components/FileDetailItem.vue:187
+#: js/components/FileDetailItem.vue:232
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkriptsioon on saadaval ainult audio- ja videofailide puhul"
 
-#: js/components/FileDetailItem.vue:326
+#: js/components/FileDetailItem.vue:384
 msgid "Name to find the file in the media list"
 msgstr "Nimi, millega leida fail meedia loendist"
 
-#: js/components/FileDetailItem.vue:338
+#: js/components/FileDetailItem.vue:396
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "Faili sisu keel, valige „puudub“, kui kasutatakse kõigis keeltes"
 
-#: js/components/FileDetailItem.vue:348
+#: js/components/FileDetailItem.vue:406
 msgid "Copy URL"
 msgstr "Kopeeri URL"
 
-#: js/components/FileDetailItem.vue:390
+#: js/components/FileDetailItem.vue:449
 msgid "Descriptions"
 msgstr "Kirjeldused"
 
-#: js/components/FileDetailItem.vue:398
-#: js/components/FileDetailItem.vue:456
+#: js/components/FileDetailItem.vue:457 js/components/FileDetailItem.vue:516
 msgid "Translate text"
 msgstr "Tõlgi tekst"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:465
 msgid "Generate description"
 msgstr "Genereeri kirjeldus"
 
-#: js/components/FileDetailItem.vue:432
+#: js/components/FileDetailItem.vue:492
 msgid "Description (%{lang})"
 msgstr "Kirjeldus (%{lang})"
 
-#: js/components/FileDetailItem.vue:432
-msgid "Alternative text for screen readers and search engines, also used as caption"
-msgstr "Alternatiivtekst ekraanilugejatele ja otsingumootoritele, kasutatakse ka pealdisena"
+#: js/components/FileDetailItem.vue:492
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"Alternatiivtekst ekraanilugejatele ja otsingumootoritele, kasutatakse ka "
+"pealdisena"
 
-#: js/components/FileDetailItem.vue:448
+#: js/components/FileDetailItem.vue:508
 msgid "Transcriptions"
 msgstr "Transkriptsioonid"
 
-#: js/components/FileDetailItem.vue:464
+#: js/components/FileDetailItem.vue:524
 msgid "Transcribe file content"
 msgstr "Transkribeeri faili sisu"
 
-#: js/components/FileDetailItem.vue:481
+#: js/components/FileDetailItem.vue:541
 msgid "Transcription (%{lang})"
 msgstr "Transkriptsioon (%{lang})"
 
-#: js/components/FileDetailItem.vue:481
+#: js/components/FileDetailItem.vue:541
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
-msgstr "Räägitud tekst WebVTT vormingus, kuvatakse subtiitrite ja transkriptsioonina"
+msgstr ""
+"Räägitud tekst WebVTT vormingus, kuvatakse subtiitrite ja transkriptsioonina"
 
-#: js/components/FileDetailItemImage.vue:145
+#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "Algne suhe"
 
-#: js/components/FileDetailItemImage.vue:146
+#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "Suhe puudub"
 
-#: js/components/FileDetailItemImage.vue:147
+#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "Ruut"
 
-#: js/components/FileDetailItemImage.vue:156
-msgid "Number of pixels added at this side of the image"
-msgstr "Pildi sellele küljele lisatud pikslite arv"
+#: js/components/FileDetailItemImage.vue:175
+msgid "Error downloading image"
+msgstr "Viga pildi allalaadimisel"
 
-#: js/components/FileDetailItemImage.vue:159
-msgctxt "image edge"
-msgid "Top"
-msgstr "Üleval"
-
-#: js/components/FileDetailItemImage.vue:161
-msgctxt "image edge"
-msgid "Left"
-msgstr "Vasakul"
-
-#: js/components/FileDetailItemImage.vue:162
-msgctxt "image edge"
-msgid "Right"
-msgstr "Paremal"
-
-#: js/components/FileDetailItemImage.vue:164
-msgctxt "image edge"
-msgid "Bottom"
-msgstr "All"
-
-#: js/components/FileDetailItemImage.vue:226
-msgid "Error erasing image part"
-msgstr "Viga pildiosa kustutamisel"
-
-#: js/components/FileDetailItemImage.vue:319
-msgid "Error editing image part"
-msgstr "Viga pildiosa redigeerimisel"
-
-#: js/components/FileDetailItemImage.vue:331
-msgid "Error removing background"
-msgstr "Viga tausta eemaldamisel"
-
-#: js/components/FileDetailItemImage.vue:439
+#: js/components/FileDetailItemImage.vue:285
+#: js/components/FileDetailItemImage.vue:370 js/imageai.js:216
 msgid "Error editing image"
 msgstr "Viga pildi redigeerimisel"
 
-#: js/components/FileDetailItemImage.vue:518
-msgid "Error uncropping image"
-msgstr "Viga pildi laiendamisel"
-
-#: js/components/FileDetailItemImage.vue:548
-msgid "Error upscaling image"
-msgstr "Viga pildi eraldusvõime suurendamisel"
-
-#: js/components/FileDetailItemImage.vue:603
-#: js/components/FileDetailItemImage.vue:608
+#: js/components/FileDetailItemImage.vue:428
+#: js/components/FileDetailItemImage.vue:433
 msgid "Select area"
 msgstr "Vali ala"
 
-#: js/components/FileDetailItemImage.vue:627
+#: js/components/FileDetailItemImage.vue:452
 msgid "Crop selected area"
 msgstr "Kärbi valitud ala"
 
-#: js/components/FileDetailItemImage.vue:637
+#: js/components/FileDetailItemImage.vue:462
 msgid "Erase selected area"
 msgstr "Kustuta valitud ala"
 
-#: js/components/FileDetailItemImage.vue:648
-#: js/components/FileDetailItemImage.vue:655
-#: js/components/FileDetailItemImage.vue:670
+#: js/components/FileDetailItemImage.vue:474
+#: js/components/FileDetailItemImage.vue:481
+#: js/components/FileDetailItemImage.vue:496
 msgid "Edit image"
 msgstr "Redigeeri pilti"
 
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:487
 msgid "Describe the changes"
 msgstr "Kirjeldage muutusi"
 
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:487
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "Kirjeldage, mida pildil tuleks muuta, nt muutke taevas siniseks"
 
-#: js/components/FileDetailItemImage.vue:679
+#: js/components/FileDetailItemImage.vue:506
 msgid "Remove background"
 msgstr "Eemalda taust"
 
-#: js/components/FileDetailItemImage.vue:689
-#: js/components/FileDetailItemImage.vue:696
-#: js/components/FileDetailItemImage.vue:716
+#: js/components/FileDetailItemImage.vue:517
+#: js/components/FileDetailItemImage.vue:524
+#: js/components/FileDetailItemImage.vue:544
 msgid "Expand image"
 msgstr "Laienda pilti"
 
-#: js/components/FileDetailItemImage.vue:724
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:552
+#: js/components/FileDetailItemImage.vue:559
 msgid "Upscale image"
 msgstr "Suurenda pildi eraldusvõimet"
 
-#: js/components/FileDetailItemImage.vue:744
+#: js/components/FileDetailItemImage.vue:572
 msgid "Scale %{factor}"
 msgstr "Suurenda %{factor}"
 
-#: js/components/FileDetailItemImage.vue:752
+#: js/components/FileDetailItemImage.vue:581
 msgid "Rotate counter-clockwise"
 msgstr "Pööra vastupäeva"
 
-#: js/components/FileDetailItemImage.vue:758
+#: js/components/FileDetailItemImage.vue:588
 msgid "Rotate clockwise"
 msgstr "Pööra päripäeva"
 
-#: js/components/FileDetailItemImage.vue:765
+#: js/components/FileDetailItemImage.vue:596
 msgid "Flip horizontally"
 msgstr "Peegelda horisontaalselt"
 
-#: js/components/FileDetailItemImage.vue:771
+#: js/components/FileDetailItemImage.vue:603
 msgid "Flip vertically"
 msgstr "Peegelda vertikaalselt"
 
-#: js/components/FileDetailItemImage.vue:778
+#: js/components/FileDetailItemImage.vue:611
 msgid "Convert to monochrome"
 msgstr "Muuda mustvalgeks"
 
-#: js/components/FileDetailItemImage.vue:781
+#: js/components/FileDetailItemImage.vue:614
 msgid "Download"
 msgstr "Laadi alla"
 
-#: js/components/FileDetailItemImage.vue:783
-#: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:525
-#: js/components/PageListItems.vue:715
-#: js/lists.js:247
+#: js/components/FileDetailItemImage.vue:616
+#: js/components/FileDetailItemImage.vue:621 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "Võta tagasi"
 
-#: js/components/FileDetailItemImage.vue:797
+#: js/components/FileDetailItemImage.vue:628
 msgid "Previous edit"
 msgstr "Eelmine muudatus"
 
-#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:631
 msgid "Original"
 msgstr "Originaal"
 
-#: js/components/FileDetailItemVideo.vue:69
+#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "Videoelementi ei leitud"
 
-#: js/components/FileDetailItemVideo.vue:90
+#: js/components/FileDetailItemVideo.vue:85
+msgid "Video not loaded yet"
+msgstr "Video pole veel laaditud"
+
+#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "Viga video kaane salvestamisel"
 
-#: js/components/FileDetailItemVideo.vue:127
+#: js/components/FileDetailItemVideo.vue:158
+#: js/components/FileDetailItemVideo.vue:202
+#: js/components/FileDetailItemVideo.vue:203
+msgid "Remove cover image"
+msgstr "Eemalda kaanepilt"
+
+#: js/components/FileDetailItemVideo.vue:158
+msgid "Remove the cover image of this video?"
+msgstr "Kas eemaldada selle video kaanepilt?"
+
+#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "Viga video kaane eemaldamisel"
 
-#: js/components/FileDetailItemVideo.vue:136
+#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "Faili pole valitud"
 
-#: js/components/FileDetailItemVideo.vue:139
+#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "Viga video kaane üleslaadimisel"
 
-#: js/components/FileDetailItemVideo.vue:167
+#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "Kasuta kaanepildina"
 
-#: js/components/FileDetailItemVideo.vue:175
+#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "Laadi kaanepilt üles"
 
-#: js/components/FileListItems.vue:165
+#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "Viga faili prügikasti teisaldamisel"
 
-#: js/components/FileListItems.vue:166
+#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "Viga faili taastamisel"
 
-#: js/components/FileListItems.vue:167
-#: js/detail.js:55
+#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Viga faili avaldamisel"
 
-#: js/components/FileListItems.vue:168
+#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "Viga faili jäädaval kustutamisel"
 
-#: js/components/FileListItems.vue:170
+#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "Viga failide toomisel"
 
-#: js/components/FileListItems.vue:242
+#: js/components/FileListItems.vue:269
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "%{num} faili kirjeldused tõlgitud"
 msgstr[1] "%{num} faili kirjeldused tõlgitud"
 
-#: js/components/FileListItems.vue:252
+#: js/components/FileListItems.vue:279
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "Viga kirjelduste tõlkimisel pärast %{done} faili %{total}-st"
 
-#: js/components/FileListItems.vue:253
+#: js/components/FileListItems.vue:280
 msgid "Error translating descriptions"
 msgstr "Viga kirjelduste tõlkimisel"
 
-#: js/components/FileListItems.vue:258
+#: js/components/FileListItems.vue:285
 msgid "No missing descriptions to translate"
 msgstr "Puuduvaid kirjeldusi tõlkimiseks pole"
 
-#: js/components/FileListItems.vue:304
-#: js/components/FileListItems.vue:446
+#: js/components/FileListItems.vue:326 js/components/FileListItems.vue:390
 msgid "Translate descriptions"
 msgstr "Tõlgi kirjeldused"
 
-#: js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:334
-#: js/components/FileListItems.vue:557
-#: js/components/FileListItems.vue:567
-#: js/components/FileUrlDialog.vue:188
-#: js/fields/Images.vue:297
-#: js/fields/Images.vue:321
-msgid "Add files"
-msgstr "Lisa failid"
-
-#: js/components/FileListItems.vue:334
-#: js/components/FileListItems.vue:527
-#: js/components/FileListItems.vue:567
-#: js/components/FileProtect.vue:45
-msgid "Protect access"
-msgstr "Kaitse lehe juurdepääsuga"
-
-#: js/components/FileListItems.vue:373
+#: js/components/FileListItems.vue:341
 msgid "Reload files"
 msgstr "Laadi failid uuesti"
 
-#: js/components/FileListItems.vue:382
+#: js/components/FileListItems.vue:347
 msgid "Grid view"
 msgstr "Ruudustiku vaade"
 
-#: js/components/FileListItems.vue:390
-msgid "List view"
-msgstr "Nimekirja vaade"
+#: js/components/FileListItems.vue:456 js/components/FileProtect.vue:45
+#: js/components/FileUploadButtons.vue:39
+msgid "Protect access"
+msgstr "Kaitse lehe juurdepääsuga"
 
 #: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
-msgstr "Faili saavad alla laadida ainult külastajad, kellel on õigus faili sisaldavat lehekülge vaadata"
+msgstr ""
+"Faili saavad alla laadida ainult külastajad, kellel on õigus faili "
+"sisaldavat lehekülge vaadata"
 
-#: js/components/FileUrlDialog.vue:112
+#: js/components/FileUploadButtons.vue:29
+#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:201
+#: js/fields/Images.vue:356 js/fields/Images.vue:380
+msgid "Add files"
+msgstr "Lisa failid"
+
+#: js/components/FileUrlDialog.vue:118
 msgid "At least one URL is longer than 255 characters"
 msgstr "Vähemalt üks URL on pikem kui 255 tähemärki"
 
-#: js/components/FileUrlDialog.vue:148
+#: js/components/FileUrlDialog.vue:154
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Vähemalt üks fail ei ole tüüpi \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:152
+#: js/components/FileUrlDialog.vue:158
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Faili tüüp ei ole \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:180
-#: js/fields/Images.vue:304
+#: js/components/FileUrlDialog.vue:186 js/fields/Images.vue:363
 msgid "Add files from URLs"
 msgstr "Lisa failid URL-idelt"
 
-#: js/components/FileUrlDialog.vue:188
-#: js/fields/File.vue:284
+#: js/components/FileUrlDialog.vue:201 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Lisa fail"
 
-#: js/components/FileUrlDialog.vue:201
+#: js/components/FileUrlDialog.vue:214
 msgid "Enter one URL per line"
 msgstr "Sisestage üks URL iga rea kohta"
 
-#: js/components/FileUrlDialog.vue:202
+#: js/components/FileUrlDialog.vue:215
 msgid "URLs"
 msgstr "URL-id"
 
-#: js/components/FileUrlDialog.vue:202
+#: js/components/FileUrlDialog.vue:215
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "Failid laaditakse alla nendelt URL-idelt ja lisatakse meedia loendisse"
 
-#: js/components/FileUrlDialog.vue:218
+#: js/components/FileUrlDialog.vue:231
 msgid "Enter URL"
 msgstr "Sisestage URL"
 
-#: js/components/FileUrlDialog.vue:219
+#: js/components/FileUrlDialog.vue:232
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Fail laaditakse alla sellelt URL-ilt ja lisatakse meedia loendisse"
 
-#: js/components/FileUrlDialog.vue:260
+#: js/components/FileUrlDialog.vue:273
 msgid "Size"
 msgstr "Suurus"
 
-#: js/components/HistoryDialog.vue:67
-#: js/components/HistoryDialog.vue:133
-#: js/components/PageDetailContentList.vue:885
+#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
+#: js/components/PageDetailContentList.vue:660
 msgid "Shared element"
 msgstr "Jagatud element"
 
-#: js/components/HistoryDialog.vue:68
+#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "Sisuplokk"
 
-#: js/components/HistoryDialog.vue:73
+#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "Rühm: %{group} · Asukoht %{num}"
 
-#: js/components/HistoryDialog.vue:81
+#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "Teisaldatud asukohalt %{from} asukohale %{to}"
 
-#: js/components/HistoryDialog.vue:82
-#: js/components/HistoryDialog.vue:171
+#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "%{num} väli muudetud"
 msgstr[1] "%{num} välja muudetud"
 
-#: js/components/HistoryDialog.vue:83
+#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "Valitud on %{selected}/%{total}"
 
-#: js/components/HistoryDialog.vue:90
+#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "Tundmatu kuupäev"
 
-#: js/components/HistoryDialog.vue:129
+#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "Ploki asukoht"
 
-#: js/components/HistoryDialog.vue:134
+#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "Väärtus"
 
-#: js/components/HistoryDialog.vue:178
+#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "%{num} plokk lisatud"
 msgstr[1] "%{num} plokki lisatud"
 
-#: js/components/HistoryDialog.vue:179
+#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "%{num} plokk eemaldatud"
 msgstr[1] "%{num} plokki eemaldatud"
 
-#: js/components/HistoryDialog.vue:180
+#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "%{num} plokk muudetud"
 msgstr[1] "%{num} plokki muudetud"
 
-#: js/components/HistoryDialog.vue:181
+#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "%{num} plokk teisaldatud"
 msgstr[1] "%{num} plokki teisaldatud"
 
-#: js/components/HistoryDialog.vue:182
+#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "%{num} fail muudetud"
 msgstr[1] "%{num} faili muudetud"
 
-#: js/components/HistoryDialog.vue:183
-#: js/components/HistoryDialog.vue:212
-#: js/components/HistoryDialog.vue:308
+#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
+#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "Muudatusi ei ole"
 
-#: js/components/HistoryDialog.vue:197
+#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "Ajalugu"
 
-#: js/components/HistoryDialog.vue:205
-#: js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30
-#: js/fields/Autocomplete.vue:177
-#: js/fields/Url.vue:150
+#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
+#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
+#: js/fields/Url.vue:172
 msgid "Loading"
 msgstr "Laadimine"
 
-#: js/components/HistoryDialog.vue:208
+#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "Viga versioonide toomisel"
 
-#: js/components/HistoryDialog.vue:209
+#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "Proovi uuesti"
 
-#: js/components/HistoryDialog.vue:223
+#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "Praegused muudatused"
 
-#: js/components/HistoryDialog.vue:229
-#: js/components/PageListItems.vue:1407
-#: js/lists.js:476
+#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
+#: js/lists.js:510
 msgid "Scheduled for %{date}"
 msgstr "Ajastatud %{date}"
 
-#: js/components/HistoryDialog.vue:237
+#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "Vali kõik"
 
-#: js/components/HistoryDialog.vue:251
+#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "Plokk lisatud"
 
-#: js/components/HistoryDialog.vue:252
+#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "Plokk eemaldatud"
 
-#: js/components/HistoryDialog.vue:272
+#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "Säilita praegune asukoht"
 
-#: js/components/HistoryDialog.vue:272
-#: js/components/HistoryDialog.vue:292
+#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "Säilita praegune väärtus"
 
-#: js/components/HistoryDialog.vue:318
+#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "Eelmine versioon: viimane salvestatud versioon"
 
-#: js/components/HistoryDialog.vue:318
+#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "Eelmine versioon: %{date}"
 
-#: js/components/HistoryDialog.vue:319
+#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "Ennistamiseks on valitud %{selected}/%{total}"
 
-#: js/components/HistoryDialog.vue:322
+#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "Ennista valitud muudatused"
 
-#: js/components/HistoryDialog.vue:325
+#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "Taasta eelmine versioon"
 
-#: js/components/HistoryField.vue:85
-#: js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133
-#: js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
+#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "Eelmine väärtus"
 
-#: js/components/HistoryField.vue:85
-#: js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133
-#: js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
+#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "Uus väärtus"
 
-#: js/components/HistoryField.vue:91
+#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "Suurenda %{name}"
 
-#: js/components/HistoryField.vue:97
-#: js/components/HistoryField.vue:124
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "Eelvaate laadimine"
 
-#: js/components/HistoryField.vue:98
-#: js/components/HistoryField.vue:100
-#: js/components/HistoryField.vue:105
-#: js/components/HistoryField.vue:125
-#: js/components/HistoryField.vue:127
+#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
+#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
+#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "Eelvaade pole saadaval"
 
-#: js/components/HistoryField.vue:114
+#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "Pildi eelvaade"
 
-#: js/components/HistoryField.vue:115
+#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "Sule eelvaade"
 
-#: js/components/HistoryField.vue:135
+#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "Tabeli eelvaade"
 
-#: js/components/HistoryField.vue:139
+#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} rida on välja jäetud"
 msgstr[1] "%{num} rida on välja jäetud"
 
-#: js/components/ListSort.vue:27
+#: js/components/ListAppBar.vue:34
+msgid "Close navigation"
+msgstr "Sulge navigatsioon"
+
+#: js/components/ListAppBar.vue:34
+msgid "Open navigation"
+msgstr "Ava navigatsioon"
+
+#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
+#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:787
+msgid "Delete"
+msgstr "Kustuta"
+
+#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
+#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:793
+#: js/components/PageListItems.vue:918
+msgid "Restore"
+msgstr "Taasta"
+
+#: js/components/ListReload.vue:29
+msgid "Updated by another user"
+msgstr "Uuendas teine kasutaja"
+
+#: js/components/ListReload.vue:35
+msgid "Refresh"
+msgstr "Värskenda"
+
+#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:544
+#: js/views/AccessList.vue:289
+msgid "Search for"
+msgstr "Otsi"
+
+#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "toimetaja"
 
-#: js/components/ListSort.vue:29
+#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "Viimane"
 
-#: js/components/ListSort.vue:30
+#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "Viimati muudetud"
 
-#: js/components/ListSort.vue:33
+#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "Vanim"
 
-#: js/components/ListSort.vue:34
+#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "Vanim muudatus"
 
-#: js/components/ListSort.vue:35
+#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "Positsioon"
 
-#: js/components/ListSort.vue:36
-#: js/views/PageList.vue:110
+#: js/components/ListSort.vue:37 js/views/PageList.vue:116
 msgid "Tree"
 msgstr "Puu"
 
-#: js/components/ListSort.vue:38
+#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "Kasutus"
 
-#: js/components/ListSort.vue:61
+#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "Sorteeri"
 
@@ -1457,826 +1333,659 @@ msgstr "Sorteeri"
 msgid "No entries yet"
 msgstr "Kirjeid veel pole"
 
-#: js/components/Navigation.vue:53
+#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "Paneelid"
 
-#: js/components/Navigation.vue:78
-#: js/components/ShortcutDialog.vue:88
+#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "Kiirklahvid"
 
-#: js/components/PageAccess.vue:102
+#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "Viga lehekülje juurdepääsu muutmisel"
 
-#: js/components/PageAccess.vue:166
+#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "Juurdepääsu muudatused jõustuvad kohe pärast vahemälu aegumist"
 
-#: js/components/PageAccess.vue:170
+#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "Nähtavus"
 
-#: js/components/PageAccess.vue:170
-msgid "Public pages are visible to everyone, others only to logged in users or users with the selected roles"
-msgstr "Avalikud leheküljed on nähtavad kõigile, teised ainult sisselogitud kasutajatele või valitud rollidega kasutajatele"
+#: js/components/PageAccess.vue:181
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr ""
+"Avalikud leheküljed on nähtavad kõigile, teised ainult sisselogitud "
+"kasutajatele või valitud rollidega kasutajatele"
 
-#: js/components/PageAccess.vue:174
+#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "Avalik"
 
-#: js/components/PageAccess.vue:175
-#: js/components/PageListItems.vue:479
+#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "Autentitud kasutajad"
 
-#: js/components/PageAccess.vue:183
-#: js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:478
-#: js/components/PageListItems.vue:1564
-#: js/components/PageListItems.vue:1781
-#: js/components/PageListItems.vue:1974
-#: js/views/AccessList.vue:240
-#: js/views/AccessList.vue:249
+#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
+#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
+#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
+#: js/views/AccessList.vue:231 js/views/AccessList.vue:235
 msgid "Access"
 msgstr "Juurdepääs"
 
-#: js/components/PageAccess.vue:183
+#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
-msgstr "Ainult külastajad, kellel on üks neist rollidest, saavad lehekülge vaadata"
+msgstr ""
+"Ainult külastajad, kellel on üks neist rollidest, saavad lehekülge vaadata"
 
-#: js/components/PageAccess.vue:193
-#: js/components/PageBulkDialog.vue:264
-msgid "Page bulk changes are limited to 1,000 pages"
-msgstr "Lehekülgede hulgimuudatused on piiratud 1000 leheküljega"
+#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:269
+msgid "Page bulk changes are limited to %{count} pages"
+msgstr "Lehekülgede hulgimuudatused on piiratud %{count} leheküljega"
 
-#: js/components/PageAccess.vue:213
-#: js/components/PageBulkDialog.vue:258
+#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:263
 msgid "Apply recursively"
 msgstr "Rakenda rekursiivselt"
 
-#: js/components/PageBulkDialog.vue:141
+#: js/components/PageBulkDialog.vue:146
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Rakenda valitud omadused %{num} leheküljele."
 msgstr[1] "Rakenda valitud omadused %{num} leheküljele."
 
-#: js/components/PageBulkDialog.vue:152
+#: js/components/PageBulkDialog.vue:157
 msgid "Change status"
 msgstr "Muuda olekut"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageBulkDialog.vue:162
+#: js/components/PageDetailItemProps.vue:205
 msgid "Status"
 msgstr "Olek"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:219
-msgid "Disabled pages are offline, hidden pages are online but not shown in the navigation"
-msgstr "Keelatud leheküljed on võrguühenduseta, peidetud leheküljed on võrgus, kuid neid ei kuvata navigatsioonis"
+#: js/components/PageBulkDialog.vue:162
+#: js/components/PageDetailItemProps.vue:205
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"Keelatud leheküljed on võrguühenduseta, peidetud leheküljed on võrgus, kuid "
+"neid ei kuvata navigatsioonis"
 
-#: js/components/PageBulkDialog.vue:166
+#: js/components/PageBulkDialog.vue:171
 msgid "Change cache time"
 msgstr "Muuda vahemälu aega"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:337
-#: js/components/PageListItems.vue:1423
+#: js/components/PageBulkDialog.vue:176
+#: js/components/PageDetailItemProps.vue:323
+#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "Vahemälu aeg"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageBulkDialog.vue:176
+#: js/components/PageDetailItemProps.vue:323
 msgid "How long the generated page is cached before it is created again"
 msgstr "Kui kaua loodud lehekülg on vahemälus, enne kui see uuesti luuakse"
 
-#: js/components/PageBulkDialog.vue:180
+#: js/components/PageBulkDialog.vue:185
 msgid "Change source language"
 msgstr "Muuda algkeelt"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Source language"
 msgstr "Allikakeel"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Language of the source page content"
 msgstr "Allikalehe sisu keel"
 
-#: js/components/PageBulkDialog.vue:192
+#: js/components/PageBulkDialog.vue:197
 msgid "Change theme"
 msgstr "Muuda teemat"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:306
-#: js/components/PageListItems.vue:1411
+#: js/components/PageBulkDialog.vue:202
+#: js/components/PageDetailItemProps.vue:292
+#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "Teema"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:306
+#: js/components/PageBulkDialog.vue:202
+#: js/components/PageDetailItemProps.vue:292
 msgid "Design used to display the page"
 msgstr "Lehekülje kuvamiseks kasutatav kujundus"
 
-#: js/components/PageBulkDialog.vue:204
+#: js/components/PageBulkDialog.vue:209
 msgid "Change page type"
 msgstr "Muuda lehekülje tüüpi"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:315
-#: js/components/PageListItems.vue:1415
+#: js/components/PageBulkDialog.vue:214
+#: js/components/PageDetailItemProps.vue:301
+#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "Lehekülje tüüp"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:214
+#: js/components/PageDetailItemProps.vue:301
 msgid "Template of the theme which defines the page layout"
 msgstr "Teema mall, mis määrab lehekülje paigutuse"
 
-#: js/components/PageBulkDialog.vue:216
+#: js/components/PageBulkDialog.vue:221
 msgid "Change tag"
 msgstr "Muuda silti"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:326
-#: js/components/PageListItems.vue:1419
+#: js/components/PageBulkDialog.vue:225
+#: js/components/PageDetailItemProps.vue:312
+#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "Lehekülje silt"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageBulkDialog.vue:225
+#: js/components/PageDetailItemProps.vue:312
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Sisemine identifikaator lehekülje leidmiseks mallides, nt blog"
 
-#: js/components/PageBulkDialog.vue:229
+#: js/components/PageBulkDialog.vue:234
 msgid "Change domain"
 msgstr "Muuda domeeni"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:291
+#: js/components/PageBulkDialog.vue:239
+#: js/components/PageDetailItemProps.vue:277
 msgid "Domain"
 msgstr "Domeen"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:291
+#: js/components/PageBulkDialog.vue:239
+#: js/components/PageDetailItemProps.vue:277
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domeen, kus lehekülg on saadaval, nt example.com"
 
-#: js/components/PageDetailContentList.vue:195
-#: js/components/PageDetailContentList.vue:205
-#: js/components/PageDetailContentList.vue:609
+#: js/components/PageBulkMenu.vue:93 js/components/PageListItems.vue:741
+msgctxt "page status"
+msgid "Enable"
+msgstr "Luba"
+
+#: js/components/PageBulkMenu.vue:96 js/components/PageListItems.vue:747
+msgctxt "page status"
+msgid "Disable"
+msgstr "Keela"
+
+#: js/components/PageBulkMenu.vue:106 js/components/PageListItems.vue:761
+msgid "Clear cache"
+msgstr "Tühjenda vahemälu"
+
+#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
+#: js/views/PageDetail.vue:680
+msgid "Ignore changes"
+msgstr "Ignoreeri muudatusi"
+
+#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:825
+msgid "Delete this language"
+msgstr "Kustuta see keel"
+
+#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:833
+msgid "Restore this language"
+msgstr "Taasta see keel"
+
+#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:841
+msgid "Purge language"
+msgstr "Kustuta keel jäädavalt"
+
+#: js/components/PageDetailContentList.vue:161
+#: js/components/PageDetailContentList.vue:171 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Sisuelementi ei leitud"
 
-#: js/components/PageDetailContentList.vue:405
-msgid "Error refining content"
-msgstr "Viga sisu täpsustamisel"
-
-#: js/components/PageDetailContentList.vue:457
-msgid "Element not found"
-msgstr "Elementi ei leitud"
-
-#: js/components/PageDetailContentList.vue:462
-msgid "Element is already shared"
-msgstr "Element on juba jagatud"
-
-#: js/components/PageDetailContentList.vue:496
-msgid "Unable to make element shared"
-msgstr "Elementi ei saa jagatuks muuta"
-
-#: js/components/PageDetailContentList.vue:529
+#: js/components/PageDetailContentList.vue:370
 msgid "Not available for this content element"
 msgstr "Ei ole selle sisuelemendi jaoks saadaval"
 
-#: js/components/PageDetailContentList.vue:616
-msgid "Element is not shared"
-msgstr "Element ei ole jagatud"
+#: js/components/PageDetailContentList.vue:380
+msgid "Error splitting text"
+msgstr "Viga teksti jagamisel"
 
-#: js/components/PageDetailContentList.vue:686
+#: js/components/PageDetailContentList.vue:495
 msgid "Describe the task you want to perform"
 msgstr "Kirjeldage ülesannet, mida soovite täita"
 
-#: js/components/PageDetailContentList.vue:700
-#: js/views/ElementList.vue:89
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:305
-msgid "Hide help"
-msgstr "Peida abi"
-
-#: js/components/PageDetailContentList.vue:700
-#: js/views/ElementList.vue:89
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:305
-msgid "Show help"
-msgstr "Näita abi"
-
-#: js/components/PageDetailContentList.vue:712
+#: js/components/PageDetailContentList.vue:496
 msgid "Refining ..."
 msgstr "Täpsustamine ..."
 
-#: js/components/PageDetailContentList.vue:712
+#: js/components/PageDetailContentList.vue:496
 msgid "Refine content based on prompt"
 msgstr "Täpsusta sisu viiba põhjal"
 
-#: js/components/PageDetailContentList.vue:729
-#: js/views/ElementList.vue:115
-#: js/views/FileList.vue:115
-#: js/views/PageList.vue:331
-msgid "Help"
-msgstr "Abi"
-
-#: js/components/PageDetailContentList.vue:730
+#: js/components/PageDetailContentList.vue:500
 msgid "AI can add or improve content based on your input"
 msgstr "Tehisintellekt saab teie sisendi põhjal sisu lisada või täiustada"
 
-#: js/components/PageDetailContentList.vue:731
+#: js/components/PageDetailContentList.vue:501
 msgid "It can take a long time depending on the task and content size"
 msgstr "Sõltuvalt ülesandest ja sisu suurusest võib see võtta kaua aega."
 
-#: js/components/PageDetailContentList.vue:753
-#: js/components/PageDetailContentList.vue:839
-#: js/components/PageListItems.vue:1790
-#: js/fields/Items.vue:304
+#: js/components/PageDetailContentList.vue:527
+#: js/components/PageDetailContentList.vue:614
+#: js/components/PageListItems.vue:767 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Lõika"
 
-#: js/components/PageDetailContentList.vue:756
-#: js/components/PageListItems.vue:388
-#: js/components/PageListItems.vue:390
+#: js/components/PageDetailContentList.vue:530 js/pagetree.js:37
 msgid "Paste"
 msgstr "Kleebi"
 
-#: js/components/PageDetailContentList.vue:759
-#: js/components/PageDetailContentList.vue:878
+#: js/components/PageDetailContentList.vue:533
+#: js/components/PageDetailContentList.vue:653
 msgid "Merge"
 msgstr "Ühenda"
 
-#: js/components/PageDetailContentList.vue:814
-#: js/fields/Items.vue:291
+#: js/components/PageDetailContentList.vue:588 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Liiguta elementi"
 
-#: js/components/PageDetailContentList.vue:848
-#: js/fields/Items.vue:307
+#: js/components/PageDetailContentList.vue:623 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Kleebi enne"
 
-#: js/components/PageDetailContentList.vue:851
-#: js/fields/Items.vue:308
+#: js/components/PageDetailContentList.vue:626 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Kleebi pärast"
 
-#: js/components/PageDetailContentList.vue:854
-#: js/fields/Items.vue:309
-#: js/fields/Table.vue:180
-#: js/fields/Table.vue:229
+#: js/components/PageDetailContentList.vue:629 js/fields/Items.vue:287
+#: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Sisesta enne"
 
-#: js/components/PageDetailContentList.vue:857
-#: js/fields/Items.vue:310
-#: js/fields/Table.vue:181
-#: js/fields/Table.vue:230
+#: js/components/PageDetailContentList.vue:632 js/fields/Items.vue:288
+#: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Sisesta pärast"
 
-#: js/components/PageDetailContentList.vue:866
+#: js/components/PageDetailContentList.vue:641
 msgid "Make shared"
 msgstr "Muuda jagatuks"
 
-#: js/components/PageDetailContentList.vue:869
+#: js/components/PageDetailContentList.vue:644
 msgid "Replace with local copy"
 msgstr "Asenda kohaliku koopiaga"
 
-#: js/components/PageDetailContentList.vue:875
+#: js/components/PageDetailContentList.vue:650
 msgctxt "text element"
 msgid "Split"
 msgstr "Poolita"
 
-#: js/components/PageDetailEditor.vue:79
+#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Topeltklõpsake redigeerimiseks"
 
-#: js/components/PageDetailEditor.vue:268
+#: js/components/PageDetailEditor.vue:277
 msgid "Preview mode"
 msgstr "Eelvaate režiim"
 
-#: js/components/PageDetailEditor.vue:271
+#: js/components/PageDetailEditor.vue:280
 msgid "Not CMS content"
 msgstr "Ei ole CMS-i sisu"
 
-#: js/components/PageDetailItem.vue:87
+#: js/components/PageDetailItem.vue:83
 msgid "Detail"
 msgstr "Üksikasjad"
 
-#: js/components/PageDetailItem.vue:94
+#: js/components/PageDetailItem.vue:90
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:101
+#: js/components/PageDetailItem.vue:97
 msgid "Config"
 msgstr "Seadistus"
 
-#: js/components/PageDetailItemProps.vue:53
+#: js/components/PageDetailItemProps.vue:68
 msgid "Path must not start with a slash (/)"
 msgstr "Tee ei tohi alata kaldkriipsuga (/)"
 
-#: js/components/PageDetailItemProps.vue:63
+#: js/components/PageDetailItemProps.vue:78
 msgid "URL is not valid"
 msgstr "URL ei ole kehtiv"
 
-#: js/components/PageDetailItemProps.vue:68
-#: js/views/Login.vue:54
-#: js/views/Login.vue:57
+#: js/components/PageDetailItemProps.vue:83 js/views/Login.vue:61
+#: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "Väli on nõutav"
 
-#: js/components/PageDetailItemProps.vue:95
+#: js/components/PageDetailItemProps.vue:114
 msgid "The path is already in use by another page"
 msgstr "Tee on juba teise lehekülje kasutuses"
 
-#: js/components/PageDetailItemProps.vue:233
+#: js/components/PageDetailItemProps.vue:219
 msgid "Language of the page content"
 msgstr "Lehekülje sisu keel"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:233
 msgid "Page title"
 msgstr "Lehekülje pealkiri"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:233
 msgid "Shown in the browser tab and search results"
 msgstr "Kuvatakse brauseri sakil ja otsingutulemustes"
 
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/PageDetailItemProps.vue:244
 msgid "Page name"
 msgstr "Lehekülje nimi"
 
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/PageDetailItemProps.vue:244
 msgid "Short name shown in the navigation menus"
 msgstr "Lühike nimi, mida kuvatakse navigatsioonimenüüdes"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:260
 msgid "URL path"
 msgstr "URL-i tee"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:260
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Osa lehekülje URL-ist pärast domeeni, nt about-us"
 
-#: js/components/PageDetailItemProps.vue:353
+#: js/components/PageDetailItemProps.vue:339
 msgid "Redirect URL"
 msgstr "Ümbersuunamise URL"
 
-#: js/components/PageDetailItemProps.vue:353
+#: js/components/PageDetailItemProps.vue:339
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Külastajad suunatakse sellele URL-ile lehekülje vaatamise asemel"
 
-#: js/components/PageDetailItemSection.vue:65
+#: js/components/PageDetailItemSection.vue:63
 msgid "The element has already been added"
 msgstr "Element on juba lisatud"
 
-#: js/components/PageDetailItemSection.vue:198
+#: js/components/PageDetailItemSection.vue:178
 msgid "Remove content element"
 msgstr "Eemalda sisuelement"
 
-#: js/components/PageDetailMetrics.vue:109
+#: js/components/PageDetailMetrics.vue:99
 msgid "Views & Visits"
 msgstr "Vaatamised ja külastused"
 
-#: js/components/PageDetailMetrics.vue:111
+#: js/components/PageDetailMetrics.vue:101
 msgid "Views"
 msgstr "Vaatamised"
 
-#: js/components/PageDetailMetrics.vue:112
+#: js/components/PageDetailMetrics.vue:102
 msgid "Visits"
 msgstr "Külastused"
 
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:171
+#: js/components/PageDetailMetrics.vue:103
+#: js/components/PageDetailMetrics.vue:142
 msgid "Conversions"
 msgstr "Konversioonid"
 
-#: js/components/PageDetailMetrics.vue:117
+#: js/components/PageDetailMetrics.vue:107
 msgid "Visit Durations (minutes)"
 msgstr "Külastuse kestus (minutit)"
 
-#: js/components/PageDetailMetrics.vue:118
+#: js/components/PageDetailMetrics.vue:108
 msgid "Duration"
 msgstr "Kestus"
 
-#: js/components/PageDetailMetrics.vue:121
+#: js/components/PageDetailMetrics.vue:111
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google’i otsing: näitmised ja klikid"
 
-#: js/components/PageDetailMetrics.vue:123
-#: js/components/PageDetailMetrics.vue:542
+#: js/components/PageDetailMetrics.vue:113
+#: js/components/PageDetailMetrics.vue:415
 msgid "Impressions"
 msgstr "Näitmised"
 
-#: js/components/PageDetailMetrics.vue:124
-#: js/components/PageDetailMetrics.vue:543
+#: js/components/PageDetailMetrics.vue:114
+#: js/components/PageDetailMetrics.vue:416
 msgid "Clicks"
 msgstr "Klikid"
 
-#: js/components/PageDetailMetrics.vue:128
+#: js/components/PageDetailMetrics.vue:118
 msgid "Google Search: Click-through rate"
 msgstr "Google’i otsing: klikkimise määr"
 
-#: js/components/PageDetailMetrics.vue:129
+#: js/components/PageDetailMetrics.vue:119
 msgid "Percentage"
 msgstr "Protsentuaalne osakaal"
 
-#: js/components/PageDetailMetrics.vue:168
+#: js/components/PageDetailMetrics.vue:139
 msgid "Page Views"
 msgstr "Lehekülje vaatamised"
 
-#: js/components/PageDetailMetrics.vue:169
+#: js/components/PageDetailMetrics.vue:140
 msgid "Page Visits"
 msgstr "Lehekülje külastused"
 
-#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:143
 msgid "Visit Duration (minutes)"
 msgstr "Külastuse kestus (minutit)"
 
-#: js/components/PageDetailMetrics.vue:173
+#: js/components/PageDetailMetrics.vue:144
 msgid "Google Impressions"
 msgstr "Google’i näitmised"
 
-#: js/components/PageDetailMetrics.vue:174
+#: js/components/PageDetailMetrics.vue:145
 msgid "Google Clicks"
 msgstr "Google’i klikid"
 
-#: js/components/PageDetailMetrics.vue:175
+#: js/components/PageDetailMetrics.vue:146
 msgid "Google click-through rate"
 msgstr "Google’i klikkimise määr"
 
-#: js/components/PageDetailMetrics.vue:181
+#: js/components/PageDetailMetrics.vue:152
 msgid "Round trip time"
 msgstr "Edasi-tagasi viivitus"
 
-#: js/components/PageDetailMetrics.vue:182
+#: js/components/PageDetailMetrics.vue:153
 msgid "Time to first byte"
 msgstr "Aeg esimese baidini"
 
-#: js/components/PageDetailMetrics.vue:183
+#: js/components/PageDetailMetrics.vue:154
 msgid "First contentful paint"
 msgstr "Esimene sisukas kuvamine"
 
-#: js/components/PageDetailMetrics.vue:184
+#: js/components/PageDetailMetrics.vue:155
 msgid "Largest contentful paint"
 msgstr "Suurim sisukas kuvamine"
 
-#: js/components/PageDetailMetrics.vue:185
+#: js/components/PageDetailMetrics.vue:156
 msgid "Interaction to next paint"
 msgstr "Interaktsioonist järgmise kuvamiseni"
 
-#: js/components/PageDetailMetrics.vue:186
+#: js/components/PageDetailMetrics.vue:157
 msgid "Cumulative layout shift"
 msgstr "Kumulatiivne paigutuse muutus"
 
-#: js/components/PageDetailMetrics.vue:376
+#: js/components/PageDetailMetrics.vue:238
+msgid "Error fetching metrics"
+msgstr "Viga mõõdikute laadimisel"
+
+#: js/components/PageDetailMetrics.vue:260
 msgid "Page metrics"
 msgstr "Lehekülje mõõdikud"
 
-#: js/components/PageDetailMetrics.vue:382
+#: js/components/PageDetailMetrics.vue:266
 msgid "Days"
 msgstr "Päevad"
 
-#: js/components/PageDetailMetrics.vue:409
+#: js/components/PageDetailMetrics.vue:293
 msgid "Weekly Insights"
 msgstr "Nädalane ülevaade"
 
-#: js/components/PageDetailMetrics.vue:452
+#: js/components/PageDetailMetrics.vue:325
 msgid "Referrers"
 msgstr "Viiteallikad"
 
-#: js/components/PageDetailMetrics.vue:495
+#: js/components/PageDetailMetrics.vue:368
 msgid "Countries"
 msgstr "Riigid"
 
-#: js/components/PageDetailMetrics.vue:511
+#: js/components/PageDetailMetrics.vue:384
 msgid "Page Speed"
 msgstr "Lehekülje kiirus"
 
-#: js/components/PageDetailMetrics.vue:536
+#: js/components/PageDetailMetrics.vue:409
 msgid "Google Search: Queries"
 msgstr "Google’i otsing: päringud"
 
-#: js/components/PageDetailMetrics.vue:544
+#: js/components/PageDetailMetrics.vue:417
 msgid "Percent"
 msgstr "Protsent"
 
-#: js/components/PageDetailMetrics.vue:545
+#: js/components/PageDetailMetrics.vue:418
 msgctxt "search ranking"
 msgid "Position"
 msgstr "Positsioon"
 
-#: js/components/PageListItems.vue:394
-msgid "Insert"
-msgstr "Sisesta"
-
-#: js/components/PageListItems.vue:402
-msgid "Before"
-msgstr "Enne"
-
-#: js/components/PageListItems.vue:403
-msgid "Into"
-msgstr "Sisse"
-
-#: js/components/PageListItems.vue:404
-msgid "After"
-msgstr "Pärast"
-
-#: js/components/PageListItems.vue:425
-#: js/views/PageList.vue:212
-msgid "Error fetching translation states"
-msgstr "Viga tõlkeolekute toomisel"
-
-#: js/components/PageListItems.vue:432
-msgid "Translating into %{langs}"
-msgstr "Tõlgitakse keelde %{langs}"
-
-#: js/components/PageListItems.vue:440
-#: js/components/PageListItems.vue:1891
-#: js/views/PageDetail.vue:776
-#: js/views/PageList.vue:143
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
+#: js/views/PageDetail.vue:662 js/views/PageList.vue:149
 msgid "Needs update"
 msgstr "Vajab uuendamist"
 
-#: js/components/PageListItems.vue:441
-#: js/views/PageList.vue:149
+#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:155
 msgid "Missing"
 msgstr "Puudub"
 
-#: js/components/PageListItems.vue:442
-#: js/views/PageList.vue:155
+#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:161
 msgid "AI draft"
 msgstr "Tehisintellekti mustand"
 
-#: js/components/PageListItems.vue:445
-#: js/views/PageDetail.vue:775
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:661
 msgid "Up to date"
 msgstr "Ajakohane"
 
-#: js/components/PageListItems.vue:504
+#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:221
+msgid "Error fetching translation states"
+msgstr "Viga tõlkeolekute toomisel"
+
+#: js/components/PageListItems.vue:255
 msgid "Error adding root page"
 msgstr "Viga juurlehekülje lisamisel"
 
-#: js/components/PageListItems.vue:524
-msgid "Page moved"
-msgstr "Lehekülg teisaldatud"
-
-#: js/components/PageListItems.vue:595
-msgid "Cache cleared"
-msgstr "Vahemälu tühjendatud"
-
-#: js/components/PageListItems.vue:596
-msgid "Cache cleared for %{num} page."
-msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] "%{num} lehekülje vahemälu tühjendatud."
-msgstr[1] "%{num} lehekülje vahemälu tühjendatud."
-
-#: js/components/PageListItems.vue:606
-msgid "Error clearing cache"
-msgstr "Viga vahemälu tühjendamisel"
-
-#: js/components/PageListItems.vue:664
-#: js/views/PageDetail.vue:625
-#: js/views/PageDetail.vue:683
+#: js/components/PageListItems.vue:293 js/variants.js:405 js/variants.js:475
 msgid "Error translating page"
 msgstr "Viga lehekülje tõlkimisel"
 
-#: js/components/PageListItems.vue:668
-#: js/views/PageDetail.vue:614
+#: js/components/PageListItems.vue:297 js/variants.js:394
 msgid "Error adding language"
 msgstr "Viga keele lisamisel"
 
-#: js/components/PageListItems.vue:689
-msgid "Error trashing page"
-msgstr "Viga lehekülje prügikasti teisaldamisel"
-
-#: js/components/PageListItems.vue:717
-#: js/variants.js:261
-msgid "Error restoring language"
-msgstr "Viga keele taastamisel"
-
-#: js/components/PageListItems.vue:717
-#: js/components/PageListItems.vue:862
-msgid "Error restoring page"
-msgstr "Viga lehekülje taastamisel"
-
-#: js/components/PageListItems.vue:726
-#: js/lists.js:241
-msgid "Moved to trash"
-msgid_plural "%{num} entries moved to trash"
-msgstr[0] "Teisaldatud prügikasti"
-msgstr[1] "%{num} kirjet teisaldati prügikasti"
-
-#: js/components/PageListItems.vue:778
-#: js/components/PageListItems.vue:1154
+#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
+#: js/pagetree.js:152
 msgid "Error fetching pages"
 msgstr "Viga lehekülgede toomisel"
 
-#: js/components/PageListItems.vue:834
-msgid "Error inserting page"
-msgstr "Viga lehekülje sisestamisel"
-
-#: js/components/PageListItems.vue:941
-msgid "Error moving page"
-msgstr "Viga lehekülje teisaldamisel"
-
-#: js/components/PageListItems.vue:1042
-#: js/views/PageDetail.vue:274
-msgid "Error fetching page"
-msgstr "Viga lehekülje toomisel"
-
-#: js/components/PageListItems.vue:1056
-msgid "Error copying page"
-msgstr "Viga lehekülje kopeerimisel"
-
-#: js/components/PageListItems.vue:1102
-#: js/detail.js:61
-msgid "Error publishing page"
-msgstr "Viga lehekülje avaldamisel"
-
-#: js/components/PageListItems.vue:1121
-msgid "All subpages of these pages will be purged as well."
-msgstr "Kõik nende lehekülgede alamlehed kustutatakse samuti jäädavalt."
-
-#: js/components/PageListItems.vue:1130
-msgid "Error purging page"
-msgstr "Viga lehekülje jäädaval kustutamisel"
-
-#: js/components/PageListItems.vue:1318
-msgid "%{num} page could not be updated"
-msgid_plural "%{num} pages could not be updated"
-msgstr[0] "%{num} lehekülge ei saanud uuendada"
-msgstr[1] "%{num} lehekülge ei saanud uuendada"
-
-#: js/components/PageListItems.vue:1329
-#: js/components/PageListItems.vue:1384
-#: js/views/PageDetail.vue:575
-msgid "Error saving page"
-msgstr "Viga lehekülje salvestamisel"
-
-#: js/components/PageListItems.vue:1339
+#: js/components/PageListItems.vue:504
 msgid "Error searching pages"
 msgstr "Viga lehekülgede otsimisel"
 
-#: js/components/PageListItems.vue:1423
-#: js/utils.js:37
+#: js/components/PageListItems.vue:540 js/options.js:50
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minut"
 msgstr[1] "%{num} minutit"
 
-#: js/components/PageListItems.vue:1554
-#: js/components/PageListItems.vue:1764
-msgctxt "page status"
-msgid "Enable"
-msgstr "Luba"
+#: js/components/PageListItems.vue:549
+msgid "Translating into %{langs}"
+msgstr "Tõlgitakse keelde %{langs}"
 
-#: js/components/PageListItems.vue:1557
-#: js/components/PageListItems.vue:1770
-msgctxt "page status"
-msgid "Disable"
-msgstr "Keela"
-
-#: js/components/PageListItems.vue:1567
-#: js/components/PageListItems.vue:1784
-msgid "Clear cache"
-msgstr "Tühjenda vahemälu"
-
-#: js/components/PageListItems.vue:1599
-#: js/components/PageListItems.vue:1841
-#: js/views/PageDetail.vue:794
-msgid "Ignore changes"
-msgstr "Ignoreeri muudatusi"
-
-#: js/components/PageListItems.vue:1608
-#: js/components/PageListItems.vue:1850
-msgid "Delete this language"
-msgstr "Kustuta see keel"
-
-#: js/components/PageListItems.vue:1616
-#: js/components/PageListItems.vue:1858
-msgid "Restore this language"
-msgstr "Taasta see keel"
-
-#: js/components/PageListItems.vue:1624
-#: js/components/PageListItems.vue:1866
-msgid "Purge this language"
-msgstr "Kustuta see keel jäädavalt"
-
-#: js/components/PageListItems.vue:1634
-#: js/components/PageListItems.vue:1952
+#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:948
 msgid "Add page"
 msgstr "Lisa lehekülg"
 
-#: js/components/PageListItems.vue:1668
+#: js/components/PageListItems.vue:656
 msgid "Reload page tree"
 msgstr "Laadi lehekülgede puu uuesti"
 
-#: js/components/PageListItems.vue:1689
+#: js/components/PageListItems.vue:669
 msgid "Translating %{done} of %{total}"
 msgstr "Tõlgitakse %{done}/%{total}"
 
-#: js/components/PageListItems.vue:1704
+#: js/components/PageListItems.vue:685
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
-msgstr "Liikumiseks kasutage nooleklahve. Järjestuse muutmiseks kasutage Alt-klahvi koos nooleklahvidega."
+msgstr ""
+"Liikumiseks kasutage nooleklahve. Järjestuse muutmiseks kasutage Alt-klahvi "
+"koos nooleklahvidega."
 
-#: js/components/PageListItems.vue:1706
+#: js/components/PageListItems.vue:687
 msgid "Moved to position %{position} of %{total}"
 msgstr "Teisaldatud positsioonile %{position} / %{total}"
 
-#: js/components/PageListItems.vue:1708
+#: js/components/PageListItems.vue:689
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Taane vähendatud tasemele %{level}, positsioon %{position} / %{total}"
 
-#: js/components/PageListItems.vue:1714
+#: js/components/PageListItems.vue:695
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Taane suurendatud tasemele %{level}, positsioon %{position} / %{total}"
 
-#: js/components/PageListItems.vue:1734
+#: js/components/PageListItems.vue:715
 msgid "Toggle child nodes"
 msgstr "Ava/sulge alamsõlmed"
 
-#: js/components/PageListItems.vue:1750
-msgid "Create in %{lang}"
-msgstr "Loo keeles %{lang}"
+#: js/components/PageListItems.vue:890 js/options.js:64
+msgid "Hidden in navigation"
+msgstr "Navigatsioonis peidetud"
 
-#: js/components/PageListItems.vue:1933
-#: js/views/PageDetail.vue:778
+#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:664
 msgid "Create"
 msgstr "Loo"
 
-#: js/components/PageListItems.vue:1977
+#: js/components/PageListItems.vue:974
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Rakenda juurdepääsuseaded %{num} leheküljele."
 msgstr[1] "Rakenda juurdepääsuseaded %{num} leheküljele."
 
-#: js/components/ReloginDialog.vue:95
+#: js/components/PasswordField.vue:35
+msgid "Password"
+msgstr "Parool"
+
+#: js/components/PasswordField.vue:42
+msgid "Hide password"
+msgstr "Peida parool"
+
+#: js/components/PasswordField.vue:42
+msgid "Show password"
+msgstr "Näita parooli"
+
+#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "Te pole veel sisse logitud"
 
-#: js/components/ReloginDialog.vue:99
-#: js/components/ReloginDialog.vue:121
-#: js/stores.js:338
-#: js/views/Login.vue:146
-msgid "Login failed"
-msgstr "Sisselogimine ebaõnnestus"
-
-#: js/components/ReloginDialog.vue:134
+#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "Seanss aegus"
 
-#: js/components/ReloginDialog.vue:135
-#: js/components/ReloginDialog.vue:207
+#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
 #: js/components/User.vue:134
 msgid "Logout"
 msgstr "Logi välja"
 
-#: js/components/ReloginDialog.vue:148
-msgid "Please sign in again in the new tab and return here to continue. Your unsaved changes are kept."
-msgstr "Logige uuel vahelehel uuesti sisse ja naaske jätkamiseks siia. Teie salvestamata muudatused säilivad."
+#: js/components/ReloginDialog.vue:151
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Logige uuel vahelehel uuesti sisse ja naaske jätkamiseks siia. Teie "
+"salvestamata muudatused säilivad."
 
-#: js/components/ReloginDialog.vue:154
+#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
-msgstr "Jätkamiseks logige uuesti sisse. Teie salvestamata muudatused säilivad."
+msgstr ""
+"Jätkamiseks logige uuesti sisse. Teie salvestamata muudatused säilivad."
 
-#: js/components/ReloginDialog.vue:167
-#: js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "Logi sisse"
 
-#: js/components/ReloginDialog.vue:175
-#: js/views/Login.vue:199
+#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "E-post"
 
-#: js/components/ReloginDialog.vue:183
-#: js/views/Login.vue:209
-msgid "Password"
-msgstr "Parool"
-
-#: js/components/ReloginDialog.vue:191
-#: js/views/Login.vue:219
-msgid "Hide password"
-msgstr "Peida parool"
-
-#: js/components/ReloginDialog.vue:191
-#: js/views/Login.vue:219
-msgid "Show password"
-msgstr "Näita parooli"
-
-#: js/components/ReloginDialog.vue:217
+#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "Jätka"
 
-#: js/components/ReloginDialog.vue:217
-#: js/views/Login.vue:240
+#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "Logi sisse"
 
@@ -2292,103 +2001,109 @@ msgstr "Uued elemendid"
 msgid "Only elements in %{lang}"
 msgstr "Ainult elemendid keeles %{lang}"
 
-#: js/components/SchemaItems.vue:111
+#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "Kategoriseerimata"
 
-#: js/components/SchemaItems.vue:124
+#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "Viga sisuelementide toomisel"
 
-#: js/components/ShortcutDialog.vue:29
+#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "Üldine"
 
-#: js/components/ShortcutDialog.vue:34
+#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "Sulge dialoog või menüü"
 
-#: js/components/ShortcutDialog.vue:40
+#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "Liigu käskude ja tulemuste vahel"
 
-#: js/components/ShortcutDialog.vue:41
+#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "Käivita käsk või ava tulemus"
 
-#: js/components/ShortcutDialog.vue:42
+#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "Sulge käsupalett"
 
-#: js/components/ShortcutDialog.vue:46
+#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "Loendid"
 
-#: js/components/ShortcutDialog.vue:50
+#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "Muutmisvaated"
 
-#: js/components/ShortcutDialog.vue:54
+#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "Lehekülje sisu"
 
-#: js/components/ShortcutDialog.vue:55
+#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "Liiguta sisuelementi üles või alla"
 
-#: js/components/ShortcutDialog.vue:58
+#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "Lehekülgede puu"
 
-#: js/components/ShortcutDialog.vue:61
+#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "Liigu lehekülgede vahel"
 
-#: js/components/ShortcutDialog.vue:62
+#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "Laienda lehekülg"
 
-#: js/components/ShortcutDialog.vue:63
+#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "Lisa fookuses olevale leheküljele alamleht"
 
-#: js/components/ShortcutDialog.vue:64
+#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "Järjesta ümber või paiguta lehekülg teise kohta"
 
-#: js/components/ShortcutDialog.vue:70
+#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "AI-vestlus"
 
-#: js/components/ShortcutDialog.vue:73
+#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "Saada sõnum"
 
-#: js/components/ShortcutDialog.vue:74
+#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "Uus rida"
 
-#: js/components/ShortcutDialog.vue:75
+#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "Too tagasi varasemad sõnumid"
 
-#: js/components/TranslateDialog.vue:70
+#: js/components/TranslateDialog.vue:74
 msgid "Translate into"
 msgstr "Tõlgi keelde"
 
-#: js/components/TranslateDialog.vue:72
+#: js/components/TranslateDialog.vue:76
 msgid "Languages"
 msgstr "Keeled"
 
-#: js/components/TranslateDialog.vue:87
+#: js/components/TranslateDialog.vue:91
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "%{num} leht valitud."
 msgstr[1] "%{num} lehte valitud."
 
-#: js/components/TranslateDialog.vue:92
-msgid "Only missing and outdated translations are created. Pages in their source language and up to date translations are skipped. The translations run in the background and are saved as drafts for review."
-msgstr "Luuakse ainult puuduvad ja aegunud tõlked. Lähtekeeles lehed ja ajakohased tõlked jäetakse vahele. Tõlked töötavad taustal ja salvestatakse ülevaatamiseks mustanditena."
+#: js/components/TranslateDialog.vue:96
+msgid ""
+"Only missing and outdated translations are created. Pages in their source "
+"language and up to date translations are skipped. The translations run in "
+"the background and are saved as drafts for review."
+msgstr ""
+"Luuakse ainult puuduvad ja aegunud tõlked. Lähtekeeles lehed ja ajakohased "
+"tõlked jäetakse vahele. Tõlked töötavad taustal ja salvestatakse "
+"ülevaatamiseks mustanditena."
 
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
@@ -2406,22 +2121,49 @@ msgstr "Loobu"
 msgid "Save & leave"
 msgstr "Salvesta ja lahku"
 
-#: js/components/User.vue:60
+#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "Kasutaja laadimine ebaõnnestus"
+
+#: js/components/User.vue:86
+msgid "Logout failed"
+msgstr "Väljalogimine ebaõnnestus"
 
 #: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "Vaheta heledat/tumedat režiimi"
 
-#: js/components/User.vue:106
-#: js/components/User.vue:111
+#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "Vaheta keelt"
 
 #: js/components/User.vue:120
 msgid "User menu"
 msgstr "Kasutaja menüü"
+
+#: js/contentrefine.js:125
+msgid "Elements changed during the refinement were kept unchanged"
+msgstr "Täiustamise ajal muudetud elemendid jäeti muutmata"
+
+#: js/contentrefine.js:134
+msgid "Error refining content"
+msgstr "Viga sisu täpsustamisel"
+
+#: js/contentshare.js:51
+msgid "Element not found"
+msgstr "Elementi ei leitud"
+
+#: js/contentshare.js:56
+msgid "Element is already shared"
+msgstr "Element on juba jagatud"
+
+#: js/contentshare.js:101
+msgid "Unable to make element shared"
+msgstr "Elementi ei saa jagatuks muuta"
+
+#: js/contentshare.js:117
+msgid "Element is not shared"
+msgstr "Element ei ole jagatud"
 
 #: js/detail.js:47
 msgid "Element published successfully"
@@ -2451,14 +2193,29 @@ msgstr "Lehekülg edukalt avaldatud"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Lehekülje avaldamine on ajastatud %{date}"
 
-#: js/detail.js:308
-#: js/fields/Autocomplete.vue:176
+#: js/detail.js:61 js/pageactions.js:79
+msgid "Error publishing page"
+msgstr "Viga lehekülje avaldamisel"
+
+#: js/detail.js:276
+msgid "Not published, please review the changes and publish again"
+msgstr "Ei avaldatud, palun vaadake muudatused üle ja avaldage uuesti"
+
+#: js/detail.js:346 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Andmed puuduvad"
 
-#: js/detail.js:342
+#: js/detail.js:347
+msgid "No version data available"
+msgstr "Versiooni andmed puuduvad"
+
+#: js/detail.js:437
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Mõned väljad on vigased, palun parandage esmalt vead"
+
+#: js/dictation.js:23 js/dictation.js:42
+msgid "Error recording audio"
+msgstr "Viga heli salvestamisel"
 
 #: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
@@ -2468,213 +2225,379 @@ msgstr "Väärtus peab olema HEX-värvikood"
 msgid "File is required"
 msgstr "Fail on nõutav"
 
-#: js/fields/File.vue:291
+#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "Lisa fail URL-ilt"
 
-#: js/fields/File.vue:299
-#: js/fields/Images.vue:314
+#: js/fields/File.vue:293 js/fields/Images.vue:373
 msgid "Create file"
 msgstr "Loo fail"
 
-#: js/fields/File.vue:305
+#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "Laadi fail üles"
 
-#: js/fields/File.vue:330
+#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "Üleslaadimiseks pukseerige fail siia"
 
-#: js/fields/File.vue:338
+#: js/fields/File.vue:332
 msgid "name"
 msgstr "nimi"
 
-#: js/fields/File.vue:339
+#: js/fields/File.vue:333
 msgid "description"
 msgstr "kirjeldus"
 
-#: js/fields/Images.vue:338
+#: js/fields/Images.vue:397
 msgid "Drop files here"
 msgstr "Pukseerige failid siia"
 
-#: js/fields/Map.vue:218
-msgid "Clear location"
-msgstr "Eemalda asukoht"
+#: js/fields/Map.vue:214
+msgid "Map location"
+msgstr "Asukoht kaardil"
 
-#: js/fields/Map.vue:221
+#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "Asukoha määramiseks klõpsake kaardil"
+
+#: js/fields/Map.vue:224
+msgid "Clear location"
+msgstr "Eemalda asukoht"
 
 #: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "Väärtuse vorming on vale"
 
-#: js/fields/Table.vue:168
+#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "Liiguta veergu"
 
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "Veerutoimingud"
 
-#: js/fields/Table.vue:202
+#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "Liiguta rida"
 
-#: js/fields/Table.vue:222
+#: js/fields/Table.vue:295
+msgid "Row %{row}, column %{col}"
+msgstr "Rida %{row}, veerg %{col}"
+
+#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "Reatoimingud"
 
-#: js/fields/Url.vue:61
-#: js/utils.js:280
+#: js/fields/Url.vue:50 js/options.js:93
 msgid "None"
 msgstr "Puudub"
 
-#: js/fields/Url.vue:62
+#: js/fields/Url.vue:51
 msgid "Sponsored"
 msgstr "Sponsoreeritud"
 
-#: js/fields/Url.vue:63
+#: js/fields/Url.vue:52
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:75
+#: js/fields/Url.vue:92
 msgid "Not a valid URL"
 msgstr "Ei ole kehtiv URL"
 
-#: js/fields/Url.vue:85
+#: js/fields/Url.vue:100
 msgid "Invalid URL schema configuration"
 msgstr "URL-skeemi vale konfiguratsioon"
 
-#: js/fields/Url.vue:150
+#: js/fields/Url.vue:172
 msgid "No pages found"
 msgstr "Lehekülgi ei leitud"
 
-#: js/fields/Url.vue:162
+#: js/fields/Url.vue:184
 msgid "Link attribute"
 msgstr "Lingi atribuut"
 
-#: js/listview.js:103
+#: js/filefield.js:118
+msgid "Unsupported file type"
+msgstr "Toetamata failitüüp"
+
+#: js/graphql.js:127
+msgid "Connection failed, please try again"
+msgstr "Ühendus ebaõnnestus, palun proovige uuesti"
+
+#: js/graphql.js:132 js/stores/session.js:336 js/views/Login.vue:163
+msgid "Login failed"
+msgstr "Sisselogimine ebaõnnestus"
+
+#: js/imageai.js:75
+msgid "Number of pixels added at this side of the image"
+msgstr "Pildi sellele küljele lisatud pikslite arv"
+
+#: js/imageai.js:78
+msgctxt "image edge"
+msgid "Top"
+msgstr "Üleval"
+
+#: js/imageai.js:80
+msgctxt "image edge"
+msgid "Left"
+msgstr "Vasakul"
+
+#: js/imageai.js:81
+msgctxt "image edge"
+msgid "Right"
+msgstr "Paremal"
+
+#: js/imageai.js:83
+msgctxt "image edge"
+msgid "Bottom"
+msgstr "All"
+
+#: js/imageai.js:95
+msgid "Error erasing image part"
+msgstr "Viga pildiosa kustutamisel"
+
+#: js/imageai.js:103
+msgid "Error editing image part"
+msgstr "Viga pildiosa redigeerimisel"
+
+#: js/imageai.js:114
+msgid "Error removing background"
+msgstr "Viga tausta eemaldamisel"
+
+#: js/imageai.js:259
+msgid "Error uncropping image"
+msgstr "Viga pildi laiendamisel"
+
+#: js/imageai.js:281
+msgid "Error upscaling image"
+msgstr "Viga pildi eraldusvõime suurendamisel"
+
+#: js/lists.js:92
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "Teisaldatud prügikasti"
+msgstr[1] "%{num} kirjet teisaldati prügikasti"
+
+#: js/listview.js:87
 msgid "publish"
 msgstr "avaldamine"
 
-#: js/listview.js:105
-#: js/listview.js:115
-#: js/listview.js:124
-#: js/utils.js:267
-#: js/views/PageList.vue:120
-#: js/views/PageList.vue:130
-#: js/views/PageList.vue:141
+#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
+#: js/views/PageList.vue:126 js/views/PageList.vue:136
+#: js/views/PageList.vue:147
 msgid "All"
 msgstr "Kõik"
 
-#: js/listview.js:107
+#: js/listview.js:91
 msgid "Scheduled"
 msgstr "Ajastatud"
 
-#: js/listview.js:108
+#: js/listview.js:92
 msgid "Drafts"
 msgstr "Mustandid"
 
-#: js/listview.js:113
+#: js/listview.js:97
 msgid "trashed"
 msgstr "prügikast"
 
-#: js/listview.js:116
+#: js/listview.js:100
 msgid "Available only"
 msgstr "Ainult saadaolevad"
 
-#: js/listview.js:117
+#: js/listview.js:101
 msgid "Only trashed"
 msgstr "Ainult prügikastis"
 
-#: js/listview.js:125
+#: js/listview.js:109
 msgid "Edited by me"
 msgstr "Minu muudetud"
 
-#: js/listview.js:130
+#: js/listview.js:114
 msgid "languages"
 msgstr "keeled"
 
-#: js/merge.js:23
+#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "Ühendatud kasutaja %{editor} muudatustega"
 
-#: js/routes.js:126
+#: js/options.js:49 js/views/PageList.vue:137
+msgid "No cache"
+msgstr "Vahemäluta"
+
+#: js/options.js:51
+msgid "%{num} hour"
+msgid_plural "%{num} hours"
+msgstr[0] "%{num} tund"
+msgstr[1] "%{num} tundi"
+
+#: js/options.js:62 js/views/PageList.vue:129
+msgid "Disabled"
+msgstr "Keelatud"
+
+#: js/options.js:63 js/views/PageList.vue:127
+msgid "Enabled"
+msgstr "Lubatud"
+
+#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:585
+msgid "Error saving page"
+msgstr "Viga lehekülje salvestamisel"
+
+#: js/pageactions.js:134
+msgid "Error trashing page"
+msgstr "Viga lehekülje prügikasti teisaldamisel"
+
+#: js/pageactions.js:159 js/variants.js:176
+msgid "Error restoring language"
+msgstr "Viga keele taastamisel"
+
+#: js/pageactions.js:159 js/pageactions.js:175
+msgid "Error restoring page"
+msgstr "Viga lehekülje taastamisel"
+
+#: js/pageactions.js:201
+msgid "All subpages of these pages will be purged as well."
+msgstr "Kõik nende lehekülgede alamlehed kustutatakse samuti jäädavalt."
+
+#: js/pageactions.js:210
+msgid "Error purging page"
+msgstr "Viga lehekülje jäädaval kustutamisel"
+
+#: js/pageactions.js:244
+msgid "Cache cleared"
+msgstr "Vahemälu tühjendatud"
+
+#: js/pageactions.js:245
+msgid "Cache cleared for %{num} page."
+msgid_plural "Cache cleared for %{num} pages."
+msgstr[0] "%{num} lehekülje vahemälu tühjendatud."
+msgstr[1] "%{num} lehekülje vahemälu tühjendatud."
+
+#: js/pageactions.js:255
+msgid "Error clearing cache"
+msgstr "Viga vahemälu tühjendamisel"
+
+#: js/pageactions.js:354
+msgid "%{num} page could not be updated"
+msgid_plural "%{num} pages could not be updated"
+msgstr[0] "%{num} lehekülge ei saanud uuendada"
+msgstr[1] "%{num} lehekülge ei saanud uuendada"
+
+#: js/pagetree.js:41
+msgid "Insert"
+msgstr "Sisesta"
+
+#: js/pagetree.js:66
+msgid "Before"
+msgstr "Enne"
+
+#: js/pagetree.js:67
+msgid "Into"
+msgstr "Sisse"
+
+#: js/pagetree.js:68
+msgid "After"
+msgstr "Pärast"
+
+#: js/pagetree.js:205
+msgid "Error inserting page"
+msgstr "Viga lehekülje sisestamisel"
+
+#: js/pagetree.js:245 js/views/PageDetail.vue:220
+msgid "Error fetching page"
+msgstr "Viga lehekülje toomisel"
+
+#: js/pagetree.js:263
+msgid "Error copying page"
+msgstr "Viga lehekülje kopeerimisel"
+
+#: js/pagetree.js:330
+msgid "Error moving page"
+msgstr "Viga lehekülje teisaldamisel"
+
+#: js/pagetree.js:340
+msgid "Page moved"
+msgstr "Lehekülg teisaldatud"
+
+#: js/routes.js:111
+msgid "Error checking the session, please try again"
+msgstr "Viga seansi kontrollimisel, proovige uuesti"
+
+#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "Teil puudub juurdepääsuõigus: %{path}"
 
-#: js/rules.js:18
+#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "Domeeninimi on kehtetu"
 
-#: js/rules.js:21
+#: js/rules.js:24
 msgid "Value is required"
 msgstr "Väärtus on nõutav"
 
-#: js/rules.js:26
+#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "Nõutav on vähemalt %{num} kirje"
 msgstr[1] "Nõutav on vähemalt %{num} kirjet"
 
-#: js/rules.js:33
+#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "Lubatud on kuni %{num} kirje"
 msgstr[1] "Lubatud on kuni %{num} kirjet"
 
-#: js/rules.js:41
+#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "Nõutav on vähemalt %{num} märk"
 msgstr[1] "Nõutav on vähemalt %{num} märki"
 
-#: js/rules.js:51
+#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "Lubatud on kuni %{num} märk"
 msgstr[1] "Lubatud on kuni %{num} märki"
 
-#: js/rules.js:58
-msgid "At least %{num} column is required"
-msgid_plural "At least %{num} columns are required"
-msgstr[0] "Nõutav on vähemalt %{num} veerg"
-msgstr[1] "Nõutav on vähemalt %{num} veergu"
+#: js/rules.js:62
+msgid "At least %{num} row is required"
+msgid_plural "At least %{num} rows are required"
+msgstr[0] "Nõutav on vähemalt %{num} rida"
+msgstr[1] "Nõutav on vähemalt %{num} rida"
 
-#: js/rules.js:65
-msgid "At most %{num} column is allowed"
-msgid_plural "At most %{num} columns are allowed"
-msgstr[0] "Lubatud on kuni %{num} veerg"
-msgstr[1] "Lubatud on kuni %{num} veergu"
+#: js/rules.js:69
+msgid "At most %{num} row is allowed"
+msgid_plural "At most %{num} rows are allowed"
+msgstr[0] "Lubatud on kõige rohkem %{num} rida"
+msgstr[1] "Lubatud on kõige rohkem %{num} rida"
 
-#: js/stores.js:497
-msgid "Failed to save user settings"
-msgstr "Kasutaja seadete salvestamine ebaõnnestus"
-
-#: js/stores.js:553
-msgid "Failed to load plugin"
-msgstr "Plugina laadimine ebaõnnestus"
-
-#: js/stores.js:660
+#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "Luba keelatud"
 
-#: js/stores.js:1062
+#: js/stores/plugin.js:20
+msgid "Failed to load plugin"
+msgstr "Plugina laadimine ebaõnnestus"
+
+#: js/stores/setting.js:111
+msgid "Failed to save user settings"
+msgstr "Kasutaja seadete salvestamine ebaõnnestus"
+
+#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "Viga tõlke edenemise toomisel"
 
-#: js/stores.js:1080
+#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "Tõlkimine jätkub taustal"
 
-#: js/stores.js:1083
+#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} tõlge ebaõnnestus"
 msgstr[1] "%{num} tõlget ebaõnnestus"
 
-#: js/stores.js:1089
+#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "Tõlkimine lõpetatud"
 
@@ -2778,274 +2701,261 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "Juba olemas"
 
-#: js/utils.js:36
-#: js/views/PageList.vue:131
-msgid "No cache"
-msgstr "Vahemäluta"
-
-#: js/utils.js:38
-msgid "%{num} hour"
-msgid_plural "%{num} hours"
-msgstr[0] "%{num} tund"
-msgstr[1] "%{num} tundi"
-
-#: js/utils.js:317
-#: js/views/PageList.vue:123
-msgid "Disabled"
-msgstr "Keelatud"
-
-#: js/utils.js:318
-#: js/views/PageList.vue:121
-msgid "Enabled"
-msgstr "Lubatud"
-
-#: js/utils.js:319
-msgid "Hidden in navigation"
-msgstr "Navigatsioonis peidetud"
-
-#: js/variants.js:214
+#: js/variants.js:129
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "Lähtekeeles lehekülgi kustutatakse ainult tervete lehekülgedena"
 
-#: js/variants.js:222
+#: js/variants.js:137
 msgid "Delete language"
 msgstr "Kustuta keel"
 
-#: js/variants.js:223
+#: js/variants.js:138
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "Kas teisaldada %{num} lehekülg keeles „%{lang}“ prügikasti?"
 msgstr[1] "Kas teisaldada %{num} lehekülge keeles „%{lang}“ prügikasti?"
 
-#: js/variants.js:231
+#: js/variants.js:146
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} lähtekeeles lehekülg jäetakse vahele."
 msgstr[1] "%{num} lähtekeeles lehekülge jäetakse vahele."
 
-#: js/variants.js:245
+#: js/variants.js:160
 msgid "Error trashing language"
 msgstr "Viga keele prügikasti teisaldamisel"
 
-#: js/variants.js:283
+#: js/variants.js:197
 msgid "Error purging language"
 msgstr "Viga keele jäädavalt kustutamisel"
 
-#: js/variants.js:305
+#: js/variants.js:219
 msgid "Error ignoring changes"
 msgstr "Viga muudatuste ignoreerimisel"
 
-#: js/variants.js:364
-msgid "Nothing to translate, the pages are up to date or already being translated"
+#: js/variants.js:287
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
 msgstr "Pole midagi tõlkida, lehed on ajakohased või neid juba tõlgitakse"
 
-#: js/variants.js:371
+#: js/variants.js:294
 msgid "Error translating pages"
 msgstr "Viga lehekülgede tõlkimisel"
 
-#: js/views/AccessList.vue:170
+#: js/variants.js:404 js/variants.js:472
+msgid "Translation saved as draft, review the changes"
+msgstr "Tõlge salvestati mustandina, vaata muudatused üle"
+
+#: js/variants.js:441
+msgid "Marked as up to date"
+msgstr "Märgitud ajakohaseks"
+
+#: js/variants.js:444
+msgid "Error marking as up to date"
+msgstr "Viga ajakohaseks märkimisel"
+
+#: js/variants.js:465
+msgid ""
+"Nothing to translate, the page is up to date or already being translated"
+msgstr "Pole midagi tõlkida, leht on ajakohane või seda juba tõlgitakse"
+
+#: js/views/AccessList.vue:169
 msgid "Error adding access value"
 msgstr "Viga juurdepääsuväärtuse lisamisel"
 
 #: js/views/AccessList.vue:184
-msgid "Existing restrictions are not changed and will continue to reference the purged access values."
-msgstr "Olemasolevaid piiranguid ei muudeta ja need viitavad jätkuvalt jäädavalt kustutatud juurdepääsuväärtustele."
+msgid ""
+"Existing restrictions are not changed and will continue to reference the "
+"purged access values."
+msgstr ""
+"Olemasolevaid piiranguid ei muudeta ja need viitavad jätkuvalt jäädavalt "
+"kustutatud juurdepääsuväärtustele."
 
 #: js/views/AccessList.vue:203
 msgid "Error purging access values"
 msgstr "Viga juurdepääsuväärtuste jäädaval kustutamisel"
 
-#: js/views/AccessList.vue:235
-#: js/views/ElementList.vue:45
-#: js/views/FileList.vue:45
-#: js/views/PageList.vue:261
-#: js/views/PluginPanel.vue:70
-msgid "Close navigation"
-msgstr "Sulge navigatsioon"
-
-#: js/views/AccessList.vue:235
-#: js/views/ElementList.vue:45
-#: js/views/FileList.vue:45
-#: js/views/PageList.vue:261
-#: js/views/PluginPanel.vue:70
-msgid "Open navigation"
-msgstr "Ava navigatsioon"
-
-#: js/views/AccessList.vue:254
+#: js/views/AccessList.vue:240
 msgid "Roles"
 msgstr "Rollid"
 
-#: js/views/AccessList.vue:289
-#: js/views/AccessList.vue:334
+#: js/views/AccessList.vue:275 js/views/AccessList.vue:320
 msgid "Add access value"
 msgstr "Lisa juurdepääsuväärtus"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:324
 msgid "Access value"
 msgstr "Juurdepääsuväärtus"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:324
 msgid "Role name which can be assigned to pages and users"
 msgstr "Rolli nimi, mida saab määrata lehekülgedele ja kasutajatele"
 
-#: js/views/AccessList.vue:354
+#: js/views/AccessList.vue:340
 msgid "Add"
 msgstr "Lisa"
 
-#: js/views/ElementDetail.vue:120
+#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "Viga elemendi toomisel"
 
-#: js/views/ElementDetail.vue:180
+#: js/views/ElementDetail.vue:185
 msgid "Element saved successfully"
 msgstr "Element edukalt salvestatud"
 
-#: js/views/ElementDetail.vue:188
+#: js/views/ElementDetail.vue:192
 msgid "Error saving element"
 msgstr "Viga elemendi salvestamisel"
 
-#: js/views/ElementDetail.vue:220
-#: js/views/ElementDetail.vue:222
-#: js/views/ElementDetail.vue:227
+#: js/views/ElementDetail.vue:225 js/views/ElementDetail.vue:227
+#: js/views/ElementDetail.vue:232
 msgid "Element"
 msgstr "Element"
 
-#: js/views/ElementDetail.vue:229
-#: js/views/FileDetail.vue:255
+#: js/views/ElementDetail.vue:234 js/views/FileDetail.vue:289
 msgid "Used by"
 msgstr "Kasutuskohad"
 
-#: js/views/ElementList.vue:74
-#: js/views/FileList.vue:74
-#: js/views/PageList.vue:290
-msgid "Press Enter to open the chat"
-msgstr "Vestluse avamiseks vajutage sisestusklahvi"
-
-#: js/views/ElementList.vue:116
+#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
-msgstr "Tehisintellekt saab teie sisendi põhjal jagatud elemente leida ja hallata"
+msgstr ""
+"Tehisintellekt saab teie sisendi põhjal jagatud elemente leida ja hallata"
 
-#: js/views/ElementList.vue:117
-#: js/views/FileList.vue:117
-#: js/views/PageList.vue:341
+#: js/views/ElementList.vue:50 js/views/FileList.vue:50
+#: js/views/PageList.vue:281
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
-msgstr "Vajutage sisestusklahvi või noolt, et avada tehisintellekti assistent ja täpsustada sisu vestluses"
+msgstr ""
+"Vajutage sisestusklahvi või noolt, et avada tehisintellekti assistent ja "
+"täpsustada sisu vestluses"
 
-#: js/views/FileDetail.vue:123
+#: js/views/FileDetail.vue:128
 msgid "Error fetching file"
 msgstr "Viga faili toomisel"
 
-#: js/views/FileDetail.vue:210
+#: js/views/FileDetail.vue:238
 msgid "File saved successfully"
 msgstr "Fail edukalt salvestatud"
 
-#: js/views/FileDetail.vue:246
-#: js/views/FileDetail.vue:248
-#: js/views/FileDetail.vue:253
+#: js/views/FileDetail.vue:280 js/views/FileDetail.vue:282
+#: js/views/FileDetail.vue:287
 msgid "File"
 msgstr "Fail"
 
-#: js/views/FileList.vue:116
+#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
 msgstr "Tehisintellekt saab teie sisendi põhjal meediafaile leida ja hallata"
 
-#: js/views/Login.vue:55
+#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "Kehtetu e-posti aadress"
 
-#: js/views/Login.vue:115
+#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "Ei ole CMS-i toimetaja"
 
-#: js/views/Login.vue:171
+#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "Juurdepääs keelatud"
 
-#: js/views/Login.vue:231
-msgid "Error"
-msgstr "Viga"
+#: js/views/Login.vue:230
+msgid "Error: %{msg}"
+msgstr "Viga: %{msg}"
 
-#: js/views/PageDetail.vue:192
-msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
-msgstr "Kasutaja vaatab lehte ID-ga „%{id}“. Kui ta viitab „sellele lehele“, kasutage selle ID-ga käsku get-page."
-
-#: js/views/PageDetail.vue:504
-#: js/views/PageDetail.vue:802
+#: js/views/PageDetail.vue:499 js/views/PageDetail.vue:688
 msgid "Rate this page and suggest improvements"
 msgstr "Hinnake seda lehekülge ja soovitage parandusi"
 
-#: js/views/PageDetail.vue:560
+#: js/views/PageDetail.vue:506
+msgid "Please wait until the language is switched"
+msgstr "Palun oodake, kuni keel vahetatakse"
+
+#: js/views/PageDetail.vue:571
 msgid "Page saved successfully"
 msgstr "Lehekülg edukalt salvestatud"
 
-#: js/views/PageDetail.vue:624
-#: js/views/PageDetail.vue:679
-msgid "Translation saved as draft, review the changes"
-msgstr "Tõlge salvestati mustandina, vaata muudatused üle"
-
-#: js/views/PageDetail.vue:648
-msgid "Marked as up to date"
-msgstr "Märgitud ajakohaseks"
-
-#: js/views/PageDetail.vue:651
-msgid "Error marking as up to date"
-msgstr "Viga ajakohaseks märkimisel"
-
-#: js/views/PageDetail.vue:672
-msgid "Nothing to translate, the page is up to date or already being translated"
-msgstr "Pole midagi tõlkida, leht on ajakohane või seda juba tõlgitakse"
-
-#: js/views/PageDetail.vue:746
-#: js/views/PageDetail.vue:809
-#: js/views/PageDetail.vue:828
+#: js/views/PageDetail.vue:632 js/views/PageDetail.vue:695
+#: js/views/PageDetail.vue:714
 msgid "Page"
 msgstr "Lehekülg"
 
-#: js/views/PageDetail.vue:773
+#: js/views/PageDetail.vue:659
 msgid "Source"
 msgstr "Lähtekeel"
 
-#: js/views/PageDetail.vue:777
+#: js/views/PageDetail.vue:663
 msgid "Trashed"
 msgstr "Prügikastis"
 
-#: js/views/PageDetail.vue:814
+#: js/views/PageDetail.vue:700
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Redaktor"
 
-#: js/views/PageDetail.vue:831
+#: js/views/PageDetail.vue:717
 msgid "Metrics"
 msgstr "Mõõdikud"
 
-#: js/views/PageList.vue:108
+#: js/views/PageList.vue:114
 msgid "view"
 msgstr "vaade"
 
-#: js/views/PageList.vue:111
+#: js/views/PageList.vue:117
 msgid "List"
 msgstr "Loend"
 
-#: js/views/PageList.vue:118
+#: js/views/PageList.vue:124
 msgid "status"
 msgstr "olek"
 
-#: js/views/PageList.vue:122
+#: js/views/PageList.vue:128
 msgid "Hidden"
 msgstr "Peidetud"
 
-#: js/views/PageList.vue:128
+#: js/views/PageList.vue:134
 msgid "cache"
 msgstr "vahemälu"
 
-#: js/views/PageList.vue:139
+#: js/views/PageList.vue:145
 msgid "translation"
 msgstr "tõlge"
 
-#: js/views/PageList.vue:316
+#: js/views/PageList.vue:277
 msgid "Generate page based on prompt"
 msgstr "Loo lehekülg viiba põhjal"
 
-#: js/views/PageList.vue:334
-msgid "AI can create a page and content based on your input and add it to the page tree"
-msgstr "Tehisintellekt saab teie sisendi põhjal luua lehekülje ja sisu ning lisada selle lehekülgede puusse"
+#: js/views/PageList.vue:280
+msgid ""
+"AI can create a page and content based on your input and add it to the page "
+"tree"
+msgstr ""
+"Tehisintellekt saab teie sisendi põhjal luua lehekülje ja sisu ning lisada "
+"selle lehekülgede puusse"
+
+#~ msgid "List view"
+#~ msgstr "Nimekirja vaade"
+
+#~ msgid "Error"
+#~ msgstr "Viga"
+
+#~ msgid "At least %{num} column is required"
+#~ msgid_plural "At least %{num} columns are required"
+#~ msgstr[0] "Nõutav on vähemalt %{num} veerg"
+#~ msgstr[1] "Nõutav on vähemalt %{num} veergu"
+
+#~ msgid "At most %{num} column is allowed"
+#~ msgid_plural "At most %{num} columns are allowed"
+#~ msgstr[0] "Lubatud on kuni %{num} veerg"
+#~ msgstr[1] "Lubatud on kuni %{num} veergu"
+
+#~ msgid ""
+#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
+#~ "page\", use get-page with that ID."
+#~ msgstr ""
+#~ "Kasutaja vaatab lehte ID-ga „%{id}“. Kui ta viitab „sellele lehele“, "
+#~ "kasutage selle ID-ga käsku get-page."
+
+#~ msgid "Purge this language"
+#~ msgstr "Kustuta see keel jäädavalt"
+
+#~ msgid "Create in %{lang}"
+#~ msgstr "Loo keeles %{lang}"

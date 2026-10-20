@@ -5,9 +5,10 @@
 // Raw chunked-text streaming transport for the admin AI chat (POST cms.chat). Kept apart from ai.js
 // because that module's transcribe/translate/write go through GraphQL/Apollo, not fetch streaming.
 import gettext from './i18n'
-import { postHeaders } from './utils'
-import { useUserStore } from './stores'
+import { postHeaders } from './http'
+import { useSessionStore, useUserStore } from './stores'
 import { urlchat } from './config'
+import { AUTH_STATUS } from './graphql'
 
 /**
  * Streams the AI assistant's answer from the chat endpoint.
@@ -54,14 +55,14 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
 
     // Session expired: the request was rejected before streaming, so it's safe to send it again
     // (with the renewed XSRF token) after the user signed in again in the re-login dialog
-    if ((response.status === 401 || response.status === 419) && user.me) {
-      await user.reauth()
+    if (AUTH_STATUS.includes(response.status) && user.me) {
+      await useSessionStore().reauth()
       response = await send()
     }
 
     if (response.ok) {
       // the chat request extends the session like GraphQL requests do
-      user.touch()
+      useSessionStore().touch()
     } else {
       // Two distinct "busy" cases the caller shows verbatim in the bubble: 409 = the per-user
       // concurrency lock is held (a stream is already running), 429 = the cms-ai rate limit.

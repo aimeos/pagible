@@ -51,7 +51,7 @@ describe('ChatDialog', () => {
 
   it('renders the message input textarea', () => {
     mountDialog()
-    cy.get('textarea').should('exist')
+    cy.get('.chat-input textarea').first().should('have.attr', 'aria-label', 'Chat message')
   })
 
   it('shows the empty state prompt', () => {
@@ -115,6 +115,55 @@ describe('ChatDialog', () => {
       .should('have.value', 'Keep this draft')
   })
 
+  it('moves the caret within multi-line input instead of recalling the history', () => {
+    mountDialog()
+    cy.then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ChatDialog).vm
+      const event = (selectionStart, selectionEnd = selectionStart) => ({
+        preventDefault: cy.spy(),
+        target: { value: vm.input, selectionStart, selectionEnd },
+      })
+
+      vm.messages = [{ id: 1, role: 'user', content: 'Create the first page' }]
+      vm.input = 'first line\nsecond line'
+
+      // caret on the second line: up moves the caret
+      let e = event(15)
+      vm.recall(e, -1)
+      expect(e.preventDefault).not.to.have.been.called
+      expect(vm.input).to.equal('first line\nsecond line')
+
+      // caret on the first line: up recalls the last message
+      e = event(3)
+      vm.recall(e, -1)
+      expect(e.preventDefault).to.have.been.calledOnce
+      expect(vm.input).to.equal('Create the first page')
+
+      // caret on the last line: down returns to the draft
+      e = event(vm.input.length)
+      vm.recall(e, 1)
+      expect(vm.input).to.equal('first line\nsecond line')
+
+      // caret on the first line of the draft: down moves the caret
+      vm.historyIndex = 0
+      vm.input = 'first line\nsecond line'
+      e = event(3)
+      vm.recall(e, 1)
+      expect(e.preventDefault).not.to.have.been.called
+      expect(vm.input).to.equal('first line\nsecond line')
+    })
+  })
+
+  it('labels the copy button of assistant messages', () => {
+    mountDialog()
+    cy.then(() => {
+      Cypress.vueWrapper.findComponent(ChatDialog).vm.messages = [
+        { id: 1, role: 'assistant', content: 'Done', blocks: ['Done'] },
+      ]
+    })
+    cy.get('.chat-copy').should('have.attr', 'aria-label', 'Copy')
+  })
+
   it('shows the dictate button with audio:transcribe permission', () => {
     mountDialog({}, { 'audio:transcribe': true })
     cy.get('button[aria-label="Dictate"]').should('exist')
@@ -123,6 +172,17 @@ describe('ChatDialog', () => {
   it('hides the dictate button without audio:transcribe permission', () => {
     mountDialog()
     cy.get('button[aria-label="Dictate"]').should('not.exist')
+  })
+
+  it('stops the dictation when the dialog is closed', () => {
+    mountDialog().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(ChatDialog).vm
+      const stop = cy.stub(vm.dictation, 'stop')
+
+      // the props of the wrapped component can't be changed, so the watcher is called directly
+      vm.$options.watch.open.call(vm, false)
+      expect(stop).to.have.been.calledOnce
+    })
   })
 
   it('renders the open streaming block as markdown, not raw text', () => {

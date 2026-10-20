@@ -7,13 +7,36 @@ import { RetryLink } from '@apollo/client/link/retry'
 import { BatchHttpLink } from 'apollo-link-batch-http'
 import { createApolloProvider } from '@vue/apollo-option'
 import { ApolloClient, ApolloLink, InMemoryCache, Observable } from '@apollo/client/core'
-import router from './routes'
-import { socketId } from './echo'
-import { useUserStore } from './stores'
+import { realtime, socketId } from './echo'
 import { urlgraphql } from './config'
-import { xsrfHeaders } from './utils'
+import { xsrfHeaders } from './http'
+import gettext from './i18n'
 
 const MESSAGE_HEADERS = ['x-error-message', 'x-status-message', 'x-message']
+
+// HTTP status codes of requests rejected because the session expired
+export const AUTH_STATUS = Object.freeze([401, 419])
+
+// Handlers for the user session, registered by session.js so this module doesn't depend on the stores and router
+const session = {
+  // returns TRUE if a user is signed in
+  active: () => false,
+  // resolves after the user signed in again, rejects if the user gave up
+  reauth: () => Promise.reject(new Error('Unauthenticated')),
+  // called when the session ended and the user must sign in again
+  ended: () => {},
+  // called for each successful request, which extends the session
+  touch: () => {}
+}
+
+/**
+ * Registers the handlers for the user session
+ *
+ * @param {Object} handlers Functions active(), reauth(), ended() and touch()
+ */
+export function onSession(handlers) {
+  Object.assign(session, handlers)
+}
 
 const retryLink = new RetryLink({
   delay: { initial: 300, max: 5000, jitter: true },
@@ -50,14 +73,14 @@ export function graphqlFetch(input, init) {
     }
 
     // each request extends the session, so check it again after it would expire without one
-    useUserStore().touch()
+    session.touch()
 
     return response
   })
 }
 
 export function handleError({ graphQLErrors, networkError, operation, forward }) {
-  const unauthorized = [401, 419].includes(networkError?.statusCode) || graphQLErrors?.some((err) =>
+  const unauthorized = AUTH_STATUS.includes(networkError?.statusCode) || graphQLErrors?.some((err) =>
     err.message === 'Unauthenticated.' ||
     err.extensions?.code === 'UNAUTHENTICATED' ||
     err.extensions?.http?.status === 401
@@ -65,15 +88,13 @@ export function handleError({ graphQLErrors, networkError, operation, forward })
 
   if (!unauthorized || operation?.getContext().relogin) return
 
-  const user = useUserStore()
-
   // Session expired while editing: keep the open views and retry the request after
   // the user signed in again instead of dropping all unsaved changes
-  if (user.me && forward) {
+  if (session.active() && forward) {
     return new Observable((observer) => {
       let sub = null
 
-      user.reauth()
+      session.reauth()
         .then(() => { sub = forward(operation).subscribe(observer) })
         .catch(() => observer.error(networkError || new Error(graphQLErrors?.[0]?.message || 'Unauthenticated')))
 
@@ -81,9 +102,8 @@ export function handleError({ graphQLErrors, networkError, operation, forward })
     })
   }
 
-  user.me = false
   apolloClient.clearStore().catch((error) => console.error('Failed to clear Apollo cache', error))
-  router.push({ name: 'login' })
+  session.ended()
 }
 
 /** Removes every cached variant of a root list field. */
@@ -94,11 +114,29 @@ export function invalidateList(field, cache = apolloClient.cache) {
 
 /** Uses cached lists only when remote invalidation is configured. */
 export function listFetchPolicy() {
-  return document.querySelector('#app')?.dataset?.reverb ? 'cache-first' : 'network-only'
+  return realtime() ? 'cache-first' : 'network-only'
 }
 
-export function retry(error) {
-  return !!error && error.statusCode !== 419
+// TRUE if the server wasn't reachable at all, e.g. offline, instead of responding with an error
+export function unreachable(error) {
+  return (error?.networkError ?? error) instanceof TypeError
+}
+
+// translated message shown if the server wasn't reachable
+export function connectionError() {
+  return gettext.$gettext('Connection failed, please try again')
+}
+
+// translated message of a failed sign-in, the browser's message of network errors is technical
+export function loginError(error) {
+  return unreachable(error) ? connectionError() : error?.message || gettext.$gettext('Login failed')
+}
+
+// retries failed queries only, mutations may have been executed on the server before the request failed
+// and authentication errors are handled by the error link
+export function retry(error, operation) {
+  const mutation = operation?.query?.definitions?.some((def) => def.operation === 'mutation')
+  return !!error && !mutation && !AUTH_STATUS.includes(error.statusCode)
 }
 
 const lazyUploadLink = new ApolloLink((operation, forward) => {

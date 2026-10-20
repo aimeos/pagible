@@ -1,5 +1,5 @@
 import { isProxy, reactive } from 'vue'
-import { clone, debounce, focusInvalid, uid } from '../../../js/utils'
+import { clone, composing, debounce, uid } from '../../../js/utils'
 
 describe('uid()', () => {
   it('returns a string of length 6', () => {
@@ -33,6 +33,15 @@ describe('uid()', () => {
   })
 })
 
+describe('composing()', () => {
+  it('detects key events of an input method editor', () => {
+    expect(composing(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }))).to.equal(true)
+    // Safari confirms the composed word after the composition ended
+    expect(composing(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 229 }))).to.equal(true)
+    expect(composing(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13 }))).to.equal(false)
+  })
+})
+
 describe('debounce()', () => {
   it('invokes the function once after the delay, coalescing rapid calls', () => {
     cy.clock().then((clock) => {
@@ -53,6 +62,49 @@ describe('debounce()', () => {
       fn.cancel()
       clock.tick(300)
       expect(calls).to.equal(0)
+    })
+  })
+
+  it('settles superseded calls with the result of the final invocation', () => {
+    cy.clock().then((clock) => {
+      const fn = debounce((val) => val, 300)
+      const first = fn('a')
+      const second = fn('b')
+      clock.tick(300)
+
+      return Promise.all([first, second]).then((results) => {
+        expect(results).to.deep.equal(['b', 'b'])
+      })
+    })
+  })
+
+  it('flush() runs a pending invocation immediately and only once', () => {
+    cy.clock().then((clock) => {
+      let calls = 0
+      const fn = debounce(() => ++calls, 300)
+      const pending = fn()
+      fn.flush()
+      expect(calls).to.equal(1)
+      clock.tick(300)
+      fn.flush()
+      expect(calls).to.equal(1)
+
+      return pending.then((result) => {
+        expect(result).to.equal(1)
+      })
+    })
+  })
+
+  it('cancel() resolves the pending calls with undefined', () => {
+    cy.clock().then((clock) => {
+      const fn = debounce(() => 'x', 300)
+      const pending = fn()
+      fn.cancel()
+      clock.tick(300)
+
+      return pending.then((result) => {
+        expect(result).to.equal(undefined)
+      })
     })
   })
 })
@@ -82,32 +134,3 @@ describe('clone()', () => {
   })
 })
 
-describe('focusInvalid()', () => {
-  afterEach(() => {
-    document.getElementById('focus-test')?.remove()
-  })
-
-  it('focuses the first visible invalid input', () => {
-    const root = document.createElement('div')
-    root.id = 'focus-test'
-    root.innerHTML = '<div class="v-input"><input id="hidden" style="display:none"></div>'
-      + '<div class="v-input"><input id="visible"></div>'
-    document.body.appendChild(root)
-
-    const form = { validate: () => Promise.resolve({ valid: false, errors: [{ id: 'hidden' }, { id: 'visible' }] }) }
-
-    return focusInvalid(form).then((result) => {
-      expect(result).to.equal(true)
-      expect(document.activeElement.id).to.equal('visible')
-    })
-  })
-
-  it('returns false without errors or form', () => {
-    return focusInvalid(null).then((result) => {
-      expect(result).to.equal(false)
-      return focusInvalid({ validate: () => Promise.resolve({ valid: true, errors: [] }) })
-    }).then((result) => {
-      expect(result).to.equal(false)
-    })
-  })
-})

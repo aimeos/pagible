@@ -1,5 +1,6 @@
 import PageDetailItemSection from '../../../js/components/PageDetailItemSection.vue'
-import { useUserStore, useSchemaStore } from '../../../js/stores'
+import { reactive } from 'vue'
+import { useUserStore, useSchemaStore, useSideStore } from '../../../js/stores'
 
 const stubs = {
   Fields: { template: '<div class="fields-stub" />' },
@@ -107,13 +108,69 @@ describe('PageDetailItemSection (meta)', () => {
     cy.get('.v-expansion-panel').should('not.exist')
   })
 
+  it('hides add button if the section has no schemas', () => {
+    mountMeta({ section: 'config', item: { id: '1', config: {} } }, { 'page:save': true })
+    cy.get('.v-expansion-panel').should('not.exist')
+    cy.get('button.btn-add').should('not.exist')
+  })
+
+  it('keeps the open panels of other entries and updates the counts when removing an entry', () => {
+    const page = reactive({
+      id: '1',
+      meta: {
+        seo: { type: 'seo', data: {}, files: [] },
+        social: { type: 'social', data: {}, files: [] },
+      },
+    })
+
+    mountMeta({ item: page, onPatch: (entries) => Object.assign(page, entries) }, { 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailItemSection).vm
+      vm.panel = ['seo', 'social']
+      vm.remove('seo')
+
+      expect(vm.panel).to.deep.equal(['social'])
+      expect(useSideStore().store.type).to.deep.equal({ social: 1 })
+    })
+  })
+
+  it('keeps the error state of the remaining entries when removing an entry', () => {
+    const page = reactive({
+      id: '1',
+      meta: {
+        seo: { type: 'seo', data: {}, files: [] },
+        social: { type: 'social', data: {}, files: [] },
+      },
+    })
+    const onError = cy.spy().as('error')
+    const consoleError = cy.spy(console, 'error')
+
+    mountMeta({ item: page, onError, onPatch: (entries) => Object.assign(page, entries) }, { 'page:save': true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailItemSection).vm
+      vm.error('social', true)
+      vm.remove('seo')
+      expect(onError.lastCall.args[0]).to.equal(true)
+
+      vm.remove('social')
+      expect(onError.lastCall.args[0]).to.equal(false)
+    })
+
+    // no deferred validation may run (and fail) after removing an entry
+    cy.wait(50).then(() => {
+      expect(onError.lastCall.args[0]).to.equal(false)
+      expect(consoleError).not.to.have.been.calledWithMatch(/validate/)
+    })
+  })
+
   it('adds canonical meta items without a group', () => {
     const page = { id: '1', meta: {} }
 
-    mountMeta({ item: page }, { 'page:save': true }).then(({ wrapper }) => {
+    const onPatch = cy.spy()
+
+    mountMeta({ item: page, onPatch }, { 'page:save': true }).then(({ wrapper }) => {
       wrapper.findComponent(PageDetailItemSection).vm.add({ type: 'seo' })
 
-      expect(page.meta.seo).to.deep.equal({
+      expect(page.meta).to.deep.equal({})
+      expect(onPatch.lastCall.args[0].meta.seo).to.deep.equal({
         type: 'seo',
         data: {},
         files: [],

@@ -5,13 +5,15 @@ import { useLanguageStore, useMessageStore, useUserStore } from '../../../js/sto
 const stubs = {
 }
 
-function mountList(props = {}, perms = {}, apollo = {}) {
+// "early" sets the permissions before mounting, e.g. for the initial search
+function mountList(props = {}, perms = {}, apollo = {}, early = false) {
   return cy.mount(FileListItems, {
     props: {
       ...props,
     },
     global: {
       stubs,
+      plugins: early ? [{ install: () => (useUserStore().me = { permission: perms }) }] : [],
       provide: {
         debounce: (fn) => fn,
         url: (path) => path,
@@ -108,7 +110,7 @@ describe('FileListItems', () => {
 
   it('renders grid/list toggle button', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button.btn-grid, button.btn-list').should('exist')
+    cy.get('button.btn-grid').should('exist')
   })
 
   it('shows add button with file:add permission and not embed', () => {
@@ -157,7 +159,11 @@ describe('FileListItems', () => {
       const vm = wrapper.findComponent(FileListItems).vm
       const file = new File(['private'], 'private.pdf', { type: 'application/pdf' })
 
-      return vm.add({ target: { files: [file] } }, 'private').then(() => {
+      const target = { files: [file], value: 'private.pdf' }
+
+      return vm.add({ target }, 'private').then(() => {
+        // allows selecting the same file again
+        expect(target.value).to.equal('')
         expect(mutate).to.have.been.calledOnce
         expect(mutate.firstCall.args[0].variables).to.deep.equal({
           disk: 'private',
@@ -276,7 +282,7 @@ describe('FileListItems', () => {
     })
   })
 
-  it('clears the complete Apollo cache before a manual reload', () => {
+  it('drops the cached list before a manual reload', () => {
     const calls = []
     const query = cy.stub().callsFake(() => {
       calls.push('query')
@@ -293,30 +299,39 @@ describe('FileListItems', () => {
       query,
       provider: {
         defaultClient: {
-          cache: { diff: () => ({ complete: true }), evict() {}, gc() {} },
+          cache: { diff: () => ({ complete: true }), evict: (opts) => calls.push('evict:' + opts.fieldName), gc() {} },
           clearStore,
         },
       },
     }).then(({ wrapper }) => {
       return wrapper.findComponent(FileListItems).vm.reload().then(() => {
-        expect(calls).to.deep.equal(['clearStore', 'query'])
+        expect(calls).to.deep.equal(['evict:files', 'query'])
       })
     })
   })
 
   it('shows loading state initially', () => {
-    mountList({}, { 'file:view': true })
+    // the initial search requires the view permission and must not finish
+    mountList({}, { 'file:view': true }, { query: () => new Promise(() => {}) }, true)
     cy.contains('Loading').should('exist')
   })
 
   it('starts in list view by default', () => {
     mountList({}, { 'file:view': true })
-    cy.get('button.btn-grid').should('exist')
+    cy.get('button.btn-grid').should('have.attr', 'aria-pressed', 'false')
+    cy.get('.items.list').should('exist')
   })
 
   it('starts in grid view when grid prop is true', () => {
     mountList({ grid: true }, { 'file:view': true })
-    cy.get('button.btn-list').should('exist')
+    cy.get('button.btn-grid').should('have.attr', 'aria-pressed', 'true')
+  })
+
+  it('keeps the focus on the view toggle', () => {
+    mountList({}, { 'file:view': true })
+    cy.get('button.btn-grid').focus().click()
+    cy.get('button.btn-grid').should('have.focus').and('have.attr', 'aria-pressed', 'true')
+    cy.get('.items.grid').should('exist')
   })
 
   it('edits one item without changing the bulk selection', () => {
@@ -327,6 +342,9 @@ describe('FileListItems', () => {
       const item = { id: 'file-1' }
       vm.items = [item, { id: 'file-2' }]
       vm.checked = new Set(['file-2'])
+
+      // the reloaded list still contains both items
+      cy.stub(vm, 'search').resolves(vm.items)
 
       vm.edit(item)
       expect(vm.editIds).to.deep.equal(['file-1'])
@@ -357,7 +375,7 @@ describe('FileListItems', () => {
     })
 
     press('.items [data-id="file-1"] .item-content', ' ').should('equal', true)
-    cy.get('.items [data-id="file-1"] .item-check input').should('be.checked')
+    cy.get('.items [data-id="file-1"] .item-check input').should('be.checked').and('have.attr', 'aria-label', 'Toggle selection')
 
     press('.items [data-id="file-1"] .item-check input', ' ').should('equal', false) // the checkbox toggles itself
     cy.get('.items [data-id="file-1"] .item-check input').should('be.checked')
@@ -397,7 +415,9 @@ describe('FileListItems', () => {
     const defaults = { trashed: 'WITHOUT', publish: null, editor: null, lang: null }
     const filter = reactive({ ...defaults, publish: 'DRAFT' })
 
-    mountList({ defaults, filter }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
+    const onUpdate = (patch) => Object.assign(filter, patch)
+
+    mountList({ defaults, filter, 'onUpdate:filter': onUpdate }, { 'file:view': true }).then(({ wrapper }) => wrapper.findComponent(FileListItems).vm.search())
     cy.get('.notfound').should('contain', 'No entries found')
     cy.get('.notfound .btn-reset-filter').click()
     cy.get('.notfound').should('contain', 'No entries yet').then(() => {
@@ -446,6 +466,7 @@ describe('FileListItems', () => {
           expect(vm.items[0].description).to.deep.equal({ en: 'A cat', de: 'Eine Katze' })
           expect(vm.items[0].published).to.equal(false)
           expect(add).to.have.been.calledWithMatch(/1 file translated/, 'success')
+          expect(add).not.to.have.been.calledWithMatch(/No missing descriptions/)
         })
       })
     })

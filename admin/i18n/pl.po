@@ -1,42 +1,48 @@
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: pl\n"
-"Language-Team: none\n"
-"Last-Translator: Automatically generated\n"
-"MIME-Version: 1.0\n"
-"PO-Revision-Date: \n"
-"POT-Creation-Date: \n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 
-#: js/ai.js:64
+#: js/ai.js:65 js/components/FileDetailItem.vue:251
 msgid "Error transcribing file"
 msgstr "Błąd transkrypcji pliku"
 
-#: js/ai.js:113
+#: js/ai.js:114 js/components/FileDetailItem.vue:304
+#: js/components/FileDetailItem.vue:311
 msgid "Error translating texts"
 msgstr "Błąd podczas tłumaczenia tekstów"
 
-#: js/ai.js:137
+#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "Do generowania tekstu wymagany jest monit"
 
-#: js/ai.js:160
+#: js/ai.js:161
 msgid "Error generating text"
 msgstr "Błąd generowania tekstu"
 
-#: js/chat.js:34
+#: js/App.vue:88 js/components/User.vue:68
+msgid "Error switching language"
+msgstr "Błąd przełączania języka"
+
+#: js/chat.js:35
 msgid "The chat assistant is not available."
 msgstr "Asystent czatu jest niedostępny."
 
-#: js/chat.js:71
+#: js/chat.js:72
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Odpowiedź jest już generowana. Proszę poczekać na zakończenie."
 
-#: js/chat.js:73
+#: js/chat.js:74
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Zbyt wiele żądań. Poczekaj chwilę i spróbuj ponownie."
 
@@ -76,8 +82,7 @@ msgstr "Następna karta"
 msgid "Show or hide side panel"
 msgstr "Pokaż lub ukryj panel boczny"
 
-#: js/commands.js:115
-#: js/components/DetailAppBar.vue:160
+#: js/commands.js:115 js/components/DetailAppBar.vue:167
 msgid "Back to list view"
 msgstr "Powrót do widoku listy"
 
@@ -105,12 +110,9 @@ msgstr "Wytnij stronę"
 msgid "Paste page"
 msgstr "Wklej stronę"
 
-#: js/commands.js:178
-#: js/components/CommandPalette.vue:106
-#: js/components/DetailRefs.vue:128
-#: js/components/Navigation.vue:30
-#: js/views/PageList.vue:267
-#: js/views/PageList.vue:284
+#: js/commands.js:178 js/components/CommandPalette.vue:111
+#: js/components/DetailRefs.vue:150 js/components/Navigation.vue:31
+#: js/views/PageList.vue:266 js/views/PageList.vue:270
 msgid "Pages"
 msgstr "Strony"
 
@@ -118,14 +120,10 @@ msgstr "Strony"
 msgid "Go to pages"
 msgstr "Przejdź do stron"
 
-#: js/commands.js:184
-#: js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25
-#: js/components/HistoryDialog.vue:303
-#: js/components/HistoryDialog.vue:305
-#: js/components/Navigation.vue:31
-#: js/views/FileList.vue:51
-#: js/views/FileList.vue:68
+#: js/commands.js:184 js/components/CommandPalette.vue:112
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
+#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
+#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "Media"
 
@@ -133,11 +131,9 @@ msgstr "Media"
 msgid "Go to media"
 msgstr "Przejdź do mediów"
 
-#: js/commands.js:190
-#: js/components/CommandPalette.vue:108
-#: js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:51
+#: js/commands.js:190 js/components/CommandPalette.vue:113
+#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
+#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "Elementy współdzielone"
 
@@ -145,9 +141,8 @@ msgstr "Elementy współdzielone"
 msgid "Go to shared elements"
 msgstr "Przejdź do elementów współdzielonych"
 
-#: js/commands.js:196
-#: js/components/Navigation.vue:33
-#: js/views/AccessList.vue:253
+#: js/commands.js:196 js/components/Navigation.vue:34
+#: js/views/AccessList.vue:239
 msgid "Users"
 msgstr "Użytkownicy"
 
@@ -155,455 +150,415 @@ msgstr "Użytkownicy"
 msgid "Go to users"
 msgstr "Przejdź do użytkowników"
 
-#: js/components/AccessUsers.vue:220
+#: js/components/AccessUsers.vue:218
 msgid "Access roles updated"
 msgstr "Role dostępu zostały zaktualizowane"
 
-#: js/components/AccessUsers.vue:229
+#: js/components/AccessUsers.vue:218
+msgid "Backend roles updated"
+msgstr "Role backendu zaktualizowane"
+
+#: js/components/AccessUsers.vue:228
 msgid "Error updating access roles"
 msgstr "Błąd podczas aktualizowania ról dostępu"
 
-#: js/components/AccessUsers.vue:230
+#: js/components/AccessUsers.vue:229
 msgid "Error updating CMS permissions"
 msgstr "Błąd podczas aktualizowania uprawnień CMS"
 
-#: js/components/AccessUsers.vue:267
+#: js/components/AccessUsers.vue:264
 msgid "User created"
 msgstr "Użytkownik został utworzony"
 
-#: js/components/AccessUsers.vue:273
+#: js/components/AccessUsers.vue:270
 msgid "Error creating user"
 msgstr "Błąd podczas tworzenia użytkownika"
 
-#: js/components/AccessUsers.vue:306
-#: js/components/PageAccess.vue:123
-#: js/views/AccessList.vue:142
+#: js/components/AccessUsers.vue:310 js/components/PageAccess.vue:130
+#: js/views/AccessList.vue:141
 msgid "Error fetching access roles"
 msgstr "Błąd podczas pobierania ról dostępu"
 
-#: js/components/AccessUsers.vue:336
+#: js/components/AccessUsers.vue:340
 msgid "Error fetching user access roles"
 msgstr "Błąd podczas pobierania ról dostępu użytkownika"
 
-#: js/components/AccessUsers.vue:379
-#: js/components/AccessUsers.vue:380
+#: js/components/AccessUsers.vue:383 js/components/AccessUsers.vue:384
 msgid "Create user"
 msgstr "Utwórz użytkownika"
 
-#: js/components/AccessUsers.vue:387
+#: js/components/AccessUsers.vue:391
 msgid "Email address"
 msgstr "Adres e-mail"
 
-#: js/components/AccessUsers.vue:396
+#: js/components/AccessUsers.vue:400
 msgid "Search user by email"
 msgstr "Wyszukaj użytkownika według adresu e-mail"
 
-#: js/components/AccessUsers.vue:408
-#: js/components/AccessUsers.vue:409
+#: js/components/AccessUsers.vue:412 js/components/AccessUsers.vue:413
 msgid "Search"
 msgstr "Szukaj"
 
-#: js/components/AccessUsers.vue:424
-#: js/components/AccessUsers.vue:425
-#: js/components/DetailAppBar.vue:194
+#: js/components/AccessUsers.vue:428 js/components/AccessUsers.vue:429
+#: js/components/DetailAppBar.vue:201
 msgid "Save"
 msgstr "Zapisz"
 
-#: js/components/AccessUsers.vue:434
+#: js/components/AccessUsers.vue:438
 msgid "Account"
 msgstr "Konto"
 
-#: js/components/AccessUsers.vue:439
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:443 js/components/AccessUsers.vue:450
 msgid "Assigned frontend roles"
 msgstr "Przypisane role frontendu"
 
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:450
 msgid "Roles granting access to restricted pages"
 msgstr "Role przyznające dostęp do stron z ograniczonym dostępem"
 
-#: js/components/AccessUsers.vue:459
+#: js/components/AccessUsers.vue:463
 msgid "Assigned backend roles"
 msgstr "Przypisane role w zapleczu"
 
-#: js/components/AccessUsers.vue:463
+#: js/components/AccessUsers.vue:467
 msgid "Custom"
 msgstr "Niestandardowe"
 
-#: js/components/AccessUsers.vue:469
+#: js/components/AccessUsers.vue:473
 msgid "Available roles"
 msgstr "Dostępne role"
 
-#: js/components/AccessUsers.vue:469
+#: js/components/AccessUsers.vue:473
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "Role określające, co użytkownik może robić w panelu administracyjnym"
 
-#: js/components/AccessUsers.vue:481
-#: js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:196
-#: js/views/AccessList.vue:325
+#: js/components/AccessUsers.vue:485 js/components/ListStatus.vue:36
+#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:311
 msgid "No entries found"
 msgstr "Nie znaleziono żadnych wpisów"
 
-#: js/components/ActionMenu.vue:25
-#: js/components/CommandPalette.vue:104
+#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:109
 msgid "Actions"
 msgstr "Akcje"
 
-#: js/components/ActionMenu.vue:60
-#: js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:183
+#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "Zamknij"
 
-#: js/components/AsideCount.vue:46
-msgid "Used elements"
-msgstr "Wykorzystane elementy"
-
-#: js/components/AsideList.vue:69
-msgid "Filters"
-msgstr "Filtry"
-
-#: js/components/AsideList.vue:76
-#: js/components/ListStatus.vue:43
-msgid "Reset"
-msgstr "Resetuj"
-
-#: js/components/AsideMeta.vue:21
-#: js/components/DetailRefs.vue:133
-#: js/components/DetailRefs.vue:163
-#: js/components/DetailRefs.vue:185
-msgid "ID"
-msgstr "ID"
-
-#: js/components/AsideMeta.vue:25
-#: js/components/ListSort.vue:31
-#: js/fields/File.vue:340
-msgid "MIME"
-msgstr "MIME"
-
-#: js/components/AsideMeta.vue:29
-#: js/fields/File.vue:341
-#: js/listview.js:122
-msgid "editor"
-msgstr "redaktor"
-
-#: js/components/AsideMeta.vue:33
-msgid "created"
-msgstr "stworzony"
-
-#: js/components/AsideMeta.vue:34
-#: js/fields/File.vue:342
-msgid "updated"
-msgstr "zaktualizowany"
-
-#: js/components/AsideMeta.vue:35
-msgid "deleted"
-msgstr "usunięty"
-
-#: js/components/AsideMeta.vue:51
-#: js/components/AsideMeta.vue:53
-#: js/components/HistoryDialog.vue:41
-msgid "Meta data"
-msgstr "Metadane"
-
-#: js/components/ChangesDialog.vue:58
-#: js/components/ChangesDialog.vue:59
-#: js/components/HistoryDialog.vue:41
-msgid "Fields"
-msgstr "Pola"
-
-#: js/components/ChangesDialog.vue:60
-msgid "Meta tags"
-msgstr "Metatagi"
-
-#: js/components/ChangesDialog.vue:61
-#: js/components/HistoryDialog.vue:42
-msgid "Configuration"
-msgstr "Konfiguracja"
-
-#: js/components/ChangesDialog.vue:62
-#: js/components/HistoryDialog.vue:42
-#: js/views/PageDetail.vue:821
-msgid "Content"
-msgstr "Treść"
-
-#: js/components/ChangesDialog.vue:252
-msgid "Conflicts from %{editor}"
-msgstr "Konflikty od %{editor}"
-
-#: js/components/ChangesDialog.vue:258
-msgid "%{count} / %{total}"
-msgstr "%{count} / %{total}"
-
-#: js/components/ChangesDialog.vue:280
-#: js/components/Fields.vue:286
-#: js/components/Fields.vue:319
-#: js/components/FieldsAside.vue:253
-msgid "Revert"
-msgstr "Przywróć poprzednią"
-
-#: js/components/ChangesDialog.vue:283
-msgid "Changes"
-msgstr "Zmiany"
-
-#: js/components/ChangesDialog.vue:302
-msgid "Removed"
-msgstr "Usunięto"
-
-#: js/components/ChangesDialog.vue:309
-msgid "Added"
-msgstr "Dodano"
-
-#: js/components/ChangesDialog.vue:329
-msgid "Use theirs"
-msgstr "Użyj ich wersji"
-
-#: js/components/ChangesDialog.vue:335
-msgid "Keep mine"
-msgstr "Zachowaj moje"
-
-#: js/components/ChangesDialog.vue:342
-msgid "Merge both"
-msgstr "Połącz obie"
-
-#: js/components/ChatDialog.vue:253
-msgid "Done"
-msgstr "Gotowe"
-
-#: js/components/ChatDialog.vue:263
-msgid "Sorry, something went wrong."
-msgstr "Przepraszamy, coś poszło nie tak."
-
-#: js/components/ChatDialog.vue:310
-msgid "AI Assistant"
-msgstr "Asystent AI"
-
-#: js/components/ChatDialog.vue:318
-#: js/components/ChatDialog.vue:319
-msgid "New chat"
-msgstr "Nowy czat"
-
-#: js/components/ChatDialog.vue:330
-#: js/views/ElementList.vue:74
-#: js/views/FileList.vue:74
-#: js/views/PageList.vue:290
+#: js/components/AiPrompt.vue:87 js/components/AiPrompt.vue:88
+#: js/components/ChatDialog.vue:324
 msgid "What shall I do for you?"
 msgstr "Co mogę dla Ciebie zrobić?"
 
-#: js/components/ChatDialog.vue:347
+#: js/components/AiPrompt.vue:87
+msgid "Press Enter to open the chat"
+msgstr "Naciśnij Enter, aby otworzyć czat"
+
+#: js/components/AiPrompt.vue:104
+msgid "Hide help"
+msgstr "Ukryj pomoc"
+
+#: js/components/AiPrompt.vue:104
+msgid "Show help"
+msgstr "Pokaż pomoc"
+
+#: js/components/AiPrompt.vue:115 js/components/ChatDialog.vue:399
+#: js/components/ChatDialog.vue:400
+msgid "Send"
+msgstr "Wyślij"
+
+#: js/components/AiPrompt.vue:123 js/components/ChatDialog.vue:378
+#: js/components/ChatDialog.vue:379 js/components/FieldActions.vue:134
+#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:476
+msgid "Dictate"
+msgstr "Dyktuj"
+
+#: js/components/AiPrompt.vue:132
+msgid "Help"
+msgstr "Pomoc"
+
+#: js/components/AsideCount.vue:60
+msgid "Used elements"
+msgstr "Wykorzystane elementy"
+
+#: js/components/AsideList.vue:70
+msgid "Filters"
+msgstr "Filtry"
+
+#: js/components/AsideList.vue:77 js/components/ListStatus.vue:43
+msgid "Reset"
+msgstr "Resetuj"
+
+#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:155
+#: js/components/DetailRefs.vue:185 js/components/DetailRefs.vue:207
+msgid "ID"
+msgstr "ID"
+
+#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
+#: js/fields/File.vue:334
+msgid "MIME"
+msgstr "MIME"
+
+#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
+msgid "editor"
+msgstr "redaktor"
+
+#: js/components/AsideMeta.vue:34
+msgid "created"
+msgstr "stworzony"
+
+#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
+msgid "updated"
+msgstr "zaktualizowany"
+
+#: js/components/AsideMeta.vue:36
+msgid "deleted"
+msgstr "usunięty"
+
+#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
+#: js/components/HistoryDialog.vue:46
+msgid "Meta data"
+msgstr "Metadane"
+
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:46
+msgid "Fields"
+msgstr "Pola"
+
+#: js/components/ChangesDialog.vue:61
+msgid "Meta tags"
+msgstr "Metatagi"
+
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
+msgid "Configuration"
+msgstr "Konfiguracja"
+
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
+#: js/views/PageDetail.vue:707
+msgid "Content"
+msgstr "Treść"
+
+#: js/components/ChangesDialog.vue:231
+msgid "Conflicts from %{editor}"
+msgstr "Konflikty od %{editor}"
+
+#: js/components/ChangesDialog.vue:237
+msgid "%{count} / %{total}"
+msgstr "%{count} / %{total}"
+
+#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
+#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
+msgid "Revert"
+msgstr "Przywróć poprzednią"
+
+#: js/components/ChangesDialog.vue:262
+msgid "Changes"
+msgstr "Zmiany"
+
+#: js/components/ChangesDialog.vue:281
+msgid "Removed"
+msgstr "Usunięto"
+
+#: js/components/ChangesDialog.vue:288
+msgid "Added"
+msgstr "Dodano"
+
+#: js/components/ChangesDialog.vue:308
+msgid "Use theirs"
+msgstr "Użyj ich wersji"
+
+#: js/components/ChangesDialog.vue:314
+msgid "Keep mine"
+msgstr "Zachowaj moje"
+
+#: js/components/ChangesDialog.vue:321
+msgid "Merge both"
+msgstr "Połącz obie"
+
+#: js/components/ChatDialog.vue:208
+msgid "Sorry, something went wrong."
+msgstr "Przepraszamy, coś poszło nie tak."
+
+#: js/components/ChatDialog.vue:284
+msgid "Done"
+msgstr "Gotowe"
+
+#: js/components/ChatDialog.vue:304
+msgid "AI Assistant"
+msgstr "Asystent AI"
+
+#: js/components/ChatDialog.vue:312 js/components/ChatDialog.vue:313
+msgid "New chat"
+msgstr "Nowy czat"
+
+#: js/components/ChatDialog.vue:341
 msgid "Thinking ..."
 msgstr "Myślę ..."
 
-#: js/components/ChatDialog.vue:353
-#: js/components/PageDetailContentList.vue:750
-#: js/components/PageDetailContentList.vue:836
-#: js/components/PageListItems.vue:1793
-#: js/fields/Items.vue:303
+#: js/components/ChatDialog.vue:347 js/components/ChatDialog.vue:348
+#: js/components/PageDetailContentList.vue:524
+#: js/components/PageDetailContentList.vue:611
+#: js/components/PageListItems.vue:770 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopiuj"
 
-#: js/components/ChatDialog.vue:367
+#: js/components/ChatDialog.vue:362
 msgid "Send a message ..."
 msgstr "Wyślij wiadomość..."
 
-#: js/components/ChatDialog.vue:382
-#: js/components/ChatDialog.vue:383
-#: js/components/Fields.vue:279
-#: js/components/FileAiDialog.vue:200
-#: js/components/FileDetailItem.vue:416
-#: js/components/PageDetailContentList.vue:721
-#: js/fields/Items.vue:372
-#: js/views/ElementList.vue:107
-#: js/views/FileList.vue:107
-#: js/views/PageList.vue:323
-msgid "Dictate"
-msgstr "Dyktuj"
+#: js/components/ChatDialog.vue:363
+msgid "Chat message"
+msgstr "Wiadomość czatu"
 
-#: js/components/ChatDialog.vue:393
-#: js/components/ChatDialog.vue:394
+#: js/components/ChatDialog.vue:389 js/components/ChatDialog.vue:390
 msgid "Stop"
 msgstr "Zatrzymaj"
 
-#: js/components/ChatDialog.vue:403
-#: js/components/ChatDialog.vue:404
-#: js/views/ElementList.vue:100
-#: js/views/FileList.vue:100
-msgid "Send"
-msgstr "Wyślij"
-
-#: js/components/CommandPalette.vue:105
+#: js/components/CommandPalette.vue:110
 msgid "Go to"
 msgstr "Przejdź do"
 
-#: js/components/CommandPalette.vue:226
-#: js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352
-#: js/components/PageListItems.vue:1907
+#: js/components/CommandPalette.vue:231 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
 msgid "New"
 msgstr "Nowy"
 
-#: js/components/CommandPalette.vue:280
-#: js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:77
-#: js/components/ShortcutDialog.vue:38
+#: js/components/CommandPalette.vue:286 js/components/CommandPalette.vue:309
+#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "Polecenia"
 
-#: js/components/CommandPalette.vue:289
+#: js/components/CommandPalette.vue:295
 msgid "Type a command or search pages, files and elements"
 msgstr "Wpisz polecenie lub szukaj stron, plików i elementów"
 
-#: js/components/CommandPalette.vue:290
+#: js/components/CommandPalette.vue:296
 msgid "Command or search term"
 msgstr "Polecenie lub wyszukiwana fraza"
 
-#: js/components/CommandPalette.vue:322
-#: js/components/ShortcutDialog.vue:98
+#: js/components/CommandPalette.vue:328 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "potem"
 
-#: js/components/CommandPalette.vue:329
+#: js/components/CommandPalette.vue:335
 msgid "Search failed, please try again"
 msgstr "Wyszukiwanie nie powiodło się, spróbuj ponownie"
 
-#: js/components/CommandPalette.vue:330
+#: js/components/CommandPalette.vue:336
 msgid "No results"
 msgstr "Brak wyników"
 
-#: js/components/ConfirmDialog.vue:23
-#: js/components/ConfirmDialog.vue:57
-#: js/components/ElementListItems.vue:229
-#: js/components/ElementListItems.vue:335
-#: js/components/FileListItems.vue:314
-#: js/components/FileListItems.vue:462
-#: js/components/PageListItems.vue:1579
-#: js/components/PageListItems.vue:1821
-#: js/views/AccessList.vue:279
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
+#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
+#: js/views/AccessList.vue:265
 msgid "Purge"
 msgstr "Usuń trwale"
 
 #: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
-msgid_plural "The following %{num} entries will be permanently deleted and cannot be restored:"
-msgstr[0] "Następujący wpis zostanie trwale usunięty i nie będzie można go przywrócić:"
-msgstr[1] "Następujące %{num} wpisy zostaną trwale usunięte i nie będzie można ich przywrócić:"
-msgstr[2] "Następujące %{num} wpisów zostanie trwale usuniętych i nie będzie można ich przywrócić:"
+msgid_plural ""
+"The following %{num} entries will be permanently deleted and cannot be "
+"restored:"
+msgstr[0] ""
+"Następujący wpis zostanie trwale usunięty i nie będzie można go przywrócić:"
+msgstr[1] ""
+"Następujące %{num} wpisy zostaną trwale usunięte i nie będzie można ich "
+"przywrócić:"
+msgstr[2] ""
+"Następujące %{num} wpisów zostanie trwale usuniętych i nie będzie można ich "
+"przywrócić:"
 
-#: js/components/ConfirmDialog.vue:55
-#: js/components/FileDetailItemImage.vue:597
-#: js/components/TranslateDialog.vue:99
-#: js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:346
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:422
+#: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
+#: js/views/AccessList.vue:332
 msgid "Cancel"
 msgstr "Anuluj"
 
-#: js/components/DetailAppBar.vue:156
-#: js/views/AccessList.vue:231
-#: js/views/ElementList.vue:41
-#: js/views/FileList.vue:41
-#: js/views/PageList.vue:257
-#: js/views/PluginPanel.vue:66
+#: js/components/DetailAppBar.vue:163 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Menu"
 
-#: js/components/DetailAppBar.vue:177
+#: js/components/DetailAppBar.vue:184
 msgid "View history"
 msgstr "Wyświetl historię"
 
-#: js/components/DetailAppBar.vue:186
+#: js/components/DetailAppBar.vue:193
 msgid "View merge changes"
 msgstr "Wyświetl zmiany po scaleniu"
 
-#: js/components/DetailAppBar.vue:210
-#: js/components/DetailAppBar.vue:226
-#: js/components/DetailAppBar.vue:230
-#: js/components/ElementListItems.vue:214
-#: js/components/ElementListItems.vue:304
-#: js/components/FileListItems.vue:292
-#: js/components/FileListItems.vue:427
-#: js/components/PageListItems.vue:1551
-#: js/components/PageListItems.vue:1757
+#: js/components/DetailAppBar.vue:217 js/components/DetailAppBar.vue:233
+#: js/components/DetailAppBar.vue:237 js/components/ListBulkMenu.vue:53
+#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:90
+#: js/components/PageListItems.vue:734
 msgid "Publish"
 msgstr "Opublikuj"
 
-#: js/components/DetailAppBar.vue:233
+#: js/components/DetailAppBar.vue:240
 msgid "Publish & Close"
 msgstr "Opublikuj i zamknij"
 
-#: js/components/DetailAppBar.vue:238
-#: js/components/DetailAppBar.vue:264
+#: js/components/DetailAppBar.vue:245 js/components/DetailAppBar.vue:271
 msgid "Schedule"
 msgstr "Zaplanuj"
 
-#: js/components/DetailAppBar.vue:273
+#: js/components/DetailAppBar.vue:280
 msgid "Schedule & Close"
 msgstr "Zaplanuj i zamknij"
 
-#: js/components/DetailAppBar.vue:281
-#: js/views/ElementList.vue:59
-#: js/views/FileList.vue:59
-#: js/views/PageList.vue:275
-#: js/views/PluginPanel.vue:83
+#: js/components/DetailAppBar.vue:288 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Przełącz menu boczne"
 
-#: js/components/DetailRefs.vue:70
+#: js/components/DetailRefs.vue:80
 msgid "yes"
 msgstr "tak"
 
-#: js/components/DetailRefs.vue:73
+#: js/components/DetailRefs.vue:83
 msgid "no"
 msgstr "nie"
 
-#: js/components/DetailRefs.vue:134
-#: js/components/FileUrlDialog.vue:219
+#: js/components/DetailRefs.vue:136
+msgid "Error fetching references"
+msgstr "Błąd pobierania odwołań"
+
+#: js/components/DetailRefs.vue:156 js/components/FileUrlDialog.vue:232
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:135
-#: js/components/DetailRefs.vue:165
-#: js/components/ElementDetailItem.vue:66
-#: js/components/FileDetailItem.vue:326
-#: js/components/ListSort.vue:32
+#: js/components/DetailRefs.vue:157 js/components/DetailRefs.vue:187
+#: js/components/ElementDetailItem.vue:57 js/components/FileDetailItem.vue:384
+#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Nazwa"
 
-#: js/components/DetailRefs.vue:147
-#: js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:475
+#: js/components/DetailRefs.vue:169 js/components/PageAccess.vue:187
+#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "Ograniczone"
 
-#: js/components/DetailRefs.vue:158
-#: js/views/ElementList.vue:68
+#: js/components/DetailRefs.vue:180 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "Elementy"
 
-#: js/components/DetailRefs.vue:164
-#: js/components/DetailRefs.vue:186
-#: js/components/ListSort.vue:37
+#: js/components/DetailRefs.vue:186 js/components/DetailRefs.vue:208
+#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "Typ"
 
-#: js/components/DetailRefs.vue:180
+#: js/components/DetailRefs.vue:202
 msgid "Versions"
 msgstr "Wersje"
 
-#: js/components/DetailRefs.vue:187
-#: js/listview.js:106
+#: js/components/DetailRefs.vue:209 js/listview.js:90
 msgid "Published"
 msgstr "Opublikowano"
 
-#: js/components/EditBulkDialog.vue:53
-#: js/components/ElementListItems.vue:217
-#: js/components/ElementListItems.vue:317
-#: js/components/FileListItems.vue:295
-#: js/components/FileListItems.vue:437
-#: js/components/PageBulkDialog.vue:135
-#: js/components/PageListItems.vue:1561
-#: js/components/PageListItems.vue:1778
+#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
+#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:140
+#: js/components/PageBulkMenu.vue:100 js/components/PageListItems.vue:755
 msgid "Edit properties"
 msgstr "Edytuj właściwości"
 
@@ -614,13 +569,10 @@ msgstr[0] "Zastosuj wybrane właściwości do %{num} wpisu."
 msgstr[1] "Zastosuj wybrane właściwości do %{num} wpisów."
 msgstr[2] "Zastosuj wybrane właściwości do %{num} wpisów."
 
-#: js/components/EditBulkDialog.vue:71
-#: js/components/ElementDetailItem.vue:79
-#: js/components/FileDetailItem.vue:338
-#: js/components/ListSort.vue:28
-#: js/components/PageDetailItemProps.vue:233
-#: js/components/PageListItems.vue:1647
-#: js/views/PageDetail.vue:749
+#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
+#: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
+#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:635
 msgid "Language"
 msgstr "Język"
 
@@ -628,838 +580,769 @@ msgstr "Język"
 msgid "Language of the content"
 msgstr "Język treści"
 
-#: js/components/EditBulkDialog.vue:78
-#: js/components/PageAccess.vue:204
-#: js/components/PageBulkDialog.vue:250
+#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
+#: js/components/PageBulkDialog.vue:255
 msgid "Apply"
 msgstr "Zastosuj"
 
-#: js/components/ElementDetailItem.vue:66
+#: js/components/ElementDetailItem.vue:57
 msgid "Name to find the shared element in the element list"
-msgstr "Nazwa umożliwiająca znalezienie współdzielonego elementu na liście elementów"
+msgstr ""
+"Nazwa umożliwiająca znalezienie współdzielonego elementu na liście elementów"
 
-#: js/components/ElementDetailItem.vue:79
+#: js/components/ElementDetailItem.vue:70
 msgid "Language of the element content, choose none if used in all languages"
-msgstr "Język treści elementu, wybierz Brak, jeśli używany we wszystkich językach"
+msgstr ""
+"Język treści elementu, wybierz Brak, jeśli używany we wszystkich językach"
 
-#: js/components/ElementListItems.vue:152
+#: js/components/ElementListItems.vue:153
+msgid "Error adding shared element"
+msgstr "Błąd dodawania elementu współdzielonego"
+
+#: js/components/ElementListItems.vue:159
 msgid "Error trashing shared element"
 msgstr "Błąd podczas przenoszenia elementu współdzielonego do kosza"
 
-#: js/components/ElementListItems.vue:153
+#: js/components/ElementListItems.vue:160
 msgid "Error restoring shared element"
 msgstr "Błąd przywracania elementu współdzielonego"
 
-#: js/components/ElementListItems.vue:154
+#: js/components/ElementListItems.vue:161
 msgid "Error publishing shared element"
 msgstr "Błąd publikowania elementu współdzielonego"
 
-#: js/components/ElementListItems.vue:155
+#: js/components/ElementListItems.vue:162
 msgid "Error purging shared element"
 msgstr "Błąd podczas trwałego usuwania elementu współdzielonego"
 
-#: js/components/ElementListItems.vue:156
+#: js/components/ElementListItems.vue:163
 msgid "Error saving shared element"
 msgstr "Błąd podczas zapisywania elementu współdzielonego"
 
-#: js/components/ElementListItems.vue:157
+#: js/components/ElementListItems.vue:164
 msgid "Error fetching shared elements"
 msgstr "Błąd pobierania elementów współdzielonych"
 
-#: js/components/ElementListItems.vue:196
-#: js/components/FileListItems.vue:277
-#: js/components/PageDetailContentList.vue:737
-#: js/components/PageListItems.vue:1535
-#: js/views/AccessList.vue:274
-#: js/views/AccessList.vue:318
+#: js/components/ElementListItems.vue:200
+#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:305
+#: js/components/FileListItems.vue:367
+#: js/components/PageDetailContentList.vue:510
+#: js/components/PageDetailContentList.vue:601
+#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
+#: js/views/AccessList.vue:260 js/views/AccessList.vue:304
 msgid "Toggle selection"
 msgstr "Przełącz wybór"
 
-#: js/components/ElementListItems.vue:220
-#: js/components/ElementListItems.vue:326
-#: js/components/FileListItems.vue:308
-#: js/components/FileListItems.vue:453
-#: js/components/PageListItems.vue:1573
-#: js/components/PageListItems.vue:1812
-msgid "Delete"
-msgstr "Usuń"
-
-#: js/components/ElementListItems.vue:226
-#: js/components/ElementListItems.vue:332
-#: js/components/FileListItems.vue:311
-#: js/components/FileListItems.vue:459
-#: js/components/PageListItems.vue:1576
-#: js/components/PageListItems.vue:1818
-msgid "Restore"
-msgstr "Przywróć"
-
-#: js/components/ElementListItems.vue:237
-#: js/components/ElementListItems.vue:380
-#: js/components/PageDetailContentList.vue:924
-#: js/components/PageDetailItemSection.vue:225
-#: js/fields/Items.vue:410
+#: js/components/ElementListItems.vue:218
+#: js/components/ElementListItems.vue:299
+#: js/components/PageDetailContentList.vue:701
+#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Dodaj element"
 
-#: js/components/ElementListItems.vue:252
-#: js/components/FileListItems.vue:348
-#: js/components/PageDetailContentList.vue:770
-#: js/components/PageListItems.vue:1656
-#: js/components/SchemaItems.vue:145
-#: js/views/AccessList.vue:303
-msgid "Search for"
-msgstr "Szukaj"
-
-#: js/components/ElementListItems.vue:263
-#: js/components/FileListItems.vue:361
-msgid "Updated by another user"
-msgstr "Zaktualizowane przez innego użytkownika"
-
-#: js/components/ElementListItems.vue:269
-#: js/components/FileListItems.vue:367
-#: js/components/PageListItems.vue:1674
-msgid "Refresh"
-msgstr "Odśwież"
-
-#: js/components/ElementListItems.vue:275
-#: js/components/SchemaItems.vue:156
+#: js/components/ElementListItems.vue:230 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Odśwież elementy"
 
-#: js/components/Fields.vue:242
-#: js/components/Fields.vue:248
-#: js/components/PageListItems.vue:1591
-#: js/components/PageListItems.vue:1828
-#: js/components/TranslateDialog.vue:66
-#: js/components/TranslateDialog.vue:101
-#: js/fields/Items.vue:337
-#: js/fields/Items.vue:343
-#: js/views/PageDetail.vue:791
+#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
+#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
+#: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
+#: js/views/PageDetail.vue:677
 msgid "Translate"
 msgstr "Przetłumacz"
 
-#: js/components/Fields.vue:267
-#: js/fields/Items.vue:361
+#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "Generuj tekst"
 
-#: js/components/Fields.vue:294
+#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "Zaktualizowane przez innego redaktora"
 
-#: js/components/Fields.vue:297
+#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "Nadpisano"
 
-#: js/components/FieldsAside.vue:77
+#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "Telefon"
 
-#: js/components/FieldsAside.vue:78
+#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "Tablet"
 
-#: js/components/FieldsAside.vue:79
+#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "Komputer"
 
-#: js/components/FieldsAside.vue:79
+#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "Pełna szerokość"
 
-#: js/components/FieldsAside.vue:176
+#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "Element zawartości"
 
-#: js/components/FieldsAside.vue:189
+#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "Dodaj element przed"
 
-#: js/components/FieldsAside.vue:197
+#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "Dodaj element po"
 
-#: js/components/FieldsAside.vue:205
+#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "Odłącz element"
 
-#: js/components/FieldsAside.vue:213
+#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "Podgląd responsywny"
 
-#: js/components/FieldsAside.vue:245
-#: js/components/PageDetailContentList.vue:872
+#: js/components/FieldsAside.vue:231
+#: js/components/PageDetailContentList.vue:647
 msgid "Change to"
 msgstr "Zmień na"
 
-#: js/components/FileActionMenu.vue:36
-#: js/fields/File.vue:233
-#: js/fields/File.vue:234
-#: js/fields/File.vue:258
-#: js/fields/File.vue:259
-#: js/fields/Images.vue:271
+#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
+#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
+#: js/fields/Images.vue:328
 msgid "Edit"
 msgstr "Edytuj"
 
-#: js/components/FileActionMenu.vue:39
-#: js/components/FileAiDialog.vue:223
-#: js/components/FileAiDialog.vue:250
-#: js/components/FileUrlDialog.vue:231
-#: js/components/PageDetailContentList.vue:762
-#: js/components/PageDetailContentList.vue:842
-#: js/fields/Items.vue:305
-#: js/fields/Table.vue:182
-#: js/fields/Table.vue:231
+#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:254
+#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:244
+#: js/components/PageDetailContentList.vue:536
+#: js/components/PageDetailContentList.vue:617 js/fields/Items.vue:283
+#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Odłącz"
 
-#: js/components/FileAiDialog.vue:116
-#: js/components/FileListItems.vue:153
-#: js/components/FileUrlDialog.vue:59
-#: js/components/FileUrlDialog.vue:158
-#: js/fields/File.vue:102
-#: js/fields/Images.vue:95
+#: js/components/FileAiDialog.vue:129 js/components/FileListItems.vue:174
+#: js/components/FileUrlDialog.vue:62 js/components/FileUrlDialog.vue:164
+#: js/filefield.js:188
 msgid "Error adding file %{path}"
 msgstr "Błąd dodawania pliku %{path}"
 
-#: js/components/FileAiDialog.vue:157
+#: js/components/FileAiDialog.vue:173
 msgid "Error creating file"
 msgstr "Błąd tworzenia pliku"
 
-#: js/components/FileAiDialog.vue:189
+#: js/components/FileAiDialog.vue:220
 msgid "Create image"
 msgstr "Utwórz obraz"
 
-#: js/components/FileAiDialog.vue:207
+#: js/components/FileAiDialog.vue:238
 msgid "Describe the image content"
 msgstr "Opis zawartości obrazu"
 
-#: js/components/FileAiDialog.vue:207
+#: js/components/FileAiDialog.vue:238
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Opisz temat, styl i kolory generowanego obrazu"
 
-#: js/components/FileAiDialog.vue:214
+#: js/components/FileAiDialog.vue:245
 msgid "New image"
 msgstr "Nowy obraz"
 
-#: js/components/FileAiDialog.vue:218
+#: js/components/FileAiDialog.vue:249
 msgid "Current images"
 msgstr "Aktualne obrazy"
 
-#: js/components/FileAiDialog.vue:243
+#: js/components/FileAiDialog.vue:274
 msgid "Images used"
 msgstr "Użyte obrazy"
 
-#: js/components/FileAiDialog.vue:260
+#: js/components/FileAiDialog.vue:291
 msgid "Select images"
 msgstr "Wybierz obrazy"
 
-#: js/components/FileDetailItem.vue:99
+#: js/components/FileDetailItem.vue:137 js/components/FileDetailItem.vue:146
+msgid "Error copying to clipboard"
+msgstr "Błąd kopiowania do schowka"
+
+#: js/components/FileDetailItem.vue:143
 msgid "Copied to clipboard"
 msgstr "Skopiowano do schowka"
 
-#: js/components/FileDetailItem.vue:126
+#: js/components/FileDetailItem.vue:170
 msgid "Error describing file"
 msgstr "Błąd opisywania pliku"
 
-#: js/components/FileDetailItem.vue:174
-#: js/components/FileListItems.vue:169
-#: js/fields/File.vue:184
-#: js/fields/Images.vue:185
-#: js/views/FileDetail.vue:218
+#: js/components/FileDetailItem.vue:219 js/components/FileListItems.vue:190
+#: js/filefield.js:156 js/views/FileDetail.vue:246
 msgid "Error saving file"
 msgstr "Błąd zapisu pliku"
 
-#: js/components/FileDetailItem.vue:187
+#: js/components/FileDetailItem.vue:232
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkrypcja jest dostępna tylko dla plików audio i wideo"
 
-#: js/components/FileDetailItem.vue:326
+#: js/components/FileDetailItem.vue:384
 msgid "Name to find the file in the media list"
 msgstr "Nazwa umożliwiająca znalezienie pliku na liście mediów"
 
-#: js/components/FileDetailItem.vue:338
+#: js/components/FileDetailItem.vue:396
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "Język treści pliku, wybierz Brak, jeśli używany we wszystkich językach"
 
-#: js/components/FileDetailItem.vue:348
+#: js/components/FileDetailItem.vue:406
 msgid "Copy URL"
 msgstr "Kopiuj adres URL"
 
-#: js/components/FileDetailItem.vue:390
+#: js/components/FileDetailItem.vue:449
 msgid "Descriptions"
 msgstr "Opisy"
 
-#: js/components/FileDetailItem.vue:398
-#: js/components/FileDetailItem.vue:456
+#: js/components/FileDetailItem.vue:457 js/components/FileDetailItem.vue:516
 msgid "Translate text"
 msgstr "Przetłumacz tekst"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:465
 msgid "Generate description"
 msgstr "Generuj opis"
 
-#: js/components/FileDetailItem.vue:432
+#: js/components/FileDetailItem.vue:492
 msgid "Description (%{lang})"
 msgstr "Opis (%{lang})"
 
-#: js/components/FileDetailItem.vue:432
-msgid "Alternative text for screen readers and search engines, also used as caption"
-msgstr "Tekst alternatywny dla czytników ekranu i wyszukiwarek, używany też jako podpis"
+#: js/components/FileDetailItem.vue:492
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"Tekst alternatywny dla czytników ekranu i wyszukiwarek, używany też jako "
+"podpis"
 
-#: js/components/FileDetailItem.vue:448
+#: js/components/FileDetailItem.vue:508
 msgid "Transcriptions"
 msgstr "Transkrypcje"
 
-#: js/components/FileDetailItem.vue:464
+#: js/components/FileDetailItem.vue:524
 msgid "Transcribe file content"
 msgstr "Transkrybuj zawartość pliku"
 
-#: js/components/FileDetailItem.vue:481
+#: js/components/FileDetailItem.vue:541
 msgid "Transcription (%{lang})"
 msgstr "Transkrypcja (%{lang})"
 
-#: js/components/FileDetailItem.vue:481
+#: js/components/FileDetailItem.vue:541
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
-msgstr "Tekst mówiony w formacie WebVTT, wyświetlany jako napisy i transkrypcja"
+msgstr ""
+"Tekst mówiony w formacie WebVTT, wyświetlany jako napisy i transkrypcja"
 
-#: js/components/FileDetailItemImage.vue:145
+#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "Oryginalne proporcje"
 
-#: js/components/FileDetailItemImage.vue:146
+#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "Dowolne proporcje"
 
-#: js/components/FileDetailItemImage.vue:147
+#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "Kwadrat"
 
-#: js/components/FileDetailItemImage.vue:156
-msgid "Number of pixels added at this side of the image"
-msgstr "Liczba pikseli dodanych z tej strony obrazu"
+#: js/components/FileDetailItemImage.vue:175
+msgid "Error downloading image"
+msgstr "Błąd pobierania obrazu"
 
-#: js/components/FileDetailItemImage.vue:159
-msgctxt "image edge"
-msgid "Top"
-msgstr "Góra"
-
-#: js/components/FileDetailItemImage.vue:161
-msgctxt "image edge"
-msgid "Left"
-msgstr "Lewo"
-
-#: js/components/FileDetailItemImage.vue:162
-msgctxt "image edge"
-msgid "Right"
-msgstr "Prawo"
-
-#: js/components/FileDetailItemImage.vue:164
-msgctxt "image edge"
-msgid "Bottom"
-msgstr "Dół"
-
-#: js/components/FileDetailItemImage.vue:226
-msgid "Error erasing image part"
-msgstr "Błąd kasowania części obrazu"
-
-#: js/components/FileDetailItemImage.vue:319
-msgid "Error editing image part"
-msgstr "Błąd edycji części obrazu"
-
-#: js/components/FileDetailItemImage.vue:331
-msgid "Error removing background"
-msgstr "Błąd usuwania tła"
-
-#: js/components/FileDetailItemImage.vue:439
+#: js/components/FileDetailItemImage.vue:285
+#: js/components/FileDetailItemImage.vue:370 js/imageai.js:216
 msgid "Error editing image"
 msgstr "Błąd edycji obrazu"
 
-#: js/components/FileDetailItemImage.vue:518
-msgid "Error uncropping image"
-msgstr "Błąd podczas rozszerzania obrazu"
-
-#: js/components/FileDetailItemImage.vue:548
-msgid "Error upscaling image"
-msgstr "Błąd podczas zwiększania rozdzielczości obrazu"
-
-#: js/components/FileDetailItemImage.vue:603
-#: js/components/FileDetailItemImage.vue:608
+#: js/components/FileDetailItemImage.vue:428
+#: js/components/FileDetailItemImage.vue:433
 msgid "Select area"
 msgstr "Wybierz obszar"
 
-#: js/components/FileDetailItemImage.vue:627
+#: js/components/FileDetailItemImage.vue:452
 msgid "Crop selected area"
 msgstr "Przytnij zaznaczony obszar"
 
-#: js/components/FileDetailItemImage.vue:637
+#: js/components/FileDetailItemImage.vue:462
 msgid "Erase selected area"
 msgstr "Wymaż zaznaczony obszar"
 
-#: js/components/FileDetailItemImage.vue:648
-#: js/components/FileDetailItemImage.vue:655
-#: js/components/FileDetailItemImage.vue:670
+#: js/components/FileDetailItemImage.vue:474
+#: js/components/FileDetailItemImage.vue:481
+#: js/components/FileDetailItemImage.vue:496
 msgid "Edit image"
 msgstr "Edytuj obraz"
 
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:487
 msgid "Describe the changes"
 msgstr "Opisz zmiany"
 
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:487
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "Opisz, co należy zmienić na obrazie, np. zrobić niebo niebieskim"
 
-#: js/components/FileDetailItemImage.vue:679
+#: js/components/FileDetailItemImage.vue:506
 msgid "Remove background"
 msgstr "Usuń tło"
 
-#: js/components/FileDetailItemImage.vue:689
-#: js/components/FileDetailItemImage.vue:696
-#: js/components/FileDetailItemImage.vue:716
+#: js/components/FileDetailItemImage.vue:517
+#: js/components/FileDetailItemImage.vue:524
+#: js/components/FileDetailItemImage.vue:544
 msgid "Expand image"
 msgstr "Rozszerz obraz"
 
-#: js/components/FileDetailItemImage.vue:724
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:552
+#: js/components/FileDetailItemImage.vue:559
 msgid "Upscale image"
 msgstr "Zwiększ rozdzielczość obrazu"
 
-#: js/components/FileDetailItemImage.vue:744
+#: js/components/FileDetailItemImage.vue:572
 msgid "Scale %{factor}"
 msgstr "Skala %{factor}"
 
-#: js/components/FileDetailItemImage.vue:752
+#: js/components/FileDetailItemImage.vue:581
 msgid "Rotate counter-clockwise"
 msgstr "Obróć przeciwnie do ruchu wskazówek zegara"
 
-#: js/components/FileDetailItemImage.vue:758
+#: js/components/FileDetailItemImage.vue:588
 msgid "Rotate clockwise"
 msgstr "Obróć zgodnie z ruchem wskazówek zegara"
 
-#: js/components/FileDetailItemImage.vue:765
+#: js/components/FileDetailItemImage.vue:596
 msgid "Flip horizontally"
 msgstr "Odwróć w poziomie"
 
-#: js/components/FileDetailItemImage.vue:771
+#: js/components/FileDetailItemImage.vue:603
 msgid "Flip vertically"
 msgstr "Odwróć w pionie"
 
-#: js/components/FileDetailItemImage.vue:778
+#: js/components/FileDetailItemImage.vue:611
 msgid "Convert to monochrome"
 msgstr "Przekonwertuj na czarno-biały"
 
-#: js/components/FileDetailItemImage.vue:781
+#: js/components/FileDetailItemImage.vue:614
 msgid "Download"
 msgstr "Pobierz"
 
-#: js/components/FileDetailItemImage.vue:783
-#: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:525
-#: js/components/PageListItems.vue:715
-#: js/lists.js:247
+#: js/components/FileDetailItemImage.vue:616
+#: js/components/FileDetailItemImage.vue:621 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "Cofnij"
 
-#: js/components/FileDetailItemImage.vue:797
+#: js/components/FileDetailItemImage.vue:628
 msgid "Previous edit"
 msgstr "Poprzednia edycja"
 
-#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:631
 msgid "Original"
 msgstr "Oryginał"
 
-#: js/components/FileDetailItemVideo.vue:69
+#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "Nie znaleziono elementu wideo"
 
-#: js/components/FileDetailItemVideo.vue:90
+#: js/components/FileDetailItemVideo.vue:85
+msgid "Video not loaded yet"
+msgstr "Wideo nie zostało jeszcze załadowane"
+
+#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "Błąd zapisu okładki wideo"
 
-#: js/components/FileDetailItemVideo.vue:127
+#: js/components/FileDetailItemVideo.vue:158
+#: js/components/FileDetailItemVideo.vue:202
+#: js/components/FileDetailItemVideo.vue:203
+msgid "Remove cover image"
+msgstr "Usuń obraz okładki"
+
+#: js/components/FileDetailItemVideo.vue:158
+msgid "Remove the cover image of this video?"
+msgstr "Usunąć obraz okładki tego filmu?"
+
+#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "Błąd usuwania okładki wideo"
 
-#: js/components/FileDetailItemVideo.vue:136
+#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "Nie wybrano żadnego pliku"
 
-#: js/components/FileDetailItemVideo.vue:139
+#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "Błąd przesyłania okładki wideo"
 
-#: js/components/FileDetailItemVideo.vue:167
+#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "Użyj jako obrazu okładki"
 
-#: js/components/FileDetailItemVideo.vue:175
+#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "Prześlij obraz okładki"
 
-#: js/components/FileListItems.vue:165
+#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "Błąd podczas przenoszenia pliku do kosza"
 
-#: js/components/FileListItems.vue:166
+#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "Błąd przywracania pliku"
 
-#: js/components/FileListItems.vue:167
-#: js/detail.js:55
+#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Błąd publikowania pliku"
 
-#: js/components/FileListItems.vue:168
+#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "Błąd podczas trwałego usuwania pliku"
 
-#: js/components/FileListItems.vue:170
+#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "Błąd pobierania plików"
 
-#: js/components/FileListItems.vue:242
+#: js/components/FileListItems.vue:269
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "Przetłumaczono opisy %{num} pliku"
 msgstr[1] "Przetłumaczono opisy %{num} plików"
 msgstr[2] "Przetłumaczono opisy %{num} plików"
 
-#: js/components/FileListItems.vue:252
+#: js/components/FileListItems.vue:279
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "Błąd podczas tłumaczenia opisów po %{done} z %{total} plików"
 
-#: js/components/FileListItems.vue:253
+#: js/components/FileListItems.vue:280
 msgid "Error translating descriptions"
 msgstr "Błąd podczas tłumaczenia opisów"
 
-#: js/components/FileListItems.vue:258
+#: js/components/FileListItems.vue:285
 msgid "No missing descriptions to translate"
 msgstr "Brak brakujących opisów do przetłumaczenia"
 
-#: js/components/FileListItems.vue:304
-#: js/components/FileListItems.vue:446
+#: js/components/FileListItems.vue:326 js/components/FileListItems.vue:390
 msgid "Translate descriptions"
 msgstr "Przetłumacz opisy"
 
-#: js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:334
-#: js/components/FileListItems.vue:557
-#: js/components/FileListItems.vue:567
-#: js/components/FileUrlDialog.vue:188
-#: js/fields/Images.vue:297
-#: js/fields/Images.vue:321
-msgid "Add files"
-msgstr "Dodaj pliki"
-
-#: js/components/FileListItems.vue:334
-#: js/components/FileListItems.vue:527
-#: js/components/FileListItems.vue:567
-#: js/components/FileProtect.vue:45
-msgid "Protect access"
-msgstr "Ogranicz dostęp"
-
-#: js/components/FileListItems.vue:373
+#: js/components/FileListItems.vue:341
 msgid "Reload files"
 msgstr "Odśwież pliki"
 
-#: js/components/FileListItems.vue:382
+#: js/components/FileListItems.vue:347
 msgid "Grid view"
 msgstr "Widok siatki"
 
-#: js/components/FileListItems.vue:390
-msgid "List view"
-msgstr "Widok listy"
+#: js/components/FileListItems.vue:456 js/components/FileProtect.vue:45
+#: js/components/FileUploadButtons.vue:39
+msgid "Protect access"
+msgstr "Ogranicz dostęp"
 
 #: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
-msgstr "Plik może pobrać tylko odwiedzający, który ma dostęp do strony zawierającej ten plik"
+msgstr ""
+"Plik może pobrać tylko odwiedzający, który ma dostęp do strony zawierającej "
+"ten plik"
 
-#: js/components/FileUrlDialog.vue:112
+#: js/components/FileUploadButtons.vue:29
+#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:201
+#: js/fields/Images.vue:356 js/fields/Images.vue:380
+msgid "Add files"
+msgstr "Dodaj pliki"
+
+#: js/components/FileUrlDialog.vue:118
 msgid "At least one URL is longer than 255 characters"
 msgstr "Co najmniej jeden adres URL jest dłuższy niż 255 znaków"
 
-#: js/components/FileUrlDialog.vue:148
+#: js/components/FileUrlDialog.vue:154
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Co najmniej jeden plik nie jest typu \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:152
+#: js/components/FileUrlDialog.vue:158
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Plik nie jest typu \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:180
-#: js/fields/Images.vue:304
+#: js/components/FileUrlDialog.vue:186 js/fields/Images.vue:363
 msgid "Add files from URLs"
 msgstr "Dodaj pliki z adresów URL"
 
-#: js/components/FileUrlDialog.vue:188
-#: js/fields/File.vue:284
+#: js/components/FileUrlDialog.vue:201 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Dodaj plik"
 
-#: js/components/FileUrlDialog.vue:201
+#: js/components/FileUrlDialog.vue:214
 msgid "Enter one URL per line"
 msgstr "Wprowadź jeden adres URL w wierszu"
 
-#: js/components/FileUrlDialog.vue:202
+#: js/components/FileUrlDialog.vue:215
 msgid "URLs"
 msgstr "Adresy URL"
 
-#: js/components/FileUrlDialog.vue:202
+#: js/components/FileUrlDialog.vue:215
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "Pliki są pobierane z tych adresów URL i dodawane do listy mediów"
 
-#: js/components/FileUrlDialog.vue:218
+#: js/components/FileUrlDialog.vue:231
 msgid "Enter URL"
 msgstr "Wprowadź adres URL"
 
-#: js/components/FileUrlDialog.vue:219
+#: js/components/FileUrlDialog.vue:232
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Plik jest pobierany z tego adresu URL i dodawany do listy mediów"
 
-#: js/components/FileUrlDialog.vue:260
+#: js/components/FileUrlDialog.vue:273
 msgid "Size"
 msgstr "Rozmiar"
 
-#: js/components/HistoryDialog.vue:67
-#: js/components/HistoryDialog.vue:133
-#: js/components/PageDetailContentList.vue:885
+#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
+#: js/components/PageDetailContentList.vue:660
 msgid "Shared element"
 msgstr "Element współdzielony"
 
-#: js/components/HistoryDialog.vue:68
+#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "Blok treści"
 
-#: js/components/HistoryDialog.vue:73
+#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "Grupa: %{group} · Pozycja %{num}"
 
-#: js/components/HistoryDialog.vue:81
+#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "Przesunięto z pozycji %{from} do %{to}"
 
-#: js/components/HistoryDialog.vue:82
-#: js/components/HistoryDialog.vue:171
+#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "Zmieniono %{num} pole"
 msgstr[1] "Zmieniono %{num} pola"
 msgstr[2] "Zmieniono %{num} pól"
 
-#: js/components/HistoryDialog.vue:83
+#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "Wybrano %{selected} z %{total}"
 
-#: js/components/HistoryDialog.vue:90
+#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "Nieznana data"
 
-#: js/components/HistoryDialog.vue:129
+#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "Pozycja bloku"
 
-#: js/components/HistoryDialog.vue:134
+#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "Wartość"
 
-#: js/components/HistoryDialog.vue:178
+#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "Dodano %{num} blok"
 msgstr[1] "Dodano %{num} bloki"
 msgstr[2] "Dodano %{num} bloków"
 
-#: js/components/HistoryDialog.vue:179
+#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "Usunięto %{num} blok"
 msgstr[1] "Usunięto %{num} bloki"
 msgstr[2] "Usunięto %{num} bloków"
 
-#: js/components/HistoryDialog.vue:180
+#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "Zmieniono %{num} blok"
 msgstr[1] "Zmieniono %{num} bloki"
 msgstr[2] "Zmieniono %{num} bloków"
 
-#: js/components/HistoryDialog.vue:181
+#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "Przeniesiono %{num} blok"
 msgstr[1] "Przeniesiono %{num} bloki"
 msgstr[2] "Przeniesiono %{num} bloków"
 
-#: js/components/HistoryDialog.vue:182
+#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "Zmieniono %{num} plik"
 msgstr[1] "Zmieniono %{num} pliki"
 msgstr[2] "Zmieniono %{num} plików"
 
-#: js/components/HistoryDialog.vue:183
-#: js/components/HistoryDialog.vue:212
-#: js/components/HistoryDialog.vue:308
+#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
+#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "Bez zmian"
 
-#: js/components/HistoryDialog.vue:197
+#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "Historia"
 
-#: js/components/HistoryDialog.vue:205
-#: js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30
-#: js/fields/Autocomplete.vue:177
-#: js/fields/Url.vue:150
+#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
+#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
+#: js/fields/Url.vue:172
 msgid "Loading"
 msgstr "Ładowanie"
 
-#: js/components/HistoryDialog.vue:208
+#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "Błąd podczas pobierania wersji"
 
-#: js/components/HistoryDialog.vue:209
+#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "Spróbuj ponownie"
 
-#: js/components/HistoryDialog.vue:223
+#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "Aktualne zmiany"
 
-#: js/components/HistoryDialog.vue:229
-#: js/components/PageListItems.vue:1407
-#: js/lists.js:476
+#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
+#: js/lists.js:510
 msgid "Scheduled for %{date}"
 msgstr "Zaplanowane na %{date}"
 
-#: js/components/HistoryDialog.vue:237
+#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "Zaznacz wszystko"
 
-#: js/components/HistoryDialog.vue:251
+#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "Dodano blok"
 
-#: js/components/HistoryDialog.vue:252
+#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "Usunięto blok"
 
-#: js/components/HistoryDialog.vue:272
+#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "Zachowaj aktualną pozycję"
 
-#: js/components/HistoryDialog.vue:272
-#: js/components/HistoryDialog.vue:292
+#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "Zachowaj aktualną wartość"
 
-#: js/components/HistoryDialog.vue:318
+#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "Poprzednia wersja: najnowsza zapisana wersja"
 
-#: js/components/HistoryDialog.vue:318
+#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "Poprzednia wersja: %{date}"
 
-#: js/components/HistoryDialog.vue:319
+#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "Wybrano %{selected} z %{total} do przywrócenia"
 
-#: js/components/HistoryDialog.vue:322
+#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "Cofnij wybrane zmiany"
 
-#: js/components/HistoryDialog.vue:325
+#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "Przywróć poprzednią wersję"
 
-#: js/components/HistoryField.vue:85
-#: js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133
-#: js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
+#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "Poprzednia wartość"
 
-#: js/components/HistoryField.vue:85
-#: js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133
-#: js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
+#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "Nowa wartość"
 
-#: js/components/HistoryField.vue:91
+#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "Powiększ %{name}"
 
-#: js/components/HistoryField.vue:97
-#: js/components/HistoryField.vue:124
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "Ładowanie podglądu"
 
-#: js/components/HistoryField.vue:98
-#: js/components/HistoryField.vue:100
-#: js/components/HistoryField.vue:105
-#: js/components/HistoryField.vue:125
-#: js/components/HistoryField.vue:127
+#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
+#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
+#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "Podgląd niedostępny"
 
-#: js/components/HistoryField.vue:114
+#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "Podgląd obrazu"
 
-#: js/components/HistoryField.vue:115
+#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "Zamknij podgląd"
 
-#: js/components/HistoryField.vue:135
+#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "Podgląd tabeli"
 
-#: js/components/HistoryField.vue:139
+#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "Pominięto %{num} wiersz"
 msgstr[1] "Pominięto %{num} wiersze"
 msgstr[2] "Pominięto %{num} wierszy"
 
-#: js/components/ListSort.vue:27
+#: js/components/ListAppBar.vue:34
+msgid "Close navigation"
+msgstr "Zamknij nawigację"
+
+#: js/components/ListAppBar.vue:34
+msgid "Open navigation"
+msgstr "Otwórz nawigację"
+
+#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
+#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:787
+msgid "Delete"
+msgstr "Usuń"
+
+#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
+#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:793
+#: js/components/PageListItems.vue:918
+msgid "Restore"
+msgstr "Przywróć"
+
+#: js/components/ListReload.vue:29
+msgid "Updated by another user"
+msgstr "Zaktualizowane przez innego użytkownika"
+
+#: js/components/ListReload.vue:35
+msgid "Refresh"
+msgstr "Odśwież"
+
+#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:544
+#: js/views/AccessList.vue:289
+msgid "Search for"
+msgstr "Szukaj"
+
+#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "Redaktor"
 
-#: js/components/ListSort.vue:29
+#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "Najnowszy"
 
-#: js/components/ListSort.vue:30
+#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "Ostatnia modyfikacja"
 
-#: js/components/ListSort.vue:33
+#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "Najstarszy"
 
-#: js/components/ListSort.vue:34
+#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "Najstarsza modyfikacja"
 
-#: js/components/ListSort.vue:35
+#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "Pozycja"
 
-#: js/components/ListSort.vue:36
-#: js/views/PageList.vue:110
+#: js/components/ListSort.vue:37 js/views/PageList.vue:116
 msgid "Tree"
 msgstr "Drzewo"
 
-#: js/components/ListSort.vue:38
+#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "Użycie"
 
-#: js/components/ListSort.vue:61
+#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "Sortuj według"
 
@@ -1467,832 +1350,671 @@ msgstr "Sortuj według"
 msgid "No entries yet"
 msgstr "Brak wpisów"
 
-#: js/components/Navigation.vue:53
+#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "Panele"
 
-#: js/components/Navigation.vue:78
-#: js/components/ShortcutDialog.vue:88
+#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "Skróty klawiszowe"
 
-#: js/components/PageAccess.vue:102
+#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "Błąd podczas zmiany dostępu do strony"
 
-#: js/components/PageAccess.vue:166
+#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
-msgstr "Zmiany dostępu zaczynają obowiązywać natychmiast po wygaśnięciu pamięci podręcznej"
+msgstr ""
+"Zmiany dostępu zaczynają obowiązywać natychmiast po wygaśnięciu pamięci "
+"podręcznej"
 
-#: js/components/PageAccess.vue:170
+#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "Widoczność"
 
-#: js/components/PageAccess.vue:170
-msgid "Public pages are visible to everyone, others only to logged in users or users with the selected roles"
-msgstr "Strony publiczne są widoczne dla wszystkich, pozostałe tylko dla zalogowanych użytkowników lub użytkowników z wybranymi rolami"
+#: js/components/PageAccess.vue:181
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr ""
+"Strony publiczne są widoczne dla wszystkich, pozostałe tylko dla "
+"zalogowanych użytkowników lub użytkowników z wybranymi rolami"
 
-#: js/components/PageAccess.vue:174
+#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "Publiczne"
 
-#: js/components/PageAccess.vue:175
-#: js/components/PageListItems.vue:479
+#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "Uwierzytelnieni użytkownicy"
 
-#: js/components/PageAccess.vue:183
-#: js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:478
-#: js/components/PageListItems.vue:1564
-#: js/components/PageListItems.vue:1781
-#: js/components/PageListItems.vue:1974
-#: js/views/AccessList.vue:240
-#: js/views/AccessList.vue:249
+#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
+#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
+#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
+#: js/views/AccessList.vue:231 js/views/AccessList.vue:235
 msgid "Access"
 msgstr "Dostęp"
 
-#: js/components/PageAccess.vue:183
+#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Tylko odwiedzający z jedną z tych ról mogą zobaczyć stronę"
 
-#: js/components/PageAccess.vue:193
-#: js/components/PageBulkDialog.vue:264
-msgid "Page bulk changes are limited to 1,000 pages"
-msgstr "Zbiorcze zmiany stron są ograniczone do 1000 stron"
+#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:269
+msgid "Page bulk changes are limited to %{count} pages"
+msgstr "Zbiorcze zmiany stron są ograniczone do %{count} stron"
 
-#: js/components/PageAccess.vue:213
-#: js/components/PageBulkDialog.vue:258
+#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:263
 msgid "Apply recursively"
 msgstr "Zastosuj rekurencyjnie"
 
-#: js/components/PageBulkDialog.vue:141
+#: js/components/PageBulkDialog.vue:146
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Zastosuj wybrane właściwości do %{num} strony."
 msgstr[1] "Zastosuj wybrane właściwości do %{num} stron."
 msgstr[2] "Zastosuj wybrane właściwości do %{num} stron."
 
-#: js/components/PageBulkDialog.vue:152
+#: js/components/PageBulkDialog.vue:157
 msgid "Change status"
 msgstr "Zmień status"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageBulkDialog.vue:162
+#: js/components/PageDetailItemProps.vue:205
 msgid "Status"
 msgstr "Status"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:219
-msgid "Disabled pages are offline, hidden pages are online but not shown in the navigation"
-msgstr "Wyłączone strony są offline, ukryte strony są online, ale nie są pokazywane w nawigacji"
+#: js/components/PageBulkDialog.vue:162
+#: js/components/PageDetailItemProps.vue:205
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"Wyłączone strony są offline, ukryte strony są online, ale nie są pokazywane "
+"w nawigacji"
 
-#: js/components/PageBulkDialog.vue:166
+#: js/components/PageBulkDialog.vue:171
 msgid "Change cache time"
 msgstr "Zmień czas pamięci podręcznej"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:337
-#: js/components/PageListItems.vue:1423
+#: js/components/PageBulkDialog.vue:176
+#: js/components/PageDetailItemProps.vue:323
+#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "Czas pamięci podręcznej"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageBulkDialog.vue:176
+#: js/components/PageDetailItemProps.vue:323
 msgid "How long the generated page is cached before it is created again"
-msgstr "Jak długo wygenerowana strona jest przechowywana w pamięci podręcznej, zanim zostanie utworzona ponownie"
+msgstr ""
+"Jak długo wygenerowana strona jest przechowywana w pamięci podręcznej, zanim "
+"zostanie utworzona ponownie"
 
-#: js/components/PageBulkDialog.vue:180
+#: js/components/PageBulkDialog.vue:185
 msgid "Change source language"
 msgstr "Zmień język źródłowy"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Source language"
 msgstr "Język źródłowy"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Language of the source page content"
 msgstr "Język treści strony źródłowej"
 
-#: js/components/PageBulkDialog.vue:192
+#: js/components/PageBulkDialog.vue:197
 msgid "Change theme"
 msgstr "Zmień motyw"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:306
-#: js/components/PageListItems.vue:1411
+#: js/components/PageBulkDialog.vue:202
+#: js/components/PageDetailItemProps.vue:292
+#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "Motyw"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:306
+#: js/components/PageBulkDialog.vue:202
+#: js/components/PageDetailItemProps.vue:292
 msgid "Design used to display the page"
 msgstr "Motyw używany do wyświetlania strony"
 
-#: js/components/PageBulkDialog.vue:204
+#: js/components/PageBulkDialog.vue:209
 msgid "Change page type"
 msgstr "Zmień typ strony"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:315
-#: js/components/PageListItems.vue:1415
+#: js/components/PageBulkDialog.vue:214
+#: js/components/PageDetailItemProps.vue:301
+#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "Typ strony"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:214
+#: js/components/PageDetailItemProps.vue:301
 msgid "Template of the theme which defines the page layout"
 msgstr "Szablon motywu określający układ strony"
 
-#: js/components/PageBulkDialog.vue:216
+#: js/components/PageBulkDialog.vue:221
 msgid "Change tag"
 msgstr "Zmień tag"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:326
-#: js/components/PageListItems.vue:1419
+#: js/components/PageBulkDialog.vue:225
+#: js/components/PageDetailItemProps.vue:312
+#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "Tag strony"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageBulkDialog.vue:225
+#: js/components/PageDetailItemProps.vue:312
 msgid "Internal identifier to find the page in templates, e.g. blog"
-msgstr "Wewnętrzny identyfikator umożliwiający znalezienie strony w szablonach, np. blog"
+msgstr ""
+"Wewnętrzny identyfikator umożliwiający znalezienie strony w szablonach, np. "
+"blog"
 
-#: js/components/PageBulkDialog.vue:229
+#: js/components/PageBulkDialog.vue:234
 msgid "Change domain"
 msgstr "Zmień domenę"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:291
+#: js/components/PageBulkDialog.vue:239
+#: js/components/PageDetailItemProps.vue:277
 msgid "Domain"
 msgstr "Domena"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:291
+#: js/components/PageBulkDialog.vue:239
+#: js/components/PageDetailItemProps.vue:277
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domena, pod którą strona jest dostępna, np. example.com"
 
-#: js/components/PageDetailContentList.vue:195
-#: js/components/PageDetailContentList.vue:205
-#: js/components/PageDetailContentList.vue:609
+#: js/components/PageBulkMenu.vue:93 js/components/PageListItems.vue:741
+msgctxt "page status"
+msgid "Enable"
+msgstr "Włącz"
+
+#: js/components/PageBulkMenu.vue:96 js/components/PageListItems.vue:747
+msgctxt "page status"
+msgid "Disable"
+msgstr "Wyłącz"
+
+#: js/components/PageBulkMenu.vue:106 js/components/PageListItems.vue:761
+msgid "Clear cache"
+msgstr "Wyczyść pamięć podręczną"
+
+#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
+#: js/views/PageDetail.vue:680
+msgid "Ignore changes"
+msgstr "Ignoruj zmiany"
+
+#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:825
+msgid "Delete this language"
+msgstr "Usuń ten język"
+
+#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:833
+msgid "Restore this language"
+msgstr "Przywróć ten język"
+
+#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:841
+msgid "Purge language"
+msgstr "Usuń trwale język"
+
+#: js/components/PageDetailContentList.vue:161
+#: js/components/PageDetailContentList.vue:171 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Nie znaleziono elementu zawartości"
 
-#: js/components/PageDetailContentList.vue:405
-msgid "Error refining content"
-msgstr "Błąd podczas dopracowywania treści"
-
-#: js/components/PageDetailContentList.vue:457
-msgid "Element not found"
-msgstr "Nie znaleziono elementu"
-
-#: js/components/PageDetailContentList.vue:462
-msgid "Element is already shared"
-msgstr "Element jest już współdzielony"
-
-#: js/components/PageDetailContentList.vue:496
-msgid "Unable to make element shared"
-msgstr "Nie można ustawić elementu jako współdzielonego"
-
-#: js/components/PageDetailContentList.vue:529
+#: js/components/PageDetailContentList.vue:370
 msgid "Not available for this content element"
 msgstr "Niedostępne dla tego elementu zawartości"
 
-#: js/components/PageDetailContentList.vue:616
-msgid "Element is not shared"
-msgstr "Element nie jest współdzielony"
+#: js/components/PageDetailContentList.vue:380
+msgid "Error splitting text"
+msgstr "Błąd dzielenia tekstu"
 
-#: js/components/PageDetailContentList.vue:686
+#: js/components/PageDetailContentList.vue:495
 msgid "Describe the task you want to perform"
 msgstr "Opisz zadanie, które chcesz wykonać"
 
-#: js/components/PageDetailContentList.vue:700
-#: js/views/ElementList.vue:89
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:305
-msgid "Hide help"
-msgstr "Ukryj pomoc"
-
-#: js/components/PageDetailContentList.vue:700
-#: js/views/ElementList.vue:89
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:305
-msgid "Show help"
-msgstr "Pokaż pomoc"
-
-#: js/components/PageDetailContentList.vue:712
+#: js/components/PageDetailContentList.vue:496
 msgid "Refining ..."
 msgstr "Dopracowywanie ..."
 
-#: js/components/PageDetailContentList.vue:712
+#: js/components/PageDetailContentList.vue:496
 msgid "Refine content based on prompt"
 msgstr "Dopracuj treść na podstawie monitu"
 
-#: js/components/PageDetailContentList.vue:729
-#: js/views/ElementList.vue:115
-#: js/views/FileList.vue:115
-#: js/views/PageList.vue:331
-msgid "Help"
-msgstr "Pomoc"
-
-#: js/components/PageDetailContentList.vue:730
+#: js/components/PageDetailContentList.vue:500
 msgid "AI can add or improve content based on your input"
-msgstr "Sztuczna inteligencja może dodawać lub ulepszać treści na podstawie danych wprowadzonych przez użytkownika."
+msgstr ""
+"Sztuczna inteligencja może dodawać lub ulepszać treści na podstawie danych "
+"wprowadzonych przez użytkownika."
 
-#: js/components/PageDetailContentList.vue:731
+#: js/components/PageDetailContentList.vue:501
 msgid "It can take a long time depending on the task and content size"
 msgstr "Może to zająć dużo czasu w zależności od zadania i rozmiaru zawartości"
 
-#: js/components/PageDetailContentList.vue:753
-#: js/components/PageDetailContentList.vue:839
-#: js/components/PageListItems.vue:1790
-#: js/fields/Items.vue:304
+#: js/components/PageDetailContentList.vue:527
+#: js/components/PageDetailContentList.vue:614
+#: js/components/PageListItems.vue:767 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Wytnij"
 
-#: js/components/PageDetailContentList.vue:756
-#: js/components/PageListItems.vue:388
-#: js/components/PageListItems.vue:390
+#: js/components/PageDetailContentList.vue:530 js/pagetree.js:37
 msgid "Paste"
 msgstr "Wklej"
 
-#: js/components/PageDetailContentList.vue:759
-#: js/components/PageDetailContentList.vue:878
+#: js/components/PageDetailContentList.vue:533
+#: js/components/PageDetailContentList.vue:653
 msgid "Merge"
 msgstr "Scal"
 
-#: js/components/PageDetailContentList.vue:814
-#: js/fields/Items.vue:291
+#: js/components/PageDetailContentList.vue:588 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Przenieś element"
 
-#: js/components/PageDetailContentList.vue:848
-#: js/fields/Items.vue:307
+#: js/components/PageDetailContentList.vue:623 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Wklej przed"
 
-#: js/components/PageDetailContentList.vue:851
-#: js/fields/Items.vue:308
+#: js/components/PageDetailContentList.vue:626 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Wklej po"
 
-#: js/components/PageDetailContentList.vue:854
-#: js/fields/Items.vue:309
-#: js/fields/Table.vue:180
-#: js/fields/Table.vue:229
+#: js/components/PageDetailContentList.vue:629 js/fields/Items.vue:287
+#: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Wstaw przed"
 
-#: js/components/PageDetailContentList.vue:857
-#: js/fields/Items.vue:310
-#: js/fields/Table.vue:181
-#: js/fields/Table.vue:230
+#: js/components/PageDetailContentList.vue:632 js/fields/Items.vue:288
+#: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Wstaw po"
 
-#: js/components/PageDetailContentList.vue:866
+#: js/components/PageDetailContentList.vue:641
 msgid "Make shared"
 msgstr "Ustaw jako współdzielony"
 
-#: js/components/PageDetailContentList.vue:869
+#: js/components/PageDetailContentList.vue:644
 msgid "Replace with local copy"
 msgstr "Zastąp lokalną kopią"
 
-#: js/components/PageDetailContentList.vue:875
+#: js/components/PageDetailContentList.vue:650
 msgctxt "text element"
 msgid "Split"
 msgstr "Podziel"
 
-#: js/components/PageDetailEditor.vue:79
+#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Kliknij dwukrotnie, aby edytować"
 
-#: js/components/PageDetailEditor.vue:268
+#: js/components/PageDetailEditor.vue:277
 msgid "Preview mode"
 msgstr "Tryb podglądu"
 
-#: js/components/PageDetailEditor.vue:271
+#: js/components/PageDetailEditor.vue:280
 msgid "Not CMS content"
 msgstr "To nie jest zawartość CMS"
 
-#: js/components/PageDetailItem.vue:87
+#: js/components/PageDetailItem.vue:83
 msgid "Detail"
 msgstr "Szczegóły"
 
-#: js/components/PageDetailItem.vue:94
+#: js/components/PageDetailItem.vue:90
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:101
+#: js/components/PageDetailItem.vue:97
 msgid "Config"
 msgstr "Konfiguracja"
 
-#: js/components/PageDetailItemProps.vue:53
+#: js/components/PageDetailItemProps.vue:68
 msgid "Path must not start with a slash (/)"
 msgstr "Ścieżka nie może zaczynać się od ukośnika (/)"
 
-#: js/components/PageDetailItemProps.vue:63
+#: js/components/PageDetailItemProps.vue:78
 msgid "URL is not valid"
 msgstr "Adres URL jest nieprawidłowy"
 
-#: js/components/PageDetailItemProps.vue:68
-#: js/views/Login.vue:54
-#: js/views/Login.vue:57
+#: js/components/PageDetailItemProps.vue:83 js/views/Login.vue:61
+#: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "Pole jest wymagane"
 
-#: js/components/PageDetailItemProps.vue:95
+#: js/components/PageDetailItemProps.vue:114
 msgid "The path is already in use by another page"
 msgstr "Ścieżka jest już używana przez inną stronę"
 
-#: js/components/PageDetailItemProps.vue:233
+#: js/components/PageDetailItemProps.vue:219
 msgid "Language of the page content"
 msgstr "Język treści strony"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:233
 msgid "Page title"
 msgstr "Tytuł strony"
 
-#: js/components/PageDetailItemProps.vue:247
+#: js/components/PageDetailItemProps.vue:233
 msgid "Shown in the browser tab and search results"
 msgstr "Wyświetlane na karcie przeglądarki i w wynikach wyszukiwania"
 
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/PageDetailItemProps.vue:244
 msgid "Page name"
 msgstr "Nazwa strony"
 
-#: js/components/PageDetailItemProps.vue:258
+#: js/components/PageDetailItemProps.vue:244
 msgid "Short name shown in the navigation menus"
 msgstr "Krótka nazwa wyświetlana w menu nawigacji"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:260
 msgid "URL path"
 msgstr "Ścieżka URL"
 
-#: js/components/PageDetailItemProps.vue:274
+#: js/components/PageDetailItemProps.vue:260
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Część adresu URL strony po domenie, np. about-us"
 
-#: js/components/PageDetailItemProps.vue:353
+#: js/components/PageDetailItemProps.vue:339
 msgid "Redirect URL"
 msgstr "Przekierowanie URL"
 
-#: js/components/PageDetailItemProps.vue:353
+#: js/components/PageDetailItemProps.vue:339
 msgid "Visitors are forwarded to this URL instead of seeing the page"
-msgstr "Odwiedzający są przekierowywani na ten adres URL zamiast zobaczyć stronę"
+msgstr ""
+"Odwiedzający są przekierowywani na ten adres URL zamiast zobaczyć stronę"
 
-#: js/components/PageDetailItemSection.vue:65
+#: js/components/PageDetailItemSection.vue:63
 msgid "The element has already been added"
 msgstr "Element został już dodany"
 
-#: js/components/PageDetailItemSection.vue:198
+#: js/components/PageDetailItemSection.vue:178
 msgid "Remove content element"
 msgstr "Odłącz element zawartości"
 
-#: js/components/PageDetailMetrics.vue:109
+#: js/components/PageDetailMetrics.vue:99
 msgid "Views & Visits"
 msgstr "Odsłony i wizyty"
 
-#: js/components/PageDetailMetrics.vue:111
+#: js/components/PageDetailMetrics.vue:101
 msgid "Views"
 msgstr "Odsłony"
 
-#: js/components/PageDetailMetrics.vue:112
+#: js/components/PageDetailMetrics.vue:102
 msgid "Visits"
 msgstr "Wizyty"
 
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:171
+#: js/components/PageDetailMetrics.vue:103
+#: js/components/PageDetailMetrics.vue:142
 msgid "Conversions"
 msgstr "Konwersje"
 
-#: js/components/PageDetailMetrics.vue:117
+#: js/components/PageDetailMetrics.vue:107
 msgid "Visit Durations (minutes)"
 msgstr "Czas trwania wizyty (minuty)"
 
-#: js/components/PageDetailMetrics.vue:118
+#: js/components/PageDetailMetrics.vue:108
 msgid "Duration"
 msgstr "Czas trwania"
 
-#: js/components/PageDetailMetrics.vue:121
+#: js/components/PageDetailMetrics.vue:111
 msgid "Google Search: Impressions & Clicks"
 msgstr "Wyszukiwarka Google: Wyświetlenia i kliknięcia"
 
-#: js/components/PageDetailMetrics.vue:123
-#: js/components/PageDetailMetrics.vue:542
+#: js/components/PageDetailMetrics.vue:113
+#: js/components/PageDetailMetrics.vue:415
 msgid "Impressions"
 msgstr "Wyświetlenia"
 
-#: js/components/PageDetailMetrics.vue:124
-#: js/components/PageDetailMetrics.vue:543
+#: js/components/PageDetailMetrics.vue:114
+#: js/components/PageDetailMetrics.vue:416
 msgid "Clicks"
 msgstr "Kliknięcia"
 
-#: js/components/PageDetailMetrics.vue:128
+#: js/components/PageDetailMetrics.vue:118
 msgid "Google Search: Click-through rate"
 msgstr "Wyszukiwarka Google: Współczynnik klikalności"
 
-#: js/components/PageDetailMetrics.vue:129
+#: js/components/PageDetailMetrics.vue:119
 msgid "Percentage"
 msgstr "Procent"
 
-#: js/components/PageDetailMetrics.vue:168
+#: js/components/PageDetailMetrics.vue:139
 msgid "Page Views"
 msgstr "Odsłony"
 
-#: js/components/PageDetailMetrics.vue:169
+#: js/components/PageDetailMetrics.vue:140
 msgid "Page Visits"
 msgstr "Wizyty na stronie"
 
-#: js/components/PageDetailMetrics.vue:172
+#: js/components/PageDetailMetrics.vue:143
 msgid "Visit Duration (minutes)"
 msgstr "Czas trwania wizyty (minuty)"
 
-#: js/components/PageDetailMetrics.vue:173
+#: js/components/PageDetailMetrics.vue:144
 msgid "Google Impressions"
 msgstr "Wyświetlenia Google"
 
-#: js/components/PageDetailMetrics.vue:174
+#: js/components/PageDetailMetrics.vue:145
 msgid "Google Clicks"
 msgstr "Kliknięcia Google"
 
-#: js/components/PageDetailMetrics.vue:175
+#: js/components/PageDetailMetrics.vue:146
 msgid "Google click-through rate"
 msgstr "Współczynnik klikalności Google"
 
-#: js/components/PageDetailMetrics.vue:181
+#: js/components/PageDetailMetrics.vue:152
 msgid "Round trip time"
 msgstr "Czas odpowiedzi (RTT)"
 
-#: js/components/PageDetailMetrics.vue:182
+#: js/components/PageDetailMetrics.vue:153
 msgid "Time to first byte"
 msgstr "Czas do pierwszego bajtu"
 
-#: js/components/PageDetailMetrics.vue:183
+#: js/components/PageDetailMetrics.vue:154
 msgid "First contentful paint"
 msgstr "Pierwsze wyrenderowanie treści"
 
-#: js/components/PageDetailMetrics.vue:184
+#: js/components/PageDetailMetrics.vue:155
 msgid "Largest contentful paint"
 msgstr "Wyrenderowanie największego elementu treści"
 
-#: js/components/PageDetailMetrics.vue:185
+#: js/components/PageDetailMetrics.vue:156
 msgid "Interaction to next paint"
 msgstr "Interakcja do kolejnego wyrenderowania"
 
-#: js/components/PageDetailMetrics.vue:186
+#: js/components/PageDetailMetrics.vue:157
 msgid "Cumulative layout shift"
 msgstr "Łączna zmiana układu"
 
-#: js/components/PageDetailMetrics.vue:376
+#: js/components/PageDetailMetrics.vue:238
+msgid "Error fetching metrics"
+msgstr "Błąd podczas pobierania statystyk"
+
+#: js/components/PageDetailMetrics.vue:260
 msgid "Page metrics"
 msgstr "Wskaźniki strony"
 
-#: js/components/PageDetailMetrics.vue:382
+#: js/components/PageDetailMetrics.vue:266
 msgid "Days"
 msgstr "Dni"
 
-#: js/components/PageDetailMetrics.vue:409
+#: js/components/PageDetailMetrics.vue:293
 msgid "Weekly Insights"
 msgstr "Cotygodniowe spostrzeżenia"
 
-#: js/components/PageDetailMetrics.vue:452
+#: js/components/PageDetailMetrics.vue:325
 msgid "Referrers"
 msgstr "Źródła odesłań"
 
-#: js/components/PageDetailMetrics.vue:495
+#: js/components/PageDetailMetrics.vue:368
 msgid "Countries"
 msgstr "Kraje"
 
-#: js/components/PageDetailMetrics.vue:511
+#: js/components/PageDetailMetrics.vue:384
 msgid "Page Speed"
 msgstr "Prędkość strony"
 
-#: js/components/PageDetailMetrics.vue:536
+#: js/components/PageDetailMetrics.vue:409
 msgid "Google Search: Queries"
 msgstr "Wyszukiwarka Google: Zapytania"
 
-#: js/components/PageDetailMetrics.vue:544
+#: js/components/PageDetailMetrics.vue:417
 msgid "Percent"
 msgstr "Procent"
 
-#: js/components/PageDetailMetrics.vue:545
+#: js/components/PageDetailMetrics.vue:418
 msgctxt "search ranking"
 msgid "Position"
 msgstr "Pozycja"
 
-#: js/components/PageListItems.vue:394
-msgid "Insert"
-msgstr "Wstaw"
-
-#: js/components/PageListItems.vue:402
-msgid "Before"
-msgstr "Przed"
-
-#: js/components/PageListItems.vue:403
-msgid "Into"
-msgstr "Do środka"
-
-#: js/components/PageListItems.vue:404
-msgid "After"
-msgstr "Po"
-
-#: js/components/PageListItems.vue:425
-#: js/views/PageList.vue:212
-msgid "Error fetching translation states"
-msgstr "Błąd podczas pobierania stanów tłumaczeń"
-
-#: js/components/PageListItems.vue:432
-msgid "Translating into %{langs}"
-msgstr "Tłumaczenie na %{langs}"
-
-#: js/components/PageListItems.vue:440
-#: js/components/PageListItems.vue:1891
-#: js/views/PageDetail.vue:776
-#: js/views/PageList.vue:143
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
+#: js/views/PageDetail.vue:662 js/views/PageList.vue:149
 msgid "Needs update"
 msgstr "Wymaga aktualizacji"
 
-#: js/components/PageListItems.vue:441
-#: js/views/PageList.vue:149
+#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:155
 msgid "Missing"
 msgstr "Brak"
 
-#: js/components/PageListItems.vue:442
-#: js/views/PageList.vue:155
+#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:161
 msgid "AI draft"
 msgstr "Wersja robocza AI"
 
-#: js/components/PageListItems.vue:445
-#: js/views/PageDetail.vue:775
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:661
 msgid "Up to date"
 msgstr "Aktualne"
 
-#: js/components/PageListItems.vue:504
+#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:221
+msgid "Error fetching translation states"
+msgstr "Błąd podczas pobierania stanów tłumaczeń"
+
+#: js/components/PageListItems.vue:255
 msgid "Error adding root page"
 msgstr "Błąd dodawania strony głównej"
 
-#: js/components/PageListItems.vue:524
-msgid "Page moved"
-msgstr "Strona przeniesiona"
-
-#: js/components/PageListItems.vue:595
-msgid "Cache cleared"
-msgstr "Pamięć podręczna wyczyszczona"
-
-#: js/components/PageListItems.vue:596
-msgid "Cache cleared for %{num} page."
-msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] "Wyczyszczono pamięć podręczną dla %{num} strony."
-msgstr[1] "Wyczyszczono pamięć podręczną dla %{num} stron."
-msgstr[2] "Wyczyszczono pamięć podręczną dla %{num} stron."
-
-#: js/components/PageListItems.vue:606
-msgid "Error clearing cache"
-msgstr "Błąd podczas czyszczenia pamięci podręcznej"
-
-#: js/components/PageListItems.vue:664
-#: js/views/PageDetail.vue:625
-#: js/views/PageDetail.vue:683
+#: js/components/PageListItems.vue:293 js/variants.js:405 js/variants.js:475
 msgid "Error translating page"
 msgstr "Błąd podczas tłumaczenia strony"
 
-#: js/components/PageListItems.vue:668
-#: js/views/PageDetail.vue:614
+#: js/components/PageListItems.vue:297 js/variants.js:394
 msgid "Error adding language"
 msgstr "Błąd podczas dodawania języka"
 
-#: js/components/PageListItems.vue:689
-msgid "Error trashing page"
-msgstr "Błąd podczas przenoszenia strony do kosza"
-
-#: js/components/PageListItems.vue:717
-#: js/variants.js:261
-msgid "Error restoring language"
-msgstr "Błąd podczas przywracania języka"
-
-#: js/components/PageListItems.vue:717
-#: js/components/PageListItems.vue:862
-msgid "Error restoring page"
-msgstr "Błąd przywracania strony"
-
-#: js/components/PageListItems.vue:726
-#: js/lists.js:241
-msgid "Moved to trash"
-msgid_plural "%{num} entries moved to trash"
-msgstr[0] "Przeniesiono do kosza"
-msgstr[1] "Przeniesiono %{num} wpisy do kosza"
-msgstr[2] "Przeniesiono %{num} wpisów do kosza"
-
-#: js/components/PageListItems.vue:778
-#: js/components/PageListItems.vue:1154
+#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
+#: js/pagetree.js:152
 msgid "Error fetching pages"
 msgstr "Błąd pobierania stron"
 
-#: js/components/PageListItems.vue:834
-msgid "Error inserting page"
-msgstr "Błąd wstawiania strony"
-
-#: js/components/PageListItems.vue:941
-msgid "Error moving page"
-msgstr "Błąd przenoszenia strony"
-
-#: js/components/PageListItems.vue:1042
-#: js/views/PageDetail.vue:274
-msgid "Error fetching page"
-msgstr "Błąd pobierania strony"
-
-#: js/components/PageListItems.vue:1056
-msgid "Error copying page"
-msgstr "Błąd kopiowania strony"
-
-#: js/components/PageListItems.vue:1102
-#: js/detail.js:61
-msgid "Error publishing page"
-msgstr "Błąd publikowania strony"
-
-#: js/components/PageListItems.vue:1121
-msgid "All subpages of these pages will be purged as well."
-msgstr "Wszystkie podstrony tych stron również zostaną trwale usunięte."
-
-#: js/components/PageListItems.vue:1130
-msgid "Error purging page"
-msgstr "Błąd podczas trwałego usuwania strony"
-
-#: js/components/PageListItems.vue:1318
-msgid "%{num} page could not be updated"
-msgid_plural "%{num} pages could not be updated"
-msgstr[0] "Nie można zaktualizować %{num} strony"
-msgstr[1] "Nie można zaktualizować %{num} stron"
-msgstr[2] "Nie można zaktualizować %{num} stron"
-
-#: js/components/PageListItems.vue:1329
-#: js/components/PageListItems.vue:1384
-#: js/views/PageDetail.vue:575
-msgid "Error saving page"
-msgstr "Błąd zapisywania strony"
-
-#: js/components/PageListItems.vue:1339
+#: js/components/PageListItems.vue:504
 msgid "Error searching pages"
 msgstr "Błąd wyszukiwania stron"
 
-#: js/components/PageListItems.vue:1423
-#: js/utils.js:37
+#: js/components/PageListItems.vue:540 js/options.js:50
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minuta"
 msgstr[1] "%{num} minuty"
 msgstr[2] "%{num} minut"
 
-#: js/components/PageListItems.vue:1554
-#: js/components/PageListItems.vue:1764
-msgctxt "page status"
-msgid "Enable"
-msgstr "Włącz"
+#: js/components/PageListItems.vue:549
+msgid "Translating into %{langs}"
+msgstr "Tłumaczenie na %{langs}"
 
-#: js/components/PageListItems.vue:1557
-#: js/components/PageListItems.vue:1770
-msgctxt "page status"
-msgid "Disable"
-msgstr "Wyłącz"
-
-#: js/components/PageListItems.vue:1567
-#: js/components/PageListItems.vue:1784
-msgid "Clear cache"
-msgstr "Wyczyść pamięć podręczną"
-
-#: js/components/PageListItems.vue:1599
-#: js/components/PageListItems.vue:1841
-#: js/views/PageDetail.vue:794
-msgid "Ignore changes"
-msgstr "Ignoruj zmiany"
-
-#: js/components/PageListItems.vue:1608
-#: js/components/PageListItems.vue:1850
-msgid "Delete this language"
-msgstr "Usuń ten język"
-
-#: js/components/PageListItems.vue:1616
-#: js/components/PageListItems.vue:1858
-msgid "Restore this language"
-msgstr "Przywróć ten język"
-
-#: js/components/PageListItems.vue:1624
-#: js/components/PageListItems.vue:1866
-msgid "Purge this language"
-msgstr "Usuń trwale ten język"
-
-#: js/components/PageListItems.vue:1634
-#: js/components/PageListItems.vue:1952
+#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:948
 msgid "Add page"
 msgstr "Dodaj stronę"
 
-#: js/components/PageListItems.vue:1668
+#: js/components/PageListItems.vue:656
 msgid "Reload page tree"
 msgstr "Odśwież drzewo stron"
 
-#: js/components/PageListItems.vue:1689
+#: js/components/PageListItems.vue:669
 msgid "Translating %{done} of %{total}"
 msgstr "Tłumaczenie %{done} z %{total}"
 
-#: js/components/PageListItems.vue:1704
+#: js/components/PageListItems.vue:685
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
-msgstr "Do poruszania się używaj klawiszy strzałek. Aby zmienić kolejność, naciśnij klawisz Alt wraz z klawiszami strzałek."
+msgstr ""
+"Do poruszania się używaj klawiszy strzałek. Aby zmienić kolejność, naciśnij "
+"klawisz Alt wraz z klawiszami strzałek."
 
-#: js/components/PageListItems.vue:1706
+#: js/components/PageListItems.vue:687
 msgid "Moved to position %{position} of %{total}"
 msgstr "Przeniesiono na pozycję %{position} z %{total}"
 
-#: js/components/PageListItems.vue:1708
+#: js/components/PageListItems.vue:689
 msgid "Outdented to level %{level}, position %{position} of %{total}"
-msgstr "Zmniejszono wcięcie do poziomu %{level}, pozycja %{position} z %{total}"
+msgstr ""
+"Zmniejszono wcięcie do poziomu %{level}, pozycja %{position} z %{total}"
 
-#: js/components/PageListItems.vue:1714
+#: js/components/PageListItems.vue:695
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Zwiększono wcięcie do poziomu %{level}, pozycja %{position} z %{total}"
 
-#: js/components/PageListItems.vue:1734
+#: js/components/PageListItems.vue:715
 msgid "Toggle child nodes"
 msgstr "Przełącz węzły podrzędne"
 
-#: js/components/PageListItems.vue:1750
-msgid "Create in %{lang}"
-msgstr "Utwórz w języku %{lang}"
+#: js/components/PageListItems.vue:890 js/options.js:64
+msgid "Hidden in navigation"
+msgstr "Ukryte w nawigacji"
 
-#: js/components/PageListItems.vue:1933
-#: js/views/PageDetail.vue:778
+#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:664
 msgid "Create"
 msgstr "Utwórz"
 
-#: js/components/PageListItems.vue:1977
+#: js/components/PageListItems.vue:974
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Zastosuj ustawienia dostępu do %{num} strony."
 msgstr[1] "Zastosuj ustawienia dostępu do %{num} stron."
 msgstr[2] "Zastosuj ustawienia dostępu do %{num} stron."
 
-#: js/components/ReloginDialog.vue:95
+#: js/components/PasswordField.vue:35
+msgid "Password"
+msgstr "Hasło"
+
+#: js/components/PasswordField.vue:42
+msgid "Hide password"
+msgstr "Ukryj hasło"
+
+#: js/components/PasswordField.vue:42
+msgid "Show password"
+msgstr "Pokaż hasło"
+
+#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "Nie jesteś jeszcze zalogowany"
 
-#: js/components/ReloginDialog.vue:99
-#: js/components/ReloginDialog.vue:121
-#: js/stores.js:338
-#: js/views/Login.vue:146
-msgid "Login failed"
-msgstr "Logowanie nie powiodło się"
-
-#: js/components/ReloginDialog.vue:134
+#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "Sesja wygasła"
 
-#: js/components/ReloginDialog.vue:135
-#: js/components/ReloginDialog.vue:207
+#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
 #: js/components/User.vue:134
 msgid "Logout"
 msgstr "Wyloguj się"
 
-#: js/components/ReloginDialog.vue:148
-msgid "Please sign in again in the new tab and return here to continue. Your unsaved changes are kept."
-msgstr "Zaloguj się ponownie w nowej karcie i wróć tutaj, aby kontynuować. Niezapisane zmiany zostaną zachowane."
+#: js/components/ReloginDialog.vue:151
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"Zaloguj się ponownie w nowej karcie i wróć tutaj, aby kontynuować. "
+"Niezapisane zmiany zostaną zachowane."
 
-#: js/components/ReloginDialog.vue:154
+#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
-msgstr "Zaloguj się ponownie, aby kontynuować. Niezapisane zmiany zostaną zachowane."
+msgstr ""
+"Zaloguj się ponownie, aby kontynuować. Niezapisane zmiany zostaną zachowane."
 
-#: js/components/ReloginDialog.vue:167
-#: js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "Zaloguj się"
 
-#: js/components/ReloginDialog.vue:175
-#: js/views/Login.vue:199
+#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "E-mail"
 
-#: js/components/ReloginDialog.vue:183
-#: js/views/Login.vue:209
-msgid "Password"
-msgstr "Hasło"
-
-#: js/components/ReloginDialog.vue:191
-#: js/views/Login.vue:219
-msgid "Hide password"
-msgstr "Ukryj hasło"
-
-#: js/components/ReloginDialog.vue:191
-#: js/views/Login.vue:219
-msgid "Show password"
-msgstr "Pokaż hasło"
-
-#: js/components/ReloginDialog.vue:217
+#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "Kontynuuj"
 
-#: js/components/ReloginDialog.vue:217
-#: js/views/Login.vue:240
+#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "Zaloguj się"
 
@@ -2308,104 +2030,110 @@ msgstr "Nowe elementy"
 msgid "Only elements in %{lang}"
 msgstr "Tylko elementy w języku %{lang}"
 
-#: js/components/SchemaItems.vue:111
+#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "Nieskategoryzowane"
 
-#: js/components/SchemaItems.vue:124
+#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "Błąd podczas pobierania elementów zawartości"
 
-#: js/components/ShortcutDialog.vue:29
+#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "Ogólne"
 
-#: js/components/ShortcutDialog.vue:34
+#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "Zamknij okno dialogowe lub menu"
 
-#: js/components/ShortcutDialog.vue:40
+#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "Przechodź między poleceniami a wynikami"
 
-#: js/components/ShortcutDialog.vue:41
+#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "Wykonaj polecenie lub otwórz wynik"
 
-#: js/components/ShortcutDialog.vue:42
+#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "Zamknij paletę poleceń"
 
-#: js/components/ShortcutDialog.vue:46
+#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "Listy"
 
-#: js/components/ShortcutDialog.vue:50
+#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "Widoki edycji"
 
-#: js/components/ShortcutDialog.vue:54
+#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "Treść strony"
 
-#: js/components/ShortcutDialog.vue:55
+#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "Przesuń element zawartości w górę lub w dół"
 
-#: js/components/ShortcutDialog.vue:58
+#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "Drzewo stron"
 
-#: js/components/ShortcutDialog.vue:61
+#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "Przechodź między stronami"
 
-#: js/components/ShortcutDialog.vue:62
+#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "Rozwiń stronę"
 
-#: js/components/ShortcutDialog.vue:63
+#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "Dodaj podstronę do aktywnej strony"
 
-#: js/components/ShortcutDialog.vue:64
+#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "Zmień kolejność lub poziom strony"
 
-#: js/components/ShortcutDialog.vue:70
+#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "Czat AI"
 
-#: js/components/ShortcutDialog.vue:73
+#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "Wyślij wiadomość"
 
-#: js/components/ShortcutDialog.vue:74
+#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "Nowy wiersz"
 
-#: js/components/ShortcutDialog.vue:75
+#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "Przywołaj poprzednie wiadomości"
 
-#: js/components/TranslateDialog.vue:70
+#: js/components/TranslateDialog.vue:74
 msgid "Translate into"
 msgstr "Przetłumacz na"
 
-#: js/components/TranslateDialog.vue:72
+#: js/components/TranslateDialog.vue:76
 msgid "Languages"
 msgstr "Języki"
 
-#: js/components/TranslateDialog.vue:87
+#: js/components/TranslateDialog.vue:91
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "Wybrano %{num} stronę."
 msgstr[1] "Wybrano %{num} strony."
 msgstr[2] "Wybrano %{num} stron."
 
-#: js/components/TranslateDialog.vue:92
-msgid "Only missing and outdated translations are created. Pages in their source language and up to date translations are skipped. The translations run in the background and are saved as drafts for review."
-msgstr "Tworzone są tylko brakujące i nieaktualne tłumaczenia. Strony w języku źródłowym i aktualne tłumaczenia są pomijane. Tłumaczenia działają w tle i są zapisywane jako wersje robocze do przejrzenia."
+#: js/components/TranslateDialog.vue:96
+msgid ""
+"Only missing and outdated translations are created. Pages in their source "
+"language and up to date translations are skipped. The translations run in "
+"the background and are saved as drafts for review."
+msgstr ""
+"Tworzone są tylko brakujące i nieaktualne tłumaczenia. Strony w języku "
+"źródłowym i aktualne tłumaczenia są pomijane. Tłumaczenia działają w tle i "
+"są zapisywane jako wersje robocze do przejrzenia."
 
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
@@ -2423,22 +2151,49 @@ msgstr "Odrzuć"
 msgid "Save & leave"
 msgstr "Zapisz i wyjdź"
 
-#: js/components/User.vue:60
+#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "Nie udało się załadować użytkownika"
+
+#: js/components/User.vue:86
+msgid "Logout failed"
+msgstr "Wylogowanie nie powiodło się"
 
 #: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "Przełącz tryb jasny/ciemny"
 
-#: js/components/User.vue:106
-#: js/components/User.vue:111
+#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "Przełącz język"
 
 #: js/components/User.vue:120
 msgid "User menu"
 msgstr "Menu użytkownika"
+
+#: js/contentrefine.js:125
+msgid "Elements changed during the refinement were kept unchanged"
+msgstr "Elementy zmienione podczas ulepszania zostały pozostawione bez zmian"
+
+#: js/contentrefine.js:134
+msgid "Error refining content"
+msgstr "Błąd podczas dopracowywania treści"
+
+#: js/contentshare.js:51
+msgid "Element not found"
+msgstr "Nie znaleziono elementu"
+
+#: js/contentshare.js:56
+msgid "Element is already shared"
+msgstr "Element jest już współdzielony"
+
+#: js/contentshare.js:101
+msgid "Unable to make element shared"
+msgstr "Nie można ustawić elementu jako współdzielonego"
+
+#: js/contentshare.js:117
+msgid "Element is not shared"
+msgstr "Element nie jest współdzielony"
 
 #: js/detail.js:47
 msgid "Element published successfully"
@@ -2468,14 +2223,29 @@ msgstr "Strona została pomyślnie opublikowana"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Strona zaplanowana do publikacji na %{date}"
 
-#: js/detail.js:308
-#: js/fields/Autocomplete.vue:176
+#: js/detail.js:61 js/pageactions.js:79
+msgid "Error publishing page"
+msgstr "Błąd publikowania strony"
+
+#: js/detail.js:276
+msgid "Not published, please review the changes and publish again"
+msgstr "Nie opublikowano, przejrzyj zmiany i opublikuj ponownie"
+
+#: js/detail.js:346 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Brak dostępnych danych"
 
-#: js/detail.js:342
+#: js/detail.js:347
+msgid "No version data available"
+msgstr "Brak dostępnych danych wersji"
+
+#: js/detail.js:437
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Istnieją nieprawidłowe pola, najpierw usuń błędy"
+
+#: js/dictation.js:23 js/dictation.js:42
+msgid "Error recording audio"
+msgstr "Błąd nagrywania dźwięku"
 
 #: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
@@ -2485,220 +2255,390 @@ msgstr "Wartość musi być kodem szesnastkowym koloru"
 msgid "File is required"
 msgstr "Plik jest wymagany"
 
-#: js/fields/File.vue:291
+#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "Dodaj plik z adresu URL"
 
-#: js/fields/File.vue:299
-#: js/fields/Images.vue:314
+#: js/fields/File.vue:293 js/fields/Images.vue:373
 msgid "Create file"
 msgstr "Utwórz plik"
 
-#: js/fields/File.vue:305
+#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "Prześlij plik"
 
-#: js/fields/File.vue:330
+#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "Upuść plik tutaj, aby go przesłać"
 
-#: js/fields/File.vue:338
+#: js/fields/File.vue:332
 msgid "name"
 msgstr "nazwa"
 
-#: js/fields/File.vue:339
+#: js/fields/File.vue:333
 msgid "description"
 msgstr "opis"
 
-#: js/fields/Images.vue:338
+#: js/fields/Images.vue:397
 msgid "Drop files here"
 msgstr "Upuść pliki tutaj"
 
-#: js/fields/Map.vue:218
-msgid "Clear location"
-msgstr "Wyczyść lokalizację"
+#: js/fields/Map.vue:214
+msgid "Map location"
+msgstr "Lokalizacja na mapie"
 
-#: js/fields/Map.vue:221
+#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "Kliknij mapę, aby ustawić lokalizację"
+
+#: js/fields/Map.vue:224
+msgid "Clear location"
+msgstr "Wyczyść lokalizację"
 
 #: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "Wartość ma nieprawidłowy format"
 
-#: js/fields/Table.vue:168
+#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "Przesuń kolumnę"
 
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "Operacje na kolumnach"
 
-#: js/fields/Table.vue:202
+#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "Przenieś wiersz"
 
-#: js/fields/Table.vue:222
+#: js/fields/Table.vue:295
+msgid "Row %{row}, column %{col}"
+msgstr "Wiersz %{row}, kolumna %{col}"
+
+#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "Operacje na wierszach"
 
-#: js/fields/Url.vue:61
-#: js/utils.js:280
+#: js/fields/Url.vue:50 js/options.js:93
 msgid "None"
 msgstr "Brak"
 
-#: js/fields/Url.vue:62
+#: js/fields/Url.vue:51
 msgid "Sponsored"
 msgstr "Sponsorowany"
 
-#: js/fields/Url.vue:63
+#: js/fields/Url.vue:52
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:75
+#: js/fields/Url.vue:92
 msgid "Not a valid URL"
 msgstr "Nieprawidłowy adres URL"
 
-#: js/fields/Url.vue:85
+#: js/fields/Url.vue:100
 msgid "Invalid URL schema configuration"
 msgstr "Nieprawidłowa konfiguracja schematu URL"
 
-#: js/fields/Url.vue:150
+#: js/fields/Url.vue:172
 msgid "No pages found"
 msgstr "Nie znaleziono stron"
 
-#: js/fields/Url.vue:162
+#: js/fields/Url.vue:184
 msgid "Link attribute"
 msgstr "Atrybut linku"
 
-#: js/listview.js:103
+#: js/filefield.js:118
+msgid "Unsupported file type"
+msgstr "Nieobsługiwany typ pliku"
+
+#: js/graphql.js:127
+msgid "Connection failed, please try again"
+msgstr "Połączenie nie powiodło się, spróbuj ponownie"
+
+#: js/graphql.js:132 js/stores/session.js:336 js/views/Login.vue:163
+msgid "Login failed"
+msgstr "Logowanie nie powiodło się"
+
+#: js/imageai.js:75
+msgid "Number of pixels added at this side of the image"
+msgstr "Liczba pikseli dodanych z tej strony obrazu"
+
+#: js/imageai.js:78
+msgctxt "image edge"
+msgid "Top"
+msgstr "Góra"
+
+#: js/imageai.js:80
+msgctxt "image edge"
+msgid "Left"
+msgstr "Lewo"
+
+#: js/imageai.js:81
+msgctxt "image edge"
+msgid "Right"
+msgstr "Prawo"
+
+#: js/imageai.js:83
+msgctxt "image edge"
+msgid "Bottom"
+msgstr "Dół"
+
+#: js/imageai.js:95
+msgid "Error erasing image part"
+msgstr "Błąd kasowania części obrazu"
+
+#: js/imageai.js:103
+msgid "Error editing image part"
+msgstr "Błąd edycji części obrazu"
+
+#: js/imageai.js:114
+msgid "Error removing background"
+msgstr "Błąd usuwania tła"
+
+#: js/imageai.js:259
+msgid "Error uncropping image"
+msgstr "Błąd podczas rozszerzania obrazu"
+
+#: js/imageai.js:281
+msgid "Error upscaling image"
+msgstr "Błąd podczas zwiększania rozdzielczości obrazu"
+
+#: js/lists.js:92
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "Przeniesiono do kosza"
+msgstr[1] "Przeniesiono %{num} wpisy do kosza"
+msgstr[2] "Przeniesiono %{num} wpisów do kosza"
+
+#: js/listview.js:87
 msgid "publish"
 msgstr "publikacja"
 
-#: js/listview.js:105
-#: js/listview.js:115
-#: js/listview.js:124
-#: js/utils.js:267
-#: js/views/PageList.vue:120
-#: js/views/PageList.vue:130
-#: js/views/PageList.vue:141
+#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
+#: js/views/PageList.vue:126 js/views/PageList.vue:136
+#: js/views/PageList.vue:147
 msgid "All"
 msgstr "Wszystkie"
 
-#: js/listview.js:107
+#: js/listview.js:91
 msgid "Scheduled"
 msgstr "Zaplanowane"
 
-#: js/listview.js:108
+#: js/listview.js:92
 msgid "Drafts"
 msgstr "Wersje robocze"
 
-#: js/listview.js:113
+#: js/listview.js:97
 msgid "trashed"
 msgstr "Kosz"
 
-#: js/listview.js:116
+#: js/listview.js:100
 msgid "Available only"
 msgstr "Tylko dostępne"
 
-#: js/listview.js:117
+#: js/listview.js:101
 msgid "Only trashed"
 msgstr "Tylko w koszu"
 
-#: js/listview.js:125
+#: js/listview.js:109
 msgid "Edited by me"
 msgstr "Edytowane przeze mnie"
 
-#: js/listview.js:130
+#: js/listview.js:114
 msgid "languages"
 msgstr "języki"
 
-#: js/merge.js:23
+#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "Scalono ze zmianami od %{editor}"
 
-#: js/routes.js:126
+#: js/options.js:49 js/views/PageList.vue:137
+msgid "No cache"
+msgstr "Brak pamięci podręcznej"
+
+#: js/options.js:51
+msgid "%{num} hour"
+msgid_plural "%{num} hours"
+msgstr[0] "%{num} godzina"
+msgstr[1] "%{num} godziny"
+msgstr[2] "%{num} godzin"
+
+#: js/options.js:62 js/views/PageList.vue:129
+msgid "Disabled"
+msgstr "Wyłączone"
+
+#: js/options.js:63 js/views/PageList.vue:127
+msgid "Enabled"
+msgstr "Włączone"
+
+#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:585
+msgid "Error saving page"
+msgstr "Błąd zapisywania strony"
+
+#: js/pageactions.js:134
+msgid "Error trashing page"
+msgstr "Błąd podczas przenoszenia strony do kosza"
+
+#: js/pageactions.js:159 js/variants.js:176
+msgid "Error restoring language"
+msgstr "Błąd podczas przywracania języka"
+
+#: js/pageactions.js:159 js/pageactions.js:175
+msgid "Error restoring page"
+msgstr "Błąd przywracania strony"
+
+#: js/pageactions.js:201
+msgid "All subpages of these pages will be purged as well."
+msgstr "Wszystkie podstrony tych stron również zostaną trwale usunięte."
+
+#: js/pageactions.js:210
+msgid "Error purging page"
+msgstr "Błąd podczas trwałego usuwania strony"
+
+#: js/pageactions.js:244
+msgid "Cache cleared"
+msgstr "Pamięć podręczna wyczyszczona"
+
+#: js/pageactions.js:245
+msgid "Cache cleared for %{num} page."
+msgid_plural "Cache cleared for %{num} pages."
+msgstr[0] "Wyczyszczono pamięć podręczną dla %{num} strony."
+msgstr[1] "Wyczyszczono pamięć podręczną dla %{num} stron."
+msgstr[2] "Wyczyszczono pamięć podręczną dla %{num} stron."
+
+#: js/pageactions.js:255
+msgid "Error clearing cache"
+msgstr "Błąd podczas czyszczenia pamięci podręcznej"
+
+#: js/pageactions.js:354
+msgid "%{num} page could not be updated"
+msgid_plural "%{num} pages could not be updated"
+msgstr[0] "Nie można zaktualizować %{num} strony"
+msgstr[1] "Nie można zaktualizować %{num} stron"
+msgstr[2] "Nie można zaktualizować %{num} stron"
+
+#: js/pagetree.js:41
+msgid "Insert"
+msgstr "Wstaw"
+
+#: js/pagetree.js:66
+msgid "Before"
+msgstr "Przed"
+
+#: js/pagetree.js:67
+msgid "Into"
+msgstr "Do środka"
+
+#: js/pagetree.js:68
+msgid "After"
+msgstr "Po"
+
+#: js/pagetree.js:205
+msgid "Error inserting page"
+msgstr "Błąd wstawiania strony"
+
+#: js/pagetree.js:245 js/views/PageDetail.vue:220
+msgid "Error fetching page"
+msgstr "Błąd pobierania strony"
+
+#: js/pagetree.js:263
+msgid "Error copying page"
+msgstr "Błąd kopiowania strony"
+
+#: js/pagetree.js:330
+msgid "Error moving page"
+msgstr "Błąd przenoszenia strony"
+
+#: js/pagetree.js:340
+msgid "Page moved"
+msgstr "Strona przeniesiona"
+
+#: js/routes.js:111
+msgid "Error checking the session, please try again"
+msgstr "Błąd podczas sprawdzania sesji, spróbuj ponownie"
+
+#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "Nie masz uprawnień dostępu do %{path}"
 
-#: js/rules.js:18
+#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "Nazwa domeny jest nieprawidłowa"
 
-#: js/rules.js:21
+#: js/rules.js:24
 msgid "Value is required"
 msgstr "Wartość jest wymagana"
 
-#: js/rules.js:26
+#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "Wymagany jest co najmniej %{num} wpis"
 msgstr[1] "Wymagane są co najmniej %{num} wpisy"
 msgstr[2] "Wymaganych jest co najmniej %{num} wpisów"
 
-#: js/rules.js:33
+#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "Dozwolony jest maksymalnie %{num} wpis"
 msgstr[1] "Dozwolone są maksymalnie %{num} wpisy"
 msgstr[2] "Dozwolonych jest maksymalnie %{num} wpisów"
 
-#: js/rules.js:41
+#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "Wymagany jest co najmniej %{num} znak"
 msgstr[1] "Wymagane są co najmniej %{num} znaki"
 msgstr[2] "Wymaganych jest co najmniej %{num} znaków"
 
-#: js/rules.js:51
+#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "Dozwolony jest maksymalnie %{num} znak"
 msgstr[1] "Dozwolone są maksymalnie %{num} znaki"
 msgstr[2] "Dozwolonych jest maksymalnie %{num} znaków"
 
-#: js/rules.js:58
-msgid "At least %{num} column is required"
-msgid_plural "At least %{num} columns are required"
-msgstr[0] "Wymagana jest co najmniej %{num} kolumna"
-msgstr[1] "Wymagane są co najmniej %{num} kolumny"
-msgstr[2] "Wymaganych jest co najmniej %{num} kolumn"
+#: js/rules.js:62
+msgid "At least %{num} row is required"
+msgid_plural "At least %{num} rows are required"
+msgstr[0] "Wymagany jest co najmniej %{num} wiersz"
+msgstr[1] "Wymagane są co najmniej %{num} wiersze"
+msgstr[2] "Wymaganych jest co najmniej %{num} wierszy"
 
-#: js/rules.js:65
-msgid "At most %{num} column is allowed"
-msgid_plural "At most %{num} columns are allowed"
-msgstr[0] "Dozwolona jest maksymalnie %{num} kolumna"
-msgstr[1] "Dozwolone są maksymalnie %{num} kolumny"
-msgstr[2] "Dozwolonych jest maksymalnie %{num} kolumn"
+#: js/rules.js:69
+msgid "At most %{num} row is allowed"
+msgid_plural "At most %{num} rows are allowed"
+msgstr[0] "Dozwolony jest maksymalnie %{num} wiersz"
+msgstr[1] "Dozwolone są maksymalnie %{num} wiersze"
+msgstr[2] "Dozwolonych jest maksymalnie %{num} wierszy"
 
-#: js/stores.js:497
-msgid "Failed to save user settings"
-msgstr "Nie udało się zapisać ustawień użytkownika"
-
-#: js/stores.js:553
-msgid "Failed to load plugin"
-msgstr "Nie udało się załadować wtyczki"
-
-#: js/stores.js:660
+#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "Brak uprawnień"
 
-#: js/stores.js:1062
+#: js/stores/plugin.js:20
+msgid "Failed to load plugin"
+msgstr "Nie udało się załadować wtyczki"
+
+#: js/stores/setting.js:111
+msgid "Failed to save user settings"
+msgstr "Nie udało się zapisać ustawień użytkownika"
+
+#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "Błąd podczas pobierania postępu tłumaczenia"
 
-#: js/stores.js:1080
+#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "Tłumaczenie nadal trwa w tle"
 
-#: js/stores.js:1083
+#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} tłumaczenie nie powiodło się"
 msgstr[1] "%{num} tłumaczenia nie powiodły się"
 msgstr[2] "%{num} tłumaczeń nie powiodło się"
 
-#: js/stores.js:1089
+#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "Tłumaczenie zakończone"
 
@@ -2802,277 +2742,268 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "Już istnieje"
 
-#: js/utils.js:36
-#: js/views/PageList.vue:131
-msgid "No cache"
-msgstr "Brak pamięci podręcznej"
-
-#: js/utils.js:38
-msgid "%{num} hour"
-msgid_plural "%{num} hours"
-msgstr[0] "%{num} godzina"
-msgstr[1] "%{num} godziny"
-msgstr[2] "%{num} godzin"
-
-#: js/utils.js:317
-#: js/views/PageList.vue:123
-msgid "Disabled"
-msgstr "Wyłączone"
-
-#: js/utils.js:318
-#: js/views/PageList.vue:121
-msgid "Enabled"
-msgstr "Włączone"
-
-#: js/utils.js:319
-msgid "Hidden in navigation"
-msgstr "Ukryte w nawigacji"
-
-#: js/variants.js:214
+#: js/variants.js:129
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "Strony w języku źródłowym są usuwane tylko jako całe strony"
 
-#: js/variants.js:222
+#: js/variants.js:137
 msgid "Delete language"
 msgstr "Usuń język"
 
-#: js/variants.js:223
+#: js/variants.js:138
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "Przenieść %{num} stronę w języku „%{lang}” do kosza?"
 msgstr[1] "Przenieść %{num} strony w języku „%{lang}” do kosza?"
 msgstr[2] "Przenieść %{num} stron w języku „%{lang}” do kosza?"
 
-#: js/variants.js:231
+#: js/variants.js:146
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} strona w języku źródłowym zostanie pominięta."
 msgstr[1] "%{num} strony w języku źródłowym zostaną pominięte."
 msgstr[2] "%{num} stron w języku źródłowym zostanie pominiętych."
 
-#: js/variants.js:245
+#: js/variants.js:160
 msgid "Error trashing language"
 msgstr "Błąd podczas przenoszenia języka do kosza"
 
-#: js/variants.js:283
+#: js/variants.js:197
 msgid "Error purging language"
 msgstr "Błąd podczas trwałego usuwania języka"
 
-#: js/variants.js:305
+#: js/variants.js:219
 msgid "Error ignoring changes"
 msgstr "Błąd podczas ignorowania zmian"
 
-#: js/variants.js:364
-msgid "Nothing to translate, the pages are up to date or already being translated"
+#: js/variants.js:287
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
 msgstr "Nic do przetłumaczenia, strony są aktualne lub są już tłumaczone"
 
-#: js/variants.js:371
+#: js/variants.js:294
 msgid "Error translating pages"
 msgstr "Błąd podczas tłumaczenia stron"
 
-#: js/views/AccessList.vue:170
+#: js/variants.js:404 js/variants.js:472
+msgid "Translation saved as draft, review the changes"
+msgstr "Tłumaczenie zapisano jako wersję roboczą, przejrzyj zmiany"
+
+#: js/variants.js:441
+msgid "Marked as up to date"
+msgstr "Oznaczono jako aktualne"
+
+#: js/variants.js:444
+msgid "Error marking as up to date"
+msgstr "Błąd podczas oznaczania jako aktualne"
+
+#: js/variants.js:465
+msgid ""
+"Nothing to translate, the page is up to date or already being translated"
+msgstr "Nic do przetłumaczenia, strona jest aktualna lub jest już tłumaczona"
+
+#: js/views/AccessList.vue:169
 msgid "Error adding access value"
 msgstr "Błąd podczas dodawania wartości dostępu"
 
 #: js/views/AccessList.vue:184
-msgid "Existing restrictions are not changed and will continue to reference the purged access values."
-msgstr "Istniejące ograniczenia nie ulegają zmianie i nadal będą odwoływać się do trwale usuniętych wartości dostępu."
+msgid ""
+"Existing restrictions are not changed and will continue to reference the "
+"purged access values."
+msgstr ""
+"Istniejące ograniczenia nie ulegają zmianie i nadal będą odwoływać się do "
+"trwale usuniętych wartości dostępu."
 
 #: js/views/AccessList.vue:203
 msgid "Error purging access values"
 msgstr "Błąd podczas trwałego usuwania wartości dostępu"
 
-#: js/views/AccessList.vue:235
-#: js/views/ElementList.vue:45
-#: js/views/FileList.vue:45
-#: js/views/PageList.vue:261
-#: js/views/PluginPanel.vue:70
-msgid "Close navigation"
-msgstr "Zamknij nawigację"
-
-#: js/views/AccessList.vue:235
-#: js/views/ElementList.vue:45
-#: js/views/FileList.vue:45
-#: js/views/PageList.vue:261
-#: js/views/PluginPanel.vue:70
-msgid "Open navigation"
-msgstr "Otwórz nawigację"
-
-#: js/views/AccessList.vue:254
+#: js/views/AccessList.vue:240
 msgid "Roles"
 msgstr "Role"
 
-#: js/views/AccessList.vue:289
-#: js/views/AccessList.vue:334
+#: js/views/AccessList.vue:275 js/views/AccessList.vue:320
 msgid "Add access value"
 msgstr "Dodaj wartość dostępu"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:324
 msgid "Access value"
 msgstr "Wartość dostępu"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:324
 msgid "Role name which can be assigned to pages and users"
 msgstr "Nazwa roli, którą można przypisać do stron i użytkowników"
 
-#: js/views/AccessList.vue:354
+#: js/views/AccessList.vue:340
 msgid "Add"
 msgstr "Dodaj"
 
-#: js/views/ElementDetail.vue:120
+#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "Błąd pobierania elementu"
 
-#: js/views/ElementDetail.vue:180
+#: js/views/ElementDetail.vue:185
 msgid "Element saved successfully"
 msgstr "Element zapisany pomyślnie"
 
-#: js/views/ElementDetail.vue:188
+#: js/views/ElementDetail.vue:192
 msgid "Error saving element"
 msgstr "Błąd zapisu elementu"
 
-#: js/views/ElementDetail.vue:220
-#: js/views/ElementDetail.vue:222
-#: js/views/ElementDetail.vue:227
+#: js/views/ElementDetail.vue:225 js/views/ElementDetail.vue:227
+#: js/views/ElementDetail.vue:232
 msgid "Element"
 msgstr "Element"
 
-#: js/views/ElementDetail.vue:229
-#: js/views/FileDetail.vue:255
+#: js/views/ElementDetail.vue:234 js/views/FileDetail.vue:289
 msgid "Used by"
 msgstr "Używany przez"
 
-#: js/views/ElementList.vue:74
-#: js/views/FileList.vue:74
-#: js/views/PageList.vue:290
-msgid "Press Enter to open the chat"
-msgstr "Naciśnij Enter, aby otworzyć czat"
-
-#: js/views/ElementList.vue:116
+#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
-msgstr "Sztuczna inteligencja może wyszukiwać elementy współdzielone i zarządzać nimi na podstawie danych wprowadzonych przez użytkownika."
+msgstr ""
+"Sztuczna inteligencja może wyszukiwać elementy współdzielone i zarządzać "
+"nimi na podstawie danych wprowadzonych przez użytkownika."
 
-#: js/views/ElementList.vue:117
-#: js/views/FileList.vue:117
-#: js/views/PageList.vue:341
+#: js/views/ElementList.vue:50 js/views/FileList.vue:50
+#: js/views/PageList.vue:281
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
-msgstr "Naciśnij Enter lub strzałkę, aby otworzyć asystenta AI i dopracować treść na czacie"
+msgstr ""
+"Naciśnij Enter lub strzałkę, aby otworzyć asystenta AI i dopracować treść na "
+"czacie"
 
-#: js/views/FileDetail.vue:123
+#: js/views/FileDetail.vue:128
 msgid "Error fetching file"
 msgstr "Błąd pobierania pliku"
 
-#: js/views/FileDetail.vue:210
+#: js/views/FileDetail.vue:238
 msgid "File saved successfully"
 msgstr "Plik został pomyślnie zapisany"
 
-#: js/views/FileDetail.vue:246
-#: js/views/FileDetail.vue:248
-#: js/views/FileDetail.vue:253
+#: js/views/FileDetail.vue:280 js/views/FileDetail.vue:282
+#: js/views/FileDetail.vue:287
 msgid "File"
 msgstr "Plik"
 
-#: js/views/FileList.vue:116
+#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
-msgstr "Sztuczna inteligencja może wyszukiwać pliki multimedialne i zarządzać nimi na podstawie danych wprowadzonych przez użytkownika."
+msgstr ""
+"Sztuczna inteligencja może wyszukiwać pliki multimedialne i zarządzać nimi "
+"na podstawie danych wprowadzonych przez użytkownika."
 
-#: js/views/Login.vue:55
+#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "Nieprawidłowy adres e-mail"
 
-#: js/views/Login.vue:115
+#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "Nie jest redaktorem CMS"
 
-#: js/views/Login.vue:171
+#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "Odmowa dostępu"
 
-#: js/views/Login.vue:231
-msgid "Error"
-msgstr "Błąd"
+#: js/views/Login.vue:230
+msgid "Error: %{msg}"
+msgstr "Błąd: %{msg}"
 
-#: js/views/PageDetail.vue:192
-msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
-msgstr "Użytkownik przegląda stronę o identyfikatorze „%{id}”. Gdy odnosi się do „tej strony”, użyj get-page z tym identyfikatorem."
-
-#: js/views/PageDetail.vue:504
-#: js/views/PageDetail.vue:802
+#: js/views/PageDetail.vue:499 js/views/PageDetail.vue:688
 msgid "Rate this page and suggest improvements"
 msgstr "Oceń tę stronę i zaproponuj ulepszenia"
 
-#: js/views/PageDetail.vue:560
+#: js/views/PageDetail.vue:506
+msgid "Please wait until the language is switched"
+msgstr "Poczekaj, aż język zostanie przełączony"
+
+#: js/views/PageDetail.vue:571
 msgid "Page saved successfully"
 msgstr "Strona została pomyślnie zapisana"
 
-#: js/views/PageDetail.vue:624
-#: js/views/PageDetail.vue:679
-msgid "Translation saved as draft, review the changes"
-msgstr "Tłumaczenie zapisano jako wersję roboczą, przejrzyj zmiany"
-
-#: js/views/PageDetail.vue:648
-msgid "Marked as up to date"
-msgstr "Oznaczono jako aktualne"
-
-#: js/views/PageDetail.vue:651
-msgid "Error marking as up to date"
-msgstr "Błąd podczas oznaczania jako aktualne"
-
-#: js/views/PageDetail.vue:672
-msgid "Nothing to translate, the page is up to date or already being translated"
-msgstr "Nic do przetłumaczenia, strona jest aktualna lub jest już tłumaczona"
-
-#: js/views/PageDetail.vue:746
-#: js/views/PageDetail.vue:809
-#: js/views/PageDetail.vue:828
+#: js/views/PageDetail.vue:632 js/views/PageDetail.vue:695
+#: js/views/PageDetail.vue:714
 msgid "Page"
 msgstr "Strona"
 
-#: js/views/PageDetail.vue:773
+#: js/views/PageDetail.vue:659
 msgid "Source"
 msgstr "Źródłowy"
 
-#: js/views/PageDetail.vue:777
+#: js/views/PageDetail.vue:663
 msgid "Trashed"
 msgstr "W koszu"
 
-#: js/views/PageDetail.vue:814
+#: js/views/PageDetail.vue:700
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Edytor"
 
-#: js/views/PageDetail.vue:831
+#: js/views/PageDetail.vue:717
 msgid "Metrics"
 msgstr "Metryki"
 
-#: js/views/PageList.vue:108
+#: js/views/PageList.vue:114
 msgid "view"
 msgstr "widok"
 
-#: js/views/PageList.vue:111
+#: js/views/PageList.vue:117
 msgid "List"
 msgstr "Lista"
 
-#: js/views/PageList.vue:118
+#: js/views/PageList.vue:124
 msgid "status"
 msgstr "status"
 
-#: js/views/PageList.vue:122
+#: js/views/PageList.vue:128
 msgid "Hidden"
 msgstr "Ukryte"
 
-#: js/views/PageList.vue:128
+#: js/views/PageList.vue:134
 msgid "cache"
 msgstr "pamięć podręczna"
 
-#: js/views/PageList.vue:139
+#: js/views/PageList.vue:145
 msgid "translation"
 msgstr "tłumaczenie"
 
-#: js/views/PageList.vue:316
+#: js/views/PageList.vue:277
 msgid "Generate page based on prompt"
 msgstr "Generuj stronę na podstawie monitu"
 
-#: js/views/PageList.vue:334
-msgid "AI can create a page and content based on your input and add it to the page tree"
-msgstr "Sztuczna inteligencja może utworzyć stronę i zawartość na podstawie danych wprowadzonych przez użytkownika i dodać je do drzewa stron"
+#: js/views/PageList.vue:280
+msgid ""
+"AI can create a page and content based on your input and add it to the page "
+"tree"
+msgstr ""
+"Sztuczna inteligencja może utworzyć stronę i zawartość na podstawie danych "
+"wprowadzonych przez użytkownika i dodać je do drzewa stron"
+
+#~ msgid "List view"
+#~ msgstr "Widok listy"
+
+#~ msgid "Error"
+#~ msgstr "Błąd"
+
+#~ msgid "At least %{num} column is required"
+#~ msgid_plural "At least %{num} columns are required"
+#~ msgstr[0] "Wymagana jest co najmniej %{num} kolumna"
+#~ msgstr[1] "Wymagane są co najmniej %{num} kolumny"
+#~ msgstr[2] "Wymaganych jest co najmniej %{num} kolumn"
+
+#~ msgid "At most %{num} column is allowed"
+#~ msgid_plural "At most %{num} columns are allowed"
+#~ msgstr[0] "Dozwolona jest maksymalnie %{num} kolumna"
+#~ msgstr[1] "Dozwolone są maksymalnie %{num} kolumny"
+#~ msgstr[2] "Dozwolonych jest maksymalnie %{num} kolumn"
+
+#~ msgid ""
+#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
+#~ "page\", use get-page with that ID."
+#~ msgstr ""
+#~ "Użytkownik przegląda stronę o identyfikatorze „%{id}”. Gdy odnosi się do "
+#~ "„tej strony”, użyj get-page z tym identyfikatorem."
+
+#~ msgid "Purge this language"
+#~ msgstr "Usuń trwale ten język"
+
+#~ msgid "Create in %{lang}"
+#~ msgstr "Utwórz w języku %{lang}"

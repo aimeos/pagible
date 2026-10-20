@@ -1,3 +1,4 @@
+import { h, ref } from 'vue'
 import FileField from '../../../js/fields/File.vue'
 import { useUserStore } from '../../../js/stores'
 
@@ -163,6 +164,25 @@ describe('File', () => {
     cy.contains('document.pdf').should('exist')
   })
 
+  it('shows the file of a value replaced from outside', () => {
+    const other = { ...fileAsset, id: '2', name: 'other.pdf', path: '/files/other.pdf' }
+    const value = ref({ id: '1', type: 'file' })
+    const onUpdate = cy.spy().as('update')
+    const Host = {
+      render: () => h(FileField, { modelValue: value.value, config: {}, assets: { 1: fileAsset, 2: other }, 'onUpdate:modelValue': onUpdate })
+    }
+
+    cy.mount(Host)
+    cy.contains('document.pdf').should('exist')
+    cy.then(() => { value.value = { id: '2', type: 'file' } })
+    cy.contains('other.pdf').should('exist')
+    cy.contains('document.pdf').should('not.exist')
+    cy.then(() => { value.value = null })
+    cy.contains('other.pdf').should('not.exist')
+    cy.get('button.btn-upload').should('exist')
+    cy.get('@update').should('not.have.been.called')
+  })
+
   it('uses a native button for the editable preview', () => {
     mountFile({
       modelValue: { id: '1', type: 'file' },
@@ -198,6 +218,40 @@ describe('File', () => {
         expect(vm.file).to.deep.equal({})
       })
     })
+  })
+
+  it('shows the previous file again after a failed replacement upload', () => {
+    cy.stub(URL, 'createObjectURL').returns('blob:upload')
+    cy.stub(URL, 'revokeObjectURL')
+    const mutate = cy.stub().rejects(new Error('Upload failed'))
+
+    mountFile({ modelValue: { id: '1', type: 'file' }, assets: { '1': fileAsset } }, { 'file:add': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileField).vm
+
+      return vm.add(new File(['content'], 'other.pdf', { type: 'application/pdf' })).then(() => {
+        expect(vm.file).to.equal(vm.assets['1'])
+      })
+    })
+
+    cy.contains('document.pdf').should('exist')
+  })
+
+  it('shows the upload progress and ignores further uploads meanwhile', () => {
+    cy.stub(URL, 'createObjectURL').returns('blob:upload')
+    cy.stub(URL, 'revokeObjectURL')
+    const mutate = cy.stub().returns(new Promise(() => {}))
+
+    mountFile({}, { 'file:add': true }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileField).vm
+
+      vm.add(new File(['content'], 'document.pdf', { type: 'application/pdf' }))
+      expect(vm.add(new File(['other'], 'other.pdf', { type: 'application/pdf' }))).to.equal(undefined)
+      expect(vm.add(null)).to.equal(undefined)
+      expect(mutate).to.have.been.calledOnce
+    })
+
+    cy.get('.file .v-progress-linear').should('exist')
+    cy.get('.meta').should('not.exist')
   })
 
   it('shows file metadata when file is present', () => {

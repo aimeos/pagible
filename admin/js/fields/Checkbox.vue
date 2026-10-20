@@ -7,7 +7,8 @@ export default {
   extends: fieldBase,
 
   props: {
-    modelValue: { type: Boolean }
+    // custom on/off values may be strings or numbers, undefined uses the configured default
+    modelValue: { type: [Boolean, String, Number], default: undefined }
   }
 }
 </script>

@@ -1,4 +1,4 @@
-import { h } from 'vue'
+import { h, reactive } from 'vue'
 import FieldsAside from '../../../js/components/FieldsAside.vue'
 import { useDrawerStore, useSchemaStore } from '../../../js/stores'
 
@@ -30,10 +30,14 @@ const element = {
   _error: false,
 }
 
+// applies the patches like the owning page does
+const patchEntry = (entry, values) => Object.assign(entry, values)
+
 function mountAside(props = {}, schemas = {}) {
   return cy.mount(FieldsAside, {
     props: {
-      element: { ...element },
+      element: reactive({ ...element }),
+      onPatchEntry: patchEntry,
       ...props,
     },
     global: {
@@ -103,6 +107,7 @@ describe('FieldsAside', () => {
       expect(aside.vm.element._changed).to.equal(true)
       expect(aside.vm.element._error).to.equal(undefined)
       expect(aside.emitted('change')).to.have.length(1)
+      expect(aside.emitted('patch-entry')[0][1]).to.deep.include({ type: 'text', _changed: true })
     })
 
     cy.get('.element-type').should('contain', 'text')
@@ -195,12 +200,12 @@ describe('FieldsAside', () => {
     const onChange = cy.spy().as('change')
 
     cy.mount(FieldsAside, {
-      props: { element: { ...element }, onChange },
+      props: { element: reactive({ ...element }), onChange, onPatchEntry: patchEntry },
       global: {
         stubs: {
           Fields: {
-            render() { return h('button', { class: 'fields-stub', onClick: () => this.$emit('change') }, 'Change') },
-            emits: ['change'],
+            render() { return h('button', { class: 'fields-stub', onClick: () => this.$emit('update:data', { title: 'New' }) }, 'Change') },
+            emits: ['update:data'],
           },
         },
         plugins: [{
@@ -213,7 +218,7 @@ describe('FieldsAside', () => {
     })
 
     cy.get('.fields-stub').click()
-    cy.get('@change').should('have.been.calledOnceWith', Cypress.sinon.match({ _changed: true }))
+    cy.get('@change').should('have.been.calledOnceWith', Cypress.sinon.match({ _changed: true, data: { title: 'New' } }))
   })
 
   it('does not render a local save button for changed elements', () => {

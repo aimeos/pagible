@@ -2,27 +2,14 @@
 
 <script>
 import gql from 'graphql-tag'
-import { defineAsyncComponent, markRaw } from 'vue'
-import { useAppStore } from '../stores'
+import { markRaw } from 'vue'
+import { pageUrl } from '../urls'
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import LoadingSpinner from './LoadingSpinner.vue'
-
-const LineChart = defineAsyncComponent(() =>
-  Promise.all([
-    import('vue-chartjs').then(m => m.Line),
-    import('chart.js').then(({ Chart, Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale }) => {
-      Chart.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale)
-    })
-  ]).then(([Line]) => Line)
-)
+import MetricsCharts from './MetricsCharts.vue'
+import { QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, ranked, rating, signed, sortedByValue, timeline, toMinutes, toPercent, weeklySum } from '../metrics'
 
 const DAYS_OPTIONS = [30, 60]
-
-const BASE_CHART_OPTIONS = {
-  maintainAspectRatio: false,
-  responsive: true,
-  interaction: { mode: 'index', intersect: false }
-}
 
 const REFERRER_HEADERS = [
   { key: 'data-table-expand', width: 1 },
@@ -53,8 +40,8 @@ const FETCH_METRICS = gql`
 
 export default {
   components: {
-    LineChart,
-    LoadingSpinner
+    LoadingSpinner,
+    MetricsCharts
   },
 
   props: {
@@ -62,7 +49,7 @@ export default {
   },
 
   data: () => ({
-    destroyed: false,
+    request: 0,
     days: 30,
     errors: [],
     loading: false,
@@ -81,8 +68,10 @@ export default {
   }),
 
   setup() {
-    const app = useAppStore()
-    return { app, mdiChevronUp, mdiChevronDown, DAYS_OPTIONS, REFERRER_HEADERS, COUNTRY_HEADERS }
+    return {
+      mdiChevronUp, mdiChevronDown, DAYS_OPTIONS, REFERRER_HEADERS, COUNTRY_HEADERS,
+      QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, rating, signed, sortedByValue, weeklySum
+    }
   },
 
   created() {
@@ -97,7 +86,8 @@ export default {
   },
 
   beforeUnmount() {
-    this.destroyed = true
+    // discards the responses of pending requests
+    this.request++
   },
 
   computed: {
@@ -109,7 +99,7 @@ export default {
         title: this.$gettext('Views & Visits'),
         data: this.chart(this.views,
           [p.primary, this.$gettext('Views'), this.views],
-          [p.secondary, this.$gettext('Visits'), this.visits],
+          [p.warning, this.$gettext('Visits'), this.visits],
           [p.success, this.$gettext('Conversions'), this.conversions]
         )
       }, {
@@ -121,7 +111,7 @@ export default {
         title: this.$gettext('Google Search: Impressions & Clicks'),
         data: this.chart(this.impressions,
           [p.primary, this.$gettext('Impressions'), this.impressions],
-          [p.secondary, this.$gettext('Clicks'), this.clicks]
+          [p.warning, this.$gettext('Clicks'), this.clicks]
         )
       }, {
         show: this.ctrs.length,
@@ -137,28 +127,9 @@ export default {
     palette() {
       return {
         primary: this.colors?.primary,
-        secondary: this.colors?.warning,
+        warning: this.colors?.warning,
         success: this.colors?.success
       }
-    },
-
-    chartOptions() {
-      const isRtl = this.$vuetify.locale.isRtl
-      const tickColor = this.colors?.['text-secondary'] || this.colors?.['on-surface']
-      const gridColor = this.colors?.['border-light']
-
-      return markRaw({
-        ...BASE_CHART_OPTIONS,
-        locale: this.$vuetify.locale.current,
-        plugins: {
-          legend: { labels: { color: tickColor }, rtl: isRtl },
-          tooltip: { intersect: false, rtl: isRtl }
-        },
-        scales: {
-          x: { reverse: isRtl, ticks: { color: tickColor }, grid: { color: gridColor } },
-          y: { beginAtZero: true, position: isRtl ? 'right' : 'left', ticks: { color: tickColor }, grid: { color: gridColor } }
-        }
-      })
     },
 
     insightColumns() {
@@ -200,43 +171,19 @@ export default {
       })
     },
 
-    insightValue(col) {
-      return col.average
-        ? Number(this.weekly(col.data) / 7).toFixed(1) + (col.suffix || '')
-        : this.value(this.weekly(col.data))
-    },
-
-
-    color(value, good, bad) {
-      if (value === undefined || value === null) {
-        return ''
-      } else if (value < good) {
-        return 'good'
-      } else if (value >= bad) {
-        return 'bad'
+    // removes the fetched metrics
+    clear() {
+      for (const key of ['conversions', 'countries', 'durations', 'referrers', 'impressions', 'queries', 'ctrs', 'clicks', 'visits', 'views']) {
+        this[key] = []
       }
-      return 'warn'
-    },
 
-    formatDate(item) {
-      item.key = this.dateFormatter.format(new Date(item.key))
-      return item
-    },
-
-    formatValue(item) {
-      item.value = this.value(item.value)
-      return item
-    },
-
-    error(msg) {
-      try {
-        return JSON.parse(msg)?.error?.message || msg
-      } catch {
-        return msg
-      }
+      this.pagespeed = null
+      this.querypage = 1
     },
 
     async metrics() {
+      const request = ++this.request
+
       this.errors = []
       this.loading = true
 
@@ -249,32 +196,33 @@ export default {
           }
         })
 
-        if (this.destroyed) return
+        // skip responses of outdated requests if the days have been changed meanwhile
+        if (request !== this.request) return
 
         const stats = data?.metrics || {}
 
-        this.views = Object.freeze(this.sortAndFormat(stats.views))
-        this.visits = Object.freeze(this.sortAndFormat(stats.visits))
-        this.conversions = Object.freeze(this.sortAndFormat(stats.conversions))
-        this.durations = Object.freeze(this.sortAndFormat(stats.durations, this.toMinutes))
+        this.views = Object.freeze(timeline(stats.views, this.dateFormatter))
+        this.visits = Object.freeze(timeline(stats.visits, this.dateFormatter))
+        this.conversions = Object.freeze(timeline(stats.conversions, this.dateFormatter))
+        this.durations = Object.freeze(timeline(stats.durations, this.dateFormatter, toMinutes))
 
-        this.impressions = Object.freeze(this.sortAndFormat(stats.impressions))
-        this.clicks = Object.freeze(this.sortAndFormat(stats.clicks))
-        this.ctrs = Object.freeze(this.sortAndFormat(stats.ctrs, this.toPercent))
+        this.impressions = Object.freeze(timeline(stats.impressions, this.dateFormatter))
+        this.clicks = Object.freeze(timeline(stats.clicks, this.dateFormatter))
+        this.ctrs = Object.freeze(timeline(stats.ctrs, this.dateFormatter, toPercent))
 
-        const ranked = (data) => (data || []).sort(this.sortByValue).map(this.formatValue)
-
-        this.countries = Object.freeze(ranked(stats.countries).map(item => Object.freeze(item)))
+        this.countries = Object.freeze(ranked(stats.countries, this.$vuetify.locale.current).map(item => Object.freeze(item)))
 
         this.referrers = Object.freeze(
-          ranked(stats.referrers)
+          ranked(stats.referrers, this.$vuetify.locale.current)
             .map(item => Object.freeze({
               ...item,
               rows: Object.freeze((item.rows || []).map(r => Object.freeze(r)))
             }))
         )
 
-        this.queries = Object.freeze((stats.queries || [])
+        // the previous query page may not exist for the new time range
+        this.querypage = 1
+        this.queries = Object.freeze([...(stats.queries || [])]
           .sort((a, b) => b.impressions - a.impressions)
           .map(q => Object.freeze(q)))
         this.pagespeed = Object.freeze(stats?.pagespeed?.reduce((acc, { key, value }) => {
@@ -284,85 +232,21 @@ export default {
 
         this.errors = stats.errors || []
       } catch (e) {
-        this.errors.push(e.message || String(e))
+        if (request === this.request) {
+          // don't show the charts of the previous time range next to the error
+          this.clear()
+          this.errors.push(this.$gettext('Error fetching metrics'))
+          this.$log('PageDetailMetrics::metrics(): Error fetching metrics', e)
+        }
       } finally {
-        this.loading = false
+        if (request === this.request) {
+          this.loading = false
+        }
       }
-    },
-
-    sortAndFormat(data, transform) {
-      const arr = (data || []).sort(this.sortByDate)
-
-      for (let i = 0; i < arr.length; i++) {
-        this.formatDate(arr[i])
-        if (transform) transform(arr[i])
-      }
-
-      return arr
-    },
-
-    sortedRows(rows) {
-      return [...rows].sort((a, b) => b.value - a.value)
-    },
-
-    sortByDate(a, b) {
-      return a.key > b.key ? 1 : a.key < b.key ? -1 : 0
-    },
-
-    sortByValue(a, b) {
-      return b.value - a.value
-    },
-
-    toMinutes(item) {
-      item.value = Math.round(item.value / 6) / 10
-      return item
-    },
-
-    toPercent(item) {
-      item.value = Math.round(item.value * 1000) / 10
-      return item
-    },
-
-    percent(v) {
-      return (v > 0 ? '+' : '') + Number(v).toFixed(0)
-    },
-
-    slice(items, page) {
-      const start = (page - 1) * 10
-      return items.slice(start, start + 10)
     },
 
     url(node) {
-      const url = new URL(
-        this.app.urlpage
-          .replace(/_domain_/, node.domain || window.location.hostname)
-          .replace(/_path_/, node.path || '/')
-          .replace(/\/{2,}$/, '/'),
-        window.location.origin
-      )
-
-      url.protocol = window.location.protocol
-      url.port = window.location.port
-
-      return url.href
-    },
-
-    value(v) {
-      switch (true) {
-        case v >= 1e9:
-          return (v / 1e9).toFixed(2).toLocaleString() + 'B'
-        case v >= 1e6:
-          return (v / 1e6).toFixed(2).toLocaleString() + 'M'
-        case v >= 1e3:
-          return (v / 1e3).toFixed(2).toLocaleString() + 'K'
-      }
-      return v
-    },
-
-    weekly(data, slice = 1) {
-      return data
-        .slice(-7 * slice, data.length - 7 * (slice - 1))
-        .reduce((acc, item) => acc + Number(item.value), 0)
+      return pageUrl(node, true)
     }
   }
 }
@@ -395,7 +279,7 @@ export default {
         class="panel"
         type="error"
       >
-        {{ error(err) }}
+        {{ apiError(err) }}
       </v-alert>
 
       <div v-if="loading" class="loading-overlay d-flex align-center justify-center">
@@ -413,13 +297,13 @@ export default {
                   <div class="text-caption text-medium-emphasis">{{ col.label }}</div>
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="col.data.length">
-                      <span class="number">{{ insightValue(col) }}</span>
+                      <span class="number">{{ insightValue(col, $vuetify.locale.current) }}</span>
                       <span
-                        v-if="weekly(col.data, 2)"
+                        v-if="weeklySum(col.data, 2)"
                         class="percent"
-                        :class="weekly(col.data) >= weekly(col.data, 2) ? 'good' : 'bad'"
+                        :class="weeklySum(col.data) >= weeklySum(col.data, 2) ? 'good' : 'bad'"
                       >
-                        {{ percent((weekly(col.data) * 100) / (weekly(col.data, 2) || 1) - 100) }}%
+                        {{ signed((weeklySum(col.data) * 100) / (weeklySum(col.data, 2) || 1) - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -432,18 +316,7 @@ export default {
       </v-row>
 
       <!-- Analytics Charts -->
-      <v-row>
-        <template v-for="c in charts.slice(0, 2)" :key="c.title">
-          <v-col v-if="c.show" cols="12" md="6">
-            <v-card class="panel chart">
-              <v-card-title>{{ c.title }}</v-card-title>
-              <v-card-text>
-                <LineChart :options="chartOptions" :data="c.data" />
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </template>
-      </v-row>
+      <MetricsCharts :charts="charts.slice(0, 2)" />
 
       <!-- Top lists -->
       <v-row>
@@ -470,7 +343,7 @@ export default {
                   <tr v-if="item.rows.length">
                     <td :colspan="columns.length" class="py-2">
                       <v-data-table
-                        :items="sortedRows(item.rows)"
+                        :items="sortedByValue(item.rows)"
                         density="compact"
                         hide-default-header
                         hover
@@ -478,7 +351,7 @@ export default {
                         <template v-slot:item="{ item }">
                           <tr>
                             <td class="v-data-table-column--align-start">{{ item.key }}</td>
-                            <td class="v-data-table-column--align-end">{{ value(item.value) }}</td>
+                            <td class="v-data-table-column--align-end">{{ compact(item.value, $vuetify.locale.current) }}</td>
                           </tr>
                         </template>
                       </v-data-table>
@@ -515,7 +388,7 @@ export default {
                   <div class="text-caption text-medium-emphasis">{{ m.label }}</div>
                   <div
                     class="d-flex align-center justify-space-between text-h6"
-                    :class="color(pagespeed?.[m.key], m.good, m.bad)"
+                    :class="rating(pagespeed?.[m.key], m.good, m.bad)"
                   >
                     <span v-if="typeof pagespeed?.[m.key] === 'number'">
                       {{ pagespeed?.[m.key] }}{{ m.unit }}
@@ -546,45 +419,34 @@ export default {
                   </v-row>
                 </v-col>
               </v-row>
-              <v-row v-for="(q, i) in slice(queries, querypage)" :key="i" class="line">
+              <v-row v-for="(q, i) in paginate(queries, querypage)" :key="i" class="line">
                 <v-col cols="12" sm="6" class="key">{{ q.key }}</v-col>
                 <v-col cols="12" sm="6">
                   <v-row>
-                    <v-col cols="3">{{ value(q.impressions) }}</v-col>
-                    <v-col cols="3">{{ value(q.clicks) }}</v-col>
+                    <v-col cols="3">{{ compact(q.impressions, $vuetify.locale.current) }}</v-col>
+                    <v-col cols="3">{{ compact(q.clicks, $vuetify.locale.current) }}</v-col>
                     <v-col cols="3">{{ Number(q.ctr * 100).toFixed(1) }}</v-col>
                     <v-col cols="3">{{ Number(q.position).toFixed(1) }}</v-col>
                   </v-row>
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-actions v-if="queries.length > 10" class="justify-center">
-              <v-pagination v-model="querypage" :length="Math.ceil(queries.length / 10)" />
+            <v-card-actions v-if="queries.length > QUERY_PAGE_SIZE" class="justify-center">
+              <v-pagination v-model="querypage" :length="Math.ceil(queries.length / QUERY_PAGE_SIZE)" />
             </v-card-actions>
           </v-card>
         </v-col>
       </v-row>
 
       <!-- GSC Charts -->
-      <v-row>
-        <template v-for="c in charts.slice(2)" :key="c.title">
-          <v-col v-if="c.show" cols="12" md="6">
-            <v-card class="panel chart">
-              <v-card-title>{{ c.title }}</v-card-title>
-              <v-card-text>
-                <LineChart :options="chartOptions" :data="c.data" />
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </template>
-      </v-row>
+      <MetricsCharts :charts="charts.slice(2)" />
     </v-sheet>
   </v-container>
 </template>
 
 <style scoped>
 .v-sheet.scroll {
-  height: calc(100vh - 96px);
+  height: var(--cms-detail-height);
 }
 
 .loading-overlay {
@@ -654,19 +516,9 @@ export default {
   color: color-mix(in srgb, rgb(var(--v-theme-warning)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
 }
 
-.panel.chart .v-card-text {
-  aspect-ratio: 3 / 2;
-}
-
 .panel .percent {
   font-size: 80%;
   margin-inline-start: 12px;
-}
-
-.panel .value {
-  margin-inline-start: 8px;
-  text-align: end;
-  min-width: 3.5rem;
 }
 
 .panel .table .header {

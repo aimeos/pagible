@@ -1,6 +1,6 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { chat } from '../../../js/chat'
-import { useUserStore } from '../../../js/stores'
+import { useSessionStore, useUserStore } from '../../../js/stores'
 
 describe('chat()', () => {
   beforeEach(() => {
@@ -14,8 +14,8 @@ describe('chat()', () => {
 
     const user = useUserStore()
     user.me = { email: 'editor@example.com', permission: {}, settings: {} }
-    const reauth = cy.stub(user, 'reauth').resolves()
-    const touch = cy.stub(user, 'touch')
+    const reauth = cy.stub(useSessionStore(), 'reauth').resolves()
+    const touch = cy.stub(useSessionStore(), 'touch')
 
     return chat('Create a page').then((text) => {
       expect(text).to.equal('Done')
@@ -29,8 +29,7 @@ describe('chat()', () => {
     cy.stub(window, 'fetch').resolves(new Response('', { status: 401 }))
     cy.stub(console, 'error')
 
-    const user = useUserStore()
-    const reauth = cy.stub(user, 'reauth').resolves()
+    const reauth = cy.stub(useSessionStore(), 'reauth').resolves()
 
     return chat('Create a page').then(
       () => expect.fail('chat() should reject'),

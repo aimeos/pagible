@@ -55,41 +55,54 @@ function globalOptions(apollo = {}) {
   }
 }
 
-function mountList(props = {}, perms = {}, apollo = {}) {
-  return cy.mount(PageDetailContentList, {
-    props: {
-      item: { id: '1', lang: 'en' },
-      assets: {},
-      content: [...content.map(c => ({ ...c }))],
-      elements: {},
-      ...props,
+// owns the content like the page detail view and applies the changes sent by the list
+function host(props = {}, scroll = false) {
+  const { content: list, assets, elements, ...rest } = props
+
+  return {
+    data: () => ({
+      assets: assets ?? {},
+      content: list ?? content.map((c) => ({ ...c, data: { ...c.data } })),
+      elements: elements ?? {},
+    }),
+
+    render() {
+      const node = h(PageDetailContentList, {
+        item: { id: '1', lang: 'en' },
+        ...rest,
+        assets: this.assets,
+        content: this.content,
+        elements: this.elements,
+        'onUpdate:content': (value) => {
+          this.content = value
+          rest['onUpdate:content']?.(value)
+        },
+        onPatchEntry: (entry, values) => Object.assign(entry, values),
+        onAddAssets: (map) => (this.assets = { ...this.assets, ...map }),
+        onAddElements: (map) => (this.elements = { ...this.elements, ...map }),
+      })
+
+      return scroll ? h('div', { class: 'scroll', style: { height: '320px', overflowY: 'auto' } }, [node]) : node
     },
-    global: globalOptions(apollo),
-  }).then(({ wrapper }) => {
+  }
+}
+
+function mountList(props = {}, perms = {}, apollo = {}) {
+  return cy.mount(host(props), { global: globalOptions(apollo) }).then(({ wrapper }) => {
     const user = useUserStore()
     user.me = { permission: perms }
 
-    return { wrapper }
+    const vm = wrapper.findComponent(PageDetailContentList).vm
+    return { wrapper, owner: vm.$parent, vm }
   })
 }
 
 function mountScrollable(content) {
-  const Host = {
-    data: () => ({ content }),
+  return cy.mount(host({ content }, true), { global: globalOptions() })
+}
 
-    render() {
-      return h('div', { class: 'scroll', style: { height: '320px', overflowY: 'auto' } }, [
-        h(PageDetailContentList, {
-          item: { id: '1', lang: 'en' },
-          assets: {},
-          content: this.content,
-          elements: {},
-        }),
-      ])
-    },
-  }
-
-  return cy.mount(Host, { global: globalOptions() })
+function select(vm, ...indexes) {
+  indexes.forEach((idx) => vm.select(vm.content[idx]))
 }
 
 describe('PageDetailContentList', () => {
@@ -105,11 +118,27 @@ describe('PageDetailContentList', () => {
   it('opens the first invalid element', () => {
     mountList({}, { 'page:view': true, 'page:save': true }).then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageDetailContentList).vm
-      vm.content[1]._error = true
+      vm.$parent.content[1]._error = true
 
       return vm.showError().then(() => {
         expect(vm.panel).to.include('c2')
       })
+    })
+  })
+
+  it('sends field changes to the owner without changing the content itself', () => {
+    const onChange = cy.spy()
+    const onUpdate = cy.spy()
+
+    mountList({ onChange, 'onUpdate:content': onUpdate }).then(({ owner, vm }) => {
+      const entry = owner.content[0]
+
+      vm.update(entry, { data: { title: 'Changed' } })
+
+      expect(owner.content[0]).to.equal(entry)
+      expect(entry).to.deep.include({ data: { title: 'Changed' }, _changed: true, group: 'main' })
+      expect(onChange).to.have.been.calledOnce
+      expect(onUpdate).not.to.have.been.called
     })
   })
 
@@ -176,6 +205,8 @@ describe('PageDetailContentList', () => {
         .scrollTo('bottom')
         .then(() => {
           field.vm.add({ type: 'heading' }, null)
+        })
+        .then(() => {
           field.vm.content.at(-1).data.title = 'New item'
         })
     })
@@ -227,7 +258,7 @@ describe('PageDetailContentList', () => {
 
       vm.copy(0)
       expect(vm.clipboard.get('page-content')).to.deep.equal([
-        { ...content[0], id: null, _checked: false },
+        { ...content[0], id: null },
       ])
     })
 
@@ -238,11 +269,8 @@ describe('PageDetailContentList', () => {
   })
 
   it('copies all selected elements from the context menu of a selected element', () => {
-    const items = reactive(contentItems(3).map((item, idx) => ({ ...item, _checked: idx !== 1 })))
-
-    mountList({ content: items }, { 'page:save': true }).then(({ wrapper }) => {
-      const vm = wrapper.findComponent(PageDetailContentList).vm
-
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => {
+      select(vm, 0, 2)
       vm.copy(2)
       expect(vm.clipboard.get('page-content').map((el) => el.data.title)).to.deep.equal([
         'Item 0',
@@ -258,22 +286,93 @@ describe('PageDetailContentList', () => {
     cy.contains('.v-overlay .v-btn', 'Cut (2)').should('exist')
   })
 
+  it('merges the selected elements from the bulk menu', () => {
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0, 2))
+
+    cy.get('.bulk .v-btn').first().click()
+    cy.contains('.v-overlay .v-btn', 'Merge').click()
+
+    cy.get('.v-expansion-panel').should('have.length', 2)
+  })
+
+  it('shows merge in the context menu of a selected element only', () => {
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0, 2))
+
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(0).click()
+    cy.contains('.v-overlay .v-btn', 'Merge').should('exist')
+    cy.get('body').type('{esc}')
+
+    cy.get('.v-expansion-panel-title .btn-actions button').eq(1).click()
+    cy.contains('.v-overlay--active .v-btn', 'Copy').should('exist')
+    cy.contains('.v-overlay--active .v-btn', 'Merge').should('not.exist')
+  })
+
+  it('selects all shown elements if some are unselected and clears them if all are selected', () => {
+    mountList({ content: contentItems(5) }, { 'page:save': true }).then(({ vm }) => {
+      select(vm, 0, 2)
+      expect(vm.allSelected).to.equal(false)
+
+      vm.toggle()
+      expect(vm.checkedCount).to.equal(5)
+      expect(vm.allSelected).to.equal(true)
+
+      vm.toggle()
+      expect(vm.checkedCount).to.equal(0)
+    })
+  })
+
+  it('hides merge with less than two selected elements', () => {
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0))
+
+    cy.get('.bulk .v-btn').first().click()
+    cy.contains('.v-overlay .v-btn', 'Copy (1)').should('exist')
+    cy.contains('.v-overlay .v-btn', 'Merge').should('not.exist')
+  })
+
   it('cuts only the current element from the context menu of an unselected element', () => {
-    const items = reactive(contentItems(3).map((item, idx) => ({ ...item, _checked: idx !== 1 })))
-
-    mountList({ content: items }, { 'page:save': true }).then(({ wrapper }) => {
-      const vm = wrapper.findComponent(PageDetailContentList).vm
-
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ owner, vm }) => {
+      select(vm, 0, 2)
       vm.cut(1)
       expect(vm.clipboard.get('page-content').map((el) => el.data.title)).to.deep.equal(['Item 1'])
-      expect(items.map((el) => el.data.title)).to.deep.equal(['Item 0', 'Item 2'])
+      expect(owner.content.map((el) => el.data.title)).to.deep.equal(['Item 0', 'Item 2'])
+      expect(vm.checkedCount).to.equal(2)
+    })
+  })
+
+  it('copies cut elements to the clipboard without their IDs', () => {
+    mountList({}, { 'page:save': true }).then(({ owner, vm }) => {
+      vm.cut(0)
+      expect(vm.clipboard.get('page-content')).to.deep.equal([{ ...content[0], data: { ...content[0].data }, id: null }])
+      expect(owner.content.map((el) => el.id)).to.deep.equal(['c2'])
+    })
+  })
+
+  it('marks an element as changed after changing its type', () => {
+    mountList({}, { 'page:save': true }).then(({ owner, vm }) => {
+      vm.changeTo({ type: 'text' }, 0)
+      expect(owner.content[0]).to.include({ id: 'c1', type: 'text', _changed: true })
+      expect(vm.vchange).to.equal(false)
+    })
+  })
+
+  it('replaces the split element where it is after the content changed meanwhile', () => {
+    const list = [{ id: 'c1', type: 'text', group: 'main', data: { text: '# Title\n\nParagraph' } }]
+
+    mountList({ content: list }, { 'page:save': true }).then(({ owner, vm }) => {
+      const done = vm.split(0)
+      owner.content = [{ id: 'c0', type: 'heading', group: 'main', data: { title: 'First' } }, ...owner.content]
+
+      return done.then(() => {
+        expect(owner.content.map((el) => el.type)).to.deep.equal(['heading', 'heading', 'text'])
+        expect(owner.content[0].id).to.equal('c0')
+        expect(owner.content[1].data.title).to.equal('Title')
+        expect(owner.content[2].data.text).to.equal('Paragraph')
+      })
     })
   })
 
   it('shows no count in the context menu of an unselected element', () => {
-    const items = reactive(contentItems(3).map((item, idx) => ({ ...item, _checked: idx !== 1 })))
-
-    mountList({ content: items }, { 'page:save': true })
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => select(vm, 0, 2))
     cy.get('.v-expansion-panel-title .btn-actions button').eq(1).click()
     cy.get('.v-overlay .v-btn').contains(/^\s*Copy\s*$/).should('exist')
     cy.get('.v-overlay .v-btn').contains(/^\s*Cut\s*$/).should('exist')
@@ -299,6 +398,42 @@ describe('PageDetailContentList', () => {
     cy.get('textarea').should('exist')
   })
 
+  it('refines the content and shows the success state for a while', () => {
+    const refined = JSON.stringify([{ id: 'c1', type: 'heading', data: { title: 'Better' } }])
+    const mutate = cy.stub().resolves({ data: { refine: refined } })
+
+    cy.clock(Date.now(), ['setTimeout', 'clearTimeout'])
+    mountList({}, { 'page:refine': true }, { mutate }).then(({ vm, owner }) => {
+      vm.chat = 'Improve'
+
+      return vm.refine().then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(owner.content[0].data.title).to.equal('Better')
+        expect(owner.content[0]._changed).to.equal(true)
+        expect(vm.refining).to.equal(false)
+        expect(vm.refined).to.equal(true)
+        expect(vm.chat).to.equal('')
+      }).then(() => vm)
+    }).then((vm) => {
+      cy.tick(3000).then(() => expect(vm.refined).to.equal(false))
+    })
+  })
+
+  it('ignores refine requests while refining or without prompt', () => {
+    const mutate = cy.stub().returns(new Promise(() => {}))
+
+    mountList({}, { 'page:refine': true }, { mutate }).then(({ vm }) => {
+      vm.refine()
+      expect(mutate).not.to.have.been.called
+
+      vm.chat = 'Improve'
+      vm.refine()
+      vm.refine()
+      expect(mutate).to.have.been.calledOnce
+      expect(vm.refining).to.equal(true)
+    })
+  })
+
   it('hides AI refine textarea without page:refine permission', () => {
     mountList()
     cy.get('.prompt').should('not.exist')
@@ -311,13 +446,21 @@ describe('PageDetailContentList', () => {
 
   it('clears the error state when deleting an invalid content element', () => {
     const onError = cy.spy()
+    let vm
 
-    mountList({ onError }).then(({ wrapper }) => {
-      const vm = wrapper.findComponent(PageDetailContentList).vm
-
+    mountList({ onError }).then((mounted) => {
+      vm = mounted.vm
       vm.panel = [vm.content[0].id]
       vm.error(vm.content[0], true)
       vm.remove(0)
+    })
+
+    cy.wrap(null).should(() => {
+      expect(vm.content.map((el) => el.id)).to.deep.equal(['c2'])
+      expect(onError.args).to.deep.equal([[true], [false]])
+    })
+
+    cy.then(() => {
       vm.error(vm.content[0], true)
 
       expect(onError.args).to.deep.equal([[true], [false], [true]])
@@ -326,23 +469,19 @@ describe('PageDetailContentList', () => {
   })
 
   it('adds files from a selected shared element to the page assets', () => {
-    const assets = {}
-    const elements = {}
-
-    mountList({ assets, content: [], elements }).then(() => {
-      const vm = Cypress.vueWrapper.findComponent(PageDetailContentList).vm
+    mountList({ content: [] }).then(({ owner, vm }) => {
       const file = { disk: 'private', id: 'file-1', path: 'draft.jpg', previews: {} }
 
       vm.add({ id: 'element-1', name: 'Shared', files: [file] }, null)
 
-      expect(assets['file-1']).to.equal(file)
-      expect(elements['element-1'].files).to.deep.equal([file])
+      expect(owner.assets['file-1']).to.deep.equal(file)
+      expect(owner.elements['element-1'].files).to.deep.equal([file])
+      expect(owner.content[0].refid).to.equal('element-1')
     })
   })
 
   it('keeps normalized files when making content shared', () => {
-    const assets = {}
-    const elements = {}
+    let owner
     const mutate = cy.stub().resolves({
       data: {
         addElement: {
@@ -363,14 +502,37 @@ describe('PageDetailContentList', () => {
     })
     const item = { id: 'c1', type: 'heading', group: 'main', data: {} }
 
-    mountList({ assets, content: [item], elements }, { 'element:add': true }, { mutate }).then(({ wrapper }) => {
-      wrapper.findComponent(PageDetailContentList).vm.share(0)
+    mountList({ content: [item] }, { 'element:add': true }, { mutate }).then((mounted) => {
+      owner = mounted.owner
+      mounted.vm.share(0)
     })
 
-    cy.wrap(elements).should((value) => {
+    cy.wrap(null).should(() => {
+      const value = owner.elements
+
       expect(value['element-1'].files[0].path).to.equal('draft.jpg')
       expect(value['element-1'].files[0].previews).to.deep.equal({ 500: 'draft-500.webp' })
-      expect(assets['file-1']).to.equal(value['element-1'].files[0])
+      expect(owner.assets['file-1']).to.deep.equal(value['element-1'].files[0])
+      expect(owner.content[0]).to.deep.include({ id: 'c1', type: 'reference', refid: 'element-1' })
+    })
+  })
+
+  it('creates only one shared element if sharing is requested twice', () => {
+    let resolve
+    const mutate = cy.stub().returns(new Promise((r) => { resolve = r }))
+    const item = { id: 'c1', type: 'heading', group: 'main', data: {} }
+
+    mountList({ content: [item] }, { 'element:add': true }, { mutate }).then((mounted) => {
+      const pending = mounted.vm.share(0)
+
+      expect(mounted.vm.share(0)).to.be.undefined
+      expect(mutate).to.have.been.calledOnce
+
+      resolve({ data: { addElement: { id: 'element-1', data: '{}', files: [] } } })
+
+      return pending.then(() => {
+        expect(mounted.vm.sharing.size).to.equal(0)
+      })
     })
   })
 
@@ -392,17 +554,18 @@ describe('PageDetailContentList', () => {
 
     cy.focused().then(($btn) => {
       $btn[0].dispatchEvent(alt('ArrowUp'))
-      $btn[0].dispatchEvent(alt('ArrowUp')) // already the first element
     })
     order(['c0', 'c1', 'c2'])
+    cy.focused().then(($btn) => {
+      $btn[0].dispatchEvent(alt('ArrowUp')) // already the first element
+    })
     cy.get('@update').should('have.been.calledTwice')
   })
 
   it('skips hidden elements when moving with Alt+Arrow', () => {
-    const items = contentItems(3)
-    items[1]._hide = true
-
-    mountList({ content: reactive(items) }, { 'page:save': true })
+    mountList({ content: contentItems(3) }, { 'page:save': true }).then(({ vm }) => {
+      vm.hidden = new Set([vm.content[1]])
+    })
 
     cy.get('[data-key="c0"] .item-handle').focus().then(($btn) => {
       $btn[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', altKey: true, bubbles: true, cancelable: true }))

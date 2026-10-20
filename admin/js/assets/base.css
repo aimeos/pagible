@@ -2,6 +2,11 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
+:root {
+  /* height of the scrollable detail views below the app bar and the tabs */
+  --cms-detail-height: calc(100vh - 96px);
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:focus {
   transition:

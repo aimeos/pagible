@@ -123,8 +123,7 @@ export default {
     },
 
     isBackendPermissionCustom() {
-      const known = new Set(this.permissionOptions.roles || [])
-      return (this.result?.permissions || []).some((entry) => !this.isRole(entry) || !known.has(entry))
+      return (this.result?.permissions || []).some((entry) => !this.isRole(entry))
     },
 
     permissionRoleItems() {
@@ -138,12 +137,11 @@ export default {
       return items
     },
 
+    // roles which aren't configured any more are shown too, so they can be removed
+    // the custom entry stands for the other permissions
     permissionRole() {
-      if (this.isBackendPermissionCustom) {
-        return [this.customRoleValue]
-      }
-
-      return this.assignedPermissionRoles
+      const roles = this.assignedPermissionRoles
+      return this.isBackendPermissionCustom ? [...roles, this.customRoleValue] : roles
     },
 
     searchEmail() {
@@ -197,7 +195,6 @@ export default {
       const saving = field === 'access' ? 'savingAccess' : 'savingPermissions'
       if (!this.result || this[saving]) return
 
-      const email = this.result.email
       const id = this.result.id
       const assignments = [...new Set(Array.isArray(values) ? values : [])]
 
@@ -213,17 +210,19 @@ export default {
           variables: { id, [field]: assignments }
         })
 
-        if (email === this.searchEmail) {
+        // the stored email may differ in case from the searched one, so the user is matched by id
+        if (this.result?.id === id) {
           this.result = { ...this.result, [field]: response.data.assignments }
 
-          if (field === 'access') {
-            this.messages.add(this.$gettext('Access roles updated'), 'success')
-          }
+          this.messages.add(
+            field === 'access' ? this.$gettext('Access roles updated') : this.$gettext('Backend roles updated'),
+            'success'
+          )
 
           this.sync(field)
         }
       } catch (error) {
-        if (email === this.searchEmail) {
+        if (this.result?.id === id) {
           const message =
             field === 'access'
               ? this.$gettext('Error updating access roles')
@@ -239,9 +238,7 @@ export default {
     changePermissionRole(roles) {
       if (!this.result || this.savingPermissions) return
 
-      const remaining = (this.result.permissions || []).filter((entry) =>
-        !this.isRole(entry) || !this.permissionOptions.roles.includes(entry)
-      )
+      const remaining = (this.result.permissions || []).filter((entry) => !this.isRole(entry))
       const selected = (roles || []).filter((value) => value !== this.customRoleValue)
 
       return this.change('permissions', [...remaining, ...selected], SET_USER_PERMISSIONS)
@@ -278,7 +275,14 @@ export default {
     },
 
     draft(key, values) {
-      this[key] = [...new Set(Array.isArray(values) ? values : [])]
+      const list = Array.isArray(values) ? [...values] : []
+
+      // the custom permissions can't be removed here, so the entry stays selected
+      if (key === 'backendRoleDraft' && this.isBackendPermissionCustom) {
+        list.push(this.customRoleValue)
+      }
+
+      this[key] = [...new Set(list)]
     },
 
     emailChanged() {

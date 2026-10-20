@@ -2,41 +2,13 @@
  * @license MIT, https://opensource.org/license/mit
  */
 
-import gettext from './i18n'
-import { markRaw, toRaw } from 'vue'
-import { useAppStore, useLanguageStore } from './stores'
-
-export { frozenParse, safeParse, sanitize } from './json'
-
-
-export const IMAGE_MIME_FILTER = { mime: ['image/gif', 'image/jpeg', 'image/png', 'image/svg+xml', 'image/webp'] }
-
-export const AUDIO_MIME_FILTER = { mime: ['audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/aac', 'audio/ogg', 'audio/webm', 'audio/wav', 'audio/wave', 'audio/x-wav', 'audio/vnd.wave', 'audio/flac', 'audio/x-flac'] }
-
-export const VIDEO_MIME_FILTER = { mime: ['video/mp4', 'video/webm', 'video/ogg'] }
-
-export const MEDIA_MIME_FILTER = { mime: [...IMAGE_MIME_FILTER.mime, ...VIDEO_MIME_FILTER.mime] }
-
-export const PAGE_BULK_LIMIT = 1000
+import { toRaw } from 'vue'
 
 // Wraps the browser navigation so it can be replaced in tests
 export const browser = {
   assign(url) {
     window.location.assign(url)
   }
-}
-
-/**
- * Returns the translated cache duration options of pages in minutes
- */
-export function cacheItems() {
-  const { $gettext, $ngettext } = gettext
-
-  return [
-    { key: 0, val: $gettext('No cache') },
-    ...[1, 5, 15, 30].map((num) => ({ key: num, val: $ngettext('%{num} minute', '%{num} minutes', num, { num }) })),
-    ...[1, 3, 6, 12, 24].map((num) => ({ key: num * 60, val: $ngettext('%{num} hour', '%{num} hours', num, { num }) }))
-  ]
 }
 
 /**
@@ -72,60 +44,105 @@ export function clone(value) {
   return copy
 }
 
+// Delay before server requests triggered by typing (searches, lookups, validation requests)
+export const REQUEST_DELAY = 500
+// Delay before local updates triggered by typing or repeated events
+export const INPUT_DELAY = 300
+// Duration of drag and drop reorder animations
+export const DRAG_ANIMATION = 300
+
 /**
- * Creates a debounced version of a function that returns a Promise. The returned function
- * exposes a cancel() method that clears any pending invocation.
+ * Creates a debounced version of a function that returns a Promise. All calls of one burst
+ * share the result of the final invocation and the returned function exposes a cancel()
+ * method that clears any pending invocation and resolves the waiting calls with undefined
+ * and a flush() method that runs a pending invocation immediately.
  *
  * @param {Function} func Function to debounce
  * @param {number} delay Delay in milliseconds
- * @returns {Function} Debounced function (with a cancel() method) that returns a Promise
+ * @returns {Function} Debounced function (with cancel() and flush() methods) that returns a Promise
  */
+/**
+ * Checks if the key event belongs to the input of an input method editor, e.g. Enter confirming a CJK word
+ *
+ * Safari sends the confirming keydown after the composition ended, only recognizable by its key code.
+ *
+ * @param {KeyboardEvent} ev Keyboard event
+ * @returns {Boolean} TRUE if the event is part of the composition
+ */
+export function composing(ev) {
+  return ev.isComposing || ev.keyCode === 229
+}
+
+/**
+ * Direction of moving an entry by Alt + arrow key as keyboard alternative to dragging
+ *
+ * @param {KeyboardEvent} ev Keyboard event
+ * @param {Boolean} horizontal Use the left/right instead of the up/down arrow keys
+ * @param {Boolean} rtl Right-to-left layout which reverses the left/right direction
+ * @returns {Number} -1 for backward, 1 for forward and 0 for other keys
+ */
+export function moveStep(ev, horizontal = false, rtl = false) {
+  if (!ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) {
+    return 0
+  }
+
+  const step = (horizontal ? { ArrowLeft: -1, ArrowRight: 1 } : { ArrowUp: -1, ArrowDown: 1 })[ev.key] || 0
+  return horizontal && rtl ? -step : step
+}
+
 export function debounce(func, delay) {
   let timer
+  let invoke = null // runs the pending invocation
+  let waiting = [] // settle callbacks of the calls of the current burst
 
   function debounced(...args) {
-    return new Promise((resolve, reject) => {
-      const context = this
+    const context = this
 
-      clearTimeout(timer)
-      timer = setTimeout(() => {
+    clearTimeout(timer)
+
+    return new Promise((resolve, reject) => {
+      waiting.push({ resolve, reject })
+
+      invoke = () => {
+        const calls = waiting
+        waiting = []
+        invoke = null
+
         try {
-          resolve(func.apply(context, args))
+          const result = func.apply(context, args)
+          calls.forEach((call) => call.resolve(result))
         } catch (error) {
-          reject(error)
+          calls.forEach((call) => call.reject(error))
         }
-      }, delay)
+      }
+
+      timer = setTimeout(invoke, delay)
     })
   }
 
-  debounced.cancel = () => clearTimeout(timer)
+  debounced.flush = () => {
+    clearTimeout(timer)
+    invoke?.()
+  }
+
+  debounced.cancel = () => {
+    invoke = null
+    clearTimeout(timer)
+    waiting.forEach((call) => call.resolve(undefined))
+    waiting = []
+  }
 
   return debounced
 }
 
 /**
- * Starts a recording if none is running, otherwise stops it and passes the transcribed text to "done"
+ * Returns the string with the first character in upper case
  *
- * @param {Promise|null} audio Running recording returned by the previous call
- * @param {Function} busy Called with true while transcribing and with false afterwards
- * @param {Function} done Called with the transcribed text
- * @returns {Promise|null} New recording state the caller must store
+ * @param {string} str String to convert
+ * @returns {string} Converted string
  */
-export function dictate(audio, busy, done) {
-  if (!audio) {
-    return markRaw(import('./audio').then((mod) => mod.recording().start()))
-  }
-
-  busy(true)
-
-  audio
-    .then((rec) => rec.stop())
-    .then((buffer) => import('./ai').then((mod) => mod.transcribe(buffer)))
-    .then((transcription) => done(transcription.asText()))
-    .catch((error) => console.error('dictate(): Error recording audio', error))
-    .finally(() => busy(false))
-
-  return null
+export function ucfirst(str) {
+  return str ? str[0].toUpperCase() + str.slice(1) : ''
 }
 
 /**
@@ -136,31 +153,6 @@ export function dictate(audio, busy, done) {
  */
 export function empty(val) {
   return val == null || (typeof val === 'object' && Object.keys(val).length === 0)
-}
-
-/**
- * Validates a form, scrolls to the first visible invalid input and focuses it
- *
- * Validating the form is required because inputs only show their errors after the
- * user interacted with them, e.g. empty required fields aren't highlighted otherwise.
- *
- * @param {Object} form VForm component instance
- * @returns {Promise<boolean>} True if an invalid input has been focused
- */
-export async function focusInvalid(form) {
-  const result = await form?.validate()
-
-  for (const { id } of result?.errors || []) {
-    const input = document.getElementById(id)
-
-    if (input && input.getClientRects().length) {
-      input.closest('.v-input')?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
-      input.focus({ preventScroll: true })
-      return true
-    }
-  }
-
-  return false
 }
 
 /**
@@ -177,17 +169,26 @@ export function hasTrue(obj) {
 }
 
 /**
- * Checks if any value in an object has a truthy property
+ * Returns the date in the "YYYY-MM-DD HH:MM:SS" UTC format used by the server
  *
- * @param {Object} obj Object to check
- * @param {string} prop Property name to check on each value
- * @returns {boolean} True if any value has a truthy property
+ * @param {Date} date Date to format, now by default
+ * @returns {string} Formatted date
  */
-export function hasProp(obj, prop) {
-  for (const k in obj) {
-    if (obj[k]?.[prop]) return true
-  }
-  return false
+export function dbDate(date = new Date()) {
+  return date.toISOString().substring(0, 19).replace('T', ' ')
+}
+
+/**
+ * Formats a date value for display in the given UI locale
+ *
+ * @param {string|number|Date} value Date value
+ * @param {string} locale UI locale, e.g. $vuetify.locale.current
+ * @param {boolean} time Include the time, otherwise only the date
+ * @returns {string} Localized date
+ */
+export function formatDate(value, locale, time = true) {
+  const date = new Date(value)
+  return time ? date.toLocaleString(locale) : date.toLocaleDateString(locale)
 }
 
 /**
@@ -219,78 +220,6 @@ export function itemTitle(data) {
   )
 }
 
-let langCache = null
-
-const supported = new Set([
-  'ar', 'bg', 'cs', 'da', 'de', 'el', 'en', 'en-GB', 'en-US',
-  'es', 'et', 'fi', 'fr', 'he', 'hu', 'id', 'it', 'ja', 'ko',
-  'lt', 'lv', 'nb', 'nl', 'pl', 'pt', 'pt-BR', 'ro', 'ru', 'sk',
-  'sl', 'sv', 'th', 'tr', 'uk', 'vi', 'zh', 'zh-Hans', 'zh-Hant'
-])
-
-/**
- * Returns the cached locale lists, rebuilt when the available languages change
- *
- * @returns {Object} { locales, tx, filter } lists of the available languages
- */
-function langs() {
-  const languages = useLanguageStore()
-
-  if (langCache?.key !== languages.available) {
-    const all = languages.available.map((code) => ({
-      code,
-      name: languages.translate(code) + ' (' + code.toUpperCase() + ')'
-    }))
-
-    langCache = {
-      key: languages.available,
-      locales: all.map(({ code, name }) => ({ value: code, title: name })),
-      tx: all.filter(({ code }) => supported.has(code)),
-      filter: {}
-    }
-  }
-
-  return langCache
-}
-
-/**
- * Returns filter dropdown items for language selection in list views
- *
- * @param {String} allIcon Icon for the "All" item
- * @param {String} langIcon Icon for each language item
- * @returns {Array} List of { title, icon, value } objects
- */
-export function languageFilter(allIcon, langIcon) {
-  const cache = langs()
-
-  return (cache.filter[allIcon + langIcon] ??= [
-    { title: gettext.$gettext('All'), icon: allIcon, value: { lang: null } },
-    ...cache.locales.map((entry) => ({ title: entry.title, icon: langIcon, value: { lang: entry.value } }))
-  ])
-}
-
-/**
- * Returns available locales as a list for dropdown menus
- *
- * @param {boolean} none If true, prepends a "None" option with null value
- * @returns {Array<{value: string|null, title: string}>} Locale options
- */
-export function locales(none = false) {
-  const list = langs().locales
-  return none ? [{ value: null, title: gettext.$gettext('None') }, ...list] : list
-}
-
-/**
- * Returns the URL of the login page of the application for single sign-on
- *
- * @param {String} template Login page URL (cms.admin.login), may contain the "_url_" placeholder
- * @param {String} back URL the login page should return to afterwards
- * @returns {String} Login page URL
- */
-export function loginUrl(template, back = window.location.href) {
-  return template.replace('_url_', encodeURIComponent(back))
-}
-
 /**
  * Converts text to a URL-safe slug
  *
@@ -308,19 +237,6 @@ export function slugify(text) {
 }
 
 /**
- * Returns the translated status options of pages
- */
-export function statusItems() {
-  const { $gettext } = gettext
-
-  return [
-    { key: 0, val: $gettext('Disabled') },
-    { key: 1, val: $gettext('Enabled') },
-    { key: 2, val: $gettext('Hidden in navigation') }
-  ]
-}
-
-/**
  * Formats a value as a displayable string
  *
  * @param {*} value Value to format
@@ -330,39 +246,6 @@ export function stringify(value) {
   if (value == null) return ''
 
   return typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)
-}
-
-/**
- * Converts a base64-encoded string to a Blob
- *
- * @param {string} base64 Base64-encoded binary data
- * @param {string} mimeType MIME type for the resulting Blob
- * @returns {Blob|null} Blob object or null if input is empty
- */
-export function toBlob(base64, mimeType = 'image/png') {
-  if (!base64) {
-    return null
-  }
-
-  const binary = atob(base64)
-  const byteArray = new Uint8Array(binary.length)
-
-  for (let i = 0; i < binary.length; i++) {
-    byteArray[i] = binary.charCodeAt(i)
-  }
-
-  return new Blob([byteArray], { type: mimeType })
-}
-
-/**
- * Returns available locales that support AI translation, excluding the current locale
- *
- * @param {string|null} current Locale code to exclude from the list
- * @returns {Array<{code: string, name: string}>} Translation-supported locale options
- */
-export function txlocales(current = null) {
-  const list = langs().tx
-  return current ? list.filter((entry) => entry.code !== current) : list
 }
 
 /**
@@ -390,90 +273,3 @@ const uid = (function () {
 
 export { uid }
 
-/**
- * Returns the CSRF header derived from Laravel's XSRF-TOKEN cookie for cookie-authenticated
- * requests, or an empty object when the cookie is absent. Used directly by Apollo's headersLink and
- * (via postHeaders) by raw fetch POSTs, so the cookie/header contract lives in one place.
- *
- * @returns {Object} { 'X-XSRF-TOKEN': token } or {}
- */
-export function xsrfHeaders() {
-  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/)
-
-  return match ? { 'X-XSRF-TOKEN': decodeURIComponent(match[1]) } : {}
-}
-
-/**
- * Returns the request headers for a cookie-authenticated JSON POST: content negotiation plus the
- * CSRF token header. Keeps the header contract for raw fetch() calls in one place (builds on
- * xsrfHeaders so a future CSRF-contract change is made once).
- *
- * @param {string} accept Value for the Accept header (e.g. 'text/plain' for a streamed response)
- * @returns {Object} request headers
- */
-export function postHeaders(accept = 'application/json') {
-  return { 'Content-Type': 'application/json', Accept: accept, ...xsrfHeaders() }
-}
-
-/**
- * Resolves a file path to a full URL using the app's file or proxy URL
- *
- * @param {string} path Relative path, absolute URL, or blob URL
- * @param {boolean} proxy If true, routes external URLs through the media proxy
- * @returns {string} Resolved URL
- */
-export function url(path, proxy = false) {
-  if (!path) return ''
-
-  if (typeof path !== 'string') {
-    return path
-  }
-
-  const app = useAppStore()
-
-  if (proxy && path.startsWith('http')) {
-    return app.urlproxy.replace(/_url_/, encodeURIComponent(path))
-  }
-
-  if (path.startsWith('http') || path.startsWith('blob:')) {
-    return path
-  }
-
-  return app.urlfile.replace(/\/+$/g, '') + '/' + path
-}
-
-/**
- * Resolves a public or private File URL for the admin editor.
- *
- * @param {Object} file File data including id, disk, path and previews
- * @param {string|null} path Original or preview path
- * @param {boolean} proxy Route a public remote URL through the media proxy
- * @returns {string} Resolved URL
- */
-export function fileurl(file, path = null, proxy = false) {
-  path ??= file?.path
-
-  if (!file || file.disk !== 'private') {
-    return url(path, proxy)
-  }
-
-  const preview = Object.entries(file.previews || {}).find((entry) => entry[1] === path)
-  const variant = preview?.[0] || ''
-
-  return useAppStore()
-    .urlasset.replace(/_file_/, encodeURIComponent(file.id))
-    .replace(/_variant_/, encodeURIComponent(variant))
-    .replace(/\/+$/g, '')
-}
-
-/**
- * Generates a srcset for a public or private File.
- *
- * @param {Object} file File data including previews
- * @returns {string} Responsive image srcset
- */
-export function filesrcset(file) {
-  return Object.entries(file?.previews || {})
-    .map(([width, path]) => `${fileurl(file, path)} ${width}w`)
-    .join(',')
-}

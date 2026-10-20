@@ -6,10 +6,15 @@ import { filechanges, plaintext, restore, sections } from '../history'
 import CmsDialog from './Dialog.vue'
 import HistoryField from './HistoryField.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
+
+const MAX_TITLE_LENGTH = 60 // characters of block titles shown in the block labels
+const MAX_EXPANDED = 5 // changed blocks up to which all are expanded, otherwise only the first one
 
 export default {
   components: { CmsDialog, HistoryField, LoadingSpinner },
+
+  mixins: [typeLabelMixin],
 
   props: {
     modelValue: { type: Boolean, required: true },
@@ -49,10 +54,6 @@ export default {
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     apply(card) {
       if (this.readonly || !this.selected(card)) return
       const source = this.current || this.cards[0].after
@@ -63,7 +64,7 @@ export default {
     blockLabel(card, block) {
       const item = block.after || block.before
       const element = Object.values((block.after ? card.after : card.before).elements || {}).find(element => element.id === item?.refid)
-      const title = plaintext(element?.name || item?.data?.title || item?.data?.text || '').replace(/\s+/g, ' ').slice(0, 60)
+      const title = plaintext(element?.name || item?.data?.title || item?.data?.text || '').replace(/\s+/g, ' ').slice(0, MAX_TITLE_LENGTH)
       const type = item?.type === 'reference' ? this.$gettext('Shared element')
         : this.typeLabel(this.schemas.content[item?.type]?.label || item?.type || this.$gettext('Content block'))
       return type + (title ? ': ' + title : '')
@@ -112,7 +113,7 @@ export default {
             key: unsaved ? 'current' : 'version:' + (after.id || index), before, after, unsaved, diffs, fileCount: files.count, keys,
             selection: Object.fromEntries(keys.map(key => [key, true])),
             remaining: files.remaining,
-            expanded: (blocks.length > 5 ? blocks.slice(0, 1) : blocks).map(block => block.key)
+            expanded: (blocks.length > MAX_EXPANDED ? blocks.slice(0, 1) : blocks).map(block => block.key)
           }
         }).filter(card => !card.unsaved || card.keys.length || card.fileCount)
         const first = this.cards.find(card => card.keys.length || card.fileCount) || this.cards[0]
@@ -147,7 +148,7 @@ export default {
       } else if (['meta', 'config'].includes(path[0])) {
         const [section, key] = path.splice(0, 2)
         const item = card.after.data?.[section]?.[key] || card.before.data?.[section]?.[key]
-        definitions = this.schemas[section][item?.type || key]?.fields
+        definitions = this.schemas[section]?.[item?.type || key]?.fields
         if (path[0] === 'data') path.shift()
       } else if (path[0] === 'data') {
         definitions = this.schemas.content[card.after.data?.type || card.before.data?.type]?.fields
@@ -577,7 +578,8 @@ export default {
     padding-inline-start: 0;
   }
 
-  .history-body {
+  /* the dialog body is rendered by CmsDialog in a teleported overlay */
+  :global(.history-body) {
     padding: 8px !important;
   }
 

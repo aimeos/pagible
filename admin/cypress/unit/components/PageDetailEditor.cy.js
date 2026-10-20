@@ -61,6 +61,12 @@ describe('PageDetailEditor', () => {
       .and('have.css', 'margin-right', '8px')
   })
 
+  it('uses the shared detail height below the app bar', () => {
+    cy.viewport(1000, 720)
+    mountEditor()
+    cy.get('.page-preview-stage').should('have.css', 'height', '624px')
+  })
+
   it('does not add the sidebar gap on mobile', () => {
     cy.viewport(375, 667)
     mountEditor({ asideVisible: true })
@@ -163,6 +169,21 @@ describe('PageDetailEditor', () => {
     })
   })
 
+  it('ignores preview messages without element data', () => {
+    mountEditor({ item: { ...item, content: undefined } }, { 'page:save': true }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      const message = (data) => editor.vm.message({ source: editor.vm.$refs.iframe.contentWindow, origin: editor.vm.origin, data })
+
+      message(null)
+      message({ section: 'footer' })
+
+      expect(editor.vm.index).to.equal(null)
+      expect(editor.vm.section).to.equal('footer')
+      expect(editor.vm.vschemas).to.equal(false)
+      expect(editor.emitted('edit')).to.equal(undefined)
+    })
+  })
+
   it('inserts a chosen element and keeps it open for sidebar editing', () => {
     const save = cy.stub().resolves(true)
 
@@ -173,12 +194,43 @@ describe('PageDetailEditor', () => {
       editor.vm.addAfter()
       editor.vm.add({ type: 'heading' })
 
-      expect(editor.vm.item.content).to.have.length(1)
-      expect(editor.vm.item.content[0]).to.include({ type: 'heading', group: 'footer' })
+      const [list] = editor.emitted('update:content')[0]
+
+      expect(editor.vm.item.content).to.have.length(0)
+      expect(list).to.have.length(1)
+      expect(list[0]).to.include({ type: 'heading', group: 'footer' })
       expect(editor.vm.index).to.equal(0)
       expect(editor.emitted('change')).to.deep.equal([['content']])
-      expect(editor.emitted('edit').at(-1)).to.deep.equal([editor.vm.item.content[0], true])
+      expect(editor.emitted('edit').at(-1)).to.deep.equal([list[0], true])
       expect(save).not.to.have.been.called
+    })
+  })
+
+  it('adds elements for unknown preview elements at the end of their section', () => {
+    const content = [
+      { id: 'a', group: 'main', type: 'text' },
+      { id: 'b', group: 'footer', type: 'text' },
+      { id: 'c', group: 'main', type: 'text' },
+    ]
+
+    mountEditor({ item: { ...item, content } }, { 'page:save': true }).then(({ wrapper }) => {
+      const editor = wrapper.findComponent(PageDetailEditor)
+      const message = (data) => editor.vm.message({ source: editor.vm.$refs.iframe.contentWindow, origin: editor.vm.origin, data })
+
+      message({ id: 'unknown', section: 'footer' })
+      editor.vm.add({ type: 'heading' })
+
+      let [list] = editor.emitted('update:content').at(-1)
+      expect(list.map((entry) => entry.id).slice(0, 2)).to.deep.equal(['a', 'b'])
+      expect(list[2]).to.include({ type: 'heading', group: 'footer' })
+      expect(editor.vm.index).to.equal(2)
+
+      message({ id: 'unknown', section: 'header' })
+      editor.vm.add({ type: 'heading' })
+
+      list = editor.emitted('update:content').at(-1)[0]
+      expect(list).to.have.length(4)
+      expect(list[3]).to.include({ type: 'heading', group: 'header' })
     })
   })
 
@@ -200,10 +252,58 @@ describe('PageDetailEditor', () => {
       editor.vm.element = content[0]
       editor.vm.remove()
 
-      expect(editor.vm.item.content).to.deep.equal([])
+      expect(editor.vm.item.content).to.have.length(1)
+      expect(editor.emitted('update:content')).to.deep.equal([[[]]])
       expect(editor.emitted('edit')).to.deep.equal([[null]])
       expect(editor.emitted('change')).to.deep.equal([['content']])
       expect(save).to.have.been.calledOnceWith(true)
+    })
+  })
+
+  it('shows the loading state again when the preview URL changes', () => {
+    mountEditor().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailEditor).vm
+
+      vm.visible = true
+
+      return vm.$nextTick().then(() => {
+        vm.loaded()
+        return vm.$nextTick()
+      }).then(() => {
+        expect(vm.loading).to.be.false
+        vm.saved = { domain: '', path: 'other-page' }
+        return vm.$nextTick()
+      }).then(() => expect(vm.loading).to.be.true)
+    })
+  })
+
+  it('restarts the hint timer when the same hint is shown again', () => {
+    cy.clock()
+
+    mountEditor().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailEditor).vm
+
+      vm.hint('vpreview')
+      cy.tick(2000).then(() => vm.hint('vpreview'))
+      cy.tick(2000).then(() => expect(vm.vpreview).to.be.true)
+      cy.tick(1000).then(() => expect(vm.vpreview).to.be.false)
+    })
+  })
+
+  it('clears pending hint timers on unmount', () => {
+    cy.clock()
+
+    mountEditor().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailEditor).vm
+      const clear = cy.spy(window, 'clearTimeout')
+
+      vm.hint('vpreview')
+      vm.hint('vcontent')
+      const ids = Object.values(vm.timers)
+
+      wrapper.unmount()
+
+      ids.forEach((id) => expect(clear).to.have.been.calledWith(id))
     })
   })
 })

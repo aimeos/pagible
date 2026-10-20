@@ -12,269 +12,81 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/strings.js:9
-msgctxt "webhooks"
-msgid "Webhooks"
-msgstr "Webhook"
-
-#: src/views/WebhookList.vue:147
-msgctxt "webhooks"
-msgid "Webhooks are disabled by the server configuration, no events are sent"
-msgstr "Webhook ត្រូវបានបិទដោយការកំណត់របស់ម៉ាស៊ីនមេ ដូច្នេះគ្មានព្រឹត្តិការណ៍ត្រូវបានផ្ញើទេ"
-
-#: src/views/WebhookList.vue:154
-msgctxt "webhooks"
-msgid "All deliveries are blocked by the server configuration"
-msgstr "ការបញ្ជូនទាំងអស់ត្រូវបានរារាំងដោយការកំណត់របស់ម៉ាស៊ីនមេ"
-
-#: src/views/WebhookList.vue:183
-msgctxt "webhooks"
-msgid "Status"
-msgstr "ស្ថានភាព"
-
-#: src/views/WebhookList.vue:187
-msgctxt "webhooks"
-msgid "All"
-msgstr "ទាំងអស់"
-
-#: src/views/WebhookList.vue:192 src/views/WebhookList.vue:682
-#: src/views/WebhookList.vue:766 src/views/WebhookList.vue:770
-msgctxt "webhooks"
-msgid "Active"
-msgstr "សកម្ម"
-
-#: src/views/WebhookList.vue:197 src/views/WebhookList.vue:683
-msgctxt "webhooks"
-msgid "Inactive"
-msgstr "អសកម្ម"
-
-#: src/views/WebhookList.vue:250
-msgctxt "webhooks"
-msgid "Error fetching webhooks"
-msgstr "មានកំហុសក្នុងការទាញយក Webhook"
-
-#: src/views/WebhookList.vue:314
-msgctxt "webhooks"
-msgid "Error saving webhook"
-msgstr "មានកំហុសក្នុងការរក្សាទុក Webhook"
-
-#: src/views/WebhookList.vue:319
-msgctxt "webhooks"
-msgid ""
-"Rotate the secret of this webhook? Receivers must be updated with the new "
-"secret."
-msgstr "ប្តូរសោសម្ងាត់របស់ Webhook នេះឬ? អ្នកទទួលត្រូវធ្វើបច្ចុប្បន្នភាពដោយប្រើសោសម្ងាត់ថ្មី។"
-
-#: src/views/WebhookList.vue:338
-msgctxt "webhooks"
-msgid "Error rotating webhook secret"
-msgstr "មានកំហុសក្នុងការប្តូរសោសម្ងាត់របស់ Webhook"
-
-#: src/views/WebhookList.vue:358
-msgctxt "webhooks"
-msgid "Test event delivered"
-msgstr "បានបញ្ជូនព្រឹត្តិការណ៍សាកល្បង"
-
-#: src/views/WebhookList.vue:364 src/views/WebhookList.vue:371
-msgctxt "webhooks"
-msgid "Test event failed"
-msgstr "ព្រឹត្តិការណ៍សាកល្បងបានបរាជ័យ"
-
-#: src/views/WebhookList.vue:412
-msgctxt "webhooks"
-msgid "Error purging webhook"
-msgstr "មានកំហុសក្នុងការលុប Webhook ជាអចិន្ត្រៃយ៍"
-
-#: src/views/WebhookList.vue:420
+#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "បានចម្លងសោសម្ងាត់"
 
-#: src/views/WebhookList.vue:425
+#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "មិនអាចចម្លងសោសម្ងាត់បានទេ"
 
-#: src/views/WebhookList.vue:434 src/views/WebhookList.vue:469
-msgctxt "webhooks"
-msgid "None"
-msgstr "គ្មាន"
-
-#: src/views/WebhookList.vue:447
-msgctxt "webhooks"
-msgid "Connection failed"
-msgstr "ការតភ្ជាប់បានបរាជ័យ"
-
-#: src/views/WebhookList.vue:448
-msgctxt "webhooks"
-msgid "Access denied"
-msgstr "ការចូលប្រើត្រូវបានបដិសេធ"
-
-#: src/views/WebhookList.vue:449
-msgctxt "webhooks"
-msgid "Secret can't be decrypted, rotate it"
-msgstr "មិនអាចឌិគ្រីបសោសម្ងាត់បានទេ សូមប្តូរវា"
-
-#: src/views/WebhookList.vue:450
-msgctxt "webhooks"
-msgid "Blocked by server configuration"
-msgstr "ត្រូវបានរារាំងដោយការកំណត់របស់ម៉ាស៊ីនមេ"
-
-#: src/views/WebhookList.vue:451 src/views/WebhookList.vue:784
-msgctxt "webhooks"
-msgid "Not a valid URL"
-msgstr "មិនមែនជា URL ត្រឹមត្រូវទេ"
-
-#: src/views/WebhookList.vue:452
-msgctxt "webhooks"
-msgid "Queue unavailable"
-msgstr "មិនអាចប្រើជួររង់ចាំបានទេ"
-
-#: src/views/WebhookList.vue:453
-msgctxt "webhooks"
-msgid "Host not found"
-msgstr "រកមិនឃើញម៉ាស៊ីន Host ទេ"
-
-#: src/views/WebhookList.vue:454
-msgctxt "webhooks"
-msgid "Response too large"
-msgstr "ការឆ្លើយតបធំពេក"
-
-#: src/views/WebhookList.vue:455
-msgctxt "webhooks"
-msgid "Request timed out"
-msgstr "សំណើបានផុតពេលរង់ចាំ"
-
-#: src/views/WebhookList.vue:460
-msgctxt "webhooks"
-msgid "Redirects aren't followed"
-msgstr "មិនធ្វើតាមការបញ្ជូនបន្តទេ"
-
-#: src/views/WebhookList.vue:461
-msgctxt "webhooks"
-msgid "Delivery failed"
-msgstr "ការបញ្ជូនបានបរាជ័យ"
-
-#: src/views/WebhookList.vue:523
-msgctxt "webhooks"
-msgid "Send signed notifications when published content changes."
-msgstr "ផ្ញើការជូនដំណឹងដែលមានហត្ថលេខា នៅពេលមាតិកាដែលបានបោះផ្សាយផ្លាស់ប្តូរ។"
-
-#: src/views/WebhookList.vue:544 src/views/WebhookList.vue:618
-msgctxt "webhooks"
-msgid "Toggle selection"
-msgstr "បិទ/បើកការជ្រើសរើស"
-
-#: src/views/WebhookList.vue:563 src/views/WebhookList.vue:655
-msgctxt "webhooks"
-msgid "Purge"
-msgstr "លុបជាអចិន្ត្រៃយ៍"
-
-#: src/views/WebhookList.vue:571 src/views/WebhookList.vue:722
-#: src/views/WebhookList.vue:741
-msgctxt "webhooks"
-msgid "Add webhook"
-msgstr "បន្ថែម Webhook"
-
-#: src/views/WebhookList.vue:585
-msgctxt "webhooks"
-msgid "Search for"
-msgstr "ស្វែងរក"
-
-#: src/views/WebhookList.vue:594
-msgctxt "webhooks"
-msgid "Refresh"
-msgstr "ផ្ទុកឡើងវិញ"
-
-#: src/views/WebhookList.vue:635
-msgctxt "webhooks"
-msgid "Edit"
-msgstr "កែសម្រួល"
-
-#: src/views/WebhookList.vue:645
-msgctxt "webhooks"
-msgid "Rotate"
-msgstr "ប្តូរសោ"
-
-#: src/views/WebhookList.vue:688
-msgctxt "webhooks"
-msgid "Last success"
-msgstr "ការបញ្ជូនជោគជ័យចុងក្រោយ"
-
-#: src/views/WebhookList.vue:692
-msgctxt "webhooks"
-msgid "Last error"
-msgstr "កំហុសចុងក្រោយ"
-
-#: src/views/WebhookList.vue:699
-msgctxt "webhooks"
-msgid "Paused until"
-msgstr "ផ្អាករហូតដល់"
-
-#: src/views/WebhookList.vue:709
-msgctxt "webhooks"
-msgid "Loading"
-msgstr "កំពុងផ្ទុក"
-
-#: src/views/WebhookList.vue:715
-msgctxt "webhooks"
-msgid "No entries found"
-msgstr "រកមិនឃើញធាតុបញ្ចូលទេ"
-
-#: src/views/WebhookList.vue:716
-msgctxt "webhooks"
-msgid "No webhooks configured."
-msgstr "មិនទាន់មាន Webhook ត្រូវបានកំណត់ទេ។"
-
-#: src/views/WebhookList.vue:738
+#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "សោសម្ងាត់របស់ Webhook"
 
-#: src/views/WebhookList.vue:740
+#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "កែសម្រួល Webhook"
 
-#: src/views/WebhookList.vue:750
+#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
+msgctxt "webhooks"
+msgid "Add webhook"
+msgstr "បន្ថែម Webhook"
+
+#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "ចម្លងសោសម្ងាត់នេះឥឡូវនេះ។ វានឹងមិនត្រូវបានបង្ហាញម្តងទៀតទេ។"
 
-#: src/views/WebhookList.vue:771
+#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
+#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
+msgctxt "webhooks"
+msgid "Active"
+msgstr "សកម្ម"
+
+#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
 msgstr "Webhook ដែលអសកម្មមិនទទួលព្រឹត្តិការណ៍ទេ ហើយការបញ្ជូនរបស់វាដែលកំពុងរង់ចាំនឹងត្រូវបោះបង់"
 
-#: src/views/WebhookList.vue:780
+#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL ចំណុចចុង HTTPS"
 
-#: src/views/WebhookList.vue:781
+#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr "អាសយដ្ឋានដែលទទួលព្រឹត្តិការណ៍មានហត្ថលេខា មិនអាចផ្លាស់ប្តូរនៅពេលក្រោយបានទេ"
 
-#: src/views/WebhookList.vue:805
+#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
+msgctxt "webhooks"
+msgid "Not a valid URL"
+msgstr "មិនមែនជា URL ត្រឹមត្រូវទេ"
+
+#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "ព្រឹត្តិការណ៍"
 
-#: src/views/WebhookList.vue:806
+#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
 msgstr ""
 "ព្រឹត្តិការណ៍ដែលផ្ញើទៅ Webhook ការបញ្ជូនដែលកំពុងរង់ចាំសម្រាប់ព្រឹត្តិការណ៍ដែលបានដកចេញនឹងត្រូវលុបចោល"
 
-#: src/views/WebhookList.vue:813
+#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "ឈ្មោះ"
 
-#: src/views/WebhookList.vue:814
+#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -283,27 +95,242 @@ msgstr ""
 "ឈ្មោះជាជម្រើសសម្រាប់សម្គាល់ Webhook ដែលមានចំណុចចុងដូចគ្នា អាចមើលឃើញដោយអ្នកកែសម្រួល Webhook "
 "ទាំងអស់"
 
-#: src/views/WebhookList.vue:824
-msgctxt "webhooks"
-msgid "Done"
-msgstr "រួចរាល់"
-
-#: src/views/WebhookList.vue:827
-msgctxt "webhooks"
-msgid "Copy secret"
-msgstr "ចម្លងសោសម្ងាត់"
-
-#: src/views/WebhookList.vue:840
+#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "សាកល្បង"
 
-#: src/views/WebhookList.vue:843
+#: src/components/WebhookDialog.vue:209
+msgctxt "webhooks"
+msgid "Done"
+msgstr "រួចរាល់"
+
+#: src/components/WebhookDialog.vue:212
+msgctxt "webhooks"
+msgid "Copy secret"
+msgstr "ចម្លងសោសម្ងាត់"
+
+#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "បោះបង់"
 
-#: src/views/WebhookList.vue:853
+#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "រក្សាទុក"
+
+#: src/strings.js:9
+msgctxt "webhooks"
+msgid "Webhooks"
+msgstr "Webhook"
+
+#: src/views/WebhookList.vue:102
+msgctxt "webhooks"
+msgid "Webhooks are disabled by the server configuration, no events are sent"
+msgstr "Webhook ត្រូវបានបិទដោយការកំណត់របស់ម៉ាស៊ីនមេ ដូច្នេះគ្មានព្រឹត្តិការណ៍ត្រូវបានផ្ញើទេ"
+
+#: src/views/WebhookList.vue:109
+msgctxt "webhooks"
+msgid "All deliveries are blocked by the server configuration: %{reason}"
+msgstr "ការបញ្ជូនទាំងអស់ត្រូវបានរារាំងដោយការកំណត់របស់ម៉ាស៊ីនមេ: %{reason}"
+
+#: src/views/WebhookList.vue:139
+msgctxt "webhooks"
+msgid "Status"
+msgstr "ស្ថានភាព"
+
+#: src/views/WebhookList.vue:143
+msgctxt "webhooks"
+msgid "All"
+msgstr "ទាំងអស់"
+
+#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
+msgctxt "webhooks"
+msgid "Inactive"
+msgstr "អសកម្ម"
+
+#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
+msgctxt "webhooks"
+msgid "None"
+msgstr "គ្មាន"
+
+#: src/views/WebhookList.vue:213
+msgctxt "webhooks"
+msgid "%{reason} · %{date}"
+msgstr "%{reason} · %{date}"
+
+#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
+msgctxt "webhooks"
+msgid "Error fetching webhooks"
+msgstr "មានកំហុសក្នុងការទាញយក Webhook"
+
+#: src/views/WebhookList.vue:295
+msgctxt "webhooks"
+msgid "Test event delivered (%{status})"
+msgstr "បានបញ្ជូនព្រឹត្តិការណ៍សាកល្បង (%{status})"
+
+#: src/views/WebhookList.vue:302
+msgctxt "webhooks"
+msgid "Test event failed: %{reason}"
+msgstr "ព្រឹត្តិការណ៍សាកល្បងបានបរាជ័យ: %{reason}"
+
+#: src/views/WebhookList.vue:309
+msgctxt "webhooks"
+msgid "Test event failed"
+msgstr "ព្រឹត្តិការណ៍សាកល្បងបានបរាជ័យ"
+
+#: src/views/WebhookList.vue:349
+msgctxt "webhooks"
+msgid "Error purging webhook"
+msgstr "មានកំហុសក្នុងការលុប Webhook ជាអចិន្ត្រៃយ៍"
+
+#: src/views/WebhookList.vue:378
+msgctxt "webhooks"
+msgid ""
+"The new webhook secret could not be shown after leaving the page, please "
+"rotate it to get a new one"
+msgstr "មិនអាចបង្ហាញសម្ងាត់ webhook ថ្មីបានទេ បន្ទាប់ពីចាកចេញពីទំព័រ សូមប្តូរវាដើម្បីទទួលបានថ្មី"
+
+#: src/views/WebhookList.vue:392
+msgctxt "webhooks"
+msgid ""
+"Rotate the secret of this webhook? Receivers must be updated with the new "
+"secret."
+msgstr "ប្តូរសោសម្ងាត់របស់ Webhook នេះឬ? អ្នកទទួលត្រូវធ្វើបច្ចុប្បន្នភាពដោយប្រើសោសម្ងាត់ថ្មី។"
+
+#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
+msgctxt "webhooks"
+msgid "Rotate"
+msgstr "ប្តូរសោ"
+
+#: src/views/WebhookList.vue:417
+msgctxt "webhooks"
+msgid "Error rotating webhook secret"
+msgstr "មានកំហុសក្នុងការប្តូរសោសម្ងាត់របស់ Webhook"
+
+#: src/views/WebhookList.vue:447
+msgctxt "webhooks"
+msgid "Error saving webhook"
+msgstr "មានកំហុសក្នុងការរក្សាទុក Webhook"
+
+#: src/views/WebhookList.vue:483
+msgctxt "webhooks"
+msgid "Send signed notifications when published content changes."
+msgstr "ផ្ញើការជូនដំណឹងដែលមានហត្ថលេខា នៅពេលមាតិកាដែលបានបោះផ្សាយផ្លាស់ប្តូរ។"
+
+#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
+msgctxt "webhooks"
+msgid "Toggle selection"
+msgstr "បិទ/បើកការជ្រើសរើស"
+
+#: src/views/WebhookList.vue:523
+msgctxt "webhooks"
+msgid "Purge (%{count})"
+msgstr "លុបជាអចិន្ត្រៃយ៍ (%{count})"
+
+#: src/views/WebhookList.vue:538
+msgctxt "webhooks"
+msgid "Search for"
+msgstr "ស្វែងរក"
+
+#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
+msgctxt "webhooks"
+msgid "Refresh"
+msgstr "ផ្ទុកឡើងវិញ"
+
+#: src/views/WebhookList.vue:587
+msgctxt "webhooks"
+msgid "Edit"
+msgstr "កែសម្រួល"
+
+#: src/views/WebhookList.vue:607
+msgctxt "webhooks"
+msgid "Purge"
+msgstr "លុបជាអចិន្ត្រៃយ៍"
+
+#: src/views/WebhookList.vue:647
+msgctxt "webhooks"
+msgid "Last success: %{date}"
+msgstr "ការបញ្ជូនជោគជ័យចុងក្រោយ: %{date}"
+
+#: src/views/WebhookList.vue:654
+msgctxt "webhooks"
+msgid "Last error: %{reason}"
+msgstr "កំហុសចុងក្រោយ: %{reason}"
+
+#: src/views/WebhookList.vue:666
+msgctxt "webhooks"
+msgid "Paused until: %{date}"
+msgstr "ផ្អាករហូតដល់: %{date}"
+
+#: src/views/WebhookList.vue:678
+msgctxt "webhooks"
+msgid "Loading"
+msgstr "កំពុងផ្ទុក"
+
+#: src/views/WebhookList.vue:690
+msgctxt "webhooks"
+msgid "No entries found"
+msgstr "រកមិនឃើញធាតុបញ្ចូលទេ"
+
+#: src/views/WebhookList.vue:691
+msgctxt "webhooks"
+msgid "No webhooks configured."
+msgstr "មិនទាន់មាន Webhook ត្រូវបានកំណត់ទេ។"
+
+#: src/webhooks.js:19
+msgctxt "webhooks"
+msgid "Connection failed"
+msgstr "ការតភ្ជាប់បានបរាជ័យ"
+
+#: src/webhooks.js:20
+msgctxt "webhooks"
+msgid "Access denied"
+msgstr "ការចូលប្រើត្រូវបានបដិសេធ"
+
+#: src/webhooks.js:21
+msgctxt "webhooks"
+msgid "Secret can't be decrypted, rotate it"
+msgstr "មិនអាចឌិគ្រីបសោសម្ងាត់បានទេ សូមប្តូរវា"
+
+#: src/webhooks.js:22
+msgctxt "webhooks"
+msgid "Invalid list of denied networks"
+msgstr "បញ្ជីបណ្តាញដែលបានបដិសេធមិនត្រឹមត្រូវ"
+
+#: src/webhooks.js:23 src/webhooks.js:25
+msgctxt "webhooks"
+msgid "Queue unavailable"
+msgstr "មិនអាចប្រើជួររង់ចាំបានទេ"
+
+#: src/webhooks.js:26
+msgctxt "webhooks"
+msgid "Host not found"
+msgstr "រកមិនឃើញម៉ាស៊ីន Host ទេ"
+
+#: src/webhooks.js:27
+msgctxt "webhooks"
+msgid "Response too large"
+msgstr "ការឆ្លើយតបធំពេក"
+
+#: src/webhooks.js:28
+msgctxt "webhooks"
+msgid "Request timed out"
+msgstr "សំណើបានផុតពេលរង់ចាំ"
+
+#: src/webhooks.js:33
+msgctxt "webhooks"
+msgid "Redirects aren't followed"
+msgstr "មិនធ្វើតាមការបញ្ជូនបន្តទេ"
+
+#: src/webhooks.js:34
+msgctxt "webhooks"
+msgid "Delivery failed"
+msgstr "ការបញ្ជូនបានបរាជ័យ"
+
+#: src/webhooks.js:37
+msgctxt "webhooks"
+msgid "%{reason} (%{status})"
+msgstr "%{reason} (%{status})"
+

@@ -27,6 +27,22 @@ describe('FileUrlDialog', () => {
     cy.on('uncaught:exception', () => false)
   })
 
+  it('checks the URL with Enter but not while an input method composes', () => {
+    let update
+
+    mountDialog().then(({ wrapper }) => {
+      update = cy.stub(wrapper.findComponent(FileUrlDialog).vm, 'update')
+    })
+
+    cy.get('.v-dialog input').type('https://example.com/a.jpg')
+      .trigger('keydown', { eventConstructor: 'KeyboardEvent', key: 'Enter', isComposing: true })
+    cy.get('.v-dialog input').trigger('keyup', { eventConstructor: 'KeyboardEvent', key: 'Enter', keyCode: 13 })
+    cy.then(() => expect(update).not.to.have.been.called)
+
+    cy.get('.v-dialog input').type('{enter}')
+    cy.then(() => expect(update).to.have.been.calledOnce)
+  })
+
   it('renders the dialog when modelValue is true', () => {
     mountDialog()
     cy.get('.v-dialog').should('exist')
@@ -122,6 +138,46 @@ describe('FileUrlDialog', () => {
     })
   })
 
+  it('ignores further adds while the files are created', () => {
+    const onAdd = cy.spy()
+    const mutate = cy.stub()
+    let resolve
+
+    mutate.onFirstCall().returns(new Promise((done) => (resolve = done)))
+
+    mountDialog({ onAdd }, { mutate }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileUrlDialog).vm
+      vm.items = {
+        file: { name: 'document.pdf', path: 'https://example.com/document.pdf' },
+      }
+
+      const promise = vm.add()
+      expect(vm.add()).to.equal(undefined)
+      expect(mutate).to.have.been.calledOnce
+
+      resolve({
+        data: {
+          addFile: { id: '1', disk: 'public', name: 'document.pdf', path: 'cms/test/file/document.pdf', previews: '{}' },
+        },
+      })
+
+      return promise.then(() => {
+        expect(mutate).to.have.been.calledOnce
+        expect(onAdd).to.have.been.calledOnce
+      })
+    })
+  })
+
+  it('shows the add button as loading while the files are created', () => {
+    mountDialog().then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileUrlDialog).vm
+      vm.items = { file: { name: 'document.pdf', path: 'https://example.com/document.pdf' } }
+      vm.loading = true
+    })
+
+    cy.get('[data-confirm]').should('have.class', 'v-btn--loading')
+  })
+
   it('keeps loading until all requests settle and excludes failed imports', () => {
     const onAdd = cy.spy()
     const mutate = cy.stub()
@@ -157,6 +213,20 @@ describe('FileUrlDialog', () => {
         expect(onAdd).to.have.been.calledOnce
         expect(onAdd.firstCall.args[0].map((item) => item.id)).to.deep.equal(['1'])
       })
+    })
+  })
+
+  it('resets previous errors when the URLs are checked again', () => {
+    mountDialog({ multiple: true }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(FileUrlDialog).vm
+
+      vm.input = 'https://example.com/' + 'a'.repeat(300)
+      vm.update()
+      expect(vm.errors).to.have.length(1)
+
+      vm.input = ''
+      vm.update()
+      expect(vm.errors).to.have.length(0)
     })
   })
 })

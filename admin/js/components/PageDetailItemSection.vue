@@ -1,12 +1,15 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { defineAsyncComponent } from 'vue'
 import Fields from './Fields.vue'
-import SchemaDialog from './SchemaDialog.vue'
 import { useUserStore, useMessageStore, useSchemaStore, useSideStore } from '../stores'
-import { hasProp, itemTitle } from '../utils'
+import { hasTrue, itemTitle } from '../utils'
 import { mdiPencil, mdiDelete, mdiViewGridPlus } from '@mdi/js'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
+import { schemaFields } from '../field'
+
+const SchemaDialog = defineAsyncComponent(() => import('./SchemaDialog.vue'))
 
 export default {
   components: {
@@ -14,16 +17,19 @@ export default {
     SchemaDialog
   },
 
+  mixins: [typeLabelMixin],
+
   props: {
-    assets: { type: Object, default: () => {} },
+    assets: { type: Object, default: () => ({}) },
     item: { type: Object, required: true },
     permission: { type: String, default: null },
     section: { type: String, required: true }
   },
 
-  emits: ['change', 'error'],
+  emits: ['patch', 'add-assets', 'error'],
 
   data: () => ({
+    errors: {},
     vschemas: false,
     panel: []
   }),
@@ -39,7 +45,7 @@ export default {
 
   computed: {
     available() {
-      return Object.keys(this.schemas).length
+      return Object.keys(this.schemas[this.section] || {}).length
     },
 
     canEdit() {
@@ -52,81 +58,67 @@ export default {
   },
 
   methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
-
     add(item) {
-      if (!this.item[this.section]) {
-        this.item[this.section] = {}
-      }
-
-      if (this.item[this.section][item.type]) {
+      if (this.entries[item.type]) {
         this.messages.add(this.$gettext('The element has already been added'), 'error')
         return
       }
 
-      this.item[this.section][item.type] = {
-        type: item.type,
-        data: {},
-        files: []
-      }
-      this.panel.push(Object.keys(this.item[this.section]).length - 1)
+      this.patch({ ...this.entries, [item.type]: { type: item.type, data: {}, files: [] } })
+      this.panel.push(item.type)
       this.vschemas = false
     },
 
-    error(el, value) {
-      el._error = value
-      this.$emit(
-        'error',
-        hasProp(this.entries, '_error')
-      )
+    // updates the error state of the entry and reports if any entry is invalid
+    error(code, value) {
+      if (value) {
+        this.errors[code] = value
+      } else {
+        delete this.errors[code]
+      }
+
+      this.$emit('error', hasTrue(this.errors))
       this.store()
     },
 
     fields(type) {
-      if (!this.schemas[this.section]?.[type]?.fields) {
-        console.warn(`No definition of fields for "${type}" available`)
-        return []
-      }
+      return schemaFields(this, this.schemas, this.section, type)
+    },
 
-      return this.schemas[this.section][type].fields
+    // sends the new entries of the section to the owner of the item
+    patch(entries) {
+      this.$emit('patch', { [this.section]: entries })
     },
 
     remove(code) {
-      delete this.item[this.section][code]
-      this.$emit('change', true)
+      const { [code]: removed, ...entries } = this.entries
 
-      this.$nextTick(() => {
-        this.validate().then((valid) => {
-          this.$emit('error', !valid)
-        })
-      })
+      this.panel = this.panel.filter((open) => open !== code)
+      this.patch(entries)
+      this.error(code, false)
     },
 
     reset() {
-      for (const k in this.entries) {
-        delete this.entries[k]._changed
-        delete this.entries[k]._error
-      }
+      this.errors = {}
     },
 
     showError() {
-      const idx = Object.values(this.entries).findIndex((el) => el._error)
+      const code = Object.keys(this.entries).find((code) => this.errors[code])
 
-      if (idx >= 0 && !this.panel.includes(idx)) {
-        this.panel.push(idx)
+      if (code && !this.panel.includes(code)) {
+        this.panel.push(code)
       }
     },
 
-    shown(el) {
+    shown(el, code) {
       const valid = this.side.shown('state', 'valid')
       const error = this.side.shown('state', 'error')
       const changed = this.side.shown('state', 'changed')
+      const failed = this.errors[code]
 
       return (
         this.side.shown('type', el.type) &&
-        ((error && el._error) || (changed && el._changed) || (valid && !el._error && !el._changed))
+        ((error && failed) || (changed && el._changed) || (valid && !failed && !el._changed))
       )
     },
 
@@ -138,44 +130,31 @@ export default {
       const types = {}
       const state = {}
 
-      for (const el of Object.values(this.entries)) {
+      for (const [code, el] of Object.entries(this.entries)) {
         if (el.type) {
           types[el.type] = (types[el.type] || 0) + 1
         }
-        if (!el._changed && !el._error) {
+        if (!el._changed && !this.errors[code]) {
           state['valid'] = (state['valid'] || 0) + 1
         }
         if (el._changed) {
           state['changed'] = (state['changed'] || 0) + 1
         }
-        if (el._error) {
+        if (this.errors[code]) {
           state['error'] = (state['error'] || 0) + 1
         }
       }
 
-      this.side.store = { type: types, state: state }
+      this.side.store = Object.freeze({ type: Object.freeze(types), state: Object.freeze(state) })
     },
 
     title(el) {
       return itemTitle(el.data) || this.typeLabel(el.type) || ''
     },
 
-    update(el) {
-      el._changed = true
-      this.$emit('change', true)
+    update(code, values) {
+      this.patch({ ...this.entries, [code]: { ...this.entries[code], ...values, _changed: true } })
       this.store()
-    },
-
-    validate() {
-      const list = []
-
-      this.$refs.field?.filter(field => field).forEach((field) => {
-        list.push(field.validate())
-      })
-
-      return Promise.all(list).then((result) => {
-        return result.every((r) => r)
-      })
     }
   }
 }
@@ -188,8 +167,9 @@ export default {
         <v-expansion-panel
           v-for="(el, code) in entries"
           :key="code"
-          :class="{ changed: el._changed, error: el._error }"
-          v-show="shown(el)"
+          :value="code"
+          :class="{ changed: el._changed, error: errors[code] }"
+          v-show="shown(el, code)"
         >
           <v-expansion-panel-title :expand-icon="mdiPencil">
             <v-btn
@@ -206,10 +186,12 @@ export default {
           <v-expansion-panel-text eager>
             <Fields
               ref="field"
-              v-model:data="el.data"
-              v-model:files="el.files"
-              @error="error(el, $event)"
-              @change="update(el)"
+              :data="el.data"
+              :files="el.files"
+              @update:data="update(code, { data: $event })"
+              @update:files="update(code, { files: $event })"
+              @add-assets="$emit('add-assets', $event)"
+              @error="error(code, $event)"
               :readonly="!canEdit"
               :fields="fields(el.type)"
               :assets="assets"

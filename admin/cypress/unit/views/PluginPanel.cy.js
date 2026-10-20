@@ -1,6 +1,6 @@
-import { h } from 'vue'
+import { h, nextTick } from 'vue'
 import PluginPanel from '../../../js/views/PluginPanel.vue'
-import { useDrawerStore, usePluginStore, useUserStore } from '../../../js/stores'
+import { useDrawerStore, usePluginStore, useSettingStore, useUserStore } from '../../../js/stores'
 
 const Body = {
   props: ['panel'],
@@ -36,7 +36,7 @@ describe('PluginPanel', () => {
           }
         }],
         stubs: {
-          User: { template: '<div class="user-stub" />' }
+          User: { render: () => h('div', { class: 'user-stub' }) }
         }
       }
     })
@@ -125,6 +125,63 @@ describe('PluginPanel', () => {
 
     cy.get('.btn-sidemenu').click().then(() => {
       expect(useDrawerStore().aside).to.equal(!initial)
+    })
+  })
+
+  it('stops the filter watcher registered after setup when the panel is unmounted', () => {
+    let filter
+    const Late = {
+      inject: ['pluginAside'],
+      mounted() {
+        filter = this.pluginAside(() => [], { status: null })
+      },
+      render() {
+        return h('div', { class: 'plugin-body' })
+      }
+    }
+
+    mountPanel(undefined, undefined, Late).then(({ wrapper }) => {
+      const saveData = cy.stub(useSettingStore(), 'saveData')
+
+      filter.status = true
+      return nextTick().then(() => {
+        expect(saveData).to.have.been.calledOnceWith('plugin:webhooks', 'filter')
+
+        wrapper.unmount()
+        filter.status = false
+        return nextTick()
+      }).then(() => {
+        expect(saveData).to.have.been.calledOnce
+      })
+    })
+  })
+
+  it('replaces the filter watcher when the sidebar is registered again', () => {
+    let first
+    let second
+    const Twice = {
+      inject: ['pluginAside'],
+      mounted() {
+        first = this.pluginAside(() => [], { status: null })
+        second = this.pluginAside(() => [], { status: null })
+      },
+      render() {
+        return h('div', { class: 'plugin-body' })
+      }
+    }
+
+    mountPanel(undefined, undefined, Twice).then(() => {
+      const saveData = cy.stub(useSettingStore(), 'saveData')
+
+      first.status = true
+      return nextTick().then(() => {
+        expect(saveData).not.to.have.been.called
+
+        second.status = true
+        return nextTick()
+      }).then(() => {
+        expect(saveData).to.have.been.calledOnce
+      })
     })
   })
 })

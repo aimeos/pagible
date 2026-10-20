@@ -1,8 +1,9 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
+import { previewUrl } from '../files'
 import { filepairs, lineRows, tableRows, words } from '../history'
-import { fileurl, filesrcset } from '../utils'
+import { fileurl, filesrcset } from '../urls'
 import CmsDialog from './Dialog.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -14,7 +15,7 @@ export default {
     type: { type: String, default: '' }
   },
 
-  setup() { return { fileurl, filesrcset } },
+  setup() { return { fileurl, filesrcset, previewUrl } },
   data: () => ({ preview: null, activator: null, failed: {} }),
 
   computed: {
@@ -90,8 +91,8 @@ export default {
               <button v-if="row[position].mime?.startsWith('image/')" class="media-zoom"
                 :aria-label="$gettext('Enlarge %{name}', { name: name(row[position]) })" @click="activator = $event.currentTarget; preview = { file: row[position], position }"
               >
-                <v-img v-if="fileurl(row[position], Object.values(row[position].previews || {})[0] ?? row[position].path)"
-                  :srcset="filesrcset(row[position])" :src="fileurl(row[position], Object.values(row[position].previews || {})[0] ?? row[position].path)"
+                <v-img v-if="previewUrl(row[position])"
+                  :srcset="filesrcset(row[position])" :src="previewUrl(row[position])"
                   :alt="name(row[position])" height="150" class="checkered" draggable="false" loading="lazy"
                 >
                   <template #placeholder><div class="media-loading" role="status"><LoadingSpinner width="24" height="24" />{{ $gettext('Loading preview') }}</div></template>

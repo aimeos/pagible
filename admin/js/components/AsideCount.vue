@@ -2,12 +2,16 @@
 
 <script>
 import { useDrawerStore, useSideStore } from '../stores'
-import { typeLabel } from '../i18n'
+import { typeLabelMixin } from '../i18n'
+
+// number of leading groups which are expanded when they appear
+const OPEN_GROUPS = 3
 
 export default {
+  mixins: [typeLabelMixin],
+
   data: () => ({
-    active: {},
-    open: [0, 1, 2]
+    open: []
   }),
 
   setup() {
@@ -23,19 +27,29 @@ export default {
     }
   },
 
-  methods: {
-    typeLabel(type) {
-      return typeLabel(type, this)
-    },
+  watch: {
+    // groups are tracked by key so added or removed groups don't toggle other groups
+    stores: {
+      immediate: true,
+      handler(stores) {
+        // immediate watchers run before created()
+        this.seen ??= new Set()
+        Object.keys(stores).forEach((key, index) => {
+          if (this.seen.has(key)) return
+          this.seen.add(key)
+          if (index < OPEN_GROUPS) this.open.push(key)
+        })
+      }
+    }
+  },
 
+  methods: {
+    // hidden entries are marked as active
     isActive(key, code) {
-      return !!this.active[key]?.[code]
+      return !this.side.shown(key, code)
     },
 
     toggle(key, code) {
-      const group = this.active[key] ??= {}
-
-      group[code] = !group[code]
       this.side.toggle(key, code)
     }
   }
@@ -48,7 +62,7 @@ export default {
       <v-list-group
         v-for="(items, key) in stores"
         :key="key"
-        :value="Object.keys(stores).indexOf(key)"
+        :value="key"
         v-show="Object.keys(items).length"
       >
         <template v-slot:activator="{ props }">

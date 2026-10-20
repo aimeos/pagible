@@ -39,10 +39,10 @@ export default {
     :persistent-counter="!!config.max"
     :placeholder="config.placeholder || ''"
     :modelValue="modelValue ?? config.default ?? ''"
-    @update:modelValue="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', $event ?? '')"
     density="comfortable"
     hide-details="auto"
     variant="outlined"
-    clearable
+    :clearable="!readonly"
   ></v-textarea>
 </template>

@@ -1,3 +1,4 @@
+import { h } from 'vue'
 import PageDetailItem from '../../../js/components/PageDetailItem.vue'
 import { useUserStore } from '../../../js/stores'
 
@@ -99,5 +100,38 @@ describe('PageDetailItem', () => {
 
     cy.contains('.v-tab', 'Access').click()
     cy.get('.access-stub').should('exist')
+  })
+
+  it('resets the details form and opens the failed section', () => {
+    const reset = cy.stub()
+    const showError = cy.stub()
+    const stub = (cls, methods) => ({ render: () => h('div', { class: cls }), methods })
+
+    cy.mount(PageDetailItem, {
+      props: { item: { ...item }, assets: {} },
+      global: {
+        stubs: {
+          PageAccess: stub('access-stub', {}),
+          PageDetailItemProps: stub('props-stub', { reset }),
+          PageDetailItemSection: stub('section-stub', { reset() {}, showError }),
+        },
+      },
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetailItem).vm
+
+      vm.reset()
+      expect(reset).to.have.been.calledOnce
+
+      // render the lazy meta window item once before switching back
+      vm.tab = 'meta'
+      return vm.$nextTick().then(() => {
+        vm.tab = 'details'
+        vm.error('meta', true)
+        return vm.showError()
+      }).then(() => {
+        expect(vm.tab).to.equal('meta')
+        expect(showError).to.have.been.calledOnce
+      })
+    })
   })
 })

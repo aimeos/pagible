@@ -21,6 +21,16 @@ describe('Checkbox', () => {
     cy.get('input[type="checkbox"]').should('not.be.checked')
   })
 
+  it('uses config.default (true) when no modelValue', () => {
+    cy.mount(Checkbox, { props: { config: { default: true } } })
+    cy.get('input[type="checkbox"]').should('be.checked')
+  })
+
+  it('accepts custom string on/off values', () => {
+    cy.mount(Checkbox, { props: { modelValue: 'yes', config: { on: 'yes', off: 'no' } } })
+    cy.get('input[type="checkbox"]').should('be.checked')
+  })
+
   it('emits update:modelValue true when checked', () => {
     const onUpdate = cy.spy().as('update')
     cy.mount(Checkbox, {

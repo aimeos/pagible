@@ -1,42 +1,47 @@
 msgid ""
 msgstr ""
-"Content-Transfer-Encoding: 8bit\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Language: ja\n"
-"Language-Team: none\n"
-"Last-Translator: Automatically generated\n"
-"MIME-Version: 1.0\n"
-"PO-Revision-Date: \n"
-"POT-Creation-Date: \n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
-#: js/ai.js:64
+#: js/ai.js:65 js/components/FileDetailItem.vue:251
 msgid "Error transcribing file"
 msgstr "ファイルの文字起こしエラー"
 
-#: js/ai.js:113
+#: js/ai.js:114 js/components/FileDetailItem.vue:304
+#: js/components/FileDetailItem.vue:311
 msgid "Error translating texts"
 msgstr "テキストの翻訳エラー"
 
-#: js/ai.js:137
+#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "テキスト生成にはプロンプトが必要"
 
-#: js/ai.js:160
+#: js/ai.js:161
 msgid "Error generating text"
 msgstr "テキスト生成エラー"
 
-#: js/chat.js:34
+#: js/App.vue:88 js/components/User.vue:68
+msgid "Error switching language"
+msgstr "言語切り替えエラー"
+
+#: js/chat.js:35
 msgid "The chat assistant is not available."
 msgstr "チャットアシスタントは利用できません。"
 
-#: js/chat.js:71
+#: js/chat.js:72
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "応答を生成中です。完了するまでお待ちください。"
 
-#: js/chat.js:73
+#: js/chat.js:74
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "リクエストが多すぎます。しばらく待ってから、もう一度試してください。"
 
@@ -76,8 +81,7 @@ msgstr "次のタブ"
 msgid "Show or hide side panel"
 msgstr "サイドパネルの表示/非表示"
 
-#: js/commands.js:115
-#: js/components/DetailAppBar.vue:160
+#: js/commands.js:115 js/components/DetailAppBar.vue:167
 msgid "Back to list view"
 msgstr "リスト表示に戻る"
 
@@ -105,12 +109,9 @@ msgstr "ページをカット"
 msgid "Paste page"
 msgstr "ページをペースト"
 
-#: js/commands.js:178
-#: js/components/CommandPalette.vue:106
-#: js/components/DetailRefs.vue:128
-#: js/components/Navigation.vue:30
-#: js/views/PageList.vue:267
-#: js/views/PageList.vue:284
+#: js/commands.js:178 js/components/CommandPalette.vue:111
+#: js/components/DetailRefs.vue:150 js/components/Navigation.vue:31
+#: js/views/PageList.vue:266 js/views/PageList.vue:270
 msgid "Pages"
 msgstr "ページ"
 
@@ -118,14 +119,10 @@ msgstr "ページ"
 msgid "Go to pages"
 msgstr "ページへ移動"
 
-#: js/commands.js:184
-#: js/components/CommandPalette.vue:107
-#: js/components/FileDialog.vue:25
-#: js/components/HistoryDialog.vue:303
-#: js/components/HistoryDialog.vue:305
-#: js/components/Navigation.vue:31
-#: js/views/FileList.vue:51
-#: js/views/FileList.vue:68
+#: js/commands.js:184 js/components/CommandPalette.vue:112
+#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
+#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
+#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "メディア"
 
@@ -133,11 +130,9 @@ msgstr "メディア"
 msgid "Go to media"
 msgstr "メディアへ移動"
 
-#: js/commands.js:190
-#: js/components/CommandPalette.vue:108
-#: js/components/Navigation.vue:32
-#: js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:51
+#: js/commands.js:190 js/components/CommandPalette.vue:113
+#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
+#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "共有要素"
 
@@ -145,9 +140,8 @@ msgstr "共有要素"
 msgid "Go to shared elements"
 msgstr "共有要素へ移動"
 
-#: js/commands.js:196
-#: js/components/Navigation.vue:33
-#: js/views/AccessList.vue:253
+#: js/commands.js:196 js/components/Navigation.vue:34
+#: js/views/AccessList.vue:239
 msgid "Users"
 msgstr "ユーザー"
 
@@ -155,453 +149,408 @@ msgstr "ユーザー"
 msgid "Go to users"
 msgstr "ユーザーへ移動"
 
-#: js/components/AccessUsers.vue:220
+#: js/components/AccessUsers.vue:218
 msgid "Access roles updated"
 msgstr "アクセスロールを更新しました"
 
-#: js/components/AccessUsers.vue:229
+#: js/components/AccessUsers.vue:218
+msgid "Backend roles updated"
+msgstr "バックエンドのロールを更新しました"
+
+#: js/components/AccessUsers.vue:228
 msgid "Error updating access roles"
 msgstr "アクセスロールの更新中にエラーが発生しました"
 
-#: js/components/AccessUsers.vue:230
+#: js/components/AccessUsers.vue:229
 msgid "Error updating CMS permissions"
 msgstr "CMS権限の更新中にエラーが発生しました"
 
-#: js/components/AccessUsers.vue:267
+#: js/components/AccessUsers.vue:264
 msgid "User created"
 msgstr "ユーザーを作成しました"
 
-#: js/components/AccessUsers.vue:273
+#: js/components/AccessUsers.vue:270
 msgid "Error creating user"
 msgstr "ユーザーの作成中にエラーが発生しました"
 
-#: js/components/AccessUsers.vue:306
-#: js/components/PageAccess.vue:123
-#: js/views/AccessList.vue:142
+#: js/components/AccessUsers.vue:310 js/components/PageAccess.vue:130
+#: js/views/AccessList.vue:141
 msgid "Error fetching access roles"
 msgstr "アクセスロールの取得エラー"
 
-#: js/components/AccessUsers.vue:336
+#: js/components/AccessUsers.vue:340
 msgid "Error fetching user access roles"
 msgstr "ユーザーのアクセスロールの取得中にエラーが発生しました"
 
-#: js/components/AccessUsers.vue:379
-#: js/components/AccessUsers.vue:380
+#: js/components/AccessUsers.vue:383 js/components/AccessUsers.vue:384
 msgid "Create user"
 msgstr "ユーザーを作成"
 
-#: js/components/AccessUsers.vue:387
+#: js/components/AccessUsers.vue:391
 msgid "Email address"
 msgstr "メールアドレス"
 
-#: js/components/AccessUsers.vue:396
+#: js/components/AccessUsers.vue:400
 msgid "Search user by email"
 msgstr "メールアドレスでユーザーを検索"
 
-#: js/components/AccessUsers.vue:408
-#: js/components/AccessUsers.vue:409
+#: js/components/AccessUsers.vue:412 js/components/AccessUsers.vue:413
 msgid "Search"
 msgstr "検索"
 
-#: js/components/AccessUsers.vue:424
-#: js/components/AccessUsers.vue:425
-#: js/components/DetailAppBar.vue:194
+#: js/components/AccessUsers.vue:428 js/components/AccessUsers.vue:429
+#: js/components/DetailAppBar.vue:201
 msgid "Save"
 msgstr "保存"
 
-#: js/components/AccessUsers.vue:434
+#: js/components/AccessUsers.vue:438
 msgid "Account"
 msgstr "アカウント"
 
-#: js/components/AccessUsers.vue:439
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:443 js/components/AccessUsers.vue:450
 msgid "Assigned frontend roles"
 msgstr "割り当てられたフロントエンドロール"
 
-#: js/components/AccessUsers.vue:446
+#: js/components/AccessUsers.vue:450
 msgid "Roles granting access to restricted pages"
 msgstr "制限されたページへのアクセスを許可するロール"
 
-#: js/components/AccessUsers.vue:459
+#: js/components/AccessUsers.vue:463
 msgid "Assigned backend roles"
 msgstr "割り当てられたバックエンドロール"
 
-#: js/components/AccessUsers.vue:463
+#: js/components/AccessUsers.vue:467
 msgid "Custom"
 msgstr "カスタム"
 
-#: js/components/AccessUsers.vue:469
+#: js/components/AccessUsers.vue:473
 msgid "Available roles"
 msgstr "利用可能なロール"
 
-#: js/components/AccessUsers.vue:469
+#: js/components/AccessUsers.vue:473
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "管理パネルでユーザーができることを定義するロール"
 
-#: js/components/AccessUsers.vue:481
-#: js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:196
-#: js/views/AccessList.vue:325
+#: js/components/AccessUsers.vue:485 js/components/ListStatus.vue:36
+#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:311
 msgid "No entries found"
 msgstr "エントリーが見つかりません"
 
-#: js/components/ActionMenu.vue:25
-#: js/components/CommandPalette.vue:104
+#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:109
 msgid "Actions"
 msgstr "操作"
 
-#: js/components/ActionMenu.vue:60
-#: js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:183
+#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
+#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "閉じる"
 
-#: js/components/AsideCount.vue:46
-msgid "Used elements"
-msgstr "使用された要素"
-
-#: js/components/AsideList.vue:69
-msgid "Filters"
-msgstr "フィルター"
-
-#: js/components/AsideList.vue:76
-#: js/components/ListStatus.vue:43
-msgid "Reset"
-msgstr "リセット"
-
-#: js/components/AsideMeta.vue:21
-#: js/components/DetailRefs.vue:133
-#: js/components/DetailRefs.vue:163
-#: js/components/DetailRefs.vue:185
-msgid "ID"
-msgstr "ID"
-
-#: js/components/AsideMeta.vue:25
-#: js/components/ListSort.vue:31
-#: js/fields/File.vue:340
-msgid "MIME"
-msgstr "MIME"
-
-#: js/components/AsideMeta.vue:29
-#: js/fields/File.vue:341
-#: js/listview.js:122
-msgid "editor"
-msgstr "編集者"
-
-#: js/components/AsideMeta.vue:33
-msgid "created"
-msgstr "作成日時"
-
-#: js/components/AsideMeta.vue:34
-#: js/fields/File.vue:342
-msgid "updated"
-msgstr "更新日時"
-
-#: js/components/AsideMeta.vue:35
-msgid "deleted"
-msgstr "削除日時"
-
-#: js/components/AsideMeta.vue:51
-#: js/components/AsideMeta.vue:53
-#: js/components/HistoryDialog.vue:41
-msgid "Meta data"
-msgstr "メタデータ"
-
-#: js/components/ChangesDialog.vue:58
-#: js/components/ChangesDialog.vue:59
-#: js/components/HistoryDialog.vue:41
-msgid "Fields"
-msgstr "フィールド"
-
-#: js/components/ChangesDialog.vue:60
-msgid "Meta tags"
-msgstr "メタタグ"
-
-#: js/components/ChangesDialog.vue:61
-#: js/components/HistoryDialog.vue:42
-msgid "Configuration"
-msgstr "設定"
-
-#: js/components/ChangesDialog.vue:62
-#: js/components/HistoryDialog.vue:42
-#: js/views/PageDetail.vue:821
-msgid "Content"
-msgstr "内容"
-
-#: js/components/ChangesDialog.vue:252
-msgid "Conflicts from %{editor}"
-msgstr "%{editor} からの競合"
-
-#: js/components/ChangesDialog.vue:258
-msgid "%{count} / %{total}"
-msgstr "%{count} / %{total}"
-
-#: js/components/ChangesDialog.vue:280
-#: js/components/Fields.vue:286
-#: js/components/Fields.vue:319
-#: js/components/FieldsAside.vue:253
-msgid "Revert"
-msgstr "変更を取り消す"
-
-#: js/components/ChangesDialog.vue:283
-msgid "Changes"
-msgstr "変更点"
-
-#: js/components/ChangesDialog.vue:302
-msgid "Removed"
-msgstr "削除されました"
-
-#: js/components/ChangesDialog.vue:309
-msgid "Added"
-msgstr "追加されました"
-
-#: js/components/ChangesDialog.vue:329
-msgid "Use theirs"
-msgstr "相手の変更を使用"
-
-#: js/components/ChangesDialog.vue:335
-msgid "Keep mine"
-msgstr "自分の変更を保持"
-
-#: js/components/ChangesDialog.vue:342
-msgid "Merge both"
-msgstr "両方を結合する"
-
-#: js/components/ChatDialog.vue:253
-msgid "Done"
-msgstr "完了"
-
-#: js/components/ChatDialog.vue:263
-msgid "Sorry, something went wrong."
-msgstr "申し訳ありませんが、問題が発生しました。"
-
-#: js/components/ChatDialog.vue:310
-msgid "AI Assistant"
-msgstr "AIアシスタント"
-
-#: js/components/ChatDialog.vue:318
-#: js/components/ChatDialog.vue:319
-msgid "New chat"
-msgstr "新しいチャット"
-
-#: js/components/ChatDialog.vue:330
-#: js/views/ElementList.vue:74
-#: js/views/FileList.vue:74
-#: js/views/PageList.vue:290
+#: js/components/AiPrompt.vue:87 js/components/AiPrompt.vue:88
+#: js/components/ChatDialog.vue:324
 msgid "What shall I do for you?"
 msgstr "何をお手伝いしましょうか？"
 
-#: js/components/ChatDialog.vue:347
+#: js/components/AiPrompt.vue:87
+msgid "Press Enter to open the chat"
+msgstr "Enterキーを押してチャットを開きます"
+
+#: js/components/AiPrompt.vue:104
+msgid "Hide help"
+msgstr "ヘルプを非表示"
+
+#: js/components/AiPrompt.vue:104
+msgid "Show help"
+msgstr "ヘルプを表示"
+
+#: js/components/AiPrompt.vue:115 js/components/ChatDialog.vue:399
+#: js/components/ChatDialog.vue:400
+msgid "Send"
+msgstr "送信"
+
+#: js/components/AiPrompt.vue:123 js/components/ChatDialog.vue:378
+#: js/components/ChatDialog.vue:379 js/components/FieldActions.vue:134
+#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:476
+msgid "Dictate"
+msgstr "ディクテーション"
+
+#: js/components/AiPrompt.vue:132
+msgid "Help"
+msgstr "ヘルプ"
+
+#: js/components/AsideCount.vue:60
+msgid "Used elements"
+msgstr "使用された要素"
+
+#: js/components/AsideList.vue:70
+msgid "Filters"
+msgstr "フィルター"
+
+#: js/components/AsideList.vue:77 js/components/ListStatus.vue:43
+msgid "Reset"
+msgstr "リセット"
+
+#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:155
+#: js/components/DetailRefs.vue:185 js/components/DetailRefs.vue:207
+msgid "ID"
+msgstr "ID"
+
+#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
+#: js/fields/File.vue:334
+msgid "MIME"
+msgstr "MIME"
+
+#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
+msgid "editor"
+msgstr "編集者"
+
+#: js/components/AsideMeta.vue:34
+msgid "created"
+msgstr "作成日時"
+
+#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
+msgid "updated"
+msgstr "更新日時"
+
+#: js/components/AsideMeta.vue:36
+msgid "deleted"
+msgstr "削除日時"
+
+#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
+#: js/components/HistoryDialog.vue:46
+msgid "Meta data"
+msgstr "メタデータ"
+
+#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
+#: js/components/HistoryDialog.vue:46
+msgid "Fields"
+msgstr "フィールド"
+
+#: js/components/ChangesDialog.vue:61
+msgid "Meta tags"
+msgstr "メタタグ"
+
+#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
+msgid "Configuration"
+msgstr "設定"
+
+#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
+#: js/views/PageDetail.vue:707
+msgid "Content"
+msgstr "内容"
+
+#: js/components/ChangesDialog.vue:231
+msgid "Conflicts from %{editor}"
+msgstr "%{editor} からの競合"
+
+#: js/components/ChangesDialog.vue:237
+msgid "%{count} / %{total}"
+msgstr "%{count} / %{total}"
+
+#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
+#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
+msgid "Revert"
+msgstr "変更を取り消す"
+
+#: js/components/ChangesDialog.vue:262
+msgid "Changes"
+msgstr "変更点"
+
+#: js/components/ChangesDialog.vue:281
+msgid "Removed"
+msgstr "削除されました"
+
+#: js/components/ChangesDialog.vue:288
+msgid "Added"
+msgstr "追加されました"
+
+#: js/components/ChangesDialog.vue:308
+msgid "Use theirs"
+msgstr "相手の変更を使用"
+
+#: js/components/ChangesDialog.vue:314
+msgid "Keep mine"
+msgstr "自分の変更を保持"
+
+#: js/components/ChangesDialog.vue:321
+msgid "Merge both"
+msgstr "両方を結合する"
+
+#: js/components/ChatDialog.vue:208
+msgid "Sorry, something went wrong."
+msgstr "申し訳ありませんが、問題が発生しました。"
+
+#: js/components/ChatDialog.vue:284
+msgid "Done"
+msgstr "完了"
+
+#: js/components/ChatDialog.vue:304
+msgid "AI Assistant"
+msgstr "AIアシスタント"
+
+#: js/components/ChatDialog.vue:312 js/components/ChatDialog.vue:313
+msgid "New chat"
+msgstr "新しいチャット"
+
+#: js/components/ChatDialog.vue:341
 msgid "Thinking ..."
 msgstr "考え中 ..."
 
-#: js/components/ChatDialog.vue:353
-#: js/components/PageDetailContentList.vue:750
-#: js/components/PageDetailContentList.vue:836
-#: js/components/PageListItems.vue:1793
-#: js/fields/Items.vue:303
+#: js/components/ChatDialog.vue:347 js/components/ChatDialog.vue:348
+#: js/components/PageDetailContentList.vue:524
+#: js/components/PageDetailContentList.vue:611
+#: js/components/PageListItems.vue:770 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "コピー"
 
-#: js/components/ChatDialog.vue:367
+#: js/components/ChatDialog.vue:362
 msgid "Send a message ..."
 msgstr "メッセージを入力 ..."
 
-#: js/components/ChatDialog.vue:382
-#: js/components/ChatDialog.vue:383
-#: js/components/Fields.vue:279
-#: js/components/FileAiDialog.vue:200
-#: js/components/FileDetailItem.vue:416
-#: js/components/PageDetailContentList.vue:721
-#: js/fields/Items.vue:372
-#: js/views/ElementList.vue:107
-#: js/views/FileList.vue:107
-#: js/views/PageList.vue:323
-msgid "Dictate"
-msgstr "ディクテーション"
+#: js/components/ChatDialog.vue:363
+msgid "Chat message"
+msgstr "チャットメッセージ"
 
-#: js/components/ChatDialog.vue:393
-#: js/components/ChatDialog.vue:394
+#: js/components/ChatDialog.vue:389 js/components/ChatDialog.vue:390
 msgid "Stop"
 msgstr "停止"
 
-#: js/components/ChatDialog.vue:403
-#: js/components/ChatDialog.vue:404
-#: js/views/ElementList.vue:100
-#: js/views/FileList.vue:100
-msgid "Send"
-msgstr "送信"
-
-#: js/components/CommandPalette.vue:105
+#: js/components/CommandPalette.vue:110
 msgid "Go to"
 msgstr "移動"
 
-#: js/components/CommandPalette.vue:226
-#: js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:352
-#: js/components/PageListItems.vue:1907
+#: js/components/CommandPalette.vue:231 js/components/ConfirmDialog.vue:47
+#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
 msgid "New"
 msgstr "新規"
 
-#: js/components/CommandPalette.vue:280
-#: js/components/CommandPalette.vue:303
-#: js/components/Navigation.vue:77
-#: js/components/ShortcutDialog.vue:38
+#: js/components/CommandPalette.vue:286 js/components/CommandPalette.vue:309
+#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "コマンド"
 
-#: js/components/CommandPalette.vue:289
+#: js/components/CommandPalette.vue:295
 msgid "Type a command or search pages, files and elements"
 msgstr "コマンドを入力、またはページ、ファイル、要素を検索"
 
-#: js/components/CommandPalette.vue:290
+#: js/components/CommandPalette.vue:296
 msgid "Command or search term"
 msgstr "コマンドまたは検索語"
 
-#: js/components/CommandPalette.vue:322
-#: js/components/ShortcutDialog.vue:98
+#: js/components/CommandPalette.vue:328 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "→"
 
-#: js/components/CommandPalette.vue:329
+#: js/components/CommandPalette.vue:335
 msgid "Search failed, please try again"
 msgstr "検索に失敗しました。もう一度お試しください"
 
-#: js/components/CommandPalette.vue:330
+#: js/components/CommandPalette.vue:336
 msgid "No results"
 msgstr "結果がありません"
 
-#: js/components/ConfirmDialog.vue:23
-#: js/components/ConfirmDialog.vue:57
-#: js/components/ElementListItems.vue:229
-#: js/components/ElementListItems.vue:335
-#: js/components/FileListItems.vue:314
-#: js/components/FileListItems.vue:462
-#: js/components/PageListItems.vue:1579
-#: js/components/PageListItems.vue:1821
-#: js/views/AccessList.vue:279
+#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
+#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
+#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
+#: js/views/AccessList.vue:265
 msgid "Purge"
 msgstr "完全に削除"
 
 #: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
-msgid_plural "The following %{num} entries will be permanently deleted and cannot be restored:"
+msgid_plural ""
+"The following %{num} entries will be permanently deleted and cannot be "
+"restored:"
 msgstr[0] "次の%{num}件の項目は完全に削除され、復元できません："
 
-#: js/components/ConfirmDialog.vue:55
-#: js/components/FileDetailItemImage.vue:597
-#: js/components/TranslateDialog.vue:99
-#: js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:346
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:422
+#: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
+#: js/views/AccessList.vue:332
 msgid "Cancel"
 msgstr "キャンセル"
 
-#: js/components/DetailAppBar.vue:156
-#: js/views/AccessList.vue:231
-#: js/views/ElementList.vue:41
-#: js/views/FileList.vue:41
-#: js/views/PageList.vue:257
-#: js/views/PluginPanel.vue:66
+#: js/components/DetailAppBar.vue:163 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "メニュー"
 
-#: js/components/DetailAppBar.vue:177
+#: js/components/DetailAppBar.vue:184
 msgid "View history"
 msgstr "履歴を見る"
 
-#: js/components/DetailAppBar.vue:186
+#: js/components/DetailAppBar.vue:193
 msgid "View merge changes"
 msgstr "マージの変更を確認する"
 
-#: js/components/DetailAppBar.vue:210
-#: js/components/DetailAppBar.vue:226
-#: js/components/DetailAppBar.vue:230
-#: js/components/ElementListItems.vue:214
-#: js/components/ElementListItems.vue:304
-#: js/components/FileListItems.vue:292
-#: js/components/FileListItems.vue:427
-#: js/components/PageListItems.vue:1551
-#: js/components/PageListItems.vue:1757
+#: js/components/DetailAppBar.vue:217 js/components/DetailAppBar.vue:233
+#: js/components/DetailAppBar.vue:237 js/components/ListBulkMenu.vue:53
+#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:90
+#: js/components/PageListItems.vue:734
 msgid "Publish"
 msgstr "公開"
 
-#: js/components/DetailAppBar.vue:233
+#: js/components/DetailAppBar.vue:240
 msgid "Publish & Close"
 msgstr "公開して閉じる"
 
-#: js/components/DetailAppBar.vue:238
-#: js/components/DetailAppBar.vue:264
+#: js/components/DetailAppBar.vue:245 js/components/DetailAppBar.vue:271
 msgid "Schedule"
 msgstr "予約"
 
-#: js/components/DetailAppBar.vue:273
+#: js/components/DetailAppBar.vue:280
 msgid "Schedule & Close"
 msgstr "予約して閉じる"
 
-#: js/components/DetailAppBar.vue:281
-#: js/views/ElementList.vue:59
-#: js/views/FileList.vue:59
-#: js/views/PageList.vue:275
-#: js/views/PluginPanel.vue:83
+#: js/components/DetailAppBar.vue:288 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "サイドメニューの切り替え"
 
-#: js/components/DetailRefs.vue:70
+#: js/components/DetailRefs.vue:80
 msgid "yes"
 msgstr "はい"
 
-#: js/components/DetailRefs.vue:73
+#: js/components/DetailRefs.vue:83
 msgid "no"
 msgstr "いいえ"
 
-#: js/components/DetailRefs.vue:134
-#: js/components/FileUrlDialog.vue:219
+#: js/components/DetailRefs.vue:136
+msgid "Error fetching references"
+msgstr "参照の取得エラー"
+
+#: js/components/DetailRefs.vue:156 js/components/FileUrlDialog.vue:232
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:135
-#: js/components/DetailRefs.vue:165
-#: js/components/ElementDetailItem.vue:66
-#: js/components/FileDetailItem.vue:326
-#: js/components/ListSort.vue:32
+#: js/components/DetailRefs.vue:157 js/components/DetailRefs.vue:187
+#: js/components/ElementDetailItem.vue:57 js/components/FileDetailItem.vue:384
+#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "名称"
 
-#: js/components/DetailRefs.vue:147
-#: js/components/PageAccess.vue:176
-#: js/components/PageListItems.vue:475
+#: js/components/DetailRefs.vue:169 js/components/PageAccess.vue:187
+#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "制限付き"
 
-#: js/components/DetailRefs.vue:158
-#: js/views/ElementList.vue:68
+#: js/components/DetailRefs.vue:180 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "要素"
 
-#: js/components/DetailRefs.vue:164
-#: js/components/DetailRefs.vue:186
-#: js/components/ListSort.vue:37
+#: js/components/DetailRefs.vue:186 js/components/DetailRefs.vue:208
+#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "タイプ"
 
-#: js/components/DetailRefs.vue:180
+#: js/components/DetailRefs.vue:202
 msgid "Versions"
 msgstr "バージョン"
 
-#: js/components/DetailRefs.vue:187
-#: js/listview.js:106
+#: js/components/DetailRefs.vue:209 js/listview.js:90
 msgid "Published"
 msgstr "公開済み"
 
-#: js/components/EditBulkDialog.vue:53
-#: js/components/ElementListItems.vue:217
-#: js/components/ElementListItems.vue:317
-#: js/components/FileListItems.vue:295
-#: js/components/FileListItems.vue:437
-#: js/components/PageBulkDialog.vue:135
-#: js/components/PageListItems.vue:1561
-#: js/components/PageListItems.vue:1778
+#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
+#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:140
+#: js/components/PageBulkMenu.vue:100 js/components/PageListItems.vue:755
 msgid "Edit properties"
 msgstr "プロパティを編集"
 
@@ -610,13 +559,10 @@ msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "選択したプロパティを %{num} エントリに適用します。"
 
-#: js/components/EditBulkDialog.vue:71
-#: js/components/ElementDetailItem.vue:79
-#: js/components/FileDetailItem.vue:338
-#: js/components/ListSort.vue:28
-#: js/components/PageDetailItemProps.vue:233
-#: js/components/PageListItems.vue:1647
-#: js/views/PageDetail.vue:749
+#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
+#: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
+#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:635
 msgid "Language"
 msgstr "言語"
 
@@ -624,822 +570,749 @@ msgstr "言語"
 msgid "Language of the content"
 msgstr "コンテンツの言語"
 
-#: js/components/EditBulkDialog.vue:78
-#: js/components/PageAccess.vue:204
-#: js/components/PageBulkDialog.vue:250
+#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
+#: js/components/PageBulkDialog.vue:255
 msgid "Apply"
 msgstr "適用"
 
-#: js/components/ElementDetailItem.vue:66
+#: js/components/ElementDetailItem.vue:57
 msgid "Name to find the shared element in the element list"
 msgstr "要素リストで共有要素を見つけるための名前"
 
-#: js/components/ElementDetailItem.vue:79
+#: js/components/ElementDetailItem.vue:70
 msgid "Language of the element content, choose none if used in all languages"
 msgstr "要素のコンテンツの言語。すべての言語で使用する場合は「なし」を選択"
 
-#: js/components/ElementListItems.vue:152
+#: js/components/ElementListItems.vue:153
+msgid "Error adding shared element"
+msgstr "共有要素の追加エラー"
+
+#: js/components/ElementListItems.vue:159
 msgid "Error trashing shared element"
 msgstr "共有要素をゴミ箱に移動中にエラーが発生しました"
 
-#: js/components/ElementListItems.vue:153
+#: js/components/ElementListItems.vue:160
 msgid "Error restoring shared element"
 msgstr "共有要素の復元エラー"
 
-#: js/components/ElementListItems.vue:154
+#: js/components/ElementListItems.vue:161
 msgid "Error publishing shared element"
 msgstr "共有要素の公開エラー"
 
-#: js/components/ElementListItems.vue:155
+#: js/components/ElementListItems.vue:162
 msgid "Error purging shared element"
 msgstr "共有要素の完全削除中にエラーが発生しました"
 
-#: js/components/ElementListItems.vue:156
+#: js/components/ElementListItems.vue:163
 msgid "Error saving shared element"
 msgstr "共有要素の保存中にエラーが発生しました"
 
-#: js/components/ElementListItems.vue:157
+#: js/components/ElementListItems.vue:164
 msgid "Error fetching shared elements"
 msgstr "共有要素の取得エラー"
 
-#: js/components/ElementListItems.vue:196
-#: js/components/FileListItems.vue:277
-#: js/components/PageDetailContentList.vue:737
-#: js/components/PageListItems.vue:1535
-#: js/views/AccessList.vue:274
-#: js/views/AccessList.vue:318
+#: js/components/ElementListItems.vue:200
+#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:305
+#: js/components/FileListItems.vue:367
+#: js/components/PageDetailContentList.vue:510
+#: js/components/PageDetailContentList.vue:601
+#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
+#: js/views/AccessList.vue:260 js/views/AccessList.vue:304
 msgid "Toggle selection"
 msgstr "選択を切り替える"
 
-#: js/components/ElementListItems.vue:220
-#: js/components/ElementListItems.vue:326
-#: js/components/FileListItems.vue:308
-#: js/components/FileListItems.vue:453
-#: js/components/PageListItems.vue:1573
-#: js/components/PageListItems.vue:1812
-msgid "Delete"
-msgstr "削除"
-
-#: js/components/ElementListItems.vue:226
-#: js/components/ElementListItems.vue:332
-#: js/components/FileListItems.vue:311
-#: js/components/FileListItems.vue:459
-#: js/components/PageListItems.vue:1576
-#: js/components/PageListItems.vue:1818
-msgid "Restore"
-msgstr "復元"
-
-#: js/components/ElementListItems.vue:237
-#: js/components/ElementListItems.vue:380
-#: js/components/PageDetailContentList.vue:924
-#: js/components/PageDetailItemSection.vue:225
-#: js/fields/Items.vue:410
+#: js/components/ElementListItems.vue:218
+#: js/components/ElementListItems.vue:299
+#: js/components/PageDetailContentList.vue:701
+#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "要素を追加する"
 
-#: js/components/ElementListItems.vue:252
-#: js/components/FileListItems.vue:348
-#: js/components/PageDetailContentList.vue:770
-#: js/components/PageListItems.vue:1656
-#: js/components/SchemaItems.vue:145
-#: js/views/AccessList.vue:303
-msgid "Search for"
-msgstr "検索"
-
-#: js/components/ElementListItems.vue:263
-#: js/components/FileListItems.vue:361
-msgid "Updated by another user"
-msgstr "別のユーザーによって更新されました"
-
-#: js/components/ElementListItems.vue:269
-#: js/components/FileListItems.vue:367
-#: js/components/PageListItems.vue:1674
-msgid "Refresh"
-msgstr "最新に更新"
-
-#: js/components/ElementListItems.vue:275
-#: js/components/SchemaItems.vue:156
+#: js/components/ElementListItems.vue:230 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "要素を再読み込み"
 
-#: js/components/Fields.vue:242
-#: js/components/Fields.vue:248
-#: js/components/PageListItems.vue:1591
-#: js/components/PageListItems.vue:1828
-#: js/components/TranslateDialog.vue:66
-#: js/components/TranslateDialog.vue:101
-#: js/fields/Items.vue:337
-#: js/fields/Items.vue:343
-#: js/views/PageDetail.vue:791
+#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
+#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
+#: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
+#: js/views/PageDetail.vue:677
 msgid "Translate"
 msgstr "翻訳する"
 
-#: js/components/Fields.vue:267
-#: js/fields/Items.vue:361
+#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "テキストの生成"
 
-#: js/components/Fields.vue:294
+#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "別の編集者によって更新されました"
 
-#: js/components/Fields.vue:297
+#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "上書きされました"
 
-#: js/components/FieldsAside.vue:77
+#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "モバイル"
 
-#: js/components/FieldsAside.vue:78
+#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "タブレット"
 
-#: js/components/FieldsAside.vue:79
+#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "パソコン"
 
-#: js/components/FieldsAside.vue:79
+#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "全幅"
 
-#: js/components/FieldsAside.vue:176
+#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "コンテンツ要素"
 
-#: js/components/FieldsAside.vue:189
+#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "前に要素を追加"
 
-#: js/components/FieldsAside.vue:197
+#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "後に要素を追加"
 
-#: js/components/FieldsAside.vue:205
+#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "要素の削除"
 
-#: js/components/FieldsAside.vue:213
+#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "レスポンシブプレビュー"
 
-#: js/components/FieldsAside.vue:245
-#: js/components/PageDetailContentList.vue:872
+#: js/components/FieldsAside.vue:231
+#: js/components/PageDetailContentList.vue:647
 msgid "Change to"
 msgstr "変更先"
 
-#: js/components/FileActionMenu.vue:36
-#: js/fields/File.vue:233
-#: js/fields/File.vue:234
-#: js/fields/File.vue:258
-#: js/fields/File.vue:259
-#: js/fields/Images.vue:271
+#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
+#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
+#: js/fields/Images.vue:328
 msgid "Edit"
 msgstr "編集"
 
-#: js/components/FileActionMenu.vue:39
-#: js/components/FileAiDialog.vue:223
-#: js/components/FileAiDialog.vue:250
-#: js/components/FileUrlDialog.vue:231
-#: js/components/PageDetailContentList.vue:762
-#: js/components/PageDetailContentList.vue:842
-#: js/fields/Items.vue:305
-#: js/fields/Table.vue:182
-#: js/fields/Table.vue:231
+#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:254
+#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:244
+#: js/components/PageDetailContentList.vue:536
+#: js/components/PageDetailContentList.vue:617 js/fields/Items.vue:283
+#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "取り除く"
 
-#: js/components/FileAiDialog.vue:116
-#: js/components/FileListItems.vue:153
-#: js/components/FileUrlDialog.vue:59
-#: js/components/FileUrlDialog.vue:158
-#: js/fields/File.vue:102
-#: js/fields/Images.vue:95
+#: js/components/FileAiDialog.vue:129 js/components/FileListItems.vue:174
+#: js/components/FileUrlDialog.vue:62 js/components/FileUrlDialog.vue:164
+#: js/filefield.js:188
 msgid "Error adding file %{path}"
 msgstr "ファイル %{path} の追加エラー"
 
-#: js/components/FileAiDialog.vue:157
+#: js/components/FileAiDialog.vue:173
 msgid "Error creating file"
 msgstr "ファイル作成エラー"
 
-#: js/components/FileAiDialog.vue:189
+#: js/components/FileAiDialog.vue:220
 msgid "Create image"
 msgstr "画像を作成"
 
-#: js/components/FileAiDialog.vue:207
+#: js/components/FileAiDialog.vue:238
 msgid "Describe the image content"
 msgstr "画像の内容を記述"
 
-#: js/components/FileAiDialog.vue:207
+#: js/components/FileAiDialog.vue:238
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "生成する画像の被写体、スタイル、色を記述してください"
 
-#: js/components/FileAiDialog.vue:214
+#: js/components/FileAiDialog.vue:245
 msgid "New image"
 msgstr "新しい画像"
 
-#: js/components/FileAiDialog.vue:218
+#: js/components/FileAiDialog.vue:249
 msgid "Current images"
 msgstr "現在の画像"
 
-#: js/components/FileAiDialog.vue:243
+#: js/components/FileAiDialog.vue:274
 msgid "Images used"
 msgstr "使用画像"
 
-#: js/components/FileAiDialog.vue:260
+#: js/components/FileAiDialog.vue:291
 msgid "Select images"
 msgstr "画像を選択"
 
-#: js/components/FileDetailItem.vue:99
+#: js/components/FileDetailItem.vue:137 js/components/FileDetailItem.vue:146
+msgid "Error copying to clipboard"
+msgstr "クリップボードへのコピーエラー"
+
+#: js/components/FileDetailItem.vue:143
 msgid "Copied to clipboard"
 msgstr "クリップボードにコピーしました"
 
-#: js/components/FileDetailItem.vue:126
+#: js/components/FileDetailItem.vue:170
 msgid "Error describing file"
 msgstr "ファイルの説明エラー"
 
-#: js/components/FileDetailItem.vue:174
-#: js/components/FileListItems.vue:169
-#: js/fields/File.vue:184
-#: js/fields/Images.vue:185
-#: js/views/FileDetail.vue:218
+#: js/components/FileDetailItem.vue:219 js/components/FileListItems.vue:190
+#: js/filefield.js:156 js/views/FileDetail.vue:246
 msgid "Error saving file"
 msgstr "ファイル保存エラー"
 
-#: js/components/FileDetailItem.vue:187
+#: js/components/FileDetailItem.vue:232
 msgid "Transcription is only available for audio and video files"
 msgstr "文字起こしはオーディオファイルとビデオファイルでのみ利用できます。"
 
-#: js/components/FileDetailItem.vue:326
+#: js/components/FileDetailItem.vue:384
 msgid "Name to find the file in the media list"
 msgstr "メディアリストでファイルを見つけるための名前"
 
-#: js/components/FileDetailItem.vue:338
+#: js/components/FileDetailItem.vue:396
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "ファイルのコンテンツの言語。すべての言語で使用する場合は「なし」を選択"
 
-#: js/components/FileDetailItem.vue:348
+#: js/components/FileDetailItem.vue:406
 msgid "Copy URL"
 msgstr "URLをコピー"
 
-#: js/components/FileDetailItem.vue:390
+#: js/components/FileDetailItem.vue:449
 msgid "Descriptions"
 msgstr "説明"
 
-#: js/components/FileDetailItem.vue:398
-#: js/components/FileDetailItem.vue:456
+#: js/components/FileDetailItem.vue:457 js/components/FileDetailItem.vue:516
 msgid "Translate text"
 msgstr "テキストを翻訳する"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:465
 msgid "Generate description"
 msgstr "説明文の作成"
 
-#: js/components/FileDetailItem.vue:432
+#: js/components/FileDetailItem.vue:492
 msgid "Description (%{lang})"
 msgstr "説明 (%{lang})"
 
-#: js/components/FileDetailItem.vue:432
-msgid "Alternative text for screen readers and search engines, also used as caption"
-msgstr "スクリーンリーダーや検索エンジン向けの代替テキスト。キャプションとしても使用されます"
+#: js/components/FileDetailItem.vue:492
+msgid ""
+"Alternative text for screen readers and search engines, also used as caption"
+msgstr ""
+"スクリーンリーダーや検索エンジン向けの代替テキスト。キャプションとしても使用"
+"されます"
 
-#: js/components/FileDetailItem.vue:448
+#: js/components/FileDetailItem.vue:508
 msgid "Transcriptions"
 msgstr "文字起こし"
 
-#: js/components/FileDetailItem.vue:464
+#: js/components/FileDetailItem.vue:524
 msgid "Transcribe file content"
 msgstr "ファイルの内容を文字起こし"
 
-#: js/components/FileDetailItem.vue:481
+#: js/components/FileDetailItem.vue:541
 msgid "Transcription (%{lang})"
 msgstr "文字起こし (%{lang})"
 
-#: js/components/FileDetailItem.vue:481
+#: js/components/FileDetailItem.vue:541
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr "WebVTT形式の音声テキスト。字幕とトランスクリプトとして表示されます"
 
-#: js/components/FileDetailItemImage.vue:145
+#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "オリジナル比率"
 
-#: js/components/FileDetailItemImage.vue:146
+#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "比率なし"
 
-#: js/components/FileDetailItemImage.vue:147
+#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "正方形"
 
-#: js/components/FileDetailItemImage.vue:156
-msgid "Number of pixels added at this side of the image"
-msgstr "画像のこの辺に追加するピクセル数"
+#: js/components/FileDetailItemImage.vue:175
+msgid "Error downloading image"
+msgstr "画像のダウンロード中にエラーが発生しました"
 
-#: js/components/FileDetailItemImage.vue:159
-msgctxt "image edge"
-msgid "Top"
-msgstr "上"
-
-#: js/components/FileDetailItemImage.vue:161
-msgctxt "image edge"
-msgid "Left"
-msgstr "左"
-
-#: js/components/FileDetailItemImage.vue:162
-msgctxt "image edge"
-msgid "Right"
-msgstr "右"
-
-#: js/components/FileDetailItemImage.vue:164
-msgctxt "image edge"
-msgid "Bottom"
-msgstr "下"
-
-#: js/components/FileDetailItemImage.vue:226
-msgid "Error erasing image part"
-msgstr "画像部分消去エラー"
-
-#: js/components/FileDetailItemImage.vue:319
-msgid "Error editing image part"
-msgstr "画像部分の編集エラー"
-
-#: js/components/FileDetailItemImage.vue:331
-msgid "Error removing background"
-msgstr "背景の削除エラー"
-
-#: js/components/FileDetailItemImage.vue:439
+#: js/components/FileDetailItemImage.vue:285
+#: js/components/FileDetailItemImage.vue:370 js/imageai.js:216
 msgid "Error editing image"
 msgstr "画像編集エラー"
 
-#: js/components/FileDetailItemImage.vue:518
-msgid "Error uncropping image"
-msgstr "画像の拡張中にエラーが発生しました"
-
-#: js/components/FileDetailItemImage.vue:548
-msgid "Error upscaling image"
-msgstr "画像の高解像度化中にエラーが発生しました"
-
-#: js/components/FileDetailItemImage.vue:603
-#: js/components/FileDetailItemImage.vue:608
+#: js/components/FileDetailItemImage.vue:428
+#: js/components/FileDetailItemImage.vue:433
 msgid "Select area"
 msgstr "エリアを選択"
 
-#: js/components/FileDetailItemImage.vue:627
+#: js/components/FileDetailItemImage.vue:452
 msgid "Crop selected area"
 msgstr "選択範囲を切り抜く"
 
-#: js/components/FileDetailItemImage.vue:637
+#: js/components/FileDetailItemImage.vue:462
 msgid "Erase selected area"
 msgstr "選択領域の消去"
 
-#: js/components/FileDetailItemImage.vue:648
-#: js/components/FileDetailItemImage.vue:655
-#: js/components/FileDetailItemImage.vue:670
+#: js/components/FileDetailItemImage.vue:474
+#: js/components/FileDetailItemImage.vue:481
+#: js/components/FileDetailItemImage.vue:496
 msgid "Edit image"
 msgstr "画像を編集する"
 
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:487
 msgid "Describe the changes"
 msgstr "変更内容を記述"
 
-#: js/components/FileDetailItemImage.vue:661
+#: js/components/FileDetailItemImage.vue:487
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "画像で変更する内容を記述してください。例: 空を青くする"
 
-#: js/components/FileDetailItemImage.vue:679
+#: js/components/FileDetailItemImage.vue:506
 msgid "Remove background"
 msgstr "背景を取り除く"
 
-#: js/components/FileDetailItemImage.vue:689
-#: js/components/FileDetailItemImage.vue:696
-#: js/components/FileDetailItemImage.vue:716
+#: js/components/FileDetailItemImage.vue:517
+#: js/components/FileDetailItemImage.vue:524
+#: js/components/FileDetailItemImage.vue:544
 msgid "Expand image"
 msgstr "画像を拡張"
 
-#: js/components/FileDetailItemImage.vue:724
-#: js/components/FileDetailItemImage.vue:731
+#: js/components/FileDetailItemImage.vue:552
+#: js/components/FileDetailItemImage.vue:559
 msgid "Upscale image"
 msgstr "画像を高解像度化"
 
-#: js/components/FileDetailItemImage.vue:744
+#: js/components/FileDetailItemImage.vue:572
 msgid "Scale %{factor}"
 msgstr "スケール%{factor}"
 
-#: js/components/FileDetailItemImage.vue:752
+#: js/components/FileDetailItemImage.vue:581
 msgid "Rotate counter-clockwise"
 msgstr "反時計回りに回転"
 
-#: js/components/FileDetailItemImage.vue:758
+#: js/components/FileDetailItemImage.vue:588
 msgid "Rotate clockwise"
 msgstr "時計回りに回転させる"
 
-#: js/components/FileDetailItemImage.vue:765
+#: js/components/FileDetailItemImage.vue:596
 msgid "Flip horizontally"
 msgstr "水平に反転"
 
-#: js/components/FileDetailItemImage.vue:771
+#: js/components/FileDetailItemImage.vue:603
 msgid "Flip vertically"
 msgstr "垂直に反転"
 
-#: js/components/FileDetailItemImage.vue:778
+#: js/components/FileDetailItemImage.vue:611
 msgid "Convert to monochrome"
 msgstr "モノクロに変換する"
 
-#: js/components/FileDetailItemImage.vue:781
+#: js/components/FileDetailItemImage.vue:614
 msgid "Download"
 msgstr "ダウンロード"
 
-#: js/components/FileDetailItemImage.vue:783
-#: js/components/FileDetailItemImage.vue:788
-#: js/components/PageListItems.vue:525
-#: js/components/PageListItems.vue:715
-#: js/lists.js:247
+#: js/components/FileDetailItemImage.vue:616
+#: js/components/FileDetailItemImage.vue:621 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "元に戻す"
 
-#: js/components/FileDetailItemImage.vue:797
+#: js/components/FileDetailItemImage.vue:628
 msgid "Previous edit"
 msgstr "前回の編集"
 
-#: js/components/FileDetailItemImage.vue:802
+#: js/components/FileDetailItemImage.vue:631
 msgid "Original"
 msgstr "オリジナル"
 
-#: js/components/FileDetailItemVideo.vue:69
+#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "ビデオ要素が見つかりません"
 
-#: js/components/FileDetailItemVideo.vue:90
+#: js/components/FileDetailItemVideo.vue:85
+msgid "Video not loaded yet"
+msgstr "動画はまだ読み込まれていません"
+
+#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "ビデオカバーの保存エラー"
 
-#: js/components/FileDetailItemVideo.vue:127
+#: js/components/FileDetailItemVideo.vue:158
+#: js/components/FileDetailItemVideo.vue:202
+#: js/components/FileDetailItemVideo.vue:203
+msgid "Remove cover image"
+msgstr "カバー画像を削除"
+
+#: js/components/FileDetailItemVideo.vue:158
+msgid "Remove the cover image of this video?"
+msgstr "この動画のカバー画像を削除しますか？"
+
+#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "ビデオカバーの削除エラー"
 
-#: js/components/FileDetailItemVideo.vue:136
+#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "ファイルが選択されていません"
 
-#: js/components/FileDetailItemVideo.vue:139
+#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "ビデオカバーのアップロードエラー"
 
-#: js/components/FileDetailItemVideo.vue:167
+#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "カバー画像として使用"
 
-#: js/components/FileDetailItemVideo.vue:175
+#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "カバー画像のアップロード"
 
-#: js/components/FileListItems.vue:165
+#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "ファイルをゴミ箱に移動中にエラーが発生しました"
 
-#: js/components/FileListItems.vue:166
+#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "ファイルの復元エラー"
 
-#: js/components/FileListItems.vue:167
-#: js/detail.js:55
+#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "ファイル公開エラー"
 
-#: js/components/FileListItems.vue:168
+#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "ファイルの完全削除中にエラーが発生しました"
 
-#: js/components/FileListItems.vue:170
+#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "ファイル取得エラー"
 
-#: js/components/FileListItems.vue:242
+#: js/components/FileListItems.vue:269
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "%{num} 件のファイルの説明を翻訳しました"
 
-#: js/components/FileListItems.vue:252
+#: js/components/FileListItems.vue:279
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "%{done} / %{total} 件のファイルの後に説明の翻訳エラーが発生しました"
 
-#: js/components/FileListItems.vue:253
+#: js/components/FileListItems.vue:280
 msgid "Error translating descriptions"
 msgstr "説明の翻訳エラー"
 
-#: js/components/FileListItems.vue:258
+#: js/components/FileListItems.vue:285
 msgid "No missing descriptions to translate"
 msgstr "翻訳が必要な未設定の説明はありません"
 
-#: js/components/FileListItems.vue:304
-#: js/components/FileListItems.vue:446
+#: js/components/FileListItems.vue:326 js/components/FileListItems.vue:390
 msgid "Translate descriptions"
 msgstr "説明を翻訳"
 
-#: js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:334
-#: js/components/FileListItems.vue:557
-#: js/components/FileListItems.vue:567
-#: js/components/FileUrlDialog.vue:188
-#: js/fields/Images.vue:297
-#: js/fields/Images.vue:321
-msgid "Add files"
-msgstr "ファイルの追加"
-
-#: js/components/FileListItems.vue:334
-#: js/components/FileListItems.vue:527
-#: js/components/FileListItems.vue:567
-#: js/components/FileProtect.vue:45
-msgid "Protect access"
-msgstr "ページのアクセス権で保護"
-
-#: js/components/FileListItems.vue:373
+#: js/components/FileListItems.vue:341
 msgid "Reload files"
 msgstr "ファイルを再読み込み"
 
-#: js/components/FileListItems.vue:382
+#: js/components/FileListItems.vue:347
 msgid "Grid view"
 msgstr "グリッドビュー"
 
-#: js/components/FileListItems.vue:390
-msgid "List view"
-msgstr "一覧表示"
+#: js/components/FileListItems.vue:456 js/components/FileProtect.vue:45
+#: js/components/FileUploadButtons.vue:39
+msgid "Protect access"
+msgstr "ページのアクセス権で保護"
 
 #: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
 msgstr "ファイルを含むページの閲覧が許可された訪問者のみがダウンロードできます"
 
-#: js/components/FileUrlDialog.vue:112
+#: js/components/FileUploadButtons.vue:29
+#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:201
+#: js/fields/Images.vue:356 js/fields/Images.vue:380
+msgid "Add files"
+msgstr "ファイルの追加"
+
+#: js/components/FileUrlDialog.vue:118
 msgid "At least one URL is longer than 255 characters"
 msgstr "少なくとも1つのURLが255文字を超えています"
 
-#: js/components/FileUrlDialog.vue:148
+#: js/components/FileUrlDialog.vue:154
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "少なくとも1つのファイルが \"%{mime}*\" 型ではありません。"
 
-#: js/components/FileUrlDialog.vue:152
+#: js/components/FileUrlDialog.vue:158
 msgid "The file is not of type \"%{mime}*\""
 msgstr "ファイルのタイプが \"%{mime}*\" ではありません。"
 
-#: js/components/FileUrlDialog.vue:180
-#: js/fields/Images.vue:304
+#: js/components/FileUrlDialog.vue:186 js/fields/Images.vue:363
 msgid "Add files from URLs"
 msgstr "URLからファイルを追加する"
 
-#: js/components/FileUrlDialog.vue:188
-#: js/fields/File.vue:284
+#: js/components/FileUrlDialog.vue:201 js/fields/File.vue:278
 msgid "Add file"
 msgstr "ファイルを追加する"
 
-#: js/components/FileUrlDialog.vue:201
+#: js/components/FileUrlDialog.vue:214
 msgid "Enter one URL per line"
 msgstr "1行に1つのURLを入力"
 
-#: js/components/FileUrlDialog.vue:202
+#: js/components/FileUrlDialog.vue:215
 msgid "URLs"
 msgstr "URL"
 
-#: js/components/FileUrlDialog.vue:202
+#: js/components/FileUrlDialog.vue:215
 msgid "Files are downloaded from these URLs and added to the media list"
-msgstr "これらのURLからファイルがダウンロードされ、メディアリストに追加されます"
+msgstr ""
+"これらのURLからファイルがダウンロードされ、メディアリストに追加されます"
 
-#: js/components/FileUrlDialog.vue:218
+#: js/components/FileUrlDialog.vue:231
 msgid "Enter URL"
 msgstr "URLを入力"
 
-#: js/components/FileUrlDialog.vue:219
+#: js/components/FileUrlDialog.vue:232
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "このURLからファイルがダウンロードされ、メディアリストに追加されます"
 
-#: js/components/FileUrlDialog.vue:260
+#: js/components/FileUrlDialog.vue:273
 msgid "Size"
 msgstr "サイズ"
 
-#: js/components/HistoryDialog.vue:67
-#: js/components/HistoryDialog.vue:133
-#: js/components/PageDetailContentList.vue:885
+#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
+#: js/components/PageDetailContentList.vue:660
 msgid "Shared element"
 msgstr "共有要素"
 
-#: js/components/HistoryDialog.vue:68
+#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "コンテンツブロック"
 
-#: js/components/HistoryDialog.vue:73
+#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "グループ: %{group} · 位置 %{num}"
 
-#: js/components/HistoryDialog.vue:81
+#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "%{from} から %{to} に移動"
 
-#: js/components/HistoryDialog.vue:82
-#: js/components/HistoryDialog.vue:171
+#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "%{num} フィールドが変更されました"
 
-#: js/components/HistoryDialog.vue:83
+#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "%{total} 件中 %{selected} 件を選択"
 
-#: js/components/HistoryDialog.vue:90
+#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "日付不明"
 
-#: js/components/HistoryDialog.vue:129
+#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "ブロックの位置"
 
-#: js/components/HistoryDialog.vue:134
+#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "値"
 
-#: js/components/HistoryDialog.vue:178
+#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "%{num} ブロックが追加されました"
 
-#: js/components/HistoryDialog.vue:179
+#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "%{num} ブロックが削除されました"
 
-#: js/components/HistoryDialog.vue:180
+#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "%{num} ブロックが変更されました"
 
-#: js/components/HistoryDialog.vue:181
+#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "%{num} ブロックが移動されました"
 
-#: js/components/HistoryDialog.vue:182
+#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "%{num} ファイルが変更されました"
 
-#: js/components/HistoryDialog.vue:183
-#: js/components/HistoryDialog.vue:212
-#: js/components/HistoryDialog.vue:308
+#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
+#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "変更なし"
 
-#: js/components/HistoryDialog.vue:197
+#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "履歴"
 
-#: js/components/HistoryDialog.vue:205
-#: js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30
-#: js/fields/Autocomplete.vue:177
-#: js/fields/Url.vue:150
+#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
+#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
+#: js/fields/Url.vue:172
 msgid "Loading"
 msgstr "読み込み中"
 
-#: js/components/HistoryDialog.vue:208
+#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "バージョンの取得エラー"
 
-#: js/components/HistoryDialog.vue:209
+#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "再試行"
 
-#: js/components/HistoryDialog.vue:223
+#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "現在の変更点"
 
-#: js/components/HistoryDialog.vue:229
-#: js/components/PageListItems.vue:1407
-#: js/lists.js:476
+#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
+#: js/lists.js:510
 msgid "Scheduled for %{date}"
 msgstr "%{date} に予約済み"
 
-#: js/components/HistoryDialog.vue:237
+#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "すべて選択"
 
-#: js/components/HistoryDialog.vue:251
+#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "ブロックが追加されました"
 
-#: js/components/HistoryDialog.vue:252
+#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "ブロックが削除されました"
 
-#: js/components/HistoryDialog.vue:272
+#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "現在位置を維持する"
 
-#: js/components/HistoryDialog.vue:272
-#: js/components/HistoryDialog.vue:292
+#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "現在の値を維持する"
 
-#: js/components/HistoryDialog.vue:318
+#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "以前のバージョン: 最新の保存バージョン"
 
-#: js/components/HistoryDialog.vue:318
+#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "前のバージョン: %{date}"
 
-#: js/components/HistoryDialog.vue:319
+#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "%{total} 件中 %{selected} 件を元に戻す対象として選択"
 
-#: js/components/HistoryDialog.vue:322
+#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "選択した変更を元に戻す"
 
-#: js/components/HistoryDialog.vue:325
+#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "以前のバージョンを復元する"
 
-#: js/components/HistoryField.vue:85
-#: js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133
-#: js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
+#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "以前の値"
 
-#: js/components/HistoryField.vue:85
-#: js/components/HistoryField.vue:121
-#: js/components/HistoryField.vue:133
-#: js/components/HistoryField.vue:153
+#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
+#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "新しい値"
 
-#: js/components/HistoryField.vue:91
+#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "%{name}を拡大"
 
-#: js/components/HistoryField.vue:97
-#: js/components/HistoryField.vue:124
+#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "プレビューを読み込んでいます"
 
-#: js/components/HistoryField.vue:98
-#: js/components/HistoryField.vue:100
-#: js/components/HistoryField.vue:105
-#: js/components/HistoryField.vue:125
-#: js/components/HistoryField.vue:127
+#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
+#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
+#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "プレビューは利用できません"
 
-#: js/components/HistoryField.vue:114
+#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "画像プレビュー"
 
-#: js/components/HistoryField.vue:115
+#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "プレビューを閉じる"
 
-#: js/components/HistoryField.vue:135
+#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "テーブルのプレビュー"
 
-#: js/components/HistoryField.vue:139
+#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} 行が省略されました"
 
-#: js/components/ListSort.vue:27
+#: js/components/ListAppBar.vue:34
+msgid "Close navigation"
+msgstr "ナビゲーションを閉じる"
+
+#: js/components/ListAppBar.vue:34
+msgid "Open navigation"
+msgstr "ナビゲーションを開く"
+
+#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
+#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:787
+msgid "Delete"
+msgstr "削除"
+
+#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
+#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:793
+#: js/components/PageListItems.vue:918
+msgid "Restore"
+msgstr "復元"
+
+#: js/components/ListReload.vue:29
+msgid "Updated by another user"
+msgstr "別のユーザーによって更新されました"
+
+#: js/components/ListReload.vue:35
+msgid "Refresh"
+msgstr "最新に更新"
+
+#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:544
+#: js/views/AccessList.vue:289
+msgid "Search for"
+msgstr "検索"
+
+#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "編集者"
 
-#: js/components/ListSort.vue:29
+#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "最新"
 
-#: js/components/ListSort.vue:30
+#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "最終更新"
 
-#: js/components/ListSort.vue:33
+#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "最古"
 
-#: js/components/ListSort.vue:34
+#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "初回更新"
 
-#: js/components/ListSort.vue:35
+#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "位置"
 
-#: js/components/ListSort.vue:36
-#: js/views/PageList.vue:110
+#: js/components/ListSort.vue:37 js/views/PageList.vue:116
 msgid "Tree"
 msgstr "ツリー"
 
-#: js/components/ListSort.vue:38
+#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "使用状況"
 
-#: js/components/ListSort.vue:61
+#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "並べ替え"
 
@@ -1447,820 +1320,655 @@ msgstr "並べ替え"
 msgid "No entries yet"
 msgstr "まだエントリがありません"
 
-#: js/components/Navigation.vue:53
+#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "パネル"
 
-#: js/components/Navigation.vue:78
-#: js/components/ShortcutDialog.vue:88
+#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "キーボードショートカット"
 
-#: js/components/PageAccess.vue:102
+#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "ページアクセス変更時のエラー"
 
-#: js/components/PageAccess.vue:166
+#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "アクセスの変更はキャッシュの有効期限が切れた直後に有効になります"
 
-#: js/components/PageAccess.vue:170
+#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "公開範囲"
 
-#: js/components/PageAccess.vue:170
-msgid "Public pages are visible to everyone, others only to logged in users or users with the selected roles"
-msgstr "公開ページは全員に表示され、それ以外はログインユーザーまたは選択したロールを持つユーザーにのみ表示されます"
+#: js/components/PageAccess.vue:181
+msgid ""
+"Public pages are visible to everyone, others only to logged in users or "
+"users with the selected roles"
+msgstr ""
+"公開ページは全員に表示され、それ以外はログインユーザーまたは選択したロールを"
+"持つユーザーにのみ表示されます"
 
-#: js/components/PageAccess.vue:174
+#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "公開"
 
-#: js/components/PageAccess.vue:175
-#: js/components/PageListItems.vue:479
+#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "認証されたユーザー"
 
-#: js/components/PageAccess.vue:183
-#: js/components/PageDetailItem.vue:108
-#: js/components/PageListItems.vue:478
-#: js/components/PageListItems.vue:1564
-#: js/components/PageListItems.vue:1781
-#: js/components/PageListItems.vue:1974
-#: js/views/AccessList.vue:240
-#: js/views/AccessList.vue:249
+#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
+#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
+#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
+#: js/views/AccessList.vue:231 js/views/AccessList.vue:235
 msgid "Access"
 msgstr "アクセス"
 
-#: js/components/PageAccess.vue:183
+#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
 msgstr "これらのロールのいずれかを持つ訪問者のみがページを閲覧できます"
 
-#: js/components/PageAccess.vue:193
-#: js/components/PageBulkDialog.vue:264
-msgid "Page bulk changes are limited to 1,000 pages"
-msgstr "ページの一括変更は 1,000 ページに制限されています"
+#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:269
+msgid "Page bulk changes are limited to %{count} pages"
+msgstr "ページの一括変更は %{count} ページに制限されています"
 
-#: js/components/PageAccess.vue:213
-#: js/components/PageBulkDialog.vue:258
+#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:263
 msgid "Apply recursively"
 msgstr "再帰的に適用する"
 
-#: js/components/PageBulkDialog.vue:141
+#: js/components/PageBulkDialog.vue:146
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "選択したプロパティを %{num} ページに適用します。"
 
-#: js/components/PageBulkDialog.vue:152
+#: js/components/PageBulkDialog.vue:157
 msgid "Change status"
 msgstr "ステータス変更"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageBulkDialog.vue:162
+#: js/components/PageDetailItemProps.vue:205
 msgid "Status"
 msgstr "ステータス"
 
-#: js/components/PageBulkDialog.vue:157
-#: js/components/PageDetailItemProps.vue:219
-msgid "Disabled pages are offline, hidden pages are online but not shown in the navigation"
-msgstr "無効なページはオフラインになり、非表示のページはオンラインのままナビゲーションには表示されません"
+#: js/components/PageBulkDialog.vue:162
+#: js/components/PageDetailItemProps.vue:205
+msgid ""
+"Disabled pages are offline, hidden pages are online but not shown in the "
+"navigation"
+msgstr ""
+"無効なページはオフラインになり、非表示のページはオンラインのままナビゲーショ"
+"ンには表示されません"
 
-#: js/components/PageBulkDialog.vue:166
+#: js/components/PageBulkDialog.vue:171
 msgid "Change cache time"
 msgstr "キャッシュ時間を変更する"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:337
-#: js/components/PageListItems.vue:1423
+#: js/components/PageBulkDialog.vue:176
+#: js/components/PageDetailItemProps.vue:323
+#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "キャッシュ時間"
 
-#: js/components/PageBulkDialog.vue:171
-#: js/components/PageDetailItemProps.vue:337
+#: js/components/PageBulkDialog.vue:176
+#: js/components/PageDetailItemProps.vue:323
 msgid "How long the generated page is cached before it is created again"
 msgstr "生成されたページが再作成されるまでキャッシュされる時間"
 
-#: js/components/PageBulkDialog.vue:180
+#: js/components/PageBulkDialog.vue:185
 msgid "Change source language"
 msgstr "ソース言語を変更する"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Source language"
 msgstr "原文"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Language of the source page content"
 msgstr "ソースページのコンテンツの言語"
 
-#: js/components/PageBulkDialog.vue:192
+#: js/components/PageBulkDialog.vue:197
 msgid "Change theme"
 msgstr "テーマの変更"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:306
-#: js/components/PageListItems.vue:1411
+#: js/components/PageBulkDialog.vue:202
+#: js/components/PageDetailItemProps.vue:292
+#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "テーマ"
 
-#: js/components/PageBulkDialog.vue:197
-#: js/components/PageDetailItemProps.vue:306
+#: js/components/PageBulkDialog.vue:202
+#: js/components/PageDetailItemProps.vue:292
 msgid "Design used to display the page"
 msgstr "ページの表示に使用するデザイン"
 
-#: js/components/PageBulkDialog.vue:204
+#: js/components/PageBulkDialog.vue:209
 msgid "Change page type"
 msgstr "ページの種類を変更する"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:315
-#: js/components/PageListItems.vue:1415
+#: js/components/PageBulkDialog.vue:214
+#: js/components/PageDetailItemProps.vue:301
+#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "ページタイプ"
 
-#: js/components/PageBulkDialog.vue:209
-#: js/components/PageDetailItemProps.vue:315
+#: js/components/PageBulkDialog.vue:214
+#: js/components/PageDetailItemProps.vue:301
 msgid "Template of the theme which defines the page layout"
 msgstr "ページレイアウトを定義するテーマのテンプレート"
 
-#: js/components/PageBulkDialog.vue:216
+#: js/components/PageBulkDialog.vue:221
 msgid "Change tag"
 msgstr "タグを変更する"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:326
-#: js/components/PageListItems.vue:1419
+#: js/components/PageBulkDialog.vue:225
+#: js/components/PageDetailItemProps.vue:312
+#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "ページタグ"
 
-#: js/components/PageBulkDialog.vue:220
-#: js/components/PageDetailItemProps.vue:326
+#: js/components/PageBulkDialog.vue:225
+#: js/components/PageDetailItemProps.vue:312
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "テンプレート内でページを見つけるための内部識別子。例: blog"
 
-#: js/components/PageBulkDialog.vue:229
+#: js/components/PageBulkDialog.vue:234
 msgid "Change domain"
 msgstr "ドメインを変更する"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:291
+#: js/components/PageBulkDialog.vue:239
+#: js/components/PageDetailItemProps.vue:277
 msgid "Domain"
 msgstr "ドメイン"
 
-#: js/components/PageBulkDialog.vue:234
-#: js/components/PageDetailItemProps.vue:291
+#: js/components/PageBulkDialog.vue:239
+#: js/components/PageDetailItemProps.vue:277
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "ページが公開されるドメイン。例: example.com"
 
-#: js/components/PageDetailContentList.vue:195
-#: js/components/PageDetailContentList.vue:205
-#: js/components/PageDetailContentList.vue:609
-msgid "Content element not found"
-msgstr "コンテンツ要素が見つかりません"
-
-#: js/components/PageDetailContentList.vue:405
-msgid "Error refining content"
-msgstr "コンテンツの改善エラー"
-
-#: js/components/PageDetailContentList.vue:457
-msgid "Element not found"
-msgstr "要素が見つかりません"
-
-#: js/components/PageDetailContentList.vue:462
-msgid "Element is already shared"
-msgstr "要素はすでに共有されています"
-
-#: js/components/PageDetailContentList.vue:496
-msgid "Unable to make element shared"
-msgstr "要素を共有にできません"
-
-#: js/components/PageDetailContentList.vue:529
-msgid "Not available for this content element"
-msgstr "このコンテンツ要素では使用できません。"
-
-#: js/components/PageDetailContentList.vue:616
-msgid "Element is not shared"
-msgstr "要素は共有されていません"
-
-#: js/components/PageDetailContentList.vue:686
-msgid "Describe the task you want to perform"
-msgstr "実行したいタスクを記述してください"
-
-#: js/components/PageDetailContentList.vue:700
-#: js/views/ElementList.vue:89
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:305
-msgid "Hide help"
-msgstr "ヘルプを非表示"
-
-#: js/components/PageDetailContentList.vue:700
-#: js/views/ElementList.vue:89
-#: js/views/FileList.vue:89
-#: js/views/PageList.vue:305
-msgid "Show help"
-msgstr "ヘルプを表示"
-
-#: js/components/PageDetailContentList.vue:712
-msgid "Refining ..."
-msgstr "調整中..."
-
-#: js/components/PageDetailContentList.vue:712
-msgid "Refine content based on prompt"
-msgstr "プロンプトに基づいてコンテンツを改善"
-
-#: js/components/PageDetailContentList.vue:729
-#: js/views/ElementList.vue:115
-#: js/views/FileList.vue:115
-#: js/views/PageList.vue:331
-msgid "Help"
-msgstr "ヘルプ"
-
-#: js/components/PageDetailContentList.vue:730
-msgid "AI can add or improve content based on your input"
-msgstr "AIは入力内容に基づいてコンテンツを追加・改善できます"
-
-#: js/components/PageDetailContentList.vue:731
-msgid "It can take a long time depending on the task and content size"
-msgstr "タスクやコンテンツのサイズによっては、長い時間がかかることがあります。"
-
-#: js/components/PageDetailContentList.vue:753
-#: js/components/PageDetailContentList.vue:839
-#: js/components/PageListItems.vue:1790
-#: js/fields/Items.vue:304
-msgctxt "clipboard"
-msgid "Cut"
-msgstr "カット"
-
-#: js/components/PageDetailContentList.vue:756
-#: js/components/PageListItems.vue:388
-#: js/components/PageListItems.vue:390
-msgid "Paste"
-msgstr "ペースト"
-
-#: js/components/PageDetailContentList.vue:759
-#: js/components/PageDetailContentList.vue:878
-msgid "Merge"
-msgstr "マージ"
-
-#: js/components/PageDetailContentList.vue:814
-#: js/fields/Items.vue:291
-msgid "Move element"
-msgstr "要素を移動"
-
-#: js/components/PageDetailContentList.vue:848
-#: js/fields/Items.vue:307
-msgid "Paste before"
-msgstr "前に貼り付け"
-
-#: js/components/PageDetailContentList.vue:851
-#: js/fields/Items.vue:308
-msgid "Paste after"
-msgstr "後に貼り付け"
-
-#: js/components/PageDetailContentList.vue:854
-#: js/fields/Items.vue:309
-#: js/fields/Table.vue:180
-#: js/fields/Table.vue:229
-msgid "Insert before"
-msgstr "前に挿入"
-
-#: js/components/PageDetailContentList.vue:857
-#: js/fields/Items.vue:310
-#: js/fields/Table.vue:181
-#: js/fields/Table.vue:230
-msgid "Insert after"
-msgstr "後に挿入"
-
-#: js/components/PageDetailContentList.vue:866
-msgid "Make shared"
-msgstr "共有する"
-
-#: js/components/PageDetailContentList.vue:869
-msgid "Replace with local copy"
-msgstr "ローカルコピーに置き換える"
-
-#: js/components/PageDetailContentList.vue:875
-msgctxt "text element"
-msgid "Split"
-msgstr "分割"
-
-#: js/components/PageDetailEditor.vue:79
-msgid "Double-click to edit"
-msgstr "ダブルクリックで編集"
-
-#: js/components/PageDetailEditor.vue:268
-msgid "Preview mode"
-msgstr "プレビューモード"
-
-#: js/components/PageDetailEditor.vue:271
-msgid "Not CMS content"
-msgstr "CMSコンテンツではない"
-
-#: js/components/PageDetailItem.vue:87
-msgid "Detail"
-msgstr "詳細"
-
-#: js/components/PageDetailItem.vue:94
-msgid "Meta"
-msgstr "メタ"
-
-#: js/components/PageDetailItem.vue:101
-msgid "Config"
-msgstr "設定"
-
-#: js/components/PageDetailItemProps.vue:53
-msgid "Path must not start with a slash (/)"
-msgstr "パスをスラッシュ (/) で始めることはできません。"
-
-#: js/components/PageDetailItemProps.vue:63
-msgid "URL is not valid"
-msgstr "URL が無効です。"
-
-#: js/components/PageDetailItemProps.vue:68
-#: js/views/Login.vue:54
-#: js/views/Login.vue:57
-msgid "Field is required"
-msgstr "この項目は必須です"
-
-#: js/components/PageDetailItemProps.vue:95
-msgid "The path is already in use by another page"
-msgstr "そのパスはすでに別のページで使用されています。"
-
-#: js/components/PageDetailItemProps.vue:233
-msgid "Language of the page content"
-msgstr "ページコンテンツの言語"
-
-#: js/components/PageDetailItemProps.vue:247
-msgid "Page title"
-msgstr "ページタイトル"
-
-#: js/components/PageDetailItemProps.vue:247
-msgid "Shown in the browser tab and search results"
-msgstr "ブラウザのタブと検索結果に表示されます"
-
-#: js/components/PageDetailItemProps.vue:258
-msgid "Page name"
-msgstr "ページ名"
-
-#: js/components/PageDetailItemProps.vue:258
-msgid "Short name shown in the navigation menus"
-msgstr "ナビゲーションメニューに表示される短い名前"
-
-#: js/components/PageDetailItemProps.vue:274
-msgid "URL path"
-msgstr "URLパス"
-
-#: js/components/PageDetailItemProps.vue:274
-msgid "Part of the page URL after the domain, e.g. about-us"
-msgstr "ドメインの後に続くページURLの部分。例: about-us"
-
-#: js/components/PageDetailItemProps.vue:353
-msgid "Redirect URL"
-msgstr "リダイレクトURL"
-
-#: js/components/PageDetailItemProps.vue:353
-msgid "Visitors are forwarded to this URL instead of seeing the page"
-msgstr "訪問者はページを見る代わりにこのURLに転送されます"
-
-#: js/components/PageDetailItemSection.vue:65
-msgid "The element has already been added"
-msgstr "要素はすでに追加されています。"
-
-#: js/components/PageDetailItemSection.vue:198
-msgid "Remove content element"
-msgstr "コンテンツ要素の削除"
-
-#: js/components/PageDetailMetrics.vue:109
-msgid "Views & Visits"
-msgstr "閲覧数と訪問数"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Views"
-msgstr "閲覧数"
-
-#: js/components/PageDetailMetrics.vue:112
-msgid "Visits"
-msgstr "訪問数"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:171
-msgid "Conversions"
-msgstr "コンバージョン"
-
-#: js/components/PageDetailMetrics.vue:117
-msgid "Visit Durations (minutes)"
-msgstr "訪問時間（分）"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Duration"
-msgstr "滞在時間"
-
-#: js/components/PageDetailMetrics.vue:121
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google 検索: インプレッションとクリック数"
-
-#: js/components/PageDetailMetrics.vue:123
-#: js/components/PageDetailMetrics.vue:542
-msgid "Impressions"
-msgstr "インプレッション"
-
-#: js/components/PageDetailMetrics.vue:124
-#: js/components/PageDetailMetrics.vue:543
-msgid "Clicks"
-msgstr "クリック"
-
-#: js/components/PageDetailMetrics.vue:128
-msgid "Google Search: Click-through rate"
-msgstr "Google 検索: クリック率"
-
-#: js/components/PageDetailMetrics.vue:129
-msgid "Percentage"
-msgstr "パーセント"
-
-#: js/components/PageDetailMetrics.vue:168
-msgid "Page Views"
-msgstr "ページビュー"
-
-#: js/components/PageDetailMetrics.vue:169
-msgid "Page Visits"
-msgstr "ページ訪問数"
-
-#: js/components/PageDetailMetrics.vue:172
-msgid "Visit Duration (minutes)"
-msgstr "訪問時間（分）"
-
-#: js/components/PageDetailMetrics.vue:173
-msgid "Google Impressions"
-msgstr "Google インプレッション"
-
-#: js/components/PageDetailMetrics.vue:174
-msgid "Google Clicks"
-msgstr "Google クリック数"
-
-#: js/components/PageDetailMetrics.vue:175
-msgid "Google click-through rate"
-msgstr "Google クリック率"
-
-#: js/components/PageDetailMetrics.vue:181
-msgid "Round trip time"
-msgstr "往復所要時間"
-
-#: js/components/PageDetailMetrics.vue:182
-msgid "Time to first byte"
-msgstr "最初のバイトまでの時間"
-
-#: js/components/PageDetailMetrics.vue:183
-msgid "First contentful paint"
-msgstr "First Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:184
-msgid "Largest contentful paint"
-msgstr "Largest Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:185
-msgid "Interaction to next paint"
-msgstr "Interaction to Next Paint"
-
-#: js/components/PageDetailMetrics.vue:186
-msgid "Cumulative layout shift"
-msgstr "累積レイアウトシフト"
-
-#: js/components/PageDetailMetrics.vue:376
-msgid "Page metrics"
-msgstr "ページ指標"
-
-#: js/components/PageDetailMetrics.vue:382
-msgid "Days"
-msgstr "日数"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Weekly Insights"
-msgstr "週間インサイト"
-
-#: js/components/PageDetailMetrics.vue:452
-msgid "Referrers"
-msgstr "参照元"
-
-#: js/components/PageDetailMetrics.vue:495
-msgid "Countries"
-msgstr "国"
-
-#: js/components/PageDetailMetrics.vue:511
-msgid "Page Speed"
-msgstr "ページ速度"
-
-#: js/components/PageDetailMetrics.vue:536
-msgid "Google Search: Queries"
-msgstr "Google 検索: クエリ"
-
-#: js/components/PageDetailMetrics.vue:544
-msgid "Percent"
-msgstr "パーセント"
-
-#: js/components/PageDetailMetrics.vue:545
-msgctxt "search ranking"
-msgid "Position"
-msgstr "掲載順位"
-
-#: js/components/PageListItems.vue:394
-msgid "Insert"
-msgstr "挿入"
-
-#: js/components/PageListItems.vue:402
-msgid "Before"
-msgstr "前"
-
-#: js/components/PageListItems.vue:403
-msgid "Into"
-msgstr "中に"
-
-#: js/components/PageListItems.vue:404
-msgid "After"
-msgstr "後"
-
-#: js/components/PageListItems.vue:425
-#: js/views/PageList.vue:212
-msgid "Error fetching translation states"
-msgstr "翻訳状態の取得エラー"
-
-#: js/components/PageListItems.vue:432
-msgid "Translating into %{langs}"
-msgstr "%{langs} に翻訳中"
-
-#: js/components/PageListItems.vue:440
-#: js/components/PageListItems.vue:1891
-#: js/views/PageDetail.vue:776
-#: js/views/PageList.vue:143
-msgid "Needs update"
-msgstr "要更新"
-
-#: js/components/PageListItems.vue:441
-#: js/views/PageList.vue:149
-msgid "Missing"
-msgstr "未作成"
-
-#: js/components/PageListItems.vue:442
-#: js/views/PageList.vue:155
-msgid "AI draft"
-msgstr "AI下書き"
-
-#: js/components/PageListItems.vue:445
-#: js/views/PageDetail.vue:775
-msgid "Up to date"
-msgstr "最新"
-
-#: js/components/PageListItems.vue:504
-msgid "Error adding root page"
-msgstr "ルートページの追加エラー"
-
-#: js/components/PageListItems.vue:524
-msgid "Page moved"
-msgstr "ページを移動しました"
-
-#: js/components/PageListItems.vue:595
-msgid "Cache cleared"
-msgstr "キャッシュがクリアされました"
-
-#: js/components/PageListItems.vue:596
-msgid "Cache cleared for %{num} page."
-msgid_plural "Cache cleared for %{num} pages."
-msgstr[0] "%{num} ページのキャッシュをクリアしました。"
-
-#: js/components/PageListItems.vue:606
-msgid "Error clearing cache"
-msgstr "キャッシュクリアエラー"
-
-#: js/components/PageListItems.vue:664
-#: js/views/PageDetail.vue:625
-#: js/views/PageDetail.vue:683
-msgid "Error translating page"
-msgstr "ページの翻訳エラー"
-
-#: js/components/PageListItems.vue:668
-#: js/views/PageDetail.vue:614
-msgid "Error adding language"
-msgstr "言語の追加エラー"
-
-#: js/components/PageListItems.vue:689
-msgid "Error trashing page"
-msgstr "ページをゴミ箱に移動中にエラーが発生しました"
-
-#: js/components/PageListItems.vue:717
-#: js/variants.js:261
-msgid "Error restoring language"
-msgstr "言語の復元エラー"
-
-#: js/components/PageListItems.vue:717
-#: js/components/PageListItems.vue:862
-msgid "Error restoring page"
-msgstr "ページの復元エラー"
-
-#: js/components/PageListItems.vue:726
-#: js/lists.js:241
-msgid "Moved to trash"
-msgid_plural "%{num} entries moved to trash"
-msgstr[0] "%{num} 件をゴミ箱に移動しました"
-
-#: js/components/PageListItems.vue:778
-#: js/components/PageListItems.vue:1154
-msgid "Error fetching pages"
-msgstr "ページ取得エラー"
-
-#: js/components/PageListItems.vue:834
-msgid "Error inserting page"
-msgstr "ページ挿入エラー"
-
-#: js/components/PageListItems.vue:941
-msgid "Error moving page"
-msgstr "ページ移動エラー"
-
-#: js/components/PageListItems.vue:1042
-#: js/views/PageDetail.vue:274
-msgid "Error fetching page"
-msgstr "ページ取得エラー"
-
-#: js/components/PageListItems.vue:1056
-msgid "Error copying page"
-msgstr "ページのコピーエラー"
-
-#: js/components/PageListItems.vue:1102
-#: js/detail.js:61
-msgid "Error publishing page"
-msgstr "ページ公開エラー"
-
-#: js/components/PageListItems.vue:1121
-msgid "All subpages of these pages will be purged as well."
-msgstr "これらのページのすべてのサブページも完全に削除されます。"
-
-#: js/components/PageListItems.vue:1130
-msgid "Error purging page"
-msgstr "ページの完全削除中にエラーが発生しました"
-
-#: js/components/PageListItems.vue:1318
-msgid "%{num} page could not be updated"
-msgid_plural "%{num} pages could not be updated"
-msgstr[0] "%{num} ページを更新できませんでした"
-
-#: js/components/PageListItems.vue:1329
-#: js/components/PageListItems.vue:1384
-#: js/views/PageDetail.vue:575
-msgid "Error saving page"
-msgstr "ページ保存エラー"
-
-#: js/components/PageListItems.vue:1339
-msgid "Error searching pages"
-msgstr "ページの検索中にエラーが発生しました"
-
-#: js/components/PageListItems.vue:1423
-#: js/utils.js:37
-msgid "%{num} minute"
-msgid_plural "%{num} minutes"
-msgstr[0] "%{num} 分"
-
-#: js/components/PageListItems.vue:1554
-#: js/components/PageListItems.vue:1764
+#: js/components/PageBulkMenu.vue:93 js/components/PageListItems.vue:741
 msgctxt "page status"
 msgid "Enable"
 msgstr "有効にする"
 
-#: js/components/PageListItems.vue:1557
-#: js/components/PageListItems.vue:1770
+#: js/components/PageBulkMenu.vue:96 js/components/PageListItems.vue:747
 msgctxt "page status"
 msgid "Disable"
 msgstr "無効にする"
 
-#: js/components/PageListItems.vue:1567
-#: js/components/PageListItems.vue:1784
+#: js/components/PageBulkMenu.vue:106 js/components/PageListItems.vue:761
 msgid "Clear cache"
 msgstr "キャッシュをクリア"
 
-#: js/components/PageListItems.vue:1599
-#: js/components/PageListItems.vue:1841
-#: js/views/PageDetail.vue:794
+#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
+#: js/views/PageDetail.vue:680
 msgid "Ignore changes"
 msgstr "変更を無視"
 
-#: js/components/PageListItems.vue:1608
-#: js/components/PageListItems.vue:1850
+#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:825
 msgid "Delete this language"
 msgstr "この言語を削除"
 
-#: js/components/PageListItems.vue:1616
-#: js/components/PageListItems.vue:1858
+#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:833
 msgid "Restore this language"
 msgstr "この言語を復元"
 
-#: js/components/PageListItems.vue:1624
-#: js/components/PageListItems.vue:1866
-msgid "Purge this language"
-msgstr "この言語を完全に削除"
+#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:841
+msgid "Purge language"
+msgstr "言語を完全に削除"
 
-#: js/components/PageListItems.vue:1634
-#: js/components/PageListItems.vue:1952
+#: js/components/PageDetailContentList.vue:161
+#: js/components/PageDetailContentList.vue:171 js/contentshare.js:110
+msgid "Content element not found"
+msgstr "コンテンツ要素が見つかりません"
+
+#: js/components/PageDetailContentList.vue:370
+msgid "Not available for this content element"
+msgstr "このコンテンツ要素では使用できません。"
+
+#: js/components/PageDetailContentList.vue:380
+msgid "Error splitting text"
+msgstr "テキストの分割エラー"
+
+#: js/components/PageDetailContentList.vue:495
+msgid "Describe the task you want to perform"
+msgstr "実行したいタスクを記述してください"
+
+#: js/components/PageDetailContentList.vue:496
+msgid "Refining ..."
+msgstr "調整中..."
+
+#: js/components/PageDetailContentList.vue:496
+msgid "Refine content based on prompt"
+msgstr "プロンプトに基づいてコンテンツを改善"
+
+#: js/components/PageDetailContentList.vue:500
+msgid "AI can add or improve content based on your input"
+msgstr "AIは入力内容に基づいてコンテンツを追加・改善できます"
+
+#: js/components/PageDetailContentList.vue:501
+msgid "It can take a long time depending on the task and content size"
+msgstr "タスクやコンテンツのサイズによっては、長い時間がかかることがあります。"
+
+#: js/components/PageDetailContentList.vue:527
+#: js/components/PageDetailContentList.vue:614
+#: js/components/PageListItems.vue:767 js/fields/Items.vue:282
+msgctxt "clipboard"
+msgid "Cut"
+msgstr "カット"
+
+#: js/components/PageDetailContentList.vue:530 js/pagetree.js:37
+msgid "Paste"
+msgstr "ペースト"
+
+#: js/components/PageDetailContentList.vue:533
+#: js/components/PageDetailContentList.vue:653
+msgid "Merge"
+msgstr "マージ"
+
+#: js/components/PageDetailContentList.vue:588 js/fields/Items.vue:269
+msgid "Move element"
+msgstr "要素を移動"
+
+#: js/components/PageDetailContentList.vue:623 js/fields/Items.vue:285
+msgid "Paste before"
+msgstr "前に貼り付け"
+
+#: js/components/PageDetailContentList.vue:626 js/fields/Items.vue:286
+msgid "Paste after"
+msgstr "後に貼り付け"
+
+#: js/components/PageDetailContentList.vue:629 js/fields/Items.vue:287
+#: js/fields/Table.vue:86 js/fields/Table.vue:95
+msgid "Insert before"
+msgstr "前に挿入"
+
+#: js/components/PageDetailContentList.vue:632 js/fields/Items.vue:288
+#: js/fields/Table.vue:87 js/fields/Table.vue:96
+msgid "Insert after"
+msgstr "後に挿入"
+
+#: js/components/PageDetailContentList.vue:641
+msgid "Make shared"
+msgstr "共有する"
+
+#: js/components/PageDetailContentList.vue:644
+msgid "Replace with local copy"
+msgstr "ローカルコピーに置き換える"
+
+#: js/components/PageDetailContentList.vue:650
+msgctxt "text element"
+msgid "Split"
+msgstr "分割"
+
+#: js/components/PageDetailEditor.vue:78
+msgid "Double-click to edit"
+msgstr "ダブルクリックで編集"
+
+#: js/components/PageDetailEditor.vue:277
+msgid "Preview mode"
+msgstr "プレビューモード"
+
+#: js/components/PageDetailEditor.vue:280
+msgid "Not CMS content"
+msgstr "CMSコンテンツではない"
+
+#: js/components/PageDetailItem.vue:83
+msgid "Detail"
+msgstr "詳細"
+
+#: js/components/PageDetailItem.vue:90
+msgid "Meta"
+msgstr "メタ"
+
+#: js/components/PageDetailItem.vue:97
+msgid "Config"
+msgstr "設定"
+
+#: js/components/PageDetailItemProps.vue:68
+msgid "Path must not start with a slash (/)"
+msgstr "パスをスラッシュ (/) で始めることはできません。"
+
+#: js/components/PageDetailItemProps.vue:78
+msgid "URL is not valid"
+msgstr "URL が無効です。"
+
+#: js/components/PageDetailItemProps.vue:83 js/views/Login.vue:61
+#: js/views/Login.vue:64
+msgid "Field is required"
+msgstr "この項目は必須です"
+
+#: js/components/PageDetailItemProps.vue:114
+msgid "The path is already in use by another page"
+msgstr "そのパスはすでに別のページで使用されています。"
+
+#: js/components/PageDetailItemProps.vue:219
+msgid "Language of the page content"
+msgstr "ページコンテンツの言語"
+
+#: js/components/PageDetailItemProps.vue:233
+msgid "Page title"
+msgstr "ページタイトル"
+
+#: js/components/PageDetailItemProps.vue:233
+msgid "Shown in the browser tab and search results"
+msgstr "ブラウザのタブと検索結果に表示されます"
+
+#: js/components/PageDetailItemProps.vue:244
+msgid "Page name"
+msgstr "ページ名"
+
+#: js/components/PageDetailItemProps.vue:244
+msgid "Short name shown in the navigation menus"
+msgstr "ナビゲーションメニューに表示される短い名前"
+
+#: js/components/PageDetailItemProps.vue:260
+msgid "URL path"
+msgstr "URLパス"
+
+#: js/components/PageDetailItemProps.vue:260
+msgid "Part of the page URL after the domain, e.g. about-us"
+msgstr "ドメインの後に続くページURLの部分。例: about-us"
+
+#: js/components/PageDetailItemProps.vue:339
+msgid "Redirect URL"
+msgstr "リダイレクトURL"
+
+#: js/components/PageDetailItemProps.vue:339
+msgid "Visitors are forwarded to this URL instead of seeing the page"
+msgstr "訪問者はページを見る代わりにこのURLに転送されます"
+
+#: js/components/PageDetailItemSection.vue:63
+msgid "The element has already been added"
+msgstr "要素はすでに追加されています。"
+
+#: js/components/PageDetailItemSection.vue:178
+msgid "Remove content element"
+msgstr "コンテンツ要素の削除"
+
+#: js/components/PageDetailMetrics.vue:99
+msgid "Views & Visits"
+msgstr "閲覧数と訪問数"
+
+#: js/components/PageDetailMetrics.vue:101
+msgid "Views"
+msgstr "閲覧数"
+
+#: js/components/PageDetailMetrics.vue:102
+msgid "Visits"
+msgstr "訪問数"
+
+#: js/components/PageDetailMetrics.vue:103
+#: js/components/PageDetailMetrics.vue:142
+msgid "Conversions"
+msgstr "コンバージョン"
+
+#: js/components/PageDetailMetrics.vue:107
+msgid "Visit Durations (minutes)"
+msgstr "訪問時間（分）"
+
+#: js/components/PageDetailMetrics.vue:108
+msgid "Duration"
+msgstr "滞在時間"
+
+#: js/components/PageDetailMetrics.vue:111
+msgid "Google Search: Impressions & Clicks"
+msgstr "Google 検索: インプレッションとクリック数"
+
+#: js/components/PageDetailMetrics.vue:113
+#: js/components/PageDetailMetrics.vue:415
+msgid "Impressions"
+msgstr "インプレッション"
+
+#: js/components/PageDetailMetrics.vue:114
+#: js/components/PageDetailMetrics.vue:416
+msgid "Clicks"
+msgstr "クリック"
+
+#: js/components/PageDetailMetrics.vue:118
+msgid "Google Search: Click-through rate"
+msgstr "Google 検索: クリック率"
+
+#: js/components/PageDetailMetrics.vue:119
+msgid "Percentage"
+msgstr "パーセント"
+
+#: js/components/PageDetailMetrics.vue:139
+msgid "Page Views"
+msgstr "ページビュー"
+
+#: js/components/PageDetailMetrics.vue:140
+msgid "Page Visits"
+msgstr "ページ訪問数"
+
+#: js/components/PageDetailMetrics.vue:143
+msgid "Visit Duration (minutes)"
+msgstr "訪問時間（分）"
+
+#: js/components/PageDetailMetrics.vue:144
+msgid "Google Impressions"
+msgstr "Google インプレッション"
+
+#: js/components/PageDetailMetrics.vue:145
+msgid "Google Clicks"
+msgstr "Google クリック数"
+
+#: js/components/PageDetailMetrics.vue:146
+msgid "Google click-through rate"
+msgstr "Google クリック率"
+
+#: js/components/PageDetailMetrics.vue:152
+msgid "Round trip time"
+msgstr "往復所要時間"
+
+#: js/components/PageDetailMetrics.vue:153
+msgid "Time to first byte"
+msgstr "最初のバイトまでの時間"
+
+#: js/components/PageDetailMetrics.vue:154
+msgid "First contentful paint"
+msgstr "First Contentful Paint"
+
+#: js/components/PageDetailMetrics.vue:155
+msgid "Largest contentful paint"
+msgstr "Largest Contentful Paint"
+
+#: js/components/PageDetailMetrics.vue:156
+msgid "Interaction to next paint"
+msgstr "Interaction to Next Paint"
+
+#: js/components/PageDetailMetrics.vue:157
+msgid "Cumulative layout shift"
+msgstr "累積レイアウトシフト"
+
+#: js/components/PageDetailMetrics.vue:238
+msgid "Error fetching metrics"
+msgstr "統計情報の取得中にエラーが発生しました"
+
+#: js/components/PageDetailMetrics.vue:260
+msgid "Page metrics"
+msgstr "ページ指標"
+
+#: js/components/PageDetailMetrics.vue:266
+msgid "Days"
+msgstr "日数"
+
+#: js/components/PageDetailMetrics.vue:293
+msgid "Weekly Insights"
+msgstr "週間インサイト"
+
+#: js/components/PageDetailMetrics.vue:325
+msgid "Referrers"
+msgstr "参照元"
+
+#: js/components/PageDetailMetrics.vue:368
+msgid "Countries"
+msgstr "国"
+
+#: js/components/PageDetailMetrics.vue:384
+msgid "Page Speed"
+msgstr "ページ速度"
+
+#: js/components/PageDetailMetrics.vue:409
+msgid "Google Search: Queries"
+msgstr "Google 検索: クエリ"
+
+#: js/components/PageDetailMetrics.vue:417
+msgid "Percent"
+msgstr "パーセント"
+
+#: js/components/PageDetailMetrics.vue:418
+msgctxt "search ranking"
+msgid "Position"
+msgstr "掲載順位"
+
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
+#: js/views/PageDetail.vue:662 js/views/PageList.vue:149
+msgid "Needs update"
+msgstr "要更新"
+
+#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:155
+msgid "Missing"
+msgstr "未作成"
+
+#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:161
+msgid "AI draft"
+msgstr "AI下書き"
+
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:661
+msgid "Up to date"
+msgstr "最新"
+
+#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:221
+msgid "Error fetching translation states"
+msgstr "翻訳状態の取得エラー"
+
+#: js/components/PageListItems.vue:255
+msgid "Error adding root page"
+msgstr "ルートページの追加エラー"
+
+#: js/components/PageListItems.vue:293 js/variants.js:405 js/variants.js:475
+msgid "Error translating page"
+msgstr "ページの翻訳エラー"
+
+#: js/components/PageListItems.vue:297 js/variants.js:394
+msgid "Error adding language"
+msgstr "言語の追加エラー"
+
+#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
+#: js/pagetree.js:152
+msgid "Error fetching pages"
+msgstr "ページ取得エラー"
+
+#: js/components/PageListItems.vue:504
+msgid "Error searching pages"
+msgstr "ページの検索中にエラーが発生しました"
+
+#: js/components/PageListItems.vue:540 js/options.js:50
+msgid "%{num} minute"
+msgid_plural "%{num} minutes"
+msgstr[0] "%{num} 分"
+
+#: js/components/PageListItems.vue:549
+msgid "Translating into %{langs}"
+msgstr "%{langs} に翻訳中"
+
+#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:948
 msgid "Add page"
 msgstr "ページ追加"
 
-#: js/components/PageListItems.vue:1668
+#: js/components/PageListItems.vue:656
 msgid "Reload page tree"
 msgstr "ページツリーの再読み込み"
 
-#: js/components/PageListItems.vue:1689
+#: js/components/PageListItems.vue:669
 msgid "Translating %{done} of %{total}"
 msgstr "翻訳中 %{done} / %{total}"
 
-#: js/components/PageListItems.vue:1704
+#: js/components/PageListItems.vue:685
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
-msgstr "移動には矢印キーを使用してください。順序を変更するには、Altキーと矢印キーを同時に押してください。"
+msgstr ""
+"移動には矢印キーを使用してください。順序を変更するには、Altキーと矢印キーを同"
+"時に押してください。"
 
-#: js/components/PageListItems.vue:1706
+#: js/components/PageListItems.vue:687
 msgid "Moved to position %{position} of %{total}"
 msgstr "%{total} 件中 %{position} 番目に移動しました"
 
-#: js/components/PageListItems.vue:1708
+#: js/components/PageListItems.vue:689
 msgid "Outdented to level %{level}, position %{position} of %{total}"
-msgstr "レベル %{level} にインデントを解除しました（%{total} 件中 %{position} 番目）"
+msgstr ""
+"レベル %{level} にインデントを解除しました（%{total} 件中 %{position} 番目）"
 
-#: js/components/PageListItems.vue:1714
+#: js/components/PageListItems.vue:695
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "レベル %{level} にインデントしました（%{total} 件中 %{position} 番目）"
 
-#: js/components/PageListItems.vue:1734
+#: js/components/PageListItems.vue:715
 msgid "Toggle child nodes"
 msgstr "子ノードの切り替え"
 
-#: js/components/PageListItems.vue:1750
-msgid "Create in %{lang}"
-msgstr "%{lang} で作成"
+#: js/components/PageListItems.vue:890 js/options.js:64
+msgid "Hidden in navigation"
+msgstr "ナビゲーションで非表示"
 
-#: js/components/PageListItems.vue:1933
-#: js/views/PageDetail.vue:778
+#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:664
 msgid "Create"
 msgstr "作成"
 
-#: js/components/PageListItems.vue:1977
+#: js/components/PageListItems.vue:974
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "%{num} ページにアクセス設定を適用します。"
 
-#: js/components/ReloginDialog.vue:95
+#: js/components/PasswordField.vue:35
+msgid "Password"
+msgstr "パスワード"
+
+#: js/components/PasswordField.vue:42
+msgid "Hide password"
+msgstr "パスワードを非表示にする"
+
+#: js/components/PasswordField.vue:42
+msgid "Show password"
+msgstr "パスワードを表示"
+
+#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "まだサインインしていません"
 
-#: js/components/ReloginDialog.vue:99
-#: js/components/ReloginDialog.vue:121
-#: js/stores.js:338
-#: js/views/Login.vue:146
-msgid "Login failed"
-msgstr "ログインに失敗しました"
-
-#: js/components/ReloginDialog.vue:134
+#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "セッションの有効期限が切れました"
 
-#: js/components/ReloginDialog.vue:135
-#: js/components/ReloginDialog.vue:207
+#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
 #: js/components/User.vue:134
 msgid "Logout"
 msgstr "ログアウト"
 
-#: js/components/ReloginDialog.vue:148
-msgid "Please sign in again in the new tab and return here to continue. Your unsaved changes are kept."
-msgstr "新しいタブで再度サインインし、ここに戻って続行してください。保存されていない変更は保持されます。"
+#: js/components/ReloginDialog.vue:151
+msgid ""
+"Please sign in again in the new tab and return here to continue. Your "
+"unsaved changes are kept."
+msgstr ""
+"新しいタブで再度サインインし、ここに戻って続行してください。保存されていない"
+"変更は保持されます。"
 
-#: js/components/ReloginDialog.vue:154
+#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr "続行するには再度サインインしてください。未保存の変更は保持されます。"
 
-#: js/components/ReloginDialog.vue:167
-#: js/views/Login.vue:237
+#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "サインイン"
 
-#: js/components/ReloginDialog.vue:175
-#: js/views/Login.vue:199
+#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "Eメール"
 
-#: js/components/ReloginDialog.vue:183
-#: js/views/Login.vue:209
-msgid "Password"
-msgstr "パスワード"
-
-#: js/components/ReloginDialog.vue:191
-#: js/views/Login.vue:219
-msgid "Hide password"
-msgstr "パスワードを非表示にする"
-
-#: js/components/ReloginDialog.vue:191
-#: js/views/Login.vue:219
-msgid "Show password"
-msgstr "パスワードを表示"
-
-#: js/components/ReloginDialog.vue:217
+#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "続行"
 
-#: js/components/ReloginDialog.vue:217
-#: js/views/Login.vue:240
+#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "ログイン"
 
@@ -2276,102 +1984,108 @@ msgstr "新しい要素"
 msgid "Only elements in %{lang}"
 msgstr "%{lang} の要素のみ"
 
-#: js/components/SchemaItems.vue:111
+#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "未分類"
 
-#: js/components/SchemaItems.vue:124
+#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "コンテンツ要素の取得中にエラーが発生しました"
 
-#: js/components/ShortcutDialog.vue:29
+#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "一般"
 
-#: js/components/ShortcutDialog.vue:34
+#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "ダイアログまたはメニューを閉じる"
 
-#: js/components/ShortcutDialog.vue:40
+#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "コマンドと結果の間を移動"
 
-#: js/components/ShortcutDialog.vue:41
+#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "コマンドを実行または結果を開く"
 
-#: js/components/ShortcutDialog.vue:42
+#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "コマンドパレットを閉じる"
 
-#: js/components/ShortcutDialog.vue:46
+#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "リスト"
 
-#: js/components/ShortcutDialog.vue:50
+#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "編集画面"
 
-#: js/components/ShortcutDialog.vue:54
+#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "ページの内容"
 
-#: js/components/ShortcutDialog.vue:55
+#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "コンテンツ要素を上下に移動"
 
-#: js/components/ShortcutDialog.vue:58
+#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "ページツリー"
 
-#: js/components/ShortcutDialog.vue:61
+#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "ページ間を移動"
 
-#: js/components/ShortcutDialog.vue:62
+#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "ページを展開"
 
-#: js/components/ShortcutDialog.vue:63
+#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "フォーカス中のページにサブページを追加"
 
-#: js/components/ShortcutDialog.vue:64
+#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "ページの並べ替えまたは階層の変更"
 
-#: js/components/ShortcutDialog.vue:70
+#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "AIチャット"
 
-#: js/components/ShortcutDialog.vue:73
+#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "メッセージを送信"
 
-#: js/components/ShortcutDialog.vue:74
+#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "改行"
 
-#: js/components/ShortcutDialog.vue:75
+#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "以前のメッセージを呼び出す"
 
-#: js/components/TranslateDialog.vue:70
+#: js/components/TranslateDialog.vue:74
 msgid "Translate into"
 msgstr "翻訳先"
 
-#: js/components/TranslateDialog.vue:72
+#: js/components/TranslateDialog.vue:76
 msgid "Languages"
 msgstr "言語"
 
-#: js/components/TranslateDialog.vue:87
+#: js/components/TranslateDialog.vue:91
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "%{num} ページを選択しました。"
 
-#: js/components/TranslateDialog.vue:92
-msgid "Only missing and outdated translations are created. Pages in their source language and up to date translations are skipped. The translations run in the background and are saved as drafts for review."
-msgstr "不足している翻訳と古い翻訳のみが作成されます。ソース言語のページと最新の翻訳はスキップされます。翻訳はバックグラウンドで実行され、レビュー用の下書きとして保存されます。"
+#: js/components/TranslateDialog.vue:96
+msgid ""
+"Only missing and outdated translations are created. Pages in their source "
+"language and up to date translations are skipped. The translations run in "
+"the background and are saved as drafts for review."
+msgstr ""
+"不足している翻訳と古い翻訳のみが作成されます。ソース言語のページと最新の翻訳"
+"はスキップされます。翻訳はバックグラウンドで実行され、レビュー用の下書きとし"
+"て保存されます。"
 
 #: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
@@ -2379,7 +2093,8 @@ msgstr "保存されていない変更"
 
 #: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
-msgstr "保存されていない変更があります。このまま閉じると、これらの変更は失われます。"
+msgstr ""
+"保存されていない変更があります。このまま閉じると、これらの変更は失われます。"
 
 #: js/components/UnsavedDialog.vue:50
 msgid "Discard"
@@ -2389,22 +2104,49 @@ msgstr "破棄"
 msgid "Save & leave"
 msgstr "保存して退出"
 
-#: js/components/User.vue:60
+#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "ユーザーのロードに失敗しました"
+
+#: js/components/User.vue:86
+msgid "Logout failed"
+msgstr "ログアウトに失敗しました"
 
 #: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "明暗モードの切り替え"
 
-#: js/components/User.vue:106
-#: js/components/User.vue:111
+#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "言語を切り替える"
 
 #: js/components/User.vue:120
 msgid "User menu"
 msgstr "ユーザーメニュー"
+
+#: js/contentrefine.js:125
+msgid "Elements changed during the refinement were kept unchanged"
+msgstr "改善中に変更された要素はそのまま保持されました"
+
+#: js/contentrefine.js:134
+msgid "Error refining content"
+msgstr "コンテンツの改善エラー"
+
+#: js/contentshare.js:51
+msgid "Element not found"
+msgstr "要素が見つかりません"
+
+#: js/contentshare.js:56
+msgid "Element is already shared"
+msgstr "要素はすでに共有されています"
+
+#: js/contentshare.js:101
+msgid "Unable to make element shared"
+msgstr "要素を共有にできません"
+
+#: js/contentshare.js:117
+msgid "Element is not shared"
+msgstr "要素は共有されていません"
 
 #: js/detail.js:47
 msgid "Element published successfully"
@@ -2434,14 +2176,29 @@ msgstr "ページを公開しました"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "ページは %{date} に公開予定です"
 
-#: js/detail.js:308
-#: js/fields/Autocomplete.vue:176
+#: js/detail.js:61 js/pageactions.js:79
+msgid "Error publishing page"
+msgstr "ページ公開エラー"
+
+#: js/detail.js:276
+msgid "Not published, please review the changes and publish again"
+msgstr "公開されていません。変更内容を確認して、もう一度公開してください"
+
+#: js/detail.js:346 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "データなし"
 
-#: js/detail.js:342
+#: js/detail.js:347
+msgid "No version data available"
+msgstr "バージョンデータがありません"
+
+#: js/detail.js:437
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "無効なフィールドがあります。先にエラーを解決してください"
+
+#: js/dictation.js:23 js/dictation.js:42
+msgid "Error recording audio"
+msgstr "録音エラー"
 
 #: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
@@ -2451,206 +2208,368 @@ msgstr "値は16進数のカラーコードでなければなりません。"
 msgid "File is required"
 msgstr "ファイルが必要"
 
-#: js/fields/File.vue:291
+#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "URLからファイルを追加"
 
-#: js/fields/File.vue:299
-#: js/fields/Images.vue:314
+#: js/fields/File.vue:293 js/fields/Images.vue:373
 msgid "Create file"
 msgstr "ファイル作成"
 
-#: js/fields/File.vue:305
+#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "ファイルのアップロード"
 
-#: js/fields/File.vue:330
+#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "ここにファイルをドロップしてアップロードします"
 
-#: js/fields/File.vue:338
+#: js/fields/File.vue:332
 msgid "name"
 msgstr "名称"
 
-#: js/fields/File.vue:339
+#: js/fields/File.vue:333
 msgid "description"
 msgstr "説明"
 
-#: js/fields/Images.vue:338
+#: js/fields/Images.vue:397
 msgid "Drop files here"
 msgstr "ここにファイルをドロップします"
 
-#: js/fields/Map.vue:218
-msgid "Clear location"
-msgstr "位置をクリア"
+#: js/fields/Map.vue:214
+msgid "Map location"
+msgstr "地図上の位置"
 
-#: js/fields/Map.vue:221
+#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "地図をクリックして位置を設定してください"
+
+#: js/fields/Map.vue:224
+msgid "Clear location"
+msgstr "位置をクリア"
 
 #: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "値の形式が無効です"
 
-#: js/fields/Table.vue:168
+#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "列を移動する"
 
-#: js/fields/Table.vue:173
+#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "列の操作"
 
-#: js/fields/Table.vue:202
+#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "行を移動"
 
-#: js/fields/Table.vue:222
+#: js/fields/Table.vue:295
+msgid "Row %{row}, column %{col}"
+msgstr "%{row}行目、%{col}列目"
+
+#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "行操作"
 
-#: js/fields/Url.vue:61
-#: js/utils.js:280
+#: js/fields/Url.vue:50 js/options.js:93
 msgid "None"
 msgstr "なし"
 
-#: js/fields/Url.vue:62
+#: js/fields/Url.vue:51
 msgid "Sponsored"
 msgstr "スポンサー"
 
-#: js/fields/Url.vue:63
+#: js/fields/Url.vue:52
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:75
+#: js/fields/Url.vue:92
 msgid "Not a valid URL"
 msgstr "有効なURLではありません"
 
-#: js/fields/Url.vue:85
+#: js/fields/Url.vue:100
 msgid "Invalid URL schema configuration"
 msgstr "無効なURLスキーマ設定"
 
-#: js/fields/Url.vue:150
+#: js/fields/Url.vue:172
 msgid "No pages found"
 msgstr "該当するページはありません"
 
-#: js/fields/Url.vue:162
+#: js/fields/Url.vue:184
 msgid "Link attribute"
 msgstr "リンク属性"
 
-#: js/listview.js:103
+#: js/filefield.js:118
+msgid "Unsupported file type"
+msgstr "サポートされていないファイル形式"
+
+#: js/graphql.js:127
+msgid "Connection failed, please try again"
+msgstr "接続に失敗しました。もう一度お試しください"
+
+#: js/graphql.js:132 js/stores/session.js:336 js/views/Login.vue:163
+msgid "Login failed"
+msgstr "ログインに失敗しました"
+
+#: js/imageai.js:75
+msgid "Number of pixels added at this side of the image"
+msgstr "画像のこの辺に追加するピクセル数"
+
+#: js/imageai.js:78
+msgctxt "image edge"
+msgid "Top"
+msgstr "上"
+
+#: js/imageai.js:80
+msgctxt "image edge"
+msgid "Left"
+msgstr "左"
+
+#: js/imageai.js:81
+msgctxt "image edge"
+msgid "Right"
+msgstr "右"
+
+#: js/imageai.js:83
+msgctxt "image edge"
+msgid "Bottom"
+msgstr "下"
+
+#: js/imageai.js:95
+msgid "Error erasing image part"
+msgstr "画像部分消去エラー"
+
+#: js/imageai.js:103
+msgid "Error editing image part"
+msgstr "画像部分の編集エラー"
+
+#: js/imageai.js:114
+msgid "Error removing background"
+msgstr "背景の削除エラー"
+
+#: js/imageai.js:259
+msgid "Error uncropping image"
+msgstr "画像の拡張中にエラーが発生しました"
+
+#: js/imageai.js:281
+msgid "Error upscaling image"
+msgstr "画像の高解像度化中にエラーが発生しました"
+
+#: js/lists.js:92
+msgid "Moved to trash"
+msgid_plural "%{num} entries moved to trash"
+msgstr[0] "%{num} 件をゴミ箱に移動しました"
+
+#: js/listview.js:87
 msgid "publish"
 msgstr "公開"
 
-#: js/listview.js:105
-#: js/listview.js:115
-#: js/listview.js:124
-#: js/utils.js:267
-#: js/views/PageList.vue:120
-#: js/views/PageList.vue:130
-#: js/views/PageList.vue:141
+#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
+#: js/views/PageList.vue:126 js/views/PageList.vue:136
+#: js/views/PageList.vue:147
 msgid "All"
 msgstr "すべて"
 
-#: js/listview.js:107
+#: js/listview.js:91
 msgid "Scheduled"
 msgstr "予約済み"
 
-#: js/listview.js:108
+#: js/listview.js:92
 msgid "Drafts"
 msgstr "下書き"
 
-#: js/listview.js:113
+#: js/listview.js:97
 msgid "trashed"
 msgstr "ゴミ箱"
 
-#: js/listview.js:116
+#: js/listview.js:100
 msgid "Available only"
 msgstr "利用可能なもののみ"
 
-#: js/listview.js:117
+#: js/listview.js:101
 msgid "Only trashed"
 msgstr "ゴミ箱のみ"
 
-#: js/listview.js:125
+#: js/listview.js:109
 msgid "Edited by me"
 msgstr "自分が編集"
 
-#: js/listview.js:130
+#: js/listview.js:114
 msgid "languages"
 msgstr "言語"
 
-#: js/merge.js:23
+#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "%{editor} からの変更をマージしました"
 
-#: js/routes.js:126
+#: js/options.js:49 js/views/PageList.vue:137
+msgid "No cache"
+msgstr "キャッシュなし"
+
+#: js/options.js:51
+msgid "%{num} hour"
+msgid_plural "%{num} hours"
+msgstr[0] "%{num} 時間"
+
+#: js/options.js:62 js/views/PageList.vue:129
+msgid "Disabled"
+msgstr "無効"
+
+#: js/options.js:63 js/views/PageList.vue:127
+msgid "Enabled"
+msgstr "有効"
+
+#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:585
+msgid "Error saving page"
+msgstr "ページ保存エラー"
+
+#: js/pageactions.js:134
+msgid "Error trashing page"
+msgstr "ページをゴミ箱に移動中にエラーが発生しました"
+
+#: js/pageactions.js:159 js/variants.js:176
+msgid "Error restoring language"
+msgstr "言語の復元エラー"
+
+#: js/pageactions.js:159 js/pageactions.js:175
+msgid "Error restoring page"
+msgstr "ページの復元エラー"
+
+#: js/pageactions.js:201
+msgid "All subpages of these pages will be purged as well."
+msgstr "これらのページのすべてのサブページも完全に削除されます。"
+
+#: js/pageactions.js:210
+msgid "Error purging page"
+msgstr "ページの完全削除中にエラーが発生しました"
+
+#: js/pageactions.js:244
+msgid "Cache cleared"
+msgstr "キャッシュがクリアされました"
+
+#: js/pageactions.js:245
+msgid "Cache cleared for %{num} page."
+msgid_plural "Cache cleared for %{num} pages."
+msgstr[0] "%{num} ページのキャッシュをクリアしました。"
+
+#: js/pageactions.js:255
+msgid "Error clearing cache"
+msgstr "キャッシュクリアエラー"
+
+#: js/pageactions.js:354
+msgid "%{num} page could not be updated"
+msgid_plural "%{num} pages could not be updated"
+msgstr[0] "%{num} ページを更新できませんでした"
+
+#: js/pagetree.js:41
+msgid "Insert"
+msgstr "挿入"
+
+#: js/pagetree.js:66
+msgid "Before"
+msgstr "前"
+
+#: js/pagetree.js:67
+msgid "Into"
+msgstr "中に"
+
+#: js/pagetree.js:68
+msgid "After"
+msgstr "後"
+
+#: js/pagetree.js:205
+msgid "Error inserting page"
+msgstr "ページ挿入エラー"
+
+#: js/pagetree.js:245 js/views/PageDetail.vue:220
+msgid "Error fetching page"
+msgstr "ページ取得エラー"
+
+#: js/pagetree.js:263
+msgid "Error copying page"
+msgstr "ページのコピーエラー"
+
+#: js/pagetree.js:330
+msgid "Error moving page"
+msgstr "ページ移動エラー"
+
+#: js/pagetree.js:340
+msgid "Page moved"
+msgstr "ページを移動しました"
+
+#: js/routes.js:111
+msgid "Error checking the session, please try again"
+msgstr "セッションの確認中にエラーが発生しました。もう一度お試しください"
+
+#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "%{path} にアクセスする権限がありません"
 
-#: js/rules.js:18
+#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "ドメイン名が無効"
 
-#: js/rules.js:21
+#: js/rules.js:24
 msgid "Value is required"
 msgstr "値が必要"
 
-#: js/rules.js:26
+#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "少なくとも %{num} 件のエントリーが必要です"
 
-#: js/rules.js:33
+#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "エントリーは最大 %{num} 件までです"
 
-#: js/rules.js:41
+#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "少なくとも %{num} 文字必要です"
 
-#: js/rules.js:51
+#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "最大 %{num} 文字までです"
 
-#: js/rules.js:58
-msgid "At least %{num} column is required"
-msgid_plural "At least %{num} columns are required"
-msgstr[0] "少なくとも %{num} 列必要です"
+#: js/rules.js:62
+msgid "At least %{num} row is required"
+msgid_plural "At least %{num} rows are required"
+msgstr[0] "少なくとも %{num} 行が必要です"
 
-#: js/rules.js:65
-msgid "At most %{num} column is allowed"
-msgid_plural "At most %{num} columns are allowed"
-msgstr[0] "最大 %{num} 列までです"
+#: js/rules.js:69
+msgid "At most %{num} row is allowed"
+msgid_plural "At most %{num} rows are allowed"
+msgstr[0] "最大 %{num} 行まで許可されています"
 
-#: js/stores.js:497
-msgid "Failed to save user settings"
-msgstr "ユーザー設定を保存できませんでした"
-
-#: js/stores.js:553
-msgid "Failed to load plugin"
-msgstr "プラグインのロードに失敗しました"
-
-#: js/stores.js:660
+#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "権限がありません"
 
-#: js/stores.js:1062
+#: js/stores/plugin.js:20
+msgid "Failed to load plugin"
+msgstr "プラグインのロードに失敗しました"
+
+#: js/stores/setting.js:111
+msgid "Failed to save user settings"
+msgstr "ユーザー設定を保存できませんでした"
+
+#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "翻訳の進捗の取得エラー"
 
-#: js/stores.js:1080
+#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "翻訳はバックグラウンドで実行中です"
 
-#: js/stores.js:1083
+#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} 件の翻訳に失敗しました"
 
-#: js/stores.js:1089
+#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "翻訳が完了しました"
 
@@ -2754,271 +2673,255 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "すでに存在します"
 
-#: js/utils.js:36
-#: js/views/PageList.vue:131
-msgid "No cache"
-msgstr "キャッシュなし"
-
-#: js/utils.js:38
-msgid "%{num} hour"
-msgid_plural "%{num} hours"
-msgstr[0] "%{num} 時間"
-
-#: js/utils.js:317
-#: js/views/PageList.vue:123
-msgid "Disabled"
-msgstr "無効"
-
-#: js/utils.js:318
-#: js/views/PageList.vue:121
-msgid "Enabled"
-msgstr "有効"
-
-#: js/utils.js:319
-msgid "Hidden in navigation"
-msgstr "ナビゲーションで非表示"
-
-#: js/variants.js:214
+#: js/variants.js:129
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "原語のページはページ全体としてのみ削除されます"
 
-#: js/variants.js:222
+#: js/variants.js:137
 msgid "Delete language"
 msgstr "言語を削除"
 
-#: js/variants.js:223
+#: js/variants.js:138
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "「%{lang}」の %{num} ページをゴミ箱に移動しますか？"
 
-#: js/variants.js:231
+#: js/variants.js:146
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "原語の %{num} ページはスキップされます。"
 
-#: js/variants.js:245
+#: js/variants.js:160
 msgid "Error trashing language"
 msgstr "言語をゴミ箱に移動中にエラーが発生しました"
 
-#: js/variants.js:283
+#: js/variants.js:197
 msgid "Error purging language"
 msgstr "言語の完全削除中にエラーが発生しました"
 
-#: js/variants.js:305
+#: js/variants.js:219
 msgid "Error ignoring changes"
 msgstr "変更の無視エラー"
 
-#: js/variants.js:364
-msgid "Nothing to translate, the pages are up to date or already being translated"
+#: js/variants.js:287
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
 msgstr "翻訳するものはありません。ページは最新か、すでに翻訳中です"
 
-#: js/variants.js:371
+#: js/variants.js:294
 msgid "Error translating pages"
 msgstr "ページの翻訳エラー"
 
-#: js/views/AccessList.vue:170
+#: js/variants.js:404 js/variants.js:472
+msgid "Translation saved as draft, review the changes"
+msgstr "翻訳を下書きとして保存しました。変更を確認してください"
+
+#: js/variants.js:441
+msgid "Marked as up to date"
+msgstr "最新としてマークしました"
+
+#: js/variants.js:444
+msgid "Error marking as up to date"
+msgstr "最新としてマークする際のエラー"
+
+#: js/variants.js:465
+msgid ""
+"Nothing to translate, the page is up to date or already being translated"
+msgstr "翻訳するものはありません。ページは最新か、すでに翻訳中です"
+
+#: js/views/AccessList.vue:169
 msgid "Error adding access value"
 msgstr "アクセス値の追加中にエラーが発生しました"
 
 #: js/views/AccessList.vue:184
-msgid "Existing restrictions are not changed and will continue to reference the purged access values."
-msgstr "既存の制限は変更されず、完全に削除されたアクセス値を引き続き参照します。"
+msgid ""
+"Existing restrictions are not changed and will continue to reference the "
+"purged access values."
+msgstr ""
+"既存の制限は変更されず、完全に削除されたアクセス値を引き続き参照します。"
 
 #: js/views/AccessList.vue:203
 msgid "Error purging access values"
 msgstr "アクセス値の完全削除中にエラーが発生しました"
 
-#: js/views/AccessList.vue:235
-#: js/views/ElementList.vue:45
-#: js/views/FileList.vue:45
-#: js/views/PageList.vue:261
-#: js/views/PluginPanel.vue:70
-msgid "Close navigation"
-msgstr "ナビゲーションを閉じる"
-
-#: js/views/AccessList.vue:235
-#: js/views/ElementList.vue:45
-#: js/views/FileList.vue:45
-#: js/views/PageList.vue:261
-#: js/views/PluginPanel.vue:70
-msgid "Open navigation"
-msgstr "ナビゲーションを開く"
-
-#: js/views/AccessList.vue:254
+#: js/views/AccessList.vue:240
 msgid "Roles"
 msgstr "ロール"
 
-#: js/views/AccessList.vue:289
-#: js/views/AccessList.vue:334
+#: js/views/AccessList.vue:275 js/views/AccessList.vue:320
 msgid "Add access value"
 msgstr "アクセス値の追加"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:324
 msgid "Access value"
 msgstr "アクセス値"
 
-#: js/views/AccessList.vue:338
+#: js/views/AccessList.vue:324
 msgid "Role name which can be assigned to pages and users"
 msgstr "ページやユーザーに割り当てられるロール名"
 
-#: js/views/AccessList.vue:354
+#: js/views/AccessList.vue:340
 msgid "Add"
 msgstr "追加"
 
-#: js/views/ElementDetail.vue:120
+#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "要素の取得エラー"
 
-#: js/views/ElementDetail.vue:180
+#: js/views/ElementDetail.vue:185
 msgid "Element saved successfully"
 msgstr "要素を保存しました"
 
-#: js/views/ElementDetail.vue:188
+#: js/views/ElementDetail.vue:192
 msgid "Error saving element"
 msgstr "要素の保存中にエラーが発生しました"
 
-#: js/views/ElementDetail.vue:220
-#: js/views/ElementDetail.vue:222
-#: js/views/ElementDetail.vue:227
+#: js/views/ElementDetail.vue:225 js/views/ElementDetail.vue:227
+#: js/views/ElementDetail.vue:232
 msgid "Element"
 msgstr "要素"
 
-#: js/views/ElementDetail.vue:229
-#: js/views/FileDetail.vue:255
+#: js/views/ElementDetail.vue:234 js/views/FileDetail.vue:289
 msgid "Used by"
 msgstr "使用箇所"
 
-#: js/views/ElementList.vue:74
-#: js/views/FileList.vue:74
-#: js/views/PageList.vue:290
-msgid "Press Enter to open the chat"
-msgstr "Enterキーを押してチャットを開きます"
-
-#: js/views/ElementList.vue:116
+#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
 msgstr "AIは入力内容に基づいて共有要素を検索・管理できます"
 
-#: js/views/ElementList.vue:117
-#: js/views/FileList.vue:117
-#: js/views/PageList.vue:341
+#: js/views/ElementList.vue:50 js/views/FileList.vue:50
+#: js/views/PageList.vue:281
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
-msgstr "Enterキーまたは矢印を押してAIアシスタントを開き、チャットでコンテンツを調整します"
+msgstr ""
+"Enterキーまたは矢印を押してAIアシスタントを開き、チャットでコンテンツを調整し"
+"ます"
 
-#: js/views/FileDetail.vue:123
+#: js/views/FileDetail.vue:128
 msgid "Error fetching file"
 msgstr "ファイルの取得に失敗しました"
 
-#: js/views/FileDetail.vue:210
+#: js/views/FileDetail.vue:238
 msgid "File saved successfully"
 msgstr "ファイルを保存しました"
 
-#: js/views/FileDetail.vue:246
-#: js/views/FileDetail.vue:248
-#: js/views/FileDetail.vue:253
+#: js/views/FileDetail.vue:280 js/views/FileDetail.vue:282
+#: js/views/FileDetail.vue:287
 msgid "File"
 msgstr "ファイル"
 
-#: js/views/FileList.vue:116
+#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
 msgstr "AIは入力内容に基づいてメディアファイルを検索・管理できます"
 
-#: js/views/Login.vue:55
+#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "無効なメールアドレス"
 
-#: js/views/Login.vue:115
+#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "CMS編集者ではありません"
 
-#: js/views/Login.vue:171
+#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "アクセス拒否"
 
-#: js/views/Login.vue:231
-msgid "Error"
-msgstr "エラー"
+#: js/views/Login.vue:230
+msgid "Error: %{msg}"
+msgstr "エラー：%{msg}"
 
-#: js/views/PageDetail.vue:192
-msgid "The user is viewing the page with ID \"%{id}\". When they refer to \"this page\", use get-page with that ID."
-msgstr "ユーザーは ID「%{id}」のページを表示しています。「このページ」と言及した場合は、その ID で get-page を使用してください。"
-
-#: js/views/PageDetail.vue:504
-#: js/views/PageDetail.vue:802
+#: js/views/PageDetail.vue:499 js/views/PageDetail.vue:688
 msgid "Rate this page and suggest improvements"
 msgstr "このページを評価し、改善案を提案してください"
 
-#: js/views/PageDetail.vue:560
+#: js/views/PageDetail.vue:506
+msgid "Please wait until the language is switched"
+msgstr "言語が切り替わるまでお待ちください"
+
+#: js/views/PageDetail.vue:571
 msgid "Page saved successfully"
 msgstr "ページを保存しました"
 
-#: js/views/PageDetail.vue:624
-#: js/views/PageDetail.vue:679
-msgid "Translation saved as draft, review the changes"
-msgstr "翻訳を下書きとして保存しました。変更を確認してください"
-
-#: js/views/PageDetail.vue:648
-msgid "Marked as up to date"
-msgstr "最新としてマークしました"
-
-#: js/views/PageDetail.vue:651
-msgid "Error marking as up to date"
-msgstr "最新としてマークする際のエラー"
-
-#: js/views/PageDetail.vue:672
-msgid "Nothing to translate, the page is up to date or already being translated"
-msgstr "翻訳するものはありません。ページは最新か、すでに翻訳中です"
-
-#: js/views/PageDetail.vue:746
-#: js/views/PageDetail.vue:809
-#: js/views/PageDetail.vue:828
+#: js/views/PageDetail.vue:632 js/views/PageDetail.vue:695
+#: js/views/PageDetail.vue:714
 msgid "Page"
 msgstr "ページ"
 
-#: js/views/PageDetail.vue:773
+#: js/views/PageDetail.vue:659
 msgid "Source"
 msgstr "原語"
 
-#: js/views/PageDetail.vue:777
+#: js/views/PageDetail.vue:663
 msgid "Trashed"
 msgstr "ゴミ箱内"
 
-#: js/views/PageDetail.vue:814
+#: js/views/PageDetail.vue:700
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "エディター"
 
-#: js/views/PageDetail.vue:831
+#: js/views/PageDetail.vue:717
 msgid "Metrics"
 msgstr "指標"
 
-#: js/views/PageList.vue:108
+#: js/views/PageList.vue:114
 msgid "view"
 msgstr "ビュー"
 
-#: js/views/PageList.vue:111
+#: js/views/PageList.vue:117
 msgid "List"
 msgstr "リスト"
 
-#: js/views/PageList.vue:118
+#: js/views/PageList.vue:124
 msgid "status"
 msgstr "ステータス"
 
-#: js/views/PageList.vue:122
+#: js/views/PageList.vue:128
 msgid "Hidden"
 msgstr "非表示"
 
-#: js/views/PageList.vue:128
+#: js/views/PageList.vue:134
 msgid "cache"
 msgstr "キャッシュ"
 
-#: js/views/PageList.vue:139
+#: js/views/PageList.vue:145
 msgid "translation"
 msgstr "翻訳"
 
-#: js/views/PageList.vue:316
+#: js/views/PageList.vue:277
 msgid "Generate page based on prompt"
 msgstr "プロンプトに基づいてページを生成する"
 
-#: js/views/PageList.vue:334
-msgid "AI can create a page and content based on your input and add it to the page tree"
-msgstr "AIは、あなたの入力に基づいてページとコンテンツを作成し、ページツリーに追加することができます。"
+#: js/views/PageList.vue:280
+msgid ""
+"AI can create a page and content based on your input and add it to the page "
+"tree"
+msgstr ""
+"AIは、あなたの入力に基づいてページとコンテンツを作成し、ページツリーに追加す"
+"ることができます。"
+
+#~ msgid "List view"
+#~ msgstr "一覧表示"
+
+#~ msgid "Error"
+#~ msgstr "エラー"
+
+#~ msgid "At least %{num} column is required"
+#~ msgid_plural "At least %{num} columns are required"
+#~ msgstr[0] "少なくとも %{num} 列必要です"
+
+#~ msgid "At most %{num} column is allowed"
+#~ msgid_plural "At most %{num} columns are allowed"
+#~ msgstr[0] "最大 %{num} 列までです"
+
+#~ msgid ""
+#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
+#~ "page\", use get-page with that ID."
+#~ msgstr ""
+#~ "ユーザーは ID「%{id}」のページを表示しています。「このページ」と言及した場"
+#~ "合は、その ID で get-page を使用してください。"
+
+#~ msgid "Purge this language"
+#~ msgstr "この言語を完全に削除"
+
+#~ msgid "Create in %{lang}"
+#~ msgstr "%{lang} で作成"

@@ -1,7 +1,8 @@
 /** @license MIT, https://opensource.org/license/mit */
 
 <script>
-import { useDrawerStore } from '../stores.js'
+import { useDrawerStore } from '../stores'
+import { formatDate } from '../utils'
 
 export default {
   props: {
@@ -37,7 +38,7 @@ export default {
 
       for (const [key, label] of Object.entries(dates)) {
         if (this.item[key]) {
-          map[label] = new Date(this.item[key]).toLocaleString(this.$vuetify.locale.current)
+          map[label] = formatDate(this.item[key], this.$vuetify.locale.current)
         }
       }
 

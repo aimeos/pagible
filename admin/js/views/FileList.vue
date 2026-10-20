@@ -27,7 +27,7 @@ export default {
 
     return {
       defaults: defaults,
-      filter: this.user.filter('file', defaults)
+      filter: this.settings.filter('file', defaults)
     }
   },
 
@@ -38,93 +38,26 @@ export default {
 </script>
 
 <template>
-  <v-app-bar :elevation="0" density="compact" role="sectionheader" :aria-label="$gettext('Menu')">
-    <template #prepend>
-      <v-btn
-        @click="drawer.toggle('nav')"
-        :title="drawer.nav ? $gettext('Close navigation') : $gettext('Open navigation')"
-        :icon="drawer.nav ? mdiClose : mdiMenu"
-      />
-    </template>
-
-    <v-app-bar-title
-      ><h1>{{ $gettext('Media') }}</h1></v-app-bar-title
-    >
-
-    <template #append>
-      <User />
-
-      <v-btn
-        @click="drawer.toggle('aside')"
-        :title="$gettext('Toggle side menu')"
-        :icon="drawer.aside ? mdiChevronRight : mdiChevronLeft"
-        class="btn-sidemenu"
-      />
-    </template>
-  </v-app-bar>
+  <ListAppBar :title="$gettext('Media')" />
 
   <Navigation />
 
   <v-main class="file-list" :aria-label="$gettext('Media')">
     <v-container>
       <v-sheet ref="scroll" class="box scroll">
-        <v-textarea
-          v-if="user.can('file:chat')"
-          v-model="chat"
-          :placeholder="$gettext('What shall I do for you?') + ' ' + $gettext('Press Enter to open the chat')"
-          @keydown.enter="onEnter"
-          variant="outlined"
-          class="prompt"
-          rounded="lg"
-          hide-details
-          auto-grow
-          clearable
-          rows="1"
-        >
-          <template #prepend>
-            <v-btn
-              @click="help = !help"
-              :icon="mdiHelpCircleOutline"
-              class="no-rtl"
-              :title="help ? $gettext('Hide help') : $gettext('Show help')"
-              :aria-expanded="help"
-              aria-controls="file-help"
-              variant="text"
-            />
-          </template>
-          <template #append>
-            <v-btn
-              v-if="chat"
-              @click="openChat()"
-              :icon="mdiArrowRightCircle"
-              :title="$gettext('Send')"
-              variant="text"
-            />
-            <v-btn
-              v-else-if="user.can('audio:transcribe')"
-              @click="record()"
-              :icon="audio ? mdiMicrophoneOutline : mdiMicrophone"
-              :title="$gettext('Dictate')"
-              :class="{ dictating: audio }"
-              :loading="dictating"
-              variant="text"
-            />
-          </template>
-        </v-textarea>
-        <div v-if="help && user.can('file:chat')" id="file-help" class="help">
-          <ul :aria-label="$gettext('Help')">
-            <li>{{ $gettext('AI can find and manage media files based on your input') }}</li>
-            <li>{{ $gettext('Press Enter or the arrow to open the AI assistant and refine in a chat') }}</li>
-          </ul>
-        </div>
+        <AiPrompt v-if="user.can('file:chat')" v-model="chat" type="file" @submit="openChat()">
+          <li>{{ $gettext('AI can find and manage media files based on your input') }}</li>
+          <li>{{ $gettext('Press Enter or the arrow to open the AI assistant and refine in a chat') }}</li>
+        </AiPrompt>
 
-        <FileListItems ref="filelist" @select="open($event)" :filter="filter" :defaults="defaults" />
+        <FileListItems ref="filelist" @select="open($event)" :filter="filter" @update:filter="Object.assign(filter, $event)" :defaults="defaults" />
       </v-sheet>
     </v-container>
   </v-main>
 
   <AsideList
     :filter="filter"
+    @update:filter="Object.assign(filter, $event)"
     :defaults="defaults"
     :content="asideContent"
   />
@@ -141,14 +74,5 @@ export default {
 <style scoped>
 .v-main {
   overflow-y: auto;
-}
-
-.prompt {
-  margin-bottom: 16px;
-}
-
-.v-input--horizontal :deep(.v-input__prepend),
-.v-input--horizontal :deep(.v-input__append) {
-  margin: 0;
 }
 </style>

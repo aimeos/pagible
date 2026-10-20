@@ -163,6 +163,26 @@ describe('Items', () => {
     cy.get('@update').should('have.been.called')
   })
 
+  it('keeps the panel open and the input focused while typing without identities', () => {
+    const input = {
+      props: ['modelValue'],
+      emits: ['update:modelValue'],
+      render() {
+        return h('input', {
+          class: 'nested-input',
+          value: this.modelValue,
+          onInput: e => this.$emit('update:modelValue', e.target.value)
+        })
+      }
+    }
+
+    mountItems({ modelValue: [{ title: 'First' }], config: itemConfig }, {}, { String: input })
+    cy.get('.v-expansion-panel-title').first().click()
+    cy.get('.v-expansion-panel--active .nested-input').first().as('input').type('abc')
+    cy.get('.v-expansion-panel--active').should('have.length', 1)
+    cy.get('@input').should('have.value', 'Firstabc').and('have.focus')
+  })
+
   it('generates an identity when an item is added', () => {
     const onUpdate = cy.spy().as('update')
     mountItems({
@@ -325,6 +345,23 @@ describe('Items', () => {
     cy.contains('.label', 'Text').should('exist')
   })
 
+  it('hides the label of hidden sub-fields and names the inputs', () => {
+    const stubs = {
+      String: { render() { return h('input', { class: 'field-string' }) } },
+      Hidden: { render() { return h('input', { class: 'field-hidden', type: 'hidden' }) } }
+    }
+
+    mountItems({
+      modelValue: [{ title: 'Test', secret: 'x' }],
+      config: { item: { title: { type: 'string', label: 'Title' }, secret: { type: 'hidden', label: 'Secret' } } }
+    }, {}, stubs)
+
+    cy.get('.v-expansion-panel-title').first().click()
+    cy.get('.label').should('have.length', 1).and('contain', 'Title')
+    cy.get('.field-string').should('have.attr', 'aria-label', 'Title')
+    cy.get('.field-hidden').should('exist')
+  })
+
   it('stores a selected relationship next to a nested URL', () => {
     const onUpdate = cy.spy().as('update')
     const Url = {
@@ -372,5 +409,54 @@ describe('Items', () => {
     cy.get('.v-expansion-panel-title').click()
     cy.get('.field-images').click()
     cy.wrap(onAddFile).should('have.been.calledOnceWith', [{ id: '1' }, { id: '2' }])
+  })
+
+  it('includes errors of nested fields and drops them for removed items', () => {
+    const onError = cy.spy().as('error')
+    const invalid = {
+      emits: ['error'],
+      mounted() { this.$emit('error', true) },
+      render: () => h('div', { class: 'nested-string' })
+    }
+
+    let vm
+
+    mountItems({ modelValue: [{ id: 'a', title: 'One' }], config: { identity: 'id', item: { title: { type: 'string' } } }, onError }, {}, { String: invalid })
+      .then(({ wrapper }) => {
+        vm = wrapper.findComponent(ItemsField).vm
+        vm.panel = [vm.itemKey(vm.items[0])]
+      })
+
+    cy.get('.nested-string').should('exist')
+    cy.get('@error').should('have.been.calledWith', true)
+      .then(() => {
+        onError.resetHistory()
+      })
+
+    cy.get('.items').then(() => {
+      vm.remove(0)
+      expect(Object.keys(vm.errors)).to.have.length(0)
+    })
+    cy.get('@error').should('have.been.calledWith', false)
+  })
+
+  it('applies AI results of nested text fields', () => {
+    const write = cy.stub().resolves('Generated')
+
+    cy.mount(ItemsField, {
+      props: { modelValue: [{ id: 'a', title: 'One' }], config: { identity: 'id', item: { title: { type: 'string' } } } },
+      global: {
+        stubs: { String: { render: () => h('div') } },
+        provide: { write, translate: () => Promise.resolve(['']) }
+      }
+    }).then(({ wrapper }) => {
+      useUserStore().me = { permission: { 'text:write': true } }
+      const vm = wrapper.findComponent(ItemsField).vm
+      vm.panel = [vm.itemKey(vm.items[0])]
+    })
+
+    cy.get('button.btn-generate').click()
+    cy.wrap(write).should('have.been.calledWith', 'One')
+    cy.get('.element-title').should('contain', 'Generated')
   })
 })

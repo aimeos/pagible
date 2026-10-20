@@ -77,13 +77,14 @@ describe('ElementDetailItem', () => {
     cy.get('input').first().should('not.have.attr', 'readonly')
   })
 
-  it('emits update:item when name is changed', () => {
+  it('emits a patch when name is changed', () => {
     const onUpdate = cy.spy().as('update')
+    const original = { ...item }
     cy.mount(ElementDetailItem, {
       props: {
-        item: { ...item },
+        item: original,
         assets: {},
-        'onUpdate:item': onUpdate,
+        onPatch: onUpdate,
       },
       global: {
         stubs,
@@ -97,6 +98,8 @@ describe('ElementDetailItem', () => {
       user.me = { permission: { 'element:save': true } }
     })
     cy.get('input').first().clear().type('New Name')
-    cy.get('@update').should('have.been.called')
+    cy.get('@update').should('have.been.calledWith', { name: 'New Name' }).then(() => {
+      expect(original.name).to.equal(item.name)
+    })
   })
 })
