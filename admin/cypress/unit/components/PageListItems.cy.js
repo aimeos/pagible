@@ -942,7 +942,7 @@ describe('PageListItems', () => {
       const vm = wrapper.findComponent(PageListItems).vm
       const grandchild = { data: { id: 'page-3' }, children: [] }
       const child = { data: { id: 'page-2' }, children: [grandchild] }
-      const root = { data: { id: 'page-1' }, children: [child] }
+      const root = { data: { id: 'page-1', lang: 'en', source: 'en' }, children: [child] }
 
       vm.drop(root)
 
@@ -1244,6 +1244,36 @@ describe('PageListItems', () => {
       })
     })
 
+    it('deletes and purges whole pages only in their source language', () => {
+      const mutate = cy.stub().resolves({ data: { dropPage: [{ id: 'page-1' }] } })
+      const perms = { 'page:drop': true, 'page:purge': true, 'page:view': true }
+
+      mountList({}, perms, { mutate }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        const add = cy.stub(vm.messages, 'add')
+        const source = variant('page-1', 'de', 'de')
+        const translated = variant('page-2', 'de')
+        vm.$refs.tree.statsFlat = [source, translated]
+        vm.count()
+
+        expect(vm.counts.live).to.equal(1)
+        expect(vm.counts.purge).to.equal(1)
+
+        vm.drop(translated)
+        expect(mutate).not.to.have.been.called
+        expect(add).to.have.been.calledWithMatch(/source language only/, 'info')
+
+        return vm.purge(translated).then(() => {
+          expect(mutate).not.to.have.been.called
+
+          return vm.drop()
+        }).then(() => {
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'] })
+        })
+      })
+    })
+
     it('opens the translate dialog with the current language', () => {
       const perms = { 'page:save': true, 'text:translate': true, 'page:view': true }
 
@@ -1257,6 +1287,64 @@ describe('PageListItems', () => {
         expect(vm.translateLangs).to.deep.equal(['de'])
         // pages with different source languages can be translated into all languages
         expect(vm.translateSources).to.deep.equal([])
+      })
+    })
+
+    it('fetches the languages the selected pages need translations in', () => {
+      const perms = { 'page:add': true, 'page:save': true, 'text:translate': true, 'page:view': true }
+      const query = cy.stub().resolves({ data: { pages: { data: [
+        { id: 'page-1', variants: [
+          { lang: 'en', source: true, state: 'current' },
+          { lang: 'de', source: false, state: 'current' },
+          { lang: 'fr', source: false, state: 'missing' }
+        ] },
+        { id: 'page-2', variants: [
+          { lang: 'en', source: false, state: 'trashed' },
+          { lang: 'de', source: true, state: 'current' },
+          { lang: 'fr', source: false, state: 'current' }
+        ] }
+      ] } } })
+
+      mountList({}, perms, { query }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        vm.$refs.tree.statsFlat = [variant('page-1', 'de'), variant('page-2', 'de', 'de')]
+        vm.translate()
+
+        expect(vm.translatePending).to.equal(null)
+
+        cy.wrap(vm).its('translatePending').should('deep.equal', ['fr']).then(() => {
+          expect(query).to.have.been.calledWithMatch({ variables: { filter: { id: ['page-1', 'page-2'] } } })
+        })
+      })
+    })
+
+    it('enables only stale languages if the user can not add pages', () => {
+      const perms = { 'page:save': true, 'text:translate': true, 'page:view': true }
+      const query = cy.stub().resolves({ data: { pages: { data: [
+        { id: 'page-1', variants: [
+          { lang: 'en', source: true, state: 'current' },
+          { lang: 'de', source: false, state: 'stale' },
+          { lang: 'fr', source: false, state: 'missing' }
+        ] }
+      ] } } })
+
+      mountList({}, perms, { query }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        vm.translate(variant('page-1', 'de'))
+
+        cy.wrap(vm).its('translatePending').should('deep.equal', ['de'])
+      })
+    })
+
+    it('enables all languages if the needed ones can not be fetched', () => {
+      const perms = { 'page:save': true, 'text:translate': true, 'page:view': true }
+      const query = cy.stub().rejects(new Error('offline'))
+
+      mountList({}, perms, { query }, 'de').then(({ wrapper }) => {
+        const vm = wrapper.findComponent(PageListItems).vm
+        vm.translate(variant('page-1', 'de'))
+
+        cy.wrap(vm).its('translatePending').should('deep.equal', ['en', 'de', 'fr'])
       })
     })
 
@@ -1405,9 +1493,9 @@ describe('PageListItems', () => {
         const other = variant('page-2', 'en')
         const reload = cy.spy(vm, 'reload')
         vm.$refs.tree.statsFlat = [translated, other]
-        query.resetHistory()
 
         vm.translate(translated)
+        query.resetHistory()
 
         return vm.translateApply({ langs: ['de'] }).then(() => {
           const fetches = query.getCalls().filter((call) => !call.args[0].variables.batch)

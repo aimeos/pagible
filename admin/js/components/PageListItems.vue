@@ -783,7 +783,12 @@ export default {
 
             <v-divider></v-divider>
 
-            <ActionItem v-if="!node.deleted_at && user.can('page:drop')" :prepend-icon="mdiDelete" @click="drop(stat)">
+            <ActionItem
+              v-if="!node.deleted_at && node.source === lang && user.can('page:drop')"
+              :prepend-icon="mdiDelete"
+              class="action-drop"
+              @click="drop(stat)"
+            >
               {{ $gettext('Delete') }}
             </ActionItem>
             <ActionItem
@@ -792,7 +797,12 @@ export default {
               @click="keep(stat)"
               >{{ $gettext('Restore') }}</ActionItem
             >
-            <ActionItem v-if="node.source === lang && user.can('page:purge')" :prepend-icon="mdiDeleteForever" @click="purge(stat)">
+            <ActionItem
+              v-if="node.source === lang && user.can('page:purge')"
+              :prepend-icon="mdiDeleteForever"
+              class="action-purge"
+              @click="purge(stat)"
+            >
               {{ $gettext('Purge') }}
             </ActionItem>
 
@@ -957,6 +967,7 @@ export default {
     v-model="translateDialog"
     :count="translateItems.length"
     :langs="translateLangs"
+    :pending="translatePending"
     :sources="translateSources"
     @apply="translateApply"
   />

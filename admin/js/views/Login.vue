@@ -227,7 +227,7 @@ export default {
           <template v-slot:prepend>
             <v-icon color="error" :icon="mdiAlertOctagon" />
           </template>
-          {{ $gettext('Error: %{msg}', { msg: error }) }}
+          {{ $gettext('Error: %{msg}', { msg: error ?? '' }) }}
         </v-alert>
       </v-card-text>
 

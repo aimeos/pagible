@@ -44,7 +44,8 @@ export const pageActions = {
         own: own.length,
         langLive: can('drop') ? own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length : 0,
         langPurge: can('purge') ? items.filter((item) => this.purgeable(item)).length : 0,
-        // whole pages are only purged while their source language is shown
+        // whole pages are only deleted and purged while their source language is shown
+        live: can('drop') ? items.filter((item) => !item.deleted_at && item.source === this.lang).length : 0,
         purge: can('purge') ? items.filter((item) => item.source === this.lang).length : 0,
         langTrashed: can('keep') ? items.filter((item) => this.restorable(item)).length : 0,
         stale: can('save') ? own.filter((item) => this.isStale(item)).length : 0,
@@ -123,11 +124,16 @@ export const pageActions = {
         })
     },
 
+    // trashes the pages incl. all variants, only while their source language is shown
     drop(stat) {
-      const list = this.allowed('drop') ? this.targets(stat) : []
+      const all = this.allowed('drop') ? this.targets(stat) : []
+      const list = all.filter((item) => item.data.source === this.lang)
       const ids = list.map((item) => item.data.id)
 
       if (!list.length) {
+        if (all.length) {
+          this.messages.add(this.$gettext('Pages are deleted as whole pages in their source language only'), 'info')
+        }
         return
       }
 
@@ -188,7 +194,7 @@ export const pageActions = {
 
     // permanently removes the pages incl. all variants, only while their source language is shown
     async purge(stat) {
-      const list = this.allowed('purge') ? this.targets(stat, (page) => page.source === this.lang) : []
+      const list = (this.allowed('purge') ? this.targets(stat) : []).filter((item) => item.data.source === this.lang)
 
       if (
         !list.length ||

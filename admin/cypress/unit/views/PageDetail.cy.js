@@ -294,6 +294,17 @@ describe('PageDetail', () => {
     cy.get('button.btn-translate-page').should('not.exist')
   })
 
+  it('limits the page review to the shown language variant', () => {
+    mountDetail({ 'page:chat': true }, { lang: 'de', source: 'en' }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(PageDetail).vm
+
+      expect(vm.chatContext).to.contain('"de" language variant').and.contain('lang "de"')
+
+      vm.variantLang = 'fr'
+      expect(vm.chatContext).to.contain('"fr" language variant').and.not.contain('lang "de"')
+    })
+  })
+
   it('hides the translate button for source variants', () => {
     mountDetail({ 'page:save': true, 'text:translate': true }, { lang: 'en', source: 'en', variants: [{ lang: 'en', source: true, state: 'current' }, { lang: 'de', state: 'current' }] })
     cy.get('.btn-lang-switch button').click()

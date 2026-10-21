@@ -177,6 +177,9 @@ const httpLink = ApolloLink.split(
 const apolloClient = new ApolloClient({
   cache: new InMemoryCache({
     typePolicies: {
+      // pages share their ID across all language variants, so normalized entries would mix the
+      // variants of different languages in cached lists; each result keeps its own copy instead
+      Page: { keyFields: false },
       Query: {
         fields: {
           elements: { merge: false },

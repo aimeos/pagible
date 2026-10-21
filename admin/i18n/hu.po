@@ -336,7 +336,7 @@ msgid "Configuration"
 msgstr "Beállítások"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:679
+#: js/views/PageDetail.vue:691
 msgid "Content"
 msgstr "Tartalom"
 
@@ -422,7 +422,7 @@ msgid "Go to"
 msgstr "Ugrás"
 
 #: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
+#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:902
 msgid "New"
 msgstr "Új"
 
@@ -453,7 +453,7 @@ msgstr "Nincs találat"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
+#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:806
 #: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Végleges törlés"
@@ -468,7 +468,7 @@ msgstr[1] ""
 "A következő %{num} bejegyzés véglegesen törlődik, és nem állítható vissza:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
+#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
 #: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "Mégse"
@@ -567,7 +567,7 @@ msgstr[1] "Alkalmazza a kiválasztott tulajdonságokat %{num} bejegyzésre."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
 #: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:607
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
 msgid "Language"
 msgstr "Nyelv"
 
@@ -619,8 +619,8 @@ msgid "Error fetching shared elements"
 msgstr "Hiba a megosztott elemek lekérdezésében"
 
 #: js/components/ElementListItems.vue:200
-#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:305
-#: js/components/FileListItems.vue:367
+#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:324
+#: js/components/FileListItems.vue:386
 #: js/components/PageDetailContentList.vue:510
 #: js/components/PageDetailContentList.vue:601
 #: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
@@ -640,9 +640,9 @@ msgid "Reload elements"
 msgstr "Elemek újratöltése"
 
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
-#: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
-#: js/views/PageDetail.vue:649
+#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:813
+#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
+#: js/views/PageDetail.vue:661
 msgid "Translate"
 msgstr "Fordítás"
 
@@ -992,37 +992,37 @@ msgstr "Hiba a fájl végleges törlésekor"
 msgid "Error fetching files"
 msgstr "Hiba a fájlok lekérdezésében"
 
-#: js/components/FileListItems.vue:269
+#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "%{num} fájl leírásai lefordítva"
 msgstr[1] "%{num} fájl leírásai lefordítva"
 
-#: js/components/FileListItems.vue:279
+#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "Hiba a leírások fordításakor %{done}/%{total} fájl után"
 
-#: js/components/FileListItems.vue:280
+#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "Hiba a leírások fordításakor"
 
-#: js/components/FileListItems.vue:285
+#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "Nincs hiányzó leírás a fordításhoz"
 
-#: js/components/FileListItems.vue:326 js/components/FileListItems.vue:390
+#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "Leírások fordítása"
 
-#: js/components/FileListItems.vue:341
+#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "Fájlok újratöltése"
 
-#: js/components/FileListItems.vue:347
+#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "Rácsnézet"
 
-#: js/components/FileListItems.vue:456 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
 #: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "Hozzáférés védelme"
@@ -1276,13 +1276,13 @@ msgid "Open navigation"
 msgstr "Navigáció megnyitása"
 
 #: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:787
+#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:792
 msgid "Delete"
 msgstr "Törlés"
 
 #: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:793
-#: js/components/PageListItems.vue:918
+#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:798
+#: js/components/PageListItems.vue:928
 msgid "Restore"
 msgstr "Helyreállítás"
 
@@ -1379,7 +1379,7 @@ msgstr "Hitelesített felhasználók"
 
 #: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
 #: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
+#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:982
 #: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Hozzáférés"
@@ -1522,20 +1522,20 @@ msgstr "Letiltás"
 msgid "Clear cache"
 msgstr "Gyorsítótár törlése"
 
-#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
-#: js/views/PageDetail.vue:652
+#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:826
+#: js/views/PageDetail.vue:664
 msgid "Ignore changes"
 msgstr "Változások figyelmen kívül hagyása"
 
-#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:825
+#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:835
 msgid "Delete this language"
 msgstr "E nyelv törlése"
 
-#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:833
+#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:843
 msgid "Restore this language"
 msgstr "E nyelv helyreállítása"
 
-#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:841
+#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:851
 msgid "Purge language"
 msgstr "Nyelv végleges törlése"
 
@@ -1848,8 +1848,8 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "Pozíció"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
-#: js/views/PageDetail.vue:634 js/views/PageList.vue:150
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:876
+#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Frissítésre szorul"
 
@@ -1861,7 +1861,7 @@ msgstr "Hiányzik"
 msgid "AI draft"
 msgstr "MI-vázlat"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:633
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
 msgid "Up to date"
 msgstr "Naprakész"
 
@@ -1873,11 +1873,11 @@ msgstr "Hiba a fordítási állapotok lekérésekor"
 msgid "Error adding root page"
 msgstr "Hiba a gyökéroldal hozzáadásakor"
 
-#: js/components/PageListItems.vue:293 js/variants.js:405 js/variants.js:475
+#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "Hiba az oldal fordításakor"
 
-#: js/components/PageListItems.vue:297 js/variants.js:394
+#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "Hiba a nyelv hozzáadásakor"
 
@@ -1900,7 +1900,7 @@ msgstr[1] "%{num} perc"
 msgid "Translating into %{langs}"
 msgstr "Fordítás folyamatban: %{langs}"
 
-#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:948
+#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:958
 msgid "Add page"
 msgstr "Oldal hozzáadása"
 
@@ -1937,15 +1937,15 @@ msgstr ""
 msgid "Toggle child nodes"
 msgstr "Gyermekcsomópontok kibontása/összecsukása"
 
-#: js/components/PageListItems.vue:890 js/options.js:64
+#: js/components/PageListItems.vue:900 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Navigációban elrejtve"
 
-#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:636
+#: js/components/PageListItems.vue:939 js/views/PageDetail.vue:648
 msgid "Create"
 msgstr "Létrehozás"
 
-#: js/components/PageListItems.vue:974
+#: js/components/PageListItems.vue:985
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Hozzáférési beállítások alkalmazása %{num} oldalra."
@@ -2097,21 +2097,27 @@ msgstr "Új sor"
 msgid "Recall previous messages"
 msgstr "Korábbi üzenetek előhívása"
 
-#: js/components/TranslateDialog.vue:74
+#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "Fordítás erre"
 
-#: js/components/TranslateDialog.vue:76
+#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "Nyelvek"
 
-#: js/components/TranslateDialog.vue:91
+#: js/components/TranslateDialog.vue:111 js/variants.js:307
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
+msgstr ""
+"Nincs mit fordítani, az oldalak naprakészek vagy már fordítás alatt állnak"
+
+#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "%{num} oldal kiválasztva."
 msgstr[1] "%{num} oldal kiválasztva."
 
-#: js/components/TranslateDialog.vue:96
+#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -2209,7 +2215,7 @@ msgstr "Az oldal sikeresen közzétéve"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Az oldal közzététele ütemezve: %{date}"
 
-#: js/detail.js:61 js/pageactions.js:79
+#: js/detail.js:61 js/pageactions.js:80
 msgid "Error publishing page"
 msgstr "Hiba az oldal közzétételekor"
 
@@ -2456,45 +2462,49 @@ msgstr "Letiltva"
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:562
+#: js/pageactions.js:123 js/pageactions.js:371 js/views/PageDetail.vue:574
 msgid "Error saving page"
 msgstr "Hiba az oldal mentésekor"
 
-#: js/pageactions.js:134
+#: js/pageactions.js:135
+msgid "Pages are deleted as whole pages in their source language only"
+msgstr "Az oldalak csak a forrásnyelvükön törölhetők teljes oldalként"
+
+#: js/pageactions.js:140
 msgid "Error trashing page"
 msgstr "Hiba az oldal kukába helyezésekor"
 
-#: js/pageactions.js:159 js/variants.js:176
+#: js/pageactions.js:165 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Hiba a nyelv helyreállításakor"
 
-#: js/pageactions.js:159 js/pageactions.js:175
+#: js/pageactions.js:165 js/pageactions.js:181
 msgid "Error restoring page"
 msgstr "Hiba az oldal helyreállításakor"
 
-#: js/pageactions.js:201
+#: js/pageactions.js:207
 msgid "All subpages of these pages will be purged as well."
 msgstr "Ezen oldalak összes aloldala is véglegesen törlődik."
 
-#: js/pageactions.js:210
+#: js/pageactions.js:216
 msgid "Error purging page"
 msgstr "Hiba az oldal végleges törlésekor"
 
-#: js/pageactions.js:244
+#: js/pageactions.js:250
 msgid "Cache cleared"
 msgstr "A gyorsítótár törölve"
 
-#: js/pageactions.js:245
+#: js/pageactions.js:251
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "A gyorsítótár törölve %{num} oldalnál."
 msgstr[1] "A gyorsítótár törölve %{num} oldalnál."
 
-#: js/pageactions.js:255
+#: js/pageactions.js:261
 msgid "Error clearing cache"
 msgstr "Hiba a gyorsítótár törlésekor"
 
-#: js/pageactions.js:354
+#: js/pageactions.js:360
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} oldal nem frissíthető"
@@ -2520,7 +2530,7 @@ msgstr "Mögé"
 msgid "Error inserting page"
 msgstr "Hiba az oldal beszúrásakor"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:220
+#: js/pagetree.js:245 js/views/PageDetail.vue:232
 msgid "Error fetching page"
 msgstr "Hiba az oldal lekérdezésében"
 
@@ -2718,61 +2728,55 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "Már létezik"
 
-#: js/variants.js:129
+#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "A forrásnyelvükön lévő oldalak csak teljes oldalként törölhetők"
 
-#: js/variants.js:137
+#: js/variants.js:139
 msgid "Delete language"
 msgstr "Nyelv törlése"
 
-#: js/variants.js:138
+#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "Áthelyezi a(z) %{num} %{lang} nyelvű oldalt a kukába?"
 msgstr[1] "Áthelyezi a(z) %{num} %{lang} nyelvű oldalt a kukába?"
 
-#: js/variants.js:146
+#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} forrásnyelvű oldal kihagyva."
 msgstr[1] "%{num} forrásnyelvű oldal kihagyva."
 
-#: js/variants.js:160
+#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "Hiba a nyelv kukába helyezésekor"
 
-#: js/variants.js:197
+#: js/variants.js:199
 msgid "Error purging language"
 msgstr "Hiba a nyelv végleges törlésekor"
 
-#: js/variants.js:219
+#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "Hiba a változások figyelmen kívül hagyásakor"
 
-#: js/variants.js:287
-msgid ""
-"Nothing to translate, the pages are up to date or already being translated"
-msgstr ""
-"Nincs mit fordítani, az oldalak naprakészek vagy már fordítás alatt állnak"
-
-#: js/variants.js:294
+#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "Hiba az oldalak fordításakor"
 
-#: js/variants.js:404 js/variants.js:472
+#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "A fordítás vázlatként mentve, ellenőrizze a változásokat"
 
-#: js/variants.js:441
+#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "Naprakésznek jelölve"
 
-#: js/variants.js:444
+#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "Hiba a naprakésznek jelöléskor"
 
-#: js/variants.js:465
+#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "Nincs mit fordítani, az oldal naprakész vagy már fordítás alatt áll"
@@ -2886,37 +2890,37 @@ msgstr "Hozzáférés megtagadva"
 msgid "Error: %{msg}"
 msgstr "Hiba: %{msg}"
 
-#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:660
-msgid "Rate this page and suggest improvements"
-msgstr "Értékelje ezt az oldalt, és javasoljon fejlesztéseket"
+#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
+msgstr "Pontozd ezt az oldalt területenként 1–10-ig (tartalom minősége, olvashatóság, SEO, UX, elköteleződés), és javasolj fejlesztéseket"
 
-#: js/views/PageDetail.vue:503
+#: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"
 msgstr "Kérjük, várjon, amíg a nyelv átvált"
 
-#: js/views/PageDetail.vue:552
+#: js/views/PageDetail.vue:564
 msgid "Page saved successfully"
 msgstr "Az oldal sikeresen mentve"
 
-#: js/views/PageDetail.vue:604 js/views/PageDetail.vue:667
-#: js/views/PageDetail.vue:686
+#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
+#: js/views/PageDetail.vue:698
 msgid "Page"
 msgstr "Oldal"
 
-#: js/views/PageDetail.vue:631
+#: js/views/PageDetail.vue:643
 msgid "Source"
 msgstr "Forrás"
 
-#: js/views/PageDetail.vue:635
+#: js/views/PageDetail.vue:647
 msgid "Trashed"
 msgstr "Kukában"
 
-#: js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:684
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Szerkesztő"
 
-#: js/views/PageDetail.vue:689
+#: js/views/PageDetail.vue:701
 msgid "Metrics"
 msgstr "Mérőszámok"
 

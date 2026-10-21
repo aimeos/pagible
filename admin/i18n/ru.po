@@ -337,7 +337,7 @@ msgid "Configuration"
 msgstr "Настройки"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:679
+#: js/views/PageDetail.vue:691
 msgid "Content"
 msgstr "Содержание"
 
@@ -423,7 +423,7 @@ msgid "Go to"
 msgstr "Перейти"
 
 #: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
+#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:902
 msgid "New"
 msgstr "Новый"
 
@@ -454,7 +454,7 @@ msgstr "Нет результатов"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
+#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:806
 #: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Удалить навсегда"
@@ -475,7 +475,7 @@ msgstr[2] ""
 "восстановления:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
+#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
 #: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "Отмена"
@@ -575,7 +575,7 @@ msgstr[2] "Применить выбранные свойства к %{num} за
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
 #: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:607
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
 msgid "Language"
 msgstr "Язык"
 
@@ -626,8 +626,8 @@ msgid "Error fetching shared elements"
 msgstr "Ошибка при получении общих элементов"
 
 #: js/components/ElementListItems.vue:200
-#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:305
-#: js/components/FileListItems.vue:367
+#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:324
+#: js/components/FileListItems.vue:386
 #: js/components/PageDetailContentList.vue:510
 #: js/components/PageDetailContentList.vue:601
 #: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
@@ -647,9 +647,9 @@ msgid "Reload elements"
 msgstr "Обновить элементы"
 
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
-#: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
-#: js/views/PageDetail.vue:649
+#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:813
+#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
+#: js/views/PageDetail.vue:661
 msgid "Translate"
 msgstr "Перевести"
 
@@ -999,38 +999,38 @@ msgstr "Ошибка при окончательном удалении файл
 msgid "Error fetching files"
 msgstr "Ошибка при получении файлов"
 
-#: js/components/FileListItems.vue:269
+#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "Описания %{num} файла переведены"
 msgstr[1] "Описания %{num} файлов переведены"
 msgstr[2] "Описания %{num} файлов переведены"
 
-#: js/components/FileListItems.vue:279
+#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "Ошибка при переводе описаний после %{done} из %{total} файлов"
 
-#: js/components/FileListItems.vue:280
+#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "Ошибка при переводе описаний"
 
-#: js/components/FileListItems.vue:285
+#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "Нет отсутствующих описаний для перевода"
 
-#: js/components/FileListItems.vue:326 js/components/FileListItems.vue:390
+#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "Перевести описания"
 
-#: js/components/FileListItems.vue:341
+#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "Обновить файлы"
 
-#: js/components/FileListItems.vue:347
+#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "Вид сеткой"
 
-#: js/components/FileListItems.vue:456 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
 #: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "Ограничить доступ"
@@ -1290,13 +1290,13 @@ msgid "Open navigation"
 msgstr "Открыть навигацию"
 
 #: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:787
+#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:792
 msgid "Delete"
 msgstr "Удалить"
 
 #: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:793
-#: js/components/PageListItems.vue:918
+#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:798
+#: js/components/PageListItems.vue:928
 msgid "Restore"
 msgstr "Восстановить"
 
@@ -1393,7 +1393,7 @@ msgstr "Аутентифицированные пользователи"
 
 #: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
 #: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
+#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:982
 #: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Доступ"
@@ -1537,20 +1537,20 @@ msgstr "Отключить"
 msgid "Clear cache"
 msgstr "Очистить кэш"
 
-#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
-#: js/views/PageDetail.vue:652
+#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:826
+#: js/views/PageDetail.vue:664
 msgid "Ignore changes"
 msgstr "Игнорировать изменения"
 
-#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:825
+#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:835
 msgid "Delete this language"
 msgstr "Удалить этот язык"
 
-#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:833
+#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:843
 msgid "Restore this language"
 msgstr "Восстановить этот язык"
 
-#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:841
+#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:851
 msgid "Purge language"
 msgstr "Удалить язык навсегда"
 
@@ -1861,8 +1861,8 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "Позиция"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
-#: js/views/PageDetail.vue:634 js/views/PageList.vue:150
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:876
+#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Требует обновления"
 
@@ -1874,7 +1874,7 @@ msgstr "Отсутствует"
 msgid "AI draft"
 msgstr "Черновик ИИ"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:633
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
 msgid "Up to date"
 msgstr "Актуально"
 
@@ -1886,11 +1886,11 @@ msgstr "Ошибка при получении состояний перевод
 msgid "Error adding root page"
 msgstr "Ошибка при добавлении корневой страницы"
 
-#: js/components/PageListItems.vue:293 js/variants.js:405 js/variants.js:475
+#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "Ошибка при переводе страницы"
 
-#: js/components/PageListItems.vue:297 js/variants.js:394
+#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "Ошибка при добавлении языка"
 
@@ -1914,7 +1914,7 @@ msgstr[2] "%{num} минут"
 msgid "Translating into %{langs}"
 msgstr "Перевод на %{langs}"
 
-#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:948
+#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:958
 msgid "Add page"
 msgstr "Добавить страницу"
 
@@ -1948,15 +1948,15 @@ msgstr "Увеличен отступ до уровня %{level}, позиция
 msgid "Toggle child nodes"
 msgstr "Развернуть/свернуть дочерние узлы"
 
-#: js/components/PageListItems.vue:890 js/options.js:64
+#: js/components/PageListItems.vue:900 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Скрыто в навигации"
 
-#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:636
+#: js/components/PageListItems.vue:939 js/views/PageDetail.vue:648
 msgid "Create"
 msgstr "Создать"
 
-#: js/components/PageListItems.vue:974
+#: js/components/PageListItems.vue:985
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Применить настройки доступа к %{num} странице."
@@ -2110,22 +2110,27 @@ msgstr "Новая строка"
 msgid "Recall previous messages"
 msgstr "Вернуть предыдущие сообщения"
 
-#: js/components/TranslateDialog.vue:74
+#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "Перевести на"
 
-#: js/components/TranslateDialog.vue:76
+#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "Языки"
 
-#: js/components/TranslateDialog.vue:91
+#: js/components/TranslateDialog.vue:111 js/variants.js:307
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
+msgstr "Нечего переводить, страницы актуальны или уже переводятся"
+
+#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "Выбрана %{num} страница."
 msgstr[1] "Выбрано %{num} страницы."
 msgstr[2] "Выбрано %{num} страниц."
 
-#: js/components/TranslateDialog.vue:96
+#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -2224,7 +2229,7 @@ msgstr "Страница успешно опубликована"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Страница запланирована к публикации на %{date}"
 
-#: js/detail.js:61 js/pageactions.js:79
+#: js/detail.js:61 js/pageactions.js:80
 msgid "Error publishing page"
 msgstr "Ошибка при публикации страницы"
 
@@ -2472,46 +2477,50 @@ msgstr "Отключено"
 msgid "Enabled"
 msgstr "Включено"
 
-#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:562
+#: js/pageactions.js:123 js/pageactions.js:371 js/views/PageDetail.vue:574
 msgid "Error saving page"
 msgstr "Ошибка сохранения страницы"
 
-#: js/pageactions.js:134
+#: js/pageactions.js:135
+msgid "Pages are deleted as whole pages in their source language only"
+msgstr "Страницы удаляются целиком только в варианте на исходном языке"
+
+#: js/pageactions.js:140
 msgid "Error trashing page"
 msgstr "Ошибка при перемещении страницы в корзину"
 
-#: js/pageactions.js:159 js/variants.js:176
+#: js/pageactions.js:165 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Ошибка при восстановлении языка"
 
-#: js/pageactions.js:159 js/pageactions.js:175
+#: js/pageactions.js:165 js/pageactions.js:181
 msgid "Error restoring page"
 msgstr "Ошибка при восстановлении страницы"
 
-#: js/pageactions.js:201
+#: js/pageactions.js:207
 msgid "All subpages of these pages will be purged as well."
 msgstr "Все подстраницы этих страниц также будут удалены навсегда."
 
-#: js/pageactions.js:210
+#: js/pageactions.js:216
 msgid "Error purging page"
 msgstr "Ошибка при окончательном удалении страницы"
 
-#: js/pageactions.js:244
+#: js/pageactions.js:250
 msgid "Cache cleared"
 msgstr "Кэш очищен"
 
-#: js/pageactions.js:245
+#: js/pageactions.js:251
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Кэш очищен для %{num} страницы."
 msgstr[1] "Кэш очищен для %{num} страниц."
 msgstr[2] "Кэш очищен для %{num} страниц."
 
-#: js/pageactions.js:255
+#: js/pageactions.js:261
 msgid "Error clearing cache"
 msgstr "Ошибка очистки кэша"
 
-#: js/pageactions.js:354
+#: js/pageactions.js:360
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "Не удалось обновить %{num} страницу"
@@ -2538,7 +2547,7 @@ msgstr "После"
 msgid "Error inserting page"
 msgstr "Ошибка при вставке страницы"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:220
+#: js/pagetree.js:245 js/views/PageDetail.vue:232
 msgid "Error fetching page"
 msgstr "Ошибка при получении страницы"
 
@@ -2743,62 +2752,57 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "Уже существует"
 
-#: js/variants.js:129
+#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "Страницы на исходном языке удаляются только целиком"
 
-#: js/variants.js:137
+#: js/variants.js:139
 msgid "Delete language"
 msgstr "Удалить язык"
 
-#: js/variants.js:138
+#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "Переместить %{num} страницу на языке «%{lang}» в корзину?"
 msgstr[1] "Переместить %{num} страницы на языке «%{lang}» в корзину?"
 msgstr[2] "Переместить %{num} страниц на языке «%{lang}» в корзину?"
 
-#: js/variants.js:146
+#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} страница на исходном языке пропущена."
 msgstr[1] "%{num} страницы на исходном языке пропущены."
 msgstr[2] "%{num} страниц на исходном языке пропущено."
 
-#: js/variants.js:160
+#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "Ошибка при перемещении языка в корзину"
 
-#: js/variants.js:197
+#: js/variants.js:199
 msgid "Error purging language"
 msgstr "Ошибка при окончательном удалении языка"
 
-#: js/variants.js:219
+#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "Ошибка при игнорировании изменений"
 
-#: js/variants.js:287
-msgid ""
-"Nothing to translate, the pages are up to date or already being translated"
-msgstr "Нечего переводить, страницы актуальны или уже переводятся"
-
-#: js/variants.js:294
+#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "Ошибка при переводе страниц"
 
-#: js/variants.js:404 js/variants.js:472
+#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "Перевод сохранён как черновик, проверьте изменения"
 
-#: js/variants.js:441
+#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "Отмечено как актуальное"
 
-#: js/variants.js:444
+#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "Ошибка при отметке как актуального"
 
-#: js/variants.js:465
+#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "Нечего переводить, страница актуальна или уже переводится"
@@ -2909,37 +2913,37 @@ msgstr "Доступ запрещен"
 msgid "Error: %{msg}"
 msgstr "Ошибка: %{msg}"
 
-#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:660
-msgid "Rate this page and suggest improvements"
-msgstr "Оцените эту страницу и предложите улучшения"
+#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
+msgstr "Оцени эту страницу от 1 до 10 по каждому направлению (качество контента, читаемость, SEO, UX, вовлечённость) и предложи улучшения"
 
-#: js/views/PageDetail.vue:503
+#: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"
 msgstr "Пожалуйста, дождитесь переключения языка"
 
-#: js/views/PageDetail.vue:552
+#: js/views/PageDetail.vue:564
 msgid "Page saved successfully"
 msgstr "Страница успешно сохранена"
 
-#: js/views/PageDetail.vue:604 js/views/PageDetail.vue:667
-#: js/views/PageDetail.vue:686
+#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
+#: js/views/PageDetail.vue:698
 msgid "Page"
 msgstr "Страница"
 
-#: js/views/PageDetail.vue:631
+#: js/views/PageDetail.vue:643
 msgid "Source"
 msgstr "Источник"
 
-#: js/views/PageDetail.vue:635
+#: js/views/PageDetail.vue:647
 msgid "Trashed"
 msgstr "В корзине"
 
-#: js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:684
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Редактор"
 
-#: js/views/PageDetail.vue:689
+#: js/views/PageDetail.vue:701
 msgid "Metrics"
 msgstr "Метрики"
 

@@ -335,7 +335,7 @@ msgid "Configuration"
 msgstr "پیکربندی"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:679
+#: js/views/PageDetail.vue:691
 msgid "Content"
 msgstr "محتوا"
 
@@ -421,7 +421,7 @@ msgid "Go to"
 msgstr "رفتن به"
 
 #: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
+#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:902
 msgid "New"
 msgstr "جدید"
 
@@ -452,7 +452,7 @@ msgstr "نتیجه‌ای یافت نشد"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
+#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:806
 #: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "حذف دائمی"
@@ -466,7 +466,7 @@ msgstr[0] "مورد زیر برای همیشه حذف می‌شود و قابل 
 msgstr[1] "%{num} مورد زیر برای همیشه حذف می‌شوند و قابل بازیابی نیستند:"
 
 #: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
+#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
 #: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "لغو"
@@ -565,7 +565,7 @@ msgstr[1] "اعمال ویژگی‌های انتخاب‌شده بر %{num} مو
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
 #: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:607
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
 msgid "Language"
 msgstr "زبان"
 
@@ -616,8 +616,8 @@ msgid "Error fetching shared elements"
 msgstr "خطا در دریافت عناصر مشترک"
 
 #: js/components/ElementListItems.vue:200
-#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:305
-#: js/components/FileListItems.vue:367
+#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:324
+#: js/components/FileListItems.vue:386
 #: js/components/PageDetailContentList.vue:510
 #: js/components/PageDetailContentList.vue:601
 #: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
@@ -637,9 +637,9 @@ msgid "Reload elements"
 msgstr "بارگذاری مجدد عناصر"
 
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
-#: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
-#: js/views/PageDetail.vue:649
+#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:813
+#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
+#: js/views/PageDetail.vue:661
 msgid "Translate"
 msgstr "ترجمه"
 
@@ -988,37 +988,37 @@ msgstr "خطا در حذف دائمی فایل"
 msgid "Error fetching files"
 msgstr "خطا در دریافت فایل‌ها"
 
-#: js/components/FileListItems.vue:269
+#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "توضیحات %{num} فایل ترجمه شد"
 msgstr[1] "توضیحات %{num} فایل ترجمه شد"
 
-#: js/components/FileListItems.vue:279
+#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "خطا در ترجمه توضیحات پس از %{done} از %{total} فایل"
 
-#: js/components/FileListItems.vue:280
+#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "خطا در ترجمه توضیحات"
 
-#: js/components/FileListItems.vue:285
+#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "هیچ توضیح ناموجودی برای ترجمه وجود ندارد"
 
-#: js/components/FileListItems.vue:326 js/components/FileListItems.vue:390
+#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "ترجمه توضیحات"
 
-#: js/components/FileListItems.vue:341
+#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "بارگذاری مجدد فایل‌ها"
 
-#: js/components/FileListItems.vue:347
+#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "نمای شبکه‌ای"
 
-#: js/components/FileListItems.vue:456 js/components/FileProtect.vue:45
+#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
 #: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "محافظت از دسترسی"
@@ -1271,13 +1271,13 @@ msgid "Open navigation"
 msgstr "باز کردن ناوبری"
 
 #: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:787
+#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:792
 msgid "Delete"
 msgstr "حذف"
 
 #: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:793
-#: js/components/PageListItems.vue:918
+#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:798
+#: js/components/PageListItems.vue:928
 msgid "Restore"
 msgstr "بازیابی"
 
@@ -1373,7 +1373,7 @@ msgstr "کاربران احرازهویت‌شده"
 
 #: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
 #: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
+#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:982
 #: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "دسترسی"
@@ -1515,20 +1515,20 @@ msgstr "غیرفعال کردن"
 msgid "Clear cache"
 msgstr "پاک کردن کش"
 
-#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
-#: js/views/PageDetail.vue:652
+#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:826
+#: js/views/PageDetail.vue:664
 msgid "Ignore changes"
 msgstr "نادیده گرفتن تغییرات"
 
-#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:825
+#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:835
 msgid "Delete this language"
 msgstr "حذف این زبان"
 
-#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:833
+#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:843
 msgid "Restore this language"
 msgstr "بازیابی این زبان"
 
-#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:841
+#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:851
 msgid "Purge language"
 msgstr "حذف دائمی زبان"
 
@@ -1837,8 +1837,8 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "رتبه"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
-#: js/views/PageDetail.vue:634 js/views/PageList.vue:150
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:876
+#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "نیاز به به‌روزرسانی"
 
@@ -1850,7 +1850,7 @@ msgstr "ناموجود"
 msgid "AI draft"
 msgstr "پیش‌نویس هوش مصنوعی"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:633
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
 msgid "Up to date"
 msgstr "به‌روز"
 
@@ -1862,11 +1862,11 @@ msgstr "خطا در دریافت وضعیت ترجمه‌ها"
 msgid "Error adding root page"
 msgstr "خطا در افزودن صفحه ریشه"
 
-#: js/components/PageListItems.vue:293 js/variants.js:405 js/variants.js:475
+#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "خطا در ترجمه صفحه"
 
-#: js/components/PageListItems.vue:297 js/variants.js:394
+#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "خطا در افزودن زبان"
 
@@ -1889,7 +1889,7 @@ msgstr[1] "%{num} دقیقه"
 msgid "Translating into %{langs}"
 msgstr "در حال ترجمه به %{langs}"
 
-#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:948
+#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:958
 msgid "Add page"
 msgstr "افزودن صفحه"
 
@@ -1925,15 +1925,15 @@ msgstr ""
 msgid "Toggle child nodes"
 msgstr "باز/بستن گره‌های فرزند"
 
-#: js/components/PageListItems.vue:890 js/options.js:64
+#: js/components/PageListItems.vue:900 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "پنهان در ناوبری"
 
-#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:636
+#: js/components/PageListItems.vue:939 js/views/PageDetail.vue:648
 msgid "Create"
 msgstr "ایجاد"
 
-#: js/components/PageListItems.vue:974
+#: js/components/PageListItems.vue:985
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "اعمال تنظیمات دسترسی بر %{num} صفحه."
@@ -2084,21 +2084,26 @@ msgstr "خط جدید"
 msgid "Recall previous messages"
 msgstr "فراخوانی پیام‌های قبلی"
 
-#: js/components/TranslateDialog.vue:74
+#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "ترجمه به"
 
-#: js/components/TranslateDialog.vue:76
+#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "زبان‌ها"
 
-#: js/components/TranslateDialog.vue:91
+#: js/components/TranslateDialog.vue:111 js/variants.js:307
+msgid ""
+"Nothing to translate, the pages are up to date or already being translated"
+msgstr "چیزی برای ترجمه نیست، صفحه‌ها به‌روز هستند یا در حال ترجمه‌اند"
+
+#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "%{num} صفحه انتخاب شد."
 msgstr[1] "%{num} صفحه انتخاب شد."
 
-#: js/components/TranslateDialog.vue:96
+#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -2196,7 +2201,7 @@ msgstr "صفحه با موفقیت منتشر شد"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "صفحه برای انتشار در %{date} زمان‌بندی شد"
 
-#: js/detail.js:61 js/pageactions.js:79
+#: js/detail.js:61 js/pageactions.js:80
 msgid "Error publishing page"
 msgstr "خطا در انتشار صفحه"
 
@@ -2442,45 +2447,49 @@ msgstr "غیرفعال"
 msgid "Enabled"
 msgstr "فعال"
 
-#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:562
+#: js/pageactions.js:123 js/pageactions.js:371 js/views/PageDetail.vue:574
 msgid "Error saving page"
 msgstr "خطا در ذخیره صفحه"
 
-#: js/pageactions.js:134
+#: js/pageactions.js:135
+msgid "Pages are deleted as whole pages in their source language only"
+msgstr "صفحات فقط به صورت کامل و در زبان مبدأ خود حذف می‌شوند"
+
+#: js/pageactions.js:140
 msgid "Error trashing page"
 msgstr "خطا در انتقال صفحه به سطل زباله"
 
-#: js/pageactions.js:159 js/variants.js:176
+#: js/pageactions.js:165 js/variants.js:178
 msgid "Error restoring language"
 msgstr "خطا در بازیابی زبان"
 
-#: js/pageactions.js:159 js/pageactions.js:175
+#: js/pageactions.js:165 js/pageactions.js:181
 msgid "Error restoring page"
 msgstr "خطا در بازیابی صفحه"
 
-#: js/pageactions.js:201
+#: js/pageactions.js:207
 msgid "All subpages of these pages will be purged as well."
 msgstr "همه زیرصفحه‌های این صفحات نیز برای همیشه حذف خواهند شد."
 
-#: js/pageactions.js:210
+#: js/pageactions.js:216
 msgid "Error purging page"
 msgstr "خطا در حذف دائمی صفحه"
 
-#: js/pageactions.js:244
+#: js/pageactions.js:250
 msgid "Cache cleared"
 msgstr "کش پاک شد"
 
-#: js/pageactions.js:245
+#: js/pageactions.js:251
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "کش %{num} صفحه پاک شد."
 msgstr[1] "کش %{num} صفحه پاک شد."
 
-#: js/pageactions.js:255
+#: js/pageactions.js:261
 msgid "Error clearing cache"
 msgstr "خطا در پاک کردن کش"
 
-#: js/pageactions.js:354
+#: js/pageactions.js:360
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} صفحه به‌روزرسانی نشد"
@@ -2506,7 +2515,7 @@ msgstr "بعد از"
 msgid "Error inserting page"
 msgstr "خطا در درج صفحه"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:220
+#: js/pagetree.js:245 js/views/PageDetail.vue:232
 msgid "Error fetching page"
 msgstr "خطا در دریافت صفحه"
 
@@ -2704,60 +2713,55 @@ msgctxt "ai"
 msgid "Already exists"
 msgstr "از قبل وجود دارد"
 
-#: js/variants.js:129
+#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "صفحه‌ها در زبان مبدأ خود فقط به‌صورت کامل حذف می‌شوند"
 
-#: js/variants.js:137
+#: js/variants.js:139
 msgid "Delete language"
 msgstr "حذف زبان"
 
-#: js/variants.js:138
+#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "%{num} صفحه در «%{lang}» به سطل زباله منتقل شود؟"
 msgstr[1] "%{num} صفحه در «%{lang}» به سطل زباله منتقل شوند؟"
 
-#: js/variants.js:146
+#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} صفحه در زبان مبدأ خود نادیده گرفته می‌شود."
 msgstr[1] "%{num} صفحه در زبان مبدأ خود نادیده گرفته می‌شوند."
 
-#: js/variants.js:160
+#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "خطا در انتقال زبان به سطل زباله"
 
-#: js/variants.js:197
+#: js/variants.js:199
 msgid "Error purging language"
 msgstr "خطا در حذف دائمی زبان"
 
-#: js/variants.js:219
+#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "خطا در نادیده گرفتن تغییرات"
 
-#: js/variants.js:287
-msgid ""
-"Nothing to translate, the pages are up to date or already being translated"
-msgstr "چیزی برای ترجمه نیست، صفحه‌ها به‌روز هستند یا در حال ترجمه‌اند"
-
-#: js/variants.js:294
+#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "خطا در ترجمه صفحه‌ها"
 
-#: js/variants.js:404 js/variants.js:472
+#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "ترجمه به‌عنوان پیش‌نویس ذخیره شد، تغییرات را بررسی کنید"
 
-#: js/variants.js:441
+#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "به‌عنوان به‌روز علامت‌گذاری شد"
 
-#: js/variants.js:444
+#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "خطا در علامت‌گذاری به‌عنوان به‌روز"
 
-#: js/variants.js:465
+#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "چیزی برای ترجمه نیست، صفحه به‌روز است یا در حال ترجمه است"
@@ -2868,37 +2872,37 @@ msgstr "دسترسی رد شد"
 msgid "Error: %{msg}"
 msgstr "خطا: %{msg}"
 
-#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:660
-msgid "Rate this page and suggest improvements"
-msgstr "به این صفحه امتیاز دهید و بهبودهایی پیشنهاد کنید"
+#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
+msgstr "به این صفحه در هر بخش از ۱ تا ۱۰ امتیاز بده (کیفیت محتوا، خوانایی، سئو، تجربه کاربری، تعامل) و بهبودهایی پیشنهاد کن"
 
-#: js/views/PageDetail.vue:503
+#: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"
 msgstr "لطفاً تا تغییر زبان صبر کنید"
 
-#: js/views/PageDetail.vue:552
+#: js/views/PageDetail.vue:564
 msgid "Page saved successfully"
 msgstr "صفحه با موفقیت ذخیره شد"
 
-#: js/views/PageDetail.vue:604 js/views/PageDetail.vue:667
-#: js/views/PageDetail.vue:686
+#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
+#: js/views/PageDetail.vue:698
 msgid "Page"
 msgstr "صفحه"
 
-#: js/views/PageDetail.vue:631
+#: js/views/PageDetail.vue:643
 msgid "Source"
 msgstr "مبدأ"
 
-#: js/views/PageDetail.vue:635
+#: js/views/PageDetail.vue:647
 msgid "Trashed"
 msgstr "در سطل زباله"
 
-#: js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:684
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "ویرایشگر"
 
-#: js/views/PageDetail.vue:689
+#: js/views/PageDetail.vue:701
 msgid "Metrics"
 msgstr "معیارها"
 

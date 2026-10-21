@@ -37,6 +37,32 @@ describe('TranslateDialog', () => {
     cy.get('@apply').should('have.been.calledOnceWith', { langs: ['de'] })
   })
 
+  it('enables all languages while the needed ones are unknown', () => {
+    mountDialog({ langs: ['de'], pending: null })
+
+    cy.get('.pending').should('exist')
+    cy.get('.translate-lang input:disabled').should('have.length', 0)
+    cy.get('.translate-lang[data-lang="de"] input').should('be.checked')
+  })
+
+  it('enables only the languages the pages need translations in', () => {
+    mountDialog({ langs: ['de'], pending: ['fr'] })
+
+    cy.get('.pending').should('not.exist')
+    cy.get('.translate-lang[data-lang="de"] input').should('be.disabled').and('not.be.checked')
+    cy.get('.translate-lang[data-lang="fr"] input').should('not.be.disabled').check()
+    cy.get('.btn-translate').click()
+    cy.get('@apply').should('have.been.calledOnceWith', { langs: ['fr'] })
+  })
+
+  it('reports if nothing needs to be translated', () => {
+    mountDialog({ pending: [] })
+
+    cy.get('.translate-lang input:disabled').should('have.length', 3)
+    cy.get('.nothing').should('exist')
+    cy.get('.btn-translate').should('be.disabled')
+  })
+
   it('disables translating without a language', () => {
     mountDialog({ langs: [] })
 

@@ -23,6 +23,71 @@ const TRANSLATE_PROGRESS = gql`
   }
 `
 
+const PAGE_VARIANTS = gql`
+  query ($filter: PageFilter, $limit: Int!) {
+    pages(filter: $filter, first: $limit) {
+      data {
+        id
+        variants {
+          lang
+          source
+          state
+        }
+      }
+    }
+  }
+`
+
+// number of pages whose variant states are fetched per request
+const PENDING_CHUNK = 100
+
+/**
+ * Returns the languages at least one of the pages needs a translation in.
+ *
+ * Uses the same rules as the server: source variants as well as up to date and trashed variants
+ * are skipped, missing variants are only created if the user is allowed to add pages.
+ * Languages already queued for a page don't count for that page.
+ *
+ * @param {Object} apollo Apollo client
+ * @param {Object} user User store
+ * @param {Array<String>} ids Page IDs
+ * @param {Function} queued Returns the languages already queued for the page ID
+ * @returns {Promise<Array<String>>} Language codes
+ */
+export async function pendingLangs(apollo, user, ids, queued = () => []) {
+  const add = user.can('page:add')
+  const langs = new Set()
+  const chunks = []
+
+  for (let i = 0; i < ids.length; i += PENDING_CHUNK) {
+    chunks.push(ids.slice(i, i + PENDING_CHUNK))
+  }
+
+  const results = await Promise.all(
+    chunks.map((chunk) =>
+      apollo.query({
+        query: PAGE_VARIANTS,
+        variables: { filter: { id: chunk }, limit: chunk.length },
+        fetchPolicy: 'no-cache'
+      })
+    )
+  )
+
+  for (const result of results) {
+    for (const page of result.data?.pages?.data || []) {
+      const skip = new Set(queued(page.id))
+
+      for (const variant of page.variants || []) {
+        if (!variant.source && !skip.has(variant.lang) && (variant.state === 'stale' || (add && variant.state === 'missing'))) {
+          langs.add(variant.lang)
+        }
+      }
+    }
+  }
+
+  return [...langs]
+}
+
 /**
  * Queues the translations of the pages into the languages.
  *

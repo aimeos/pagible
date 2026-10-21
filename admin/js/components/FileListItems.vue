@@ -197,6 +197,18 @@ export default {
       return this.languages.available.length > 1 && this.user.can('file:save') && this.user.can('text:translate')
     },
 
+    // same check as the server: a description to translate from and at least one language without it
+    untranslated(item) {
+      if (item.deleted_at) {
+        return false
+      }
+
+      const desc = item.description || {}
+      const has = (lang) => typeof desc[lang] === 'string' && desc[lang].trim() !== ''
+
+      return Object.keys(desc).some(has) && this.languages.available.some((lang) => !has(lang))
+    },
+
     hydrate(entry) {
       return Object.assign(normalizeFile(entry), {
         disk: entry.disk,
@@ -211,7 +223,7 @@ export default {
     // fills in the missing descriptions in all languages as file drafts; the server translates each
     // language sequentially, so small chunks keep the requests short and the action label shows the progress
     async translate(item = null) {
-      const list = this.canTranslate() ? this.targets(item).filter((item) => !item.deleted_at) : []
+      const list = this.canTranslate() ? this.targets(item).filter((item) => this.untranslated(item)) : []
 
       if (!list.length || this.translating) {
         return
@@ -287,6 +299,13 @@ export default {
     }
   },
 
+  computed: {
+    // number of selected files with missing descriptions, only evaluated if the user can translate
+    untranslatedCount() {
+      return this.canTranslate() ? this.selected().filter((item) => this.untranslated(item)).length : 0
+    }
+  },
+
   watch: {
     vgrid(val) {
       this.settings.saveData('file', 'grid', val)
@@ -317,14 +336,14 @@ export default {
         @purge="purge()"
       >
         <ActionItem
-          v-if="counts.live && canTranslate()"
+          v-if="untranslatedCount || translating"
           :prepend-icon="mdiTranslate"
           :disabled="translating"
           class="action-translate"
           @click="translate()"
         >
           {{ $gettext('Translate descriptions') }}
-          ({{ translating ? translating.done + '/' + translating.total : counts.live }})
+          ({{ translating ? translating.done + '/' + translating.total : untranslatedCount }})
         </ActionItem>
       </ListBulkMenu>
 
@@ -381,7 +400,7 @@ export default {
         @purge="purge(item)"
       >
         <ActionItem
-          v-if="!item.deleted_at && canTranslate()"
+          v-if="canTranslate() && (translating || untranslated(item))"
           :prepend-icon="mdiTranslate"
           :disabled="translating"
           class="action-translate"

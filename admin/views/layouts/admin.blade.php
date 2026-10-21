@@ -16,7 +16,7 @@
 
     @if($index = cmsadmin('vendor/cms/admin/.vite/manifest.json')['index.html'] ?? null)
       <script type="module" crossorigin src="{{ asset('vendor/cms/admin/' . ($index['file'] ?? '')) }}"></script>
-      @foreach($index['css'] ?? [] as $file)
+      @foreach(cmsstyles('vendor/cms/admin/.vite/manifest.json') as $file)
         <link rel="stylesheet" crossorigin href="{{ asset('vendor/cms/admin/' . $file) }}">
       @endforeach
     @endif

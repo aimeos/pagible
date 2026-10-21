@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from 'pinia'
 import router from '../../../js/routes'
 import { useSessionStore, useUserStore } from '../../../js/stores'
-import { Observable } from '@apollo/client/core'
+import { Observable, gql } from '@apollo/client/core'
 import { AUTH_STATUS, apolloClient, graphqlFetch, handleError, invalidateList, listFetchPolicy, retry } from '../../../js/graphql'
 import '../../../js/session'
 
@@ -221,5 +221,30 @@ describe('listFetchPolicy()', () => {
     document.querySelector('#app').dataset.reverb = '{}'
 
     expect(listFetchPolicy()).to.equal('cache-first')
+  })
+})
+
+describe('apolloClient cache', () => {
+  it('keeps the language variants of pages apart in cached lists', () => {
+    const query = gql`
+      query ($lang: String) {
+        pages(lang: $lang) {
+          data {
+            id
+            lang
+            name
+          }
+        }
+      }
+    `
+    const result = (lang, name) => ({ pages: { __typename: 'PagePaginator', data: [{ __typename: 'Page', id: 'page-1', lang, name }] } })
+
+    apolloClient.cache.writeQuery({ query, variables: { lang: 'en' }, data: result('en', 'Home') })
+    apolloClient.cache.writeQuery({ query, variables: { lang: 'de' }, data: result('de', 'Startseite') })
+
+    expect(apolloClient.cache.readQuery({ query, variables: { lang: 'en' } }).pages.data[0]).to.include({ lang: 'en', name: 'Home' })
+    expect(apolloClient.cache.readQuery({ query, variables: { lang: 'de' } }).pages.data[0]).to.include({ lang: 'de', name: 'Startseite' })
+
+    invalidateList('pages')
   })
 })

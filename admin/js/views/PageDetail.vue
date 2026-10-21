@@ -175,8 +175,20 @@ export default {
 
   computed: {
     // instructions for the AI model, not translated like those of the element and file lists
+    // the chat works on the language variant shown in the editor, the page tools use the source variant otherwise
     chatContext() {
-      return `The user is viewing the page with ID "${this.item.id}". When they refer to "this page", use get-page with that ID.`
+      const lang = this.variantLang || this.item.lang
+
+      if (!lang) {
+        return `The user is viewing the page with ID "${this.item.id}". When they refer to "this page", use get-page with that ID.`
+      }
+
+      return (
+        `The user is viewing the "${lang}" language variant of the page with ID "${this.item.id}". ` +
+        `When they refer to "this page", use get-page with that ID and lang "${lang}". ` +
+        `Rate, suggest and change only this language variant: pass lang "${lang}" to all tools working on the page, ` +
+        `e.g. save-page, get-page-history and publish-page, and use the URL of this variant for get-page-metrics.`
+      )
     },
 
     hasChanged() {
@@ -493,7 +505,7 @@ export default {
 
     review() {
       this.chatOpen = true
-      this.$nextTick(() => this.$refs.chat?.send(this.$gettext('Rate this page and suggest improvements')))
+      this.$nextTick(() => this.$refs.chat?.send(this.$gettext('Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements')))
     },
 
     save(quiet = false) {
@@ -657,7 +669,7 @@ export default {
       <v-btn
         v-if="user.can('page:chat')"
         @click="review()"
-        :title="$gettext('Rate this page and suggest improvements')"
+        :title="$gettext('Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements')"
         :icon="mdiCreation"
         class="btn-review-page"
       />

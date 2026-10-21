@@ -65,3 +65,45 @@ if( !function_exists( 'cmsimports' ) )
         return $imports;
     }
 }
+
+
+if( !function_exists( 'cmsstyles' ) )
+{
+    /**
+     * Collects the stylesheets of the admin entry chunk and all chunks it imports statically.
+     *
+     * Vite only lists the entry's own CSS in its "css" key while the CSS of shared chunks
+     * (e.g. Vuetify components) is attached to those chunks. The built index.html links all of
+     * them and lazy loaded views expect them to be present already, so they must be added too.
+     *
+     * @param string $path The path to the manifest file, e.g. "vendor/cms/admin/.vite/manifest.json"
+     * @param string $entry The manifest key of the entry chunk
+     * @return array<int, string> List of CSS files relative to the manifest base directory
+     */
+    function cmsstyles( string $path, string $entry = 'index.html' ) : array
+    {
+        $manifest = cmsadmin( $path );
+        $seen = [];
+        $css = [];
+
+        $walk = function( string $key ) use ( &$walk, &$seen, &$css, $manifest ) {
+            if( isset( $seen[$key] ) || !isset( $manifest[$key] ) ) {
+                return;
+            }
+
+            $seen[$key] = true;
+
+            foreach( $manifest[$key]['imports'] ?? [] as $import ) {
+                $walk( $import );
+            }
+
+            foreach( $manifest[$key]['css'] ?? [] as $file ) {
+                $css[$file] = $file;
+            }
+        };
+
+        $walk( $entry );
+
+        return array_values( $css );
+    }
+}

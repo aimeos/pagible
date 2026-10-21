@@ -336,11 +336,11 @@ describe('Page Detail', () => {
     cy.contains('AI Assistant').should('be.visible')
 
     cy.wait('@chat').its('request.body').should((body) => {
-      expect(body.prompt).to.eq('Rate this page and suggest improvements')
+      expect(body.prompt).to.eq('Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements')
       expect(body.context).to.contain('page with ID "1"')
     })
 
-    cy.contains('.chat-row.user', 'Rate this page and suggest improvements').should('be.visible')
+    cy.contains('.chat-row.user', 'Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements').should('be.visible')
     cy.contains('The page review is ready.').should('be.visible')
   })
 

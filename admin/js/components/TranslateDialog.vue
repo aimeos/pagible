@@ -15,6 +15,8 @@ export default {
     count: { type: Number, default: 0 },
     // languages checked when the dialog opens
     langs: { type: Array, default: () => [] },
+    // languages at least one selected page needs a translation in, NULL while unknown
+    pending: { type: Array, default: null },
     // source languages of all selected pages, which can't be translated into
     sources: { type: Array, default: () => [] }
   },
@@ -36,11 +38,23 @@ export default {
     items() {
       return this.languages.available
         .filter((code) => !this.sources.includes(code))
-        .map((code) => ({ code, name: this.languages.translate(code) }))
+        .map((code) => ({ code, name: this.languages.translate(code), disabled: !this.needed(code) }))
+    },
+
+    loading() {
+      return this.pending === null
+    },
+
+    nothing() {
+      return !this.loading && !this.items.some((item) => !item.disabled)
     }
   },
 
   methods: {
+    needed(code) {
+      return this.pending === null || this.pending.includes(code)
+    },
+
     apply() {
       if (!this.checked.length) {
         return
@@ -56,9 +70,13 @@ export default {
       immediate: true,
       handler(open) {
         if (open) {
-          this.checked = this.langs.filter((code) => this.items.some((item) => item.code === code))
+          this.checked = this.langs.filter((code) => this.items.some((item) => item.code === code && !item.disabled))
         }
       }
+    },
+
+    pending() {
+      this.checked = this.checked.filter((code) => this.needed(code))
     }
   }
 }
@@ -73,6 +91,8 @@ export default {
   >
     <p class="hint">{{ $gettext('Translate into') }}</p>
 
+    <v-progress-linear v-if="loading" class="pending" color="primary" height="2" indeterminate />
+
     <div class="langs" role="group" :aria-label="$gettext('Languages')">
       <v-checkbox
         v-for="item in items"
@@ -81,11 +101,14 @@ export default {
         :value="item.code"
         :label="item.name"
         :data-lang="item.code"
+        :disabled="item.disabled"
         class="translate-lang"
         density="compact"
         hide-details
       />
     </div>
+
+    <p v-if="nothing" class="hint nothing">{{ $gettext('Nothing to translate, the pages are up to date or already being translated') }}</p>
 
     <p class="hint">
       {{ $ngettext('%{num} page selected.', '%{num} pages selected.', count, { num: count }) }}
@@ -101,7 +124,7 @@ export default {
 
     <template #actions>
       <v-btn @click="$emit('update:modelValue', false)" variant="text">{{ $gettext('Cancel') }}</v-btn>
-      <v-btn @click="apply()" :disabled="!checked.length" class="btn-translate" color="primary" variant="tonal">
+      <v-btn @click="apply()" :disabled="!checked.length || nothing" class="btn-translate" color="primary" variant="tonal">
         {{ $gettext('Translate') }}
       </v-btn>
     </template>
@@ -111,6 +134,10 @@ export default {
 <style scoped>
 .hint {
   color: rgb(var(--v-theme-on-surface));
+  margin-bottom: 8px;
+}
+
+.pending {
   margin-bottom: 8px;
 }
 

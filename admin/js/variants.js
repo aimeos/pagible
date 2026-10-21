@@ -5,7 +5,7 @@
 import gql from 'graphql-tag'
 import { useLanguageStore, useTranslationStore } from './stores'
 import { ADD_PAGE_VARIANT } from './pages'
-import { translatePages } from './translate'
+import { pendingLangs, translatePages } from './translate'
 
 const IGNORE_CHANGES = gql`
   mutation ($id: [ID!]!, $lang: String!) {
@@ -83,7 +83,9 @@ export const pageVariants = {
   data() {
     return {
       translateDialog: false,
-      translateItems: []
+      translateItems: [],
+      // languages the selected pages need translations in, NULL while unknown
+      translatePending: null
     }
   },
 
@@ -264,8 +266,26 @@ export const pageVariants = {
         return
       }
 
+      const ids = list.map((stat) => stat.data.id)
+      // ignores the result if the dialog has been opened for other pages in the meantime
+      const token = (this.translateToken = (this.translateToken || 0) + 1)
+
       this.translateItems = list
+      this.translatePending = null
       this.translateDialog = true
+
+      // all languages stay selectable if the states can't be fetched, the server skips the others anyway
+      pendingLangs(this.$apollo, this.user, ids, (id) => this.translationStore.langsOf(id))
+        .then((langs) => {
+          if (this.translateToken === token) {
+            this.translatePending = langs
+          }
+        })
+        .catch(() => {
+          if (this.translateToken === token) {
+            this.translatePending = [...this.languages.available]
+          }
+        })
     },
 
     // queues the translations of the selected pages into the languages,

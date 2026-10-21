@@ -471,6 +471,38 @@ describe('FileListItems', () => {
       })
     })
 
+    it('skips and hides the action for files without missing or any descriptions', () => {
+      const mutate = cy.stub().resolves({ data: { translateFiles: [] } })
+
+      mountList({}, perms, { mutate }).then(({ wrapper }) => {
+        useLanguageStore().available = ['en', 'de']
+        const vm = wrapper.findComponent(FileListItems).vm
+        vm.items = [
+          file('file-1', { description: { en: 'A cat', de: 'Eine Katze' } }),
+          file('file-2', { description: { en: ' ' } }),
+          file('file-3', { description: { en: 'A cat', de: '' } })
+        ]
+        vm.checked = new Set(['file-1', 'file-2'])
+
+        expect(vm.untranslated(vm.items[0])).to.equal(false)
+        expect(vm.untranslated(vm.items[1])).to.equal(false)
+        expect(vm.untranslated(vm.items[2])).to.equal(true)
+        expect(vm.untranslatedCount).to.equal(0)
+
+        return vm.translate().then(() => {
+          expect(mutate).not.to.have.been.called
+
+          vm.checked = new Set(['file-1', 'file-2', 'file-3'])
+          expect(vm.untranslatedCount).to.equal(1)
+
+          return vm.translate()
+        }).then(() => {
+          expect(mutate).to.have.been.calledOnce
+          expect(mutate.firstCall.args[0].variables.id).to.deep.equal(['file-3'])
+        })
+      })
+    })
+
     it('sends at most 10 files per request and tracks the progress without messages per chunk', () => {
       const progress = []
       let vm = null
