@@ -198,12 +198,17 @@ export default {
       })
     },
 
-    // marks the assistant turn as failed and shows the error if nothing streamed
+    // marks the assistant turn as failed and shows the error, below the answer if something streamed
     failed(assistant, error) {
       assistant.error = true
-      if (!assistant.content) {
-        // Errors flagged `shown` carry a translated, user-facing message (lock / rate-limit /
-        // unavailable); show it verbatim. Everything else gets the generic fallback.
+
+      // Errors flagged `shown` carry a user-facing message (lock / rate-limit / unavailable / server
+      // error after the end marker); show it verbatim. Everything else gets the generic fallback.
+      if (assistant.content) {
+        assistant.notice = error?.shown
+          ? error.message
+          : this.$gettext('The response was interrupted and may be incomplete.')
+      } else {
         assistant.content = error?.shown
           ? error.message
           : this.$gettext('Sorry, something went wrong.')
@@ -335,6 +340,7 @@ export default {
           <template v-if="m.role === 'assistant'">
             <div v-for="(b, j) in m.blocks" :key="j" class="chat-md" v-html="b"></div>
             <div v-if="m.streaming && m.pending" class="chat-md" v-html="render(m.pending)"></div>
+            <div v-if="m.notice" class="chat-notice" role="alert">{{ m.notice }}</div>
           </template>
           <div v-else class="chat-text">{{ m.content }}</div>
           <span v-if="m.streaming && !m.content" class="chat-typing" role="status">
@@ -483,6 +489,12 @@ export default {
 .chat-bubble.error {
   border-color: rgba(var(--v-theme-error), var(--v-border-opacity));
   background-color: rgba(var(--v-theme-error), 0.12);
+}
+
+.chat-notice {
+  margin-top: 8px;
+  color: rgb(var(--v-theme-error));
+  font-size: 0.875em;
 }
 
 /* User bubble: raw text, so honor its own newlines/spacing. */

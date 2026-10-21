@@ -329,7 +329,7 @@ describe('Page Detail', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       statusCode: 200,
       headers: { 'content-type': 'text/plain' },
-      body: 'The page review is ready.',
+      body: 'The page review is ready.\u001E',
     }).as('chat')
 
     detailView().find('.btn-review-page').click()
@@ -544,7 +544,7 @@ describe('Page Detail', () => {
       req.reply(
         session.expired
           ? { statusCode: 419, body: 'CSRF token mismatch.' }
-          : { statusCode: 200, headers: { 'content-type': 'text/plain' }, body: 'The page review is ready.' }
+          : { statusCode: 200, headers: { 'content-type': 'text/plain' }, body: 'The page review is ready.\u001E' }
       )
     })
 

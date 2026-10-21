@@ -34,15 +34,15 @@ msgstr "Klaida generuojant tekstą"
 msgid "Error switching language"
 msgstr "Klaida keičiant kalbą"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Pokalbių asistentas nepasiekiamas."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Atsakymas jau generuojamas. Palaukite, kol baigsis."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Per daug prašymų. Šiek tiek palaukite ir bandykite dar kartą."
 
@@ -248,7 +248,7 @@ msgid "Close"
 msgstr "Uždaryti"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Kuo galiu jums padėti?"
 
@@ -264,13 +264,13 @@ msgstr "Paslėpti pagalbą"
 msgid "Show help"
 msgstr "Rodyti pagalbą"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Siųsti"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Diktuoti"
@@ -377,27 +377,31 @@ msgstr "Palikti mano versiją"
 msgid "Merge both"
 msgstr "Sujungti abi"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "Atsakymas buvo nutrauktas ir gali būti neišsamus."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Atsiprašome, kažkas nepavyko."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Atlikta"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "AI asistentas"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Naujas pokalbis"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Mąstoma ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -405,15 +409,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopijuoti"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Siųsti žinutę..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Pokalbio žinutė"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Sustabdyti"
 
@@ -2905,8 +2909,12 @@ msgid "Error: %{msg}"
 msgstr "Klaida: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Įvertink šį puslapį kiekvienoje srityje balais nuo 1 iki 10 (turinio kokybė, skaitomumas, SEO, UX, įsitraukimas) ir pasiūlyk patobulinimų"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Įvertink šį puslapį kiekvienoje srityje balais nuo 1 iki 10 (turinio kokybė, "
+"skaitomumas, SEO, UX, įsitraukimas) ir pasiūlyk patobulinimų"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

@@ -119,7 +119,7 @@ describe('FileList', () => {
   it('submits file chat turns and refreshes once on close while preserving filters', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       headers: { 'content-type': 'text/plain' },
-      body: 'Updated the file description',
+      body: 'Updated the file description\u001E',
     }).as('chat')
 
     mountFileList({ 'file:chat': true }, { publish: 'DRAFT', lang: 'de' }).then(() => {
@@ -162,7 +162,7 @@ describe('FileList', () => {
   it('keeps Shift+Enter and IME composition in the input and submits with the arrow', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       headers: { 'content-type': 'text/plain' },
-      body: 'Found the banner',
+      body: 'Found the banner\u001E',
     }).as('chat')
     mountFileList({ 'file:chat': true })
     cy.get('.prompt textarea').first()

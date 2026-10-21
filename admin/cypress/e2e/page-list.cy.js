@@ -940,7 +940,7 @@ describe('Page List', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       statusCode: 200,
       headers: { 'content-type': 'text/plain' },
-      body: 'Generated page content',
+      body: 'Generated page content\u001E',
     }).as('chat')
 
     cy.get('.prompt textarea').first().type('Create a landing page')

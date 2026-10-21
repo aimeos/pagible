@@ -206,4 +206,40 @@ describe('ChatDialog', () => {
     cy.get('.chat-bubble ul li em').should('contain', 'Is PagibleAI free to use?')
     cy.get('.chat-bubble').should('not.contain', '*   ')
   })
+
+  it('shows the server error below the partial answer', () => {
+    cy.intercept('POST', '**/cmsapi/chat', {
+      headers: { 'content-type': 'text/plain' },
+      body: 'Partial answer\u001EThe response took too long and was stopped.',
+    }).as('chat')
+    mountDialog({}, { 'page:chat': true })
+    cy.then(() => Cypress.vueWrapper.findComponent(ChatDialog).vm.send('Create a page'))
+    cy.wait('@chat')
+    cy.get('.chat-bubble.error').should('contain', 'Partial answer')
+    cy.get('.chat-bubble.error .chat-notice').should('have.text', 'The response took too long and was stopped.')
+  })
+
+  it('shows the interrupted notice if the end marker is missing', () => {
+    cy.intercept('POST', '**/cmsapi/chat', {
+      headers: { 'content-type': 'text/plain' },
+      body: 'Partial answer',
+    }).as('chat')
+    mountDialog({}, { 'page:chat': true })
+    cy.then(() => Cypress.vueWrapper.findComponent(ChatDialog).vm.send('Create a page'))
+    cy.wait('@chat')
+    cy.get('.chat-bubble.error .chat-notice').should('have.text', 'The response was interrupted and may be incomplete.')
+  })
+
+  it('shows no notice for a complete answer', () => {
+    cy.intercept('POST', '**/cmsapi/chat', {
+      headers: { 'content-type': 'text/plain' },
+      body: 'Created the page\u001E',
+    }).as('chat')
+    mountDialog({}, { 'page:chat': true })
+    cy.then(() => Cypress.vueWrapper.findComponent(ChatDialog).vm.send('Create a page'))
+    cy.wait('@chat')
+    cy.contains('.chat-bubble', 'Created the page').should('not.have.class', 'error')
+    cy.get('.chat-notice').should('not.exist')
+  })
 })
+

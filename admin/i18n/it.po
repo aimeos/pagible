@@ -33,15 +33,15 @@ msgstr "Errore nella generazione del testo"
 msgid "Error switching language"
 msgstr "Errore nel cambio della lingua"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "L'assistente chat non è disponibile."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "È già in corso la generazione di una risposta. Attendi che termini."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Troppe richieste. Attendi un attimo e riprova."
 
@@ -247,7 +247,7 @@ msgid "Close"
 msgstr "Chiudi"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Cosa posso fare per te?"
 
@@ -263,13 +263,13 @@ msgstr "Nascondi aiuto"
 msgid "Show help"
 msgstr "Mostra aiuto"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Invia"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Detta"
@@ -376,27 +376,31 @@ msgstr "Mantieni la mia versione"
 msgid "Merge both"
 msgstr "Unisci entrambe"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "La risposta è stata interrotta e potrebbe essere incompleta."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Siamo spiacenti, qualcosa è andato storto."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Fatto"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "Assistente AI"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Nuova chat"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Sto pensando ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -404,15 +408,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Copia"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Invia un messaggio..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Messaggio della chat"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Interrompi"
 
@@ -2898,8 +2902,12 @@ msgid "Error: %{msg}"
 msgstr "Errore: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Dai un punteggio da 1 a 10 a questa pagina per ogni area (qualità dei contenuti, leggibilità, SEO, UX, coinvolgimento) e suggerisci miglioramenti"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Dai un punteggio da 1 a 10 a questa pagina per ogni area (qualità dei "
+"contenuti, leggibilità, SEO, UX, coinvolgimento) e suggerisci miglioramenti"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

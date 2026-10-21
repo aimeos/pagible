@@ -34,16 +34,16 @@ msgstr "Помилка створення тексту"
 msgid "Error switching language"
 msgstr "Помилка при зміні мови"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Помічник чату недоступний."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr ""
 "Відповідь уже генерується. Будь ласка, зачекайте, поки вона завершиться."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Забагато запитів. Будь ласка, зачекайте трохи і спробуйте ще раз."
 
@@ -248,7 +248,7 @@ msgid "Close"
 msgstr "Закрити"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Що я можу для вас зробити?"
 
@@ -264,13 +264,13 @@ msgstr "Приховати допомогу"
 msgid "Show help"
 msgstr "Показати допомогу"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Надіслати"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Диктувати"
@@ -377,27 +377,31 @@ msgstr "Залишити моє"
 msgid "Merge both"
 msgstr "Об'єднати обидва"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "Відповідь було перервано, і вона може бути неповною."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Вибачте, щось пішло не так."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Готово"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "ШІ-помічник"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Новий чат"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Думаю ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -405,15 +409,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Копіювати"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Надіслати повідомлення..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Повідомлення чату"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Стоп"
 
@@ -2909,8 +2913,12 @@ msgid "Error: %{msg}"
 msgstr "Помилка: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Оціни цю сторінку від 1 до 10 за кожним напрямом (якість контенту, читабельність, SEO, UX, залученість) та запропонуй покращення"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Оціни цю сторінку від 1 до 10 за кожним напрямом (якість контенту, "
+"читабельність, SEO, UX, залученість) та запропонуй покращення"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

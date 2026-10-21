@@ -31,6 +31,16 @@ class ChatController extends Controller
     private const MAX = 3;
 
     /**
+     * Marks the end of the answer; an optional error message follows (missing = stream was cut off).
+     */
+    private const END = "\x1E";
+
+    /**
+     * Message sent after the end marker when the answer was stopped by a time limit.
+     */
+    private const TIMEOUT = 'The response took too long and was stopped.';
+
+    /**
      * MCP tools not offered in the chat or added separately with a call limit.
      */
     private const EXCLUDE = [
@@ -48,7 +58,8 @@ class ChatController extends Controller
      * Runs the page-synthesis pipeline (tools + the cms::prompts.chat system prompt) and writes the
      * assistant markdown token-by-token to a single HTTP response (no message broker required) so the
      * editor sees the answer build up live. The body is the raw markdown - the client appends each
-     * chunk as it arrives and the closing connection signals completion; no framing or terminator.
+     * chunk as it arrives. The answer ends with the END marker followed by an error message if it
+     * failed (empty on success); a stream without the marker was cut off before it could finish.
      *
      * @param Request $request Holds the current "prompt" and prior "messages" [{role, content}]
      * @return StreamedResponse text/plain response that produces the answer chunk by chunk
@@ -131,10 +142,22 @@ class ChatController extends Controller
             // Don't let PHP kill the script mid-flush on disconnect; emit() detects it and stops
             // cleanly so the lock is always released here (and token pulling/billing stops promptly).
             $abort = (bool) ignore_user_abort( true );
+            $done = false;
+
+            // A fatal error (e.g. PHP's execution time limit) skips the finally below, so end the
+            // stream with the reason from the shutdown handler instead; it's a no-op otherwise.
+            register_shutdown_function( function() use ( &$done ) {
+                $error = error_get_last();
+
+                if( !$done && $error && $error['type'] === E_ERROR ) { // @phpstan-ignore booleanNot.alwaysTrue ($done is set by reference)
+                    $this->end( str_contains( $error['message'], 'Maximum execution time' ) ? self::TIMEOUT : 'An unexpected error occurred' );
+                }
+            } );
 
             try {
-                $this->emit( $prisma, $prompt, $config );
+                $this->end( $this->emit( $prisma, $prompt, $config ) );
             } finally {
+                $done = true;
                 ignore_user_abort( $abort );
                 $lock?->release();
             }
@@ -159,8 +182,9 @@ class ChatController extends Controller
      * @param \Aimeos\Prisma\Contracts\Provider $prisma Configured Prisma text request
      * @param string $prompt Current user message
      * @param array<string, mixed> $config AI provider configuration
+     * @return string|null Error message if the answer failed, null on success or client disconnect
      */
-    protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : void
+    protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : ?string
     {
         $send = function( ?string $text ) {
             // text() is null when the model ended on tool calls with no prose - nothing to send
@@ -168,7 +192,7 @@ class ChatController extends Controller
                 return;
             }
 
-            echo $text;
+            echo str_replace( self::END, '', $text ); // the end marker must only appear once, at the end
 
             // Push the chunk downstream immediately without closing the buffer, so a wrapping
             // output buffer (FPM ini, middleware) streams progressively instead of holding the
@@ -189,12 +213,13 @@ class ChatController extends Controller
         // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
         // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
         // still trips the provider's own read timeout first (a catchable PrismaException).
-        Ai::lifted( function() use ( $prisma, $prompt, $config, $send ) {
+        return Ai::lifted( function() use ( $prisma, $prompt, $config, $send ) : ?string {
+            $buffer = '';
+
             try
             {
                 if( $prisma->has( 'stream' ) )
                 {
-                    $buffer = '';
                     $prose = false;
                     $response = $prisma->ensure( 'stream' )->stream( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
 
@@ -225,6 +250,7 @@ class ChatController extends Controller
 
                     if( $buffer !== '' ) {
                         $send( $buffer );
+                        $buffer = '';
                     }
 
                     // Provider that only streamed tool steps (or a non-stream-backed response, e.g. the test
@@ -239,30 +265,47 @@ class ChatController extends Controller
                     $response = $prisma->ensure( 'write' )->write( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
                     $send( $response->text() );
                 }
+
+                return null;
             }
             catch( \Throwable $e )
             {
                 if( connection_aborted() ) {
-                    return; // client gone (or the disconnect we threw above) - just stop, nothing to report
+                    return null; // client gone (or the disconnect we threw above) - just stop, nothing to report
                 }
-
-                // The response is already streaming (HTTP 200 sent), so surface the failure inline;
-                // Prisma errors expose their message, anything else stays generic.
-                $msg = $e instanceof PrismaException
-                    ? $e->getMessage()
-                    : 'An unexpected error occurred';
 
                 Log::error( 'Chat stream error', ['controller' => 'Chat', 'message' => $e->getMessage()] );
 
-                echo "\n\n**" . $msg . "**";
+                // keep the text received before the error; end() flushes it together with the message
+                echo str_replace( self::END, '', $buffer );
 
-                if( ob_get_level() > 0 ) {
-                    ob_flush();
+                // The response is already streaming (HTTP 200 sent), so the client shows the message after
+                // the end marker; timeouts of the provider request and Prisma errors are reported as such,
+                // anything else stays generic.
+                if( preg_match( '/timed? out|cURL error 28/i', $e->getMessage() ) ) {
+                    return self::TIMEOUT;
                 }
 
-                flush();
+                return $e instanceof PrismaException ? $e->getMessage() : 'An unexpected error occurred';
             }
         } );
+    }
+
+
+    /**
+     * Ends the answer with the end marker and the error message if there's one.
+     *
+     * @param string|null $error Error message to show or null if the answer is complete
+     */
+    protected function end( ?string $error ) : void
+    {
+        echo self::END . str_replace( self::END, '', (string) $error );
+
+        if( ob_get_level() > 0 ) {
+            ob_flush();
+        }
+
+        flush();
     }
 
 

@@ -34,15 +34,15 @@ msgstr "Kļūda, ģenerējot tekstu"
 msgid "Error switching language"
 msgstr "Kļūda, pārslēdzot valodu"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Tērzēšanas palīgs nav pieejams."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Atbilde jau tiek ģenerēta. Lūdzu, uzgaidiet, līdz tā būs pabeigta."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Pārāk daudz pieprasījumu. Lūdzu, uzgaidiet brīdi un mēģiniet vēlreiz."
 
@@ -247,7 +247,7 @@ msgid "Close"
 msgstr "Aizvērt"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Kā varu jums palīdzēt?"
 
@@ -263,13 +263,13 @@ msgstr "Paslēpt palīdzību"
 msgid "Show help"
 msgstr "Rādīt palīdzību"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Sūtīt"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Diktēt"
@@ -376,27 +376,31 @@ msgstr "Paturēt manu versiju"
 msgid "Merge both"
 msgstr "Apvienot abus"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "Atbilde tika pārtraukta un var būt nepilnīga."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Atvainojiet, kaut kas nogāja greizi."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Gatavs"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "AI palīgs"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Jauna tērzēšana"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Domā ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -404,15 +408,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopēt"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Nosūtīt ziņu..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Tērzēšanas ziņa"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Apturēt"
 
@@ -2912,8 +2916,12 @@ msgid "Error: %{msg}"
 msgstr "Kļūda: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Novērtē šo lapu katrā jomā no 1 līdz 10 (satura kvalitāte, lasāmība, SEO, UX, iesaiste) un iesaki uzlabojumus"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Novērtē šo lapu katrā jomā no 1 līdz 10 (satura kvalitāte, lasāmība, SEO, "
+"UX, iesaiste) un iesaki uzlabojumus"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

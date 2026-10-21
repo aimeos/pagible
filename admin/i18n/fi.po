@@ -33,15 +33,15 @@ msgstr "Virhe tekstin luomisessa"
 msgid "Error switching language"
 msgstr "Virhe kielen vaihtamisessa"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Chat-avustaja ei ole käytettävissä."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Vastausta luodaan jo. Odota sen päättymistä."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Liikaa pyyntöjä. Odota hetki ja yritä uudelleen."
 
@@ -246,7 +246,7 @@ msgid "Close"
 msgstr "Sulje"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Mitä voin tehdä hyväksesi?"
 
@@ -262,13 +262,13 @@ msgstr "Piilota ohje"
 msgid "Show help"
 msgstr "Näytä ohje"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Lähetä"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Sanele"
@@ -375,27 +375,31 @@ msgstr "Pidä oma versioni"
 msgid "Merge both"
 msgstr "Yhdistä molemmat"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "Vastaus keskeytyi ja voi olla puutteellinen."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Valitettavasti jotain meni pieleen."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Valmis"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "Tekoälyavustaja"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Uusi chat"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Ajattelee ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -403,15 +407,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopioi"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Lähetä viesti..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Keskusteluviesti"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Pysäytä"
 
@@ -2878,8 +2882,12 @@ msgid "Error: %{msg}"
 msgstr "Virhe: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Pisteytä tämä sivu osa-alueittain asteikolla 1–10 (sisällön laatu, luettavuus, SEO, UX, sitoutuminen) ja ehdota parannuksia"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Pisteytä tämä sivu osa-alueittain asteikolla 1–10 (sisällön laatu, "
+"luettavuus, SEO, UX, sitoutuminen) ja ehdota parannuksia"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

@@ -118,7 +118,7 @@ describe('ElementList', () => {
   it('submits element chat turns and refreshes once on close while preserving filters', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       headers: { 'content-type': 'text/plain' },
-      body: 'Updated the shared element content',
+      body: 'Updated the shared element content\u001E',
     }).as('chat')
 
     mountElementList({ 'element:chat': true }, { publish: 'DRAFT', lang: 'de' }).then(() => {
@@ -161,7 +161,7 @@ describe('ElementList', () => {
   it('keeps Shift+Enter and IME composition in the input and submits with the arrow', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       headers: { 'content-type': 'text/plain' },
-      body: 'Found the footer',
+      body: 'Found the footer\u001E',
     }).as('chat')
     mountElementList({ 'element:chat': true })
     cy.get('.prompt textarea').first()

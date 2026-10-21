@@ -77,7 +77,7 @@ class ChatTest extends AiTestAbstract
             ->post( route( 'cms.chat' ), ['prompt' => 'Find the banner'] );
 
         $response->assertOk();
-        $this->assertSame( 'Found the banner', $response->streamedContent() );
+        $this->assertSame( "Found the banner\x1E", $response->streamedContent() );
     }
 
 
@@ -132,10 +132,77 @@ class ChatTest extends AiTestAbstract
         $this->assertStringContainsString( 'text/plain', (string) $response->baseResponse->headers->get( 'Content-Type' ) );
         $this->assertSame( 'nosniff', $response->baseResponse->headers->get( 'X-Content-Type-Options' ) );
 
-        // The body is the raw markdown answer, streamed in chunks with no framing or terminator
+        // The body is the raw markdown answer, streamed in chunks and ended by the marker (no error message)
         $content = $this->assertExecutionLimitRestored( fn() => $response->streamedContent() );
 
-        $this->assertSame( 'Created the page', $content );
+        $this->assertSame( "Created the page\x1E", $content );
+    }
+
+
+    public function testStreamEndsWithPrismaErrorMessage()
+    {
+        $producer = function( TextResponse $response ) {
+            yield 'Partial answer';
+            throw new \Aimeos\Prisma\Exceptions\OverloadedException( 'Provider overloaded' );
+        };
+
+        Prisma::fake( [TextResponse::fromStream( $producer )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "Partial answer\x1EProvider overloaded", $response->streamedContent() );
+    }
+
+
+    public function testStreamEndsWithTimeoutMessage()
+    {
+        $producer = function( TextResponse $response ) {
+            yield 'Partial answer';
+            throw new \RuntimeException( 'cURL error 28: Operation timed out after 300001 milliseconds' );
+        };
+
+        Prisma::fake( [TextResponse::fromStream( $producer )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "Partial answer\x1EThe response took too long and was stopped.", $response->streamedContent() );
+    }
+
+
+    public function testStreamHidesUnexpectedErrorDetails()
+    {
+        $producer = function( TextResponse $response ) {
+            yield 'Partial answer';
+            throw new \RuntimeException( 'SQLSTATE[HY000]: secret details' );
+        };
+
+        Prisma::fake( [TextResponse::fromStream( $producer )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "Partial answer\x1EAn unexpected error occurred", $response->streamedContent() );
+    }
+
+
+    public function testStreamStripsEndMarkerFromAnswer()
+    {
+        Prisma::fake( [TextResponse::fromText( "Created\x1E the page" )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "Created the page\x1E", $response->streamedContent() );
     }
 
 

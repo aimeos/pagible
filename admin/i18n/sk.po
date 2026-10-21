@@ -33,15 +33,15 @@ msgstr "Chyba pri generovaní textu"
 msgid "Error switching language"
 msgstr "Chyba pri prepínaní jazyka"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Asistent chatu nie je k dispozícii."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Odpoveď sa už generuje. Počkajte, kým sa dokončí."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Príliš veľa žiadostí. Chvíľu počkajte a skúste to znova."
 
@@ -246,7 +246,7 @@ msgid "Close"
 msgstr "Zatvoriť"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Čo pre vás môžem urobiť?"
 
@@ -262,13 +262,13 @@ msgstr "Skryť pomoc"
 msgid "Show help"
 msgstr "Zobraziť pomoc"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Odoslať"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Diktovať"
@@ -375,27 +375,31 @@ msgstr "Ponechať moju verziu"
 msgid "Merge both"
 msgstr "Zlúčiť obe"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "Odpoveď bola prerušená a môže byť neúplná."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Prepáčte, niečo sa pokazilo."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Hotovo"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "Asistent AI"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Nový chat"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Premýšľam ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -403,15 +407,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopírovať"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Poslať správu..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Správa chatu"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Zastaviť"
 
@@ -2907,8 +2911,12 @@ msgid "Error: %{msg}"
 msgstr "Chyba: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Ohodnoť túto stránku v každej oblasti na stupnici 1–10 (kvalita obsahu, čitateľnosť, SEO, UX, zapojenie) a navrhni vylepšenia"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Ohodnoť túto stránku v každej oblasti na stupnici 1–10 (kvalita obsahu, "
+"čitateľnosť, SEO, UX, zapojenie) a navrhni vylepšenia"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

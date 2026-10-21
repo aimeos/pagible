@@ -33,15 +33,15 @@ msgstr "Hiba a szöveg generálásában"
 msgid "Error switching language"
 msgstr "Hiba a nyelv váltásakor"
 
-#: js/chat.js:35
+#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "A csevegősegéd nem érhető el."
 
-#: js/chat.js:72
+#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "A válasz már folyamatban van. Kérjük, várja meg, amíg befejeződik."
 
-#: js/chat.js:74
+#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Túl sok kérés. Kérjük, várjon egy pillanatot, és próbálja újra."
 
@@ -248,7 +248,7 @@ msgid "Close"
 msgstr "Bezárás"
 
 #: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:325
+#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Mit tehetek Önért?"
 
@@ -264,13 +264,13 @@ msgstr "Segítség elrejtése"
 msgid "Show help"
 msgstr "Segítség megjelenítése"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
-#: js/components/ChatDialog.vue:401
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
+#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Küldés"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
-#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
+#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
 #: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "Diktálás"
@@ -377,27 +377,31 @@ msgstr "Az enyém megtartása"
 msgid "Merge both"
 msgstr "Mindkettő összevonása"
 
-#: js/components/ChatDialog.vue:209
+#: js/components/ChatDialog.vue:210
+msgid "The response was interrupted and may be incomplete."
+msgstr "A válasz megszakadt, és hiányos lehet."
+
+#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Elnézést, valami hiba történt."
 
-#: js/components/ChatDialog.vue:285
+#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Kész"
 
-#: js/components/ChatDialog.vue:305
+#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "AI-asszisztens"
 
-#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
+#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Új csevegés"
 
-#: js/components/ChatDialog.vue:342
+#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Gondolkodik ..."
 
-#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
+#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -405,15 +409,15 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "Másolás"
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Üzenet küldése..."
 
-#: js/components/ChatDialog.vue:364
+#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Csevegőüzenet"
 
-#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
+#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Leállítás"
 
@@ -2891,8 +2895,12 @@ msgid "Error: %{msg}"
 msgstr "Hiba: %{msg}"
 
 #: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
-msgid "Score this page 1–10 per area (content quality, readability, SEO, UX, engagement) and suggest improvements"
-msgstr "Pontozd ezt az oldalt területenként 1–10-ig (tartalom minősége, olvashatóság, SEO, UX, elköteleződés), és javasolj fejlesztéseket"
+msgid ""
+"Score this page 1–10 per area (content quality, readability, SEO, UX, "
+"engagement) and suggest improvements"
+msgstr ""
+"Pontozd ezt az oldalt területenként 1–10-ig (tartalom minősége, "
+"olvashatóság, SEO, UX, elköteleződés), és javasolj fejlesztéseket"
 
 #: js/views/PageDetail.vue:515
 msgid "Please wait until the language is switched"

@@ -10,14 +10,18 @@ import { useSessionStore, useUserStore } from './stores'
 import { urlchat } from './config'
 import { AUTH_STATUS } from './graphql'
 
+// Ends the streamed answer, followed by an error message if it failed; a missing marker means cut off
+const END = '\x1E'
+
 /**
  * Streams the AI assistant's answer from the chat endpoint.
  *
  * POSTs the prompt and prior turns to the cookie-guarded chat endpoint and passes each streamed chunk
  * to onDelta as ({ text }). HTTP failures throw; 409 (all chat streams of this user are in use) and
  * 429 (rate limit) carry a translated `.message` flagged `.shown` so the caller can render it verbatim
- * instead of a generic error. Aborting via the signal is not an error: the returned promise resolves
- * with the text decoded so far.
+ * instead of a generic error. The answer ends with the END marker: a server message after it throws
+ * flagged `.shown`, a stream without the marker (cut off) throws without. Aborting via the signal is
+ * not an error: the returned promise resolves with the text decoded so far.
  *
  * @param {string} prompt Current user message (the caller checks permission and non-empty)
  * @param {Array<{role: string, content: string}>} history Prior conversation turns
@@ -38,6 +42,7 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
   }
 
   let text = ''
+  let tail = null // text after the END marker, null until the marker arrived
 
   try {
     // postHeaders() forwards Laravel's XSRF-TOKEN cookie so the guarded POST passes CSRF
@@ -81,17 +86,44 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
     }
 
     const emit = (chunk) => {
+      if (tail !== null) {
+        tail += chunk
+        return
+      }
+
+      const pos = chunk.indexOf(END)
+
+      if (pos !== -1) {
+        tail = chunk.slice(pos + 1)
+        chunk = chunk.slice(0, pos)
+      }
+
       if (chunk) {
         text += chunk
         onDelta?.({ text: chunk })
       }
     }
 
+    // Throws if the answer failed or was cut off, otherwise returns the complete answer
+    const result = () => {
+      if (tail === null) {
+        throw new Error('Chat stream ended without end marker')
+      }
+
+      if (tail.trim()) {
+        const error = new Error(tail.trim())
+        error.shown = true
+        throw error
+      }
+
+      return text
+    }
+
     if (!response.body) {
       // A 2xx response with no readable stream (a proxy buffered/stripped the body): nothing to
       // stream, so deliver the whole text in one chunk instead of failing.
       emit(await response.text())
-      return text
+      return result()
     }
 
     // The body is the raw markdown answer; append each chunk as it streams in
@@ -111,7 +143,7 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
     // Flush any bytes the decoder buffered for a multibyte char split across the final chunk
     emit(decoder.decode())
 
-    return text
+    return result()
   } catch (error) {
     if (error?.name === 'AbortError') {
       // Stop button: keep whatever already streamed. The decoder is deliberately not flushed here -
