@@ -261,7 +261,7 @@ extend type Mutation {
   relocateFile(id: [ID!]! @rulesForArray(apply: ["max:100"]), disk: FileDisk!): [File!]!
     @guard @cmsPermission(action: "file:relocate") @throttle(name: "cms-graphql")
 
-  "Update an existing file"
+  "Update an existing file, an uploaded file replaces its content"
   saveFile(id: ID!, input: FileInput!, file: Upload, preview: RemoveableUpload, latestId: ID): File
     @guard @cmsPermission(action: "file:save") @throttle(name: "cms-graphql")
 

@@ -305,6 +305,40 @@ class FileToolsTest extends McpTestAbstract
     }
 
 
+    public function testSaveFileUrl()
+    {
+        Http::fake( ['https://example.com/*' => Http::response( 'plain text content', 200 )] );
+        $file = File::where( 'name', 'Test image' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
+            'id' => $file->id,
+            'latest_id' => $file->latest_id,
+            'url' => 'https://example.com/document.txt',
+        ] );
+
+        $response->assertOk()->assertSee( ['text/plain'] );
+
+        $data = $file->fresh()->latest->data;
+        $this->assertSame( 'https://example.com/document.txt', $data->path );
+        $this->assertSame( 'text/plain', $data->mime );
+    }
+
+
+    public function testSaveFileUrlProhibitsContent()
+    {
+        $file = File::where( 'name', 'Test image' )->first();
+
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SaveFile::class, [
+            'id' => $file->id,
+            'latest_id' => $file->latest_id,
+            'url' => 'https://example.com/document.txt',
+            'content' => base64_encode( 'plain text content' ),
+        ] );
+
+        $response->assertHasErrors( ['url'] );
+    }
+
+
     public function testSaveFileContentInvalid()
     {
         $file = File::where( 'name', 'Test image' )->first();

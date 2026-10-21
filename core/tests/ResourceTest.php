@@ -616,6 +616,19 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSaveFileClearsPreviewsOfUploadWithoutImage()
+    {
+        $this->previews( function( File $file ) {
+            // replacing an image by a document mustn't keep the previews of the old image
+            $saved = FileResource::save( $file->id, [], $this->user, upload:
+                UploadedFile::fake()->createWithContent( 'replacement.pdf', '%PDF-1.4 replacement' ) );
+
+            $this->assertEquals( 'application/pdf', $saved->latest?->data->mime );
+            $this->assertEquals( [], (array) $saved->latest?->data->previews );
+        } );
+    }
+
+
     public function testAddFileRejectsPrivateDiskConfiguredAsPublic()
     {
         config( [

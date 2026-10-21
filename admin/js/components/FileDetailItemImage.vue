@@ -208,14 +208,6 @@ export default {
         return null
       }
 
-      if (this.cropper) {
-        this.cropper.destroy()
-
-        // destroy() restores the <img> to cropperjs' originalUrl, so point it
-        // back at the current path before re-initialising the cropper
-        this.$refs.image.src = this.fileurl(this.item, this.item.path, !this.svg)
-      }
-
       const self = this
 
       return new this.Cropper(this.$refs.image, {
@@ -379,26 +371,8 @@ export default {
 
       this.source = this.fileurl(items[0], items[0].path, true)
       this.cropper.replace(this.source)
-      this.$emit('update:file', null)
       this.$emit('use', items)
       this.reset()
-    }
-  },
-
-  watch: {
-    'item.path': function (path, old) {
-      if (path === old || this.svg || this.readonly) {
-        return
-      }
-
-      this.images.forEach((img) => URL.revokeObjectURL(img.url))
-      this.images = []
-      this.source = null
-
-      this.$nextTick(() => {
-        if (this.destroyed || !this.Cropper) return
-        this.cropper = markRaw(this.init())
-      })
     }
   }
 }

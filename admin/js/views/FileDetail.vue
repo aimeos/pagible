@@ -7,6 +7,7 @@ import FileDetailItem from '../components/FileDetailItem.vue'
 import { applyResult, hasUnresolved } from '../merge'
 import { detailBase, useDetail } from '../detail'
 import { markRaw } from 'vue'
+import { mdiUpload } from '@mdi/js'
 import { safeParse } from '../json'
 import { clone } from '../utils'
 
@@ -86,7 +87,7 @@ export default {
   }),
 
   setup() {
-    return useDetail('file')
+    return { ...useDetail('file'), mdiUpload }
   },
 
   created() {
@@ -174,6 +175,31 @@ export default {
       return JSON.stringify(this.item?.previews || {})
     },
 
+    // replaces the file by the selected one and saves it right away to show the new content
+    async replace(event) {
+      const file = event.target.files?.[0]
+      event.target.value = ''
+
+      if (!file) return
+
+      // running saves may upload the previous file, which mustn't be restored afterwards
+      while (this.saveRunning) {
+        await this.saveRunning.catch(() => false)
+      }
+
+      const dirty = this.dirty
+      const prev = this.file
+
+      this.fileUpdated(file)
+      const edits = this.edits
+
+      // a rejected file mustn't be uploaded again by the next save
+      if (!(await this.save()) && this.file === file) {
+        this.file = prev
+        this.dirty = dirty || this.edits !== edits
+      }
+    },
+
     saveItem(quiet) {
       const upload = this.file
       const previews = this.previewsJson()
@@ -250,7 +276,19 @@ export default {
 </script>
 
 <template>
-  <DetailAppBar v-bind="bar" :label="$gettext('File')" :has-latest="!!item.latestId" />
+  <DetailAppBar v-bind="bar" :label="$gettext('File')" :has-latest="!!item.latestId">
+    <template #actions>
+      <v-btn
+        v-if="user.can('file:save')"
+        @click="$refs.upload.click()"
+        :disabled="loading || saving || publishing"
+        :title="$gettext('Replace file')"
+        :icon="mdiUpload"
+        class="btn-replace"
+      />
+      <input @change="replace($event)" ref="upload" type="file" hidden />
+    </template>
+  </DetailAppBar>
 
   <v-main class="file-details" :aria-label="$gettext('File')">
     <v-progress-linear v-if="loading" indeterminate color="primary" />

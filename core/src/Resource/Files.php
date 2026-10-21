@@ -631,10 +631,11 @@ class Files
 
         $stored['prepared'] = true;
         $tmp->ingest( $source, $previewUpload );
-        $stored['path'] = $upload !== null || $stored['disk'] === 'private' && $remote ? $tmp->path : null;
+        $stored['path'] = $upload !== null || ( $stored['disk'] === 'private' && $remote ) ? $tmp->path : null;
         $stored['mime'] = $source !== null ? (string) $tmp->mime : null;
 
-        if( $previewUpload || $remote || $source instanceof UploadedFile && str_starts_with( (string) $source->getMimeType(), 'image/' ) ) {
+        // uploads replace the previews of the previous file, non-image uploads have none
+        if( $previewUpload || $remote || $upload !== null ) {
             $stored['previews'] = (array) $tmp->previews;
         } elseif( is_string( $source ) && $preview === null && !isset( $input['previews'] ) ) {
             // previews of the previous image don't belong to the new path, they are created for supported images
