@@ -50,7 +50,7 @@ class AddFile extends Tool
         ] );
 
         $values = array_intersect_key( $v, array_flip( ['name', 'lang', 'description'] ) );
-        $file = $this->source( $v, fn( UploadedFile|string $source ) => Files::add( $source, $values, $request->user(), $v['disk'] ?? null ) );
+        $file = $this->upload( $v, fn( ?UploadedFile $upload ) => Files::add( $upload ?? $v['url'], $values, $request->user(), $v['disk'] ?? null ) );
 
         return Response::structured( Presenter::item( $file ) );
     }

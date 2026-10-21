@@ -144,6 +144,83 @@ describe('FileDetail', () => {
     cy.get('.menu-save').should('be.disabled')
   })
 
+  it('hides the replace button without file:save permission', () => {
+    mountDetail({})
+    cy.get('.btn-replace').should('not.exist')
+  })
+
+  it('uploads and saves the selected file when replacing it', () => {
+    const files = []
+    const mutate = (options) => {
+      files.push(options.variables.file)
+      return Promise.resolve({ data: { saveFile: { latest: {
+        id: 'v2', data: JSON.stringify({ path: 'images/new.pdf', mime: 'application/pdf' })
+      } } } })
+    }
+
+    mountDetail({ 'file:save': true }, {}, { mutate })
+    cy.get('.btn-replace').should('not.be.disabled')
+    cy.get('.btn-replace + input[type=file]').selectFile({
+      contents: Cypress.Buffer.from('pdf'), fileName: 'new.pdf', mimeType: 'application/pdf'
+    }, { force: true })
+
+    cy.wrap(files).should('have.length', 1).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+
+      expect(files[0].name).to.equal('new.pdf')
+      expect(vm.file).to.equal(null)
+      expect(vm.item.path).to.equal('images/new.pdf')
+      expect(vm.item.mime).to.equal('application/pdf')
+    })
+  })
+
+  it('drops a rejected replacement and restores the previous state', () => {
+    const mutate = () => Promise.reject(new Error('Invalid mime type'))
+
+    mountDetail({ 'file:save': true }, {}, { mutate }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+      const event = { target: { files: [new File(['exe'], 'tool.exe')], value: 'tool.exe' } }
+
+      return vm.replace(event).then(() => {
+        expect(event.target.value).to.equal('')
+        expect(vm.file).to.equal(null)
+        expect(vm.dirty).to.equal(false)
+      })
+    })
+  })
+
+  it('does not restore a file saved by a running save if the replacement is rejected', () => {
+    let resolve
+    const files = []
+    const mutate = (options) => {
+      files.push(options.variables.file)
+      return files.length === 1
+        ? new Promise((res) => { resolve = res })
+        : Promise.reject(new Error('Invalid mime type'))
+    }
+
+    mountDetail({ 'file:save': true }, {}, { mutate }).then(() => {
+      const vm = Cypress.vueWrapper.findComponent(FileDetail).vm
+      const cropped = new File(['png'], 'cropped.png')
+      const event = { target: { files: [new File(['exe'], 'tool.exe')], value: 'tool.exe' } }
+
+      vm.fileUpdated(cropped)
+      const saving = vm.save()
+
+      return cy.wrap(files).should('have.length', 1).then(() => {
+        const replacing = vm.replace(event)
+        resolve({ data: { saveFile: { latest: { id: 'v2', data: '{}' } } } })
+
+        return Promise.all([saving, replacing]).then(() => {
+          expect(files[0]).to.equal(cropped)
+          expect(files).to.have.length(2)
+          expect(vm.file).to.equal(null)
+          expect(vm.dirty).to.equal(false)
+        })
+      })
+    })
+  })
+
   it('disables publish button without file:publish permission', () => {
     mountDetail({})
     cy.get('.menu-publish').first().should('be.disabled')

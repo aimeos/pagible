@@ -411,9 +411,10 @@ export default {
       </v-row>
       <v-row>
         <v-col v-if="item" cols="12" class="preview">
+          <!-- a new path remounts the editor, which resets its cropper and edit history -->
           <FileDetailItemImage
             v-if="item.mime?.startsWith('image/')"
-            :key="item.disk"
+            :key="item.disk + item.path"
             :item="item"
             :readonly="readonly"
             @update:file="$emit('update:file', $event)"

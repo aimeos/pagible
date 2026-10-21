@@ -109,9 +109,9 @@ msgstr "페이지 잘라내기"
 msgid "Paste page"
 msgstr "페이지 붙여넣기"
 
-#: js/commands.js:178 js/components/CommandPalette.vue:111
-#: js/components/DetailRefs.vue:150 js/components/Navigation.vue:31
-#: js/views/PageList.vue:266 js/views/PageList.vue:270
+#: js/commands.js:178 js/components/CommandPalette.vue:112
+#: js/components/DetailRefs.vue:148 js/components/Navigation.vue:31
+#: js/views/PageList.vue:267 js/views/PageList.vue:271
 msgid "Pages"
 msgstr "페이지"
 
@@ -119,7 +119,7 @@ msgstr "페이지"
 msgid "Go to pages"
 msgstr "페이지로 이동"
 
-#: js/commands.js:184 js/components/CommandPalette.vue:112
+#: js/commands.js:184 js/components/CommandPalette.vue:113
 #: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
 #: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
 #: js/views/FileList.vue:41 js/views/FileList.vue:45
@@ -130,7 +130,7 @@ msgstr "미디어"
 msgid "Go to media"
 msgstr "미디어로 이동"
 
-#: js/commands.js:190 js/components/CommandPalette.vue:113
+#: js/commands.js:190 js/components/CommandPalette.vue:114
 #: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
 #: js/views/ElementList.vue:41
 msgid "Shared elements"
@@ -141,7 +141,7 @@ msgid "Go to shared elements"
 msgstr "공유 요소로 이동"
 
 #: js/commands.js:196 js/components/Navigation.vue:34
-#: js/views/AccessList.vue:239
+#: js/views/AccessList.vue:241
 msgid "Users"
 msgstr "사용자"
 
@@ -174,7 +174,7 @@ msgid "Error creating user"
 msgstr "사용자를 생성하는 중 오류가 발생했습니다"
 
 #: js/components/AccessUsers.vue:310 js/components/PageAccess.vue:130
-#: js/views/AccessList.vue:141
+#: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "액세스 역할을 가져오는 중 오류가 발생했습니다"
 
@@ -232,11 +232,11 @@ msgid "Roles defining what the user can do in the admin panel"
 msgstr "관리자 패널에서 사용자가 할 수 있는 작업을 정의하는 역할"
 
 #: js/components/AccessUsers.vue:485 js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:311
+#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "항목을 찾을 수 없습니다."
 
-#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:109
+#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:110
 msgid "Actions"
 msgstr "작업"
 
@@ -245,35 +245,35 @@ msgstr "작업"
 msgid "Close"
 msgstr "닫기"
 
-#: js/components/AiPrompt.vue:87 js/components/AiPrompt.vue:88
-#: js/components/ChatDialog.vue:324
+#: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
+#: js/components/ChatDialog.vue:325
 msgid "What shall I do for you?"
 msgstr "무엇을 도와드릴까요?"
 
-#: js/components/AiPrompt.vue:87
+#: js/components/AiPrompt.vue:88
 msgid "Press Enter to open the chat"
 msgstr "Enter 키를 눌러 채팅을 여세요"
 
-#: js/components/AiPrompt.vue:104
+#: js/components/AiPrompt.vue:105
 msgid "Hide help"
 msgstr "도움말 숨기기"
 
-#: js/components/AiPrompt.vue:104
+#: js/components/AiPrompt.vue:105
 msgid "Show help"
 msgstr "도움말 표시"
 
-#: js/components/AiPrompt.vue:115 js/components/ChatDialog.vue:399
-#: js/components/ChatDialog.vue:400
+#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:400
+#: js/components/ChatDialog.vue:401
 msgid "Send"
 msgstr "보내기"
 
-#: js/components/AiPrompt.vue:123 js/components/ChatDialog.vue:378
-#: js/components/ChatDialog.vue:379 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:476
+#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:379
+#: js/components/ChatDialog.vue:380 js/components/FieldActions.vue:134
+#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
 msgid "Dictate"
 msgstr "받아쓰기"
 
-#: js/components/AiPrompt.vue:132
+#: js/components/AiPrompt.vue:133
 msgid "Help"
 msgstr "도움말"
 
@@ -281,16 +281,16 @@ msgstr "도움말"
 msgid "Used elements"
 msgstr "사용된 요소"
 
-#: js/components/AsideList.vue:70
+#: js/components/AsideList.vue:71
 msgid "Filters"
 msgstr "필터"
 
-#: js/components/AsideList.vue:77 js/components/ListStatus.vue:43
+#: js/components/AsideList.vue:78 js/components/ListStatus.vue:43
 msgid "Reset"
 msgstr "초기화"
 
-#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:155
-#: js/components/DetailRefs.vue:185 js/components/DetailRefs.vue:207
+#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:153
+#: js/components/DetailRefs.vue:183 js/components/DetailRefs.vue:205
 msgid "ID"
 msgstr "ID"
 
@@ -334,7 +334,7 @@ msgid "Configuration"
 msgstr "구성"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:707
+#: js/views/PageDetail.vue:679
 msgid "Content"
 msgstr "콘텐츠"
 
@@ -375,27 +375,27 @@ msgstr "내 변경 사항 유지"
 msgid "Merge both"
 msgstr "둘 다 병합"
 
-#: js/components/ChatDialog.vue:208
+#: js/components/ChatDialog.vue:209
 msgid "Sorry, something went wrong."
 msgstr "죄송합니다. 문제가 발생했습니다."
 
-#: js/components/ChatDialog.vue:284
+#: js/components/ChatDialog.vue:285
 msgid "Done"
 msgstr "완료"
 
-#: js/components/ChatDialog.vue:304
+#: js/components/ChatDialog.vue:305
 msgid "AI Assistant"
 msgstr "AI 어시스턴트"
 
-#: js/components/ChatDialog.vue:312 js/components/ChatDialog.vue:313
+#: js/components/ChatDialog.vue:313 js/components/ChatDialog.vue:314
 msgid "New chat"
 msgstr "새 채팅"
 
-#: js/components/ChatDialog.vue:341
+#: js/components/ChatDialog.vue:342
 msgid "Thinking ..."
 msgstr "생각 중 ..."
 
-#: js/components/ChatDialog.vue:347 js/components/ChatDialog.vue:348
+#: js/components/ChatDialog.vue:348 js/components/ChatDialog.vue:349
 #: js/components/PageDetailContentList.vue:524
 #: js/components/PageDetailContentList.vue:611
 #: js/components/PageListItems.vue:770 js/fields/Items.vue:281
@@ -403,56 +403,56 @@ msgctxt "clipboard"
 msgid "Copy"
 msgstr "복사"
 
-#: js/components/ChatDialog.vue:362
+#: js/components/ChatDialog.vue:363
 msgid "Send a message ..."
 msgstr "메시지 보내기 ..."
 
-#: js/components/ChatDialog.vue:363
+#: js/components/ChatDialog.vue:364
 msgid "Chat message"
 msgstr "채팅 메시지"
 
-#: js/components/ChatDialog.vue:389 js/components/ChatDialog.vue:390
+#: js/components/ChatDialog.vue:390 js/components/ChatDialog.vue:391
 msgid "Stop"
 msgstr "중지"
 
-#: js/components/CommandPalette.vue:110
+#: js/components/CommandPalette.vue:111
 msgid "Go to"
 msgstr "이동"
 
-#: js/components/CommandPalette.vue:231 js/components/ConfirmDialog.vue:47
+#: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
 #: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:892
 msgid "New"
 msgstr "새 항목"
 
-#: js/components/CommandPalette.vue:286 js/components/CommandPalette.vue:309
+#: js/components/CommandPalette.vue:287 js/components/CommandPalette.vue:310
 #: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "명령"
 
-#: js/components/CommandPalette.vue:295
+#: js/components/CommandPalette.vue:296
 msgid "Type a command or search pages, files and elements"
 msgstr "명령을 입력하거나 페이지, 파일 및 요소 검색"
 
-#: js/components/CommandPalette.vue:296
+#: js/components/CommandPalette.vue:297
 msgid "Command or search term"
 msgstr "명령 또는 검색어"
 
-#: js/components/CommandPalette.vue:328 js/components/ShortcutDialog.vue:99
+#: js/components/CommandPalette.vue:329 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "그다음"
 
-#: js/components/CommandPalette.vue:335
+#: js/components/CommandPalette.vue:336
 msgid "Search failed, please try again"
 msgstr "검색에 실패했습니다. 다시 시도해 주세요"
 
-#: js/components/CommandPalette.vue:336
+#: js/components/CommandPalette.vue:337
 msgid "No results"
 msgstr "결과 없음"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
 #: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:796
-#: js/views/AccessList.vue:265
+#: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "영구 삭제"
 
@@ -463,9 +463,9 @@ msgid_plural ""
 "restored:"
 msgstr[0] "다음 %{num}개 항목이 영구 삭제되며 복원할 수 없습니다:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:422
+#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
 #: js/components/TranslateDialog.vue:103 js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:332
+#: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "취소"
 
@@ -504,52 +504,52 @@ msgstr "예약 후 닫기"
 msgid "Toggle side menu"
 msgstr "사이드 메뉴 토글"
 
-#: js/components/DetailRefs.vue:80
+#: js/components/DetailRefs.vue:78
 msgid "yes"
 msgstr "예"
 
-#: js/components/DetailRefs.vue:83
+#: js/components/DetailRefs.vue:81
 msgid "no"
 msgstr "아니요"
 
-#: js/components/DetailRefs.vue:136
+#: js/components/DetailRefs.vue:134
 msgid "Error fetching references"
 msgstr "참조 가져오기 오류"
 
-#: js/components/DetailRefs.vue:156 js/components/FileUrlDialog.vue:232
+#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:233
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:157 js/components/DetailRefs.vue:187
+#: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
 #: js/components/ElementDetailItem.vue:57 js/components/FileDetailItem.vue:384
 #: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "이름"
 
-#: js/components/DetailRefs.vue:169 js/components/PageAccess.vue:187
+#: js/components/DetailRefs.vue:167 js/components/PageAccess.vue:187
 #: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "제한됨"
 
-#: js/components/DetailRefs.vue:180 js/views/ElementList.vue:45
+#: js/components/DetailRefs.vue:178 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "요소"
 
-#: js/components/DetailRefs.vue:186 js/components/DetailRefs.vue:208
+#: js/components/DetailRefs.vue:184 js/components/DetailRefs.vue:206
 #: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "유형"
 
-#: js/components/DetailRefs.vue:202
+#: js/components/DetailRefs.vue:200
 msgid "Versions"
 msgstr "버전"
 
-#: js/components/DetailRefs.vue:209 js/listview.js:90
+#: js/components/DetailRefs.vue:207 js/listview.js:90
 msgid "Published"
 msgstr "게시됨"
 
 #: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
-#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:140
+#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
 #: js/components/PageBulkMenu.vue:100 js/components/PageListItems.vue:755
 msgid "Edit properties"
 msgstr "속성 편집"
@@ -561,8 +561,8 @@ msgstr[0] "선택한 속성을 %{num}개 항목에 적용합니다."
 
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
 #: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
-#: js/components/PageDetailItemProps.vue:219
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:635
+#: js/components/PageDetailItemProps.vue:232
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:607
 msgid "Language"
 msgstr "언어"
 
@@ -571,7 +571,7 @@ msgid "Language of the content"
 msgstr "콘텐츠의 언어"
 
 #: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
-#: js/components/PageBulkDialog.vue:255
+#: js/components/PageBulkDialog.vue:260
 msgid "Apply"
 msgstr "적용"
 
@@ -617,7 +617,7 @@ msgstr "공유 요소 가져오기 오류"
 #: js/components/PageDetailContentList.vue:510
 #: js/components/PageDetailContentList.vue:601
 #: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
-#: js/views/AccessList.vue:260 js/views/AccessList.vue:304
+#: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "선택 상태 전환"
 
@@ -635,7 +635,7 @@ msgstr "요소 다시 불러오기"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:803
 #: js/components/TranslateDialog.vue:70 js/components/TranslateDialog.vue:105
-#: js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:649
 msgid "Translate"
 msgstr "번역"
 
@@ -694,12 +694,12 @@ msgstr "다음으로 변경"
 
 #: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
 #: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
-#: js/fields/Images.vue:328
+#: js/fields/Images.vue:340
 msgid "Edit"
 msgstr "편집"
 
 #: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:254
-#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:244
+#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:245
 #: js/components/PageDetailContentList.vue:536
 #: js/components/PageDetailContentList.vue:617 js/fields/Items.vue:283
 #: js/fields/Table.vue:88 js/fields/Table.vue:97
@@ -707,7 +707,7 @@ msgid "Remove"
 msgstr "제거"
 
 #: js/components/FileAiDialog.vue:129 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:62 js/components/FileUrlDialog.vue:164
+#: js/components/FileUrlDialog.vue:63 js/components/FileUrlDialog.vue:165
 #: js/filefield.js:188
 msgid "Error adding file %{path}"
 msgstr "파일 %{path} 추가 오류"
@@ -757,7 +757,7 @@ msgid "Error describing file"
 msgstr "파일 설명 오류"
 
 #: js/components/FileDetailItem.vue:219 js/components/FileListItems.vue:190
-#: js/filefield.js:156 js/views/FileDetail.vue:246
+#: js/filefield.js:156 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "파일 저장 오류"
 
@@ -777,40 +777,40 @@ msgstr "파일 콘텐츠의 언어이며, 모든 언어에서 사용하는 경�
 msgid "Copy URL"
 msgstr "URL 복사"
 
-#: js/components/FileDetailItem.vue:449
+#: js/components/FileDetailItem.vue:450
 msgid "Descriptions"
 msgstr "설명"
 
-#: js/components/FileDetailItem.vue:457 js/components/FileDetailItem.vue:516
+#: js/components/FileDetailItem.vue:458 js/components/FileDetailItem.vue:517
 msgid "Translate text"
 msgstr "텍스트 번역"
 
-#: js/components/FileDetailItem.vue:465
+#: js/components/FileDetailItem.vue:466
 msgid "Generate description"
 msgstr "설명 생성"
 
-#: js/components/FileDetailItem.vue:492
+#: js/components/FileDetailItem.vue:493
 msgid "Description (%{lang})"
 msgstr "설명 (%{lang})"
 
-#: js/components/FileDetailItem.vue:492
+#: js/components/FileDetailItem.vue:493
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr "스크린 리더와 검색 엔진을 위한 대체 텍스트이며, 캡션으로도 사용됩니다"
 
-#: js/components/FileDetailItem.vue:508
+#: js/components/FileDetailItem.vue:509
 msgid "Transcriptions"
 msgstr "전사"
 
-#: js/components/FileDetailItem.vue:524
+#: js/components/FileDetailItem.vue:525
 msgid "Transcribe file content"
 msgstr "파일 콘텐츠 전사"
 
-#: js/components/FileDetailItem.vue:541
+#: js/components/FileDetailItem.vue:542
 msgid "Transcription (%{lang})"
 msgstr "전사 (%{lang})"
 
-#: js/components/FileDetailItem.vue:541
+#: js/components/FileDetailItem.vue:542
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr "WebVTT 형식의 음성 텍스트로, 자막과 대본으로 표시됩니다"
 
@@ -830,91 +830,91 @@ msgstr "정사각형"
 msgid "Error downloading image"
 msgstr "이미지 다운로드 오류"
 
-#: js/components/FileDetailItemImage.vue:285
-#: js/components/FileDetailItemImage.vue:370 js/imageai.js:216
+#: js/components/FileDetailItemImage.vue:277
+#: js/components/FileDetailItemImage.vue:362 js/imageai.js:216
 msgid "Error editing image"
 msgstr "이미지 편집 오류"
 
-#: js/components/FileDetailItemImage.vue:428
-#: js/components/FileDetailItemImage.vue:433
+#: js/components/FileDetailItemImage.vue:402
+#: js/components/FileDetailItemImage.vue:407
 msgid "Select area"
 msgstr "영역 선택"
 
-#: js/components/FileDetailItemImage.vue:452
+#: js/components/FileDetailItemImage.vue:426
 msgid "Crop selected area"
 msgstr "선택 영역 자르기"
 
-#: js/components/FileDetailItemImage.vue:462
+#: js/components/FileDetailItemImage.vue:436
 msgid "Erase selected area"
 msgstr "선택한 영역 지우기"
 
-#: js/components/FileDetailItemImage.vue:474
-#: js/components/FileDetailItemImage.vue:481
-#: js/components/FileDetailItemImage.vue:496
+#: js/components/FileDetailItemImage.vue:448
+#: js/components/FileDetailItemImage.vue:455
+#: js/components/FileDetailItemImage.vue:470
 msgid "Edit image"
 msgstr "이미지 편집"
 
-#: js/components/FileDetailItemImage.vue:487
+#: js/components/FileDetailItemImage.vue:461
 msgid "Describe the changes"
 msgstr "변경 사항 설명"
 
-#: js/components/FileDetailItemImage.vue:487
+#: js/components/FileDetailItemImage.vue:461
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "이미지에서 변경할 내용을 설명하세요. 예: 하늘을 파란색으로 변경"
 
-#: js/components/FileDetailItemImage.vue:506
+#: js/components/FileDetailItemImage.vue:480
 msgid "Remove background"
 msgstr "배경 제거"
 
-#: js/components/FileDetailItemImage.vue:517
-#: js/components/FileDetailItemImage.vue:524
-#: js/components/FileDetailItemImage.vue:544
+#: js/components/FileDetailItemImage.vue:491
+#: js/components/FileDetailItemImage.vue:498
+#: js/components/FileDetailItemImage.vue:518
 msgid "Expand image"
 msgstr "이미지 확장"
 
-#: js/components/FileDetailItemImage.vue:552
-#: js/components/FileDetailItemImage.vue:559
+#: js/components/FileDetailItemImage.vue:526
+#: js/components/FileDetailItemImage.vue:533
 msgid "Upscale image"
 msgstr "이미지 해상도 높이기"
 
-#: js/components/FileDetailItemImage.vue:572
+#: js/components/FileDetailItemImage.vue:546
 msgid "Scale %{factor}"
 msgstr "배율 %{factor}"
 
-#: js/components/FileDetailItemImage.vue:581
+#: js/components/FileDetailItemImage.vue:555
 msgid "Rotate counter-clockwise"
 msgstr "시계 반대 방향으로 회전"
 
-#: js/components/FileDetailItemImage.vue:588
+#: js/components/FileDetailItemImage.vue:562
 msgid "Rotate clockwise"
 msgstr "시계 방향으로 회전"
 
-#: js/components/FileDetailItemImage.vue:596
+#: js/components/FileDetailItemImage.vue:570
 msgid "Flip horizontally"
 msgstr "가로로 뒤집기"
 
-#: js/components/FileDetailItemImage.vue:603
+#: js/components/FileDetailItemImage.vue:577
 msgid "Flip vertically"
 msgstr "세로로 뒤집기"
 
-#: js/components/FileDetailItemImage.vue:611
+#: js/components/FileDetailItemImage.vue:585
 msgid "Convert to monochrome"
 msgstr "흑백으로 변환"
 
-#: js/components/FileDetailItemImage.vue:614
+#: js/components/FileDetailItemImage.vue:588
 msgid "Download"
 msgstr "다운로드"
 
-#: js/components/FileDetailItemImage.vue:616
-#: js/components/FileDetailItemImage.vue:621 js/lists.js:95 js/pagetree.js:341
+#: js/components/FileDetailItemImage.vue:590
+#: js/components/FileDetailItemImage.vue:595 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "실행 취소"
 
-#: js/components/FileDetailItemImage.vue:628
+#: js/components/FileDetailItemImage.vue:602
 msgid "Previous edit"
 msgstr "이전 수정"
 
-#: js/components/FileDetailItemImage.vue:631
+#: js/components/FileDetailItemImage.vue:605
 msgid "Original"
 msgstr "원본"
 
@@ -1020,52 +1020,52 @@ msgstr ""
 "파일이 포함된 페이지를 볼 수 있는 방문자만 파일을 다운로드할 수 있습니다"
 
 #: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:201
-#: js/fields/Images.vue:356 js/fields/Images.vue:380
+#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:202
+#: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "파일 추가"
 
-#: js/components/FileUrlDialog.vue:118
+#: js/components/FileUrlDialog.vue:119
 msgid "At least one URL is longer than 255 characters"
 msgstr "하나 이상의 URL이 255자보다 깁니다."
 
-#: js/components/FileUrlDialog.vue:154
+#: js/components/FileUrlDialog.vue:155
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "하나 이상의 파일이 \"%{mime}*\" 형식이 아닙니다."
 
-#: js/components/FileUrlDialog.vue:158
+#: js/components/FileUrlDialog.vue:159
 msgid "The file is not of type \"%{mime}*\""
 msgstr "파일이 \"%{mime}*\" 형식이 아닙니다."
 
-#: js/components/FileUrlDialog.vue:186 js/fields/Images.vue:363
+#: js/components/FileUrlDialog.vue:187 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "URL에서 파일 추가"
 
-#: js/components/FileUrlDialog.vue:201 js/fields/File.vue:278
+#: js/components/FileUrlDialog.vue:202 js/fields/File.vue:278
 msgid "Add file"
 msgstr "파일 추가"
 
-#: js/components/FileUrlDialog.vue:214
+#: js/components/FileUrlDialog.vue:215
 msgid "Enter one URL per line"
 msgstr "한 줄에 하나의 URL 입력"
 
-#: js/components/FileUrlDialog.vue:215
+#: js/components/FileUrlDialog.vue:216
 msgid "URLs"
 msgstr "URL"
 
-#: js/components/FileUrlDialog.vue:215
+#: js/components/FileUrlDialog.vue:216
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "파일이 이 URL에서 다운로드되어 미디어 목록에 추가됩니다"
 
-#: js/components/FileUrlDialog.vue:231
+#: js/components/FileUrlDialog.vue:232
 msgid "Enter URL"
 msgstr "URL 입력"
 
-#: js/components/FileUrlDialog.vue:232
+#: js/components/FileUrlDialog.vue:233
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "파일이 이 URL에서 다운로드되어 미디어 목록에 추가됩니다"
 
-#: js/components/FileUrlDialog.vue:273
+#: js/components/FileUrlDialog.vue:274
 msgid "Size"
 msgstr "크기"
 
@@ -1143,7 +1143,7 @@ msgstr "기록"
 
 #: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
 #: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
-#: js/fields/Url.vue:172
+#: js/fields/Url.vue:173
 msgid "Loading"
 msgstr "로드 중"
 
@@ -1273,7 +1273,7 @@ msgid "Refresh"
 msgstr "새로고침"
 
 #: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:544
-#: js/views/AccessList.vue:289
+#: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "검색"
 
@@ -1302,7 +1302,7 @@ msgstr "최초 수정"
 msgid "Position"
 msgstr "위치"
 
-#: js/components/ListSort.vue:37 js/views/PageList.vue:116
+#: js/components/ListSort.vue:37 js/views/PageList.vue:117
 msgid "Tree"
 msgstr "트리"
 
@@ -1357,7 +1357,7 @@ msgstr "인증된 사용자"
 #: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
 #: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
 #: js/components/PageListItems.vue:758 js/components/PageListItems.vue:971
-#: js/views/AccessList.vue:231 js/views/AccessList.vue:235
+#: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "액세스"
 
@@ -1365,30 +1365,30 @@ msgstr "액세스"
 msgid "Only visitors with one of these roles can view the page"
 msgstr "이 역할 중 하나를 가진 방문자만 페이지를 볼 수 있습니다"
 
-#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:269
+#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:274
 msgid "Page bulk changes are limited to %{count} pages"
 msgstr "페이지 일괄 변경은 %{count}페이지로 제한됩니다."
 
-#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:263
+#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:268
 msgid "Apply recursively"
 msgstr "재귀적으로 적용"
 
-#: js/components/PageBulkDialog.vue:146
+#: js/components/PageBulkDialog.vue:151
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "선택한 속성을 %{num}개 페이지에 적용합니다."
 
-#: js/components/PageBulkDialog.vue:157
+#: js/components/PageBulkDialog.vue:162
 msgid "Change status"
 msgstr "상태 변경"
 
-#: js/components/PageBulkDialog.vue:162
-#: js/components/PageDetailItemProps.vue:205
+#: js/components/PageBulkDialog.vue:167
+#: js/components/PageDetailItemProps.vue:218
 msgid "Status"
 msgstr "상태"
 
-#: js/components/PageBulkDialog.vue:162
-#: js/components/PageDetailItemProps.vue:205
+#: js/components/PageBulkDialog.vue:167
+#: js/components/PageDetailItemProps.vue:218
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1396,89 +1396,89 @@ msgstr ""
 "비활성화된 페이지는 오프라인 상태이며, 숨겨진 페이지는 온라인 상태이지만 내비"
 "게이션에 표시되지 않습니다"
 
-#: js/components/PageBulkDialog.vue:171
+#: js/components/PageBulkDialog.vue:176
 msgid "Change cache time"
 msgstr "캐시 시간 변경"
 
-#: js/components/PageBulkDialog.vue:176
-#: js/components/PageDetailItemProps.vue:323
+#: js/components/PageBulkDialog.vue:181
+#: js/components/PageDetailItemProps.vue:336
 #: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "캐시 시간"
 
-#: js/components/PageBulkDialog.vue:176
-#: js/components/PageDetailItemProps.vue:323
+#: js/components/PageBulkDialog.vue:181
+#: js/components/PageDetailItemProps.vue:336
 msgid "How long the generated page is cached before it is created again"
 msgstr "생성된 페이지가 다시 생성되기 전까지 캐시되는 시간"
 
-#: js/components/PageBulkDialog.vue:185
+#: js/components/PageBulkDialog.vue:190
 msgid "Change source language"
 msgstr "원문 언어 변경"
 
-#: js/components/PageBulkDialog.vue:190
+#: js/components/PageBulkDialog.vue:195
 msgid "Source language"
 msgstr "원문 언어"
 
-#: js/components/PageBulkDialog.vue:190
+#: js/components/PageBulkDialog.vue:195
 msgid "Language of the source page content"
 msgstr "소스 페이지 콘텐츠의 언어"
 
-#: js/components/PageBulkDialog.vue:197
+#: js/components/PageBulkDialog.vue:202
 msgid "Change theme"
 msgstr "테마 변경"
 
-#: js/components/PageBulkDialog.vue:202
-#: js/components/PageDetailItemProps.vue:292
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:305
 #: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "테마"
 
-#: js/components/PageBulkDialog.vue:202
-#: js/components/PageDetailItemProps.vue:292
+#: js/components/PageBulkDialog.vue:207
+#: js/components/PageDetailItemProps.vue:305
 msgid "Design used to display the page"
 msgstr "페이지를 표시하는 데 사용되는 디자인"
 
-#: js/components/PageBulkDialog.vue:209
+#: js/components/PageBulkDialog.vue:214
 msgid "Change page type"
 msgstr "페이지 유형 변경"
 
-#: js/components/PageBulkDialog.vue:214
-#: js/components/PageDetailItemProps.vue:301
+#: js/components/PageBulkDialog.vue:219
+#: js/components/PageDetailItemProps.vue:314
 #: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "페이지 유형"
 
-#: js/components/PageBulkDialog.vue:214
-#: js/components/PageDetailItemProps.vue:301
+#: js/components/PageBulkDialog.vue:219
+#: js/components/PageDetailItemProps.vue:314
 msgid "Template of the theme which defines the page layout"
 msgstr "페이지 레이아웃을 정의하는 테마의 템플릿"
 
-#: js/components/PageBulkDialog.vue:221
+#: js/components/PageBulkDialog.vue:226
 msgid "Change tag"
 msgstr "태그 변경"
 
-#: js/components/PageBulkDialog.vue:225
-#: js/components/PageDetailItemProps.vue:312
+#: js/components/PageBulkDialog.vue:230
+#: js/components/PageDetailItemProps.vue:325
 #: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "페이지 태그"
 
-#: js/components/PageBulkDialog.vue:225
-#: js/components/PageDetailItemProps.vue:312
+#: js/components/PageBulkDialog.vue:230
+#: js/components/PageDetailItemProps.vue:325
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "템플릿에서 페이지를 찾기 위한 내부 식별자입니다. 예: blog"
 
-#: js/components/PageBulkDialog.vue:234
+#: js/components/PageBulkDialog.vue:239
 msgid "Change domain"
 msgstr "도메인 변경"
 
-#: js/components/PageBulkDialog.vue:239
-#: js/components/PageDetailItemProps.vue:277
+#: js/components/PageBulkDialog.vue:244
+#: js/components/PageDetailItemProps.vue:290
 msgid "Domain"
 msgstr "도메인"
 
-#: js/components/PageBulkDialog.vue:239
-#: js/components/PageDetailItemProps.vue:277
+#: js/components/PageBulkDialog.vue:244
+#: js/components/PageDetailItemProps.vue:290
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "페이지가 제공되는 도메인입니다. 예: example.com"
 
@@ -1497,7 +1497,7 @@ msgid "Clear cache"
 msgstr "캐시 지우기"
 
 #: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:816
-#: js/views/PageDetail.vue:680
+#: js/views/PageDetail.vue:652
 msgid "Ignore changes"
 msgstr "변경 사항 무시"
 
@@ -1621,56 +1621,56 @@ msgstr "메타"
 msgid "Config"
 msgstr "구성"
 
-#: js/components/PageDetailItemProps.vue:68
+#: js/components/PageDetailItemProps.vue:74
 msgid "Path must not start with a slash (/)"
 msgstr "경로는 슬래시(/)로 시작하지 않아야 합니다."
 
-#: js/components/PageDetailItemProps.vue:78
+#: js/components/PageDetailItemProps.vue:84
 msgid "URL is not valid"
 msgstr "URL이 유효하지 않습니다."
 
-#: js/components/PageDetailItemProps.vue:83 js/views/Login.vue:61
+#: js/components/PageDetailItemProps.vue:89 js/views/Login.vue:61
 #: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "필수 입력 필드입니다."
 
-#: js/components/PageDetailItemProps.vue:114
+#: js/components/PageDetailItemProps.vue:125
 msgid "The path is already in use by another page"
 msgstr "다른 페이지에서 이미 경로를 사용 중입니다."
 
-#: js/components/PageDetailItemProps.vue:219
+#: js/components/PageDetailItemProps.vue:232
 msgid "Language of the page content"
 msgstr "페이지 콘텐츠의 언어"
 
-#: js/components/PageDetailItemProps.vue:233
+#: js/components/PageDetailItemProps.vue:246
 msgid "Page title"
 msgstr "페이지 제목"
 
-#: js/components/PageDetailItemProps.vue:233
+#: js/components/PageDetailItemProps.vue:246
 msgid "Shown in the browser tab and search results"
 msgstr "브라우저 탭과 검색 결과에 표시됩니다"
 
-#: js/components/PageDetailItemProps.vue:244
+#: js/components/PageDetailItemProps.vue:257
 msgid "Page name"
 msgstr "페이지 이름"
 
-#: js/components/PageDetailItemProps.vue:244
+#: js/components/PageDetailItemProps.vue:257
 msgid "Short name shown in the navigation menus"
 msgstr "내비게이션 메뉴에 표시되는 짧은 이름"
 
-#: js/components/PageDetailItemProps.vue:260
+#: js/components/PageDetailItemProps.vue:273
 msgid "URL path"
 msgstr "URL 경로"
 
-#: js/components/PageDetailItemProps.vue:260
+#: js/components/PageDetailItemProps.vue:273
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "도메인 뒤에 오는 페이지 URL의 일부입니다. 예: about-us"
 
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageDetailItemProps.vue:352
 msgid "Redirect URL"
 msgstr "리디렉션 URL"
 
-#: js/components/PageDetailItemProps.vue:339
+#: js/components/PageDetailItemProps.vue:352
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "방문자는 페이지를 보는 대신 이 URL로 이동됩니다"
 
@@ -1819,23 +1819,23 @@ msgid "Position"
 msgstr "위치"
 
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:866
-#: js/views/PageDetail.vue:662 js/views/PageList.vue:149
+#: js/views/PageDetail.vue:634 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "업데이트 필요"
 
-#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:155
+#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:156
 msgid "Missing"
 msgstr "누락됨"
 
-#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:161
+#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:162
 msgid "AI draft"
 msgstr "AI 초안"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:661
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:633
 msgid "Up to date"
 msgstr "최신 상태"
 
-#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:221
+#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:222
 msgid "Error fetching translation states"
 msgstr "번역 상태를 가져오는 중 오류 발생"
 
@@ -1907,7 +1907,7 @@ msgstr "하위 노드 토글"
 msgid "Hidden in navigation"
 msgstr "내비게이션에 숨겨져 있음"
 
-#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:664
+#: js/components/PageListItems.vue:929 js/views/PageDetail.vue:636
 msgid "Create"
 msgstr "생성"
 
@@ -2177,19 +2177,19 @@ msgstr "페이지가 %{date}에 게시될 예정입니다"
 msgid "Error publishing page"
 msgstr "페이지 게시 오류"
 
-#: js/detail.js:276
+#: js/detail.js:299
 msgid "Not published, please review the changes and publish again"
 msgstr "게시되지 않았습니다. 변경 사항을 검토한 후 다시 게시하세요"
 
-#: js/detail.js:346 js/fields/Autocomplete.vue:209
+#: js/detail.js:369 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "사용 가능한 데이터 없음"
 
-#: js/detail.js:347
+#: js/detail.js:370
 msgid "No version data available"
 msgstr "사용 가능한 버전 데이터가 없습니다"
 
-#: js/detail.js:437
+#: js/detail.js:464
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "유효하지 않은 필드가 있습니다. 먼저 오류를 해결하세요."
 
@@ -2209,7 +2209,7 @@ msgstr "파일이 필요합니다."
 msgid "Add file from URL"
 msgstr "URL에서 파일 추가"
 
-#: js/fields/File.vue:293 js/fields/Images.vue:373
+#: js/fields/File.vue:293 js/fields/Images.vue:385
 msgid "Create file"
 msgstr "파일 만들기"
 
@@ -2229,7 +2229,7 @@ msgstr "이름"
 msgid "description"
 msgstr "설명"
 
-#: js/fields/Images.vue:397
+#: js/fields/Images.vue:409
 msgid "Drop files here"
 msgstr "여기에 파일을 드롭하세요."
 
@@ -2269,31 +2269,31 @@ msgstr "%{row}행, %{col}열"
 msgid "Row actions"
 msgstr "행 작업"
 
-#: js/fields/Url.vue:50 js/options.js:93
+#: js/fields/Url.vue:51 js/options.js:93
 msgid "None"
 msgstr "없음"
 
-#: js/fields/Url.vue:51
+#: js/fields/Url.vue:52
 msgid "Sponsored"
 msgstr "스폰서"
 
-#: js/fields/Url.vue:52
+#: js/fields/Url.vue:53
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:92
+#: js/fields/Url.vue:93
 msgid "Not a valid URL"
 msgstr "유효한 URL이 아닙니다."
 
-#: js/fields/Url.vue:100
+#: js/fields/Url.vue:101
 msgid "Invalid URL schema configuration"
 msgstr "잘못된 URL 스키마 구성"
 
-#: js/fields/Url.vue:172
+#: js/fields/Url.vue:173
 msgid "No pages found"
 msgstr "해당 페이지를 찾을 수 없습니다"
 
-#: js/fields/Url.vue:184
+#: js/fields/Url.vue:185
 msgid "Link attribute"
 msgstr "링크 속성"
 
@@ -2363,8 +2363,8 @@ msgid "publish"
 msgstr "게시"
 
 #: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
-#: js/views/PageList.vue:126 js/views/PageList.vue:136
-#: js/views/PageList.vue:147
+#: js/views/PageList.vue:127 js/views/PageList.vue:137
+#: js/views/PageList.vue:148
 msgid "All"
 msgstr "모두"
 
@@ -2400,7 +2400,7 @@ msgstr "언어"
 msgid "Merged with changes from %{editor}"
 msgstr "%{editor}의 변경 사항을 병합했습니다."
 
-#: js/options.js:49 js/views/PageList.vue:137
+#: js/options.js:49 js/views/PageList.vue:138
 msgid "No cache"
 msgstr "캐시 없음"
 
@@ -2409,15 +2409,15 @@ msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} 시간"
 
-#: js/options.js:62 js/views/PageList.vue:129
+#: js/options.js:62 js/views/PageList.vue:130
 msgid "Disabled"
 msgstr "비활성화됨"
 
-#: js/options.js:63 js/views/PageList.vue:127
+#: js/options.js:63 js/views/PageList.vue:128
 msgid "Enabled"
 msgstr "활성화됨"
 
-#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:585
+#: js/pageactions.js:122 js/pageactions.js:365 js/views/PageDetail.vue:562
 msgid "Error saving page"
 msgstr "페이지 저장 중 오류"
 
@@ -2726,38 +2726,38 @@ msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "번역할 내용이 없습니다. 페이지가 최신 상태이거나 이미 번역 중입니다"
 
-#: js/views/AccessList.vue:169
+#: js/views/AccessList.vue:171
 msgid "Error adding access value"
 msgstr "액세스 값을 추가하는 중에 오류가 발생했습니다."
 
-#: js/views/AccessList.vue:184
+#: js/views/AccessList.vue:186
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
 msgstr ""
 "기존 제한사항은 변경되지 않으며 영구 삭제된 액세스 값을 계속 참조합니다."
 
-#: js/views/AccessList.vue:203
+#: js/views/AccessList.vue:205
 msgid "Error purging access values"
 msgstr "액세스 값 영구 삭제 중 오류가 발생했습니다"
 
-#: js/views/AccessList.vue:240
+#: js/views/AccessList.vue:242
 msgid "Roles"
 msgstr "역할"
 
-#: js/views/AccessList.vue:275 js/views/AccessList.vue:320
+#: js/views/AccessList.vue:277 js/views/AccessList.vue:322
 msgid "Add access value"
 msgstr "액세스 값 추가"
 
-#: js/views/AccessList.vue:324
+#: js/views/AccessList.vue:326
 msgid "Access value"
 msgstr "액세스 값"
 
-#: js/views/AccessList.vue:324
+#: js/views/AccessList.vue:326
 msgid "Role name which can be assigned to pages and users"
 msgstr "페이지와 사용자에게 할당할 수 있는 역할 이름"
 
-#: js/views/AccessList.vue:340
+#: js/views/AccessList.vue:342
 msgid "Add"
 msgstr "추가"
 
@@ -2765,20 +2765,20 @@ msgstr "추가"
 msgid "Error fetching element"
 msgstr "요소 가져오기 오류"
 
-#: js/views/ElementDetail.vue:185
+#: js/views/ElementDetail.vue:169
 msgid "Element saved successfully"
 msgstr "요소가 성공적으로 저장되었습니다."
 
-#: js/views/ElementDetail.vue:192
+#: js/views/ElementDetail.vue:172
 msgid "Error saving element"
 msgstr "요소 저장 중 오류가 발생했습니다"
 
-#: js/views/ElementDetail.vue:225 js/views/ElementDetail.vue:227
-#: js/views/ElementDetail.vue:232
+#: js/views/ElementDetail.vue:200 js/views/ElementDetail.vue:202
+#: js/views/ElementDetail.vue:207
 msgid "Element"
 msgstr "요소"
 
-#: js/views/ElementDetail.vue:234 js/views/FileDetail.vue:289
+#: js/views/ElementDetail.vue:209 js/views/FileDetail.vue:300
 msgid "Used by"
 msgstr "사용처"
 
@@ -2787,23 +2787,27 @@ msgid "AI can find and manage shared elements based on your input"
 msgstr "AI는 사용자의 입력에 따라 공유 요소를 찾고 관리할 수 있습니다."
 
 #: js/views/ElementList.vue:50 js/views/FileList.vue:50
-#: js/views/PageList.vue:281
+#: js/views/PageList.vue:282
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Enter 키 또는 화살표를 눌러 AI 어시스턴트를 열고 채팅에서 콘텐츠를 다듬으세요"
 
-#: js/views/FileDetail.vue:128
+#: js/views/FileDetail.vue:129
 msgid "Error fetching file"
 msgstr "파일 가져오기 오류"
 
-#: js/views/FileDetail.vue:238
+#: js/views/FileDetail.vue:246
 msgid "File saved successfully"
 msgstr "파일 저장 성공"
 
-#: js/views/FileDetail.vue:280 js/views/FileDetail.vue:282
-#: js/views/FileDetail.vue:287
+#: js/views/FileDetail.vue:279 js/views/FileDetail.vue:293
+#: js/views/FileDetail.vue:298
 msgid "File"
 msgstr "파일"
+
+#: js/views/FileDetail.vue:285
+msgid "Replace file"
+msgstr "파일 교체"
 
 #: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
@@ -2825,69 +2829,69 @@ msgstr "액세스 거부됨"
 msgid "Error: %{msg}"
 msgstr "오류: %{msg}"
 
-#: js/views/PageDetail.vue:499 js/views/PageDetail.vue:688
+#: js/views/PageDetail.vue:496 js/views/PageDetail.vue:660
 msgid "Rate this page and suggest improvements"
 msgstr "이 페이지를 평가하고 개선 사항을 제안하세요"
 
-#: js/views/PageDetail.vue:506
+#: js/views/PageDetail.vue:503
 msgid "Please wait until the language is switched"
 msgstr "언어가 전환될 때까지 기다려 주세요"
 
-#: js/views/PageDetail.vue:571
+#: js/views/PageDetail.vue:552
 msgid "Page saved successfully"
 msgstr "페이지가 성공적으로 저장되었습니다."
 
-#: js/views/PageDetail.vue:632 js/views/PageDetail.vue:695
-#: js/views/PageDetail.vue:714
+#: js/views/PageDetail.vue:604 js/views/PageDetail.vue:667
+#: js/views/PageDetail.vue:686
 msgid "Page"
 msgstr "페이지"
 
-#: js/views/PageDetail.vue:659
+#: js/views/PageDetail.vue:631
 msgid "Source"
 msgstr "원본"
 
-#: js/views/PageDetail.vue:663
+#: js/views/PageDetail.vue:635
 msgid "Trashed"
 msgstr "휴지통"
 
-#: js/views/PageDetail.vue:700
+#: js/views/PageDetail.vue:672
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "편집기"
 
-#: js/views/PageDetail.vue:717
+#: js/views/PageDetail.vue:689
 msgid "Metrics"
 msgstr "메트릭"
 
-#: js/views/PageList.vue:114
+#: js/views/PageList.vue:115
 msgid "view"
 msgstr "보기"
 
-#: js/views/PageList.vue:117
+#: js/views/PageList.vue:118
 msgid "List"
 msgstr "목록"
 
-#: js/views/PageList.vue:124
+#: js/views/PageList.vue:125
 msgid "status"
 msgstr "상태"
 
-#: js/views/PageList.vue:128
+#: js/views/PageList.vue:129
 msgid "Hidden"
 msgstr "숨김"
 
-#: js/views/PageList.vue:134
+#: js/views/PageList.vue:135
 msgid "cache"
 msgstr "캐시"
 
-#: js/views/PageList.vue:145
+#: js/views/PageList.vue:146
 msgid "translation"
 msgstr "번역"
 
-#: js/views/PageList.vue:277
+#: js/views/PageList.vue:278
 msgid "Generate page based on prompt"
 msgstr "프롬프트에 따라 페이지 생성"
 
-#: js/views/PageList.vue:280
+#: js/views/PageList.vue:281
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
