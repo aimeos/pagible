@@ -2891,30 +2891,3 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI អាចបង្កើតទំព័រ និងមាតិកាដោយផ្អែកលើការបញ្ចូលរបស់អ្នក ហើយបន្ថែមវាទៅមែកធាងទំព័រ"
-
-#~ msgid "List view"
-#~ msgstr "ទិដ្ឋភាពបញ្ជី"
-
-#~ msgid "Error"
-#~ msgstr "កំហុស"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "ត្រូវការយ៉ាងហោចណាស់ %{num} ជួរឈរ"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "អនុញ្ញាតច្រើនបំផុត %{num} ជួរឈរ"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "អ្នកប្រើប្រាស់កំពុងមើលទំព័រដែលមាន ID \"%{id}\"។ នៅពេលពួកគេនិយាយសំដៅលើ \"ទំព័រនេះ\" "
-#~ "សូមប្រើ get-page ជាមួយ ID នោះ។"
-
-#~ msgid "Purge this language"
-#~ msgstr "លុបភាសានេះជាអចិន្ត្រៃយ៍"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "បង្កើតជា %{lang}"

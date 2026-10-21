@@ -2952,32 +2952,3 @@ msgid ""
 msgstr ""
 "Yapay zeka, girdilerinize göre bir sayfa ve içerik oluşturabilir ve bunları "
 "sayfa ağacına ekleyebilir"
-
-#~ msgid "List view"
-#~ msgstr "Liste görünümü"
-
-#~ msgid "Error"
-#~ msgstr "Hata"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "En az %{num} sütun gereklidir"
-#~ msgstr[1] "En az %{num} sütun gereklidir"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "En fazla %{num} sütuna izin verilir"
-#~ msgstr[1] "En fazla %{num} sütuna izin verilir"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Kullanıcı \"%{id}\" kimlikli sayfayı görüntülüyor. \"Bu sayfa\" ifadesini "
-#~ "kullandığında, bu kimlikle get-page aracını kullanın."
-
-#~ msgid "Purge this language"
-#~ msgstr "Bu dili kalıcı olarak sil"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "%{lang} dilinde oluştur"

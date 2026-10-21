@@ -2939,32 +2939,3 @@ msgid ""
 msgstr ""
 "KI kan 'n bladsy en inhoud op grond van u invoer skep en dit by die "
 "bladsyboom voeg"
-
-#~ msgid "List view"
-#~ msgstr "Lysaansig"
-
-#~ msgid "Error"
-#~ msgstr "Fout"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Ten minste %{num} kolom word vereis"
-#~ msgstr[1] "Ten minste %{num} kolomme word vereis"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Hoogstens %{num} kolom word toegelaat"
-#~ msgstr[1] "Hoogstens %{num} kolomme word toegelaat"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Die gebruiker bekyk die bladsy met ID \"%{id}\". Wanneer hulle na "
-#~ "\"hierdie bladsy\" verwys, gebruik get-page met daardie ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Skrap hierdie taal permanent"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Skep in %{lang}"

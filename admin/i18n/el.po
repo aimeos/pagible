@@ -2967,32 +2967,3 @@ msgid ""
 msgstr ""
 "Η τεχνητή νοημοσύνη μπορεί να δημιουργήσει μια σελίδα με περιεχόμενο με βάση "
 "τις δικές σας πληροφορίες και να την προσθέσει στο δέντρο σελίδων"
-
-#~ msgid "List view"
-#~ msgstr "Προβολή λίστας"
-
-#~ msgid "Error"
-#~ msgstr "Σφάλμα"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Απαιτείται τουλάχιστον %{num} στήλη"
-#~ msgstr[1] "Απαιτούνται τουλάχιστον %{num} στήλες"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Επιτρέπεται έως %{num} στήλη"
-#~ msgstr[1] "Επιτρέπονται έως %{num} στήλες"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Ο χρήστης βλέπει τη σελίδα με αναγνωριστικό «%{id}». Όταν αναφέρεται σε "
-#~ "«αυτή τη σελίδα», χρησιμοποιήστε το get-page με αυτό το αναγνωριστικό."
-
-#~ msgid "Purge this language"
-#~ msgstr "Οριστική διαγραφή αυτής της γλώσσας"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Δημιουργία σε %{lang}"

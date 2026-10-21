@@ -2978,34 +2978,3 @@ msgid ""
 msgstr ""
 "ИИ может создать страницу и контент на основе ваших данных и добавить их в "
 "дерево страниц"
-
-#~ msgid "List view"
-#~ msgstr "Вид списком"
-
-#~ msgid "Error"
-#~ msgstr "Ошибка"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Требуется минимум %{num} столбец"
-#~ msgstr[1] "Требуется минимум %{num} столбца"
-#~ msgstr[2] "Требуется минимум %{num} столбцов"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Допускается максимум %{num} столбец"
-#~ msgstr[1] "Допускается максимум %{num} столбца"
-#~ msgstr[2] "Допускается максимум %{num} столбцов"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Пользователь просматривает страницу с идентификатором «%{id}». Когда речь "
-#~ "идёт об «этой странице», используйте get-page с этим идентификатором."
-
-#~ msgid "Purge this language"
-#~ msgstr "Удалить этот язык навсегда"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Создать на языке %{lang}"

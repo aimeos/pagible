@@ -2952,32 +2952,3 @@ msgid ""
 msgstr ""
 "AI може да създаде страница и съдържание въз основа на въведените от вас "
 "данни и да ги добави в дървото на страниците"
-
-#~ msgid "List view"
-#~ msgstr "Изглед в списък"
-
-#~ msgid "Error"
-#~ msgstr "Грешка"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Изисква се поне %{num} колона"
-#~ msgstr[1] "Изискват се поне %{num} колони"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Разрешена е най-много %{num} колона"
-#~ msgstr[1] "Разрешени са най-много %{num} колони"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Потребителят разглежда страницата с ID „%{id}“. Когато говори за „тази "
-#~ "страница“, използвайте get-page с този ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Изтриване на този език завинаги"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Създаване на %{lang}"

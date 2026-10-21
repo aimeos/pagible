@@ -2985,34 +2985,3 @@ msgid ""
 msgstr ""
 "Inteligența artificială poate crea o pagină și conținut pe baza "
 "informațiilor furnizate de dvs. și le poate adăuga la arborele paginilor"
-
-#~ msgid "List view"
-#~ msgstr "Vizualizare listă"
-
-#~ msgid "Error"
-#~ msgstr "Eroare"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Este necesară cel puțin %{num} coloană"
-#~ msgstr[1] "Sunt necesare cel puțin %{num} coloane"
-#~ msgstr[2] "Sunt necesare cel puțin %{num} de coloane"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Este permisă cel mult %{num} coloană"
-#~ msgstr[1] "Sunt permise cel mult %{num} coloane"
-#~ msgstr[2] "Sunt permise cel mult %{num} de coloane"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Utilizatorul vizualizează pagina cu ID-ul „%{id}”. Când se referă la "
-#~ "„această pagină”, utilizați get-page cu acel ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Ștergeți definitiv această limbă"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Creați în %{lang}"

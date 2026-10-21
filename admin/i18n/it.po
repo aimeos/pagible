@@ -2961,32 +2961,3 @@ msgid ""
 msgstr ""
 "L'intelligenza artificiale può creare una pagina e dei contenuti in base "
 "alle tue indicazioni e aggiungerli all'albero delle pagine."
-
-#~ msgid "List view"
-#~ msgstr "Vista elenco"
-
-#~ msgid "Error"
-#~ msgstr "Errore"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "È richiesta almeno %{num} colonna"
-#~ msgstr[1] "Sono richieste almeno %{num} colonne"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "È consentita al massimo %{num} colonna"
-#~ msgstr[1] "Sono consentite al massimo %{num} colonne"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "L’utente sta visualizzando la pagina con ID «%{id}». Quando fa "
-#~ "riferimento a «questa pagina», usa get-page con quell’ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Elimina definitivamente questa lingua"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Crea in %{lang}"

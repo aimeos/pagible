@@ -2998,36 +2998,3 @@ msgid ""
 msgstr ""
 "Umetna inteligenca lahko na podlagi vaših podatkov ustvari stran in vsebino "
 "ter jo doda v drevo strani."
-
-#~ msgid "List view"
-#~ msgstr "Pogled seznama"
-
-#~ msgid "Error"
-#~ msgstr "Napaka"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Zahtevan je vsaj %{num} stolpec"
-#~ msgstr[1] "Zahtevana sta vsaj %{num} stolpca"
-#~ msgstr[2] "Zahtevani so vsaj %{num} stolpci"
-#~ msgstr[3] "Zahtevanih je vsaj %{num} stolpcev"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Dovoljen je največ %{num} stolpec"
-#~ msgstr[1] "Dovoljena sta največ %{num} stolpca"
-#~ msgstr[2] "Dovoljeni so največ %{num} stolpci"
-#~ msgstr[3] "Dovoljenih je največ %{num} stolpcev"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Uporabnik si ogleduje stran z ID-jem »%{id}«. Ko omeni »to stran«, "
-#~ "uporabite get-page s tem ID-jem."
-
-#~ msgid "Purge this language"
-#~ msgstr "Trajno izbriši ta jezik"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Ustvari v jeziku %{lang}"

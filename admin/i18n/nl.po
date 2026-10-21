@@ -2954,32 +2954,3 @@ msgid ""
 msgstr ""
 "AI kan een pagina en inhoud maken op basis van jouw invoer en deze toevoegen "
 "aan de paginaboom"
-
-#~ msgid "List view"
-#~ msgstr "Lijstweergave"
-
-#~ msgid "Error"
-#~ msgstr "Fout"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Minimaal %{num} kolom is vereist"
-#~ msgstr[1] "Minimaal %{num} kolommen zijn vereist"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Maximaal %{num} kolom is toegestaan"
-#~ msgstr[1] "Maximaal %{num} kolommen zijn toegestaan"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "De gebruiker bekijkt de pagina met ID ‘%{id}’. Wanneer die naar ‘deze "
-#~ "pagina’ verwijst, gebruik je get-page met die ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Deze taal definitief verwijderen"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Aanmaken in %{lang}"

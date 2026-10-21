@@ -2980,34 +2980,3 @@ msgid ""
 msgstr ""
 "Sztuczna inteligencja może utworzyć stronę i zawartość na podstawie danych "
 "wprowadzonych przez użytkownika i dodać je do drzewa stron"
-
-#~ msgid "List view"
-#~ msgstr "Widok listy"
-
-#~ msgid "Error"
-#~ msgstr "Błąd"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Wymagana jest co najmniej %{num} kolumna"
-#~ msgstr[1] "Wymagane są co najmniej %{num} kolumny"
-#~ msgstr[2] "Wymaganych jest co najmniej %{num} kolumn"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Dozwolona jest maksymalnie %{num} kolumna"
-#~ msgstr[1] "Dozwolone są maksymalnie %{num} kolumny"
-#~ msgstr[2] "Dozwolonych jest maksymalnie %{num} kolumn"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Użytkownik przegląda stronę o identyfikatorze „%{id}”. Gdy odnosi się do "
-#~ "„tej strony”, użyj get-page z tym identyfikatorem."
-
-#~ msgid "Purge this language"
-#~ msgstr "Usuń trwale ten język"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Utwórz w języku %{lang}"

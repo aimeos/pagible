@@ -2917,30 +2917,3 @@ msgid ""
 msgstr ""
 "AI dapat membuat halaman dan konten berdasarkan masukan Anda dan "
 "menambahkannya ke pohon halaman"
-
-#~ msgid "List view"
-#~ msgstr "Tampilan daftar"
-
-#~ msgid "Error"
-#~ msgstr "Kesalahan"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Diperlukan minimal %{num} kolom"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Maksimal %{num} kolom diperbolehkan"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Pengguna sedang melihat halaman dengan ID \"%{id}\". Saat mereka merujuk "
-#~ "pada \"halaman ini\", gunakan get-page dengan ID tersebut."
-
-#~ msgid "Purge this language"
-#~ msgstr "Hapus permanen bahasa ini"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Buat dalam %{lang}"

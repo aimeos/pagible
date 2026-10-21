@@ -2902,30 +2902,3 @@ msgid ""
 msgstr ""
 "AIは、あなたの入力に基づいてページとコンテンツを作成し、ページツリーに追加す"
 "ることができます。"
-
-#~ msgid "List view"
-#~ msgstr "一覧表示"
-
-#~ msgid "Error"
-#~ msgstr "エラー"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "少なくとも %{num} 列必要です"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "最大 %{num} 列までです"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "ユーザーは ID「%{id}」のページを表示しています。「このページ」と言及した場"
-#~ "合は、その ID で get-page を使用してください。"
-
-#~ msgid "Purge this language"
-#~ msgstr "この言語を完全に削除"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "%{lang} で作成"

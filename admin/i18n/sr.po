@@ -2963,34 +2963,3 @@ msgid ""
 msgstr ""
 "AI може да креира страницу и садржај на основу Вашег уноса и да их дода у "
 "стабло страница"
-
-#~ msgid "List view"
-#~ msgstr "Приказ листе"
-
-#~ msgid "Error"
-#~ msgstr "Грешка"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Потребна је најмање %{num} колона"
-#~ msgstr[1] "Потребне су најмање %{num} колоне"
-#~ msgstr[2] "Потребно је најмање %{num} колона"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Дозвољена је највише %{num} колона"
-#~ msgstr[1] "Дозвољене су највише %{num} колоне"
-#~ msgstr[2] "Дозвољено је највише %{num} колона"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Корисник прегледа страницу са ID-ом „%{id}”. Када помиње „ову страницу”, "
-#~ "користите get-page са тим ID-ом."
-
-#~ msgid "Purge this language"
-#~ msgstr "Трајно обриши овај језик"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Креирај на језику %{lang}"

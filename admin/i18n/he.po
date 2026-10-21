@@ -2920,32 +2920,3 @@ msgid ""
 "tree"
 msgstr ""
 "בינה מלאכותית יכולה ליצור דף ותוכן על סמך הקלט שלך ולהוסיף אותם לעץ הדפים"
-
-#~ msgid "List view"
-#~ msgstr "תצוגת רשימה"
-
-#~ msgid "Error"
-#~ msgstr "שגיאה"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "נדרשת לפחות %{num} עמודה"
-#~ msgstr[1] "נדרשות לפחות %{num} עמודות"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "מותרת לכל היותר %{num} עמודה"
-#~ msgstr[1] "מותרות לכל היותר %{num} עמודות"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "המשתמש צופה בדף עם המזהה \"%{id}\". כשהוא מתייחס ל\"דף הזה\", השתמש ב-get-"
-#~ "page עם המזהה הזה."
-
-#~ msgid "Purge this language"
-#~ msgstr "מחק שפה זו לצמיתות"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "צור ב%{lang}"

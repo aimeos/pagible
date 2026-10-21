@@ -2976,34 +2976,3 @@ msgid ""
 msgstr ""
 "AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem datiem, un "
 "pievienot to lapu kokam"
-
-#~ msgid "List view"
-#~ msgstr "Saraksta skats"
-
-#~ msgid "Error"
-#~ msgstr "Kļūda"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Nepieciešama vismaz %{num} kolonna"
-#~ msgstr[1] "Nepieciešamas vismaz %{num} kolonnas"
-#~ msgstr[2] "Nepieciešamas vismaz %{num} kolonnas"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Atļauta ne vairāk kā %{num} kolonna"
-#~ msgstr[1] "Atļautas ne vairāk kā %{num} kolonnas"
-#~ msgstr[2] "Atļautas ne vairāk kā %{num} kolonnas"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Lietotājs skata lapu ar ID “%{id}”. Ja tiek minēta “šī lapa”, izmantojiet "
-#~ "get-page ar šo ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Dzēst šo valodu neatgriezeniski"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Izveidot valodā %{lang}"

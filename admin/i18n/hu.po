@@ -2955,33 +2955,3 @@ msgid ""
 msgstr ""
 "A mesterséges intelligencia képes létrehozni egy oldalt és tartalmat az Ön "
 "által megadott adatok alapján, és hozzáadni az oldalfához."
-
-#~ msgid "List view"
-#~ msgstr "Listanézet"
-
-#~ msgid "Error"
-#~ msgstr "Hiba"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Legalább %{num} oszlop szükséges"
-#~ msgstr[1] "Legalább %{num} oszlop szükséges"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Legfeljebb %{num} oszlop engedélyezett"
-#~ msgstr[1] "Legfeljebb %{num} oszlop engedélyezett"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "A felhasználó a(z) „%{id}” azonosítójú oldalt tekinti meg. Amikor „erre "
-#~ "az oldalra” hivatkozik, használja a get-page eszközt ezzel az "
-#~ "azonosítóval."
-
-#~ msgid "Purge this language"
-#~ msgstr "E nyelv végleges törlése"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Létrehozás ezen a nyelven: %{lang}"

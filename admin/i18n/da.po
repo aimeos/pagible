@@ -2930,32 +2930,3 @@ msgid ""
 msgstr ""
 "AI kan oprette en side og indhold baseret på dit input og tilføje det til "
 "sidetræet"
-
-#~ msgid "List view"
-#~ msgstr "Listevisning"
-
-#~ msgid "Error"
-#~ msgstr "Fejl"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Mindst %{num} kolonne er påkrævet"
-#~ msgstr[1] "Mindst %{num} kolonner er påkrævet"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Højst %{num} kolonne er tilladt"
-#~ msgstr[1] "Højst %{num} kolonner er tilladt"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Brugeren ser siden med ID \"%{id}\". Når vedkommende henviser til \"denne "
-#~ "side\", skal du bruge get-page med dette ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Slet dette sprog permanent"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Opret på %{lang}"

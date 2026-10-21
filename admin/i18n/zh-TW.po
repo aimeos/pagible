@@ -2884,30 +2884,3 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI 可依據您的輸入建立頁面和內容，並將其新增至頁面樹狀結構"
-
-#~ msgid "List view"
-#~ msgstr "清單檢視"
-
-#~ msgid "Error"
-#~ msgstr "錯誤"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "至少需要 %{num} 欄"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "最多允許 %{num} 欄"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "使用者正在檢視 ID 為「%{id}」的頁面。當使用者提到「此頁面」時，請使用該 "
-#~ "ID 呼叫 get-page。"
-
-#~ msgid "Purge this language"
-#~ msgstr "永久刪除此語言"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "以 %{lang} 建立"

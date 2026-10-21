@@ -2973,34 +2973,3 @@ msgid ""
 msgstr ""
 "ШІ може створити сторінку та вміст на основі ваших даних і додати їх до "
 "дерева сторінок"
-
-#~ msgid "List view"
-#~ msgstr "Перегляд списку"
-
-#~ msgid "Error"
-#~ msgstr "Помилка"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Потрібно щонайменше %{num} стовпець"
-#~ msgstr[1] "Потрібно щонайменше %{num} стовпці"
-#~ msgstr[2] "Потрібно щонайменше %{num} стовпців"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Дозволено щонайбільше %{num} стовпець"
-#~ msgstr[1] "Дозволено щонайбільше %{num} стовпці"
-#~ msgstr[2] "Дозволено щонайбільше %{num} стовпців"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Користувач переглядає сторінку з ідентифікатором «%{id}». Коли йдеться "
-#~ "про «цю сторінку», використовуйте get-page із цим ідентифікатором."
-
-#~ msgid "Purge this language"
-#~ msgstr "Видалити цю мову назавжди"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Створити мовою %{lang}"

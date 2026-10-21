@@ -2920,30 +2920,3 @@ msgid ""
 msgstr ""
 "AI có thể tạo trang và nội dung dựa trên đầu vào của bạn và thêm trang vào "
 "cây trang."
-
-#~ msgid "List view"
-#~ msgstr "Chế độ xem danh sách"
-
-#~ msgid "Error"
-#~ msgstr "Lỗi"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Cần ít nhất %{num} cột."
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Cho phép tối đa %{num} cột."
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Người dùng đang xem trang có ID \"%{id}\". Khi họ đề cập đến \"trang "
-#~ "này\", hãy dùng get-page với ID đó."
-
-#~ msgid "Purge this language"
-#~ msgstr "Xóa vĩnh viễn ngôn ngữ này"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Tạo bằng %{lang}"

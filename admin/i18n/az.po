@@ -2950,32 +2950,3 @@ msgid ""
 msgstr ""
 "AI daxil etdiyiniz məlumatlara əsasən səhifə və məzmun yarada və onu səhifə "
 "ağacına əlavə edə bilər"
-
-#~ msgid "List view"
-#~ msgstr "Siyahı görünüşü"
-
-#~ msgid "Error"
-#~ msgstr "Xəta"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Ən azı %{num} sütun tələb olunur"
-#~ msgstr[1] "Ən azı %{num} sütun tələb olunur"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Ən çoxu %{num} sütuna icazə verilir"
-#~ msgstr[1] "Ən çoxu %{num} sütuna icazə verilir"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "İstifadəçi \"%{id}\" ID-li səhifəyə baxır. O, \"bu səhifə\" dedikdə, "
-#~ "həmin ID ilə get-page istifadə edin."
-
-#~ msgid "Purge this language"
-#~ msgstr "Bu dili həmişəlik sil"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "%{lang} dilində yarat"

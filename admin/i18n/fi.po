@@ -2942,32 +2942,3 @@ msgid ""
 msgstr ""
 "Tekoäly voi luoda sivun ja sisällön syöttösi perusteella ja lisätä sen "
 "sivupuuhun."
-
-#~ msgid "List view"
-#~ msgstr "Luettelonäkymä"
-
-#~ msgid "Error"
-#~ msgstr "Virhe"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Vähintään %{num} sarake vaaditaan"
-#~ msgstr[1] "Vähintään %{num} saraketta vaaditaan"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Enintään %{num} sarake sallitaan"
-#~ msgstr[1] "Enintään %{num} saraketta sallitaan"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Käyttäjä tarkastelee sivua, jonka tunnus on \"%{id}\". Kun hän viittaa "
-#~ "\"tähän sivuun\", käytä get-page-toimintoa kyseisellä tunnuksella."
-
-#~ msgid "Purge this language"
-#~ msgstr "Poista tämä kieli pysyvästi"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Luo kielelle %{lang}"

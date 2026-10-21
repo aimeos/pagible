@@ -2930,32 +2930,3 @@ msgid ""
 msgstr ""
 "AI kan skapa en sida och innehåll baserat på dina instruktioner och lägga "
 "till det i sidträdet"
-
-#~ msgid "List view"
-#~ msgstr "Listvy"
-
-#~ msgid "Error"
-#~ msgstr "Fel"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Minst %{num} kolumn krävs"
-#~ msgstr[1] "Minst %{num} kolumner krävs"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Högst %{num} kolumn tillåts"
-#~ msgstr[1] "Högst %{num} kolumner tillåts"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Användaren visar sidan med ID:t ”%{id}”. När användaren hänvisar till "
-#~ "”den här sidan” använder du get-page med detta ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Radera detta språk permanent"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Skapa på %{lang}"

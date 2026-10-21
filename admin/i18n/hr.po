@@ -2966,34 +2966,3 @@ msgid ""
 msgstr ""
 "AI može stvoriti stranicu i sadržaj na temelju Vašeg unosa i dodati ih u "
 "stablo stranica"
-
-#~ msgid "List view"
-#~ msgstr "Prikaz popisa"
-
-#~ msgid "Error"
-#~ msgstr "Pogreška"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Potreban je najmanje %{num} stupac"
-#~ msgstr[1] "Potrebna su najmanje %{num} stupca"
-#~ msgstr[2] "Potrebno je najmanje %{num} stupaca"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Dopušten je najviše %{num} stupac"
-#~ msgstr[1] "Dopuštena su najviše %{num} stupca"
-#~ msgstr[2] "Dopušteno je najviše %{num} stupaca"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Korisnik pregledava stranicu s ID-om \"%{id}\". Kada spominje \"ovu "
-#~ "stranicu\", koristite get-page s tim ID-om."
-
-#~ msgid "Purge this language"
-#~ msgstr "Trajno izbriši ovaj jezik"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Stvori na jeziku %{lang}"

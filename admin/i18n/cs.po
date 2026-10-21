@@ -2967,34 +2967,3 @@ msgid ""
 msgstr ""
 "Umělá inteligence dokáže vytvořit stránku a obsah na základě vašeho zadání a "
 "přidat je do stromu stránek."
-
-#~ msgid "List view"
-#~ msgstr "Zobrazení seznamu"
-
-#~ msgid "Error"
-#~ msgstr "Chyba"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Je vyžadován alespoň %{num} sloupec"
-#~ msgstr[1] "Jsou vyžadovány alespoň %{num} sloupce"
-#~ msgstr[2] "Je vyžadováno alespoň %{num} sloupců"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Je povolen nejvýše %{num} sloupec"
-#~ msgstr[1] "Jsou povoleny nejvýše %{num} sloupce"
-#~ msgstr[2] "Je povoleno nejvýše %{num} sloupců"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Uživatel si prohlíží stránku s ID „%{id}“. Když odkazuje na „tuto "
-#~ "stránku“, použijte get-page s tímto ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Trvale smazat tento jazyk"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Vytvořit v jazyce %{lang}"

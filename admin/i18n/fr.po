@@ -2972,32 +2972,3 @@ msgid ""
 msgstr ""
 "L'IA peut créer une page et son contenu en fonction de vos instructions et "
 "l'ajouter à l'arborescence des pages"
-
-#~ msgid "List view"
-#~ msgstr "Vue en liste"
-
-#~ msgid "Error"
-#~ msgstr "Erreur"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Au moins %{num} colonne est requise"
-#~ msgstr[1] "Au moins %{num} colonnes sont requises"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Au plus %{num} colonne est autorisée"
-#~ msgstr[1] "Au plus %{num} colonnes sont autorisées"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "L’utilisateur consulte la page portant l’ID « %{id} ». Lorsqu’il fait "
-#~ "référence à « cette page », utilisez get-page avec cet ID."
-
-#~ msgid "Purge this language"
-#~ msgstr "Supprimer définitivement cette langue"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Créer en %{lang}"

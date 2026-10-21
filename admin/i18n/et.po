@@ -2934,32 +2934,3 @@ msgid ""
 msgstr ""
 "Tehisintellekt saab teie sisendi põhjal luua lehekülje ja sisu ning lisada "
 "selle lehekülgede puusse"
-
-#~ msgid "List view"
-#~ msgstr "Nimekirja vaade"
-
-#~ msgid "Error"
-#~ msgstr "Viga"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "Nõutav on vähemalt %{num} veerg"
-#~ msgstr[1] "Nõutav on vähemalt %{num} veergu"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "Lubatud on kuni %{num} veerg"
-#~ msgstr[1] "Lubatud on kuni %{num} veergu"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "Kasutaja vaatab lehte ID-ga „%{id}“. Kui ta viitab „sellele lehele“, "
-#~ "kasutage selle ID-ga käsku get-page."
-
-#~ msgid "Purge this language"
-#~ msgstr "Kustuta see keel jäädavalt"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "Loo keeles %{lang}"

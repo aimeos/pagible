@@ -2889,29 +2889,3 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI สามารถสร้างหน้าและเนื้อหาตามข้อมูลที่คุณป้อนและเพิ่มลงในโครงสร้างหน้าได้"
-
-#~ msgid "List view"
-#~ msgstr "มุมมองรายการ"
-
-#~ msgid "Error"
-#~ msgstr "ข้อผิดพลาด"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "ต้องมีอย่างน้อย %{num} คอลัมน์"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "อนุญาตสูงสุด %{num} คอลัมน์"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "ผู้ใช้กำลังดูหน้าที่มี ID \"%{id}\" เมื่อกล่าวถึง \"หน้านี้\" ให้ใช้ get-page กับ ID ดังกล่าว"
-
-#~ msgid "Purge this language"
-#~ msgstr "ลบภาษานี้ถาวร"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "สร้างในภาษา %{lang}"

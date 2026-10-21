@@ -2937,32 +2937,3 @@ msgid ""
 msgstr ""
 "هوش مصنوعی می‌تواند بر اساس ورودی شما یک صفحه و محتوای آن را ایجاد کرده و به "
 "درخت صفحات اضافه کند"
-
-#~ msgid "List view"
-#~ msgstr "نمای فهرستی"
-
-#~ msgid "Error"
-#~ msgstr "خطا"
-
-#~ msgid "At least %{num} column is required"
-#~ msgid_plural "At least %{num} columns are required"
-#~ msgstr[0] "دست‌کم %{num} ستون الزامی است"
-#~ msgstr[1] "دست‌کم %{num} ستون الزامی است"
-
-#~ msgid "At most %{num} column is allowed"
-#~ msgid_plural "At most %{num} columns are allowed"
-#~ msgstr[0] "حداکثر %{num} ستون مجاز است"
-#~ msgstr[1] "حداکثر %{num} ستون مجاز است"
-
-#~ msgid ""
-#~ "The user is viewing the page with ID \"%{id}\". When they refer to \"this "
-#~ "page\", use get-page with that ID."
-#~ msgstr ""
-#~ "کاربر در حال مشاهده صفحه‌ای با شناسه \"%{id}\" است. وقتی به «این صفحه» "
-#~ "اشاره می‌کند، از get-page با همین شناسه استفاده کنید."
-
-#~ msgid "Purge this language"
-#~ msgstr "حذف دائمی این زبان"
-
-#~ msgid "Create in %{lang}"
-#~ msgstr "ایجاد در %{lang}"
