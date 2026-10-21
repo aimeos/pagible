@@ -1,1 +1,0 @@
-import e from"./File-ClbzAGHs.js";var t={extends:e,setup:e.setup,computed:{kind:()=>`media`}};export{t as default};

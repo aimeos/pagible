@@ -1,0 +1,15 @@
+function e(){let e,t,n,r=!1,i=[],a=0,o;async function s(){t?.mediaStream.getTracks().forEach(e=>e.stop()),t?.disconnect(),n?.disconnect(),await e?.close().catch(()=>{}),o&&URL.revokeObjectURL(o),e=t=n=o=null}async function c(){let r=new Blob([`
+      class RecorderProcessor extends AudioWorkletProcessor {
+        process(inputs) {
+          const input = inputs[0]
+          if (input && input[0]) this.port.postMessage(input[0])
+          return true
+        }
+      }
+      registerProcessor('recorder-processor', RecorderProcessor)
+    `],{type:`application/javascript`});e=new AudioContext,o=URL.createObjectURL(r),await e.audioWorklet.addModule(o),n=new AudioWorkletNode(e,`recorder-processor`);let s=e.sampleRate*180;n.port.onmessage=e=>{a<s&&(i.push(new Float32Array(e.data)),a+=e.data.length)};let c=await navigator.mediaDevices.getUserMedia({audio:!0});t=e.createMediaStreamSource(c),t.connect(n)}return{async start(){if(r)return this;r=!0;try{await c()}catch(e){throw r=!1,i=[],a=0,await s(),e}return this},async stop(){if(!r||!n||!t)return null;r=!1;let o=e.sampleRate;await s();let c=new Float32Array(a),l=0;for(let e of i)c.set(e,l),l+=e.length;if(i=[],a=0,!c.length)return null;let u=new AudioBuffer({length:c.length,numberOfChannels:1,sampleRate:o});return u.getChannelData(0).set(c),u}}}async function t(e){let t=[],n;if(!e)throw Error(`toMp3(): No audio input`);if(e instanceof AudioBuffer)n=e;else{let t=new AudioContext;try{if(e instanceof ArrayBuffer)n=await t.decodeAudioData(e);else if(typeof e==`string`||e instanceof URL){let r=await fetch(e);if(!r.ok)throw Error(`toMp3(): Fetching audio failed with status ${r.status}`);n=await t.decodeAudioData(await r.arrayBuffer())}else if(e instanceof Blob)n=await t.decodeAudioData(await e.arrayBuffer());else throw Error(`toMp3(): Unsupported input type. Expected URL, Blob, ArrayBuffer, or AudioBuffer.`)}finally{await t.close()}}for(let e=0;e<n.numberOfChannels;e++)t.push(n.getChannelData(e));let r=new Worker(new URL(new URL(`worker-DJIFqd1H.js`,import.meta.url).href,``+import.meta.url),{type:`module`});return new Promise((e,i)=>{r.onmessage=t=>{r.terminate(),t.data?.error?i(Error(t.data.error)):e(t.data?.mp3)},r.onerror=e=>{r.terminate(),i(e)},r.postMessage({channels:t,length:n.length,sampleRate:n.sampleRate},t.map(e=>e.buffer))})}function n(e=[]){return{asText(t=`
+`){return e.map(e=>e.text??``).join(t)},asVTT(){return`WEBVTT
+
+`+e.map((e,t)=>{let{start:n=0,end:r=0}=e,i=String(e.text??``).replace(/-->/g,`->`).replace(/\n\s*\n/g,`
+`).trim(),a=e=>{let t=Math.floor(e%1*1e3),n=Math.floor(e);return`${String(Math.floor(n/3600)).padStart(2,`0`)}:${String(Math.floor(n%3600/60)).padStart(2,`0`)}:${String(n%60).padStart(2,`0`)}.${String(t).padStart(3,`0`)}`};return`${t+1}\n${a(n)} --> ${a(r)}\n${i}\n`}).join(`
+`)}}}export{e as recording,t as toMp3,n as transcription};

@@ -1,0 +1,1 @@
+import e from"./Autocomplete-DoOl5ZEq.js";import{t}from"./VCombobox-BLhG6DZG.js";var n={extends:e,computed:{returnObject(){return!1},tag(){return t}}};export{n as default};

@@ -1,0 +1,1 @@
+import e from"./File-BlV81Grv.js";var t={extends:e,setup:e.setup,computed:{kind:()=>`audio`}};export{t as default};
