@@ -282,21 +282,43 @@ class ChatTest extends AiTestAbstract
     }
 
 
-    public function testStreamRejectsAConcurrentStreamForTheSameUser()
+    public function testStreamAllowsParallelStreamsForTheSameUser()
     {
-        $key = 'cms_chat_' . \Aimeos\Cms\Tenancy::value() . '_' . $this->user->getAuthIdentifier();
-        $lock = Cache::lock( $key, 60 );
-        $this->assertTrue( $lock->get() ); // simulate an already-running stream for this user
+        Prisma::fake( [TextResponse::fromText( 'Created the page' )] );
+
+        $lock = Cache::lock( $this->slot( 0 ), 60 );
+        $this->assertTrue( $lock->get() ); // simulate a stream running in another tab
 
         try {
             $response = $this->actingAs( $this->user )
                 ->withoutMiddleware( VerifyCsrfToken::class )
                 ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
 
-            // 409 Conflict (a stream is already running), distinct from the throttle middleware's 429
-            $response->assertStatus( 409 );
+            $response->assertOk();
+            $this->assertStringContainsString( 'Created the page', $response->streamedContent() );
         } finally {
             $lock->release();
+        }
+    }
+
+
+    public function testStreamRejectsTooManyStreamsForTheSameUser()
+    {
+        $locks = array_map( fn( $i ) => Cache::lock( $this->slot( $i ), 60 ), [0, 1, 2] );
+
+        foreach( $locks as $lock ) {
+            $this->assertTrue( $lock->get() ); // simulate three running streams for this user
+        }
+
+        try {
+            $response = $this->actingAs( $this->user )
+                ->withoutMiddleware( VerifyCsrfToken::class )
+                ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+            // 409 Conflict (all slots in use), distinct from the throttle middleware's 429
+            $response->assertStatus( 409 );
+        } finally {
+            array_map( fn( $lock ) => $lock->release(), $locks );
         }
     }
 
@@ -312,8 +334,8 @@ class ChatTest extends AiTestAbstract
         $response->assertOk();
         $response->streamedContent(); // run the stream to completion -> the finally releases the lock
 
-        $lock = Cache::lock( 'cms_chat_' . \Aimeos\Cms\Tenancy::value() . '_' . $this->user->getAuthIdentifier(), 60 );
-        $this->assertTrue( $lock->get(), 'the per-user lock should be free once the stream ended' );
+        $lock = Cache::lock( $this->slot( 0 ), 60 );
+        $this->assertTrue( $lock->get(), 'the slot should be free once the stream ended' );
         $lock->release();
     }
 
@@ -356,5 +378,11 @@ class ChatTest extends AiTestAbstract
             [['role' => 'user', 'content' => 'a question'], ['role' => 'assistant', 'content' => 'an answer']],
             $history
         );
+    }
+
+
+    protected function slot( int $num ) : string
+    {
+        return 'cms_chat_' . \Aimeos\Cms\Tenancy::value() . '_' . $this->user->getAuthIdentifier() . '_' . $num;
     }
 }

@@ -26,6 +26,11 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ChatController extends Controller
 {
     /**
+     * Maximum number of chat streams running at the same time per user.
+     */
+    private const MAX = 3;
+
+    /**
      * MCP tools not offered in the chat or added separately with a call limit.
      */
     private const EXCLUDE = [
@@ -94,22 +99,32 @@ class ChatController extends Controller
             $prisma->withMessages( $history );
         }
 
-        // The 300s TTL is only a backstop for a hard worker kill (SIGKILL/OOM, where the finally never
-        // runs): every normal/error/abort/disconnect path releases the lock explicitly.
+        // One lock per slot caps the parallel streams of a user (each holds a PHP worker for minutes) while
+        // allowing several chats in different tabs. The 300s TTL is only a backstop for a hard worker kill
+        // (SIGKILL/OOM, where the finally never runs): every other path releases the lock explicitly.
         $lock = null;
-        $blocked = false;
+        $blocked = true;
 
         try {
-            $lock = Cache::lock( 'cms_chat_' . Tenancy::value() . '_' . $user->getAuthIdentifier(), 300 );
-            $blocked = !$lock->get();
+            for( $i = 0; $i < self::MAX; $i++ )
+            {
+                $slot = Cache::lock( 'cms_chat_' . Tenancy::value() . '_' . $user->getAuthIdentifier() . '_' . $i, 300 );
+
+                if( $slot->get() ) {
+                    $lock = $slot;
+                    $blocked = false;
+                    break;
+                }
+            }
         } catch( \Throwable $e ) {
             Log::warning( 'Chat concurrency lock unavailable, running without it', ['message' => $e->getMessage()] );
+            $blocked = false;
         }
 
         if( $blocked ) {
             // 409 Conflict, not 429: the route's "throttle:cms-ai" middleware already owns 429 for rate
-            // limiting, so a distinct status lets the client tell "already generating" from "slow down".
-            abort( 409, 'A response is already being generated' );
+            // limiting, so a distinct status lets the client tell "too many streams" from "slow down".
+            abort( 409, 'Too many responses are being generated' );
         }
 
         $response = new StreamedResponse( function() use ( $prisma, $prompt, $config, $lock ) {

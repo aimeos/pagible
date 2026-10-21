@@ -14,7 +14,7 @@ import { AUTH_STATUS } from './graphql'
  * Streams the AI assistant's answer from the chat endpoint.
  *
  * POSTs the prompt and prior turns to the cookie-guarded chat endpoint and passes each streamed chunk
- * to onDelta as ({ text }). HTTP failures throw; 409 (a stream is already running for this user) and
+ * to onDelta as ({ text }). HTTP failures throw; 409 (all chat streams of this user are in use) and
  * 429 (rate limit) carry a translated `.message` flagged `.shown` so the caller can render it verbatim
  * instead of a generic error. Aborting via the signal is not an error: the returned promise resolves
  * with the text decoded so far.
@@ -64,8 +64,8 @@ export async function chat(prompt, history = [], onDelta = null, signal = null, 
       // the chat request extends the session like GraphQL requests do
       useSessionStore().touch()
     } else {
-      // Two distinct "busy" cases the caller shows verbatim in the bubble: 409 = the per-user
-      // concurrency lock is held (a stream is already running), 429 = the cms-ai rate limit.
+      // Two distinct "busy" cases the caller shows verbatim in the bubble: 409 = all per-user
+      // stream slots are in use (too many chats running), 429 = the cms-ai rate limit.
       let message = 'HTTP ' + response.status
 
       if (response.status === 409) {
