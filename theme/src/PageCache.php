@@ -124,9 +124,12 @@ class PageCache
         $expires = gmdate( 'D, d M Y H:i:s', $entry['freshUntil'] ) . ' GMT';
 
         $gzip = AcceptHeader::fromString( request()->headers->get( 'Accept-Encoding' ) )->get( 'gzip' )?->getQuality() > 0;
-        $content = $gzip ? (string) $entry['gzip'] : gzdecode( (string) $entry['gzip'] );
 
-        if( !is_string( $content ) ) {
+        if( ( $content = base64_decode( $entry['gzip'], true ) ) === false ) {
+            return null;
+        }
+
+        if( !$gzip && !is_string( $content = gzdecode( $content ) ) ) {
             return null;
         }
 
@@ -241,9 +244,12 @@ class PageCache
         $grace = max( 0, (int) config( 'cms.theme.stale', 10 ) );
         $lang = (string) $response->headers->get( 'Content-Language' );
 
+        // Base64 because binary data is rejected by text columns of e.g. the MySQL/MariaDB database cache store
+        $gzip = base64_encode( (string) gzencode( (string) $response->getContent(), 6 ) );
+
         self::store()->put(
             $key,
-            ['gzip' => gzencode( (string) $response->getContent(), 6 ), 'freshUntil' => $freshUntil, 'lang' => $lang],
+            ['gzip' => $gzip, 'freshUntil' => $freshUntil, 'lang' => $lang],
             max( 1, $freshUntil + $grace - time() ),
         );
     }

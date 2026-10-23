@@ -61,7 +61,7 @@ class PageCacheTest extends ThemeTestAbstract
             $this->assertNotNull( $response );
             $this->assertSame( 'gzip', $response->headers->get( 'Content-Encoding' ) );
             $this->assertSame( 'Accept-Encoding', $response->headers->get( 'Vary' ) );
-            $this->assertSame( $entry['gzip'], $response->getContent() );
+            $this->assertSame( base64_decode( $entry['gzip'], true ), $response->getContent() );
             $this->assertSame( $html, gzdecode( (string) $response->getContent() ) );
         }
     }

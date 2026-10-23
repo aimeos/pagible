@@ -990,7 +990,7 @@ class PageControllerTest extends ThemeTestAbstract
     {
         Cache::store( config( 'cms.theme.cache', 'file' ) )->put(
             $key,
-            ['gzip' => gzencode( $html, 6 ), 'freshUntil' => $expires->getTimestamp()],
+            ['gzip' => base64_encode( (string) gzencode( $html, 6 ) ), 'freshUntil' => $expires->getTimestamp()],
             60,
         );
     }
