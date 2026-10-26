@@ -410,7 +410,7 @@ class CoreCommandTest extends CoreTestAbstract
             ->expectsOutput( '  de, fr' )
             ->assertExitCode( 0 );
 
-        $this->artisan( 'cms:user', ['--no-langs' => true, 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->artisan( 'cms:user', ['--langs' => [''], 'email' => 'langs@example.com'] )->assertExitCode( 0 );
         $this->assertSame( [], Permission::langs( $user() ) );
 
         $this->artisan( 'cms:user', ['-l' => true, 'email' => 'langs@example.com'] )
@@ -418,12 +418,12 @@ class CoreCommandTest extends CoreTestAbstract
             ->assertExitCode( 0 );
 
         // conflicting language options change nothing
-        $this->artisan( 'cms:user', ['--langs' => ['de'], '--unrestricted' => true, 'email' => 'langs@example.com'] )
-            ->expectsOutput( 'Only one of --langs, --no-langs and --unrestricted can be used!' )
+        $this->artisan( 'cms:user', ['--langs' => ['de', '*'], 'email' => 'langs@example.com'] )
+            ->expectsOutput( 'Use either --langs=* or language codes!' )
             ->assertExitCode( 0 );
         $this->assertSame( [], Permission::langs( $user() ) );
 
-        $this->artisan( 'cms:user', ['--unrestricted' => true, 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->artisan( 'cms:user', ['--langs' => ['*'], 'email' => 'langs@example.com'] )->assertExitCode( 0 );
         $this->assertNull( Permission::langs( $user() ) );
         $this->assertEqualsCanonicalizing( ['editor', 'viewer'], $user()->cmsperms );
 

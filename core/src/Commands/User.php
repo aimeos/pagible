@@ -24,14 +24,12 @@ class User extends Command
         {--d|disable : Disables the user}
         {--e|enable : Enables the user}
         {--l|list : Lists all permissions of the CMS user}
-        {--no-langs : Allow writes in no language}
-        {--langs=* : Restrict writes to these language codes, e.g. "de" (can be used multiple times, replaces the current languages)}
+        {--langs=* : Restrict writes to these language codes, e.g. "de" (can be used multiple times, replaces the current languages), "*" for all languages or empty for none}
         {--p|password= : Secret password of the account (will ask if user will be created)}
         {--q|--quiet : Do not output any message}
         {--r|remove= : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
         {--role= : Add a named role to the user (e.g. "editor", "publisher", "admin")}
         {--roles : Lists all available roles and their permissions}
-        {--unrestricted : Allow writes in all languages}
         {email? : E-Mail of the user}';
 
     /**
@@ -55,10 +53,13 @@ class User extends Command
             return;
         }
 
-        if( count( array_filter( [$this->option( 'langs' ), $this->option( 'no-langs' ), $this->option( 'unrestricted' )] ) ) > 1 ) {
-            $this->error( 'Only one of --langs, --no-langs and --unrestricted can be used!' );
+        try {
+            $langs = $this->langs();
+        } catch( \InvalidArgumentException $e ) {
+            $this->error( $e->getMessage() );
             return;
         }
+
         $model = $this->model();
         $user = $model::where( 'email', $email )->first();
 
@@ -79,7 +80,6 @@ class User extends Command
         // per flag.
         $existing = Permission::assigned( $user );
         $assigned = $this->assigned( $existing );
-        $langs = $this->langs();
 
         if( $assigned !== null || $langs !== false ) {
             Permission::set( $user, $assigned ?? $existing, $langs );
@@ -142,20 +142,27 @@ class User extends Command
      * Returns the writable languages resulting from the command options.
      *
      * @return array<string>|null|false Language codes, NULL for unrestricted or FALSE if unchanged
+     * @throws \InvalidArgumentException If "*" is combined with language codes
      */
     protected function langs() : array|null|false
     {
-        if( $this->option( 'unrestricted' ) ) {
+        // not passed: unchanged, "--langs=" (empty): no language, "--langs=*": all languages
+        if( !( $values = (array) $this->option( 'langs' ) ) ) {
+            return false;
+        }
+
+        $langs = array_values( array_unique( array_filter( $values, fn( $lang ) => is_string( $lang ) && $lang !== '' ) ) );
+
+        if( in_array( '*', $langs, true ) )
+        {
+            if( count( $langs ) > 1 ) {
+                throw new \InvalidArgumentException( 'Use either --langs=* or language codes!' );
+            }
+
             return null;
         }
 
-        if( $this->option( 'no-langs' ) ) {
-            return [];
-        }
-
-        $langs = array_filter( (array) $this->option( 'langs' ), fn( $lang ) => is_string( $lang ) && $lang !== '' );
-
-        return $langs ? array_values( $langs ) : false;
+        return $langs;
     }
 
 
