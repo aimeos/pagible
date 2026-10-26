@@ -10,6 +10,7 @@ class User extends \Illuminate\Foundation\Auth\User
         'email' => '',
         'password' => '',
         'cmsperms' => '[]',
+        'cmslangs' => null,
     ];
 
     protected $fillable = ['name', 'email', 'password', 'cmsperms'];

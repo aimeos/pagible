@@ -419,7 +419,7 @@ class LanguagePermissionTest extends CoreTestAbstract
             }
         }
 
-        $this->assertEquals( 'Test image', File::findOrFail( $file->id )->name );
+        $this->assertEquals( $file->name, File::findOrFail( $file->id )->name );
         $this->assertNull( File::findOrFail( $file->id )->deleted_at );
     }
 
