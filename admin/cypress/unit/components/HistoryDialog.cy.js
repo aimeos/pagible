@@ -397,7 +397,7 @@ describe('HistoryDialog', () => {
     cy.get('.select-all input[aria-label="Select all"]').uncheck()
     cy.contains('.diff-block', 'New title').find('.diff-group[aria-label="title"] input').check()
     cy.contains('1 of 4 selected').should('exist')
-    cy.contains('.diff-block', 'New title').find('.block-check [aria-checked="mixed"]').should('exist')
+    cy.contains('.diff-block', 'New title').find('.block-check input').should('have.prop', 'indeterminate', true)
   })
 
   it('places media under the changed field without duplicate raw values', () => {
