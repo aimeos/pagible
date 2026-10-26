@@ -112,7 +112,8 @@ export function mutation(action, type, lang = false, at = false) {
     if (action === 'bulk') {
       mutations.set(key, gql`mutation ($id: [ID!]!, $input: ${model}Input!) { ${name}(id: $id, input: $input) { ids } }`)
     } else {
-      const vars = ['$id: [ID!]!', at && '$at: DateTime', lang && '$lang: String'].filter(Boolean)
+      // the language is required by the variant mutations, e.g. "dropPageVariant"
+      const vars = ['$id: [ID!]!', at && '$at: DateTime', lang && (model.endsWith('Variant') ? '$lang: String!' : '$lang: String')].filter(Boolean)
       const args = ['id: $id', at && 'at: $at', lang && 'lang: $lang'].filter(Boolean)
 
       mutations.set(key, gql`mutation (${vars.join(', ')}) { ${name}(${args.join(', ')}) { id } }`)

@@ -56,10 +56,11 @@ export const pageActions = {
     },
 
     // runs the mutation for the page IDs (of the variants in the language) and resolves true on success
-    mutate(action, ids, msg, lang = null) {
+    // type is "page" or "pageVariant" for the mutations of the variants in the language
+    mutate(action, ids, msg, lang = null, type = 'page') {
       return this.$apollo
         .mutate({
-          mutation: mutation(action, 'page', !!lang),
+          mutation: mutation(action, type, !!lang),
           variables: lang ? { id: ids, lang } : { id: ids }
         })
         .then(() => {
@@ -165,7 +166,7 @@ export const pageActions = {
     trashed(ids, lang = null) {
       const undo = () => {
         const msg = lang ? this.$gettext('Error restoring language') : this.$gettext('Error restoring page')
-        this.mutate('keep', ids, msg, lang).then((ok) => {
+        this.mutate('keep', ids, msg, lang, lang ? 'pageVariant' : 'page').then((ok) => {
           ok && this.reload(false)
         })
       }

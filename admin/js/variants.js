@@ -159,7 +159,7 @@ export const pageVariants = {
 
       const ids = list.map((item) => item.data.id)
 
-      return this.mutate('drop', ids, this.$gettext('Error trashing language'), this.lang).then((ok) => {
+      return this.mutate('drop', ids, this.$gettext('Error trashing language'), this.lang, 'pageVariant').then((ok) => {
         if (ok) {
           this.trashed(ids, this.lang)
           return this.refetch(list)
@@ -175,7 +175,7 @@ export const pageVariants = {
         return
       }
 
-      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring language'), this.lang).then((ok) => {
+      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring language'), this.lang, 'pageVariant').then((ok) => {
         ok && this.refetch(list)
       })
     },
@@ -196,7 +196,7 @@ export const pageVariants = {
         return
       }
 
-      this.mutate('purge', list.map((item) => item.data.id), this.$gettext('Error purging language'), this.lang).then((ok) => {
+      this.mutate('purge', list.map((item) => item.data.id), this.$gettext('Error purging language'), this.lang, 'pageVariant').then((ok) => {
         ok && this.refetch(list)
       })
     },

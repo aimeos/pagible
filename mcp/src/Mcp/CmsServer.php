@@ -53,7 +53,9 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\SetPageAccess::class,
         \Aimeos\Cms\Tools\PublishPage::class,
         \Aimeos\Cms\Tools\DropPage::class,
+        \Aimeos\Cms\Tools\DropPageVariant::class,
         \Aimeos\Cms\Tools\RestorePage::class,
+        \Aimeos\Cms\Tools\RestorePageVariant::class,
         \Aimeos\Cms\Tools\MovePage::class,
         \Aimeos\Cms\Tools\CopyPage::class,
 
