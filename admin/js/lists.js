@@ -229,8 +229,11 @@ export const listBase = {
   },
 
   methods: {
-    allowed(action, type = this.type) {
-      if (this.user.can(`${type}:${action}`)) {
+    // the language is checked too if passed, e.g. for writes to the page variants of a language
+    allowed(action, type = this.type, lang = undefined) {
+      const name = `${type}:${action}`
+
+      if (lang === undefined ? this.user.can(name) : this.user.canLang(name, lang)) {
         return true
       }
 

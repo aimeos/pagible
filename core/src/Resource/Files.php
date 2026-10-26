@@ -12,6 +12,7 @@ use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Exceptions\ConflictException;
 use Aimeos\Cms\Exceptions\InvalidInputException;
+use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
@@ -32,6 +33,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 use Aimeos\Cms\Resource\Support\Items;
+use Aimeos\Cms\Resource\Support\Langs;
 use Aimeos\Cms\Concerns\ChangeChunks;
 use Aimeos\Cms\Publication;
 
@@ -76,6 +78,9 @@ class Files
         $file = new File();
         $file->disk = $disk ?? 'public';
         $file->fill( $input );
+
+        // checked before storing the file
+        Permission::checkLang( $file->lang, $user );
 
         // Store the file and generate previews outside the transaction to keep
         // slow network, disk and image work off the database connection.
@@ -192,8 +197,12 @@ class Files
 
         try
         {
-            return File::locked( function() use ( &$changed, $disk, $editor, $ids ) {
+            return File::locked( function() use ( &$changed, $disk, $editor, $ids, $user ) {
                 $result = [];
+
+                if( Permission::langs( $user ) !== null ) {
+                    Langs::authorize( File::whereIn( 'id', $ids )->get( ['id', 'lang', 'latest_id'] ), $user );
+                }
 
                 foreach( $ids as $id ) {
                     $result[] = $this->relocateFile( $id, $disk, $editor, $changed );
@@ -260,11 +269,16 @@ class Files
         $editor = Utils::editor( $user );
         $stored = ['disk' => 'public', 'path' => null, 'mime' => null, 'previews' => null, 'prepared' => false];
 
+        // checked again while the file is locked
+        if( Permission::langs( $user ) !== null ) {
+            Langs::authorize( $this->file()->findOrFail( $id ), $user, $input );
+        }
+
         try
         {
             // Prepare storage and remote image work before opening the transaction.
             $this->prepareFile( $stored, $id, $input, $upload, $preview );
-            $file = $this->writeFile( $id, $input, $editor, $latestId, $preview, $stored );
+            $file = $this->writeFile( $id, $input, $editor, $latestId, $preview, $stored, $user );
         }
         catch( \Throwable $t )
         {
@@ -301,9 +315,17 @@ class Files
 
         Validation::limits( File::class, $input );
 
-        return Bulk::save( File::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input ) : ?File {
-            $file = $this->file()->lockForUpdate()->find( $id );
-            return $file ? $this->apply( $file, $input, $editor ) : null;
+        // an explicit NULL language makes the files language-neutral
+        Permission::checkLang( $input['lang'] ?? null, $user, array_key_exists( 'lang', $input ) );
+
+        return Bulk::save( File::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user ) : ?File {
+
+            if( !( $file = $this->file()->lockForUpdate()->find( $id ) ) ) {
+                return null;
+            }
+
+            Langs::authorize( $file, $user, $input );
+            return $this->apply( $file, $input, $editor );
         } );
     }
 
@@ -397,7 +419,7 @@ class Files
             // dispatched after commit
             Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
             File::trashMany( $items, $editor );
-        } ) ) );
+        }, $user ) ) );
 
         File::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
@@ -439,30 +461,40 @@ class Files
             }
 
             File::forceDeleteMany( $items );
-        } );
+        }, $user );
 
-        $items = File::locked( fn() => Scout::mute( [File::class], function() use ( $purge, $ids ) {
+        [$items, $denied] = File::locked( fn() => Scout::mute( [File::class], function() use ( $purge, $ids ) {
             try {
-                return $purge( $ids );
+                return [$purge( $ids ), null];
+            } catch( PermissionException $e ) {
+                throw $e;
             } catch( \Exception $e ) {
                 // files whose storage can't be cleaned up must not prevent purging the others
                 $items = collect();
+                $denied = null;
 
                 foreach( $ids as $id ) {
                     try {
                         $items->push( ...$purge( [$id] ) );
+                    } catch( PermissionException $e ) {
+                        // thrown after the purged files are announced and unindexed
+                        $denied ??= $e;
                     } catch( \Exception $e ) {
                         report( $e );
                     }
                 }
 
-                return $items;
+                return [$items, $denied];
             }
         } ) );
 
         // many files are announced as one bulk event because they may be purged in several transactions
         File::announceMany( $items, LifecycleAction::Purged, $editor, bulk: count( $ids ) !== 1 );
         Scout::unindex( File::class, $this->ids( $items ) );
+
+        if( $denied ) {
+            throw $denied;
+        }
 
         return $items;
     }
@@ -488,7 +520,7 @@ class Files
             // dispatched after commit
             Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
             File::restoreMany( $items, $editor );
-        } ) ) );
+        }, $user ) ) );
 
         File::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
         Scout::index( File::class, $this->ids( $items ) );
@@ -653,14 +685,16 @@ class Files
      * @param string|null $latestId Version ID the editor was working on (for conflict detection)
      * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
      * @param StoredFile $stored Prepared storage data
+     * @param Authenticatable|null $user Authenticated user whose writable languages are checked
      * @return File Saved file
      */
     protected function writeFile( string $id, array $input, string $editor, ?string $latestId,
-        UploadedFile|false|null $preview, array $stored ) : File
+        UploadedFile|false|null $preview, array $stored, ?Authenticatable $user ) : File
     {
 
-        return File::locked( function() use ( $id, $input, $editor, $latestId, $preview, $stored ) {
+        return File::locked( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $user ) {
             $file = $this->file()->findOrFail( $id );
+            Langs::authorize( $file, $user, $input );
 
             if( $stored['prepared'] && $file->getAttribute( 'disk' ) !== $stored['disk'] ) {
                 throw new ConflictException( 'File disk changed while saving; retry the request' );

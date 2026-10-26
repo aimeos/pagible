@@ -4,6 +4,7 @@
 
 import gql from 'graphql-tag'
 import { invalidateList } from './graphql'
+import { useUserStore } from './stores'
 import { fileurl } from './urls'
 import { safeParse, sanitize } from './json'
 
@@ -38,7 +39,14 @@ const ADD_FILE = gql`
   }
 `
 
-export async function createFile(apollo, variables) {
+export async function createFile(apollo, variables, lang = null) {
+  // restricted users can only add files in their languages
+  const addLang = variables.input?.lang ? null : useUserStore().addLang(lang)
+
+  if (addLang) {
+    variables = { ...variables, input: { ...variables.input, lang: addLang } }
+  }
+
   const options = { mutation: ADD_FILE, variables }
 
   if (variables.file) {

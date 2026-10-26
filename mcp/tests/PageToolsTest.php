@@ -639,6 +639,34 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testDropRestorePageVariantPermissions()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+
+        $user = ( new \App\Models\User( ['cmsperms' => ['page:view', 'variant:drop', 'variant:keep']] ) )
+            ->forceFill( ['cmslangs' => json_encode( ['de'] )] );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id, 'lang' => 'de'] )
+            ->assertOk()->assertDontSee( 'error' );
+        $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\RestorePage::class, ['id' => $page->id, 'lang' => 'de'] )
+            ->assertOk()->assertDontSee( 'error' );
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+
+        // whole pages and unassigned languages are denied
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id] )
+            ->assertSee( 'Insufficient permissions' );
+        $this->assertNotNull( PageView::find( $page->id ) );
+
+        $user->forceFill( ['cmslangs' => json_encode( ['fr'] )] );
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id, 'lang' => 'de'] )
+            ->assertSee( 'Insufficient permissions for language' );
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+    }
+
+
     public function testMovePage()
     {
         $page = PageView::where( 'name', 'Dev' )->first();

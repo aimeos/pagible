@@ -23,12 +23,18 @@ return [
     |   ["admin", "!page:purge"]       — admin minus purge
     |   ["editor", "publisher"]        — union of both roles
     |
+    | The writable languages of a user ("cmslangs" column) restrict the writes
+    | to pages, elements and files in addition. The "translator" role grants
+    | the variant actions ("variant:*") instead of the whole-page actions
+    | which affect all languages, for users restricted to some languages.
+    |
     */
     'roles' => [
         'admin' => ['*'],
         'viewer' => ['page:view', 'element:view', 'file:view'],
         'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'page:config', 'cache:clear'],
         'editor' => ['publisher', '!*:publish', '!*:purge', '!page:access'],
+        'translator' => ['page:view', 'page:save', 'page:publish', 'variant:*', 'element:*', 'file:*', '!element:purge', '!file:purge'],
     ],
 
     /*

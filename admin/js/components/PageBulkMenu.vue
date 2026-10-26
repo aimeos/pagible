@@ -29,6 +29,7 @@ export default {
   props: {
     counts: { type: Object, default: () => ({}) },
     disabled: { type: Boolean, default: false },
+    lang: { type: String, default: null },
     selected: { type: Boolean, default: false }
   },
 
@@ -86,17 +87,17 @@ export default {
           variant="text"
         />
       </template>
-      <ActionItem v-if="counts.draft && user.can('page:publish')" :prepend-icon="mdiPublish" @click="$emit('publish')">
+      <ActionItem v-if="counts.draft && user.canLang('page:publish', lang)" :prepend-icon="mdiPublish" @click="$emit('publish')">
         {{ $gettext('Publish') }} ({{ counts.draft }})
       </ActionItem>
-      <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiEye" @click="$emit('enable')">
+      <ActionItem v-if="counts.own && user.canLang('page:save', lang)" :prepend-icon="mdiEye" @click="$emit('enable')">
         {{ $pgettext('page status', 'Enable') }} ({{ counts.own }})
       </ActionItem>
-      <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiEyeOff" @click="$emit('disable')">
+      <ActionItem v-if="counts.own && user.canLang('page:save', lang)" :prepend-icon="mdiEyeOff" @click="$emit('disable')">
         {{ $pgettext('page status', 'Disable') }} ({{ counts.own }})
       </ActionItem>
       <v-divider></v-divider>
-      <ActionItem v-if="counts.own && user.can('page:save')" :prepend-icon="mdiPencil" @click="$emit('edit-props')">
+      <ActionItem v-if="counts.own && user.canLang('page:save', lang)" :prepend-icon="mdiPencil" @click="$emit('edit-props')">
         {{ $gettext('Edit properties') }} ({{ counts.own }})
       </ActionItem>
       <ActionItem v-if="selected && user.can('page:access')" :prepend-icon="mdiKeyVariant" @click="$emit('edit-access')">

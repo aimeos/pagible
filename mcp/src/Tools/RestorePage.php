@@ -22,7 +22,7 @@ use Laravel\Mcp\Server\Attributes\Title;
 #[Description('Restores a previously soft-deleted page, or only one deleted language variant if lang is passed. Returns the restored page as a JSON object.')]
 class RestorePage extends RestoreTool
 {
-    protected const PERMISSIONS = ['page:keep'];
+    protected const PERMISSIONS = ['variant:keep'];
     protected const MODEL = PageView::class;
     protected const RESOURCE = Pages::class;
     protected const NOUN = 'page';

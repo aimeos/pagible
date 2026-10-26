@@ -201,6 +201,13 @@ class CoreServiceProvider extends Provider
                 $model->mergeCasts( $casts );
             } );
 
+            // the database default of the uncast "cmslangs" column (unrestricted) for actors created in the same request
+            $userClass::created( function( $model ) {
+                if( !array_key_exists( 'cmslangs', $model->getAttributes() ) ) {
+                    $model->forceFill( ['cmslangs' => null] )->syncOriginalAttribute( 'cmslangs' );
+                }
+            } );
+
             $userClass::saving( function( $model ) use ( $casts ) {
                 $model->mergeCasts( $casts );
 

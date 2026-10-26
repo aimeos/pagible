@@ -631,7 +631,7 @@ export default {
             <v-btn
               @click="switchLang(entry)"
               :active="entry.code === variantLang"
-              :disabled="entry.state === 'trashed' || (entry.state === 'missing' && !user.can('page:add'))"
+              :disabled="entry.state === 'trashed' || (entry.state === 'missing' && !user.canLang('variant:add', entry.code))"
               :prepend-icon="{ current: mdiCheck, stale: mdiSync, trashed: mdiDelete, missing: mdiPlus }[entry.state]"
               :class="'lang-' + entry.state"
               :data-lang="entry.code"
@@ -650,7 +650,7 @@ export default {
               }}</span>
             </v-btn>
           </v-list-item>
-          <template v-if="isTranslation && item.stale && user.can('page:save')">
+          <template v-if="isTranslation && item.stale && canWrite('save')">
             <v-divider />
             <ActionItem
               v-if="user.can('text:translate')"
@@ -765,11 +765,11 @@ export default {
   <AsideCount v-if="aside === 'count'" />
   <FieldsAside
     v-if="aside === 'editor' && editorElement"
-    :actions="editorActions && user.can('page:save')"
+    :actions="editorActions && canWrite('save')"
     :assets="assets"
     :element="editorElement.type === 'reference' ? elements[editorElement.refid] : editorElement"
     :preview-size="previewSize"
-    :readonly="!user.can('page:save') || !!editorElement.refid"
+    :readonly="!canWrite('save') || !!editorElement.refid"
     :save-count="savecnt"
     @add-after="editorAction('addAfter')"
     @add-before="editorAction('addBefore')"

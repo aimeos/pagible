@@ -169,6 +169,7 @@ export const detailBase = {
     bar() {
       return {
         type: this.type,
+        lang: this.item?.lang ?? null,
         name: this.item.name,
         stacked: this.stacked,
         dirty: this.hasChanged,
@@ -197,7 +198,7 @@ export const detailBase = {
         changes: this.vchanged,
         changed: this.changed,
         current: this.historyData,
-        readonly: !this.user.can(`${this.type}:save`),
+        readonly: !this.canWrite('save'),
         load: () => this.versions(this.item.id),
         'onUpdate:history': (value) => (this.vhistory = value),
         'onUpdate:changes': (value) => (this.vchanged = value),
@@ -226,6 +227,16 @@ export const detailBase = {
   },
 
   methods: {
+    /**
+     * Checks if the user may perform the action for the item in its language
+     *
+     * @param {String} action Action without type prefix, e.g. "save" or "publish"
+     * @returns {Boolean} TRUE if allowed, FALSE if not
+     */
+    canWrite(action) {
+      return this.user.canLang(`${this.type}:${action}`, this.item?.lang)
+    },
+
     invalidate() {
       invalidateList(this.type + 's')
     },
@@ -283,7 +294,7 @@ export const detailBase = {
      * @param {Boolean} close Close the view after publishing
      */
     publish(at = null, close = false) {
-      if (!this.user.can(`${this.type}:publish`)) return this.messages.denied()
+      if (!this.canWrite('publish')) return this.messages.denied()
 
       const msgs = publishTexts(this, at)
       // language of the page variant to publish, the source variant if none
@@ -457,7 +468,7 @@ export const detailBase = {
 
     // checks the permission and the field errors before saving
     saveable() {
-      if (!this.user.can(`${this.type}:save`)) return this.messages.denied()
+      if (!this.canWrite('save')) return this.messages.denied()
 
       if (this.hasError) {
         this.messages.add(

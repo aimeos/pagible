@@ -21,7 +21,7 @@ use Laravel\Mcp\Server\Attributes\Title;
 #[Description('Soft-deletes a page with all its language variants, or only one language variant if lang is passed. The page or variant can be restored within the retention period using restore-page. Returns the deleted page as a JSON object.')]
 class DropPage extends DropTool
 {
-    protected const PERMISSIONS = ['page:drop'];
+    protected const PERMISSIONS = ['variant:drop'];
     protected const RESOURCE = Pages::class;
     protected const NOUN = 'page';
     protected const RULES = parent::RULES + ['lang' => 'string|max:10'];

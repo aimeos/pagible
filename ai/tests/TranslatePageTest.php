@@ -328,6 +328,45 @@ class TranslatePageTest extends AiTestAbstract
     }
 
 
+    public function testJobLanguagePermission()
+    {
+        $page = $this->page();
+        $fake = $this->fake( $page );
+        $user = $this->user( \Aimeos\Cms\Permission::all() );
+        \Aimeos\Cms\Permission::set( $user, \Aimeos\Cms\Permission::assigned( $user ), ['fr'] );
+
+        $job = $this->job( $page->id, 'de', $user );
+        $job->handle();
+
+        $job->assertFailed();
+        $this->assertCount( 0, $fake->calls() );
+        $this->assertFalse( PageVariant::withTrashed()->where( 'page_id', $page->id )->where( 'lang', 'de' )->exists() );
+    }
+
+
+    public function testAuthorize()
+    {
+        $user = $this->user( ['page:save'] );
+        \Aimeos\Cms\Permission::set( $user, ['page:save'], ['de'] );
+
+        TranslatePage::authorize( $user, ['de'] );
+
+        $this->expectException( \Aimeos\Cms\Exceptions\PermissionException::class );
+        TranslatePage::authorize( $user, ['de', 'fr'] );
+    }
+
+
+    public function testGraphqlTranslatePageLanguagePermission()
+    {
+        $user = $this->user( \Aimeos\Cms\Permission::all() );
+        \Aimeos\Cms\Permission::set( $user, \Aimeos\Cms\Permission::assigned( $user ), ['fr'] );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation { translatePage(id: ["x"], lang: ["de"]) { id } }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions for language "de"' );
+    }
+
+
     public function testJobGuard()
     {
         $page = $this->page();

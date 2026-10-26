@@ -22,6 +22,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Resource\Support\Items;
+use Aimeos\Cms\Resource\Support\Langs;
 use Aimeos\Cms\Resource\Support\PageEdits;
 use Aimeos\Cms\Resource\Support\PageRows;
 use Aimeos\Cms\Resource\Support\Paths;
@@ -64,7 +65,7 @@ class Variants
      */
     public function add( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
-        Permission::check( 'page:add', $user );
+        Permission::check( 'variant:add', $user );
         return $this->translateVariant( $id, $lang, $user, add: true );
     }
 
@@ -216,6 +217,7 @@ class Variants
     public function setSource( string $id, string $lang, ?Authenticatable $user = null ) : PageView
     {
         Permission::check( 'page:save', $user );
+        Permission::checkUnrestricted( $user );
 
         $editor = Utils::editor( $user );
 
@@ -281,6 +283,7 @@ class Variants
     public function ignoreMany( array $ids, string $lang, ?Authenticatable $user = null, array $fields = [] ) : Collection
     {
         Permission::check( 'page:save', $user );
+        Permission::checkLang( $lang, $user );
 
         $editor = Utils::editor( $user );
         $ids = PageView::bulkIds( $ids );
@@ -288,9 +291,9 @@ class Variants
         // hashed before locking the variants to keep the transaction short
         $hashes = Sync::sources( $ids );
 
-        DB::transaction( function() use ( $ids, $lang, $hashes ) {
+        DB::transaction( function() use ( $ids, $lang, $hashes, $user ) {
 
-            $pages = $this->lockVariants( $ids, $lang, trashed: false, strict: true,
+            $pages = $this->lockVariants( $ids, $lang, $user, trashed: false, strict: true,
                 error: 'The source language can\'t be marked as up to date' );
 
             foreach( $pages as $page ) {
@@ -341,13 +344,20 @@ class Variants
     protected function translateVariant( string $id, string $lang, ?Authenticatable $user = null,
         ?callable $translate = null, bool $add = false ) : PageView
     {
+        // checked before the slow AI request
+        Permission::checkLang( $lang, $user );
+
         // existing variants in unconfigured languages (e.g. imported ones) can still be translated
         if( !Utils::isLocale( $lang ) && !PageVariant::where( 'page_id', $id )->where( 'lang', $lang )->exists() ) {
             throw new InvalidInputException( sprintf( 'Invalid language code "%1$s"', $lang ) );
         }
 
         [$source, $variant] = $this->translatable( $id, $lang );
-        Permission::check( 'page:add', $user, !$variant );
+        Permission::check( 'variant:add', $user, !$variant );
+
+        if( $variant ) {
+            Langs::authorize( $variant, $user );
+        }
 
         // trashed variants are already rejected by translatable()
         if( $add && $variant ) {
@@ -384,6 +394,9 @@ class Variants
             }
 
             $page = PageView::withTrashed()->language( $lang )->with( 'latest' )->lockForUpdate()->findOrFail( $source->id );
+
+            // the variant may have changed during the AI request
+            Langs::authorize( $page, $user );
 
             // untranslated copies get the translated slug in their path
             if( $result['slug'] !== '' ) {
@@ -482,12 +495,13 @@ class Variants
      */
     protected function trashVariants( array $ids, string $lang, ?Authenticatable $user, bool $strict, array $fields = [] ) : Collection
     {
-        Permission::check( 'page:drop', $user );
+        Permission::check( 'variant:drop', $user );
+        Permission::checkLang( $lang, $user );
         $editor = Utils::editor( $user );
 
-        $dropped = DB::transaction( function() use ( $ids, $lang, $editor, $strict ) {
+        $dropped = DB::transaction( function() use ( $ids, $lang, $editor, $strict, $user ) {
 
-            $pages = $this->lockVariants( $ids, $lang, trashed: false, strict: $strict );
+            $pages = $this->lockVariants( $ids, $lang, $user, trashed: false, strict: $strict );
             $time = ( new PageVariant() )->freshTimestamp();
 
             foreach( $pages->pluck( 'variant_id' )->chunk( DB::IN_SIZE ) as $chunk ) {
@@ -532,16 +546,17 @@ class Variants
      */
     protected function deleteVariants( array $ids, string $lang, ?Authenticatable $user, bool $strict, array $fields = [] ) : Collection
     {
-        Permission::check( 'page:purge', $user );
+        Permission::check( 'variant:purge', $user );
+        Permission::checkLang( $lang, $user );
         $editor = Utils::editor( $user );
         $columns = $this->variantColumns( $fields );
 
         // the complete pages are required after the variants are deleted, but not locked
         $all = $this->variantPages( $ids, $lang, $columns, trashed: true )->keyBy( 'variant_id' );
 
-        $pages = DB::transaction( function() use ( $ids, $lang, $strict, $all, $columns ) {
+        $pages = DB::transaction( function() use ( $ids, $lang, $strict, $all, $columns, $user ) {
 
-            $pages = $this->lockVariants( $ids, $lang, trashed: true, strict: $strict );
+            $pages = $this->lockVariants( $ids, $lang, $user, trashed: true, strict: $strict );
 
             // variants added after the pages were fetched need their domain and path for cache invalidation
             $missing = $pages->reject( fn( PageView $page ) => $all->has( $page->variant_id ) )->pluck( 'id' )->all();
@@ -578,16 +593,19 @@ class Variants
      */
     protected function untrashVariants( array $ids, string $lang, ?Authenticatable $user, bool $strict, array $fields = [] ) : Collection
     {
-        Permission::check( 'page:keep', $user );
+        Permission::check( 'variant:keep', $user );
+        Permission::checkLang( $lang, $user );
         $editor = Utils::editor( $user );
 
         // hashed before locking the variants to keep the transaction short
         $hashes = Sync::sources( $ids );
 
-        $restored = DB::transaction( function() use ( $ids, $lang, $editor, $strict, $hashes ) {
+        $restored = DB::transaction( function() use ( $ids, $lang, $editor, $strict, $hashes, $user ) {
 
             $pages = PageRows::views( PageView::withTrashed()->language( $lang, trashed: true )->whereNotNull( 'variant_deleted_at' )
-                ->whereKey( $ids )->lockForUpdate()->get( ['id', 'variant_id', 'hashes'] ) );
+                ->whereKey( $ids )->lockForUpdate()->get( ['id', 'variant_id', 'lang', 'latest_id', 'hashes'] ) );
+
+            Langs::authorize( $pages, $user );
 
             if( $strict && $pages->isEmpty() ) {
                 throw ( new ModelNotFoundException() )->setModel( PageView::class, $ids );
@@ -643,22 +661,25 @@ class Variants
     /**
      * Returns the locked pages with a variant in the language which isn't the source variant.
      *
-     * Only the page ID, the variant ID, the language and the source language are loaded.
+     * Only the page ID, the variant ID, the language, the source language and the latest version ID are loaded.
+     * The languages of the variants and their latest versions must be writable by the user.
      *
      * @param array<string> $ids Page UUIDs
      * @param string $lang Language code of the variants
+     * @param Authenticatable|null $user Authenticated user whose writable languages are checked
      * @param bool $trashed TRUE to include trashed variants
      * @param bool $strict TRUE to throw if a page has no variant in the language or it's the source variant
      * @param string $error Error message if strict and a variant is the source variant
      * @return Collection<int, PageView> Pages with the variant of the language
      * @throws ConflictException If strict and the variant is the source variant of a page
+     * @throws \Aimeos\Cms\Exceptions\PermissionException If the language of a variant isn't writable
      */
-    protected function lockVariants( array $ids, string $lang, bool $trashed, bool $strict,
+    protected function lockVariants( array $ids, string $lang, ?Authenticatable $user, bool $trashed, bool $strict,
         string $error = 'The source language can not be deleted, change the source language first' ) : Collection
     {
         // only the columns required to check the variants to keep the locked rows small
         $pages = PageRows::views( PageView::withTrashed()->language( $lang, $trashed )->whereKey( $ids )->lockForUpdate()
-            ->get( ['id', 'variant_id', 'lang', 'source', 'stale'] ) );
+            ->get( ['id', 'variant_id', 'lang', 'source', 'stale', 'latest_id'] ) );
 
         if( $strict && $pages->count() !== count( $ids ) ) {
             throw ( new ModelNotFoundException() )->setModel( PageView::class, $ids );
@@ -668,7 +689,10 @@ class Variants
             throw new ConflictException( $error );
         }
 
-        return $pages->reject( fn( PageView $page ) => $page->isSourceVariant() )->values();
+        $pages = $pages->reject( fn( PageView $page ) => $page->isSourceVariant() )->values();
+        Langs::authorize( $pages, $user );
+
+        return $pages;
     }
 
 

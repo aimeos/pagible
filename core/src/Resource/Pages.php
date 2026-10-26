@@ -21,6 +21,7 @@ use Aimeos\Cms\Permission;
 use Aimeos\Cms\Publication;
 use Aimeos\Cms\Query\PageBuilder;
 use Aimeos\Cms\Resource\Support\Items;
+use Aimeos\Cms\Resource\Support\Langs;
 use Aimeos\Cms\Resource\Support\PageEdits;
 use Aimeos\Cms\Resource\Support\PageRows;
 use Aimeos\Cms\Resource\Support\Paths;
@@ -79,7 +80,11 @@ class Pages
         $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
+        Permission::checkLang( (string) $input['lang'], $user );
+
         return DB::lockedTransaction( function() use ( $input, $editor, $ref, $parent, $user ) {
+
+            $input = Langs::domain( $input, $user, $ref, $parent );
 
             $aux = [
                 'content' => $input['content'] ?? [],

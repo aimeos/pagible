@@ -36,19 +36,21 @@ export const pageActions = {
       const own = items.filter((item) => !this.missing(item))
 
       const can = (action) => this.user.can('page:' + action)
+      // writes to the variants in the current language also require the language permission
+      const canLang = (action) => this.user.canLang(action, this.lang)
 
       // variant actions only count the pages which have a variant in the current language
       // and are zero without permission, so the language section is hidden if nothing is left
       this.counts = Object.assign(tally(items), {
-        draft: own.filter((item) => !item.published).length,
+        draft: canLang('page:publish') ? own.filter((item) => !item.published).length : 0,
         own: own.length,
-        langLive: can('drop') ? own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length : 0,
-        langPurge: can('purge') ? items.filter((item) => this.purgeable(item)).length : 0,
+        langLive: canLang('variant:drop') ? own.filter((item) => item.lang !== item.source && !item.variant_deleted_at).length : 0,
+        langPurge: canLang('variant:purge') ? items.filter((item) => this.purgeable(item)).length : 0,
         // whole pages are only deleted and purged while their source language is shown
         live: can('drop') ? items.filter((item) => !item.deleted_at && item.source === this.lang).length : 0,
         purge: can('purge') ? items.filter((item) => item.source === this.lang).length : 0,
-        langTrashed: can('keep') ? items.filter((item) => this.restorable(item)).length : 0,
-        stale: can('save') ? own.filter((item) => this.isStale(item)).length : 0,
+        langTrashed: canLang('variant:keep') ? items.filter((item) => this.restorable(item)).length : 0,
+        stale: canLang('page:save') ? own.filter((item) => this.isStale(item)).length : 0,
         translate: items.filter((item) => this.translatable(item)).length
       })
     },
@@ -71,7 +73,7 @@ export const pageActions = {
     },
 
     publish(stat) {
-      const list = this.allowed('publish') ? this.targets(stat, (page) => !page.published && !this.missing(page)) : []
+      const list = this.allowed('publish', 'page', this.lang) ? this.targets(stat, (page) => !page.published && !this.missing(page)) : []
 
       if (!list.length) {
         return
@@ -86,7 +88,7 @@ export const pageActions = {
     },
 
     status(stat, val) {
-      if (!this.allowed('save')) {
+      if (!this.allowed('save', 'page', this.lang)) {
         return
       }
 
@@ -168,7 +170,7 @@ export const pageActions = {
         })
       }
 
-      trashMessage(this, ids.length, this.user.can('page:keep') ? undo : null)
+      trashMessage(this, ids.length, (lang ? this.user.canLang('variant:keep', lang) : this.user.can('page:keep')) ? undo : null)
     },
 
     keep(stat) {
@@ -316,7 +318,7 @@ export const pageActions = {
     },
 
     saveProps({ input, descendants }) {
-      if (!this.allowed('save')) {
+      if (!this.allowed('save', 'page', this.lang)) {
         return
       }
 

@@ -36,19 +36,28 @@ trait HasCmsPermissions
      * The acting user isn't checked, see Permission::set().
      *
      * @param iterable<mixed> $entries Roles, permissions and deny entries
+     * @param array<mixed>|null|false $langs Writable languages, NULL for unrestricted or FALSE to keep the stored ones
      * @return array<int, string> Assigned entries
      */
-    public function setCmsPermissions( iterable $entries ) : array
+    public function setCmsPermissions( iterable $entries, array|null|false $langs = false ) : array
     {
-        return Permission::set( $this, $entries );
+        return Permission::set( $this, $entries, $langs );
     }
 
 
     /**
      * Adds the cast of the "cmsperms" column.
+     *
+     * New users get the database default of the "cmslangs" column (unrestricted). It has no cast
+     * because database NULL and JSON null must be distinguishable. Loaded users replace all
+     * attributes, so unselected columns stay missing and deny language-restricted writes.
      */
     protected function initializeHasCmsPermissions() : void
     {
         $this->mergeCasts( ['cmsperms' => 'array'] );
+
+        if( !array_key_exists( 'cmslangs', $this->attributes ) ) {
+            $this->attributes['cmslangs'] = null;
+        }
     }
 }

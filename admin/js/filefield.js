@@ -86,6 +86,7 @@ export default {
   emits: ['update:modelValue', 'error', 'addFile', 'removeFile'],
 
   inject: {
+    pageLang: { default: null },
     update: { default: null }
   },
 
@@ -179,7 +180,7 @@ export default {
       const path = URL.createObjectURL(file)
       const disk = this.protect ? 'private' : 'public'
 
-      const promise = createFile(this.$apollo, { disk, file })
+      const promise = createFile(this.$apollo, { disk, file }, this.pageLang?.())
         .then((item) => {
           invalidateList('files')
           return item

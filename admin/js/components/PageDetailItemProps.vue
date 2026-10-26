@@ -76,7 +76,7 @@ export default {
     },
 
     readonly() {
-      return !this.user.can('page:save')
+      return !this.user.canLang('page:save', this.item.lang)
     },
 
     redirectRules() {
@@ -222,7 +222,7 @@ export default {
             item-value="key"
           ></v-select>
         </v-col>
-        <v-col v-if="!defaultLang || item.lang !== defaultLang" cols="12" md="6">
+        <v-col v-if="user.unrestricted() && (!defaultLang || item.lang !== defaultLang)" cols="12" md="6">
           <v-select
             ref="lang"
             :items="localeItems()"
@@ -285,7 +285,7 @@ export default {
             v-if="app.multidomain"
             ref="domain"
             :rules="domainRules"
-            :readonly="readonly"
+            :readonly="readonly || !user.unrestricted()"
             :modelValue="item.domain"
             :label="$gettext('Domain') + ' ‒ ' + $gettext('Domain the page is available at, e.g. example.com')"
             @update:modelValue="update('domain', $event)"

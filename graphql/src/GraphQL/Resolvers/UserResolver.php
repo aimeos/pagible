@@ -9,6 +9,7 @@ namespace Aimeos\Cms\GraphQL\Resolvers;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Events\UserChanged;
+use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
 use GraphQL\Error\Error;
@@ -79,6 +80,8 @@ class UserResolver
     /**
      * Creates a tenant user with a random password and no authorization assignments.
      *
+     * Users created by language-restricted users get the same writable languages.
+     *
      * @param array{email: string} $args
      */
     public function create( mixed $root, array $args ) : Authenticatable
@@ -98,6 +101,11 @@ class UserResolver
             'password' => Hash::make( Str::password( 32 ) ),
         ];
         $tenant = Tenancy::value();
+
+        // users created by restricted users can't write other languages than their creators
+        if( ( $langs = Permission::langs( Auth::user() ) ) !== null ) {
+            $attributes['cmslangs'] = json_encode( $langs );
+        }
 
         if( $tenant !== '' && $user->getConnection()->getSchemaBuilder()->hasColumn( $user->getTable(), 'tenant_id' ) ) {
             $attributes['tenant_id'] = $tenant;
@@ -128,6 +136,17 @@ class UserResolver
     public function id( Authenticatable $user ) : string
     {
         return (string) $user->getAuthIdentifier();
+    }
+
+
+    /**
+     * Returns the languages the user may write.
+     *
+     * @return array<int, string>|null Language codes or NULL if unrestricted
+     */
+    public function langs( Authenticatable $user ) : ?array
+    {
+        return Permission::langs( $user );
     }
 
 
@@ -176,7 +195,9 @@ class UserResolver
     /**
      * Replaces raw CMS roles and permissions assigned to a tenant user.
      *
-     * @param array{id: string, permissions: array<int, mixed>} $args
+     * The writable languages are only replaced if the "langs" argument is passed.
+     *
+     * @param array{id: string, permissions: array<int, mixed>, langs?: array<int, mixed>|null} $args
      * @return array<int, string>
      */
     public function setPermissions( mixed $root, array $args ) : array
@@ -192,8 +213,18 @@ class UserResolver
             throw new Error( 'You cannot change your own permissions' );
         }
 
+        // users restricted to some languages could otherwise widen the scope of other accounts
+        Permission::checkUnrestricted( $actor, array_key_exists( 'langs', $args ) );
+
+        // and they can't give roles to users who may write other languages, checked on the locked user
+        $check = ( $scope = Permission::langs( $actor ) ) === null ? null : function( Authenticatable $locked ) use ( $scope ) {
+            if( ( $langs = Permission::langs( $locked ) ) === null || array_diff( $langs, $scope ) ) {
+                throw new PermissionException( 'Insufficient permissions for the languages of the user' );
+            }
+        };
+
         // Audited via the PermissionChanged event dispatched by Permission::set().
-        return Permission::set( $user, $args['permissions'] ?? [] );
+        return Permission::set( $user, $args['permissions'] ?? [], array_key_exists( 'langs', $args ) ? $args['langs'] : false, $check );
     }
 
 

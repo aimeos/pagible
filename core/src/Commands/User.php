@@ -24,11 +24,14 @@ class User extends Command
         {--d|disable : Disables the user}
         {--e|enable : Enables the user}
         {--l|list : Lists all permissions of the CMS user}
+        {--no-langs : Allow writes in no language}
+        {--langs=* : Restrict writes to these language codes, e.g. "de" (can be used multiple times, replaces the current languages)}
         {--p|password= : Secret password of the account (will ask if user will be created)}
         {--q|--quiet : Do not output any message}
         {--r|remove= : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
         {--role= : Add a named role to the user (e.g. "editor", "publisher", "admin")}
         {--roles : Lists all available roles and their permissions}
+        {--unrestricted : Allow writes in all languages}
         {email? : E-Mail of the user}';
 
     /**
@@ -51,6 +54,11 @@ class User extends Command
             $this->error( 'E-Mail address is required!' );
             return;
         }
+
+        if( count( array_filter( [$this->option( 'langs' ), $this->option( 'no-langs' ), $this->option( 'unrestricted' )] ) ) > 1 ) {
+            $this->error( 'Only one of --langs, --no-langs and --unrestricted can be used!' );
+            return;
+        }
         $model = $this->model();
         $user = $model::where( 'email', $email )->first();
 
@@ -69,8 +77,12 @@ class User extends Command
         // Permission::set() — a single locked transaction and a single audit entry for
         // the intended end state, instead of one misleading intermediate audit line
         // per flag.
-        if( ( $assigned = $this->assigned( Permission::assigned( $user ) ) ) !== null ) {
-            Permission::set( $user, $assigned );
+        $existing = Permission::assigned( $user );
+        $assigned = $this->assigned( $existing );
+        $langs = $this->langs();
+
+        if( $assigned !== null || $langs !== false ) {
+            Permission::set( $user, $assigned ?? $existing, $langs );
         }
 
         // Only save when the password actually changed; an unconditional save() would
@@ -127,6 +139,27 @@ class User extends Command
 
 
     /**
+     * Returns the writable languages resulting from the command options.
+     *
+     * @return array<string>|null|false Language codes, NULL for unrestricted or FALSE if unchanged
+     */
+    protected function langs() : array|null|false
+    {
+        if( $this->option( 'unrestricted' ) ) {
+            return null;
+        }
+
+        if( $this->option( 'no-langs' ) ) {
+            return [];
+        }
+
+        $langs = array_filter( (array) $this->option( 'langs' ), fn( $lang ) => is_string( $lang ) && $lang !== '' );
+
+        return $langs ? array_values( $langs ) : false;
+    }
+
+
+    /**
      * Creates a new user with the given email.
      *
      * @param string $email E-Mail of the user
@@ -170,6 +203,10 @@ class User extends Command
                 $this->line( sprintf( '  %1$s', $role ) );
             }
         }
+
+        $langs = Permission::langs( $user );
+        $this->info( 'languages:' );
+        $this->line( sprintf( '  %1$s', $langs === null ? '* (unrestricted)' : ( implode( ', ', $langs ) ?: '- (none)' ) ) );
 
         $groups = collect( Permission::all() )->sort()->groupBy( fn( $name ) => explode( ':', $name )[0] );
 

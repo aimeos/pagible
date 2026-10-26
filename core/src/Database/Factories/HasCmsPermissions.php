@@ -27,4 +27,16 @@ trait HasCmsPermissions
     {
         return $this->state( ['cmsperms' => array_values( $perms )] );
     }
+
+
+    /**
+     * Restricts the writable languages.
+     *
+     * @param string ...$langs Language codes the user is allowed to write, none for no writes
+     * @return static Factory for fluent interface
+     */
+    public function cmsLangs( string ...$langs ) : static
+    {
+        return $this->state( ['cmslangs' => json_encode( array_values( $langs ) )] );
+    }
 }

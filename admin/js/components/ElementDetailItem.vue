@@ -27,7 +27,12 @@ export default {
 
   computed: {
     readonly() {
-      return !this.user.can('element:save')
+      return !this.user.canLang('element:save', this.item.lang)
+    },
+
+    // restricted users can only choose their assigned languages
+    langItems() {
+      return localeItems(true).filter((entry) => this.user.canLang('element:save', entry.value))
     }
   },
 
@@ -62,7 +67,7 @@ export default {
         <v-col cols="12" md="6">
           <v-select
             ref="lang"
-            :items="localeItems(true)"
+            :items="langItems"
             :readonly="readonly"
             :modelValue="item.lang"
             @update:modelValue="update('lang', $event)"

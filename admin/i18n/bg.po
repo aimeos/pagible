@@ -12,12 +12,12 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: js/ai.js:65 js/components/FileDetailItem.vue:251
+#: js/ai.js:65 js/components/FileDetailItem.vue:256
 msgid "Error transcribing file"
 msgstr "Грешка при транскрибиране на файла"
 
-#: js/ai.js:114 js/components/FileDetailItem.vue:304
-#: js/components/FileDetailItem.vue:311
+#: js/ai.js:114 js/components/FileDetailItem.vue:309
+#: js/components/FileDetailItem.vue:316
 msgid "Error translating texts"
 msgstr "Грешка при превода на текстове"
 
@@ -81,7 +81,7 @@ msgstr "Следващ раздел"
 msgid "Show or hide side panel"
 msgstr "Показване или скриване на страничния панел"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:167
+#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Връщане към изглед на списъка"
 
@@ -149,91 +149,113 @@ msgstr "Потребители"
 msgid "Go to users"
 msgstr "Към потребители"
 
-#: js/components/AccessUsers.vue:218
+#: js/components/AccessUsers.vue:212
+msgid "All languages"
+msgstr "Всички езици"
+
+#: js/components/AccessUsers.vue:213 js/components/AccessUsers.vue:574
+msgid "Selected languages"
+msgstr "Избрани езици"
+
+#: js/components/AccessUsers.vue:214
+msgid "No languages"
+msgstr "Без езици"
+
+#: js/components/AccessUsers.vue:282
 msgid "Access roles updated"
 msgstr "Ролите за достъп са актуализирани"
 
-#: js/components/AccessUsers.vue:218
+#: js/components/AccessUsers.vue:282
 msgid "Backend roles updated"
 msgstr "Ролите в бекенда са обновени"
 
-#: js/components/AccessUsers.vue:228
+#: js/components/AccessUsers.vue:292
 msgid "Error updating access roles"
 msgstr "Грешка при актуализирането на ролите за достъп"
 
-#: js/components/AccessUsers.vue:229
+#: js/components/AccessUsers.vue:293
 msgid "Error updating CMS permissions"
 msgstr "Грешка при актуализирането на разрешенията на CMS"
 
-#: js/components/AccessUsers.vue:264
+#: js/components/AccessUsers.vue:330
 msgid "User created"
 msgstr "Потребителят е създаден"
 
-#: js/components/AccessUsers.vue:270
+#: js/components/AccessUsers.vue:336
 msgid "Error creating user"
 msgstr "Грешка при създаването на потребител"
 
-#: js/components/AccessUsers.vue:310 js/components/PageAccess.vue:130
+#: js/components/AccessUsers.vue:377 js/components/PageAccess.vue:130
 #: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "Грешка при извличане на ролите за достъп"
 
-#: js/components/AccessUsers.vue:340
+#: js/components/AccessUsers.vue:407
 msgid "Error fetching user access roles"
 msgstr "Грешка при извличане на ролите за достъп на потребителя"
 
-#: js/components/AccessUsers.vue:383 js/components/AccessUsers.vue:384
+#: js/components/AccessUsers.vue:454 js/components/AccessUsers.vue:455
 msgid "Create user"
 msgstr "Създаване на потребител"
 
-#: js/components/AccessUsers.vue:391
+#: js/components/AccessUsers.vue:462
 msgid "Email address"
 msgstr "Имейл адрес"
 
-#: js/components/AccessUsers.vue:400
+#: js/components/AccessUsers.vue:471
 msgid "Search user by email"
 msgstr "Търсене на потребител по имейл"
 
-#: js/components/AccessUsers.vue:412 js/components/AccessUsers.vue:413
+#: js/components/AccessUsers.vue:483 js/components/AccessUsers.vue:484
 msgid "Search"
 msgstr "Търсене"
 
-#: js/components/AccessUsers.vue:428 js/components/AccessUsers.vue:429
-#: js/components/DetailAppBar.vue:201
+#: js/components/AccessUsers.vue:499 js/components/AccessUsers.vue:500
+#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Запазване"
 
-#: js/components/AccessUsers.vue:438
+#: js/components/AccessUsers.vue:509
 msgid "Account"
 msgstr "Акаунт"
 
-#: js/components/AccessUsers.vue:443 js/components/AccessUsers.vue:450
+#: js/components/AccessUsers.vue:514 js/components/AccessUsers.vue:521
 msgid "Assigned frontend roles"
 msgstr "Присвоени роли във фронтенда"
 
-#: js/components/AccessUsers.vue:450
+#: js/components/AccessUsers.vue:521
 msgid "Roles granting access to restricted pages"
 msgstr "Роли, които предоставят достъп до ограничени страници"
 
-#: js/components/AccessUsers.vue:463
+#: js/components/AccessUsers.vue:534
 msgid "Assigned backend roles"
 msgstr "Присвоени роли в бекенда"
 
-#: js/components/AccessUsers.vue:467
+#: js/components/AccessUsers.vue:538
 msgid "Custom"
 msgstr "По избор"
 
-#: js/components/AccessUsers.vue:473
+#: js/components/AccessUsers.vue:544
 msgid "Available roles"
 msgstr "Налични роли"
 
-#: js/components/AccessUsers.vue:473
+#: js/components/AccessUsers.vue:544
 msgid "Roles defining what the user can do in the admin panel"
 msgstr ""
 "Роли, които определят какво може да прави потребителят в администраторския "
 "панел"
 
-#: js/components/AccessUsers.vue:485 js/components/ListStatus.vue:36
+#: js/components/AccessUsers.vue:556 js/components/AccessUsers.vue:563
+msgid "Writable languages"
+msgstr "Езици за редактиране"
+
+#: js/components/AccessUsers.vue:563
+msgid "Languages of the pages, elements and files the user can change"
+msgstr ""
+"Езици на страниците, елементите и файловете, които потребителят може да "
+"променя"
+
+#: js/components/AccessUsers.vue:585 js/components/ListStatus.vue:36
 #: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "Не са намерени записи"
@@ -271,7 +293,7 @@ msgstr "Изпращане"
 
 #: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
 #: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
+#: js/components/FileAiDialog.vue:236 js/components/FileDetailItem.vue:482
 msgid "Dictate"
 msgstr "Диктовка"
 
@@ -402,9 +424,9 @@ msgid "Thinking ..."
 msgstr "Мисли ..."
 
 #: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
-#: js/components/PageDetailContentList.vue:524
-#: js/components/PageDetailContentList.vue:611
-#: js/components/PageListItems.vue:770 js/fields/Items.vue:281
+#: js/components/PageDetailContentList.vue:528
+#: js/components/PageDetailContentList.vue:615
+#: js/components/PageListItems.vue:771 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Копиране"
@@ -426,7 +448,7 @@ msgid "Go to"
 msgstr "Преминаване към"
 
 #: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:902
+#: js/components/ElementListItems.vue:275 js/components/PageListItems.vue:903
 msgid "New"
 msgstr "Нов"
 
@@ -457,7 +479,7 @@ msgstr "Няма резултати"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:806
+#: js/components/PageBulkMenu.vue:119 js/components/PageListItems.vue:807
 #: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Изтриване завинаги"
@@ -479,38 +501,38 @@ msgstr[1] ""
 msgid "Cancel"
 msgstr "Отказ"
 
-#: js/components/DetailAppBar.vue:163 js/components/ListAppBar.vue:30
+#: js/components/DetailAppBar.vue:164 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Меню"
 
-#: js/components/DetailAppBar.vue:184
+#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Преглед на историята"
 
-#: js/components/DetailAppBar.vue:193
+#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Преглед на промените при сливането"
 
-#: js/components/DetailAppBar.vue:217 js/components/DetailAppBar.vue:233
-#: js/components/DetailAppBar.vue:237 js/components/ListBulkMenu.vue:53
-#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:90
-#: js/components/PageListItems.vue:734
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ListBulkMenu.vue:53
+#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:91
+#: js/components/PageListItems.vue:735
 msgid "Publish"
 msgstr "Публикуване"
 
-#: js/components/DetailAppBar.vue:240
+#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
 msgstr "Публикуване и затваряне"
 
-#: js/components/DetailAppBar.vue:245 js/components/DetailAppBar.vue:271
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Планиране"
 
-#: js/components/DetailAppBar.vue:280
+#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
 msgstr "Планиране и затваряне"
 
-#: js/components/DetailAppBar.vue:288 js/components/ListAppBar.vue:49
+#: js/components/DetailAppBar.vue:289 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Превключване на страничното меню"
 
@@ -526,12 +548,12 @@ msgstr "не"
 msgid "Error fetching references"
 msgstr "Грешка при извличането на препратки"
 
-#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:233
+#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:238
 msgid "URL"
 msgstr "URL"
 
 #: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
-#: js/components/ElementDetailItem.vue:57 js/components/FileDetailItem.vue:384
+#: js/components/ElementDetailItem.vue:62 js/components/FileDetailItem.vue:389
 #: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Име"
@@ -560,7 +582,7 @@ msgstr "Публикувано"
 
 #: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
 #: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
-#: js/components/PageBulkMenu.vue:100 js/components/PageListItems.vue:755
+#: js/components/PageBulkMenu.vue:101 js/components/PageListItems.vue:756
 msgid "Edit properties"
 msgstr "Редактиране на свойствата"
 
@@ -570,8 +592,8 @@ msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Приложете избраните свойства към %{num} запис."
 msgstr[1] "Приложете избраните свойства към %{num} записа."
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
-#: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
+#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
+#: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
 #: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
 msgid "Language"
@@ -586,67 +608,67 @@ msgstr "Език на съдържанието"
 msgid "Apply"
 msgstr "Прилагане"
 
-#: js/components/ElementDetailItem.vue:57
+#: js/components/ElementDetailItem.vue:62
 msgid "Name to find the shared element in the element list"
 msgstr "Име за намиране на споделения елемент в списъка с елементи"
 
-#: js/components/ElementDetailItem.vue:70
+#: js/components/ElementDetailItem.vue:75
 msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 "Език на съдържанието на елемента; изберете Няма, ако се използва на всички "
 "езици"
 
-#: js/components/ElementListItems.vue:153
+#: js/components/ElementListItems.vue:157
 msgid "Error adding shared element"
 msgstr "Грешка при добавяне на споделен елемент"
 
-#: js/components/ElementListItems.vue:159
+#: js/components/ElementListItems.vue:163
 msgid "Error trashing shared element"
 msgstr "Грешка при преместване на споделения елемент в кошчето"
 
-#: js/components/ElementListItems.vue:160
+#: js/components/ElementListItems.vue:164
 msgid "Error restoring shared element"
 msgstr "Грешка при възстановяването на споделен елемент"
 
-#: js/components/ElementListItems.vue:161
+#: js/components/ElementListItems.vue:165
 msgid "Error publishing shared element"
 msgstr "Грешка при публикуването на споделен елемент"
 
-#: js/components/ElementListItems.vue:162
+#: js/components/ElementListItems.vue:166
 msgid "Error purging shared element"
 msgstr "Грешка при окончателно изтриване на споделения елемент"
 
-#: js/components/ElementListItems.vue:163
+#: js/components/ElementListItems.vue:167
 msgid "Error saving shared element"
 msgstr "Грешка при запазване на споделения елемент"
 
-#: js/components/ElementListItems.vue:164
+#: js/components/ElementListItems.vue:168
 msgid "Error fetching shared elements"
 msgstr "Грешка при извличането на споделени елементи"
 
-#: js/components/ElementListItems.vue:200
-#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:324
+#: js/components/ElementListItems.vue:204
+#: js/components/ElementListItems.vue:246 js/components/FileListItems.vue:324
 #: js/components/FileListItems.vue:386
-#: js/components/PageDetailContentList.vue:510
-#: js/components/PageDetailContentList.vue:601
-#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
+#: js/components/PageDetailContentList.vue:514
+#: js/components/PageDetailContentList.vue:605
+#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:723
 #: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "Превключване на избора"
 
-#: js/components/ElementListItems.vue:218
-#: js/components/ElementListItems.vue:299
-#: js/components/PageDetailContentList.vue:701
+#: js/components/ElementListItems.vue:222
+#: js/components/ElementListItems.vue:303
+#: js/components/PageDetailContentList.vue:705
 #: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Добавяне на елемент"
 
-#: js/components/ElementListItems.vue:230 js/components/SchemaItems.vue:145
+#: js/components/ElementListItems.vue:234 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Презареждане на елементи"
 
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:813
+#: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
 #: js/views/PageDetail.vue:661
 msgid "Translate"
@@ -701,7 +723,7 @@ msgid "Responsive preview"
 msgstr "Адаптивен преглед"
 
 #: js/components/FieldsAside.vue:231
-#: js/components/PageDetailContentList.vue:647
+#: js/components/PageDetailContentList.vue:651
 msgid "Change to"
 msgstr "Промяна към"
 
@@ -711,122 +733,122 @@ msgstr "Промяна към"
 msgid "Edit"
 msgstr "Редактиране"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:254
-#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:245
-#: js/components/PageDetailContentList.vue:536
-#: js/components/PageDetailContentList.vue:617 js/fields/Items.vue:283
+#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:259
+#: js/components/FileAiDialog.vue:286 js/components/FileUrlDialog.vue:250
+#: js/components/PageDetailContentList.vue:540
+#: js/components/PageDetailContentList.vue:621 js/fields/Items.vue:283
 #: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Премахване"
 
-#: js/components/FileAiDialog.vue:129 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:63 js/components/FileUrlDialog.vue:165
-#: js/filefield.js:188
+#: js/components/FileAiDialog.vue:134 js/components/FileListItems.vue:174
+#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:170
+#: js/filefield.js:189
 msgid "Error adding file %{path}"
 msgstr "Грешка при добавяне на файл %{path}"
 
-#: js/components/FileAiDialog.vue:173
+#: js/components/FileAiDialog.vue:178
 msgid "Error creating file"
 msgstr "Грешка при създаването на файл"
 
-#: js/components/FileAiDialog.vue:220
+#: js/components/FileAiDialog.vue:225
 msgid "Create image"
 msgstr "Създаване на изображение"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:243
 msgid "Describe the image content"
 msgstr "Опишете съдържанието на изображението"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:243
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr ""
 "Опишете темата, стила и цветовете на изображението, което да бъде генерирано"
 
-#: js/components/FileAiDialog.vue:245
+#: js/components/FileAiDialog.vue:250
 msgid "New image"
 msgstr "Ново изображение"
 
-#: js/components/FileAiDialog.vue:249
+#: js/components/FileAiDialog.vue:254
 msgid "Current images"
 msgstr "Текущи изображения"
 
-#: js/components/FileAiDialog.vue:274
+#: js/components/FileAiDialog.vue:279
 msgid "Images used"
 msgstr "Използвани изображения"
 
-#: js/components/FileAiDialog.vue:291
+#: js/components/FileAiDialog.vue:296
 msgid "Select images"
 msgstr "Избиране на изображения"
 
-#: js/components/FileDetailItem.vue:137 js/components/FileDetailItem.vue:146
+#: js/components/FileDetailItem.vue:142 js/components/FileDetailItem.vue:151
 msgid "Error copying to clipboard"
 msgstr "Грешка при копиране в клипборда"
 
-#: js/components/FileDetailItem.vue:143
+#: js/components/FileDetailItem.vue:148
 msgid "Copied to clipboard"
 msgstr "Копирано в клипборда"
 
-#: js/components/FileDetailItem.vue:170
+#: js/components/FileDetailItem.vue:175
 msgid "Error describing file"
 msgstr "Грешка при описанието на файла"
 
-#: js/components/FileDetailItem.vue:219 js/components/FileListItems.vue:190
-#: js/filefield.js:156 js/views/FileDetail.vue:250
+#: js/components/FileDetailItem.vue:224 js/components/FileListItems.vue:190
+#: js/filefield.js:157 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "Грешка при запазване на файла"
 
-#: js/components/FileDetailItem.vue:232
+#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "Транскрипцията е налична само за аудио и видео файлове"
 
-#: js/components/FileDetailItem.vue:384
+#: js/components/FileDetailItem.vue:389
 msgid "Name to find the file in the media list"
 msgstr "Име за намиране на файла в списъка с медия"
 
-#: js/components/FileDetailItem.vue:396
+#: js/components/FileDetailItem.vue:401
 msgid "Language of the file content, choose none if used in all languages"
 msgstr ""
 "Език на съдържанието на файла; изберете Няма, ако се използва на всички езици"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:411
 msgid "Copy URL"
 msgstr "Копиране на URL адреса"
 
-#: js/components/FileDetailItem.vue:450
+#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "Описания"
 
-#: js/components/FileDetailItem.vue:458 js/components/FileDetailItem.vue:517
+#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Превод на текст"
 
-#: js/components/FileDetailItem.vue:466
+#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "Генериране на описание"
 
-#: js/components/FileDetailItem.vue:493
+#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "Описание (%{lang})"
 
-#: js/components/FileDetailItem.vue:493
+#: js/components/FileDetailItem.vue:498
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Алтернативен текст за екранни четци и търсачки, използва се и като надпис"
 
-#: js/components/FileDetailItem.vue:509
+#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "Транскрипции"
 
-#: js/components/FileDetailItem.vue:525
+#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "Транскрибиране на съдържанието на файла"
 
-#: js/components/FileDetailItem.vue:542
+#: js/components/FileDetailItem.vue:547
 msgid "Transcription (%{lang})"
 msgstr "Транскрипция (%{lang})"
 
-#: js/components/FileDetailItem.vue:542
+#: js/components/FileDetailItem.vue:547
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr ""
 "Изговорен текст във формат WebVTT, показван като субтитри и транскрипция"
@@ -1041,58 +1063,58 @@ msgstr ""
 "могат да го изтеглят"
 
 #: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:202
+#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:207
 #: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "Добавяне на файлове"
 
-#: js/components/FileUrlDialog.vue:119
+#: js/components/FileUrlDialog.vue:124
 msgid "At least one URL is longer than 255 characters"
 msgstr "Поне един URL адрес е по-дълъг от 255 символа"
 
-#: js/components/FileUrlDialog.vue:155
+#: js/components/FileUrlDialog.vue:160
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Поне един файл не е от тип \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:159
+#: js/components/FileUrlDialog.vue:164
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Файлът не е от тип \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:187 js/fields/Images.vue:375
+#: js/components/FileUrlDialog.vue:192 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "Добавяне на файлове от URL адреси"
 
-#: js/components/FileUrlDialog.vue:202 js/fields/File.vue:278
+#: js/components/FileUrlDialog.vue:207 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Добавяне на файл"
 
-#: js/components/FileUrlDialog.vue:215
+#: js/components/FileUrlDialog.vue:220
 msgid "Enter one URL per line"
 msgstr "Въведете по един URL адрес на ред"
 
-#: js/components/FileUrlDialog.vue:216
+#: js/components/FileUrlDialog.vue:221
 msgid "URLs"
 msgstr "URL адреси"
 
-#: js/components/FileUrlDialog.vue:216
+#: js/components/FileUrlDialog.vue:221
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr ""
 "Файловете се изтеглят от тези URL адреси и се добавят в списъка с медия"
 
-#: js/components/FileUrlDialog.vue:232
+#: js/components/FileUrlDialog.vue:237
 msgid "Enter URL"
 msgstr "Въведете URL адрес"
 
-#: js/components/FileUrlDialog.vue:233
+#: js/components/FileUrlDialog.vue:238
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Файлът се изтегля от този URL адрес и се добавя в списъка с медия"
 
-#: js/components/FileUrlDialog.vue:274
+#: js/components/FileUrlDialog.vue:279
 msgid "Size"
 msgstr "Размер"
 
 #: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
-#: js/components/PageDetailContentList.vue:660
+#: js/components/PageDetailContentList.vue:664
 msgid "Shared element"
 msgstr "Споделен елемент"
 
@@ -1188,7 +1210,7 @@ msgid "Current changes"
 msgstr "Текущи промени"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:510
+#: js/lists.js:513
 msgid "Scheduled for %{date}"
 msgstr "Насрочено за %{date}"
 
@@ -1283,13 +1305,13 @@ msgid "Open navigation"
 msgstr "Отваряне на навигацията"
 
 #: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:792
+#: js/components/PageBulkMenu.vue:113 js/components/PageListItems.vue:793
 msgid "Delete"
 msgstr "Изтриване"
 
 #: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:798
-#: js/components/PageListItems.vue:928
+#: js/components/PageBulkMenu.vue:116 js/components/PageListItems.vue:799
+#: js/components/PageListItems.vue:929
 msgid "Restore"
 msgstr "Възстановяване"
 
@@ -1301,7 +1323,7 @@ msgstr "Актуализирано от друг потребител"
 msgid "Refresh"
 msgstr "Опресняване"
 
-#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:544
+#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:548
 #: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "Търсене за"
@@ -1383,9 +1405,9 @@ msgstr "Публичен"
 msgid "Authenticated users"
 msgstr "Удостоверени потребители"
 
-#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
+#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:104
 #: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:982
+#: js/components/PageListItems.vue:759 js/components/PageListItems.vue:983
 #: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Достъп"
@@ -1515,120 +1537,120 @@ msgstr "Домейн"
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Домейн, на който е достъпна страницата, напр. example.com"
 
-#: js/components/PageBulkMenu.vue:93 js/components/PageListItems.vue:741
+#: js/components/PageBulkMenu.vue:94 js/components/PageListItems.vue:742
 msgctxt "page status"
 msgid "Enable"
 msgstr "Активиране"
 
-#: js/components/PageBulkMenu.vue:96 js/components/PageListItems.vue:747
+#: js/components/PageBulkMenu.vue:97 js/components/PageListItems.vue:748
 msgctxt "page status"
 msgid "Disable"
 msgstr "Деактивиране"
 
-#: js/components/PageBulkMenu.vue:106 js/components/PageListItems.vue:761
+#: js/components/PageBulkMenu.vue:107 js/components/PageListItems.vue:762
 msgid "Clear cache"
 msgstr "Изчистване на кеша"
 
-#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:826
+#: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
 #: js/views/PageDetail.vue:664
 msgid "Ignore changes"
 msgstr "Игнориране на промените"
 
-#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:835
+#: js/components/PageBulkMenu.vue:148 js/components/PageListItems.vue:836
 msgid "Delete this language"
 msgstr "Изтриване на този език"
 
-#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:843
+#: js/components/PageBulkMenu.vue:156 js/components/PageListItems.vue:844
 msgid "Restore this language"
 msgstr "Възстановяване на този език"
 
-#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:851
+#: js/components/PageBulkMenu.vue:164 js/components/PageListItems.vue:852
 msgid "Purge language"
 msgstr "Изтриване на езика завинаги"
 
-#: js/components/PageDetailContentList.vue:161
-#: js/components/PageDetailContentList.vue:171 js/contentshare.js:110
+#: js/components/PageDetailContentList.vue:165
+#: js/components/PageDetailContentList.vue:175 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Не е намерен елемент от съдържанието"
 
-#: js/components/PageDetailContentList.vue:370
+#: js/components/PageDetailContentList.vue:374
 msgid "Not available for this content element"
 msgstr "Не е налично за този елемент от съдържанието"
 
-#: js/components/PageDetailContentList.vue:380
+#: js/components/PageDetailContentList.vue:384
 msgid "Error splitting text"
 msgstr "Грешка при разделяне на текста"
 
-#: js/components/PageDetailContentList.vue:495
+#: js/components/PageDetailContentList.vue:499
 msgid "Describe the task you want to perform"
 msgstr "Опишете задачата, която искате да изпълните"
 
-#: js/components/PageDetailContentList.vue:496
+#: js/components/PageDetailContentList.vue:500
 msgid "Refining ..."
 msgstr "Прецизиране ..."
 
-#: js/components/PageDetailContentList.vue:496
+#: js/components/PageDetailContentList.vue:500
 msgid "Refine content based on prompt"
 msgstr "Прецизиране на съдържанието въз основа на подкана"
 
-#: js/components/PageDetailContentList.vue:500
+#: js/components/PageDetailContentList.vue:504
 msgid "AI can add or improve content based on your input"
 msgstr ""
 "AI може да добавя или подобрява съдържанието въз основа на вашите данни"
 
-#: js/components/PageDetailContentList.vue:501
+#: js/components/PageDetailContentList.vue:505
 msgid "It can take a long time depending on the task and content size"
 msgstr ""
 "Това може да отнеме много време в зависимост от задачата и размера на "
 "съдържанието"
 
-#: js/components/PageDetailContentList.vue:527
-#: js/components/PageDetailContentList.vue:614
-#: js/components/PageListItems.vue:767 js/fields/Items.vue:282
+#: js/components/PageDetailContentList.vue:531
+#: js/components/PageDetailContentList.vue:618
+#: js/components/PageListItems.vue:768 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Изрязване"
 
-#: js/components/PageDetailContentList.vue:530 js/pagetree.js:37
+#: js/components/PageDetailContentList.vue:534 js/pagetree.js:37
 msgid "Paste"
 msgstr "Поставяне"
 
-#: js/components/PageDetailContentList.vue:533
-#: js/components/PageDetailContentList.vue:653
+#: js/components/PageDetailContentList.vue:537
+#: js/components/PageDetailContentList.vue:657
 msgid "Merge"
 msgstr "Обединяване"
 
-#: js/components/PageDetailContentList.vue:588 js/fields/Items.vue:269
+#: js/components/PageDetailContentList.vue:592 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Преместване на елемент"
 
-#: js/components/PageDetailContentList.vue:623 js/fields/Items.vue:285
+#: js/components/PageDetailContentList.vue:627 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Поставяне преди"
 
-#: js/components/PageDetailContentList.vue:626 js/fields/Items.vue:286
+#: js/components/PageDetailContentList.vue:630 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Поставяне след"
 
-#: js/components/PageDetailContentList.vue:629 js/fields/Items.vue:287
+#: js/components/PageDetailContentList.vue:633 js/fields/Items.vue:287
 #: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Вмъкване преди"
 
-#: js/components/PageDetailContentList.vue:632 js/fields/Items.vue:288
+#: js/components/PageDetailContentList.vue:636 js/fields/Items.vue:288
 #: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Вмъкване след"
 
-#: js/components/PageDetailContentList.vue:641
+#: js/components/PageDetailContentList.vue:645
 msgid "Make shared"
 msgstr "Превръщане в споделен"
 
-#: js/components/PageDetailContentList.vue:644
+#: js/components/PageDetailContentList.vue:648
 msgid "Replace with local copy"
 msgstr "Замяна с локално копие"
 
-#: js/components/PageDetailContentList.vue:650
+#: js/components/PageDetailContentList.vue:654
 msgctxt "text element"
 msgid "Split"
 msgstr "Разделяне"
@@ -1855,7 +1877,7 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "Позиция"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:876
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
 #: js/views/PageDetail.vue:646 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Нуждае се от обновяване"
@@ -1907,49 +1929,49 @@ msgstr[1] "%{num} минути"
 msgid "Translating into %{langs}"
 msgstr "Превежда се на %{langs}"
 
-#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:958
+#: js/components/PageListItems.vue:645 js/components/PageListItems.vue:959
 msgid "Add page"
 msgstr "Добавяне на страница"
 
-#: js/components/PageListItems.vue:656
+#: js/components/PageListItems.vue:657
 msgid "Reload page tree"
 msgstr "Презареждане на дървото на страниците"
 
-#: js/components/PageListItems.vue:669
+#: js/components/PageListItems.vue:670
 msgid "Translating %{done} of %{total}"
 msgstr "Превеждане на %{done} от %{total}"
 
-#: js/components/PageListItems.vue:685
+#: js/components/PageListItems.vue:686
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Използвайте клавишите със стрелки за навигация. Натиснете Alt заедно с "
 "клавишите със стрелки, за да промените реда."
 
-#: js/components/PageListItems.vue:687
+#: js/components/PageListItems.vue:688
 msgid "Moved to position %{position} of %{total}"
 msgstr "Преместено на позиция %{position} от общо %{total}"
 
-#: js/components/PageListItems.vue:689
+#: js/components/PageListItems.vue:690
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Намален отстъп до ниво %{level}, позиция %{position} от общо %{total}"
 
-#: js/components/PageListItems.vue:695
+#: js/components/PageListItems.vue:696
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Увеличен отстъп до ниво %{level}, позиция %{position} от общо %{total}"
 
-#: js/components/PageListItems.vue:715
+#: js/components/PageListItems.vue:716
 msgid "Toggle child nodes"
 msgstr "Превключване на подчинените възли"
 
-#: js/components/PageListItems.vue:900 js/options.js:64
+#: js/components/PageListItems.vue:901 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Скрито в навигацията"
 
-#: js/components/PageListItems.vue:939 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
 msgid "Create"
 msgstr "Създаване"
 
-#: js/components/PageListItems.vue:985
+#: js/components/PageListItems.vue:986
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Приложете настройките за достъп към %{num} страница."
@@ -2219,23 +2241,23 @@ msgstr "Страницата е публикувана успешно"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Страницата е планирана за публикуване на %{date}"
 
-#: js/detail.js:61 js/pageactions.js:80
+#: js/detail.js:61 js/pageactions.js:82
 msgid "Error publishing page"
 msgstr "Грешка при публикуване на страницата"
 
-#: js/detail.js:299
+#: js/detail.js:310
 msgid "Not published, please review the changes and publish again"
 msgstr "Не е публикувано, моля, прегледайте промените и публикувайте отново"
 
-#: js/detail.js:369 js/fields/Autocomplete.vue:209
+#: js/detail.js:380 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Няма налични данни"
 
-#: js/detail.js:370
+#: js/detail.js:381
 msgid "No version data available"
 msgstr "Няма налични данни за версията"
 
-#: js/detail.js:464
+#: js/detail.js:475
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Има невалидни полета, моля, първо отстранете грешките"
 
@@ -2343,7 +2365,7 @@ msgstr "Не бяха намерени страници"
 msgid "Link attribute"
 msgstr "Атрибут на връзката"
 
-#: js/filefield.js:118
+#: js/filefield.js:119
 msgid "Unsupported file type"
 msgstr "Неподдържан тип файл"
 
@@ -2351,7 +2373,7 @@ msgstr "Неподдържан тип файл"
 msgid "Connection failed, please try again"
 msgstr "Връзката е неуспешна, моля, опитайте отново"
 
-#: js/graphql.js:132 js/stores/session.js:336 js/views/Login.vue:163
+#: js/graphql.js:132 js/stores/session.js:337 js/views/Login.vue:163
 msgid "Login failed"
 msgstr "Неуспешен вход"
 
@@ -2465,49 +2487,49 @@ msgstr "Деактивирано"
 msgid "Enabled"
 msgstr "Активирано"
 
-#: js/pageactions.js:123 js/pageactions.js:371 js/views/PageDetail.vue:574
+#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
 msgid "Error saving page"
 msgstr "Грешка при запазване на страницата"
 
-#: js/pageactions.js:135
+#: js/pageactions.js:137
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Страниците се изтриват като цели страници само на изходния си език"
 
-#: js/pageactions.js:140
+#: js/pageactions.js:142
 msgid "Error trashing page"
 msgstr "Грешка при преместване на страницата в кошчето"
 
-#: js/pageactions.js:165 js/variants.js:178
+#: js/pageactions.js:167 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Грешка при възстановяване на език"
 
-#: js/pageactions.js:165 js/pageactions.js:181
+#: js/pageactions.js:167 js/pageactions.js:183
 msgid "Error restoring page"
 msgstr "Грешка при възстановяване на страницата"
 
-#: js/pageactions.js:207
+#: js/pageactions.js:209
 msgid "All subpages of these pages will be purged as well."
 msgstr "Всички подстраници на тези страници също ще бъдат изтрити завинаги."
 
-#: js/pageactions.js:216
+#: js/pageactions.js:218
 msgid "Error purging page"
 msgstr "Грешка при окончателно изтриване на страницата"
 
-#: js/pageactions.js:250
+#: js/pageactions.js:252
 msgid "Cache cleared"
 msgstr "Кешът е изчистен"
 
-#: js/pageactions.js:251
+#: js/pageactions.js:253
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Кешът е изчистен за %{num} страница."
 msgstr[1] "Кешът е изчистен за %{num} страници."
 
-#: js/pageactions.js:261
+#: js/pageactions.js:263
 msgid "Error clearing cache"
 msgstr "Грешка при изчистване на кеша"
 
-#: js/pageactions.js:360
+#: js/pageactions.js:362
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} страница не можа да бъде актуализирана"

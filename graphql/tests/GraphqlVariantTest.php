@@ -253,6 +253,49 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageVariantActionsWithVariantPermissions()
+    {
+        $page = $this->page();
+        $user = ( new \App\Models\User( [
+            'cmsperms' => ['page:view', 'variant:add', 'variant:drop', 'variant:keep'],
+        ] ) )->forceFill( ['cmslangs' => json_encode( ['de'] )] );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                addPageVariant(id: "' . $page->id . '", lang: "de") { id lang }
+            }
+        ' )->assertGraphQLErrorFree();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                addPageVariant(id: "' . $page->id . '", lang: "fr") { id }
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions for language "fr"' );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                dropPage(id: ["' . $page->id . '"], lang: "de") { id }
+            }
+        ' )->assertGraphQLErrorFree();
+        $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                keepPage(id: ["' . $page->id . '"], lang: "de") { id }
+            }
+        ' )->assertGraphQLErrorFree();
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+
+        // whole pages still require page permissions
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                dropPage(id: ["' . $page->id . '"]) { id }
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+        $this->assertNotNull( PageView::find( $page->id ) );
+    }
+
+
     public function testSavePageLanguages()
     {
         $page = $this->page();

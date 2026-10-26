@@ -1,4 +1,6 @@
-import { canvasBlob, fetchFileDisks, relocateFiles } from '../../../js/files'
+import { createPinia, setActivePinia } from 'pinia'
+import { canvasBlob, createFile, fetchFileDisks, relocateFiles } from '../../../js/files'
+import { useUserStore } from '../../../js/stores'
 
 describe('relocateFiles()', () => {
   const response = { data: { relocateFile: [{ id: '1', disk: 'private' }] } }
@@ -75,5 +77,38 @@ describe('canvasBlob()', () => {
       () => { throw new Error('resolved') },
       (error) => expect(error.name).to.equal('SecurityError')
     )
+  })
+})
+
+describe('createFile()', () => {
+  const create = (input, lang) => {
+    const apollo = { mutate: cy.stub().resolves({ data: { addFile: { id: '1' } } }) }
+    return createFile(apollo, { disk: 'public', input }, lang).then(() => apollo.mutate.firstCall.args[0].variables)
+  }
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
+  it('adds language-neutral files for unrestricted users', () => {
+    useUserStore().me = { permission: {} }
+
+    return create({ name: 'a' }, 'de').then((variables) => {
+      expect(variables.input).to.deep.equal({ name: 'a' })
+    })
+  })
+
+  it('adds files in a writable language for restricted users', () => {
+    useUserStore().me = { permission: {}, langs: ['de', 'fr'] }
+
+    return create({ name: 'a' }, 'fr').then((variables) => {
+      expect(variables.input).to.deep.equal({ name: 'a', lang: 'fr' })
+      return create(undefined, 'en')
+    }).then((variables) => {
+      expect(variables.input).to.deep.equal({ lang: 'de' })
+      return create({ lang: 'it' })
+    }).then((variables) => {
+      expect(variables.input).to.deep.equal({ lang: 'it' })
+    })
   })
 })

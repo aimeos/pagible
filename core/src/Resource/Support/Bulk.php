@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Resource\Support;
 
 use Aimeos\Cms\ContentType;
 use Aimeos\Cms\DB;
+use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
@@ -106,6 +107,7 @@ final class Bulk
      * Saves one item of a bulk operation in its own transaction.
      *
      * Failures are reported and counted by the caller instead of aborting the whole batch.
+     * Denied items are expected in mixed-language batches and aren't reported.
      *
      * @param class-string<Element>|class-string<File>|class-string<PageView> $model Model class being saved
      * @param string $id Item ID
@@ -118,6 +120,8 @@ final class Bulk
     {
         try {
             return $model::locked( fn() => DB::transaction( fn() => $save( $id, $prefetched, $editor ) ) );
+        } catch( PermissionException ) {
+            return null;
         } catch( \Exception $e ) {
             report( $e );
         }

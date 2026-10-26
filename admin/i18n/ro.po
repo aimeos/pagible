@@ -13,12 +13,12 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
 "20)) ? 1 : 2;\n"
 
-#: js/ai.js:65 js/components/FileDetailItem.vue:251
+#: js/ai.js:65 js/components/FileDetailItem.vue:256
 msgid "Error transcribing file"
 msgstr "Eroare la transcrierea fișierului"
 
-#: js/ai.js:114 js/components/FileDetailItem.vue:304
-#: js/components/FileDetailItem.vue:311
+#: js/ai.js:114 js/components/FileDetailItem.vue:309
+#: js/components/FileDetailItem.vue:316
 msgid "Error translating texts"
 msgstr "Eroare la traducerea textelor"
 
@@ -83,7 +83,7 @@ msgstr "Fila următoare"
 msgid "Show or hide side panel"
 msgstr "Afișați sau ascundeți panoul lateral"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:167
+#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Înapoi la vizualizarea listei"
 
@@ -151,90 +151,112 @@ msgstr "Utilizatori"
 msgid "Go to users"
 msgstr "Mergeți la utilizatori"
 
-#: js/components/AccessUsers.vue:218
+#: js/components/AccessUsers.vue:212
+msgid "All languages"
+msgstr "Toate limbile"
+
+#: js/components/AccessUsers.vue:213 js/components/AccessUsers.vue:574
+msgid "Selected languages"
+msgstr "Limbi selectate"
+
+#: js/components/AccessUsers.vue:214
+msgid "No languages"
+msgstr "Nicio limbă"
+
+#: js/components/AccessUsers.vue:282
 msgid "Access roles updated"
 msgstr "Rolurile de acces au fost actualizate"
 
-#: js/components/AccessUsers.vue:218
+#: js/components/AccessUsers.vue:282
 msgid "Backend roles updated"
 msgstr "Rolurile din backend au fost actualizate"
 
-#: js/components/AccessUsers.vue:228
+#: js/components/AccessUsers.vue:292
 msgid "Error updating access roles"
 msgstr "Eroare la actualizarea rolurilor de acces"
 
-#: js/components/AccessUsers.vue:229
+#: js/components/AccessUsers.vue:293
 msgid "Error updating CMS permissions"
 msgstr "Eroare la actualizarea permisiunilor CMS"
 
-#: js/components/AccessUsers.vue:264
+#: js/components/AccessUsers.vue:330
 msgid "User created"
 msgstr "Utilizator creat"
 
-#: js/components/AccessUsers.vue:270
+#: js/components/AccessUsers.vue:336
 msgid "Error creating user"
 msgstr "Eroare la crearea utilizatorului"
 
-#: js/components/AccessUsers.vue:310 js/components/PageAccess.vue:130
+#: js/components/AccessUsers.vue:377 js/components/PageAccess.vue:130
 #: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "Eroare la preluarea rolurilor de acces"
 
-#: js/components/AccessUsers.vue:340
+#: js/components/AccessUsers.vue:407
 msgid "Error fetching user access roles"
 msgstr "Eroare la preluarea rolurilor de acces ale utilizatorului"
 
-#: js/components/AccessUsers.vue:383 js/components/AccessUsers.vue:384
+#: js/components/AccessUsers.vue:454 js/components/AccessUsers.vue:455
 msgid "Create user"
 msgstr "Creați utilizatorul"
 
-#: js/components/AccessUsers.vue:391
+#: js/components/AccessUsers.vue:462
 msgid "Email address"
 msgstr "Adresă de e-mail"
 
-#: js/components/AccessUsers.vue:400
+#: js/components/AccessUsers.vue:471
 msgid "Search user by email"
 msgstr "Căutare utilizator după adresă de e-mail"
 
-#: js/components/AccessUsers.vue:412 js/components/AccessUsers.vue:413
+#: js/components/AccessUsers.vue:483 js/components/AccessUsers.vue:484
 msgid "Search"
 msgstr "Căutați"
 
-#: js/components/AccessUsers.vue:428 js/components/AccessUsers.vue:429
-#: js/components/DetailAppBar.vue:201
+#: js/components/AccessUsers.vue:499 js/components/AccessUsers.vue:500
+#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Salvați"
 
-#: js/components/AccessUsers.vue:438
+#: js/components/AccessUsers.vue:509
 msgid "Account"
 msgstr "Cont"
 
-#: js/components/AccessUsers.vue:443 js/components/AccessUsers.vue:450
+#: js/components/AccessUsers.vue:514 js/components/AccessUsers.vue:521
 msgid "Assigned frontend roles"
 msgstr "Roluri de frontend atribuite"
 
-#: js/components/AccessUsers.vue:450
+#: js/components/AccessUsers.vue:521
 msgid "Roles granting access to restricted pages"
 msgstr "Roluri care oferă acces la paginile restricționate"
 
-#: js/components/AccessUsers.vue:463
+#: js/components/AccessUsers.vue:534
 msgid "Assigned backend roles"
 msgstr "Roluri de backend atribuite"
 
-#: js/components/AccessUsers.vue:467
+#: js/components/AccessUsers.vue:538
 msgid "Custom"
 msgstr "Personalizat"
 
-#: js/components/AccessUsers.vue:473
+#: js/components/AccessUsers.vue:544
 msgid "Available roles"
 msgstr "Roluri disponibile"
 
-#: js/components/AccessUsers.vue:473
+#: js/components/AccessUsers.vue:544
 msgid "Roles defining what the user can do in the admin panel"
 msgstr ""
 "Roluri care definesc ce poate face utilizatorul în panoul de administrare"
 
-#: js/components/AccessUsers.vue:485 js/components/ListStatus.vue:36
+#: js/components/AccessUsers.vue:556 js/components/AccessUsers.vue:563
+msgid "Writable languages"
+msgstr "Limbi editabile"
+
+#: js/components/AccessUsers.vue:563
+msgid "Languages of the pages, elements and files the user can change"
+msgstr ""
+"Limbile paginilor, elementelor și fișierelor pe care utilizatorul le poate "
+"modifica"
+
+#: js/components/AccessUsers.vue:585 js/components/ListStatus.vue:36
 #: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "Nu s-au găsit intrări"
@@ -272,7 +294,7 @@ msgstr "Trimiteți"
 
 #: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
 #: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:231 js/components/FileDetailItem.vue:477
+#: js/components/FileAiDialog.vue:236 js/components/FileDetailItem.vue:482
 msgid "Dictate"
 msgstr "Dictați"
 
@@ -403,9 +425,9 @@ msgid "Thinking ..."
 msgstr "Se gândește ..."
 
 #: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
-#: js/components/PageDetailContentList.vue:524
-#: js/components/PageDetailContentList.vue:611
-#: js/components/PageListItems.vue:770 js/fields/Items.vue:281
+#: js/components/PageDetailContentList.vue:528
+#: js/components/PageDetailContentList.vue:615
+#: js/components/PageListItems.vue:771 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Copiați"
@@ -427,7 +449,7 @@ msgid "Go to"
 msgstr "Mergeți la"
 
 #: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:271 js/components/PageListItems.vue:902
+#: js/components/ElementListItems.vue:275 js/components/PageListItems.vue:903
 msgid "New"
 msgstr "Nou"
 
@@ -458,7 +480,7 @@ msgstr "Niciun rezultat"
 
 #: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
 #: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:118 js/components/PageListItems.vue:806
+#: js/components/PageBulkMenu.vue:119 js/components/PageListItems.vue:807
 #: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Ștergeți definitiv"
@@ -482,38 +504,38 @@ msgstr[2] ""
 msgid "Cancel"
 msgstr "Anulați"
 
-#: js/components/DetailAppBar.vue:163 js/components/ListAppBar.vue:30
+#: js/components/DetailAppBar.vue:164 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Meniu"
 
-#: js/components/DetailAppBar.vue:184
+#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Vizualizați istoricul"
 
-#: js/components/DetailAppBar.vue:193
+#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Vizualizați modificările îmbinate"
 
-#: js/components/DetailAppBar.vue:217 js/components/DetailAppBar.vue:233
-#: js/components/DetailAppBar.vue:237 js/components/ListBulkMenu.vue:53
-#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:90
-#: js/components/PageListItems.vue:734
+#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
+#: js/components/DetailAppBar.vue:238 js/components/ListBulkMenu.vue:53
+#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:91
+#: js/components/PageListItems.vue:735
 msgid "Publish"
 msgstr "Publicare"
 
-#: js/components/DetailAppBar.vue:240
+#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
 msgstr "Publicare și închidere"
 
-#: js/components/DetailAppBar.vue:245 js/components/DetailAppBar.vue:271
+#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Programare"
 
-#: js/components/DetailAppBar.vue:280
+#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
 msgstr "Programare și închidere"
 
-#: js/components/DetailAppBar.vue:288 js/components/ListAppBar.vue:49
+#: js/components/DetailAppBar.vue:289 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Comutați meniul lateral"
 
@@ -529,12 +551,12 @@ msgstr "nu"
 msgid "Error fetching references"
 msgstr "Eroare la preluarea referințelor"
 
-#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:233
+#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:238
 msgid "URL"
 msgstr "URL"
 
 #: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
-#: js/components/ElementDetailItem.vue:57 js/components/FileDetailItem.vue:384
+#: js/components/ElementDetailItem.vue:62 js/components/FileDetailItem.vue:389
 #: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Nume"
@@ -563,7 +585,7 @@ msgstr "Publicat"
 
 #: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
 #: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
-#: js/components/PageBulkMenu.vue:100 js/components/PageListItems.vue:755
+#: js/components/PageBulkMenu.vue:101 js/components/PageListItems.vue:756
 msgid "Edit properties"
 msgstr "Editați proprietățile"
 
@@ -574,8 +596,8 @@ msgstr[0] "Aplicați proprietățile selectate la %{num} intrare."
 msgstr[1] "Aplicați proprietățile selectate la %{num} intrări."
 msgstr[2] "Aplicați proprietățile selectate la %{num} de intrări."
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:70
-#: js/components/FileDetailItem.vue:396 js/components/ListSort.vue:29
+#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
+#: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
 #: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
 msgid "Language"
@@ -590,67 +612,67 @@ msgstr "Limba conținutului"
 msgid "Apply"
 msgstr "Aplicați"
 
-#: js/components/ElementDetailItem.vue:57
+#: js/components/ElementDetailItem.vue:62
 msgid "Name to find the shared element in the element list"
 msgstr "Nume pentru a găsi elementul partajat în lista de elemente"
 
-#: js/components/ElementDetailItem.vue:70
+#: js/components/ElementDetailItem.vue:75
 msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 "Limba conținutului elementului; alegeți Niciuna dacă este folosit în toate "
 "limbile"
 
-#: js/components/ElementListItems.vue:153
+#: js/components/ElementListItems.vue:157
 msgid "Error adding shared element"
 msgstr "Eroare la adăugarea elementului partajat"
 
-#: js/components/ElementListItems.vue:159
+#: js/components/ElementListItems.vue:163
 msgid "Error trashing shared element"
 msgstr "Eroare la mutarea elementului partajat în coșul de gunoi"
 
-#: js/components/ElementListItems.vue:160
+#: js/components/ElementListItems.vue:164
 msgid "Error restoring shared element"
 msgstr "Eroare la restaurarea elementului partajat"
 
-#: js/components/ElementListItems.vue:161
+#: js/components/ElementListItems.vue:165
 msgid "Error publishing shared element"
 msgstr "Eroare la publicarea elementului partajat"
 
-#: js/components/ElementListItems.vue:162
+#: js/components/ElementListItems.vue:166
 msgid "Error purging shared element"
 msgstr "Eroare la ștergerea definitivă a elementului partajat"
 
-#: js/components/ElementListItems.vue:163
+#: js/components/ElementListItems.vue:167
 msgid "Error saving shared element"
 msgstr "Eroare la salvarea elementului partajat"
 
-#: js/components/ElementListItems.vue:164
+#: js/components/ElementListItems.vue:168
 msgid "Error fetching shared elements"
 msgstr "Eroare la preluarea elementelor partajate"
 
-#: js/components/ElementListItems.vue:200
-#: js/components/ElementListItems.vue:242 js/components/FileListItems.vue:324
+#: js/components/ElementListItems.vue:204
+#: js/components/ElementListItems.vue:246 js/components/FileListItems.vue:324
 #: js/components/FileListItems.vue:386
-#: js/components/PageDetailContentList.vue:510
-#: js/components/PageDetailContentList.vue:601
-#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:722
+#: js/components/PageDetailContentList.vue:514
+#: js/components/PageDetailContentList.vue:605
+#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:723
 #: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "Comutați selecția"
 
-#: js/components/ElementListItems.vue:218
-#: js/components/ElementListItems.vue:299
-#: js/components/PageDetailContentList.vue:701
+#: js/components/ElementListItems.vue:222
+#: js/components/ElementListItems.vue:303
+#: js/components/PageDetailContentList.vue:705
 #: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Adăugați un element"
 
-#: js/components/ElementListItems.vue:230 js/components/SchemaItems.vue:145
+#: js/components/ElementListItems.vue:234 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Reîncărcați elementele"
 
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:130 js/components/PageListItems.vue:813
+#: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
 #: js/views/PageDetail.vue:661
 msgid "Translate"
@@ -705,7 +727,7 @@ msgid "Responsive preview"
 msgstr "Previzualizare responsivă"
 
 #: js/components/FieldsAside.vue:231
-#: js/components/PageDetailContentList.vue:647
+#: js/components/PageDetailContentList.vue:651
 msgid "Change to"
 msgstr "Schimbați în"
 
@@ -715,123 +737,123 @@ msgstr "Schimbați în"
 msgid "Edit"
 msgstr "Editați"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:254
-#: js/components/FileAiDialog.vue:281 js/components/FileUrlDialog.vue:245
-#: js/components/PageDetailContentList.vue:536
-#: js/components/PageDetailContentList.vue:617 js/fields/Items.vue:283
+#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:259
+#: js/components/FileAiDialog.vue:286 js/components/FileUrlDialog.vue:250
+#: js/components/PageDetailContentList.vue:540
+#: js/components/PageDetailContentList.vue:621 js/fields/Items.vue:283
 #: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Eliminați"
 
-#: js/components/FileAiDialog.vue:129 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:63 js/components/FileUrlDialog.vue:165
-#: js/filefield.js:188
+#: js/components/FileAiDialog.vue:134 js/components/FileListItems.vue:174
+#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:170
+#: js/filefield.js:189
 msgid "Error adding file %{path}"
 msgstr "Eroare la adăugarea fișierului %{path}"
 
-#: js/components/FileAiDialog.vue:173
+#: js/components/FileAiDialog.vue:178
 msgid "Error creating file"
 msgstr "Eroare la crearea fișierului"
 
-#: js/components/FileAiDialog.vue:220
+#: js/components/FileAiDialog.vue:225
 msgid "Create image"
 msgstr "Creați o imagine"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:243
 msgid "Describe the image content"
 msgstr "Descrieți conținutul imaginii"
 
-#: js/components/FileAiDialog.vue:238
+#: js/components/FileAiDialog.vue:243
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Descrieți subiectul, stilul și culorile imaginii de generat"
 
-#: js/components/FileAiDialog.vue:245
+#: js/components/FileAiDialog.vue:250
 msgid "New image"
 msgstr "Imagine nouă"
 
-#: js/components/FileAiDialog.vue:249
+#: js/components/FileAiDialog.vue:254
 msgid "Current images"
 msgstr "Imagini actuale"
 
-#: js/components/FileAiDialog.vue:274
+#: js/components/FileAiDialog.vue:279
 msgid "Images used"
 msgstr "Imagini utilizate"
 
-#: js/components/FileAiDialog.vue:291
+#: js/components/FileAiDialog.vue:296
 msgid "Select images"
 msgstr "Selectați imagini"
 
-#: js/components/FileDetailItem.vue:137 js/components/FileDetailItem.vue:146
+#: js/components/FileDetailItem.vue:142 js/components/FileDetailItem.vue:151
 msgid "Error copying to clipboard"
 msgstr "Eroare la copierea în clipboard"
 
-#: js/components/FileDetailItem.vue:143
+#: js/components/FileDetailItem.vue:148
 msgid "Copied to clipboard"
 msgstr "Copiat în clipboard"
 
-#: js/components/FileDetailItem.vue:170
+#: js/components/FileDetailItem.vue:175
 msgid "Error describing file"
 msgstr "Eroare la descrierea fișierului"
 
-#: js/components/FileDetailItem.vue:219 js/components/FileListItems.vue:190
-#: js/filefield.js:156 js/views/FileDetail.vue:250
+#: js/components/FileDetailItem.vue:224 js/components/FileListItems.vue:190
+#: js/filefield.js:157 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "Eroare la salvarea fișierului"
 
-#: js/components/FileDetailItem.vue:232
+#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "Transcrierea este disponibilă numai pentru fișierele audio și video"
 
-#: js/components/FileDetailItem.vue:384
+#: js/components/FileDetailItem.vue:389
 msgid "Name to find the file in the media list"
 msgstr "Nume pentru a găsi fișierul în lista media"
 
-#: js/components/FileDetailItem.vue:396
+#: js/components/FileDetailItem.vue:401
 msgid "Language of the file content, choose none if used in all languages"
 msgstr ""
 "Limba conținutului fișierului; alegeți Niciuna dacă este folosit în toate "
 "limbile"
 
-#: js/components/FileDetailItem.vue:406
+#: js/components/FileDetailItem.vue:411
 msgid "Copy URL"
 msgstr "Copiați adresa URL"
 
-#: js/components/FileDetailItem.vue:450
+#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "Descrieri"
 
-#: js/components/FileDetailItem.vue:458 js/components/FileDetailItem.vue:517
+#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Traduceți textul"
 
-#: js/components/FileDetailItem.vue:466
+#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "Generați descrierea"
 
-#: js/components/FileDetailItem.vue:493
+#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "Descriere (%{lang})"
 
-#: js/components/FileDetailItem.vue:493
+#: js/components/FileDetailItem.vue:498
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Text alternativ pentru cititoarele de ecran și motoarele de căutare, folosit "
 "și ca legendă"
 
-#: js/components/FileDetailItem.vue:509
+#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "Transcrieri"
 
-#: js/components/FileDetailItem.vue:525
+#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "Transcrieți conținutul fișierului"
 
-#: js/components/FileDetailItem.vue:542
+#: js/components/FileDetailItem.vue:547
 msgid "Transcription (%{lang})"
 msgstr "Transcriere (%{lang})"
 
-#: js/components/FileDetailItem.vue:542
+#: js/components/FileDetailItem.vue:547
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr "Text vorbit în format WebVTT, afișat ca subtitrări și transcriere"
 
@@ -1044,58 +1066,58 @@ msgstr ""
 "pot descărca"
 
 #: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:202
+#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:207
 #: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "Adăugați fișiere"
 
-#: js/components/FileUrlDialog.vue:119
+#: js/components/FileUrlDialog.vue:124
 msgid "At least one URL is longer than 255 characters"
 msgstr "Cel puțin o adresă URL are mai mult de 255 de caractere"
 
-#: js/components/FileUrlDialog.vue:155
+#: js/components/FileUrlDialog.vue:160
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Cel puțin un fișier nu este de tip \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:159
+#: js/components/FileUrlDialog.vue:164
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Fișierul nu este de tip \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:187 js/fields/Images.vue:375
+#: js/components/FileUrlDialog.vue:192 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "Adăugați fișiere din URL-uri"
 
-#: js/components/FileUrlDialog.vue:202 js/fields/File.vue:278
+#: js/components/FileUrlDialog.vue:207 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Adăugați fișier"
 
-#: js/components/FileUrlDialog.vue:215
+#: js/components/FileUrlDialog.vue:220
 msgid "Enter one URL per line"
 msgstr "Introduceți o adresă URL pe linie"
 
-#: js/components/FileUrlDialog.vue:216
+#: js/components/FileUrlDialog.vue:221
 msgid "URLs"
 msgstr "URL-uri"
 
-#: js/components/FileUrlDialog.vue:216
+#: js/components/FileUrlDialog.vue:221
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr ""
 "Fișierele sunt descărcate de la aceste URL-uri și adăugate în lista media"
 
-#: js/components/FileUrlDialog.vue:232
+#: js/components/FileUrlDialog.vue:237
 msgid "Enter URL"
 msgstr "Introduceți URL"
 
-#: js/components/FileUrlDialog.vue:233
+#: js/components/FileUrlDialog.vue:238
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Fișierul este descărcat de la acest URL și adăugat în lista media"
 
-#: js/components/FileUrlDialog.vue:274
+#: js/components/FileUrlDialog.vue:279
 msgid "Size"
 msgstr "Dimensiune"
 
 #: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
-#: js/components/PageDetailContentList.vue:660
+#: js/components/PageDetailContentList.vue:664
 msgid "Shared element"
 msgstr "Element partajat"
 
@@ -1197,7 +1219,7 @@ msgid "Current changes"
 msgstr "Modificări curente"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:510
+#: js/lists.js:513
 msgid "Scheduled for %{date}"
 msgstr "Programat pentru %{date}"
 
@@ -1293,13 +1315,13 @@ msgid "Open navigation"
 msgstr "Deschideți navigarea"
 
 #: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:112 js/components/PageListItems.vue:792
+#: js/components/PageBulkMenu.vue:113 js/components/PageListItems.vue:793
 msgid "Delete"
 msgstr "Ștergeți"
 
 #: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:115 js/components/PageListItems.vue:798
-#: js/components/PageListItems.vue:928
+#: js/components/PageBulkMenu.vue:116 js/components/PageListItems.vue:799
+#: js/components/PageListItems.vue:929
 msgid "Restore"
 msgstr "Restaurați"
 
@@ -1311,7 +1333,7 @@ msgstr "Actualizat de un alt utilizator"
 msgid "Refresh"
 msgstr "Reîmprospătați"
 
-#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:544
+#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:548
 #: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "Căutare pentru"
@@ -1394,9 +1416,9 @@ msgstr "Public"
 msgid "Authenticated users"
 msgstr "Utilizatori autentificați"
 
-#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:103
+#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:104
 #: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:758 js/components/PageListItems.vue:982
+#: js/components/PageListItems.vue:759 js/components/PageListItems.vue:983
 #: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Acces"
@@ -1525,121 +1547,121 @@ msgstr "Domeniu"
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domeniul la care este disponibilă pagina, de ex. example.com"
 
-#: js/components/PageBulkMenu.vue:93 js/components/PageListItems.vue:741
+#: js/components/PageBulkMenu.vue:94 js/components/PageListItems.vue:742
 msgctxt "page status"
 msgid "Enable"
 msgstr "Activați"
 
-#: js/components/PageBulkMenu.vue:96 js/components/PageListItems.vue:747
+#: js/components/PageBulkMenu.vue:97 js/components/PageListItems.vue:748
 msgctxt "page status"
 msgid "Disable"
 msgstr "Dezactivați"
 
-#: js/components/PageBulkMenu.vue:106 js/components/PageListItems.vue:761
+#: js/components/PageBulkMenu.vue:107 js/components/PageListItems.vue:762
 msgid "Clear cache"
 msgstr "Goliți memoria cache"
 
-#: js/components/PageBulkMenu.vue:138 js/components/PageListItems.vue:826
+#: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
 #: js/views/PageDetail.vue:664
 msgid "Ignore changes"
 msgstr "Ignorați modificările"
 
-#: js/components/PageBulkMenu.vue:147 js/components/PageListItems.vue:835
+#: js/components/PageBulkMenu.vue:148 js/components/PageListItems.vue:836
 msgid "Delete this language"
 msgstr "Ștergeți această limbă"
 
-#: js/components/PageBulkMenu.vue:155 js/components/PageListItems.vue:843
+#: js/components/PageBulkMenu.vue:156 js/components/PageListItems.vue:844
 msgid "Restore this language"
 msgstr "Restaurați această limbă"
 
-#: js/components/PageBulkMenu.vue:163 js/components/PageListItems.vue:851
+#: js/components/PageBulkMenu.vue:164 js/components/PageListItems.vue:852
 msgid "Purge language"
 msgstr "Ștergeți definitiv limba"
 
-#: js/components/PageDetailContentList.vue:161
-#: js/components/PageDetailContentList.vue:171 js/contentshare.js:110
+#: js/components/PageDetailContentList.vue:165
+#: js/components/PageDetailContentList.vue:175 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Elementul de conținut nu a fost găsit"
 
-#: js/components/PageDetailContentList.vue:370
+#: js/components/PageDetailContentList.vue:374
 msgid "Not available for this content element"
 msgstr "Nu este disponibil pentru acest element de conținut"
 
-#: js/components/PageDetailContentList.vue:380
+#: js/components/PageDetailContentList.vue:384
 msgid "Error splitting text"
 msgstr "Eroare la împărțirea textului"
 
-#: js/components/PageDetailContentList.vue:495
+#: js/components/PageDetailContentList.vue:499
 msgid "Describe the task you want to perform"
 msgstr "Descrieți sarcina pe care doriți să o îndepliniți"
 
-#: js/components/PageDetailContentList.vue:496
+#: js/components/PageDetailContentList.vue:500
 msgid "Refining ..."
 msgstr "Se rafinează..."
 
-#: js/components/PageDetailContentList.vue:496
+#: js/components/PageDetailContentList.vue:500
 msgid "Refine content based on prompt"
 msgstr "Rafinați conținutul pe baza solicitării"
 
-#: js/components/PageDetailContentList.vue:500
+#: js/components/PageDetailContentList.vue:504
 msgid "AI can add or improve content based on your input"
 msgstr ""
 "Inteligența artificială poate adăuga sau îmbunătăți conținutul pe baza "
 "informațiilor furnizate de dvs."
 
-#: js/components/PageDetailContentList.vue:501
+#: js/components/PageDetailContentList.vue:505
 msgid "It can take a long time depending on the task and content size"
 msgstr ""
 "Aceasta poate dura mult timp, în funcție de dimensiunea sarcinii și a "
 "conținutului"
 
-#: js/components/PageDetailContentList.vue:527
-#: js/components/PageDetailContentList.vue:614
-#: js/components/PageListItems.vue:767 js/fields/Items.vue:282
+#: js/components/PageDetailContentList.vue:531
+#: js/components/PageDetailContentList.vue:618
+#: js/components/PageListItems.vue:768 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Tăiați"
 
-#: js/components/PageDetailContentList.vue:530 js/pagetree.js:37
+#: js/components/PageDetailContentList.vue:534 js/pagetree.js:37
 msgid "Paste"
 msgstr "Lipiți"
 
-#: js/components/PageDetailContentList.vue:533
-#: js/components/PageDetailContentList.vue:653
+#: js/components/PageDetailContentList.vue:537
+#: js/components/PageDetailContentList.vue:657
 msgid "Merge"
 msgstr "Îmbinați"
 
-#: js/components/PageDetailContentList.vue:588 js/fields/Items.vue:269
+#: js/components/PageDetailContentList.vue:592 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Mutați elementul"
 
-#: js/components/PageDetailContentList.vue:623 js/fields/Items.vue:285
+#: js/components/PageDetailContentList.vue:627 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Lipiți înainte"
 
-#: js/components/PageDetailContentList.vue:626 js/fields/Items.vue:286
+#: js/components/PageDetailContentList.vue:630 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Lipiți după"
 
-#: js/components/PageDetailContentList.vue:629 js/fields/Items.vue:287
+#: js/components/PageDetailContentList.vue:633 js/fields/Items.vue:287
 #: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Inserați înainte"
 
-#: js/components/PageDetailContentList.vue:632 js/fields/Items.vue:288
+#: js/components/PageDetailContentList.vue:636 js/fields/Items.vue:288
 #: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Inserați după"
 
-#: js/components/PageDetailContentList.vue:641
+#: js/components/PageDetailContentList.vue:645
 msgid "Make shared"
 msgstr "Partajați"
 
-#: js/components/PageDetailContentList.vue:644
+#: js/components/PageDetailContentList.vue:648
 msgid "Replace with local copy"
 msgstr "Înlocuiți cu o copie locală"
 
-#: js/components/PageDetailContentList.vue:650
+#: js/components/PageDetailContentList.vue:654
 msgctxt "text element"
 msgid "Split"
 msgstr "Divizați"
@@ -1865,7 +1887,7 @@ msgctxt "search ranking"
 msgid "Position"
 msgstr "Poziția"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:876
+#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
 #: js/views/PageDetail.vue:646 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Necesită actualizare"
@@ -1918,49 +1940,49 @@ msgstr[2] "%{num} de minute"
 msgid "Translating into %{langs}"
 msgstr "Se traduce în %{langs}"
 
-#: js/components/PageListItems.vue:644 js/components/PageListItems.vue:958
+#: js/components/PageListItems.vue:645 js/components/PageListItems.vue:959
 msgid "Add page"
 msgstr "Adăugați o pagină"
 
-#: js/components/PageListItems.vue:656
+#: js/components/PageListItems.vue:657
 msgid "Reload page tree"
 msgstr "Reîncărcați arborele paginilor"
 
-#: js/components/PageListItems.vue:669
+#: js/components/PageListItems.vue:670
 msgid "Translating %{done} of %{total}"
 msgstr "Se traduce %{done} din %{total}"
 
-#: js/components/PageListItems.vue:685
+#: js/components/PageListItems.vue:686
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Folosiți tastele săgeată pentru a naviga. Apăsați tasta Alt împreună cu "
 "tastele săgeată pentru a reordona."
 
-#: js/components/PageListItems.vue:687
+#: js/components/PageListItems.vue:688
 msgid "Moved to position %{position} of %{total}"
 msgstr "Mutat la poziția %{position} din %{total}"
 
-#: js/components/PageListItems.vue:689
+#: js/components/PageListItems.vue:690
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Indentare redusă la nivelul %{level}, poziția %{position} din %{total}"
 
-#: js/components/PageListItems.vue:695
+#: js/components/PageListItems.vue:696
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Indentare mărită la nivelul %{level}, poziția %{position} din %{total}"
 
-#: js/components/PageListItems.vue:715
+#: js/components/PageListItems.vue:716
 msgid "Toggle child nodes"
 msgstr "Comutare noduri copil"
 
-#: js/components/PageListItems.vue:900 js/options.js:64
+#: js/components/PageListItems.vue:901 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Ascuns în navigare"
 
-#: js/components/PageListItems.vue:939 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
 msgid "Create"
 msgstr "Creați"
 
-#: js/components/PageListItems.vue:985
+#: js/components/PageListItems.vue:986
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Aplicați setările de acces la %{num} pagină."
@@ -2234,24 +2256,24 @@ msgstr "Pagină publicată cu succes"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagină programată pentru publicare la %{date}"
 
-#: js/detail.js:61 js/pageactions.js:80
+#: js/detail.js:61 js/pageactions.js:82
 msgid "Error publishing page"
 msgstr "Eroare la publicarea paginii"
 
-#: js/detail.js:299
+#: js/detail.js:310
 msgid "Not published, please review the changes and publish again"
 msgstr ""
 "Nepublicat, vă rugăm să verificați modificările și să publicați din nou"
 
-#: js/detail.js:369 js/fields/Autocomplete.vue:209
+#: js/detail.js:380 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nu există date disponibile"
 
-#: js/detail.js:370
+#: js/detail.js:381
 msgid "No version data available"
 msgstr "Nu există date despre versiune disponibile"
 
-#: js/detail.js:464
+#: js/detail.js:475
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Există câmpuri invalide, vă rugăm să rezolvați mai întâi erorile"
 
@@ -2359,7 +2381,7 @@ msgstr "Nu s-au găsit pagini"
 msgid "Link attribute"
 msgstr "Atribut link"
 
-#: js/filefield.js:118
+#: js/filefield.js:119
 msgid "Unsupported file type"
 msgstr "Tip de fișier neacceptat"
 
@@ -2367,7 +2389,7 @@ msgstr "Tip de fișier neacceptat"
 msgid "Connection failed, please try again"
 msgstr "Conexiunea a eșuat, vă rugăm să încercați din nou"
 
-#: js/graphql.js:132 js/stores/session.js:336 js/views/Login.vue:163
+#: js/graphql.js:132 js/stores/session.js:337 js/views/Login.vue:163
 msgid "Login failed"
 msgstr "Autentificare eșuată"
 
@@ -2483,51 +2505,51 @@ msgstr "Dezactivat"
 msgid "Enabled"
 msgstr "Activat"
 
-#: js/pageactions.js:123 js/pageactions.js:371 js/views/PageDetail.vue:574
+#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
 msgid "Error saving page"
 msgstr "Eroare la salvarea paginii"
 
-#: js/pageactions.js:135
+#: js/pageactions.js:137
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Paginile sunt șterse ca pagini întregi doar în limba lor sursă"
 
-#: js/pageactions.js:140
+#: js/pageactions.js:142
 msgid "Error trashing page"
 msgstr "Eroare la mutarea paginii în coșul de gunoi"
 
-#: js/pageactions.js:165 js/variants.js:178
+#: js/pageactions.js:167 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Eroare la restaurarea limbii"
 
-#: js/pageactions.js:165 js/pageactions.js:181
+#: js/pageactions.js:167 js/pageactions.js:183
 msgid "Error restoring page"
 msgstr "Eroare la restaurarea paginii"
 
-#: js/pageactions.js:207
+#: js/pageactions.js:209
 msgid "All subpages of these pages will be purged as well."
 msgstr ""
 "Toate subpaginile acestor pagini vor fi, de asemenea, șterse definitiv."
 
-#: js/pageactions.js:216
+#: js/pageactions.js:218
 msgid "Error purging page"
 msgstr "Eroare la ștergerea definitivă a paginii"
 
-#: js/pageactions.js:250
+#: js/pageactions.js:252
 msgid "Cache cleared"
 msgstr "Cache-ul a fost golit"
 
-#: js/pageactions.js:251
+#: js/pageactions.js:253
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cache-ul a fost golit pentru %{num} pagină."
 msgstr[1] "Cache-ul a fost golit pentru %{num} pagini."
 msgstr[2] "Cache-ul a fost golit pentru %{num} de pagini."
 
-#: js/pageactions.js:261
+#: js/pageactions.js:263
 msgid "Error clearing cache"
 msgstr "Eroare la golirea memoriei cache"
 
-#: js/pageactions.js:360
+#: js/pageactions.js:362
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} pagină nu a putut fi actualizată"

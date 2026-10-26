@@ -23,6 +23,7 @@ final class PermissionChanged implements Loggable
 
     /**
      * @param array<int, string> $assignments Resulting raw assignments
+     * @param array<int, string>|null $langs Resulting writable languages, NULL for unrestricted
      */
     public function __construct(
         public readonly string $actorEmail,
@@ -32,6 +33,7 @@ final class PermissionChanged implements Loggable
         public readonly string $ip = '',
         public readonly string $userAgent = '',
         public readonly string $tenant = '',
+        public readonly ?array $langs = null,
     ) {}
 
 
@@ -51,6 +53,7 @@ final class PermissionChanged implements Loggable
             'target' => $this->targetEmail,
             'target_id' => $this->targetId,
             'assignments' => $this->assignments,
+            'langs' => $this->langs,
             'ip' => Watch::mask( $this->ip ),
             'user_agent' => Watch::mask( $this->userAgent ),
             'tenant_id' => $this->tenant,
