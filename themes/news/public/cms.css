@@ -662,3 +662,10 @@ body > footer.bottom .copyright {
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
+
+/* Opt-in: skip rendering off-screen sections by setting --cms-content-visibility: auto (clips overflowing content) */
+
+.cms-content[data-section="main"] > * + * {
+    content-visibility: var(--cms-content-visibility, visible);
+    contain-intrinsic-size: auto var(--cms-content-size, 40rem);
+}
