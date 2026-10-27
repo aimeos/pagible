@@ -59,9 +59,10 @@ The `colors` section defines the Vuetify theme colors for the `light` and `dark`
 
 ## Development
 
-Install the dependencies first:
+Install the dependencies first in the root directory of the repository. The admin and the admin plugins of the packages (`*/admin`) are npm workspaces sharing one `node_modules` directory:
 
 ```sh
+cd ..
 npm install
 ```
 
@@ -204,6 +205,7 @@ Composer packages can add their own panels to the admin backend.
 Register top-level panels, or sub-panels for the page, element or file editors, with `Aimeos\Cms\Plugin::register()`:
 
 - The component URL must point to a Vite-built ES module whose default export is a Vue component.
+- In this repository, every `<package>/admin/` directory is such an extension. Its `src/index.js` is built to `dist/index.js` with the shared configuration in `plugin/`, e.g. `vite build --config ../../admin/plugin/vite.config.js` (see `metrics/admin/package.json`). The CSS is inlined into the module.
 - Components are loaded lazily.
 - For top-level panels, the admin supplies the application shell.
 
@@ -261,8 +263,8 @@ Application-shell components, Vuetify Labs components and heavy specialized widg
 
 Extensions keep their translations in their own package:
 
-1. Register a catalog URL with `Plugin::i18n()`. It must contain one `{locale}` placeholder and point to the split JSON files published with the extension.
-2. Use its key as the panel's `i18n` value.
+1. Use the catalog key as the panel's `i18n` value. The catalog is loaded from the split JSON files published to `/vendor/cms/<key>/i18n/`.
+2. For other locations, register the catalog URL with `Plugin::i18n()` before. It must contain one `{locale}` placeholder.
 3. Use the same key as gettext context for all extension strings, e.g. `$pgettext('commerce', 'Products')`.
 
 The admin loads the catalog of the active locale into its shared gettext instance without overwriting the core or other package contexts. Regional locales like `pt-BR` and `zh-TW` use the messages of their base language (`pt`, `zh`) if they are missing in the regional catalogs. All labels and messages of extensions must be translated.

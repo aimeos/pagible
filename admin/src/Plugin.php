@@ -61,18 +61,21 @@ class Plugin
      * Registers a package-owned admin translation catalog.
      *
      * The URL must be a same-origin absolute path containing one "{locale}"
-     * placeholder, which the admin replaces with its active language.
+     * placeholder, which the admin replaces with its active language. Without URL,
+     * the catalog is expected in the published "/vendor/cms/<key>/i18n/" directory.
      *
      * @param string $key Translation context matching "[a-z0-9_-]+"
-     * @param string $url Catalog URL, e.g. "/vendor/cms/example/i18n/{locale}.json"
+     * @param string|null $url Catalog URL, e.g. "/vendor/cms/example/i18n/{locale}.json"
      * @throws \InvalidArgumentException If the key or catalog URL is invalid
      * @throws \LogicException If the key is already registered differently
      */
-    public static function i18n( string $key, string $url ) : void
+    public static function i18n( string $key, ?string $url = null ) : void
     {
         if( !preg_match( '/^[a-z0-9_-]+$/', $key ) ) {
             throw new \InvalidArgumentException( "Invalid translation key '$key'" );
         }
+
+        $url ??= '/vendor/cms/' . $key . '/i18n/{locale}.json';
 
         self::url( $key, $url, 'translation catalog' );
 
@@ -90,7 +93,9 @@ class Plugin
      * A top-level key like "products" adds a navigation panel and requires a "permission".
      * Its component renders the panel body; the admin SPA provides the app bar, navigation
      * and main content layout. A sub-panel key like "page:settings" adds a tab to the page,
-     * element or file editor and inherits the host view's permission.
+     * element or file editor and inherits the host view's permission. An optional "permission"
+     * additionally restricts a sub-panel to users with that permission. An "i18n" context
+     * without registered catalog adds the catalog from "/vendor/cms/<i18n>/i18n/".
      *
      * @param string $key Panel key, e.g. "products" or "page:settings"
      * @param array<string, string> $definition Definition with "label", "component" and optional "icon"/"i18n"/"permission"
@@ -106,7 +111,7 @@ class Plugin
         self::url( $key, $definition['component'] ?? null, 'component' );
 
         if( isset( $definition['i18n'] ) && !isset( self::$i18n[$definition['i18n']] ) ) {
-            throw new \InvalidArgumentException( "Unknown translation catalog '{$definition['i18n']}' for plugin '$key'" );
+            self::i18n( $definition['i18n'] );
         }
 
         if( strpos( $key, ':' ) === false ) {
@@ -196,6 +201,10 @@ class Plugin
 
         if( isset( $definition['i18n'] ) ) {
             $panel['i18n'] = $definition['i18n'];
+        }
+
+        if( !empty( $definition['permission'] ) ) {
+            $panel['permission'] = $definition['permission'];
         }
 
         self::$subpanels[$host] ??= [];

@@ -18,7 +18,7 @@ export async function switchLocale(code) {
   let mod
 
   try {
-    mod = await import(`../node_modules/vuetify/lib/locale/${name}.js`)
+    mod = await import(`vuetify-locale/${name}.js`)
   } catch {
     // Vuetify has no translations for the language, its components keep the current ones
     return

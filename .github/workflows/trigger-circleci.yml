@@ -19,8 +19,9 @@ jobs:
           git cat-file -e "$BASE^{commit}" 2>/dev/null || BASE=HEAD~1
           CHANGED=$(git diff --name-only "$BASE" HEAD)
 
-          # Changed admin frontend files and packages (or root files) without docs and frontend files
-          FRONTEND='^(admin/((js|cypress|dist|i18n|public)/|index\.html$|package|[^/]*\.m?js$)|webhooks/admin/)'
+          # Changed admin frontend files incl. admin plugins of packages and the npm workspace root,
+          # and packages (or root files) without docs and frontend files
+          FRONTEND='^(package(-lock)?\.json$|admin/((js|cypress|dist|i18n|public)/|index\.html$|package|[^/]*\.m?js$)|[^/]+/admin/)'
           ADMIN=$(echo "$CHANGED" | grep -E "$FRONTEND" || true)
           DIRS=$(echo "$CHANGED" | grep -vE "\.md$|$FRONTEND" \
             | sed -E 's#^(themes/[^/]+|[^/]+)/.*#\1#' | sort -u || true)
@@ -37,7 +38,7 @@ jobs:
           for f in $ADMIN; do
             case "$f" in
               admin/dist/*|admin/cypress/e2e/*) continue ;;
-              webhooks/admin/*) a=webhooks ;;
+              */admin/*) a=${f%%/*} ;;
               admin/js/fields/*|admin/js/components/*|admin/js/views/*) a=$(echo "$f" | cut -d/ -f3) ;;
               admin/cypress/unit/*/*) a=$(echo "$f" | cut -d/ -f4) ;;
               admin/cypress/unit/*) a=root ;;

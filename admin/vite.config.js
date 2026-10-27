@@ -11,11 +11,15 @@ import vuetify from 'vite-plugin-vuetify'
 // which run on CI without a warm Vite cache.
 const broken = new Set(['VCalendar', 'VOverflowBtn'])
 
-const vuetifyComponents = readdirSync('node_modules/vuetify/lib/components', { withFileTypes: true })
+// packages are resolved because npm workspaces install them in the node_modules of the repository root
+const vuetifyLib = fileURLToPath(new URL('.', import.meta.resolve('vuetify')))
+const ckeditorDist = fileURLToPath(new URL('.', import.meta.resolve('ckeditor5')))
+
+const vuetifyComponents = readdirSync(vuetifyLib + 'components', { withFileTypes: true })
   .filter(d => d.isDirectory() && !broken.has(d.name))
   .map(d => `vuetify/components/${d.name}`)
 
-const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes: true })
+const vuetifyLabs = readdirSync(vuetifyLib + 'labs', { withFileTypes: true })
   .filter(d => d.isDirectory())
   .map(d => `vuetify/labs/${d.name}`)
 
@@ -85,7 +89,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./js', import.meta.url)),
-      'ckeditor5/translations': fileURLToPath(new URL('./node_modules/ckeditor5/dist/translations', import.meta.url)),
+      'ckeditor5/translations': ckeditorDist + 'translations',
+      // Vuetify doesn't export its single locales for the lazy imports in js/vuetify.js
+      'vuetify-locale': vuetifyLib + 'locale',
     },
     dedupe: ['pinia', 'vue']
   },

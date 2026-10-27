@@ -222,7 +222,12 @@ export const detailBase = {
     },
 
     subpanels() {
-      return usePluginStore().subpanels[this.type] || {}
+      const subpanels = usePluginStore().subpanels[this.type] || {}
+
+      // sub-panels with their own permission are only shown if the user has it
+      return Object.fromEntries(
+        Object.entries(subpanels).filter(([, sp]) => !sp.permission || this.user.can(sp.permission))
+      )
     }
   },
 

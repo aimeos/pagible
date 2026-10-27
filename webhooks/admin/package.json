@@ -3,24 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vue-gettext-compile && vite build",
-    "gettext:compile": "vue-gettext-compile",
-    "gettext:extract": "vue-gettext-extract",
-    "lint": "eslint src cypress vite.config.js",
-    "test:unit": "cd ../../admin && ./node_modules/.bin/cypress run --component --spec '../webhooks/admin/cypress/unit/**/*.cy.{js,ts}'"
+    "build": "vue-gettext-compile --config ../../admin/plugin/gettext.config.mjs && vite build --config ../../admin/plugin/vite.config.js",
+    "gettext:compile": "vue-gettext-compile --config ../../admin/plugin/gettext.config.mjs",
+    "gettext:extract": "vue-gettext-extract --config ../../admin/plugin/gettext.config.mjs",
+    "lint": "eslint src cypress",
+    "test:unit": "cd ../../admin && cypress run --component --spec '../webhooks/admin/cypress/unit/**/*.cy.{js,ts}'"
   },
   "peerDependencies": {
     "graphql-tag": "^2.12",
     "vue": "^3.5"
-  },
-  "devDependencies": {
-    "@mdi/js": "^7.4",
-    "@vitejs/plugin-vue": "^6.0",
-    "@vue/eslint-config-prettier": "^10.2",
-    "eslint": "^10.0",
-    "eslint-plugin-vue": "^10.8",
-    "vite": "^8.3",
-    "vue": "^3.5",
-    "vue3-gettext": "^4.0.0-beta.1"
   }
 }

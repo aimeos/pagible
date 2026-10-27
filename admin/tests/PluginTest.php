@@ -46,6 +46,17 @@ class PluginTest extends AdminTestAbstract
     }
 
 
+    public function testI18nDefaultUrl()
+    {
+        Plugin::i18n( 'commerce' );
+
+        $this->assertSame(
+            ['commerce' => '/vendor/cms/commerce/i18n/{locale}.json'],
+            Plugin::all()['i18n'],
+        );
+    }
+
+
     public function testI18nConflictingDefinition()
     {
         Plugin::i18n( 'commerce', '/vendor/cms/commerce/i18n/{locale}.json' );
@@ -131,13 +142,26 @@ class PluginTest extends AdminTestAbstract
     }
 
 
-    public function testRegisterPanelWithUnknownI18n()
+    public function testRegisterPanelWithDefaultI18n()
+    {
+        Plugin::register( 'products', [
+            'label' => 'Products',
+            'i18n' => 'commerce',
+            'permission' => 'product:view',
+            'component' => '/vendor/cms/extensions/commerce/product.js',
+        ] );
+
+        $this->assertSame( ['commerce' => '/vendor/cms/commerce/i18n/{locale}.json'], Plugin::all()['i18n'] );
+    }
+
+
+    public function testRegisterPanelWithInvalidI18n()
     {
         $this->expectException( \InvalidArgumentException::class );
 
         Plugin::register( 'products', [
             'label' => 'Products',
-            'i18n' => 'commerce',
+            'i18n' => 'Commerce!',
             'permission' => 'product:view',
             'component' => '/vendor/cms/extensions/commerce/product.js',
         ] );
@@ -171,6 +195,18 @@ class PluginTest extends AdminTestAbstract
         ] );
 
         $this->assertSame( 'commerce', Plugin::all()['subpanels']['page']['settings']['i18n'] );
+    }
+
+
+    public function testRegisterSubpanelWithPermission()
+    {
+        Plugin::register( 'page:metrics', [
+            'label' => 'Metrics',
+            'permission' => 'page:metrics',
+            'component' => '/vendor/cms/metrics/index.js',
+        ] );
+
+        $this->assertSame( 'page:metrics', Plugin::all()['subpanels']['page']['metrics']['permission'] );
     }
 
 

@@ -164,19 +164,18 @@
 		],
 		"translate": [
 			"@php bin/translate",
-			"npm run gettext:extract --prefix admin",
+			"npm run gettext:extract --workspaces",
 			"@php bin/schema-i18n extract theme themes/*",
-			"for POFILE in `ls admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
-			"for POFILE in `ls admin/i18n/*.po`; do vendor/bin/potrans deepl --translator=bin/potrans-deepl.php --ignore='%\\{[a-z]+\\}' --only --pot=admin/i18n/messages.pot $POFILE; done",
-			"npm run gettext:compile --prefix admin",
+			"for POFILE in `ls admin/i18n/*.po */admin/i18n/*.po`; do msgattrib --no-obsolete -o $POFILE $POFILE; done",
+			"for POFILE in `ls admin/i18n/*.po */admin/i18n/*.po`; do vendor/bin/potrans deepl --translator=bin/potrans-deepl.php --ignore='%\\{[a-z]+\\}' --only --pot=`dirname $POFILE`/messages.pot $POFILE; done",
+			"npm run gettext:compile --workspaces",
 			"for POFILE in `ls theme/i18n/*.po themes/*/i18n/*.po`; do vendor/bin/potrans deepl --translator=bin/potrans-deepl.php --only --pot=`dirname $POFILE`/messages.pot $POFILE; done",
 			"@php bin/schema-i18n compile theme themes/*"
 		],
 		"build": [
 			"@php bin/schema-i18n extract theme themes/*",
 			"@php bin/schema-i18n compile theme themes/*",
-			"npm run build --prefix admin",
-			"npm run build --prefix webhooks/admin"
+			"npm run build --workspaces"
 		],
 		"coverage": [
 			"npx playwright install chromium",
