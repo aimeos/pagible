@@ -38,6 +38,13 @@ describe('mutation()', () => {
     expect(doc).to.include('pubPage(id: $id, at: $at, lang: $lang)')
   })
 
+  it('requires the language for the variant mutations', () => {
+    const doc = print(mutation('drop', 'pageVariant', true))
+
+    expect(doc).to.include('$lang: String!')
+    expect(doc).to.include('dropPageVariant(id: $id, lang: $lang)')
+  })
+
   it('caches the documents per variant', () => {
     expect(mutation('pub', 'file', false, true)).to.equal(mutation('pub', 'file', false, true))
     expect(mutation('pub', 'file', false, true)).not.to.equal(mutation('pub', 'file'))

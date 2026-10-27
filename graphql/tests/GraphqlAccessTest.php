@@ -325,6 +325,126 @@ class GraphqlAccessTest extends GraphqlTestAbstract
     }
 
 
+    public function testSetsUserLanguagesWithPermissions(): void
+    {
+        $member = $this->frontend( 'member@example.com', ['viewer'] );
+        $this->user->cmsperms = ['user:permission'];
+
+        $query = '
+            mutation($id: ID!, $permissions: [String!]!, $langs: [String!]) {
+                setUserPermissions(id: $id, permissions: $permissions, langs: $langs)
+            }
+        ';
+        $vars = ['id' => (string) $member->getKey(), 'permissions' => ['editor']];
+
+        $this->actingAs( $this->user )->graphQL( $query, $vars + ['langs' => ['de', 'fr']] )->assertGraphQLErrorFree();
+        $this->assertSame( ['de', 'fr'], Permission::langs( $member->fresh() ) );
+
+        // omitting the languages keeps the current scope
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($id: ID!, $permissions: [String!]!) {
+                setUserPermissions(id: $id, permissions: $permissions)
+            }
+        ', $vars )->assertGraphQLErrorFree();
+        $this->assertSame( ['de', 'fr'], Permission::langs( $member->fresh() ) );
+
+        $this->actingAs( $this->user )->graphQL( $query, $vars + ['langs' => []] )->assertGraphQLErrorFree();
+        $this->assertSame( [], Permission::langs( $member->fresh() ) );
+
+        $this->actingAs( $this->user )->graphQL( $query, $vars + ['langs' => null] )->assertGraphQLErrorFree();
+        $this->assertNull( Permission::langs( $member->fresh() ) );
+    }
+
+
+    public function testRestrictedUserCannotSetUserLanguages(): void
+    {
+        $member = $this->frontend( 'member@example.com', ['viewer'] );
+        $this->user->forceFill( ['cmsperms' => ['user:permission'], 'cmslangs' => json_encode( ['de'] )] );
+
+        $query = '
+            mutation($id: ID!, $permissions: [String!]!, $langs: [String!]) {
+                setUserPermissions(id: $id, permissions: $permissions, langs: $langs)
+            }
+        ';
+        $vars = ['id' => (string) $member->getKey(), 'permissions' => ['editor']];
+
+        $this->actingAs( $this->user )->graphQL( $query, $vars + ['langs' => null] )
+            ->assertGraphQLErrorMessage( 'Insufficient permissions for all languages' );
+        $this->assertNull( Permission::langs( $member->fresh() ) );
+
+        $this->actingAs( $this->user )->graphQL( $query, $vars + ['langs' => ['de']] )
+            ->assertGraphQLErrorMessage( 'Insufficient permissions for all languages' );
+        $this->assertSame( ['viewer'], $member->fresh()->cmsperms );
+
+        // roles can't be given to users who may write other languages
+        $this->actingAs( $this->user )->graphQL( $query, $vars )
+            ->assertGraphQLErrorMessage( 'Insufficient permissions for the languages of the user' );
+
+        $member->forceFill( ['cmslangs' => json_encode( ['de', 'fr'] )] )->save();
+        $this->actingAs( $this->user )->graphQL( $query, $vars )
+            ->assertGraphQLErrorMessage( 'Insufficient permissions for the languages of the user' );
+        $this->assertSame( ['viewer'], $member->fresh()->cmsperms );
+
+        // the roles can still be changed for users within the own languages if the languages are omitted
+        $member->forceFill( ['cmslangs' => json_encode( ['de'] )] )->save();
+        $this->actingAs( $this->user )->graphQL( $query, $vars )->assertGraphQLErrorFree();
+        $this->assertSame( ['editor'], $member->fresh()->cmsperms );
+        $this->assertSame( ['de'], Permission::langs( $member->fresh() ) );
+    }
+
+
+    public function testRestrictedUserCreatesUsersWithOwnLanguages(): void
+    {
+        $query = '
+            mutation($email: String!) {
+                createUser(email: $email) { id }
+            }
+        ';
+
+        $this->actingAs( $this->user )->graphQL( $query, ['email' => 'all@example.com'] )->assertGraphQLErrorFree();
+        $this->assertNull( Permission::langs( \App\Models\User::where( 'email', 'all@example.com' )->firstOrFail() ) );
+
+        $this->user->forceFill( ['cmslangs' => json_encode( ['de', 'fr'] )] );
+
+        $this->actingAs( $this->user )->graphQL( $query, ['email' => 'some@example.com'] )->assertGraphQLErrorFree();
+        $this->assertSame( ['de', 'fr'], Permission::langs( \App\Models\User::where( 'email', 'some@example.com' )->firstOrFail() ) );
+    }
+
+
+    public function testUserLanguagesRequirePermissionAccess(): void
+    {
+        $member = $this->frontend( 'member@example.com', ['viewer'] );
+        Permission::set( $member, ['viewer'], ['de'] );
+        $this->user->cmsperms = ['user:access'];
+
+        $this->actingAs( $this->user )->graphQL( '
+            query { cmsUser(email: "member@example.com") { langs } }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+
+        Permission::set( $this->user, ['user:permission'] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            query { cmsUser(email: "member@example.com") { langs } }
+        ' )->assertExactJson( ['data' => ['cmsUser' => ['langs' => ['de']]]] );
+    }
+
+
+    public function testMeReturnsWritableLanguages(): void
+    {
+        Permission::set( $this->user, ['page:view'], ['en'] );
+
+        $this->actingAs( $this->user->fresh() )->graphQL( '
+            query { me { langs } }
+        ' )->assertExactJson( ['data' => ['me' => ['langs' => ['en']]]] );
+
+        Permission::set( $this->user, ['page:view'], null );
+
+        $this->actingAs( $this->user->fresh() )->graphQL( '
+            query { me { langs } }
+        ' )->assertExactJson( ['data' => ['me' => ['langs' => null]]] );
+    }
+
+
     public function testRepeatedPermissionUpdatesReturnTheLatestAssignments(): void
     {
         $member = $this->frontend( 'member@example.com' );

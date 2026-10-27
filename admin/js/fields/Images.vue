@@ -71,7 +71,7 @@ export default {
 
   methods: {
     add(files) {
-      if (!this.user.can('file:add')) return this.messages.denied()
+      if (!this.user.canAdd('file:add')) return this.messages.denied()
 
       if (!files?.length) {
         return

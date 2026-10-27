@@ -49,7 +49,7 @@ export default {
     },
 
     canEdit() {
-      return this.user.can('page:save') && (!this.permission || this.user.can(this.permission))
+      return this.user.canLang('page:save', this.item.lang) && (!this.permission || this.user.can(this.permission))
     },
 
     entries() {

@@ -253,6 +253,49 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageVariantActionsWithVariantPermissions()
+    {
+        $page = $this->page();
+        $user = ( new \App\Models\User( [
+            'cmsperms' => ['page:view', 'variant:add', 'variant:drop', 'variant:keep'],
+        ] ) )->forceFill( ['cmslangs' => json_encode( ['de'] )] );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                addPageVariant(id: "' . $page->id . '", lang: "de") { id lang }
+            }
+        ' )->assertGraphQLErrorFree();
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                addPageVariant(id: "' . $page->id . '", lang: "fr") { id }
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions for language "fr"' );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                dropPageVariant(id: ["' . $page->id . '"], lang: "de") { id }
+            }
+        ' )->assertGraphQLErrorFree();
+        $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
+
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                keepPageVariant(id: ["' . $page->id . '"], lang: "de") { id }
+            }
+        ' )->assertGraphQLErrorFree();
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+
+        // whole pages still require page permissions
+        $this->actingAs( $user )->graphQL( '
+            mutation {
+                dropPage(id: ["' . $page->id . '"]) { id }
+            }
+        ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+        $this->assertNotNull( PageView::find( $page->id ) );
+    }
+
+
     public function testSavePageLanguages()
     {
         $page = $this->page();
@@ -328,14 +371,14 @@ class GraphqlVariantTest extends GraphqlTestAbstract
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                dropPage(id: ["' . $page->id . '", "' . $other->id . '"], lang: "de") { id lang variant_deleted_at }
+                dropPageVariant(id: ["' . $page->id . '", "' . $other->id . '"], lang: "de") { id lang variant_deleted_at }
             }
         ' )->assertGraphQLErrorFree();
 
         // the page without a "de" variant is skipped
-        $this->assertCount( 1, $response->json( 'data.dropPage' ) );
-        $this->assertEquals( 'de', $response->json( 'data.dropPage.0.lang' ) );
-        $this->assertNotNull( $response->json( 'data.dropPage.0.variant_deleted_at' ) );
+        $this->assertCount( 1, $response->json( 'data.dropPageVariant' ) );
+        $this->assertEquals( 'de', $response->json( 'data.dropPageVariant.0.lang' ) );
+        $this->assertNotNull( $response->json( 'data.dropPageVariant.0.variant_deleted_at' ) );
         $this->assertNotNull( PageView::findOrFail( $page->id ) );
         $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
 
@@ -346,11 +389,11 @@ class GraphqlVariantTest extends GraphqlTestAbstract
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                keepPage(id: ["' . $page->id . '"], lang: "de") { id lang variant_deleted_at }
+                keepPageVariant(id: ["' . $page->id . '"], lang: "de") { id lang variant_deleted_at }
             }
         ' )->assertGraphQLErrorFree();
 
-        $response->assertJson( ['data' => ['keepPage' => [['id' => $page->id, 'lang' => 'de', 'variant_deleted_at' => null]]]] );
+        $response->assertJson( ['data' => ['keepPageVariant' => [['id' => $page->id, 'lang' => 'de', 'variant_deleted_at' => null]]]] );
         $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
     }
 
@@ -362,11 +405,11 @@ class GraphqlVariantTest extends GraphqlTestAbstract
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                dropPage(id: ["' . $page->id . '"], lang: "en") { id }
+                dropPageVariant(id: ["' . $page->id . '"], lang: "en") { id }
             }
         ' )->assertGraphQLErrorFree();
 
-        $this->assertEquals( [], $response->json( 'data.dropPage' ) );
+        $this->assertEquals( [], $response->json( 'data.dropPageVariant' ) );
         $this->assertNotNull( PageView::find( $page->id ) );
     }
 
@@ -377,7 +420,7 @@ class GraphqlVariantTest extends GraphqlTestAbstract
 
         foreach( [str_repeat( 'x', 11 ), '<x>', 'EN'] as $lang )
         {
-            foreach( ['dropPage', 'keepPage', 'purgePage', 'pubPage'] as $name )
+            foreach( ['dropPageVariant', 'keepPageVariant', 'purgePageVariant', 'pubPage'] as $name )
             {
                 $this->actingAs( $this->user )->graphQL( '
                     mutation {
@@ -398,11 +441,11 @@ class GraphqlVariantTest extends GraphqlTestAbstract
 
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
-                purgePage(id: ["' . $page->id . '"], lang: "de") { id }
+                purgePageVariant(id: ["' . $page->id . '"], lang: "de") { id }
             }
         ' )->assertGraphQLErrorFree();
 
-        $this->assertCount( 1, $response->json( 'data.purgePage' ) );
+        $this->assertCount( 1, $response->json( 'data.purgePageVariant' ) );
         $this->assertEquals( 0, PageVariant::withTrashed()->where( 'page_id', $page->id )->where( 'lang', 'de' )->count() );
         $this->assertNotNull( PageView::find( $page->id ) );
     }

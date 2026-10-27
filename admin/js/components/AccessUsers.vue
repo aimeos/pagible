@@ -4,6 +4,7 @@
 import gql from 'graphql-tag'
 import { mdiAccountPlus, mdiDatabaseArrowDown, mdiMagnify } from '@mdi/js'
 import { apolloClient } from '../graphql'
+import { localeItems } from '../options'
 import { useMessageStore, useUserStore } from '../stores'
 
 const USER_DATA = gql`
@@ -12,6 +13,7 @@ const USER_DATA = gql`
     email
     access @include(if: $withAccess)
     permissions @include(if: $withPermissions)
+    langs @include(if: $withPermissions)
   }
 `
 
@@ -40,10 +42,15 @@ const SET_USER_ACCESS = gql`
 `
 
 const SET_USER_PERMISSIONS = gql`
-  mutation ($id: ID!, $permissions: [String!]!) {
-    assignments: setUserPermissions(id: $id, permissions: $permissions)
+  mutation ($id: ID!, $permissions: [String!]!, $langs: [String!]) {
+    assignments: setUserPermissions(id: $id, permissions: $permissions, langs: $langs)
   }
 `
+
+// modes of the writable languages control
+const LANGS_ALL = 'all'
+const LANGS_SOME = 'some'
+const LANGS_NONE = 'none'
 
 const CREATE_USER = gql`
   ${USER_DATA}
@@ -84,6 +91,8 @@ export default {
       customRoleValue: '__cms_role_custom__',
       backendRoleDraft: [],
       frontendRoleDraft: [],
+      langsMode: LANGS_ALL,
+      langsDraft: [],
       permissionOptions: { roles: [], permissions: [] },
       result: undefined,
       savingAccess: false,
@@ -108,8 +117,21 @@ export default {
       return this.canAccess || this.canPermission
     },
 
+    // restricted users can't change the writable languages of others
+    canLangs() {
+      return this.canPermission && this.user.unrestricted()
+    },
+
     canPermission() {
       return this.user.can('user:permission')
+    },
+
+    // restricted users can't change the roles of users who may write other languages
+    canRoles() {
+      const langs = this.result?.langs
+
+      return this.canPermission && (this.user.unrestricted()
+        || Array.isArray(langs) && langs.every((lang) => this.user.me.langs.includes(lang)))
     },
 
     emailValid() {
@@ -163,8 +185,41 @@ export default {
       return !!userEmail && !!resultEmail && userEmail === resultEmail
     },
 
+    // writable languages resulting from the control, NULL for unrestricted
+    langsValue() {
+      switch (this.langsMode) {
+        case LANGS_ALL: return null
+        case LANGS_NONE: return []
+        default: return [...new Set(this.langsDraft)]
+      }
+    },
+
+    hasLangsChanges() {
+      const langs = this.result?.langs ?? null
+      return langs === null || this.langsValue === null
+        ? langs !== this.langsValue
+        : !this.selectionEqual(langs, this.langsValue)
+    },
+
+    langsItems() {
+      const codes = new Set(localeItems().map((entry) => entry.value))
+      // languages which aren't configured any more are shown too, so they can be removed
+      return [...localeItems(), ...(this.result?.langs || []).filter((code) => !codes.has(code)).map((code) => ({ value: code, title: code }))]
+    },
+
+    langsModes() {
+      return [
+        { value: LANGS_ALL, title: this.$gettext('All languages') },
+        { value: LANGS_SOME, title: this.$gettext('Selected languages') },
+        { value: LANGS_NONE, title: this.$gettext('No languages') }
+      ]
+    },
+
     canSaveRoleChanges() {
-      return (this.canAccess && this.hasFrontendRoleChanges) || (this.canPermission && this.hasBackendRoleChanges)
+      return (
+        (this.canAccess && this.hasFrontendRoleChanges) ||
+        (this.canPermission && (this.hasBackendRoleChanges || this.hasLangsChanges))
+      )
     },
 
     savingRoleChanges() {
@@ -184,21 +239,30 @@ export default {
         promises.push(this.change('access', this.frontendRoleDraft, SET_USER_ACCESS))
       }
 
-      if (this.canPermission && this.hasBackendRoleChanges) {
+      if (this.canPermission && (this.hasBackendRoleChanges || this.hasLangsChanges)) {
         promises.push(this.changePermissionRole(this.backendRoleDraft))
       }
 
       await Promise.all(promises)
     },
 
-    async change(field, values, mutation) {
+    /**
+     * Saves the frontend ("access") or backend ("permissions") roles
+     *
+     * @param {String} field "access" or "permissions"
+     * @param {Array<String>} values New roles and permissions
+     * @param {Object} mutation GraphQL mutation
+     * @param {Object} extra Additional variables, also stored in the result if saved successfully
+     */
+    async change(field, values, mutation, extra = {}) {
       const saving = field === 'access' ? 'savingAccess' : 'savingPermissions'
       if (!this.result || this[saving]) return
 
       const id = this.result.id
       const assignments = [...new Set(Array.isArray(values) ? values : [])]
 
-      if (this.selectionEqual(assignments, this.result[field])) {
+      // the writable languages are saved together with the backend roles
+      if (this.selectionEqual(assignments, this.result[field]) && (field !== 'permissions' || !this.hasLangsChanges)) {
         return
       }
 
@@ -207,12 +271,12 @@ export default {
       try {
         const response = await apolloClient.mutate({
           mutation,
-          variables: { id, [field]: assignments }
+          variables: { id, [field]: assignments, ...extra }
         })
 
         // the stored email may differ in case from the searched one, so the user is matched by id
         if (this.result?.id === id) {
-          this.result = { ...this.result, [field]: response.data.assignments }
+          this.result = { ...this.result, ...extra, [field]: response.data.assignments }
 
           this.messages.add(
             field === 'access' ? this.$gettext('Access roles updated') : this.$gettext('Backend roles updated'),
@@ -241,7 +305,9 @@ export default {
       const remaining = (this.result.permissions || []).filter((entry) => !this.isRole(entry))
       const selected = (roles || []).filter((value) => value !== this.customRoleValue)
 
-      return this.change('permissions', [...remaining, ...selected], SET_USER_PERMISSIONS)
+      // only unrestricted users can change the writable languages, so they are only sent if changed
+      const extra = this.hasLangsChanges ? { langs: this.langsValue } : {}
+      return this.change('permissions', [...remaining, ...selected], SET_USER_PERMISSIONS, extra)
     },
 
     async createUser() {
@@ -305,7 +371,8 @@ export default {
         })
 
         this.permissionOptions = response.data.permissions
-        this.sync('permissions')
+        // the roles depend on the catalog, unsaved language changes are kept
+        this.backendRoleDraft = this.permissionRole
       } catch (error) {
         this.messages.error(this.$gettext('Error fetching access roles'), error)
       } finally {
@@ -360,7 +427,11 @@ export default {
       }
 
       if (field !== 'access') {
+        const langs = this.result?.langs ?? null
+
         this.backendRoleDraft = this.permissionRole
+        this.langsMode = langs === null ? LANGS_ALL : langs.length ? LANGS_SOME : LANGS_NONE
+        this.langsDraft = [...(langs || [])]
       }
     }
   }
@@ -469,7 +540,7 @@ export default {
           :model-value="backendRoleDraft"
           :items="permissionRoleItems"
           :loading="savingPermissions"
-          :disabled="savingPermissions || isCurrentUser"
+          :disabled="savingPermissions || isCurrentUser || !canRoles"
           :label="$gettext('Available roles') + ' ‒ ' + $gettext('Roles defining what the user can do in the admin panel')"
           variant="underlined"
           multiple
@@ -478,6 +549,35 @@ export default {
           clearable
           hide-details="auto"
           @update:model-value="draft('backendRoleDraft', $event)"
+        />
+      </section>
+
+      <section v-if="canPermission" class="assignment assigned-langs">
+        <h3 class="assignment-title">{{ $gettext('Writable languages') }}</h3>
+
+        <v-select
+          class="langs-mode"
+          v-model="langsMode"
+          :items="langsModes"
+          :disabled="savingPermissions || isCurrentUser || !canLangs"
+          :label="$gettext('Writable languages') + ' ‒ ' + $gettext('Languages of the pages, elements and files the user can change')"
+          variant="underlined"
+          hide-details="auto"
+        />
+
+        <v-autocomplete
+          v-if="langsMode === 'some'"
+          class="assigned langs-selected"
+          v-model="langsDraft"
+          :items="langsItems"
+          :disabled="savingPermissions || isCurrentUser || !canLangs"
+          :label="$gettext('Selected languages')"
+          variant="underlined"
+          multiple
+          chips
+          closable-chips
+          clearable
+          hide-details="auto"
         />
       </section>
     </div>

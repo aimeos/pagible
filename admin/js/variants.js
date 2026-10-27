@@ -5,7 +5,7 @@
 import gql from 'graphql-tag'
 import { useLanguageStore, useTranslationStore } from './stores'
 import { ADD_PAGE_VARIANT } from './pages'
-import { pendingLangs, translatePages } from './translate'
+import { pendingLangs, translatePages, writableLangs } from './translate'
 
 const IGNORE_CHANGES = gql`
   mutation ($id: [ID!]!, $lang: String!) {
@@ -122,7 +122,7 @@ export const pageVariants = {
   methods: {
     // moves the variants in the current language to the trash, source variants are skipped
     async dropLang(stat = null) {
-      const all = this.allowed('drop') ? this.targets(stat, (page) => !this.missing(page)) : []
+      const all = this.allowed('drop', 'variant', this.lang) ? this.targets(stat, (page) => !this.missing(page)) : []
       const list = all.filter((item) => item.data.lang !== item.data.source && !item.data.variant_deleted_at)
       const skipped = all.filter((item) => item.data.lang === item.data.source).length
 
@@ -159,7 +159,7 @@ export const pageVariants = {
 
       const ids = list.map((item) => item.data.id)
 
-      return this.mutate('drop', ids, this.$gettext('Error trashing language'), this.lang).then((ok) => {
+      return this.mutate('drop', ids, this.$gettext('Error trashing language'), this.lang, 'pageVariant').then((ok) => {
         if (ok) {
           this.trashed(ids, this.lang)
           return this.refetch(list)
@@ -169,20 +169,20 @@ export const pageVariants = {
 
     // restores the trashed variants in the current language
     keepLang(stat = null) {
-      const list = this.allowed('keep') ? this.targets(stat, (page) => this.restorable(page)) : []
+      const list = this.allowed('keep', 'variant', this.lang) ? this.targets(stat, (page) => this.restorable(page)) : []
 
       if (!list.length) {
         return
       }
 
-      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring language'), this.lang).then((ok) => {
+      this.mutate('keep', list.map((item) => item.data.id), this.$gettext('Error restoring language'), this.lang, 'pageVariant').then((ok) => {
         ok && this.refetch(list)
       })
     },
 
     // permanently removes the variants in the current language incl. the trashed ones, source variants are skipped
     async purgeLang(stat = null) {
-      const list = (this.allowed('purge') ? this.targets(stat) : []).filter((item) => this.purgeable(item.data))
+      const list = (this.allowed('purge', 'variant', this.lang) ? this.targets(stat) : []).filter((item) => this.purgeable(item.data))
 
       if (
         !list.length ||
@@ -196,14 +196,14 @@ export const pageVariants = {
         return
       }
 
-      this.mutate('purge', list.map((item) => item.data.id), this.$gettext('Error purging language'), this.lang).then((ok) => {
+      this.mutate('purge', list.map((item) => item.data.id), this.$gettext('Error purging language'), this.lang, 'pageVariant').then((ok) => {
         ok && this.refetch(list)
       })
     },
 
     // marks the variants in the current language as up to date without changing their content
     ignore(stat = null) {
-      const list = this.allowed('save') ? this.targets(stat, (page) => this.isStale(page)) : []
+      const list = this.allowed('save', 'page', this.lang) ? this.targets(stat, (page) => this.isStale(page)) : []
 
       if (!list.length) {
         return
@@ -283,7 +283,7 @@ export const pageVariants = {
         })
         .catch(() => {
           if (this.translateToken === token) {
-            this.translatePending = [...this.languages.available]
+            this.translatePending = writableLangs(this.user, this.languages.available)
           }
         })
     },
@@ -391,7 +391,7 @@ export const detailVariants = {
         return
       }
 
-      if (entry.state === 'missing' && !this.user.can('page:add')) {
+      if (entry.state === 'missing' && !this.user.canLang('variant:add', entry.code)) {
         return this.messages.denied()
       }
 

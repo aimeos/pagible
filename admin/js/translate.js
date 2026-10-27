@@ -45,7 +45,8 @@ const PENDING_CHUNK = 100
  * Returns the languages at least one of the pages needs a translation in.
  *
  * Uses the same rules as the server: source variants as well as up to date and trashed variants
- * are skipped, missing variants are only created if the user is allowed to add pages.
+ * are skipped, missing variants are only created if the user is allowed to add variants.
+ * Languages the user isn't allowed to write are skipped too.
  * Languages already queued for a page don't count for that page.
  *
  * @param {Object} apollo Apollo client
@@ -55,7 +56,7 @@ const PENDING_CHUNK = 100
  * @returns {Promise<Array<String>>} Language codes
  */
 export async function pendingLangs(apollo, user, ids, queued = () => []) {
-  const add = user.can('page:add')
+  const add = user.can('variant:add')
   const langs = new Set()
   const chunks = []
 
@@ -78,14 +79,27 @@ export async function pendingLangs(apollo, user, ids, queued = () => []) {
       const skip = new Set(queued(page.id))
 
       for (const variant of page.variants || []) {
-        if (!variant.source && !skip.has(variant.lang) && (variant.state === 'stale' || (add && variant.state === 'missing'))) {
+        const needed = variant.state === 'stale' || (add && variant.state === 'missing')
+
+        if (needed && !variant.source && !skip.has(variant.lang)) {
           langs.add(variant.lang)
         }
       }
     }
   }
 
-  return [...langs]
+  return writableLangs(user, [...langs])
+}
+
+/**
+ * Returns the languages the user is allowed to translate pages into.
+ *
+ * @param {Object} user User store
+ * @param {Array<String>} langs Language codes
+ * @returns {Array<String>} Writable language codes
+ */
+export function writableLangs(user, langs) {
+  return langs.filter((lang) => user.canLang('page:save', lang))
 }
 
 /**

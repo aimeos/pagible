@@ -1093,7 +1093,7 @@ describe('PageListItems', () => {
           },
         },
       })
-      const mutate = cy.stub().resolves({ data: { keepPage: [{ id: 'page-1' }] } })
+      const mutate = cy.stub().resolves({ data: { keepPageVariant: [{ id: 'page-1' }] } })
 
       mountList({}, { 'page:keep': true, 'page:view': true }, { query, mutate }, 'fr').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
@@ -1109,6 +1109,7 @@ describe('PageListItems', () => {
 
           vm.keepLang(stat)
           expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: 'fr' })
+          expect(mutate.firstCall.args[0].mutation.loc.source.body).to.contain('keepPageVariant(id: $id, lang: $lang)')
         })
       })
     })
@@ -1164,7 +1165,7 @@ describe('PageListItems', () => {
       const query = cy.stub().resolves({
         data: { pages: { data: [], paginatorInfo: { currentPage: 1, lastPage: 1 } } }
       })
-      const mutate = cy.stub().resolves({ data: { dropPage: [{ id: 'page-1' }] } })
+      const mutate = cy.stub().resolves({ data: { dropPageVariant: [{ id: 'page-1' }] } })
 
       mountList({}, { 'page:drop': true, 'page:view': true }, { query, mutate }, 'de').then(({ wrapper }) => {
         const vm = wrapper.findComponent(PageListItems).vm
@@ -1181,6 +1182,7 @@ describe('PageListItems', () => {
           expect(ask.firstCall.args[3]).to.contain('1 page in its source language is skipped')
           expect(mutate).to.have.been.calledOnce
           expect(mutate.firstCall.args[0].variables).to.deep.equal({ id: ['page-1'], lang: 'de' })
+          expect(mutate.firstCall.args[0].mutation.loc.source.body).to.contain('dropPageVariant(id: $id, lang: $lang)')
         })
       })
     })

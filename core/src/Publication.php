@@ -17,6 +17,7 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageQuery;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\Resource\Support\Langs;
 use Aimeos\Cms\Resource\Support\PageRows;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
@@ -213,6 +214,7 @@ final class Publication
         }
 
         Permission::check( $model::PERM . ':publish', $user );
+        Permission::checkLang( $lang, $user, $lang !== null );
 
         $ids = $model::bulkIds( $ids );
         $editor = Utils::editor( $user );
@@ -224,6 +226,10 @@ final class Publication
             foreach( array_chunk( $ids, Base::CHUNK ) as $chunk )
             {
                 $loaded = self::items( $model, $chunk, (bool) $at, $lang );
+
+                // checked before publishing the chunk, publication is all or nothing
+                Langs::authorize( $loaded, $user );
+
                 $pending = $pending->concat( $publication->publishItems( $loaded, $user, $at, $editor ) );
                 $items = $items->concat( $loaded );
             }
@@ -368,8 +374,9 @@ final class Publication
     {
         $canElements = Permission::can( 'element:publish', $user );
         $canFiles = Permission::can( 'file:publish', $user );
+        $restricted = Permission::langs( $user ) !== null;
 
-        if( $canElements && $canFiles ) {
+        if( $canElements && $canFiles && !$restricted ) {
             return;
         }
 
@@ -382,6 +389,36 @@ final class Publication
             || ( $files && !$canFiles ) ) {
             throw new PermissionException( 'Insufficient permissions' );
         }
+
+        // the drafts of the dependencies must be in the writable languages too, including the files of elements
+        if( $restricted )
+        {
+            $owners = $this->references->load( $this->authorizeDrafts( Element::class, $elements, $user ) );
+            $this->authorizeDrafts( File::class, [...$files, ...$this->references->related( $owners, 'files' )], $user );
+        }
+    }
+
+
+    /**
+     * Checks the languages of the items with unpublished latest versions and returns these versions.
+     *
+     * @param class-string<Element>|class-string<File> $model Model class of the items
+     * @param array<string> $ids Item IDs
+     * @param Authenticatable $user Authenticated user
+     * @return Collection<int, Version> Unpublished latest versions
+     * @throws PermissionException If the language of an item with an unpublished version isn't writable
+     */
+    private function authorizeDrafts( string $model, array $ids, Authenticatable $user ) : Collection
+    {
+        $versions = collect();
+
+        foreach( self::unpublished( $model, $ids, true ) as [, $pending] )
+        {
+            Langs::authorize( array_column( $pending, 0 ), $user );
+            $versions = $versions->concat( array_column( $pending, 1 ) );
+        }
+
+        return $versions;
     }
 
 
@@ -403,7 +440,7 @@ final class Publication
             $query->language( $lang );
         }
 
-        $query->select( $compact ? ["{$table}.id", "{$table}.latest_id"] : ["{$table}.*"] )
+        $query->select( $compact ? ["{$table}.id", "{$table}.latest_id", "{$table}.lang"] : ["{$table}.*"] )
             ->leftJoin( 'cms_versions AS cms_latest', function( $join ) use ( $table ) {
                 $join->on( "{$table}.latest_id", '=', 'cms_latest.id' )
                     ->where( 'cms_latest.tenant_id', Tenancy::value() );
@@ -531,21 +568,14 @@ final class Publication
     {
         $existing = [];
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), Base::CHUNK ) as $chunk )
+        foreach( self::unpublished( $model, $ids ) as [$loaded, $items] )
         {
-            $items = [];
-
-            foreach( self::items( $model, $chunk )->whereInstanceOf( $model ) as $item )
-            {
-                $existing[(string) $item->id] = $item;
-
-                if( ( $version = $item->latest ) && !$version->published ) {
-                    $items[] = [$item, $version];
-                }
-            }
+            $existing += $loaded->keyBy( fn( $item ) => (string) $item->id )->all();
 
             // calls without user passed the entry check inside Permission::system() or are model calls like Base::publish()
-            if( $user ) {
+            if( $user )
+            {
+                Langs::authorize( array_column( $items, 0 ), $user );
                 Permission::check( $model::PERM . ':publish', $user, (bool) $items );
             }
 
@@ -553,6 +583,34 @@ final class Publication
         }
 
         return $existing;
+    }
+
+
+    /**
+     * Loads the items in bounded, deduplicated chunks with their latest versions.
+     *
+     * @template T of Element|File
+     * @param class-string<T> $model Model class of the items
+     * @param array<string> $ids Item IDs
+     * @param bool $compact TRUE to load only the columns required for checks
+     * @return \Generator<int, array{Collection<int, T>, array<int, array{T, Version}>}> Loaded items and the items with unpublished latest versions per chunk
+     */
+    private static function unpublished( string $model, array $ids, bool $compact = false ) : \Generator
+    {
+        foreach( array_chunk( array_values( array_unique( $ids ) ), Base::CHUNK ) as $chunk )
+        {
+            $loaded = self::items( $model, $chunk, $compact )->whereInstanceOf( $model );
+            $items = [];
+
+            foreach( $loaded as $item )
+            {
+                if( ( $version = $item->latest ) && !$version->published ) {
+                    $items[] = [$item, $version];
+                }
+            }
+
+            yield [$loaded, $items];
+        }
     }
 
 

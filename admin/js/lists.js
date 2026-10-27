@@ -112,7 +112,8 @@ export function mutation(action, type, lang = false, at = false) {
     if (action === 'bulk') {
       mutations.set(key, gql`mutation ($id: [ID!]!, $input: ${model}Input!) { ${name}(id: $id, input: $input) { ids } }`)
     } else {
-      const vars = ['$id: [ID!]!', at && '$at: DateTime', lang && '$lang: String'].filter(Boolean)
+      // the language is required by the variant mutations, e.g. "dropPageVariant"
+      const vars = ['$id: [ID!]!', at && '$at: DateTime', lang && (model.endsWith('Variant') ? '$lang: String!' : '$lang: String')].filter(Boolean)
       const args = ['id: $id', at && 'at: $at', lang && 'lang: $lang'].filter(Boolean)
 
       mutations.set(key, gql`mutation (${vars.join(', ')}) { ${name}(${args.join(', ')}) { id } }`)
@@ -229,8 +230,11 @@ export const listBase = {
   },
 
   methods: {
-    allowed(action, type = this.type) {
-      if (this.user.can(`${type}:${action}`)) {
+    // the language is checked too if passed, e.g. for writes to the page variants of a language
+    allowed(action, type = this.type, lang = undefined) {
+      const name = `${type}:${action}`
+
+      if (lang === undefined ? this.user.can(name) : this.user.canLang(name, lang)) {
         return true
       }
 

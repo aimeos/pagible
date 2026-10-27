@@ -24,6 +24,7 @@ class User extends Command
         {--d|disable : Disables the user}
         {--e|enable : Enables the user}
         {--l|list : Lists all permissions of the CMS user}
+        {--langs=* : Restrict writes to these language codes, e.g. "de" (can be used multiple times, replaces the current languages), "*" for all languages or empty for none}
         {--p|password= : Secret password of the account (will ask if user will be created)}
         {--q|--quiet : Do not output any message}
         {--r|remove= : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
@@ -51,6 +52,14 @@ class User extends Command
             $this->error( 'E-Mail address is required!' );
             return;
         }
+
+        try {
+            $langs = $this->langs();
+        } catch( \InvalidArgumentException $e ) {
+            $this->error( $e->getMessage() );
+            return;
+        }
+
         $model = $this->model();
         $user = $model::where( 'email', $email )->first();
 
@@ -69,8 +78,11 @@ class User extends Command
         // Permission::set() — a single locked transaction and a single audit entry for
         // the intended end state, instead of one misleading intermediate audit line
         // per flag.
-        if( ( $assigned = $this->assigned( Permission::assigned( $user ) ) ) !== null ) {
-            Permission::set( $user, $assigned );
+        $existing = Permission::assigned( $user );
+        $assigned = $this->assigned( $existing );
+
+        if( $assigned !== null || $langs !== false ) {
+            Permission::set( $user, $assigned ?? $existing, $langs );
         }
 
         // Only save when the password actually changed; an unconditional save() would
@@ -127,6 +139,34 @@ class User extends Command
 
 
     /**
+     * Returns the writable languages resulting from the command options.
+     *
+     * @return array<string>|null|false Language codes, NULL for unrestricted or FALSE if unchanged
+     * @throws \InvalidArgumentException If "*" is combined with language codes
+     */
+    protected function langs() : array|null|false
+    {
+        // not passed: unchanged, "--langs=" (empty): no language, "--langs=*": all languages
+        if( !( $values = (array) $this->option( 'langs' ) ) ) {
+            return false;
+        }
+
+        $langs = array_values( array_unique( array_filter( $values, fn( $lang ) => is_string( $lang ) && $lang !== '' ) ) );
+
+        if( in_array( '*', $langs, true ) )
+        {
+            if( count( $langs ) > 1 ) {
+                throw new \InvalidArgumentException( 'Use either --langs=* or language codes!' );
+            }
+
+            return null;
+        }
+
+        return $langs;
+    }
+
+
+    /**
      * Creates a new user with the given email.
      *
      * @param string $email E-Mail of the user
@@ -170,6 +210,10 @@ class User extends Command
                 $this->line( sprintf( '  %1$s', $role ) );
             }
         }
+
+        $langs = Permission::langs( $user );
+        $this->info( 'languages:' );
+        $this->line( sprintf( '  %1$s', $langs === null ? '* (unrestricted)' : ( implode( ', ', $langs ) ?: '- (none)' ) ) );
 
         $groups = collect( Permission::all() )->sort()->groupBy( fn( $name ) => explode( ':', $name )[0] );
 

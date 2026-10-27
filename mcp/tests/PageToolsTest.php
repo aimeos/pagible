@@ -53,7 +53,9 @@ class PageToolsTest extends McpTestAbstract
             \Aimeos\Cms\Tools\MovePage::class,
             \Aimeos\Cms\Tools\SavePage::class,
             \Aimeos\Cms\Tools\DropPage::class,
+            \Aimeos\Cms\Tools\DropPageVariant::class,
             \Aimeos\Cms\Tools\RestorePage::class,
+            \Aimeos\Cms\Tools\RestorePageVariant::class,
             \Aimeos\Cms\Tools\PublishPage::class,
         ] as $tool ) {
             CmsServer::actingAs( $user )->tool( $tool )
@@ -639,6 +641,34 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testDropRestorePageVariantPermissions()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+        Variants::add( $page->id, 'de', $this->user );
+
+        $user = ( new \App\Models\User( ['cmsperms' => ['page:view', 'variant:drop', 'variant:keep']] ) )
+            ->forceFill( ['cmslangs' => json_encode( ['de'] )] );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPageVariant::class, ['id' => $page->id, 'lang' => 'de'] )
+            ->assertOk()->assertDontSee( 'error' );
+        $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
+
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\RestorePageVariant::class, ['id' => $page->id, 'lang' => 'de'] )
+            ->assertOk()->assertDontSee( 'error' );
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+
+        // whole pages and unassigned languages are denied
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPage::class, ['id' => $page->id] )
+            ->assertHasErrors( ['Tool [drop-page] not found.'] );
+        $this->assertNotNull( PageView::find( $page->id ) );
+
+        $user->forceFill( ['cmslangs' => json_encode( ['fr'] )] );
+        CmsServer::actingAs( $user )->tool( \Aimeos\Cms\Tools\DropPageVariant::class, ['id' => $page->id, 'lang' => 'de'] )
+            ->assertSee( 'Insufficient permissions for language' );
+        $this->assertNotNull( PageView::language( 'de' )->find( $page->id ) );
+    }
+
+
     public function testMovePage()
     {
         $page = PageView::where( 'name', 'Dev' )->first();
@@ -828,7 +858,7 @@ class PageToolsTest extends McpTestAbstract
         $page = PageView::where( 'name', 'Dev' )->first();
         Variants::add( $page->id, 'de', $this->user );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPageVariant::class, [
             'id' => $page->id,
             'lang' => 'de',
         ] );
@@ -837,7 +867,7 @@ class PageToolsTest extends McpTestAbstract
         $this->assertNull( PageView::language( 'de' )->find( $page->id ) );
         $this->assertNotNull( PageView::find( $page->id ) );
 
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePage::class, [
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\RestorePageVariant::class, [
             'id' => $page->id,
             'lang' => 'de',
         ] );
@@ -847,12 +877,24 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
+    public function testPageVariantToolsRequireLanguage()
+    {
+        $page = PageView::where( 'name', 'Dev' )->first();
+
+        foreach( [\Aimeos\Cms\Tools\DropPageVariant::class, \Aimeos\Cms\Tools\RestorePageVariant::class] as $tool ) {
+            CmsServer::actingAs( $this->user )->tool( $tool, ['id' => $page->id] )->assertHasErrors( ['lang'] );
+        }
+
+        $this->assertNotNull( PageView::find( $page->id ) );
+    }
+
+
     public function testDropPageSourceLanguage()
     {
         $page = PageView::where( 'name', 'Dev' )->first();
         Variants::add( $page->id, 'de', $this->user );
 
-        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPage::class, [
+        CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\DropPageVariant::class, [
             'id' => $page->id,
             'lang' => $page->lang,
         ] )->assertOk()->assertSee( ['source language'] );

@@ -28,6 +28,7 @@ export default {
     error: { type: Boolean, default: false },
     hasLatest: { type: Boolean, default: false },
     label: { type: String, required: true },
+    lang: { type: [String, null], default: null },
     name: { type: String, default: '' },
     published: { type: Boolean, default: false },
     publishing: { type: Boolean, default: false },
@@ -149,11 +150,11 @@ export default {
 
   computed: {
     pubDisabled() {
-      return (this.published && !this.dirty) || this.error || !this.user.can(`${this.type}:publish`)
+      return (this.published && !this.dirty) || this.error || !this.user.canLang(`${this.type}:publish`, this.lang)
     },
 
     saveDisabled() {
-      return !this.dirty || this.error || !this.user.can(`${this.type}:save`)
+      return !this.dirty || this.error || !this.user.canLang(`${this.type}:save`, this.lang)
     }
   }
 }

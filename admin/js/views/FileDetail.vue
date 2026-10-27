@@ -279,7 +279,7 @@ export default {
   <DetailAppBar v-bind="bar" :label="$gettext('File')" :has-latest="!!item.latestId">
     <template #actions>
       <v-btn
-        v-if="user.can('file:save')"
+        v-if="canWrite('save')"
         @click="$refs.upload.click()"
         :disabled="loading || saving || publishing"
         :title="$gettext('Replace file')"

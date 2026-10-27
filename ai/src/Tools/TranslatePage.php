@@ -46,7 +46,8 @@ class TranslatePage extends Tool
         $page = PageView::findOrFail( (string) $v['id'] );
         $langs = array_values( array_unique( $v['lang'] ) );
         $user = $request->user();
-        $batch = Job::dispatchPending( [(string) $page->id], $langs, $user?->getAuthIdentifier(), Permission::can( 'page:add', $user ) );
+        Job::authorize( $user, $langs );
+        $batch = Job::dispatchPending( [(string) $page->id], $langs, $user?->getAuthIdentifier(), Permission::can( 'variant:add', $user ) );
 
         return Response::structured( ['id' => $page->id, 'lang' => $langs] + ( Job::progress( $batch['id'] ) ?? [] ) );
     }

@@ -271,7 +271,7 @@ export default {
     // adds an untranslated copy of the source variant in the current language, which is
     // translated in the background if the user is allowed to translate pages
     createLang(stat) {
-      if (!this.allowed('add') || !this.missing(stat.data)) {
+      if (!this.allowed('add', 'variant', this.lang) || !this.missing(stat.data)) {
         return
       }
 
@@ -618,6 +618,7 @@ export default {
 
       <PageBulkMenu
         :counts="counts"
+        :lang="lang"
         :selected="isChecked"
         :disabled="!isChecked || embed"
         @open="count()"
@@ -818,7 +819,7 @@ export default {
               <v-divider></v-divider>
 
               <ActionItem
-                v-if="isStale(node) && user.can('page:save')"
+                v-if="isStale(node) && user.canLang('page:save', lang)"
                 :prepend-icon="mdiCheckAll"
                 class="action-ignore-changes"
                 @click="ignore(stat)"
@@ -827,7 +828,7 @@ export default {
               </ActionItem>
 
               <ActionItem
-                v-if="!restorable(node) && user.can('page:drop')"
+                v-if="!restorable(node) && user.canLang('variant:drop', lang)"
                 :prepend-icon="mdiTranslateOff"
                 class="action-drop-lang"
                 @click="dropLang(stat)"
@@ -835,7 +836,7 @@ export default {
                 {{ $gettext('Delete this language') }}
               </ActionItem>
               <ActionItem
-                v-if="node.variant_deleted_at && user.can('page:keep')"
+                v-if="node.variant_deleted_at && user.canLang('variant:keep', lang)"
                 :prepend-icon="mdiDeleteRestore"
                 class="action-keep-lang"
                 @click="keepLang(stat)"
@@ -843,7 +844,7 @@ export default {
                 {{ $gettext('Restore this language') }}
               </ActionItem>
               <ActionItem
-                v-if="user.can('page:purge')"
+                v-if="user.canLang('variant:purge', lang)"
                 :prepend-icon="mdiDeleteForever"
                 class="action-purge-lang"
                 @click="purgeLang(stat)"
@@ -917,7 +918,7 @@ export default {
             ➔ {{ node.to.substring(0, MAX_TO_LENGTH) + (node.to.length > MAX_TO_LENGTH ? '...' : '') }}</span
           >
         </a>
-        <div v-else-if="!node.deleted_at && !embed && node.variant_trashed && user.can('page:keep')" class="item-create">
+        <div v-else-if="!node.deleted_at && !embed && node.variant_trashed && user.canLang('variant:keep', lang)" class="item-create">
           <v-btn
             @click="keepLang(stat)"
             :prepend-icon="mdiDeleteRestore"
@@ -928,7 +929,7 @@ export default {
             {{ $gettext('Restore') }}
           </v-btn>
         </div>
-        <div v-else-if="!node.deleted_at && !embed && !node.variant_trashed && user.can('page:add')" class="item-create">
+        <div v-else-if="!node.deleted_at && !embed && !node.variant_trashed && user.canLang('variant:add', lang)" class="item-create">
           <v-btn
             @click="createLang(stat)"
             :prepend-icon="mdiPlus"

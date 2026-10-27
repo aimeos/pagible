@@ -29,8 +29,12 @@ final class TranslatePage
     public function __invoke( $rootValue, array $args ) : array
     {
         $user = Auth::user();
+        $langs = array_map( 'strval', $args['lang'] );
+
+        Job::authorize( $user, $langs );
+
         $ids = PageView::whereIn( 'id', array_unique( $args['id'] ) )->orderBy( NestedSet::LFT )->pluck( 'id' )->all();
 
-        return Job::dispatchPending( $ids, array_map( 'strval', $args['lang'] ), $user?->getAuthIdentifier(), Permission::can( 'page:add', $user ) );
+        return Job::dispatchPending( $ids, $langs, $user?->getAuthIdentifier(), Permission::can( 'variant:add', $user ) );
     }
 }

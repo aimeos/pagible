@@ -25,6 +25,7 @@ use Aimeos\Cms\Validation;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Aimeos\Cms\Resource\Support\Items;
+use Aimeos\Cms\Resource\Support\Langs;
 use Aimeos\Cms\Concerns\ChangeChunks;
 use Aimeos\Cms\Publication;
 use Illuminate\Support\Collection;
@@ -61,6 +62,7 @@ class Elements
     public function add( array $input, ?Authenticatable $user = null ) : Element
     {
         Permission::check( 'element:add', $user );
+        Permission::checkLang( $input['lang'] ?? null, $user );
 
         Validation::limits( Element::class, $input );
         $input['data'] = Validation::element( $input['type'] ?? '', $input['data'] ?? [] );
@@ -107,6 +109,8 @@ class Elements
         Permission::check( 'element:save', $user );
 
         $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
+        Langs::authorize( $element, $user, $input );
+
         $type = $input['type'] ?? $element->type;
         Validation::limits( Element::class, $input );
 
@@ -148,9 +152,17 @@ class Elements
 
         Validation::limits( Element::class, $input );
 
+        // an explicit NULL language makes the elements language-neutral
+        Permission::checkLang( $input['lang'] ?? null, $user, array_key_exists( 'lang', $input ) );
+
         return Bulk::save( Element::class, $ids, $input, $user, function( string $id, array $refs, string $editor ) use ( $input, $user ) : ?Element {
-            $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id );
-            return $element ? $this->apply( $element, $input, $editor, null, $user, $refs[$element->latest_id ?? ''] ?? null ) : null;
+
+            if( !( $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
+                return null;
+            }
+
+            Langs::authorize( $element, $user, $input );
+            return $this->apply( $element, $input, $editor, null, $user, $refs[$element->latest_id ?? ''] ?? null );
         } );
     }
 
@@ -244,7 +256,7 @@ class Elements
             // dispatched after commit
             Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
             Element::trashMany( $items, $editor );
-        } ) );
+        }, $user ) );
 
         Element::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
@@ -278,7 +290,7 @@ class Elements
             // the references are removed with the elements, pages using trashed elements were invalidated when they were trashed
             Invalidation::refs( array_map( strval( ... ), $items->reject( fn( Element $item ) => $item->trashed() )->modelKeys() ) );
             Element::forceDeleteMany( $items );
-        } ) );
+        }, $user ) );
 
         Element::announceMany( $items, LifecycleAction::Purged, $editor );
         Scout::unindex( Element::class, $this->ids( $items ) );
@@ -307,7 +319,7 @@ class Elements
             // dispatched after commit
             Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
             Element::restoreMany( $items, $editor );
-        } ) );
+        }, $user ) );
 
         Element::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
         Scout::index( Element::class, $this->ids( $items ) );

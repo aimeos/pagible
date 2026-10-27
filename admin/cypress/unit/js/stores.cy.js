@@ -58,6 +58,65 @@ describe('useUserStore', () => {
       user.me = { permission: { 'page:view': 0 } }
       expect(user.can('page:view')).to.be.false
     })
+
+    it('grants variant actions by the page actions', () => {
+      const user = useUserStore()
+      user.me = { permission: { 'page:drop': true, 'variant:add': true } }
+      expect(user.can('variant:drop')).to.be.true
+      expect(user.can('variant:add')).to.be.true
+      expect(user.can('variant:keep')).to.be.false
+      expect(user.can('page:add')).to.be.false
+    })
+  })
+
+  describe('canLang()', () => {
+    it('allows all languages without language scope', () => {
+      const user = useUserStore()
+      user.me = { permission: { 'page:save': true } }
+      expect(user.unrestricted()).to.be.true
+      expect(user.canLang('page:save', 'de')).to.be.true
+      expect(user.canLang('page:save', null)).to.be.true
+    })
+
+    it('allows only the assigned languages', () => {
+      const user = useUserStore()
+      user.me = { permission: { 'page:save': true }, langs: ['de'] }
+      expect(user.unrestricted()).to.be.false
+      expect(user.canLang('page:save', 'de')).to.be.true
+      expect(user.canLang('page:save', 'fr')).to.be.false
+      expect(user.canLang('page:save', null)).to.be.false
+    })
+
+    it('requires the action permission', () => {
+      const user = useUserStore()
+      user.me = { permission: {}, langs: null }
+      expect(user.canLang('page:save', 'de')).to.be.false
+    })
+  })
+
+  describe('addLang()', () => {
+    it('adds language-neutral items without language scope', () => {
+      const user = useUserStore()
+      user.me = { permission: { 'file:add': true } }
+      expect(user.addLang('de')).to.be.null
+      expect(user.canAdd('file:add')).to.be.true
+    })
+
+    it('uses the preferred or the first assigned language', () => {
+      const user = useUserStore()
+      user.me = { permission: { 'file:add': true }, langs: ['de', 'fr'] }
+      expect(user.addLang('fr')).to.equal('fr')
+      expect(user.addLang('en')).to.equal('de')
+      expect(user.addLang()).to.equal('de')
+      expect(user.canAdd('file:add')).to.be.true
+    })
+
+    it('denies adding items without assigned languages', () => {
+      const user = useUserStore()
+      user.me = { permission: { 'file:add': true }, langs: [] }
+      expect(user.addLang('de')).to.be.undefined
+      expect(user.canAdd('file:add')).to.be.false
+    })
   })
 
   describe('filter()', () => {

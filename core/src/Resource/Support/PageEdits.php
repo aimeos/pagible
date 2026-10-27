@@ -14,6 +14,7 @@ use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
@@ -47,6 +48,7 @@ final class PageEdits
         ?string $lang, bool $restore = false ) : PageView
     {
         Permission::check( 'page:save', $user );
+        Permission::checkLang( $lang, $user, $lang !== null );
 
         $source = isset( $input['source'] ) ? (string) $input['source'] : null;
         $input = Validation::page( $input, $user );
@@ -54,7 +56,19 @@ final class PageEdits
 
         return DB::transaction( function() use ( $id, $input, $user, $editor, $latestId, $lang, $source, $restore ) {
 
+            // the language checks below need a stable variant, locking the page view would serialize saves of all languages of the page
+            if( Permission::langs( $user ) !== null )
+            {
+                PageVariant::withTrashed()->where( 'page_id', $id )
+                    ->when( $lang !== null, fn( $q ) => $q->where( 'lang', $lang ) )
+                    ->when( $lang === null, fn( $q ) => $q->whereIn( 'lang', Page::withTrashed()->where( 'id', $id )->select( 'source' ) ) )
+                    ->lockForUpdate()->get( ['id'] );
+            }
+
             $page = PageView::withTrashed()->language( $lang )->with( 'latest' )->findOrFail( $id );
+
+            Langs::authorize( $page, $user );
+            Langs::identity( $input, $user, $page );
 
             if( !empty( $input ) || $source === null )
             {
@@ -96,8 +110,12 @@ final class PageEdits
     public static function bulk( array $ids, array $input, ?Authenticatable $user, bool $descendants, ?string $lang ) : BulkResult
     {
         Permission::check( 'page:save', $user );
+        Permission::checkLang( $lang, $user, $lang !== null );
 
         $input = Validation::page( $input, $user );
+
+        // the language and domain of several pages can't be the same as their current ones
+        Langs::identity( $input, $user );
 
         // recursive save: expand to the whole subtree in depth-first order (defaultOrder() is the
         // nested-set pre-order traversal) so each parent is saved before its children
@@ -126,6 +144,8 @@ final class PageEdits
             if( !( $page = PageView::withTrashed()->language( $lang, trashed: true )->with( 'latest' )->lockForUpdate()->find( $id ) ) ) {
                 return null;
             }
+
+            Langs::authorize( $page, $user );
 
             // bulk only creates new draft versions, so the cached published output is unchanged
             self::apply( $page, $input, $editor, null, $user, $refs[$page->latest_id ?? ''] ?? null );

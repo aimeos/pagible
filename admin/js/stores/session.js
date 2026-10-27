@@ -27,6 +27,7 @@ const FETCH_ME = gql`
   query {
     me {
       permission
+      langs
       settings
       email
       name
@@ -362,6 +363,7 @@ export const useSessionStore = defineStore('session', {
         }
 
         user.me.permission = parseMe(me).permission
+        user.me.langs = me.langs ?? null
         user.me.token = me.token
         this.applyProxyToken()
         this.expired = false

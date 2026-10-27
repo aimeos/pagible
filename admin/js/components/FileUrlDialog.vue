@@ -20,6 +20,11 @@ export default {
     mime: { type: String, default: '' }
   },
 
+  inject: {
+    // files added while editing a page use its language if writable
+    pageLang: { default: null }
+  },
+
   emits: ['update:modelValue', 'add'],
 
   setup() {
@@ -58,7 +63,7 @@ export default {
               path: item.path,
               name: item.name
             }
-          })
+          }, this.pageLang?.())
             .catch((error) => {
               this.messages.error(this.$gettext(`Error adding file %{path}`, { path: item.path }), error, item)
             })

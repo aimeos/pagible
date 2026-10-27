@@ -83,7 +83,7 @@ export default {
 
   methods: {
     add(file) {
-      if (!this.user.can('file:add')) return this.messages.denied()
+      if (!this.user.canAdd('file:add')) return this.messages.denied()
 
       // only one upload at a time, a second one would race the first
       if (!file || this.file.uploading) {

@@ -97,6 +97,23 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
 
 
     /**
+     * Checks if the user may translate into the languages.
+     *
+     * Must be called before dispatchPending() for translations started by users.
+     *
+     * @param Authenticatable|null $user User who starts the translation
+     * @param array<int, string> $langs Requested language codes
+     * @throws PermissionException If a language isn't writable by the user
+     */
+    public static function authorize( ?Authenticatable $user, array $langs ) : void
+    {
+        foreach( $langs as $lang ) {
+            Permission::checkLang( (string) $lang, $user );
+        }
+    }
+
+
+    /**
      * Queues the translations of the pages which are needed as new batch.
      *
      * Only missing and stale variants are translated. Source variants, trashed pages and
@@ -351,11 +368,13 @@ class TranslatePage implements ShouldBeUnique, ShouldQueue
                     return;
                 }
 
-                if( !( $user = $this->user() ) || !Permission::can( 'page:save', $user ) || ( !Permission::can( 'page:add', $user )
+                if( !( $user = $this->user() ) || !Permission::can( 'page:save', $user ) || ( !Permission::can( 'variant:add', $user )
                     && !PageVariant::withTrashed()->where( 'page_id', $this->id )->where( 'lang', $this->lang )->exists() )
                 ) {
                     throw new PermissionException( 'Insufficient permissions' );
                 }
+
+                Permission::checkLang( $this->lang, $user );
 
                 // queue workers are long running, so later jobs mustn't run as this user
                 $previous = Auth::hasUser() ? Auth::user() : null;

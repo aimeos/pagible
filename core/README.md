@@ -519,6 +519,7 @@ php artisan cms:user [email] [options]
 | `-d`, `--disable` | Disable all permissions |
 | `-e`, `--enable` | Enable all permissions (`*`) |
 | `-l`, `--list` | List all permissions of the user |
+| `--langs=LANG` | Restrict writes to these language codes (repeatable, replaces the current ones), `--langs=*` for all languages (default) or `--langs=` for none |
 | `-p`, `--password=PWD` | Set password (prompts if omitted during creation) |
 | `-r`, `--remove=PERM` | Remove permissions (repeatable, supports wildcards) |
 | `--role=ROLE` | Add a named role (e.g., `editor`, `publisher`, `admin`) |

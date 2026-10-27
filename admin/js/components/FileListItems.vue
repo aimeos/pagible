@@ -139,7 +139,7 @@ export default {
     },
 
     add(ev, disk = 'public') {
-      if (this.embed || !this.user.can('file:add')) return this.messages.denied()
+      if (this.embed || !this.user.canAdd('file:add')) return this.messages.denied()
 
       const promises = []
       const files = [...(ev.target.files || ev.dataTransfer?.files || [])]
@@ -347,7 +347,7 @@ export default {
         </ActionItem>
       </ListBulkMenu>
 
-      <template v-if="!embed && user.can('file:add')">
+      <template v-if="!embed && user.canAdd('file:add')">
         <input @change="add($event, 'public')" ref="upload" type="file" multiple hidden />
         <input @change="add($event, 'private')" ref="uploadPrivate" type="file" multiple hidden />
         <FileUploadButtons :disabled="loading" @upload="upload" />
@@ -499,7 +499,7 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <FileUploadButtons v-if="!embed && user.can('file:add')" :disabled="loading" class="btn-group" @upload="upload" />
+  <FileUploadButtons v-if="!embed && user.canAdd('file:add')" :disabled="loading" class="btn-group" @upload="upload" />
 
   <EditBulkDialog v-model="editDialog" :count="editIds.length" @apply="save" />
 </template>

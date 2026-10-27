@@ -369,6 +369,27 @@ class PermissionTest extends CoreTestAbstract
     }
 
 
+    public function testSetChecksLockedUser(): void
+    {
+        $user = $this->user( 'permission-check@example.com', ['viewer'] );
+        \App\Models\User::whereKey( $user->getKey() )->update( ['cmslangs' => json_encode( ['de'] )] );
+
+        try {
+            // the stale instance is unrestricted, the locked row isn't
+            Permission::set( $user, ['editor'], false, function( $locked ) {
+                if( Permission::langs( $locked ) !== null ) {
+                    throw new \RuntimeException( 'denied' );
+                }
+            } );
+            $this->fail( 'Expected exception' );
+        } catch( \RuntimeException $e ) {
+            $this->assertSame( 'denied', $e->getMessage() );
+        }
+
+        $this->assertSame( ['viewer'], $user->fresh()->cmsperms );
+    }
+
+
     public function testSetAcceptsSupportedWildcardsAndDenies(): void
     {
         $user = $this->user( 'permission-wildcard@example.com' );

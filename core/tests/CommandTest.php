@@ -391,6 +391,48 @@ class CoreCommandTest extends CoreTestAbstract
     }
 
 
+    public function testUserLanguages(): void
+    {
+        $user = fn() => User::where( 'email', 'langs@example.com' )->firstOrFail();
+
+        $this->artisan( 'cms:user', ['-p' => 'test', '-a' => 'editor', 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->assertNull( Permission::langs( $user() ) );
+
+        $this->artisan( 'cms:user', ['--langs' => ['de', 'fr'], 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->assertSame( ['de', 'fr'], Permission::langs( $user() ) );
+        $this->assertSame( ['editor'], $user()->cmsperms );
+
+        // changing the permissions keeps the languages
+        $this->artisan( 'cms:user', ['-a' => 'viewer', 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->assertSame( ['de', 'fr'], Permission::langs( $user() ) );
+
+        $this->artisan( 'cms:user', ['-l' => true, 'email' => 'langs@example.com'] )
+            ->expectsOutput( '  de, fr' )
+            ->assertExitCode( 0 );
+
+        $this->artisan( 'cms:user', ['--langs' => [''], 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->assertSame( [], Permission::langs( $user() ) );
+
+        $this->artisan( 'cms:user', ['-l' => true, 'email' => 'langs@example.com'] )
+            ->expectsOutput( '  - (none)' )
+            ->assertExitCode( 0 );
+
+        // conflicting language options change nothing
+        $this->artisan( 'cms:user', ['--langs' => ['de', '*'], 'email' => 'langs@example.com'] )
+            ->expectsOutput( 'Use either --langs=* or language codes!' )
+            ->assertExitCode( 0 );
+        $this->assertSame( [], Permission::langs( $user() ) );
+
+        $this->artisan( 'cms:user', ['--langs' => ['*'], 'email' => 'langs@example.com'] )->assertExitCode( 0 );
+        $this->assertNull( Permission::langs( $user() ) );
+        $this->assertEqualsCanonicalizing( ['editor', 'viewer'], $user()->cmsperms );
+
+        $this->artisan( 'cms:user', ['-l' => true, 'email' => 'langs@example.com'] )
+            ->expectsOutput( '  * (unrestricted)' )
+            ->assertExitCode( 0 );
+    }
+
+
     public function testUserPasswordPrompt(): void
     {
         $this->artisan( 'cms:user', ['--password' => null, '-q' => true, 'email' => 'prompt@example.com'] )

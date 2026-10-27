@@ -10,6 +10,7 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Exceptions\PermissionException;
 use \Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Auth\GenericUser;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Aimeos\Cms\Events\PermissionChanged;
@@ -17,11 +18,15 @@ use Aimeos\Cms\Events\PermissionChanged;
 
 /**
  * Permissions are checked via can()/get() and changed via set().
- * The "cmsperms" column is managed by this class.
+ * The "cmsperms" and "cmslangs" columns are managed by this class.
+ *
+ * The writable languages in "cmslangs" restrict the write actions of a user in addition to
+ * the action permissions: database NULL is unrestricted, a list allows writes in these languages only.
  */
 class Permission
 {
     private const MAX_ASSIGNMENTS = 250;
+    private const MAX_LANGS = 100;
     private const MAX_LENGTH = 100;
 
     /**
@@ -39,6 +44,11 @@ class Permission
         'page:publish',
         'page:move',
         'page:access',
+
+        'variant:add',
+        'variant:drop',
+        'variant:keep',
+        'variant:purge',
 
         'element:view',
         'element:save',
@@ -114,11 +124,110 @@ class Permission
     /**
      * Checks if the user belongs to the current tenant and has the requested permission.
      *
+     * Variant actions are also granted by the page action of the same name,
+     * e.g. "page:drop" allows "variant:drop" too.
+     *
      * @param string $action Name of the requested action, e.g. "page:view"
      * @param Authenticatable|null $user Laravel user object
      * @return bool TRUE of the user is allowed to perform the action, FALSE if not
      */
     public static function can( string $action, ?Authenticatable $user ) : bool
+    {
+        if( self::grants( $action, $user ) ) {
+            return true;
+        }
+
+        return str_starts_with( $action, 'variant:' ) && self::grants( 'page:' . substr( $action, 8 ), $user );
+    }
+
+
+    /**
+     * Throws an exception if the user isn't allowed to write in the language.
+     *
+     * Items without a language (NULL) can only be written by users with an unrestricted scope.
+     * A NULL user is unrestricted inside system() only.
+     *
+     * @param string|null $lang Language of the written item or NULL for language-neutral items
+     * @param Authenticatable|null $user Laravel user object or NULL for anonymous users
+     * @param bool $needed FALSE to skip the check
+     * @throws PermissionException If the language is outside the writable languages of the user
+     */
+    public static function checkLang( ?string $lang, ?Authenticatable $user, bool $needed = true ) : void
+    {
+        if( $needed && !self::writable( $lang, $user ) ) {
+            throw new PermissionException( sprintf( 'Insufficient permissions for language "%1$s"', $lang ?? '' ) );
+        }
+    }
+
+
+    /**
+     * Throws an exception if the writable languages of the user are restricted.
+     *
+     * Required for changes affecting the identity of several languages, e.g. language or source changes.
+     *
+     * @param Authenticatable|null $user Laravel user object or NULL for anonymous users
+     * @param bool $needed FALSE to skip the check
+     * @throws PermissionException If the user has a restricted language scope
+     */
+    public static function checkUnrestricted( ?Authenticatable $user, bool $needed = true ) : void
+    {
+        if( $needed && self::langs( $user ) !== null ) {
+            throw new PermissionException( 'Insufficient permissions for all languages' );
+        }
+    }
+
+
+    /**
+     * Returns the languages the user is allowed to write.
+     *
+     * Only database NULL is unrestricted. Missing attributes (e.g. partially selected users),
+     * JSON null, malformed values and invalid language codes allow no writes at all.
+     *
+     * @param Authenticatable|null $user Laravel user object or NULL for anonymous users
+     * @return array<int, string>|null List of language codes or NULL if unrestricted
+     */
+    public static function langs( ?Authenticatable $user ) : ?array
+    {
+        if( !$user ) {
+            return Hooks::get()->system ? null : [];
+        }
+
+        $attributes = match( true ) {
+            $user instanceof Model => $user->getAttributes(),
+            $user instanceof GenericUser => ( fn() => $this->attributes )->call( $user ),
+            default => get_object_vars( $user ),
+        };
+
+        if( !array_key_exists( 'cmslangs', $attributes ) ) {
+            return [];
+        }
+
+        return $attributes['cmslangs'] === null ? null : self::parseLangs( $attributes['cmslangs'] );
+    }
+
+
+    /**
+     * Checks if the user may write in the language.
+     *
+     * @param string|null $lang Language of the written item or NULL for language-neutral items
+     * @param Authenticatable|null $user Laravel user object or NULL for anonymous users
+     * @return bool TRUE if the language is writable, FALSE if not
+     */
+    public static function writable( ?string $lang, ?Authenticatable $user ) : bool
+    {
+        $langs = self::langs( $user );
+        return $langs === null || $lang !== null && in_array( $lang, $langs, true );
+    }
+
+
+    /**
+     * Checks if the user has the permission without the implied page permissions.
+     *
+     * @param string $action Name of the requested action, e.g. "page:view"
+     * @param Authenticatable|null $user Laravel user object
+     * @return bool TRUE of the user is allowed to perform the action, FALSE if not
+     */
+    private static function grants( string $action, ?Authenticatable $user ) : bool
     {
         if( !$user || !Tenancy::allows( $user, Tenancy::value() ) ) {
             return false;
@@ -249,17 +358,23 @@ class Permission
     /**
      * Atomically replaces the raw CMS roles and permissions assigned to a persisted user.
      *
-     * This is the ONLY supported writer for the managed "cmsperms" attribute.
+     * This is the ONLY supported writer for the managed "cmsperms" and "cmslangs" attributes.
      * It enforces the current tenant, validates entries, and serializes concurrent
      * writers under a row lock. The resolution cache is fingerprinted against the
      * assignments, so the change takes effect on the next can()/get() call.
      *
+     * The acting user isn't checked, callers must authorize the change themselves. Checks depending
+     * on the stored assignments belong into the $check callback, which receives the locked user.
+     *
      * @param iterable<mixed> $entries
+     * @param array<mixed>|null|false $langs Writable languages, NULL for unrestricted or FALSE to keep the stored ones
+     * @param (\Closure(Authenticatable&Model): void)|null $check Authorizes the change of the locked user, throws to abort
      * @return array<int, string>
      */
-    public static function set( Authenticatable $user, iterable $entries ) : array
+    public static function set( Authenticatable $user, iterable $entries, array|null|false $langs = false, ?\Closure $check = null ) : array
     {
         $entries = self::normalize( $entries );
+        $langs = is_array( $langs ) ? self::normalizeLangs( $langs ) : $langs;
 
         if( !$user instanceof Model || !$user->exists || $user->getKey() === null ) {
             throw new Exception( 'CMS permission assignment requires a persisted Eloquent user.' );
@@ -272,17 +387,24 @@ class Permission
             throw new Exception( $error );
         }
 
-        $result = Tenancy::lock( $user, $tenant, $error, function( Authenticatable&Model $locked ) use ( $entries ) {
+        [$result, $raw] = Tenancy::lock( $user, $tenant, $error, function( Authenticatable&Model $locked ) use ( $entries, $langs, $check ) {
+            if( $check ) {
+                $check( $locked );
+            }
+
             $existing = self::assigned( $locked );
 
             self::validate( $entries, $existing );
-            $locked->forceFill( ['cmsperms' => $entries] )->save();
 
-            return $entries;
+            // no cast for "cmslangs" because it would decode database NULL and JSON null to the same value
+            $raw = $langs === false ? $locked->getAttributes()['cmslangs'] ?? null : ( $langs === null ? null : json_encode( $langs ) );
+            $locked->forceFill( ['cmsperms' => $entries, 'cmslangs' => $raw] )->save();
+
+            return [$entries, $raw];
         } );
 
-        $user->forceFill( ['cmsperms' => $result] );
-        self::audit( $user, $result, $tenant );
+        $user->forceFill( ['cmsperms' => $result, 'cmslangs' => $raw] );
+        self::audit( $user, $result, self::langs( $user ), $tenant );
 
         return $result;
     }
@@ -315,11 +437,12 @@ class Permission
     /**
      * Dispatches the permission-change audit event with the request context.
      *
-     * @param array<int, string> $result
+     * @param array<int, string> $result Resulting assignments
+     * @param array<int, string>|null $langs Resulting writable languages, NULL for unrestricted
      */
-    private static function audit( Authenticatable $user, array $result, string $tenant ) : void
+    private static function audit( Authenticatable $user, array $result, ?array $langs, string $tenant ) : void
     {
-        Watch::dispatch( PermissionChanged::class, function() use ( $user, $result, $tenant ) {
+        Watch::dispatch( PermissionChanged::class, function() use ( $user, $result, $langs, $tenant ) {
             $actor = Auth::user();
             $request = app()->bound( 'request' ) ? app( 'request' ) : null;
 
@@ -331,6 +454,7 @@ class Permission
                 ip: (string) ( $request?->ip() ?? '' ),
                 userAgent: (string) ( $request?->userAgent() ?? '' ),
                 tenant: $tenant,
+                langs: $langs,
             );
         } );
     }
@@ -380,6 +504,61 @@ class Permission
         sort( $result, SORT_STRING );
 
         return $result;
+    }
+
+
+    /**
+     * Returns the writable languages validated, deduplicated, and sorted.
+     *
+     * @param array<mixed> $langs Language codes
+     * @return array<int, string> Normalized language codes
+     * @throws InvalidInputException If a language code is invalid
+     */
+    private static function normalizeLangs( array $langs ) : array
+    {
+        $result = [];
+
+        foreach( $langs as $lang )
+        {
+            if( !is_string( $lang ) || !Utils::isValidLang( $lang ) ) {
+                throw new InvalidInputException( sprintf( 'Invalid language code "%1$s"', is_scalar( $lang ) ? $lang : gettype( $lang ) ) );
+            }
+
+            $result[$lang] = $lang;
+        }
+
+        if( count( $result ) > self::MAX_LANGS ) {
+            throw new InvalidInputException( sprintf( 'No more than %d languages may be assigned.', self::MAX_LANGS ) );
+        }
+
+        sort( $result, SORT_STRING );
+
+        return $result;
+    }
+
+
+    /**
+     * Returns the writable languages stored in the raw attribute value.
+     *
+     * @param mixed $raw JSON encoded list or list of language codes
+     * @return array<int, string> Language codes or an empty list if the value is invalid
+     */
+    private static function parseLangs( mixed $raw ) : array
+    {
+        $langs = is_string( $raw ) ? json_decode( $raw, true ) : $raw;
+
+        if( !is_array( $langs ) || !array_is_list( $langs ) ) {
+            return [];
+        }
+
+        foreach( $langs as $lang )
+        {
+            if( !is_string( $lang ) || !Utils::isValidLang( $lang ) ) {
+                return [];
+            }
+        }
+
+        return $langs;
     }
 
 

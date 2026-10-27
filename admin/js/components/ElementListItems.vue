@@ -123,7 +123,10 @@ export default {
 
   methods: {
     add(item) {
-      if (this.embed || !this.user.can('element:add')) return this.messages.denied()
+      if (this.embed || !this.user.canAdd('element:add')) return this.messages.denied()
+
+      // restricted users can only add elements in their languages
+      const lang = this.user.addLang()
 
       return this.$apollo
         .mutate({
@@ -132,7 +135,8 @@ export default {
             input: {
               type: item.type,
               name: '',
-              data: '{}'
+              data: '{}',
+              ...(lang ? { lang } : {})
             }
           }
         })
@@ -213,7 +217,7 @@ export default {
       />
 
       <v-btn
-        v-if="!embed && user.can('element:add')"
+        v-if="!embed && user.canAdd('element:add')"
         @click="vschemas = true"
         :title="$gettext('Add element')"
         :disabled="loading"
@@ -293,7 +297,7 @@ export default {
 
   <v-pagination v-if="last > 1" v-model="page" :length="last"></v-pagination>
 
-  <div v-if="!embed && user.can('element:add')" class="btn-group">
+  <div v-if="!embed && user.canAdd('element:add')" class="btn-group">
     <v-btn
       @click="vschemas = true"
       :title="$gettext('Add element')"

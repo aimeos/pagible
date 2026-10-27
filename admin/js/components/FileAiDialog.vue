@@ -32,6 +32,11 @@ export default {
     disk: { type: String, default: 'public' }
   },
 
+  inject: {
+    // files added while editing a page use its language if writable
+    pageLang: { default: null }
+  },
+
   emits: ['update:modelValue', 'add'],
 
   setup() {
@@ -115,7 +120,7 @@ export default {
         disk: this.disk,
         input: { name: item.name },
         file: new File([item.blob], filename, { type: item.mime })
-      })
+      }, this.pageLang?.())
         .then((data) => {
           // the server path replaces the object URL which can't be revoked afterwards
           revokeBlob(item)

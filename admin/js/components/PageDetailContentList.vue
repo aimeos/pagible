@@ -115,6 +115,10 @@ export default {
   },
 
   computed: {
+    canSave() {
+      return this.user.canLang('page:save', this.item.lang)
+    },
+
     // all shown entries are selected
     allSelected() {
       const shown = this.content.filter((el) => this.shown(el))
@@ -240,7 +244,7 @@ export default {
         ev.ctrlKey ||
         ev.metaKey ||
         ev.shiftKey ||
-        !this.user.can('page:save') ||
+        !this.canSave ||
         editable(ev.target)
       ) {
         return
@@ -502,7 +506,7 @@ export default {
     </AiPrompt>
 
     <div class="header">
-      <div v-if="user.can('page:save')" class="bulk">
+      <div v-if="canSave" class="bulk">
         <v-checkbox-btn
           :model-value="allSelected"
           :indeterminate="checkedCount > 0 && !allSelected"
@@ -559,7 +563,7 @@ export default {
         @update:modelValue="$emit('update:content', $event)"
         dataKey="id"
         :scroller="scroller"
-        :disabled="$vuetify.display.smAndDown || !user.can('page:save')"
+        :disabled="$vuetify.display.smAndDown || !canSave"
         handle=".item-handle"
         group="content"
         :animation="0"
@@ -595,7 +599,7 @@ export default {
             </v-btn>
 
             <v-checkbox-btn
-              v-if="user.can('page:save')"
+              v-if="canSave"
               :model-value="selected.has(el)"
               @click.stop="select(el)"
               :aria-label="$gettext('Toggle selection')"
@@ -680,7 +684,7 @@ export default {
               v-else
               :data="el.data"
               :files="el.files"
-              :readonly="!user.can('page:save')"
+              :readonly="!canSave"
               :fields="fields(el.type)"
               :assets="assets"
               :type="el.type"
@@ -695,7 +699,7 @@ export default {
       </VirtualList>
     </v-expansion-panels>
 
-    <div v-if="user.can('page:save')" class="btn-group">
+    <div v-if="canSave" class="btn-group">
       <v-btn
         @click="openSchemas"
         :title="$gettext('Add element')"

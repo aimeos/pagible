@@ -74,7 +74,7 @@ export default {
   mounted() {
     window.addEventListener('message', this.message)
 
-    if (this.user.can('page:save')) {
+    if (this.user.canLang('page:save', this.item.lang)) {
       this.messages.add(this.$gettext('Double-click to edit'), 'info')
     }
   },

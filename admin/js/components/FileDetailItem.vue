@@ -127,7 +127,12 @@ export default {
     },
 
     readonly() {
-      return !this.user.can('file:save')
+      return !this.user.canLang('file:save', this.item.lang)
+    },
+
+    // restricted users can only choose their assigned languages
+    langItems() {
+      return localeItems(true).filter((entry) => this.user.canLang('file:save', entry.value))
     }
   },
 
@@ -388,7 +393,7 @@ export default {
         </v-col>
         <v-col cols="12" md="6">
           <v-select
-            :items="localeItems(true)"
+            :items="langItems"
             :readonly="readonly"
             :modelValue="item.lang"
             @update:modelValue="update('lang', $event)"
