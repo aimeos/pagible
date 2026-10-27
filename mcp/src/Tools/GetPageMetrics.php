@@ -22,7 +22,7 @@ use Laravel\Mcp\Request;
 #[IsOpenWorld]
 #[Name('get-page-metrics')]
 #[Title('Get page analytics and metrics')]
-#[Description('Returns analytics data for a page URL: daily "views", "visits", "durations" (average seconds) and "conversions"; visitor "countries" and "referrers"; "links" with the number of clicks per link target on the page (internal pages visited next, outbound links and downloads); Google Search "impressions", "clicks" and "ctrs" (clicks on search results, not on the page) and top "queries"; "pagespeed" metrics. Data is cached for 1 hour.')]
+#[Description('Returns analytics data for a page URL: daily "views", "visits" and "durations" (average seconds); visitor "countries" and "referrers"; "links" with the number of clicks per link target on the page (internal pages visited next, outbound links and downloads); Google Search "impressions", "clicks" and "ctrs" (clicks on search results, not on the page) and top "queries"; "pagespeed" metrics. Data is cached for 1 hour.')]
 class GetPageMetrics extends Tool
 {
     protected const PERMISSIONS = ['page:metrics'];
@@ -41,6 +41,7 @@ class GetPageMetrics extends Tool
         ] );
 
         $data = Metrics::get( $v['url'], $v['days'] ?? 30 );
+        unset( $data['conversions'] ); // summed over all goals, not attributable
 
         if( array_key_exists( 'queries', $data ) ) {
             $data['queries'] = array_map( function( $entry ) {

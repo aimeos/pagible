@@ -216,7 +216,10 @@ class PageToolsTest extends McpTestAbstract
         \Aimeos\AnalyticsBridge\Facades\Analytics::shouldReceive('driver->stats')
             ->once()
             ->with('https://example.com/blog', 30)
-            ->andReturn(['views' => [['key' => '2026-03-01', 'value' => 100]]]);
+            ->andReturn([
+                'views' => [['key' => '2026-03-01', 'value' => 100]],
+                'conversions' => [['key' => '2026-03-01', 'value' => 5]],
+            ]);
 
         \Aimeos\AnalyticsBridge\Facades\Analytics::shouldReceive('search')
             ->once()
@@ -237,7 +240,7 @@ class PageToolsTest extends McpTestAbstract
             'url' => 'https://example.com/blog',
         ] );
 
-        $response->assertOk()->assertSee( ['views', 'pagespeed'] );
+        $response->assertOk()->assertSee( ['views', 'pagespeed'] )->assertDontSee( 'conversions' );
     }
 
 
