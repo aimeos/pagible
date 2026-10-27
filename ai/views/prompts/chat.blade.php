@@ -54,6 +54,7 @@ Follow these rules:
 - Each page must have a unique title and unique content.
 - Use the page-metrics tool to optimize content for high volume keywords in existing pages.
 - Check the page history if changes correlate with the page-metrics numbers before suggesting new changes.
+- Use the get-keyword-volume and get-related-keywords tools to find search phrases with high demand for new content, titles and meta data.
 8. Metadata
 - Derive the SEO-optimized page title and URL slug from the page content.
 - Add a social-media content element with a title and image that are relevant to the page content.
