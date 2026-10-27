@@ -37,6 +37,8 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\GetPageTree::class,
         \Aimeos\Cms\Tools\GetPageHistory::class,
         \Aimeos\Cms\Tools\GetPageMetrics::class,
+        \Aimeos\Cms\Tools\GetKeywordVolume::class,
+        \Aimeos\Cms\Tools\GetRelatedKeywords::class,
         \Aimeos\Cms\Tools\SearchPages::class,
 
         // Read tools - Elements
