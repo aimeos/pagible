@@ -34,9 +34,6 @@ class InstallAi extends Command
     {
         $result = 0;
 
-        $this->comment( '  Publishing Analytics Bridge files ...' );
-        $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\AnalyticsBridge\ServiceProvider'] );
-
         $this->comment( '  Publishing CMS AI files ...' );
         $result += $this->call( 'vendor:publish', ['--provider' => 'Aimeos\Cms\AiServiceProvider'] );
 

@@ -1,0 +1,6 @@
+/tests/         export-ignore
+/admin/cypress/ export-ignore
+phpunit.xml     export-ignore
+phpstan.neon.dist export-ignore
+.gitattributes  export-ignore
+.gitignore      export-ignore

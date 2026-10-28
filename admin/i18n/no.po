@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "Konfigurasjon"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Innhold"
 
@@ -590,7 +590,7 @@ msgstr[1] "Bruk de valgte egenskapene til %{num} oppføringer."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Språk"
 
@@ -663,7 +663,7 @@ msgstr "Last inn elementene på nytt"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Oversett"
 
@@ -1196,7 +1196,7 @@ msgid "Current changes"
 msgstr "Aktuelle endringer"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Planlagt for %{date}"
 
@@ -1535,7 +1535,7 @@ msgid "Clear cache"
 msgstr "Tøm cachen"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorer endringer"
 
@@ -1720,144 +1720,8 @@ msgstr "Elementet har allerede blitt lagt til"
 msgid "Remove content element"
 msgstr "Fjern innholdselement"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Visninger og besøk"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Visninger"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Besøk"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konverteringer"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Besøkenes varighet (minutter)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Varighet"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google Søk: Eksponeringer og klikk"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Eksponeringer"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Klikk"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google Søk: Klikkfrekvens"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Prosentandel"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Sidevisninger"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Besøk på siden"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Varighet av besøket (minutter)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google-eksponeringer"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google-klikk"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Klikkfrekvens på Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Round-trip-tid"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Tid til første byte"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Første innholdsvisning"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Største innholdsvisning"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaksjon til neste visning"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulativ layoutforskyvning"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Feil ved henting av statistikk"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Sidestatistikk"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Dager"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Ukentlig innsikt"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Henvisningskilder"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Land"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Sidehastighet"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google Søk: Søkeord"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Prosent"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Rangering"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Må oppdateres"
 
@@ -1869,7 +1733,7 @@ msgstr "Mangler"
 msgid "AI draft"
 msgstr "AI-utkast"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Oppdatert"
 
@@ -1946,7 +1810,7 @@ msgstr "Vis/skjul undernoder"
 msgid "Hidden in navigation"
 msgstr "Skjult i navigasjonen"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Opprett"
 
@@ -2222,23 +2086,23 @@ msgstr "Siden ble publisert"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Side planlagt for publisering på %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Feil ved publisering av side"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Ikke publisert, gå gjennom endringene og publiser på nytt"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Ingen data tilgjengelig"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Ingen versjonsdata tilgjengelig"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Det er ugyldige felter, vennligst løs feilene først"
 
@@ -2468,49 +2332,49 @@ msgstr "Deaktivert"
 msgid "Enabled"
 msgstr "Aktivert"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Feil ved lagring av side"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Sider slettes bare som hele sider på kildespråket sitt"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Feil ved flytting av siden til papirkurven"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Feil ved gjenoppretting av språk"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Feil ved gjenoppretting av side"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Alle undersider av disse sidene blir også slettet permanent."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Feil ved permanent sletting av siden"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Cachen er tømt"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cachen er tømt for %{num} side."
 msgstr[1] "Cachen er tømt for %{num} sider."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Feil ved tømming av cachen"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} side kunne ikke oppdateres"
@@ -2536,7 +2400,7 @@ msgstr "Etter"
 msgid "Error inserting page"
 msgstr "Feil ved innsetting av side"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Feil ved henting av side"
 
@@ -2892,7 +2756,7 @@ msgstr "Tilgang avslått"
 msgid "Error: %{msg}"
 msgstr "Feil: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2900,35 +2764,31 @@ msgstr ""
 "Gi denne siden en poengsum fra 1–10 per område (innholdskvalitet, lesbarhet, "
 "SEO, UX, engasjement) og foreslå forbedringer"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Vent til språket er byttet"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Siden ble lagret"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Side"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Kilde"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "I papirkurven"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Editor"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Måledata"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2965,3 +2825,106 @@ msgid ""
 msgstr ""
 "AI kan opprette en side og innhold basert på dine innspill og legge det til "
 "i sidetreet"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Visninger og besøk"
+
+#~ msgid "Views"
+#~ msgstr "Visninger"
+
+#~ msgid "Visits"
+#~ msgstr "Besøk"
+
+#~ msgid "Conversions"
+#~ msgstr "Konverteringer"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Besøkenes varighet (minutter)"
+
+#~ msgid "Duration"
+#~ msgstr "Varighet"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google Søk: Eksponeringer og klikk"
+
+#~ msgid "Impressions"
+#~ msgstr "Eksponeringer"
+
+#~ msgid "Clicks"
+#~ msgstr "Klikk"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google Søk: Klikkfrekvens"
+
+#~ msgid "Percentage"
+#~ msgstr "Prosentandel"
+
+#~ msgid "Page Views"
+#~ msgstr "Sidevisninger"
+
+#~ msgid "Page Visits"
+#~ msgstr "Besøk på siden"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Varighet av besøket (minutter)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google-eksponeringer"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google-klikk"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Klikkfrekvens på Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Round-trip-tid"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Tid til første byte"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Første innholdsvisning"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Største innholdsvisning"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaksjon til neste visning"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulativ layoutforskyvning"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Feil ved henting av statistikk"
+
+#~ msgid "Page metrics"
+#~ msgstr "Sidestatistikk"
+
+#~ msgid "Days"
+#~ msgstr "Dager"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Ukentlig innsikt"
+
+#~ msgid "Referrers"
+#~ msgstr "Henvisningskilder"
+
+#~ msgid "Countries"
+#~ msgstr "Land"
+
+#~ msgid "Page Speed"
+#~ msgstr "Sidehastighet"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google Søk: Søkeord"
+
+#~ msgid "Percent"
+#~ msgstr "Prosent"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Rangering"
+
+#~ msgid "Metrics"
+#~ msgstr "Måledata"

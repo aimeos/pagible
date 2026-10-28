@@ -29,7 +29,6 @@ composer require aimeos/pagible
 | **Pinia** | State management |
 | **Apollo Client** | GraphQL client with batching and file uploads |
 | **CKEditor 5** | Rich text editing |
-| **Chart.js** | Metrics visualization |
 | **vue3-gettext** | Internationalization (33 languages) |
 | **Cypress** | Component and E2E testing |
 
@@ -276,7 +275,7 @@ php bin/schema-i18n extract themes/example   # updates i18n/messages.pot and i18
 php bin/schema-i18n compile themes/example   # writes public/i18n/<locale>.json
 ```
 
-Then register them in the theme's service provider with `Plugin::i18n( 'example', '/vendor/cms/example/i18n/{locale}.json' )`. The base theme catalog (`cms`) is merged right after the admin catalog and wins over the other themes for the same string. Therefore, strings of the admin and the base theme catalogs are skipped. Strings used by three or more themes of the repository are moved to the base theme catalog, so they are translated only once. New entries are filled with existing translations of the theme, the admin, the base theme and the other themes. Elements without `label` are named by their prefixed type, e.g. `example::theme`; if it isn't translated, the admin uses the translation of the unprefixed name.
+Theme service providers extending `Aimeos\Cms\ThemeProvider` register them with `Plugin::i18n( 'example' )` automatically. The base theme catalog (`cms`) is merged right after the admin catalog and wins over the other themes for the same string. Therefore, strings of the admin and the base theme catalogs are skipped. Strings used by three or more themes of the repository are moved to the base theme catalog, so they are translated only once. New entries are filled with existing translations of the theme, the admin, the base theme and the other themes. Elements without `label` are named by their prefixed type, e.g. `example::theme`; if it isn't translated, the admin uses the translation of the unprefixed name.
 
 `composer build` updates and compiles all theme catalogs, `composer translate` additionally translates new entries with DeepL.
 

@@ -1,0 +1,183 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/components/PageDetailMetrics.vue:98
+msgctxt "metrics"
+msgid "Views & Visits"
+msgstr "Перегляди та відвідування"
+
+#: src/components/PageDetailMetrics.vue:100
+msgctxt "metrics"
+msgid "Views"
+msgstr "Перегляди"
+
+#: src/components/PageDetailMetrics.vue:101
+msgctxt "metrics"
+msgid "Visits"
+msgstr "Відвідування"
+
+#: src/components/PageDetailMetrics.vue:102
+#: src/components/PageDetailMetrics.vue:141
+msgctxt "metrics"
+msgid "Conversions"
+msgstr "Конверсії"
+
+#: src/components/PageDetailMetrics.vue:106
+msgctxt "metrics"
+msgid "Visit Durations (minutes)"
+msgstr "Тривалість відвідувань (хвилини)"
+
+#: src/components/PageDetailMetrics.vue:107
+msgctxt "metrics"
+msgid "Duration"
+msgstr "Тривалість"
+
+#: src/components/PageDetailMetrics.vue:110
+msgctxt "metrics"
+msgid "Google Search: Impressions & Clicks"
+msgstr "Пошук Google: покази та кліки"
+
+#: src/components/PageDetailMetrics.vue:112
+#: src/components/PageDetailMetrics.vue:414
+msgctxt "metrics"
+msgid "Impressions"
+msgstr "Покази"
+
+#: src/components/PageDetailMetrics.vue:113
+#: src/components/PageDetailMetrics.vue:415
+msgctxt "metrics"
+msgid "Clicks"
+msgstr "Кліки"
+
+#: src/components/PageDetailMetrics.vue:117
+msgctxt "metrics"
+msgid "Google Search: Click-through rate"
+msgstr "Пошук Google: показник кліків"
+
+#: src/components/PageDetailMetrics.vue:118
+msgctxt "metrics"
+msgid "Percentage"
+msgstr "Відсоток"
+
+#: src/components/PageDetailMetrics.vue:138
+msgctxt "metrics"
+msgid "Page Views"
+msgstr "Перегляди сторінок"
+
+#: src/components/PageDetailMetrics.vue:139
+msgctxt "metrics"
+msgid "Page Visits"
+msgstr "Відвідування сторінок"
+
+#: src/components/PageDetailMetrics.vue:142
+msgctxt "metrics"
+msgid "Visit Duration (minutes)"
+msgstr "Тривалість відвідування (хвилини)"
+
+#: src/components/PageDetailMetrics.vue:143
+msgctxt "metrics"
+msgid "Google Impressions"
+msgstr "Покази Google"
+
+#: src/components/PageDetailMetrics.vue:144
+msgctxt "metrics"
+msgid "Google Clicks"
+msgstr "Кліки в Google"
+
+#: src/components/PageDetailMetrics.vue:145
+msgctxt "metrics"
+msgid "Google click-through rate"
+msgstr "Показник кліків у Google"
+
+#: src/components/PageDetailMetrics.vue:151
+msgctxt "metrics"
+msgid "Round trip time"
+msgstr "Час приймання-передавання (RTT)"
+
+#: src/components/PageDetailMetrics.vue:152
+msgctxt "metrics"
+msgid "Time to first byte"
+msgstr "Час до першого байта"
+
+#: src/components/PageDetailMetrics.vue:153
+msgctxt "metrics"
+msgid "First contentful paint"
+msgstr "Перше відображення вмісту"
+
+#: src/components/PageDetailMetrics.vue:154
+msgctxt "metrics"
+msgid "Largest contentful paint"
+msgstr "Відображення найбільшого вмісту"
+
+#: src/components/PageDetailMetrics.vue:155
+msgctxt "metrics"
+msgid "Interaction to next paint"
+msgstr "Взаємодія до наступного відображення"
+
+#: src/components/PageDetailMetrics.vue:156
+msgctxt "metrics"
+msgid "Cumulative layout shift"
+msgstr "Сукупне зміщення макета"
+
+#: src/components/PageDetailMetrics.vue:237
+msgctxt "metrics"
+msgid "Error fetching metrics"
+msgstr "Помилка під час отримання статистики"
+
+#: src/components/PageDetailMetrics.vue:259
+msgctxt "metrics"
+msgid "Page metrics"
+msgstr "Метрики сторінки"
+
+#: src/components/PageDetailMetrics.vue:265
+msgctxt "metrics"
+msgid "Days"
+msgstr "Дні"
+
+#: src/components/PageDetailMetrics.vue:292
+msgctxt "metrics"
+msgid "Weekly Insights"
+msgstr "Щотижневі інсайти"
+
+#: src/components/PageDetailMetrics.vue:324
+msgctxt "metrics"
+msgid "Referrers"
+msgstr "Джерела переходів"
+
+#: src/components/PageDetailMetrics.vue:367
+msgctxt "metrics"
+msgid "Countries"
+msgstr "Країни"
+
+#: src/components/PageDetailMetrics.vue:383
+msgctxt "metrics"
+msgid "Page Speed"
+msgstr "Швидкість сторінки"
+
+#: src/components/PageDetailMetrics.vue:408
+msgctxt "metrics"
+msgid "Google Search: Queries"
+msgstr "Пошук Google: запити"
+
+#: src/components/PageDetailMetrics.vue:416
+msgctxt "metrics"
+msgid "Percent"
+msgstr "Відсоток"
+
+#: src/components/PageDetailMetrics.vue:417
+msgctxt "search ranking"
+msgid "Position"
+msgstr ""
+
+#: src/strings.js:9
+msgctxt "metrics"
+msgid "Metrics"
+msgstr "Метрики"

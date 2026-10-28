@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "設定"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "内容"
 
@@ -586,7 +586,7 @@ msgstr[0] "選択したプロパティを %{num} エントリに適用します�
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "言語"
 
@@ -659,7 +659,7 @@ msgstr "要素を再読み込み"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "翻訳する"
 
@@ -1186,7 +1186,7 @@ msgid "Current changes"
 msgstr "現在の変更点"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "%{date} に予約済み"
 
@@ -1523,7 +1523,7 @@ msgid "Clear cache"
 msgstr "キャッシュをクリア"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "変更を無視"
 
@@ -1708,144 +1708,8 @@ msgstr "要素はすでに追加されています。"
 msgid "Remove content element"
 msgstr "コンテンツ要素の削除"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "閲覧数と訪問数"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "閲覧数"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "訪問数"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "コンバージョン"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "訪問時間（分）"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "滞在時間"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google 検索: インプレッションとクリック数"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "インプレッション"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "クリック"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google 検索: クリック率"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "パーセント"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "ページビュー"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "ページ訪問数"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "訪問時間（分）"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google インプレッション"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google クリック数"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google クリック率"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "往復所要時間"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "最初のバイトまでの時間"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "First Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Largest Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaction to Next Paint"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "累積レイアウトシフト"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "統計情報の取得中にエラーが発生しました"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "ページ指標"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "日数"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "週間インサイト"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "参照元"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "国"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "ページ速度"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google 検索: クエリ"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "パーセント"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "掲載順位"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "要更新"
 
@@ -1857,7 +1721,7 @@ msgstr "未作成"
 msgid "AI draft"
 msgstr "AI下書き"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "最新"
 
@@ -1934,7 +1798,7 @@ msgstr "子ノードの切り替え"
 msgid "Hidden in navigation"
 msgstr "ナビゲーションで非表示"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "作成"
 
@@ -2205,23 +2069,23 @@ msgstr "ページを公開しました"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "ページは %{date} に公開予定です"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "ページ公開エラー"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "公開されていません。変更内容を確認して、もう一度公開してください"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "データなし"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "バージョンデータがありません"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "無効なフィールドがあります。先にエラーを解決してください"
 
@@ -2449,48 +2313,48 @@ msgstr "無効"
 msgid "Enabled"
 msgstr "有効"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "ページ保存エラー"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "ページ全体の削除は原語でのみ可能です"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "ページをゴミ箱に移動中にエラーが発生しました"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "言語の復元エラー"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "ページの復元エラー"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "これらのページのすべてのサブページも完全に削除されます。"
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "ページの完全削除中にエラーが発生しました"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "キャッシュがクリアされました"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "%{num} ページのキャッシュをクリアしました。"
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "キャッシュクリアエラー"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} ページを更新できませんでした"
@@ -2515,7 +2379,7 @@ msgstr "後"
 msgid "Error inserting page"
 msgstr "ページ挿入エラー"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "ページ取得エラー"
 
@@ -2861,7 +2725,7 @@ msgstr "アクセス拒否"
 msgid "Error: %{msg}"
 msgstr "エラー：%{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2869,35 +2733,31 @@ msgstr ""
 "このページを項目ごとに1〜10で採点して（コンテンツの質、読みやすさ、SEO、UX、"
 "エンゲージメント）、改善案を提案して"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "言語が切り替わるまでお待ちください"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "ページを保存しました"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "ページ"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "原語"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "ゴミ箱内"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "エディター"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "指標"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2934,3 +2794,106 @@ msgid ""
 msgstr ""
 "AIは、あなたの入力に基づいてページとコンテンツを作成し、ページツリーに追加す"
 "ることができます。"
+
+#~ msgid "Views & Visits"
+#~ msgstr "閲覧数と訪問数"
+
+#~ msgid "Views"
+#~ msgstr "閲覧数"
+
+#~ msgid "Visits"
+#~ msgstr "訪問数"
+
+#~ msgid "Conversions"
+#~ msgstr "コンバージョン"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "訪問時間（分）"
+
+#~ msgid "Duration"
+#~ msgstr "滞在時間"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google 検索: インプレッションとクリック数"
+
+#~ msgid "Impressions"
+#~ msgstr "インプレッション"
+
+#~ msgid "Clicks"
+#~ msgstr "クリック"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google 検索: クリック率"
+
+#~ msgid "Percentage"
+#~ msgstr "パーセント"
+
+#~ msgid "Page Views"
+#~ msgstr "ページビュー"
+
+#~ msgid "Page Visits"
+#~ msgstr "ページ訪問数"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "訪問時間（分）"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google インプレッション"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google クリック数"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google クリック率"
+
+#~ msgid "Round trip time"
+#~ msgstr "往復所要時間"
+
+#~ msgid "Time to first byte"
+#~ msgstr "最初のバイトまでの時間"
+
+#~ msgid "First contentful paint"
+#~ msgstr "First Contentful Paint"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Largest Contentful Paint"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaction to Next Paint"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "累積レイアウトシフト"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "統計情報の取得中にエラーが発生しました"
+
+#~ msgid "Page metrics"
+#~ msgstr "ページ指標"
+
+#~ msgid "Days"
+#~ msgstr "日数"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "週間インサイト"
+
+#~ msgid "Referrers"
+#~ msgstr "参照元"
+
+#~ msgid "Countries"
+#~ msgstr "国"
+
+#~ msgid "Page Speed"
+#~ msgstr "ページ速度"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google 検索: クエリ"
+
+#~ msgid "Percent"
+#~ msgstr "パーセント"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "掲載順位"
+
+#~ msgid "Metrics"
+#~ msgstr "指標"

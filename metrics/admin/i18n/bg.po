@@ -1,0 +1,183 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: bg\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/components/PageDetailMetrics.vue:98
+msgctxt "metrics"
+msgid "Views & Visits"
+msgstr "Прегледи и посещения"
+
+#: src/components/PageDetailMetrics.vue:100
+msgctxt "metrics"
+msgid "Views"
+msgstr "Прегледи"
+
+#: src/components/PageDetailMetrics.vue:101
+msgctxt "metrics"
+msgid "Visits"
+msgstr "Посещения"
+
+#: src/components/PageDetailMetrics.vue:102
+#: src/components/PageDetailMetrics.vue:141
+msgctxt "metrics"
+msgid "Conversions"
+msgstr "Конверсии"
+
+#: src/components/PageDetailMetrics.vue:106
+msgctxt "metrics"
+msgid "Visit Durations (minutes)"
+msgstr "Продължителност на посещенията (минути)"
+
+#: src/components/PageDetailMetrics.vue:107
+msgctxt "metrics"
+msgid "Duration"
+msgstr "Продължителност"
+
+#: src/components/PageDetailMetrics.vue:110
+msgctxt "metrics"
+msgid "Google Search: Impressions & Clicks"
+msgstr "Търсене в Google: Импресии и кликове"
+
+#: src/components/PageDetailMetrics.vue:112
+#: src/components/PageDetailMetrics.vue:414
+msgctxt "metrics"
+msgid "Impressions"
+msgstr "Импресии"
+
+#: src/components/PageDetailMetrics.vue:113
+#: src/components/PageDetailMetrics.vue:415
+msgctxt "metrics"
+msgid "Clicks"
+msgstr "Кликове"
+
+#: src/components/PageDetailMetrics.vue:117
+msgctxt "metrics"
+msgid "Google Search: Click-through rate"
+msgstr "Търсене в Google: Честота на кликване"
+
+#: src/components/PageDetailMetrics.vue:118
+msgctxt "metrics"
+msgid "Percentage"
+msgstr "Процент"
+
+#: src/components/PageDetailMetrics.vue:138
+msgctxt "metrics"
+msgid "Page Views"
+msgstr "Прегледи на страници"
+
+#: src/components/PageDetailMetrics.vue:139
+msgctxt "metrics"
+msgid "Page Visits"
+msgstr "Посещения на страницата"
+
+#: src/components/PageDetailMetrics.vue:142
+msgctxt "metrics"
+msgid "Visit Duration (minutes)"
+msgstr "Продължителност на посещението (минути)"
+
+#: src/components/PageDetailMetrics.vue:143
+msgctxt "metrics"
+msgid "Google Impressions"
+msgstr "Импресии в Google"
+
+#: src/components/PageDetailMetrics.vue:144
+msgctxt "metrics"
+msgid "Google Clicks"
+msgstr "Кликове в Google"
+
+#: src/components/PageDetailMetrics.vue:145
+msgctxt "metrics"
+msgid "Google click-through rate"
+msgstr "Честота на кликване в Google"
+
+#: src/components/PageDetailMetrics.vue:151
+msgctxt "metrics"
+msgid "Round trip time"
+msgstr "Време за двупосочен обмен"
+
+#: src/components/PageDetailMetrics.vue:152
+msgctxt "metrics"
+msgid "Time to first byte"
+msgstr "Време до първия байт"
+
+#: src/components/PageDetailMetrics.vue:153
+msgctxt "metrics"
+msgid "First contentful paint"
+msgstr "Първо изобразяване на съдържание"
+
+#: src/components/PageDetailMetrics.vue:154
+msgctxt "metrics"
+msgid "Largest contentful paint"
+msgstr "Изобразяване на най-голямото съдържание"
+
+#: src/components/PageDetailMetrics.vue:155
+msgctxt "metrics"
+msgid "Interaction to next paint"
+msgstr "Взаимодействие до следващото изобразяване"
+
+#: src/components/PageDetailMetrics.vue:156
+msgctxt "metrics"
+msgid "Cumulative layout shift"
+msgstr "Кумулативна промяна на оформлението"
+
+#: src/components/PageDetailMetrics.vue:237
+msgctxt "metrics"
+msgid "Error fetching metrics"
+msgstr "Грешка при извличане на статистиката"
+
+#: src/components/PageDetailMetrics.vue:259
+msgctxt "metrics"
+msgid "Page metrics"
+msgstr "Метрики на страницата"
+
+#: src/components/PageDetailMetrics.vue:265
+msgctxt "metrics"
+msgid "Days"
+msgstr "Дни"
+
+#: src/components/PageDetailMetrics.vue:292
+msgctxt "metrics"
+msgid "Weekly Insights"
+msgstr "Седмичен анализ"
+
+#: src/components/PageDetailMetrics.vue:324
+msgctxt "metrics"
+msgid "Referrers"
+msgstr "Източници на трафик"
+
+#: src/components/PageDetailMetrics.vue:367
+msgctxt "metrics"
+msgid "Countries"
+msgstr "Държави"
+
+#: src/components/PageDetailMetrics.vue:383
+msgctxt "metrics"
+msgid "Page Speed"
+msgstr "Скорост на страницата"
+
+#: src/components/PageDetailMetrics.vue:408
+msgctxt "metrics"
+msgid "Google Search: Queries"
+msgstr "Търсене в Google: Запитвания"
+
+#: src/components/PageDetailMetrics.vue:416
+msgctxt "metrics"
+msgid "Percent"
+msgstr "Процент"
+
+#: src/components/PageDetailMetrics.vue:417
+msgctxt "search ranking"
+msgid "Position"
+msgstr ""
+
+#: src/strings.js:9
+msgctxt "metrics"
+msgid "Metrics"
+msgstr "Метрики"

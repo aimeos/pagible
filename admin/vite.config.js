@@ -34,7 +34,6 @@ const vuetifyLabs = readdirSync(vuetifyLib + 'labs', { withFileTypes: true })
 // (5.9 MB instead of ~0.9 MB).  Leaving it out lets Rolldown auto-split and
 // tree-shake it down to only the editor features actually imported.
 const chunkGroups = {
-  charts: ['chart.js', 'vue-chartjs'],
   cropper: ['cropperjs'],
   diff: ['diff'],
   dompurify: ['dompurify'],

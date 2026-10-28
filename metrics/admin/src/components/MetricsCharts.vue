@@ -58,9 +58,9 @@ export default {
   <v-row>
     <template v-for="c in charts" :key="c.title">
       <v-col v-if="c.show" cols="12" md="6">
-        <v-card class="panel chart">
-          <v-card-title>{{ c.title }}</v-card-title>
-          <v-card-text>
+        <v-card class="mt-4">
+          <v-card-title class="text-title-medium">{{ c.title }}</v-card-title>
+          <v-card-text style="aspect-ratio: 3 / 2">
             <LineChart :options="options" :data="c.data" />
           </v-card-text>
         </v-card>
@@ -68,17 +68,3 @@ export default {
     </template>
   </v-row>
 </template>
-
-<style scoped>
-.panel {
-  margin-top: 16px !important;
-}
-
-.v-card-title {
-  font-size: 112.5%;
-}
-
-.chart .v-card-text {
-  aspect-ratio: 3 / 2;
-}
-</style>

@@ -2,7 +2,7 @@ import { h, reactive } from 'vue'
 import { apolloClient } from '../../../js/graphql'
 import PageDetail from '../../../js/views/PageDetail.vue'
 import { sections } from '../../../js/history'
-import { useMessageStore, useTranslationStore, useUserStore } from '../../../js/stores'
+import { useMessageStore, usePluginStore, useTranslationStore, useUserStore } from '../../../js/stores'
 import '../../../js/assets/base.css'
 
 const stubs = {
@@ -41,7 +41,6 @@ const stubs = {
     template: '<div class="page-detail-content-stub" />',
     methods: { reset() {} },
   },
-  PageDetailMetrics: { template: '<div class="page-detail-metrics-stub" />' },
 }
 
 const baseItem = {
@@ -63,7 +62,13 @@ const baseItem = {
   published: false,
 }
 
-function mountDetail(perms = {}, item = {}, apollo = {}) {
+// plugin sub-panels, one restricted by its own permission
+const subpanels = {
+  metrics: { label: 'Metrics', permission: 'page:metrics', component: { template: '<div />' } },
+  settings: { label: 'Settings', component: { template: '<div />' } },
+}
+
+function mountDetail(perms = {}, item = {}, apollo = {}, page = {}) {
   return cy.mount(PageDetail, {
     props: { initial: reactive({ ...baseItem, ...item }) },
     global: {
@@ -83,6 +88,7 @@ function mountDetail(perms = {}, item = {}, apollo = {}) {
         install() {
           const user = useUserStore()
           user.me = { permission: perms }
+          usePluginStore().subpanels = { page }
         }
       }],
     },
@@ -160,14 +166,16 @@ describe('PageDetail', () => {
     cy.get('.detail-tabs .v-tab__slider').should('not.exist')
   })
 
-  it('shows Metrics tab when page:metrics permission is granted', () => {
-    mountDetail({ 'page:metrics': true })
+  it('shows plugin sub-panels when the user has their permission', () => {
+    mountDetail({ 'page:metrics': true }, {}, {}, subpanels)
     cy.contains('.v-tab', 'Metrics').should('exist')
+    cy.contains('.v-tab', 'Settings').should('exist')
   })
 
-  it('hides Metrics tab without page:metrics permission', () => {
-    mountDetail({})
+  it('hides plugin sub-panels without their permission', () => {
+    mountDetail({}, {}, {}, subpanels)
     cy.contains('.v-tab', 'Metrics').should('not.exist')
+    cy.contains('.v-tab', 'Settings').should('exist')
   })
 
   it('disables save button without page:save permission', () => {

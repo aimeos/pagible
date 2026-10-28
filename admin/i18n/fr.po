@@ -359,7 +359,7 @@ msgid "Configuration"
 msgstr "Configuration"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Contenu"
 
@@ -597,7 +597,7 @@ msgstr[1] "Appliquer les propriétés sélectionnées à %{num} entrées."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Langue"
 
@@ -673,7 +673,7 @@ msgstr "Recharger les éléments"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Traduire"
 
@@ -1217,7 +1217,7 @@ msgid "Current changes"
 msgstr "Changements actuels"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Prévu pour %{date}"
 
@@ -1562,7 +1562,7 @@ msgid "Clear cache"
 msgstr "Vider le cache"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorer les modifications"
 
@@ -1750,144 +1750,8 @@ msgstr "L'élément a déjà été ajouté"
 msgid "Remove content element"
 msgstr "Retirer l'élément de contenu"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Vues et visites"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Vues"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Visites"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Conversions"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Durée des visites (minutes)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Durée"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Recherche Google : Impressions et clics"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Impressions"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Clics"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Recherche Google : Taux de clics"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Pourcentage"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Pages vues"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Visites de pages"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Durée de la visite (minutes)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Impressions Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Clics Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Taux de clics Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Temps d'aller-retour"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Temps écoulé jusqu'au premier octet"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "First Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Largest Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaction to Next Paint"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Cumulative Layout Shift"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Erreur lors de la récupération des statistiques"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Métriques de la page"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Jours"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Aperçu hebdomadaire"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Sources de trafic"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Pays"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Vitesse de la page"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Recherche Google : Requêtes"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Pourcentage"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Position"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "À mettre à jour"
 
@@ -1899,7 +1763,7 @@ msgstr "Manquante"
 msgid "AI draft"
 msgstr "Brouillon IA"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "À jour"
 
@@ -1976,7 +1840,7 @@ msgstr "Afficher ou masquer les sous-pages"
 msgid "Hidden in navigation"
 msgstr "Masqué dans la navigation"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Créer"
 
@@ -2253,23 +2117,23 @@ msgstr "Page publiée avec succès"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Publication de la page programmée pour le %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Erreur de publication de la page"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Non publié, veuillez vérifier les modifications et publier à nouveau"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Pas de données disponibles"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Aucune donnée de version disponible"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr ""
 "Certains champs ne sont pas valides, veuillez d'abord corriger les erreurs"
@@ -2500,51 +2364,51 @@ msgstr "Désactivé"
 msgid "Enabled"
 msgstr "Activé"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Erreur d'enregistrement de la page"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Les pages ne sont supprimées en entier que dans leur langue source"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Erreur lors du déplacement de la page vers la corbeille"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Erreur lors de la restauration de la langue"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Erreur de restauration de la page"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr ""
 "Toutes les sous-pages de ces pages seront également supprimées "
 "définitivement."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Erreur lors de la suppression définitive de la page"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Cache vidé"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cache vidé pour %{num} page."
 msgstr[1] "Cache vidé pour %{num} pages."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Erreur lors du vidage du cache"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} page n'a pas pu être mise à jour"
@@ -2570,7 +2434,7 @@ msgstr "Après"
 msgid "Error inserting page"
 msgstr "Erreur d'insertion de la page"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Erreur lors de la récupération de la page"
 
@@ -2932,7 +2796,7 @@ msgstr "Accès refusé"
 msgid "Error: %{msg}"
 msgstr "Erreur : %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2940,35 +2804,31 @@ msgstr ""
 "Note cette page de 1 à 10 par domaine (qualité du contenu, lisibilité, SEO, "
 "UX, engagement) et propose des améliorations"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Veuillez patienter pendant le changement de langue"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Page enregistrée avec succès"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Page"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Source"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Dans la corbeille"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Éditeur"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Métriques"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -3005,3 +2865,106 @@ msgid ""
 msgstr ""
 "L'IA peut créer une page et son contenu en fonction de vos instructions et "
 "l'ajouter à l'arborescence des pages"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Vues et visites"
+
+#~ msgid "Views"
+#~ msgstr "Vues"
+
+#~ msgid "Visits"
+#~ msgstr "Visites"
+
+#~ msgid "Conversions"
+#~ msgstr "Conversions"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Durée des visites (minutes)"
+
+#~ msgid "Duration"
+#~ msgstr "Durée"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Recherche Google : Impressions et clics"
+
+#~ msgid "Impressions"
+#~ msgstr "Impressions"
+
+#~ msgid "Clicks"
+#~ msgstr "Clics"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Recherche Google : Taux de clics"
+
+#~ msgid "Percentage"
+#~ msgstr "Pourcentage"
+
+#~ msgid "Page Views"
+#~ msgstr "Pages vues"
+
+#~ msgid "Page Visits"
+#~ msgstr "Visites de pages"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Durée de la visite (minutes)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Impressions Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Clics Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Taux de clics Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Temps d'aller-retour"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Temps écoulé jusqu'au premier octet"
+
+#~ msgid "First contentful paint"
+#~ msgstr "First Contentful Paint"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Largest Contentful Paint"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaction to Next Paint"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Cumulative Layout Shift"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Erreur lors de la récupération des statistiques"
+
+#~ msgid "Page metrics"
+#~ msgstr "Métriques de la page"
+
+#~ msgid "Days"
+#~ msgstr "Jours"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Aperçu hebdomadaire"
+
+#~ msgid "Referrers"
+#~ msgstr "Sources de trafic"
+
+#~ msgid "Countries"
+#~ msgstr "Pays"
+
+#~ msgid "Page Speed"
+#~ msgstr "Vitesse de la page"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Recherche Google : Requêtes"
+
+#~ msgid "Percent"
+#~ msgstr "Pourcentage"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Position"
+
+#~ msgid "Metrics"
+#~ msgstr "Métriques"

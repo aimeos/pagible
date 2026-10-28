@@ -1,0 +1,183 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: hr\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/components/PageDetailMetrics.vue:98
+msgctxt "metrics"
+msgid "Views & Visits"
+msgstr "Pregledi i posjeti"
+
+#: src/components/PageDetailMetrics.vue:100
+msgctxt "metrics"
+msgid "Views"
+msgstr "Pregledi"
+
+#: src/components/PageDetailMetrics.vue:101
+msgctxt "metrics"
+msgid "Visits"
+msgstr "Posjeti"
+
+#: src/components/PageDetailMetrics.vue:102
+#: src/components/PageDetailMetrics.vue:141
+msgctxt "metrics"
+msgid "Conversions"
+msgstr "Konverzije"
+
+#: src/components/PageDetailMetrics.vue:106
+msgctxt "metrics"
+msgid "Visit Durations (minutes)"
+msgstr "Trajanja posjeta (minute)"
+
+#: src/components/PageDetailMetrics.vue:107
+msgctxt "metrics"
+msgid "Duration"
+msgstr "Trajanje"
+
+#: src/components/PageDetailMetrics.vue:110
+msgctxt "metrics"
+msgid "Google Search: Impressions & Clicks"
+msgstr "Google pretraživanje: prikazi i klikovi"
+
+#: src/components/PageDetailMetrics.vue:112
+#: src/components/PageDetailMetrics.vue:414
+msgctxt "metrics"
+msgid "Impressions"
+msgstr "Prikazi"
+
+#: src/components/PageDetailMetrics.vue:113
+#: src/components/PageDetailMetrics.vue:415
+msgctxt "metrics"
+msgid "Clicks"
+msgstr "Klikovi"
+
+#: src/components/PageDetailMetrics.vue:117
+msgctxt "metrics"
+msgid "Google Search: Click-through rate"
+msgstr "Google pretraživanje: Stopa klikova"
+
+#: src/components/PageDetailMetrics.vue:118
+msgctxt "metrics"
+msgid "Percentage"
+msgstr "Postotak"
+
+#: src/components/PageDetailMetrics.vue:138
+msgctxt "metrics"
+msgid "Page Views"
+msgstr "Pregledi stranice"
+
+#: src/components/PageDetailMetrics.vue:139
+msgctxt "metrics"
+msgid "Page Visits"
+msgstr "Posjeti stranici"
+
+#: src/components/PageDetailMetrics.vue:142
+msgctxt "metrics"
+msgid "Visit Duration (minutes)"
+msgstr "Trajanje posjeta (minute)"
+
+#: src/components/PageDetailMetrics.vue:143
+msgctxt "metrics"
+msgid "Google Impressions"
+msgstr "Google prikazi"
+
+#: src/components/PageDetailMetrics.vue:144
+msgctxt "metrics"
+msgid "Google Clicks"
+msgstr "Google klikovi"
+
+#: src/components/PageDetailMetrics.vue:145
+msgctxt "metrics"
+msgid "Google click-through rate"
+msgstr "Stopa klikova na Googleu"
+
+#: src/components/PageDetailMetrics.vue:151
+msgctxt "metrics"
+msgid "Round trip time"
+msgstr "Vrijeme povratnog puta"
+
+#: src/components/PageDetailMetrics.vue:152
+msgctxt "metrics"
+msgid "Time to first byte"
+msgstr "Vrijeme do prvog bajta"
+
+#: src/components/PageDetailMetrics.vue:153
+msgctxt "metrics"
+msgid "First contentful paint"
+msgstr "Prvo iscrtavanje sadržaja"
+
+#: src/components/PageDetailMetrics.vue:154
+msgctxt "metrics"
+msgid "Largest contentful paint"
+msgstr "Najveće iscrtavanje sadržaja"
+
+#: src/components/PageDetailMetrics.vue:155
+msgctxt "metrics"
+msgid "Interaction to next paint"
+msgstr "Interakcija do sljedećeg iscrtavanja"
+
+#: src/components/PageDetailMetrics.vue:156
+msgctxt "metrics"
+msgid "Cumulative layout shift"
+msgstr "Kumulativni pomak rasporeda"
+
+#: src/components/PageDetailMetrics.vue:237
+msgctxt "metrics"
+msgid "Error fetching metrics"
+msgstr "Pogreška pri dohvaćanju statistike"
+
+#: src/components/PageDetailMetrics.vue:259
+msgctxt "metrics"
+msgid "Page metrics"
+msgstr "Metrike stranice"
+
+#: src/components/PageDetailMetrics.vue:265
+msgctxt "metrics"
+msgid "Days"
+msgstr "Dani"
+
+#: src/components/PageDetailMetrics.vue:292
+msgctxt "metrics"
+msgid "Weekly Insights"
+msgstr "Tjedni pregled"
+
+#: src/components/PageDetailMetrics.vue:324
+msgctxt "metrics"
+msgid "Referrers"
+msgstr "Izvori posjeta"
+
+#: src/components/PageDetailMetrics.vue:367
+msgctxt "metrics"
+msgid "Countries"
+msgstr "Zemlje"
+
+#: src/components/PageDetailMetrics.vue:383
+msgctxt "metrics"
+msgid "Page Speed"
+msgstr "Brzina stranice"
+
+#: src/components/PageDetailMetrics.vue:408
+msgctxt "metrics"
+msgid "Google Search: Queries"
+msgstr "Google pretraživanje: upiti"
+
+#: src/components/PageDetailMetrics.vue:416
+msgctxt "metrics"
+msgid "Percent"
+msgstr "Postotak"
+
+#: src/components/PageDetailMetrics.vue:417
+msgctxt "search ranking"
+msgid "Position"
+msgstr ""
+
+#: src/strings.js:9
+msgctxt "metrics"
+msgid "Metrics"
+msgstr "Metrike"

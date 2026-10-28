@@ -1,0 +1,183 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: src/components/PageDetailMetrics.vue:98
+msgctxt "metrics"
+msgid "Views & Visits"
+msgstr "Visualizações e visitas"
+
+#: src/components/PageDetailMetrics.vue:100
+msgctxt "metrics"
+msgid "Views"
+msgstr "Visualizações"
+
+#: src/components/PageDetailMetrics.vue:101
+msgctxt "metrics"
+msgid "Visits"
+msgstr "Visitas"
+
+#: src/components/PageDetailMetrics.vue:102
+#: src/components/PageDetailMetrics.vue:141
+msgctxt "metrics"
+msgid "Conversions"
+msgstr "Conversões"
+
+#: src/components/PageDetailMetrics.vue:106
+msgctxt "metrics"
+msgid "Visit Durations (minutes)"
+msgstr "Duração das visitas (minutos)"
+
+#: src/components/PageDetailMetrics.vue:107
+msgctxt "metrics"
+msgid "Duration"
+msgstr "Duração"
+
+#: src/components/PageDetailMetrics.vue:110
+msgctxt "metrics"
+msgid "Google Search: Impressions & Clicks"
+msgstr "Pesquisa Google: Impressões e cliques"
+
+#: src/components/PageDetailMetrics.vue:112
+#: src/components/PageDetailMetrics.vue:414
+msgctxt "metrics"
+msgid "Impressions"
+msgstr "Impressões"
+
+#: src/components/PageDetailMetrics.vue:113
+#: src/components/PageDetailMetrics.vue:415
+msgctxt "metrics"
+msgid "Clicks"
+msgstr "Cliques"
+
+#: src/components/PageDetailMetrics.vue:117
+msgctxt "metrics"
+msgid "Google Search: Click-through rate"
+msgstr "Pesquisa Google: Taxa de cliques"
+
+#: src/components/PageDetailMetrics.vue:118
+msgctxt "metrics"
+msgid "Percentage"
+msgstr "Percentagem"
+
+#: src/components/PageDetailMetrics.vue:138
+msgctxt "metrics"
+msgid "Page Views"
+msgstr "Visualizações de página"
+
+#: src/components/PageDetailMetrics.vue:139
+msgctxt "metrics"
+msgid "Page Visits"
+msgstr "Visitas à página"
+
+#: src/components/PageDetailMetrics.vue:142
+msgctxt "metrics"
+msgid "Visit Duration (minutes)"
+msgstr "Duração da visita (minutos)"
+
+#: src/components/PageDetailMetrics.vue:143
+msgctxt "metrics"
+msgid "Google Impressions"
+msgstr "Impressões do Google"
+
+#: src/components/PageDetailMetrics.vue:144
+msgctxt "metrics"
+msgid "Google Clicks"
+msgstr "Cliques no Google"
+
+#: src/components/PageDetailMetrics.vue:145
+msgctxt "metrics"
+msgid "Google click-through rate"
+msgstr "Taxa de cliques do Google"
+
+#: src/components/PageDetailMetrics.vue:151
+msgctxt "metrics"
+msgid "Round trip time"
+msgstr "Tempo de ida e volta"
+
+#: src/components/PageDetailMetrics.vue:152
+msgctxt "metrics"
+msgid "Time to first byte"
+msgstr "Tempo até ao primeiro byte"
+
+#: src/components/PageDetailMetrics.vue:153
+msgctxt "metrics"
+msgid "First contentful paint"
+msgstr "First Contentful Paint"
+
+#: src/components/PageDetailMetrics.vue:154
+msgctxt "metrics"
+msgid "Largest contentful paint"
+msgstr "Largest Contentful Paint"
+
+#: src/components/PageDetailMetrics.vue:155
+msgctxt "metrics"
+msgid "Interaction to next paint"
+msgstr "Interaction to Next Paint"
+
+#: src/components/PageDetailMetrics.vue:156
+msgctxt "metrics"
+msgid "Cumulative layout shift"
+msgstr "Mudança cumulativa de layout"
+
+#: src/components/PageDetailMetrics.vue:237
+msgctxt "metrics"
+msgid "Error fetching metrics"
+msgstr "Erro ao obter as métricas"
+
+#: src/components/PageDetailMetrics.vue:259
+msgctxt "metrics"
+msgid "Page metrics"
+msgstr "Métricas da página"
+
+#: src/components/PageDetailMetrics.vue:265
+msgctxt "metrics"
+msgid "Days"
+msgstr "Dias"
+
+#: src/components/PageDetailMetrics.vue:292
+msgctxt "metrics"
+msgid "Weekly Insights"
+msgstr "Insights semanais"
+
+#: src/components/PageDetailMetrics.vue:324
+msgctxt "metrics"
+msgid "Referrers"
+msgstr "Fontes de referência"
+
+#: src/components/PageDetailMetrics.vue:367
+msgctxt "metrics"
+msgid "Countries"
+msgstr "Países"
+
+#: src/components/PageDetailMetrics.vue:383
+msgctxt "metrics"
+msgid "Page Speed"
+msgstr "Velocidade da página"
+
+#: src/components/PageDetailMetrics.vue:408
+msgctxt "metrics"
+msgid "Google Search: Queries"
+msgstr "Pesquisa Google: Consultas"
+
+#: src/components/PageDetailMetrics.vue:416
+msgctxt "metrics"
+msgid "Percent"
+msgstr "Percentagem"
+
+#: src/components/PageDetailMetrics.vue:417
+msgctxt "search ranking"
+msgid "Position"
+msgstr ""
+
+#: src/strings.js:9
+msgctxt "metrics"
+msgid "Metrics"
+msgstr "Métricas"

@@ -356,7 +356,7 @@ msgid "Configuration"
 msgstr "Ρυθμίσεις"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Περιεχόμενο"
 
@@ -593,7 +593,7 @@ msgstr[1] "Εφαρμογή των επιλεγμένων ιδιοτήτων σ�
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Γλώσσα"
 
@@ -668,7 +668,7 @@ msgstr "Επαναφόρτωση στοιχείων"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Μετάφραση"
 
@@ -1210,7 +1210,7 @@ msgid "Current changes"
 msgstr "Τρέχουσες αλλαγές"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Προγραμματισμένο για %{date}"
 
@@ -1555,7 +1555,7 @@ msgid "Clear cache"
 msgstr "Εκκαθάριση προσωρινής μνήμης"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Παράβλεψη αλλαγών"
 
@@ -1746,144 +1746,8 @@ msgstr "Το στοιχείο έχει ήδη προστεθεί"
 msgid "Remove content element"
 msgstr "Αφαίρεση στοιχείου περιεχομένου"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Προβολές και επισκέψεις"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Προβολές"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Επισκέψεις"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Μετατροπές"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Διάρκεια επίσκεψης (λεπτά)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Διάρκεια"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Αναζήτηση Google: Εμφανίσεις και κλικ"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Εμφανίσεις"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Κλικ"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Αναζήτηση Google: Αναλογία κλικ προς εμφανίσεις"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Ποσοστό"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Προβολές σελίδων"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Επισκέψεις σελίδας"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Διάρκεια επίσκεψης (λεπτά)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Εμφανίσεις Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Κλικ Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Αναλογία κλικ προς εμφανίσεις στο Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Χρόνος μετ' επιστροφής"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Χρόνος μέχρι το πρώτο byte"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Πρώτη απόδοση περιεχομένου"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Απόδοση μεγαλύτερου περιεχομένου"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Αλληλεπίδραση έως την επόμενη απόδοση"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Σωρευτική μετατόπιση διάταξης"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Σφάλμα κατά την ανάκτηση των μετρήσεων"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Μετρήσεις σελίδας"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Ημέρες"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Εβδομαδιαία στατιστικά"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Πηγές παραπομπής"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Χώρες"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Ταχύτητα σελίδας"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Αναζήτηση Google: Ερωτήματα"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Ποσοστό"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Θέση"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Χρειάζεται ενημέρωση"
 
@@ -1895,7 +1759,7 @@ msgstr "Λείπει"
 msgid "AI draft"
 msgstr "Πρόχειρο AI"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Ενημερωμένο"
 
@@ -1972,7 +1836,7 @@ msgstr "Εναλλαγή θυγατρικών κόμβων"
 msgid "Hidden in navigation"
 msgstr "Κρυμμένο στην πλοήγηση"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Δημιουργία"
 
@@ -2250,23 +2114,23 @@ msgstr "Η σελίδα δημοσιεύτηκε με επιτυχία"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Η σελίδα προγραμματίστηκε για δημοσίευση στις %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Σφάλμα δημοσίευσης σελίδας"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Δεν δημοσιεύτηκε, ελέγξτε τις αλλαγές και δημοσιεύστε ξανά"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Δεν υπάρχουν διαθέσιμα στοιχεία"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Δεν υπάρχουν διαθέσιμα δεδομένα έκδοσης"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Υπάρχουν μη έγκυρα πεδία, επιλύστε πρώτα τα σφάλματα"
 
@@ -2496,50 +2360,50 @@ msgstr "Απενεργοποιημένο"
 msgid "Enabled"
 msgstr "Ενεργοποιημένο"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Σφάλμα αποθήκευσης σελίδας"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr ""
 "Οι σελίδες διαγράφονται ως ολόκληρες σελίδες μόνο στη γλώσσα προέλευσής τους"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Σφάλμα κατά τη μετακίνηση σελίδας στον κάδο"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Σφάλμα επαναφοράς γλώσσας"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Σφάλμα επαναφοράς σελίδας"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Όλες οι υποσελίδες αυτών των σελίδων θα διαγραφούν επίσης οριστικά."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Σφάλμα κατά την οριστική διαγραφή σελίδας"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Η προσωρινή μνήμη διαγράφηκε"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Η προσωρινή μνήμη διαγράφηκε για %{num} σελίδα."
 msgstr[1] "Η προσωρινή μνήμη διαγράφηκε για %{num} σελίδες."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Σφάλμα κατά την εκκαθάριση της προσωρινής μνήμης"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "Δεν ήταν δυνατή η ενημέρωση %{num} σελίδας"
@@ -2565,7 +2429,7 @@ msgstr "Μετά"
 msgid "Error inserting page"
 msgstr "Σφάλμα εισαγωγής σελίδας"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Σφάλμα ανάκτησης σελίδας"
 
@@ -2928,7 +2792,7 @@ msgstr "Άρνηση πρόσβασης"
 msgid "Error: %{msg}"
 msgstr "Σφάλμα: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2936,35 +2800,31 @@ msgstr ""
 "Βαθμολόγησε αυτή τη σελίδα από 1 έως 10 ανά τομέα (ποιότητα περιεχομένου, "
 "αναγνωσιμότητα, SEO, UX, αλληλεπίδραση) και πρότεινε βελτιώσεις"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Περιμένετε μέχρι να αλλάξει η γλώσσα"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Η σελίδα αποθηκεύτηκε με επιτυχία"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Σελίδα"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Προέλευση"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Στον κάδο"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Επεξεργαστής"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Μετρικές"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -3001,3 +2861,106 @@ msgid ""
 msgstr ""
 "Η τεχνητή νοημοσύνη μπορεί να δημιουργήσει μια σελίδα με περιεχόμενο με βάση "
 "τις δικές σας πληροφορίες και να την προσθέσει στο δέντρο σελίδων"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Προβολές και επισκέψεις"
+
+#~ msgid "Views"
+#~ msgstr "Προβολές"
+
+#~ msgid "Visits"
+#~ msgstr "Επισκέψεις"
+
+#~ msgid "Conversions"
+#~ msgstr "Μετατροπές"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Διάρκεια επίσκεψης (λεπτά)"
+
+#~ msgid "Duration"
+#~ msgstr "Διάρκεια"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Αναζήτηση Google: Εμφανίσεις και κλικ"
+
+#~ msgid "Impressions"
+#~ msgstr "Εμφανίσεις"
+
+#~ msgid "Clicks"
+#~ msgstr "Κλικ"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Αναζήτηση Google: Αναλογία κλικ προς εμφανίσεις"
+
+#~ msgid "Percentage"
+#~ msgstr "Ποσοστό"
+
+#~ msgid "Page Views"
+#~ msgstr "Προβολές σελίδων"
+
+#~ msgid "Page Visits"
+#~ msgstr "Επισκέψεις σελίδας"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Διάρκεια επίσκεψης (λεπτά)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Εμφανίσεις Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Κλικ Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Αναλογία κλικ προς εμφανίσεις στο Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Χρόνος μετ' επιστροφής"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Χρόνος μέχρι το πρώτο byte"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Πρώτη απόδοση περιεχομένου"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Απόδοση μεγαλύτερου περιεχομένου"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Αλληλεπίδραση έως την επόμενη απόδοση"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Σωρευτική μετατόπιση διάταξης"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Σφάλμα κατά την ανάκτηση των μετρήσεων"
+
+#~ msgid "Page metrics"
+#~ msgstr "Μετρήσεις σελίδας"
+
+#~ msgid "Days"
+#~ msgstr "Ημέρες"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Εβδομαδιαία στατιστικά"
+
+#~ msgid "Referrers"
+#~ msgstr "Πηγές παραπομπής"
+
+#~ msgid "Countries"
+#~ msgstr "Χώρες"
+
+#~ msgid "Page Speed"
+#~ msgstr "Ταχύτητα σελίδας"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Αναζήτηση Google: Ερωτήματα"
+
+#~ msgid "Percent"
+#~ msgstr "Ποσοστό"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Θέση"
+
+#~ msgid "Metrics"
+#~ msgstr "Μετρικές"

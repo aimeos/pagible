@@ -14,7 +14,7 @@ use Aimeos\KeywordsBridge\Facades\Keywords as Bridge;
 use Aimeos\KeywordsBridge\Keyword;
 
 
-class KeywordToolsTest extends McpTestAbstract
+class KeywordToolsTest extends MetricsTestAbstract
 {
     protected function defineEnvironment( $app )
     {

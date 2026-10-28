@@ -359,7 +359,7 @@ msgid "Configuration"
 msgstr "Configurare"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Conținut"
 
@@ -599,7 +599,7 @@ msgstr[2] "Aplicați proprietățile selectate la %{num} de intrări."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Limba"
 
@@ -674,7 +674,7 @@ msgstr "Reîncărcați elementele"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Traduceți"
 
@@ -1219,7 +1219,7 @@ msgid "Current changes"
 msgstr "Modificări curente"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Programat pentru %{date}"
 
@@ -1562,7 +1562,7 @@ msgid "Clear cache"
 msgstr "Goliți memoria cache"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorați modificările"
 
@@ -1751,144 +1751,8 @@ msgstr "Elementul a fost deja adăugat"
 msgid "Remove content element"
 msgstr "Eliminați elementul de conținut"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Vizualizări și vizite"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Vizualizări"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Vizite"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Conversii"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Durata vizitelor (minute)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Durată"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Căutare Google: Impresii și clicuri"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Impresii"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Clicuri"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Căutare Google: Rata de clic"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Procentaj"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Vizualizări de pagini"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Vizite pe pagină"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Durata vizitei (minute)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Impresii Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Clicuri Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Rata de clic Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Timp dus-întors"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Timpul până la primul octet"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "First Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Largest Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaction to Next Paint"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Schimbare cumulată de aspect"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Eroare la preluarea statisticilor"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Metrici de pagină"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Zile"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Perspective săptămânale"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Surse de referință"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Țări"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Viteza paginii"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Căutare Google: Interogări"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Procent"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Poziția"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Necesită actualizare"
 
@@ -1900,7 +1764,7 @@ msgstr "Lipsă"
 msgid "AI draft"
 msgstr "Ciornă AI"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Actualizat"
 
@@ -1978,7 +1842,7 @@ msgstr "Comutare noduri copil"
 msgid "Hidden in navigation"
 msgstr "Ascuns în navigare"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Creați"
 
@@ -2256,24 +2120,24 @@ msgstr "Pagină publicată cu succes"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Pagină programată pentru publicare la %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Eroare la publicarea paginii"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr ""
 "Nepublicat, vă rugăm să verificați modificările și să publicați din nou"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nu există date disponibile"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nu există date despre versiune disponibile"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Există câmpuri invalide, vă rugăm să rezolvați mai întâi erorile"
 
@@ -2505,51 +2369,51 @@ msgstr "Dezactivat"
 msgid "Enabled"
 msgstr "Activat"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Eroare la salvarea paginii"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Paginile sunt șterse ca pagini întregi doar în limba lor sursă"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Eroare la mutarea paginii în coșul de gunoi"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Eroare la restaurarea limbii"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Eroare la restaurarea paginii"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr ""
 "Toate subpaginile acestor pagini vor fi, de asemenea, șterse definitiv."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Eroare la ștergerea definitivă a paginii"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Cache-ul a fost golit"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cache-ul a fost golit pentru %{num} pagină."
 msgstr[1] "Cache-ul a fost golit pentru %{num} pagini."
 msgstr[2] "Cache-ul a fost golit pentru %{num} de pagini."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Eroare la golirea memoriei cache"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} pagină nu a putut fi actualizată"
@@ -2576,7 +2440,7 @@ msgstr "După"
 msgid "Error inserting page"
 msgstr "Eroare la inserarea paginii"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Eroare la preluarea paginii"
 
@@ -2946,7 +2810,7 @@ msgstr "Acces refuzat"
 msgid "Error: %{msg}"
 msgstr "Eroare: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2954,35 +2818,31 @@ msgstr ""
 "Notează această pagină de la 1 la 10 pe fiecare domeniu (calitatea "
 "conținutului, lizibilitate, SEO, UX, implicare) și sugerează îmbunătățiri"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Vă rugăm să așteptați până când limba este schimbată"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Pagină salvată cu succes"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Pagina"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Sursă"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "În coșul de gunoi"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Editor"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Metrici"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -3019,3 +2879,106 @@ msgid ""
 msgstr ""
 "Inteligența artificială poate crea o pagină și conținut pe baza "
 "informațiilor furnizate de dvs. și le poate adăuga la arborele paginilor"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Vizualizări și vizite"
+
+#~ msgid "Views"
+#~ msgstr "Vizualizări"
+
+#~ msgid "Visits"
+#~ msgstr "Vizite"
+
+#~ msgid "Conversions"
+#~ msgstr "Conversii"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Durata vizitelor (minute)"
+
+#~ msgid "Duration"
+#~ msgstr "Durată"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Căutare Google: Impresii și clicuri"
+
+#~ msgid "Impressions"
+#~ msgstr "Impresii"
+
+#~ msgid "Clicks"
+#~ msgstr "Clicuri"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Căutare Google: Rata de clic"
+
+#~ msgid "Percentage"
+#~ msgstr "Procentaj"
+
+#~ msgid "Page Views"
+#~ msgstr "Vizualizări de pagini"
+
+#~ msgid "Page Visits"
+#~ msgstr "Vizite pe pagină"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Durata vizitei (minute)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Impresii Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Clicuri Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Rata de clic Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Timp dus-întors"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Timpul până la primul octet"
+
+#~ msgid "First contentful paint"
+#~ msgstr "First Contentful Paint"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Largest Contentful Paint"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaction to Next Paint"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Schimbare cumulată de aspect"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Eroare la preluarea statisticilor"
+
+#~ msgid "Page metrics"
+#~ msgstr "Metrici de pagină"
+
+#~ msgid "Days"
+#~ msgstr "Zile"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Perspective săptămânale"
+
+#~ msgid "Referrers"
+#~ msgstr "Surse de referință"
+
+#~ msgid "Countries"
+#~ msgstr "Țări"
+
+#~ msgid "Page Speed"
+#~ msgstr "Viteza paginii"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Căutare Google: Interogări"
+
+#~ msgid "Percent"
+#~ msgstr "Procent"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Poziția"
+
+#~ msgid "Metrics"
+#~ msgstr "Metrici"

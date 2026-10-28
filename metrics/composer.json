@@ -1,0 +1,46 @@
+{
+    "name": "aimeos/pagible-metrics",
+    "description": "Pagible CMS page metrics and keyword research",
+    "keywords": ["laravel", "cms", "analytics", "metrics", "keywords", "seo"],
+    "homepage": "https://pagible.com",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "aimeos/pagible-core": "*@dev",
+        "aimeos/laravel-analytics-bridge": "~1.0",
+        "aimeos/laravel-keywords-bridge": "~1.0||dev-master"
+    },
+    "require-dev": {
+        "aimeos/pagible-graphql": "*@dev",
+        "aimeos/pagible-mcp": "*@dev",
+        "orchestra/testbench": "^10.0||^11.0",
+        "larastan/larastan": "^3.9"
+    },
+    "suggest": {
+        "aimeos/pagible-admin": "For the page metrics panel in the page editor",
+        "aimeos/pagible-graphql": "For the page metrics GraphQL API used by the admin panel",
+        "aimeos/pagible-mcp": "For the page metrics and keyword research MCP tools",
+        "aimeos/laravel-keywords-google": "For keyword research data from Google Ads",
+        "aimeos/laravel-keywords-ahrefs": "For keyword research data from Ahrefs",
+        "aimeos/laravel-keywords-semrush": "For keyword research data from Semrush"
+    },
+    "autoload": {
+        "psr-4": {
+            "Aimeos\\Cms\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        },
+        "classmap": ["tests/User.php"]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Aimeos\\Cms\\MetricsServiceProvider"
+            ]
+        }
+    }
+}

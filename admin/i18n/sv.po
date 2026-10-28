@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "Konfiguration"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Innehåll"
 
@@ -588,7 +588,7 @@ msgstr[1] "Tillämpa de valda egenskaperna på %{num} poster."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Språk"
 
@@ -661,7 +661,7 @@ msgstr "Ladda om element"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Översätt"
 
@@ -1194,7 +1194,7 @@ msgid "Current changes"
 msgstr "Aktuella ändringar"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Schemalagd för %{date}"
 
@@ -1533,7 +1533,7 @@ msgid "Clear cache"
 msgstr "Rensa cache"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorera ändringar"
 
@@ -1719,144 +1719,8 @@ msgstr "Elementet har redan lagts till"
 msgid "Remove content element"
 msgstr "Ta bort innehållselement"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Sidvisningar och besök"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Sidvisningar"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Besök"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konverteringar"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Besökens varaktighet (minuter)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Varaktighet"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google Sök: Visningar och klick"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Visningar"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Klick"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google Sök: Klickfrekvens"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Procentuell andel"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Sidvisningar"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Sidbesök"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Besökets varaktighet (minuter)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google-visningar"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google-klick"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Klickfrekvens på Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Round-trip-tid"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Tid till första byte"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Första innehållsrendering"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Största innehållsrendering"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaktion till nästa rendering"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulativ layoutförskjutning"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Fel vid hämtning av statistik"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Sidans mätvärden"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Dagar"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Veckovisa insikter"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Hänvisningskällor"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Länder"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Sidhastighet"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google Sök: Sökfrågor"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Procent"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Position"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Behöver uppdateras"
 
@@ -1868,7 +1732,7 @@ msgstr "Saknas"
 msgid "AI draft"
 msgstr "AI-utkast"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Aktuell"
 
@@ -1945,7 +1809,7 @@ msgstr "Visa/dölj underordnade noder"
 msgid "Hidden in navigation"
 msgstr "Dold i navigering"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Skapa"
 
@@ -2219,23 +2083,23 @@ msgstr "Sidan har publicerats"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Sidan är schemalagd för publicering %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Fel vid publicering av sida"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Inte publicerad, granska ändringarna och publicera igen"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Inga uppgifter tillgängliga"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Inga versionsdata tillgängliga"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Det finns ogiltiga fält, vänligen åtgärda felen först"
 
@@ -2465,49 +2329,49 @@ msgstr "Inaktiverad"
 msgid "Enabled"
 msgstr "Aktiverad"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Fel vid lagring av sida"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Sidor raderas bara som hela sidor på sitt källspråk"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Fel vid flytt av sidan till papperskorgen"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Fel vid återställning av språk"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Fel vid återställning av sida"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Alla undersidor till dessa sidor tas också bort permanent."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Fel vid permanent borttagning av sidan"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Cache rensad"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Cache rensad för %{num} sida."
 msgstr[1] "Cache rensad för %{num} sidor."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Det gick inte att rensa cacheminnet"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} sida kunde inte uppdateras"
@@ -2533,7 +2397,7 @@ msgstr "Efter"
 msgid "Error inserting page"
 msgstr "Fel vid infogning av sida"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Fel vid hämtning av sida"
 
@@ -2889,7 +2753,7 @@ msgstr "Åtkomst nekad"
 msgid "Error: %{msg}"
 msgstr "Fel: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2897,35 +2761,31 @@ msgstr ""
 "Betygsätt den här sidan från 1–10 per område (innehållskvalitet, läsbarhet, "
 "SEO, UX, engagemang) och föreslå förbättringar"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Vänta tills språket har bytts"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Sidan har sparats"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Sida"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Källa"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "I papperskorgen"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Redigerare"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Mätvärden"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2962,3 +2822,106 @@ msgid ""
 msgstr ""
 "AI kan skapa en sida och innehåll baserat på dina instruktioner och lägga "
 "till det i sidträdet"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Sidvisningar och besök"
+
+#~ msgid "Views"
+#~ msgstr "Sidvisningar"
+
+#~ msgid "Visits"
+#~ msgstr "Besök"
+
+#~ msgid "Conversions"
+#~ msgstr "Konverteringar"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Besökens varaktighet (minuter)"
+
+#~ msgid "Duration"
+#~ msgstr "Varaktighet"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google Sök: Visningar och klick"
+
+#~ msgid "Impressions"
+#~ msgstr "Visningar"
+
+#~ msgid "Clicks"
+#~ msgstr "Klick"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google Sök: Klickfrekvens"
+
+#~ msgid "Percentage"
+#~ msgstr "Procentuell andel"
+
+#~ msgid "Page Views"
+#~ msgstr "Sidvisningar"
+
+#~ msgid "Page Visits"
+#~ msgstr "Sidbesök"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Besökets varaktighet (minuter)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google-visningar"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google-klick"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Klickfrekvens på Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Round-trip-tid"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Tid till första byte"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Första innehållsrendering"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Största innehållsrendering"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaktion till nästa rendering"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulativ layoutförskjutning"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Fel vid hämtning av statistik"
+
+#~ msgid "Page metrics"
+#~ msgstr "Sidans mätvärden"
+
+#~ msgid "Days"
+#~ msgstr "Dagar"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Veckovisa insikter"
+
+#~ msgid "Referrers"
+#~ msgstr "Hänvisningskällor"
+
+#~ msgid "Countries"
+#~ msgstr "Länder"
+
+#~ msgid "Page Speed"
+#~ msgstr "Sidhastighet"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google Sök: Sökfrågor"
+
+#~ msgid "Percent"
+#~ msgstr "Procent"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Position"
+
+#~ msgid "Metrics"
+#~ msgstr "Mätvärden"

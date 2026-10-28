@@ -100,7 +100,7 @@ Installs the Pagible AI package.
 php artisan cms:install:ai
 ```
 
-Publishes Prism PHP configuration, analytics bridge files, and the AI GraphQL schema.
+Publishes Prism PHP configuration and the AI GraphQL schema.
 
 ### cms:description
 

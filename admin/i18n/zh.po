@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "配置"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "内容"
 
@@ -586,7 +586,7 @@ msgstr[0] "将所选属性应用到 %{num} 个条目。"
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "语言"
 
@@ -659,7 +659,7 @@ msgstr "重新加载元素"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "翻译"
 
@@ -1183,7 +1183,7 @@ msgid "Current changes"
 msgstr "当前更改"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "计划于 %{date}"
 
@@ -1516,7 +1516,7 @@ msgid "Clear cache"
 msgstr "清除缓存"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "忽略更改"
 
@@ -1701,144 +1701,8 @@ msgstr "该元素已添加"
 msgid "Remove content element"
 msgstr "移除内容元素"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "浏览量和访问量"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "浏览量"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "访问次数"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "转化次数"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "访问时长（分钟）"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "持续时间"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google 搜索：展示次数和点击次数"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "展示次数"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "点击次数"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google 搜索：点击率"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "百分比"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "页面浏览量"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "页面访问量"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "访问时长（分钟）"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google 展示次数"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google 点击次数"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google 点击率"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "往返时间"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "首字节时间"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "首次内容绘制"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "最大内容绘制"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "与下一次绘制的交互"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "累积布局偏移"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "获取统计数据时出错"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "页面指标"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "天数"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "每周洞察"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "引荐来源"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "国家"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "页面速度"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google 搜索：查询"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "百分比"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "排名"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "需要更新"
 
@@ -1850,7 +1714,7 @@ msgstr "缺失"
 msgid "AI draft"
 msgstr "AI 草稿"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "已是最新"
 
@@ -1924,7 +1788,7 @@ msgstr "切换子节点"
 msgid "Hidden in navigation"
 msgstr "在导航中隐藏"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "创建"
 
@@ -2191,23 +2055,23 @@ msgstr "页面已成功发布"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "页面计划于 %{date} 发布"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "发布页面出错"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "未发布，请检查更改后重新发布"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "无数据"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "没有可用的版本数据"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "有无效字段，请先解决错误"
 
@@ -2435,48 +2299,48 @@ msgstr "已禁用"
 msgid "Enabled"
 msgstr "已启用"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "保存页面出错"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "页面只能在其源语言中整体删除"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "将页面移至回收站时出错"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "恢复语言时出错"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "恢复页面时出错"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "这些页面的所有子页面也将被永久删除。"
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "永久删除页面时出错"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "缓存已清除"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "已清除 %{num} 个页面的缓存。"
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "清除缓存时出错"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} 个页面无法更新"
@@ -2501,7 +2365,7 @@ msgstr "之后"
 msgid "Error inserting page"
 msgstr "插入页面出错"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "获取页面出错"
 
@@ -2844,7 +2708,7 @@ msgstr "拒绝访问"
 msgid "Error: %{msg}"
 msgstr "错误：%{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2852,35 +2716,31 @@ msgstr ""
 "按各方面为此页面打分 1–10（内容质量、可读性、SEO、UX、参与度），并提出改进建"
 "议"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "请等待语言切换完成"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "页面保存成功"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "页面"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "来源"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "已移至回收站"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "编辑器"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "指标"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2915,3 +2775,106 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI 可根据您的输入创建页面和内容，并将其添加到页面树中"
+
+#~ msgid "Views & Visits"
+#~ msgstr "浏览量和访问量"
+
+#~ msgid "Views"
+#~ msgstr "浏览量"
+
+#~ msgid "Visits"
+#~ msgstr "访问次数"
+
+#~ msgid "Conversions"
+#~ msgstr "转化次数"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "访问时长（分钟）"
+
+#~ msgid "Duration"
+#~ msgstr "持续时间"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google 搜索：展示次数和点击次数"
+
+#~ msgid "Impressions"
+#~ msgstr "展示次数"
+
+#~ msgid "Clicks"
+#~ msgstr "点击次数"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google 搜索：点击率"
+
+#~ msgid "Percentage"
+#~ msgstr "百分比"
+
+#~ msgid "Page Views"
+#~ msgstr "页面浏览量"
+
+#~ msgid "Page Visits"
+#~ msgstr "页面访问量"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "访问时长（分钟）"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google 展示次数"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google 点击次数"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google 点击率"
+
+#~ msgid "Round trip time"
+#~ msgstr "往返时间"
+
+#~ msgid "Time to first byte"
+#~ msgstr "首字节时间"
+
+#~ msgid "First contentful paint"
+#~ msgstr "首次内容绘制"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "最大内容绘制"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "与下一次绘制的交互"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "累积布局偏移"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "获取统计数据时出错"
+
+#~ msgid "Page metrics"
+#~ msgstr "页面指标"
+
+#~ msgid "Days"
+#~ msgstr "天数"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "每周洞察"
+
+#~ msgid "Referrers"
+#~ msgstr "引荐来源"
+
+#~ msgid "Countries"
+#~ msgstr "国家"
+
+#~ msgid "Page Speed"
+#~ msgstr "页面速度"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google 搜索：查询"
+
+#~ msgid "Percent"
+#~ msgstr "百分比"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "排名"
+
+#~ msgid "Metrics"
+#~ msgstr "指标"

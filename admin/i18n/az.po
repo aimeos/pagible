@@ -356,7 +356,7 @@ msgid "Configuration"
 msgstr "Konfiqurasiya"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Məzmun"
 
@@ -590,7 +590,7 @@ msgstr[1] "Seçilmiş xüsusiyyətləri %{num} qeydə tətbiq et."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Dil"
 
@@ -665,7 +665,7 @@ msgstr "Elementləri yenidən yüklə"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Tərcümə et"
 
@@ -1204,7 +1204,7 @@ msgid "Current changes"
 msgstr "Cari dəyişikliklər"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "%{date} tarixinə planlaşdırılıb"
 
@@ -1545,7 +1545,7 @@ msgid "Clear cache"
 msgstr "Keşi təmizlə"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Dəyişiklikləri nəzərə alma"
 
@@ -1732,144 +1732,8 @@ msgstr "Element artıq əlavə edilib"
 msgid "Remove content element"
 msgstr "Məzmun elementini çıxar"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Baxışlar və ziyarətlər"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Baxışlar"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Ziyarətlər"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konversiyalar"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Ziyarət müddətləri (dəqiqə)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Müddət"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google Axtarış: göstərilmələr və kliklər"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Göstərilmələr"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Kliklər"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google Axtarış: Kliklənmə nisbəti"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Faiz"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Səhifə baxışları"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Səhifə ziyarətləri"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Ziyarət müddəti (dəqiqə)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google göstərilmələri"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google klikləri"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google kliklənmə nisbəti"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Gediş-qayıdış vaxtı"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "İlk bayta qədər vaxt"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "İlk məzmunlu çəkiliş"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Ən böyük məzmunlu çəkiliş"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Növbəti çəkilişə qədər qarşılıqlı əlaqə"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulyativ tərtibat sürüşməsi"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Statistikanın alınmasında xəta"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Səhifə metrikləri"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Gün"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Həftəlik icmal"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Yönləndirənlər"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Ölkələr"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Səhifə sürəti"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google Axtarış: sorğular"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Faiz"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Mövqe"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Yenilənməlidir"
 
@@ -1881,7 +1745,7 @@ msgstr "Çatışmır"
 msgid "AI draft"
 msgstr "Sİ qaralaması"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Aktualdır"
 
@@ -1958,7 +1822,7 @@ msgstr "Alt düyünləri aç/bağla"
 msgid "Hidden in navigation"
 msgstr "Naviqasiyada gizli"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Yarat"
 
@@ -2234,24 +2098,24 @@ msgstr "Səhifə uğurla dərc edildi"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Səhifə %{date} tarixində dərc olunmaq üçün planlaşdırıldı"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Səhifə dərc edilərkən xəta baş verdi"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr ""
 "Dərc edilmədi, zəhmət olmasa dəyişiklikləri yoxlayın və yenidən dərc edin"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Məlumat yoxdur"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Versiya məlumatı mövcud deyil"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Yanlış sahələr var, zəhmət olmasa, əvvəlcə xətaları düzəldin"
 
@@ -2481,49 +2345,49 @@ msgstr "Deaktiv"
 msgid "Enabled"
 msgstr "Aktiv"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Səhifə yadda saxlanılarkən xəta baş verdi"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Səhifələr yalnız mənbə dilində bütöv səhifə kimi silinir"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Səhifə zibil qutusuna köçürülərkən xəta baş verdi"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Dil bərpa edilərkən xəta baş verdi"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Səhifə bərpa edilərkən xəta baş verdi"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Bu səhifələrin bütün alt səhifələri də həmişəlik silinəcək."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Səhifə həmişəlik silinərkən xəta baş verdi"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Keş təmizləndi"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "%{num} səhifə üçün keş təmizləndi."
 msgstr[1] "%{num} səhifə üçün keş təmizləndi."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Keş təmizlənərkən xəta baş verdi"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} səhifə yenilənə bilmədi"
@@ -2549,7 +2413,7 @@ msgstr "Sonra"
 msgid "Error inserting page"
 msgstr "Səhifə daxil edilərkən xəta baş verdi"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Səhifə alınarkən xəta baş verdi"
 
@@ -2910,7 +2774,7 @@ msgstr "Giriş qadağandır"
 msgid "Error: %{msg}"
 msgstr "Xəta: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2918,35 +2782,31 @@ msgstr ""
 "Bu səhifəyə hər sahə üzrə 1–10 bal ver (məzmun keyfiyyəti, oxunaqlılıq, SEO, "
 "UX, cəlbedicilik) və təkmilləşdirmələr təklif et"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Zəhmət olmasa dil dəyişənə qədər gözləyin"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Səhifə uğurla yadda saxlanıldı"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Səhifə"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Mənbə"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Zibil qutusunda"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Redaktə aləti"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Metriklər"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2983,3 +2843,106 @@ msgid ""
 msgstr ""
 "AI daxil etdiyiniz məlumatlara əsasən səhifə və məzmun yarada və onu səhifə "
 "ağacına əlavə edə bilər"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Baxışlar və ziyarətlər"
+
+#~ msgid "Views"
+#~ msgstr "Baxışlar"
+
+#~ msgid "Visits"
+#~ msgstr "Ziyarətlər"
+
+#~ msgid "Conversions"
+#~ msgstr "Konversiyalar"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Ziyarət müddətləri (dəqiqə)"
+
+#~ msgid "Duration"
+#~ msgstr "Müddət"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google Axtarış: göstərilmələr və kliklər"
+
+#~ msgid "Impressions"
+#~ msgstr "Göstərilmələr"
+
+#~ msgid "Clicks"
+#~ msgstr "Kliklər"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google Axtarış: Kliklənmə nisbəti"
+
+#~ msgid "Percentage"
+#~ msgstr "Faiz"
+
+#~ msgid "Page Views"
+#~ msgstr "Səhifə baxışları"
+
+#~ msgid "Page Visits"
+#~ msgstr "Səhifə ziyarətləri"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Ziyarət müddəti (dəqiqə)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google göstərilmələri"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google klikləri"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google kliklənmə nisbəti"
+
+#~ msgid "Round trip time"
+#~ msgstr "Gediş-qayıdış vaxtı"
+
+#~ msgid "Time to first byte"
+#~ msgstr "İlk bayta qədər vaxt"
+
+#~ msgid "First contentful paint"
+#~ msgstr "İlk məzmunlu çəkiliş"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Ən böyük məzmunlu çəkiliş"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Növbəti çəkilişə qədər qarşılıqlı əlaqə"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulyativ tərtibat sürüşməsi"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Statistikanın alınmasında xəta"
+
+#~ msgid "Page metrics"
+#~ msgstr "Səhifə metrikləri"
+
+#~ msgid "Days"
+#~ msgstr "Gün"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Həftəlik icmal"
+
+#~ msgid "Referrers"
+#~ msgstr "Yönləndirənlər"
+
+#~ msgid "Countries"
+#~ msgstr "Ölkələr"
+
+#~ msgid "Page Speed"
+#~ msgstr "Səhifə sürəti"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google Axtarış: sorğular"
+
+#~ msgid "Percent"
+#~ msgstr "Faiz"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Mövqe"
+
+#~ msgid "Metrics"
+#~ msgstr "Metriklər"

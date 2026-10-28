@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "設定"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "內容"
 
@@ -586,7 +586,7 @@ msgstr[0] "將選取的屬性套用至 %{num} 個項目。"
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "語言"
 
@@ -659,7 +659,7 @@ msgstr "重新載入元素"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "翻譯"
 
@@ -1183,7 +1183,7 @@ msgid "Current changes"
 msgstr "目前的變更"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "排程於 %{date}"
 
@@ -1517,7 +1517,7 @@ msgid "Clear cache"
 msgstr "清除快取"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "忽略變更"
 
@@ -1702,144 +1702,8 @@ msgstr "此元素已新增"
 msgid "Remove content element"
 msgstr "移除內容元素"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "瀏覽與造訪"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "瀏覽次數"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "造訪次數"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "轉換次數"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "造訪時間（分鐘）"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "停留時間"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google 搜尋：曝光與點擊"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "曝光次數"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "點擊次數"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google 搜尋：點閱率"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "百分比"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "頁面瀏覽次數"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "頁面造訪次數"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "造訪時間（分鐘）"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google 曝光次數"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google 點擊次數"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google 點閱率"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "來回時間"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "首位元組時間"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "首次內容繪製"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "最大內容繪製"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "互動至下一次繪製"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "累積版面配置位移"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "取得統計資料時發生錯誤"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "頁面指標"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "天數"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "每週洞察"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "參照來源"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "國家/地區"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "網頁速度"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google 搜尋：查詢字詞"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "百分比"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "排名"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "需要更新"
 
@@ -1851,7 +1715,7 @@ msgstr "缺少"
 msgid "AI draft"
 msgstr "AI 草稿"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "已是最新"
 
@@ -1925,7 +1789,7 @@ msgstr "展開或收合子節點"
 msgid "Hidden in navigation"
 msgstr "在導覽中隱藏"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "建立"
 
@@ -2192,23 +2056,23 @@ msgstr "頁面已成功發佈"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "頁面已排程於 %{date} 發佈"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "發佈頁面時發生錯誤"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "未發布，請檢查變更後重新發布"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "沒有資料"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "沒有可用的版本資料"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "有無效的欄位，請先修正錯誤"
 
@@ -2436,48 +2300,48 @@ msgstr "已停用"
 msgid "Enabled"
 msgstr "已啟用"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "儲存頁面時發生錯誤"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "頁面只能在其來源語言中整體刪除"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "將頁面移至垃圾桶時發生錯誤"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "還原語言時發生錯誤"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "還原頁面時發生錯誤"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "這些頁面的所有子頁面也會一併永久刪除。"
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "永久刪除頁面時發生錯誤"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "快取已清除"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "已清除 %{num} 個頁面的快取。"
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "清除快取時發生錯誤"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} 個頁面無法更新"
@@ -2502,7 +2366,7 @@ msgstr "之後"
 msgid "Error inserting page"
 msgstr "插入頁面時發生錯誤"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "取得頁面時發生錯誤"
 
@@ -2845,7 +2709,7 @@ msgstr "拒絕存取"
 msgid "Error: %{msg}"
 msgstr "錯誤：%{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2853,35 +2717,31 @@ msgstr ""
 "依各面向為此頁面評分 1–10（內容品質、可讀性、SEO、UX、互動性），並提出改善建"
 "議"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "請等待語言切換完成"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "頁面已成功儲存"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "頁面"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "來源"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "已移至垃圾桶"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "編輯器"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "指標"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2916,3 +2776,106 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI 可依據您的輸入建立頁面和內容，並將其新增至頁面樹狀結構"
+
+#~ msgid "Views & Visits"
+#~ msgstr "瀏覽與造訪"
+
+#~ msgid "Views"
+#~ msgstr "瀏覽次數"
+
+#~ msgid "Visits"
+#~ msgstr "造訪次數"
+
+#~ msgid "Conversions"
+#~ msgstr "轉換次數"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "造訪時間（分鐘）"
+
+#~ msgid "Duration"
+#~ msgstr "停留時間"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google 搜尋：曝光與點擊"
+
+#~ msgid "Impressions"
+#~ msgstr "曝光次數"
+
+#~ msgid "Clicks"
+#~ msgstr "點擊次數"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google 搜尋：點閱率"
+
+#~ msgid "Percentage"
+#~ msgstr "百分比"
+
+#~ msgid "Page Views"
+#~ msgstr "頁面瀏覽次數"
+
+#~ msgid "Page Visits"
+#~ msgstr "頁面造訪次數"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "造訪時間（分鐘）"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google 曝光次數"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google 點擊次數"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google 點閱率"
+
+#~ msgid "Round trip time"
+#~ msgstr "來回時間"
+
+#~ msgid "Time to first byte"
+#~ msgstr "首位元組時間"
+
+#~ msgid "First contentful paint"
+#~ msgstr "首次內容繪製"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "最大內容繪製"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "互動至下一次繪製"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "累積版面配置位移"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "取得統計資料時發生錯誤"
+
+#~ msgid "Page metrics"
+#~ msgstr "頁面指標"
+
+#~ msgid "Days"
+#~ msgstr "天數"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "每週洞察"
+
+#~ msgid "Referrers"
+#~ msgstr "參照來源"
+
+#~ msgid "Countries"
+#~ msgstr "國家/地區"
+
+#~ msgid "Page Speed"
+#~ msgstr "網頁速度"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google 搜尋：查詢字詞"
+
+#~ msgid "Percent"
+#~ msgstr "百分比"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "排名"
+
+#~ msgid "Metrics"
+#~ msgstr "指標"

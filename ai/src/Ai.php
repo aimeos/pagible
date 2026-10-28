@@ -31,6 +31,24 @@ use Illuminate\Support\Facades\Log;
  */
 class Ai
 {
+    /**
+     * MCP tools of the AI package, each one sends a request to an AI provider.
+     */
+    public const TOOLS = [
+        CmsTools\RefineContent::class,
+        CmsTools\TranslateContent::class,
+        CmsTools\TranslatePage::class,
+        CmsTools\DescribeFile::class,
+        CmsTools\TranscribeAudio::class,
+        CmsTools\GenerateImage::class,
+        CmsTools\RepaintImage::class,
+        CmsTools\IsolateImage::class,
+        CmsTools\UpscaleImage::class,
+        CmsTools\UncropImage::class,
+        CmsTools\EraseImage::class,
+        CmsTools\InpaintImage::class,
+    ];
+
     /** @var string|null Tenant whose rate limit is used by translations within limited() */
     private static ?string $limit = null;
 
@@ -228,11 +246,12 @@ class Ai
             ->withTools( [
                 Tools::laravel( CmsTools\GetPage::class ),
                 Tools::laravel( CmsTools\GetPageHistory::class ),
-                Tools::laravel( CmsTools\GetPageMetrics::class ),
                 Tools::laravel( CmsTools\GetPageTree::class ),
                 Tools::laravel( CmsTools\SearchPages::class ),
                 Tools::laravel( CmsTools\GetElement::class ),
-                Tools::laravel( CmsTools\GetFile::class )
+                Tools::laravel( CmsTools\GetFile::class ),
+                // provided by the optional metrics package
+                ...( class_exists( CmsTools\GetPageMetrics::class ) ? [Tools::laravel( CmsTools\GetPageMetrics::class )] : [] )
             ] )
             ->structure( $prompt . "\n\nContent as JSON:\n" . json_encode( $content ), $schema ) // @phpstan-ignore-line method.notFound
             ->structured() );

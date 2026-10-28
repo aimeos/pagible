@@ -355,7 +355,7 @@ msgid "Configuration"
 msgstr "پیکربندی"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "محتوا"
 
@@ -589,7 +589,7 @@ msgstr[1] "اعمال ویژگی‌های انتخاب‌شده بر %{num} مو
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "زبان"
 
@@ -663,7 +663,7 @@ msgstr "بارگذاری مجدد عناصر"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "ترجمه"
 
@@ -1200,7 +1200,7 @@ msgid "Current changes"
 msgstr "تغییرات فعلی"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "زمان‌بندی‌شده برای %{date}"
 
@@ -1540,7 +1540,7 @@ msgid "Clear cache"
 msgstr "پاک کردن کش"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "نادیده گرفتن تغییرات"
 
@@ -1725,144 +1725,8 @@ msgstr "این عنصر قبلاً افزوده شده است"
 msgid "Remove content element"
 msgstr "حذف عنصر محتوا"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "بازدیدها و ویزیت‌ها"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "بازدیدها"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "ویزیت‌ها"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "تبدیل‌ها"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "مدت ویزیت‌ها (دقیقه)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "مدت"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "جستجوی Google: نمایش‌ها و کلیک‌ها"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "نمایش‌ها"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "کلیک‌ها"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "جستجوی گوگل: نرخ کلیک"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "درصد"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "بازدیدهای صفحه"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "ویزیت‌های صفحه"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "مدت ویزیت (دقیقه)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "نمایش‌های Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "کلیک‌های Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "نرخ کلیک گوگل"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "زمان رفت‌وبرگشت"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "زمان تا نخستین بایت"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "نخستین نمایش محتوا"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "بزرگ‌ترین نمایش محتوا"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "تعامل تا نمایش بعدی"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "جابه‌جایی تجمعی چیدمان"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "خطا در دریافت آمار"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "معیارهای صفحه"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "روز"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "بینش‌های هفتگی"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "ارجاع‌دهنده‌ها"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "کشورها"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "سرعت صفحه"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "جستجوی Google: عبارت‌ها"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "درصد"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "رتبه"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "نیاز به به‌روزرسانی"
 
@@ -1874,7 +1738,7 @@ msgstr "ناموجود"
 msgid "AI draft"
 msgstr "پیش‌نویس هوش مصنوعی"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "به‌روز"
 
@@ -1953,7 +1817,7 @@ msgstr "باز/بستن گره‌های فرزند"
 msgid "Hidden in navigation"
 msgstr "پنهان در ناوبری"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "ایجاد"
 
@@ -2225,23 +2089,23 @@ msgstr "صفحه با موفقیت منتشر شد"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "صفحه برای انتشار در %{date} زمان‌بندی شد"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "خطا در انتشار صفحه"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "منتشر نشد، لطفاً تغییرات را بررسی کرده و دوباره منتشر کنید"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "داده‌ای موجود نیست"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "داده‌ای برای نسخه موجود نیست"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "فیلدهای نامعتبری وجود دارد، لطفاً ابتدا خطاها را برطرف کنید"
 
@@ -2471,49 +2335,49 @@ msgstr "غیرفعال"
 msgid "Enabled"
 msgstr "فعال"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "خطا در ذخیره صفحه"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "صفحات فقط به صورت کامل و در زبان مبدأ خود حذف می‌شوند"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "خطا در انتقال صفحه به سطل زباله"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "خطا در بازیابی زبان"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "خطا در بازیابی صفحه"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "همه زیرصفحه‌های این صفحات نیز برای همیشه حذف خواهند شد."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "خطا در حذف دائمی صفحه"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "کش پاک شد"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "کش %{num} صفحه پاک شد."
 msgstr[1] "کش %{num} صفحه پاک شد."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "خطا در پاک کردن کش"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} صفحه به‌روزرسانی نشد"
@@ -2539,7 +2403,7 @@ msgstr "بعد از"
 msgid "Error inserting page"
 msgstr "خطا در درج صفحه"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "خطا در دریافت صفحه"
 
@@ -2896,7 +2760,7 @@ msgstr "دسترسی رد شد"
 msgid "Error: %{msg}"
 msgstr "خطا: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2904,35 +2768,31 @@ msgstr ""
 "به این صفحه در هر بخش از ۱ تا ۱۰ امتیاز بده (کیفیت محتوا، خوانایی، سئو، "
 "تجربه کاربری، تعامل) و بهبودهایی پیشنهاد کن"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "لطفاً تا تغییر زبان صبر کنید"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "صفحه با موفقیت ذخیره شد"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "صفحه"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "مبدأ"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "در سطل زباله"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "ویرایشگر"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "معیارها"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2969,3 +2829,106 @@ msgid ""
 msgstr ""
 "هوش مصنوعی می‌تواند بر اساس ورودی شما یک صفحه و محتوای آن را ایجاد کرده و به "
 "درخت صفحات اضافه کند"
+
+#~ msgid "Views & Visits"
+#~ msgstr "بازدیدها و ویزیت‌ها"
+
+#~ msgid "Views"
+#~ msgstr "بازدیدها"
+
+#~ msgid "Visits"
+#~ msgstr "ویزیت‌ها"
+
+#~ msgid "Conversions"
+#~ msgstr "تبدیل‌ها"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "مدت ویزیت‌ها (دقیقه)"
+
+#~ msgid "Duration"
+#~ msgstr "مدت"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "جستجوی Google: نمایش‌ها و کلیک‌ها"
+
+#~ msgid "Impressions"
+#~ msgstr "نمایش‌ها"
+
+#~ msgid "Clicks"
+#~ msgstr "کلیک‌ها"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "جستجوی گوگل: نرخ کلیک"
+
+#~ msgid "Percentage"
+#~ msgstr "درصد"
+
+#~ msgid "Page Views"
+#~ msgstr "بازدیدهای صفحه"
+
+#~ msgid "Page Visits"
+#~ msgstr "ویزیت‌های صفحه"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "مدت ویزیت (دقیقه)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "نمایش‌های Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "کلیک‌های Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "نرخ کلیک گوگل"
+
+#~ msgid "Round trip time"
+#~ msgstr "زمان رفت‌وبرگشت"
+
+#~ msgid "Time to first byte"
+#~ msgstr "زمان تا نخستین بایت"
+
+#~ msgid "First contentful paint"
+#~ msgstr "نخستین نمایش محتوا"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "بزرگ‌ترین نمایش محتوا"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "تعامل تا نمایش بعدی"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "جابه‌جایی تجمعی چیدمان"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "خطا در دریافت آمار"
+
+#~ msgid "Page metrics"
+#~ msgstr "معیارهای صفحه"
+
+#~ msgid "Days"
+#~ msgstr "روز"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "بینش‌های هفتگی"
+
+#~ msgid "Referrers"
+#~ msgstr "ارجاع‌دهنده‌ها"
+
+#~ msgid "Countries"
+#~ msgstr "کشورها"
+
+#~ msgid "Page Speed"
+#~ msgstr "سرعت صفحه"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "جستجوی Google: عبارت‌ها"
+
+#~ msgid "Percent"
+#~ msgstr "درصد"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "رتبه"
+
+#~ msgid "Metrics"
+#~ msgstr "معیارها"
