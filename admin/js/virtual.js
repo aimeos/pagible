@@ -50,8 +50,8 @@ export async function reveal(list, key, align) {
 }
 
 /**
- * Returns the surrounding admin scroller, falling back to the document.
+ * Returns the surrounding admin scroller or side drawer, falling back to the document.
  */
 export function scrollParent(element) {
-  return element.closest('.scroll') || element.ownerDocument
+  return element.closest('.scroll, .v-navigation-drawer__content') || element.ownerDocument
 }
