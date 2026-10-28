@@ -216,16 +216,15 @@ my-theme/
 ```
 
 ```php
-public function boot(): void
+namespace Aimeos\Cms;
+
+class MythemeServiceProvider extends ThemeProvider
 {
-    $basedir = dirname( __DIR__ );
-
-    Schema::register( $basedir, 'mytheme' );
-    View::addNamespace( 'mytheme', $basedir . '/views' );
-
-    $this->publishes( [$basedir . '/public' => public_path( 'vendor/cms/mytheme' )], 'cms-theme' );
+    protected string $name = 'mytheme';
 }
 ```
+
+`ThemeProvider` registers the schema and the `mytheme` view namespace, loads the JSON translations of an optional `lang/` directory, registers the admin catalog in `public/i18n/` and publishes `public/` with the `cms-theme` tag. Override `boot()` and call `parent::boot()` for additional services.
 
 - Pages of type `blog` use the first existing layout of `mytheme::layouts.blog`, `cms::layouts.blog` and `cms::layouts.page`, and the core layouts extend `mytheme::layouts.main`
 - Main layouts render `<x-cms::head :page="$page" :nav="$nav" />` (charset, viewport, theme color, CSRF token, Content-Security-Policy (built from the `cms.theme.csp.*` settings and the hashes of the custom styles and scripts of the page, omitted if `app.debug` is enabled), title, canonical URL, meta elements, favicon and the `--pico-*` variables of the `theme` config) in `<head>` and `cms::layouts.foot` at the end of `<body>`, `cms::elements` renders a list of content elements in sections
