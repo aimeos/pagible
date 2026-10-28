@@ -17,7 +17,7 @@ class WebhookProviderTest extends WebhookTestAbstract
     {
         $this->assertTrue( Permission::has( 'config:webhook' ) );
         $this->assertSame(
-            '/vendor/cms/webhooks/WebhookList.js',
+            '/vendor/cms/webhooks/index.js',
             Plugin::all()['panels']['webhooks']['component'] ?? null,
         );
         $this->assertSame(

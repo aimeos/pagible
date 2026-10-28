@@ -12,6 +12,7 @@ import logger from './log'
 import router, { addPluginRoutes } from './routes'
 import './session'
 import { useConfirmStore, useMessageStore } from './stores'
+import { pageUrl } from './urls'
 import vuetify from './vuetify'
 import App from './App.vue'
 
@@ -67,6 +68,7 @@ app
 app.provide('apollo', apolloClient)
 app.provide('confirm', useConfirmStore(pinia))
 app.provide('messages', useMessageStore(pinia))
+app.provide('pageUrl', pageUrl)
 
 // Pinia is active now, so usePluginStore() is safe; register a route per plugin panel.
 addPluginRoutes()

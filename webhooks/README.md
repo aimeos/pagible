@@ -397,7 +397,8 @@ The compiled JSON catalogs are staged in the ignored `admin/public/i18n` directo
 ## Admin tests
 
 The component tests in `admin/cypress` run with the Cypress setup of the Pagible admin package, so
-they only work in the monorepo and its npm dependencies must be installed in `../admin` first:
+they only work in the monorepo and its npm dependencies must be installed with `npm install` in the
+root directory of the repository first:
 
 ```bash
 cd admin

@@ -13,8 +13,8 @@ export default defineConfig({
     },
     specPattern: [
       'cypress/unit/**/*.cy.{js,ts}',
-      // plugin packages share the admin's component-test setup
-      '../webhooks/admin/cypress/unit/**/*.cy.{js,ts}',
+      // admin plugins of the packages share the admin's component-test setup
+      '../*/admin/cypress/unit/**/*.cy.{js,ts}',
     ],
   },
 })

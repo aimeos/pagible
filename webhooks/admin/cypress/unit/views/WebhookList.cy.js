@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 import WebhookList from '../../../src/views/WebhookList.vue'
-import BuiltWebhookList from '../../../dist/WebhookList.js'
+import BuiltWebhookList from '../../../dist/index.js'
 import { validUrl } from '../../../src/webhooks'
 import { pluginUi } from '@/plugin'
 import '@/assets/base.css'

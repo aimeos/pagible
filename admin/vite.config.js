@@ -11,12 +11,17 @@ import vuetify from 'vite-plugin-vuetify'
 // which run on CI without a warm Vite cache.
 const broken = new Set(['VCalendar', 'VOverflowBtn'])
 
-const vuetifyComponents = readdirSync('node_modules/vuetify/lib/components', { withFileTypes: true })
+// packages are resolved because npm workspaces install them in the node_modules of the repository root
+const vuetifyLib = fileURLToPath(new URL('.', import.meta.resolve('vuetify')))
+const ckeditorDist = fileURLToPath(new URL('.', import.meta.resolve('ckeditor5')))
+
+const vuetifyComponents = readdirSync(vuetifyLib + 'components', { withFileTypes: true })
   .filter(d => d.isDirectory() && !broken.has(d.name))
   .map(d => `vuetify/components/${d.name}`)
 
-const vuetifyLabs = readdirSync('node_modules/vuetify/lib/labs', { withFileTypes: true })
-  .filter(d => d.isDirectory())
+// labs/composables is no component and has no package export
+const vuetifyLabs = readdirSync(vuetifyLib + 'labs', { withFileTypes: true })
+  .filter(d => d.isDirectory() && d.name !== 'composables')
   .map(d => `vuetify/labs/${d.name}`)
 
 // Group large vendor packages into dedicated chunks.  Rolldown (Vite 8) only
@@ -85,19 +90,56 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./js', import.meta.url)),
-      'ckeditor5/translations': fileURLToPath(new URL('./node_modules/ckeditor5/dist/translations', import.meta.url)),
+      'ckeditor5/translations': ckeditorDist + 'translations',
+      // Vuetify doesn't export its single locales for the lazy imports in js/vuetify.js
+      'vuetify-locale': vuetifyLib + 'locale',
     },
     dedupe: ['pinia', 'vue']
   },
   optimizeDeps: {
     include: [
       // Cypress loads the support module for every spec, so these must be ready before the first run.
+      // CI runs subsets of the specs with a cold cache and a dependency the scan misses is bundled
+      // mid-run, which changes the ?v= hashes and fails the spec loading at that moment with
+      // "Failed to fetch dynamically imported module". Thus, list all bare imports explicitly.
       'cypress-real-events',
       'cypress/vue',
       'pinia',
       'vue',
+      'vue-router',
       'vue3-gettext',
       'dompurify',
+      'vuetify',
+      'vuetify/components',
+      'vuetify/directives',
+      'vuetify/labs/components',
+      'vuetify/iconsets/mdi-svg',
+      '@apollo/client/core',
+      '@apollo/client/link/error',
+      '@apollo/client/link/retry',
+      '@ckeditor/ckeditor5-vue',
+      '@he-tree/vue',
+      '@mdi/js',
+      '@vue/apollo-option',
+      'apollo-link-batch-http',
+      'apollo-upload-client/createUploadLink.mjs',
+      'chart.js',
+      'ckeditor5',
+      'cropperjs',
+      'diff',
+      'fast-deep-equal',
+      'graphql',
+      'graphql-tag',
+      'laravel-echo',
+      'leaflet',
+      'marked',
+      'mdast-util-from-markdown',
+      'mdast-util-to-markdown',
+      'mdast-util-to-string',
+      'pusher-js',
+      'vue-chartjs',
+      'vue-draggable-plus',
+      'vue-virtual-sortable',
       ...vuetifyComponents,
       ...vuetifyLabs,
     ]

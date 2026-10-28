@@ -343,31 +343,16 @@ jobs:
           path: ~/project
       - restore_cache:
           keys:
-            - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci --cache ~/.npm
+            - admin-{{ checksum "../package-lock.json" }}
+      - run: npm ci --cache ~/.npm --prefix ..
       - save_cache:
-          key: admin-{{ checksum "package-lock.json" }}
-          paths:
-            - ./.npm
-      - run: npx eslint
-
-  "webhook-admin":
-    docker:
-      - image: cimg/node:lts
-    working_directory: ~/project/webhooks/admin
-    steps:
-      - checkout:
-          path: ~/project
-      - restore_cache:
-          keys:
-            - webhook-admin-{{ checksum "package-lock.json" }}
-      - run: npm ci --cache ~/.npm
-      - save_cache:
-          key: webhook-admin-{{ checksum "package-lock.json" }}
+          key: admin-{{ checksum "../package-lock.json" }}
           paths:
             - ~/.npm
-      - run: npm run lint
-      - run: npm run build
+      - run: npx eslint
+      - run:
+          name: Lint and build admin plugins
+          command: for d in ../*/admin; do (cd "$d" && npm run lint && npm run build) || exit 1; done
 
   "admin-unit":
     docker:
@@ -383,15 +368,14 @@ jobs:
             case $CIRCLE_NODE_INDEX in
               0) DIRS="fields" ;;
               1) DIRS="components" ;;
-              2) DIRS="root assets js views webhooks" ;;
+              2) DIRS="root assets js views $(cd .. && ls -d */admin | cut -d/ -f1)" ;;
             esac
             SPECS=""
             for d in $DIRS; do
               case " << pipeline.parameters.admin_tests >> " in " ALL "|*" $d "*) ;; *) continue ;; esac
               case $d in
                 root) p="cypress/unit/*.cy.{js,ts}" ;;
-                webhooks) p="../webhooks/admin/cypress/unit/**/*.cy.{js,ts}" ;;
-                *) p="cypress/unit/$d/**/*.cy.{js,ts}" ;;
+                *) if [ -d "../$d/admin" ]; then p="../$d/admin/cypress/unit/**/*.cy.{js,ts}"; else p="cypress/unit/$d/**/*.cy.{js,ts}"; fi ;;
               esac
               SPECS="${SPECS:+$SPECS,}$p"
             done
@@ -399,16 +383,24 @@ jobs:
             echo "export SPECS='$SPECS'" >> "$BASH_ENV"
       - restore_cache:
           keys:
-            - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci --cache ~/.npm
+            - admin-cypress-{{ checksum "../package-lock.json" }}
+      - run: npm ci --cache ~/.npm --prefix ..
       - save_cache:
-          key: admin-{{ checksum "package-lock.json" }}
+          key: admin-cypress-{{ checksum "../package-lock.json" }}
           paths:
-            - ./.npm
+            - ~/.npm
             - ~/.cache/Cypress
+      # pre-bundled Vite dependencies, a cold cache can re-bundle mid-run and fail loading a spec
+      - restore_cache:
+          keys:
+            - admin-vite-{{ checksum "../package-lock.json" }}-{{ checksum "vite.config.js" }}
       - run:
           name: Run component tests
           command: npx cypress run --component --spec "$SPECS"
+      - save_cache:
+          key: admin-vite-{{ checksum "../package-lock.json" }}-{{ checksum "vite.config.js" }}
+          paths:
+            - node_modules/.vite
 
   "admin-e2e":
     docker:
@@ -420,12 +412,12 @@ jobs:
           path: ~/project
       - restore_cache:
           keys:
-            - admin-{{ checksum "package-lock.json" }}
-      - run: npm ci --cache ~/.npm
+            - admin-cypress-{{ checksum "../package-lock.json" }}
+      - run: npm ci --cache ~/.npm --prefix ..
       - save_cache:
-          key: admin-{{ checksum "package-lock.json" }}
+          key: admin-cypress-{{ checksum "../package-lock.json" }}
           paths:
-            - ./.npm
+            - ~/.npm
             - ~/.cache/Cypress
       - run: npm run build
       - run: |
@@ -618,8 +610,6 @@ workflows:
     when: << pipeline.parameters.run_admin >>
     jobs:
       - "admin-lint"
-      - "webhook-admin":
-          requires: ["admin-lint"]
       - "admin-unit":
           requires: ["admin-lint"]
       - "admin-e2e":

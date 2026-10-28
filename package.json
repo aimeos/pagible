@@ -1,5 +1,9 @@
 {
     "private": true,
+    "workspaces": [
+        "admin",
+        "*/admin"
+    ],
     "scripts": {
         "coverage:install": "npx playwright install chromium",
         "coverage:default": "npx playwright test --config tests/coverage.config.mjs",
