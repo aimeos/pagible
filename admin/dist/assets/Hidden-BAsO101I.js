@@ -1,0 +1,1 @@
+import{Y as e}from"./tree-dVfVAcku.js";import{ot as t}from"./index-Dsxw06Gt.js";import{n}from"./field-DA6aXPw5.js";var r={extends:n,props:{modelValue:null},created(){this.config?.value!==void 0&&this.modelValue!==this.config?.value&&this.$emit(`update:modelValue`,this.config?.value)}};function i(t,n,r,i,a,o){return e(``,!0)}var a=t(r,[[`render`,i]]);export{a as default};

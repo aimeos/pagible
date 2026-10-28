@@ -1,0 +1,1 @@
+import{At as e,J as t,Wt as n,Zt as r,rt as i,wn as a}from"./tree-dVfVAcku.js";import{et as o,ot as s,u as c}from"./index-Dsxw06Gt.js";var l={inheritAttrs:!1};function u(s,l,u,d,f,p){return n(),t(c,null,{default:a(()=>[i(o,e({variant:`text`},s.$attrs),{default:a(()=>[r(s.$slots,`default`)]),_:3},16)]),_:3})}var d=s(l,[[`render`,u]]);export{d as t};

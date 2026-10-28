@@ -1,0 +1,1 @@
+export{s as default,r as disableExperimentalFragmentVariables,i as disableFragmentWarnings,a as enableExperimentalFragmentVariables,o as gql,c as resetCaches}from"./graphql-B0HGj01_.js";

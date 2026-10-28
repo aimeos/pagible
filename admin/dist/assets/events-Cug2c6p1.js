@@ -1,0 +1,1 @@
+import{en as e,xt as t}from"./rules-D6nEhCM6.js";function n(n,r,i){return Object.keys(n).filter(t=>e(t)&&t.endsWith(r)).reduce((e,a)=>(e[a.slice(0,-r.length)]=e=>t(n[a],e,i(e)),e),{})}export{n as t};

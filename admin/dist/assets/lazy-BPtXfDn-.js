@@ -1,0 +1,1 @@
+import{Qn as e,tr as t,yn as n}from"./tree-dVfVAcku.js";import{tt as r}from"./rules-D6nEhCM6.js";var i=r({eager:Boolean},`lazy`);function a(r,i){let a=e(!1),o=t(()=>a.value||r.eager||i.value);n(i,()=>a.value=!0);function s(){r.eager||(a.value=!1)}return{isBooted:a,hasContent:o,onAfterLeave:s}}export{a as n,i as t};
