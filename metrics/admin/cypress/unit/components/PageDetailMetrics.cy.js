@@ -1,5 +1,9 @@
-import PageDetailMetrics from '../../../js/components/PageDetailMetrics.vue'
-import { useAppStore } from '../../../js/stores'
+import Metrics from '../../../src/components/PageDetailMetrics.vue'
+import { pluginUi } from '@/plugin'
+import { useAppStore } from '@/stores'
+import { pageUrl } from '@/urls'
+
+const PageDetailMetrics = pluginUi(Metrics)
 
 const stubs = {
   Line: { template: '<div class="chart-stub" />' },
@@ -27,12 +31,13 @@ function mountMetrics(props = {}) {
     },
     global: {
       stubs,
-      mocks: {
+      provide: {
         // Make mutate hang so loading stays true for the loading test
-        $apollo: {
+        apollo: {
           mutate: () => new Promise(() => {}),
           query: () => new Promise(() => {}),
         },
+        pageUrl,
       },
       plugins: [{
         install() {
@@ -82,7 +87,7 @@ describe('PageDetailMetrics', () => {
       })
       .should('have.css', 'background-color', 'rgb(248, 250, 252)')
       .and('have.css', 'color', 'rgb(15, 23, 42)')
-      .find('.text-medium-emphasis')
+      .find('.opacity-70')
       .first()
       .should(($label) => {
         expect(colorChannels(getComputedStyle($label[0]).color)).to.deep.equal([15, 23, 42])
@@ -122,7 +127,7 @@ describe('PageDetailMetrics', () => {
     mountMetrics().then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageDetailMetrics).vm
 
-      vm.$apollo.mutate = () => new Promise((resolve) => resolvers.push(resolve))
+      vm.apollo.mutate = () => new Promise((resolve) => resolvers.push(resolve))
 
       const first = vm.metrics()
       const second = vm.metrics()
@@ -146,7 +151,7 @@ describe('PageDetailMetrics', () => {
     mountMetrics().then(({ wrapper }) => {
       const vm = wrapper.findComponent(PageDetailMetrics).vm
 
-      vm.$apollo.mutate = () => Promise.resolve({ data: { metrics: { queries } } })
+      vm.apollo.mutate = () => Promise.resolve({ data: { metrics: { queries } } })
 
       return vm.metrics().then(() => {
         expect(vm.errors).to.deep.equal([])
@@ -161,7 +166,7 @@ describe('PageDetailMetrics', () => {
       const vm = wrapper.findComponent(PageDetailMetrics).vm
 
       vm.querypage = 3
-      vm.$apollo.mutate = () => Promise.resolve({ data: { metrics: { queries: [] } } })
+      vm.apollo.mutate = () => Promise.resolve({ data: { metrics: { queries: [] } } })
 
       return vm.metrics().then(() => {
         expect(vm.querypage).to.equal(1)
@@ -178,7 +183,7 @@ describe('PageDetailMetrics', () => {
         pagespeed: [{ key: 'lcp', value: 1200 }]
       }
 
-      vm.$apollo.mutate = () => Promise.resolve({ data: { metrics } })
+      vm.apollo.mutate = () => Promise.resolve({ data: { metrics } })
 
       return vm.metrics().then(() => {
         expect(vm.views).to.have.length(1)
@@ -186,7 +191,7 @@ describe('PageDetailMetrics', () => {
         expect(vm.pagespeed).to.deep.equal({ lcp: 1200 })
 
         vm.querypage = 2
-        vm.$apollo.mutate = () => Promise.reject(new Error('Network down'))
+        vm.apollo.mutate = () => Promise.reject(new Error('Network down'))
 
         return vm.metrics()
       }).then(() => {

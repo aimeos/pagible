@@ -27,7 +27,6 @@ const ALL_PERMISSIONS = {
   'page:publish': true,
   'page:synthesize': true,
   'page:chat': true,
-  'page:metrics': true,
   'text:translate': true,
   'text:write': true,
   'audio:transcribe': true,
@@ -386,24 +385,6 @@ describe('Page Detail', () => {
     detailView().find('.v-tab').eq(0).should('contain', 'Editor')
     detailView().find('.v-tab').eq(1).should('contain', 'Content')
     detailView().find('.v-tab').eq(2).should('contain', 'Page')
-  })
-
-  it('shows Metrics tab when user has page:metrics permission', () => {
-    visitPageDetail()
-    detailView().find('.v-tab').should('have.length', 4)
-    detailView().find('.v-tab').eq(3).should('contain', 'Metrics')
-  })
-
-  it('hides Metrics tab when user lacks page:metrics permission', () => {
-    const perms = { ...ALL_PERMISSIONS }
-    delete perms['page:metrics']
-    const me = {
-      permission: JSON.stringify(perms),
-      email: 'admin@example.com',
-      name: 'Admin',
-    }
-    visitPageDetail({}, {}, me)
-    detailView().find('.v-tab').should('have.length', 3)
   })
 
   it('clicking Content tab switches to content view', () => {

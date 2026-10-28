@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "Nastavení"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Obsah"
 
@@ -591,7 +591,7 @@ msgstr[2] "Použít vybrané vlastnosti na %{num} položek."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Jazyk"
 
@@ -664,7 +664,7 @@ msgstr "Znovu načíst prvky"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Přeložit"
 
@@ -1206,7 +1206,7 @@ msgid "Current changes"
 msgstr "Aktuální změny"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Naplánováno na %{date}"
 
@@ -1548,7 +1548,7 @@ msgid "Clear cache"
 msgstr "Vymazat mezipaměť"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorovat změny"
 
@@ -1736,144 +1736,8 @@ msgstr "Prvek již byl přidán"
 msgid "Remove content element"
 msgstr "Odstranit prvek obsahu"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Zobrazení a návštěvy"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Zobrazení stránky"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Návštěvy"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konverze"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Délka návštěvy (v minutách)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Doba trvání"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Vyhledávání na Googlu: Zobrazení a kliknutí"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Zobrazení"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Kliknutí"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Vyhledávání na Googlu: Míra prokliku"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Procento"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Zobrazení stránek"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Návštěvy stránek"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Délka návštěvy (v minutách)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Zobrazení v Googlu"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Kliknutí v Googlu"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Míra prokliku na Googlu"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Doba odezvy (RTT)"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Čas do prvního bajtu"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "První vykreslení obsahu"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Vykreslení největšího obsahu"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interakce s dalším vykreslením"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulativní posun rozložení"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Chyba při načítání metrik"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Metriky stránky"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Dny"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Týdenní postřehy"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Odkazující zdroje"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Země"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Rychlost stránky"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Vyhledávání na Googlu: Dotazy"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Procenta"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Pozice"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Vyžaduje aktualizaci"
 
@@ -1885,7 +1749,7 @@ msgstr "Chybí"
 msgid "AI draft"
 msgstr "Koncept AI"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Aktuální"
 
@@ -1963,7 +1827,7 @@ msgstr "Přepnout podřízené uzly"
 msgid "Hidden in navigation"
 msgstr "Skryté v navigaci"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Vytvořit"
 
@@ -2239,23 +2103,23 @@ msgstr "Stránka byla úspěšně zveřejněna"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Zveřejnění stránky naplánováno na %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Chyba při zveřejňování stránky"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Nepublikováno, zkontrolujte prosím změny a publikujte znovu"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nejsou k dispozici žádné údaje"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nejsou k dispozici žádná data verze"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Jsou zde neplatná pole, nejprve prosím vyřešte chyby."
 
@@ -2487,50 +2351,50 @@ msgstr "Zakázáno"
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Chyba při ukládání stránky"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Stránky se mažou jako celé stránky pouze ve svém zdrojovém jazyce"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Chyba při přesunu stránky do koše"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Chyba při obnovování jazyka"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Chyba při obnovení stránky"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Všechny podstránky těchto stránek budou rovněž trvale smazány."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Chyba při trvalém mazání stránky"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Mezipaměť vymazána"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Mezipaměť vymazána pro %{num} stránku."
 msgstr[1] "Mezipaměť vymazána pro %{num} stránky."
 msgstr[2] "Mezipaměť vymazána pro %{num} stránek."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Chyba při mazání mezipaměti"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} stránku se nepodařilo aktualizovat"
@@ -2557,7 +2421,7 @@ msgstr "Po"
 msgid "Error inserting page"
 msgstr "Chyba při vkládání stránky"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Chyba při načítání stránky"
 
@@ -2926,7 +2790,7 @@ msgstr "Přístup odepřen"
 msgid "Error: %{msg}"
 msgstr "Chyba: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2934,35 +2798,31 @@ msgstr ""
 "Ohodnoť tuto stránku v každé oblasti na stupnici 1–10 (kvalita obsahu, "
 "čitelnost, SEO, UX, zapojení) a navrhni vylepšení"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Počkejte prosím, dokud se jazyk nepřepne"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Stránka byla úspěšně uložena"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Stránka"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Zdroj"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "V koši"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Editor"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Metriky"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2999,3 +2859,106 @@ msgid ""
 msgstr ""
 "Umělá inteligence dokáže vytvořit stránku a obsah na základě vašeho zadání a "
 "přidat je do stromu stránek."
+
+#~ msgid "Views & Visits"
+#~ msgstr "Zobrazení a návštěvy"
+
+#~ msgid "Views"
+#~ msgstr "Zobrazení stránky"
+
+#~ msgid "Visits"
+#~ msgstr "Návštěvy"
+
+#~ msgid "Conversions"
+#~ msgstr "Konverze"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Délka návštěvy (v minutách)"
+
+#~ msgid "Duration"
+#~ msgstr "Doba trvání"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Vyhledávání na Googlu: Zobrazení a kliknutí"
+
+#~ msgid "Impressions"
+#~ msgstr "Zobrazení"
+
+#~ msgid "Clicks"
+#~ msgstr "Kliknutí"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Vyhledávání na Googlu: Míra prokliku"
+
+#~ msgid "Percentage"
+#~ msgstr "Procento"
+
+#~ msgid "Page Views"
+#~ msgstr "Zobrazení stránek"
+
+#~ msgid "Page Visits"
+#~ msgstr "Návštěvy stránek"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Délka návštěvy (v minutách)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Zobrazení v Googlu"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Kliknutí v Googlu"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Míra prokliku na Googlu"
+
+#~ msgid "Round trip time"
+#~ msgstr "Doba odezvy (RTT)"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Čas do prvního bajtu"
+
+#~ msgid "First contentful paint"
+#~ msgstr "První vykreslení obsahu"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Vykreslení největšího obsahu"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interakce s dalším vykreslením"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulativní posun rozložení"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Chyba při načítání metrik"
+
+#~ msgid "Page metrics"
+#~ msgstr "Metriky stránky"
+
+#~ msgid "Days"
+#~ msgstr "Dny"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Týdenní postřehy"
+
+#~ msgid "Referrers"
+#~ msgstr "Odkazující zdroje"
+
+#~ msgid "Countries"
+#~ msgstr "Země"
+
+#~ msgid "Page Speed"
+#~ msgstr "Rychlost stránky"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Vyhledávání na Googlu: Dotazy"
+
+#~ msgid "Percent"
+#~ msgstr "Procenta"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Pozice"
+
+#~ msgid "Metrics"
+#~ msgstr "Metriky"

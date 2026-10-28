@@ -42,6 +42,7 @@ class ChatController extends Controller
 
     /**
      * MCP tools not offered in the chat or added separately with a call limit.
+     * The AI tools (Ai::TOOLS) aren't offered either because they would start further paid AI requests.
      */
     private const EXCLUDE = [
         CmsTools\GetAccess::class,
@@ -99,7 +100,7 @@ class ChatController extends Controller
             ->withTools( [
                 Tools::laravel( CmsTools\GetLocales::class )->max( 1 ),
                 Tools::laravel( CmsTools\GetSchemas::class )->max( 1 ),
-                ...array_map( fn( $class ) => Tools::laravel( $class ), array_diff( CmsServer::TOOLS, self::EXCLUDE ) ),
+                ...array_map( fn( $class ) => Tools::laravel( $class ), array_diff( CmsServer::tools(), self::EXCLUDE, Ai::TOOLS ) ),
                 Tools::provider( 'web_search' ),
                 Tools::provider( 'web_fetch' ),
             ] )

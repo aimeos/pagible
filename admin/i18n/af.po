@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "Konfigurasie"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Inhoud"
 
@@ -592,7 +592,7 @@ msgstr[1] "Pas die gekose eienskappe op %{num} inskrywings toe."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Taal"
 
@@ -666,7 +666,7 @@ msgstr "Herlaai elemente"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Vertaal"
 
@@ -1200,7 +1200,7 @@ msgid "Current changes"
 msgstr "Huidige veranderinge"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Geskeduleer vir %{date}"
 
@@ -1540,7 +1540,7 @@ msgid "Clear cache"
 msgstr "Maak kas skoon"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignoreer veranderinge"
 
@@ -1727,144 +1727,8 @@ msgstr "Die element is reeds bygevoeg"
 msgid "Remove content element"
 msgstr "Verwyder inhoudselement"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Kyke en besoeke"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Kyke"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Besoeke"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Omskakelings"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Besoekduur (minute)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Duur"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google-soektog: Vertonings en klikke"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Vertonings"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Klikke"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google-soektog: Deurkliktempo"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Persentasie"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Bladsykyke"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Bladsybesoeke"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Besoekduur (minute)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google-vertonings"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google-klikke"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google-deurkliktempo"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Heen-en-terug-tyd"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Tyd tot eerste greep"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Eerste inhoudsvertoning"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Grootste inhoudsvertoning"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaksie tot volgende vertoning"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulatiewe uitlegverskuiwing"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Fout met die haal van statistieke"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Bladsymetrieke"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Dae"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Weeklikse insigte"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Verwysers"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Lande"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Bladsyspoed"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google-soektog: Navrae"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Persent"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Posisie"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Moet bygewerk word"
 
@@ -1876,7 +1740,7 @@ msgstr "Ontbreek"
 msgid "AI draft"
 msgstr "KI-konsep"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Op datum"
 
@@ -1953,7 +1817,7 @@ msgstr "Wissel subnodusse"
 msgid "Hidden in navigation"
 msgstr "Versteek in navigasie"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Skep"
 
@@ -2227,24 +2091,24 @@ msgstr "Bladsy suksesvol gepubliseer"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Bladsy geskeduleer vir publisering op %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Kon nie bladsy publiseer nie"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr ""
 "Nie gepubliseer nie, gaan asseblief die veranderinge na en publiseer weer"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Geen data beskikbaar nie"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Geen weergawedata beskikbaar nie"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Daar is ongeldige velde, los asseblief eers die foute op"
 
@@ -2474,49 +2338,49 @@ msgstr "Gedeaktiveer"
 msgid "Enabled"
 msgstr "Geaktiveer"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Kon nie bladsy stoor nie"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Bladsye word slegs as hele bladsye in hul brontaal geskrap"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Kon nie bladsy na asblik skuif nie"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Kon nie taal herstel nie"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Kon nie bladsy herstel nie"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Alle subbladsye van hierdie bladsye sal ook permanent geskrap word."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Kon nie bladsy permanent skrap nie"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Kas skoongemaak"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Kas vir %{num} bladsy skoongemaak."
 msgstr[1] "Kas vir %{num} bladsye skoongemaak."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Kon nie kas skoonmaak nie"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} bladsy kon nie bygewerk word nie"
@@ -2542,7 +2406,7 @@ msgstr "Na"
 msgid "Error inserting page"
 msgstr "Kon nie bladsy invoeg nie"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Kon nie bladsy haal nie"
 
@@ -2898,7 +2762,7 @@ msgstr "Toegang geweier"
 msgid "Error: %{msg}"
 msgstr "Fout: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2906,35 +2770,31 @@ msgstr ""
 "Gee hierdie bladsy 'n telling van 1–10 per area (inhoudgehalte, "
 "leesbaarheid, SEO, UX, betrokkenheid) en stel verbeterings voor"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Wag asseblief totdat die taal oorgeskakel is"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Bladsy suksesvol gestoor"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Bladsy"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Bron"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "In asblik"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Redigeerder"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Metrieke"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2971,3 +2831,106 @@ msgid ""
 msgstr ""
 "KI kan 'n bladsy en inhoud op grond van u invoer skep en dit by die "
 "bladsyboom voeg"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Kyke en besoeke"
+
+#~ msgid "Views"
+#~ msgstr "Kyke"
+
+#~ msgid "Visits"
+#~ msgstr "Besoeke"
+
+#~ msgid "Conversions"
+#~ msgstr "Omskakelings"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Besoekduur (minute)"
+
+#~ msgid "Duration"
+#~ msgstr "Duur"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google-soektog: Vertonings en klikke"
+
+#~ msgid "Impressions"
+#~ msgstr "Vertonings"
+
+#~ msgid "Clicks"
+#~ msgstr "Klikke"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google-soektog: Deurkliktempo"
+
+#~ msgid "Percentage"
+#~ msgstr "Persentasie"
+
+#~ msgid "Page Views"
+#~ msgstr "Bladsykyke"
+
+#~ msgid "Page Visits"
+#~ msgstr "Bladsybesoeke"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Besoekduur (minute)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google-vertonings"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google-klikke"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google-deurkliktempo"
+
+#~ msgid "Round trip time"
+#~ msgstr "Heen-en-terug-tyd"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Tyd tot eerste greep"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Eerste inhoudsvertoning"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Grootste inhoudsvertoning"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaksie tot volgende vertoning"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulatiewe uitlegverskuiwing"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Fout met die haal van statistieke"
+
+#~ msgid "Page metrics"
+#~ msgstr "Bladsymetrieke"
+
+#~ msgid "Days"
+#~ msgstr "Dae"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Weeklikse insigte"
+
+#~ msgid "Referrers"
+#~ msgstr "Verwysers"
+
+#~ msgid "Countries"
+#~ msgstr "Lande"
+
+#~ msgid "Page Speed"
+#~ msgstr "Bladsyspoed"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google-soektog: Navrae"
+
+#~ msgid "Percent"
+#~ msgstr "Persent"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Posisie"
+
+#~ msgid "Metrics"
+#~ msgstr "Metrieke"

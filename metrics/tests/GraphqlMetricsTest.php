@@ -10,7 +10,7 @@ namespace Tests;
 use Aimeos\AnalyticsBridge\Facades\Analytics;
 
 
-class GraphqlMetricsTest extends GraphqlTestAbstract
+class GraphqlMetricsTest extends MetricsTestAbstract
 {
     protected function setUp(): void
     {

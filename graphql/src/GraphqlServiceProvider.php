@@ -38,7 +38,6 @@ class GraphqlServiceProvider extends Provider
 
         \Aimeos\Cms\Permission::register( [
             'cache:clear',
-            'page:metrics',
             'user:permission',
             'user:create',
         ] );

@@ -311,6 +311,33 @@ jobs:
       - run: ./vendor/bin/phpunit
       - run: ./vendor/bin/phpstan analyze --no-progress
 
+  "metrics-test":
+    docker:
+      - image: aimeos/ci-php:8.5
+        environment:
+          DB_DRIVER: sqlite
+    working_directory: ~/project/metrics
+    steps:
+      - checkout:
+          path: ~/project
+      - restore_cache:
+          keys:
+            - metrics-php85-{{ checksum "composer.json" }}
+      - run:
+          name: Install isolated metrics package
+          command: |
+            composer config repositories.core '{"type":"path","url":"../core","options":{"symlink":false}}'
+            composer config repositories.graphql '{"type":"path","url":"../graphql","options":{"symlink":false}}'
+            composer config repositories.mcp '{"type":"path","url":"../mcp","options":{"symlink":false}}'
+            composer config minimum-stability dev
+            composer config prefer-stable true
+            composer update -n --prefer-dist
+      - save_cache:
+          key: metrics-php85-{{ checksum "composer.json" }}
+          paths: [./vendor]
+      - run: ./vendor/bin/phpunit
+      - run: ./vendor/bin/phpstan analyze --no-progress
+
   "cashier-provider":
     parameters:
       package:
@@ -571,6 +598,8 @@ workflows:
     jobs:
       - "php85-phpstan"
       - "webhook-test":
+          requires: ["php85-phpstan"]
+      - "metrics-test":
           requires: ["php85-phpstan"]
       - "cashier-provider":
           matrix:

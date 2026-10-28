@@ -304,9 +304,6 @@ extend type Mutation {
   "Publish file data"
   pubFile(id: [ID!]! @rulesForArray(apply: ["max:1000"]), at: DateTime): [File]!
     @guard @cmsPermission(action: "file:publish") @throttle(name: "cms-graphql")
-
-  "Get page metrics for the last X days"
-  metrics(url: String! @rules(apply: ["required", "max:500"]), days: Int @rules(apply: ["nullable", "integer", "min:1", "max:90"])): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-graphql")
 }
 
 type BulkResult {
@@ -321,72 +318,6 @@ type BulkResult {
 
   "Number of attempted items that could not be saved"
   failed: Int!
-}
-
-type Stats {
-  "List of errors occurred"
-  errors: [String!]
-
-  "Number of page views by day"
-  views: [StatsNumber!]
-
-  "Number of page visits by day"
-  visits: [StatsNumber!]
-
-  "Number of conversions on page by day"
-  conversions: [StatsNumber!]
-
-  "Average page visit duration in seconds by day"
-  durations: [StatsNumber!]
-
-  "Number of page visits by countries"
-  countries: [StatsNumber!]
-
-  "Number of page visits by referring website"
-  referrers: [StatsNumber!]
-
-  "Page Speed related values for the page"
-  pagespeed: [StatsNumber!]
-
-  "Number of Google search impressions"
-  impressions: [StatsNumber!]
-
-  "Number of Google search clicks"
-  clicks: [StatsNumber!]
-
-  "Google search click through rate by day"
-  ctrs: [StatsNumber!]
-
-  "List of search queries"
-  queries: [StatsQuery!]
-}
-
-type StatsNumber {
-  "Date in ISO format (YYYY-MM-DD) or string"
-  key: String!
-
-  "Number of page views or visits"
-  value: Float
-
-  "List of individual rows"
-  rows: [StatsNumber!]
-}
-
-type StatsQuery {
-  "Query string"
-  key: String!
-
-  "Number of page impressions in Google Search results"
-  impressions: Int
-
-  "Number of page clicks in  Google Search results"
-  clicks: Int
-
-  "Click through rate in  Google Search (between 0 and 1)"
-  ctr: Float
-
-  "Position in Google Search results"
-  position: Float
 }
 
 type Page {

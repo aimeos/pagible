@@ -355,7 +355,7 @@ msgid "Configuration"
 msgstr "Konfiguracija"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Sadržaj"
 
@@ -592,7 +592,7 @@ msgstr[2] "Primijeni odabrana svojstva na %{num} unosa."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Jezik"
 
@@ -666,7 +666,7 @@ msgstr "Ponovno učitaj elemente"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Prevedi"
 
@@ -1209,7 +1209,7 @@ msgid "Current changes"
 msgstr "Trenutne promjene"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Zakazano za %{date}"
 
@@ -1553,7 +1553,7 @@ msgid "Clear cache"
 msgstr "Očisti predmemoriju"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Zanemari promjene"
 
@@ -1738,144 +1738,8 @@ msgstr "Element je već dodan"
 msgid "Remove content element"
 msgstr "Ukloni element sadržaja"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Pregledi i posjeti"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Pregledi"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Posjeti"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konverzije"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Trajanja posjeta (minute)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Trajanje"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google pretraživanje: prikazi i klikovi"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Prikazi"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Klikovi"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google pretraživanje: Stopa klikova"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Postotak"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Pregledi stranice"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Posjeti stranici"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Trajanje posjeta (minute)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google prikazi"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google klikovi"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Stopa klikova na Googleu"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Vrijeme povratnog puta"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Vrijeme do prvog bajta"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Prvo iscrtavanje sadržaja"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Najveće iscrtavanje sadržaja"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interakcija do sljedećeg iscrtavanja"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulativni pomak rasporeda"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Pogreška pri dohvaćanju statistike"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Metrike stranice"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Dani"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Tjedni pregled"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Izvori posjeta"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Zemlje"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Brzina stranice"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google pretraživanje: upiti"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Postotak"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Pozicija"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Potrebno ažuriranje"
 
@@ -1887,7 +1751,7 @@ msgstr "Nedostaje"
 msgid "AI draft"
 msgstr "AI nacrt"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Ažurno"
 
@@ -1965,7 +1829,7 @@ msgstr "Proširi/sažmi podređene čvorove"
 msgid "Hidden in navigation"
 msgstr "Skriveno u navigaciji"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Stvori"
 
@@ -2241,23 +2105,23 @@ msgstr "Stranica je uspješno objavljena"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Stranica je zakazana za objavu %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Pogreška pri objavi stranice"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Nije objavljeno, pregledajte promjene i ponovno objavite"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nema dostupnih podataka"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nema dostupnih podataka o verziji"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Neka polja nisu valjana, najprije ispravite pogreške"
 
@@ -2489,50 +2353,50 @@ msgstr "Onemogućeno"
 msgid "Enabled"
 msgstr "Omogućeno"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Pogreška pri spremanju stranice"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Stranice se brišu kao cijele stranice samo na svom izvornom jeziku"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Pogreška pri premještanju stranice u smeće"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Pogreška pri vraćanju jezika"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Pogreška pri vraćanju stranice"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Sve podstranice ovih stranica također će biti trajno izbrisane."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Pogreška pri trajnom brisanju stranice"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Predmemorija očišćena"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Predmemorija očišćena za %{num} stranicu."
 msgstr[1] "Predmemorija očišćena za %{num} stranice."
 msgstr[2] "Predmemorija očišćena za %{num} stranica."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Pogreška pri čišćenju predmemorije"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} stranicu nije bilo moguće ažurirati"
@@ -2559,7 +2423,7 @@ msgstr "Iza"
 msgid "Error inserting page"
 msgstr "Pogreška pri umetanju stranice"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Pogreška pri dohvaćanju stranice"
 
@@ -2925,7 +2789,7 @@ msgstr "Pristup odbijen"
 msgid "Error: %{msg}"
 msgstr "Greška: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2933,35 +2797,31 @@ msgstr ""
 "Ocijeni ovu stranicu od 1 do 10 po području (kvaliteta sadržaja, čitljivost, "
 "SEO, UX, angažman) i predloži poboljšanja"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Pričekajte dok se jezik ne promijeni"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Stranica je uspješno spremljena"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Stranica"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Izvor"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "U smeću"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Uređivač"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Metrike"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2998,3 +2858,106 @@ msgid ""
 msgstr ""
 "AI može stvoriti stranicu i sadržaj na temelju Vašeg unosa i dodati ih u "
 "stablo stranica"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Pregledi i posjeti"
+
+#~ msgid "Views"
+#~ msgstr "Pregledi"
+
+#~ msgid "Visits"
+#~ msgstr "Posjeti"
+
+#~ msgid "Conversions"
+#~ msgstr "Konverzije"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Trajanja posjeta (minute)"
+
+#~ msgid "Duration"
+#~ msgstr "Trajanje"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google pretraživanje: prikazi i klikovi"
+
+#~ msgid "Impressions"
+#~ msgstr "Prikazi"
+
+#~ msgid "Clicks"
+#~ msgstr "Klikovi"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google pretraživanje: Stopa klikova"
+
+#~ msgid "Percentage"
+#~ msgstr "Postotak"
+
+#~ msgid "Page Views"
+#~ msgstr "Pregledi stranice"
+
+#~ msgid "Page Visits"
+#~ msgstr "Posjeti stranici"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Trajanje posjeta (minute)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google prikazi"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google klikovi"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Stopa klikova na Googleu"
+
+#~ msgid "Round trip time"
+#~ msgstr "Vrijeme povratnog puta"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Vrijeme do prvog bajta"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Prvo iscrtavanje sadržaja"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Najveće iscrtavanje sadržaja"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interakcija do sljedećeg iscrtavanja"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulativni pomak rasporeda"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Pogreška pri dohvaćanju statistike"
+
+#~ msgid "Page metrics"
+#~ msgstr "Metrike stranice"
+
+#~ msgid "Days"
+#~ msgstr "Dani"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Tjedni pregled"
+
+#~ msgid "Referrers"
+#~ msgstr "Izvori posjeta"
+
+#~ msgid "Countries"
+#~ msgstr "Zemlje"
+
+#~ msgid "Page Speed"
+#~ msgstr "Brzina stranice"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google pretraživanje: upiti"
+
+#~ msgid "Percent"
+#~ msgstr "Postotak"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Pozicija"
+
+#~ msgid "Metrics"
+#~ msgstr "Metrike"

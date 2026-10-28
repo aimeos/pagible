@@ -12,7 +12,7 @@ use Aimeos\KeywordsBridge\Facades\Keywords as Bridge;
 use Aimeos\KeywordsBridge\Keyword;
 
 
-class KeywordsTest extends CmsTestAbstract
+class KeywordsTest extends MetricsTestAbstract
 {
     protected function defineEnvironment( $app )
     {

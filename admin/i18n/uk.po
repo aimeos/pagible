@@ -356,7 +356,7 @@ msgid "Configuration"
 msgstr "Налаштування"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Вміст"
 
@@ -595,7 +595,7 @@ msgstr[2] "Застосувати вибрані властивості до %{n
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Мова"
 
@@ -669,7 +669,7 @@ msgstr "Оновити елементи"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Перекласти"
 
@@ -1214,7 +1214,7 @@ msgid "Current changes"
 msgstr "Поточні зміни"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Заплановано на %{date}"
 
@@ -1559,7 +1559,7 @@ msgid "Clear cache"
 msgstr "Очистити кеш"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ігнорувати зміни"
 
@@ -1745,144 +1745,8 @@ msgstr "Елемент вже додано"
 msgid "Remove content element"
 msgstr "Прибрати елемент вмісту"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Перегляди та відвідування"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Перегляди"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Відвідування"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Конверсії"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Тривалість відвідувань (хвилини)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Тривалість"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Пошук Google: покази та кліки"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Покази"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Кліки"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Пошук Google: показник кліків"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Відсоток"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Перегляди сторінок"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Відвідування сторінок"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Тривалість відвідування (хвилини)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Покази Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Кліки в Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Показник кліків у Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Час приймання-передавання (RTT)"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Час до першого байта"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Перше відображення вмісту"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Відображення найбільшого вмісту"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Взаємодія до наступного відображення"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Сукупне зміщення макета"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Помилка під час отримання статистики"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Метрики сторінки"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Дні"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Щотижневі інсайти"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Джерела переходів"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Країни"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Швидкість сторінки"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Пошук Google: запити"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Відсоток"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Позиція"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Потребує оновлення"
 
@@ -1894,7 +1758,7 @@ msgstr "Відсутній"
 msgid "AI draft"
 msgstr "Чернетка ШІ"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Актуальний"
 
@@ -1972,7 +1836,7 @@ msgstr "Розгорнути/згорнути дочірні вузли"
 msgid "Hidden in navigation"
 msgstr "Приховано в навігації"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Створити"
 
@@ -2248,23 +2112,23 @@ msgstr "Сторінку успішно опубліковано"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Публікацію сторінки заплановано на %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Помилка публікації сторінки"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Не опубліковано, перегляньте зміни та опублікуйте знову"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Дані відсутні"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Дані версії недоступні"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Є недійсні поля, будь ласка, спочатку виправте помилки"
 
@@ -2496,50 +2360,50 @@ msgstr "Вимкнено"
 msgid "Enabled"
 msgstr "Увімкнено"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Помилка збереження сторінки"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Цілі сторінки можна видалити лише у варіанті мовою оригіналу"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Помилка під час переміщення сторінки в кошик"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Помилка відновлення мови"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Помилка відновлення сторінки"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Усі підсторінки цих сторінок також буде видалено назавжди."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Помилка під час остаточного видалення сторінки"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Кеш очищено"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Кеш очищено для %{num} сторінки."
 msgstr[1] "Кеш очищено для %{num} сторінок."
 msgstr[2] "Кеш очищено для %{num} сторінок."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Помилка очищення кешу"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "Не вдалося оновити %{num} сторінку"
@@ -2566,7 +2430,7 @@ msgstr "Після"
 msgid "Error inserting page"
 msgstr "Помилка вставки сторінки"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Помилка при завантаженні сторінки"
 
@@ -2932,7 +2796,7 @@ msgstr "У доступі відмовлено"
 msgid "Error: %{msg}"
 msgstr "Помилка: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2940,35 +2804,31 @@ msgstr ""
 "Оціни цю сторінку від 1 до 10 за кожним напрямом (якість контенту, "
 "читабельність, SEO, UX, залученість) та запропонуй покращення"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Зачекайте, доки мову буде змінено"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Сторінку успішно збережено"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Сторінка"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Оригінал"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "У кошику"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Редактор"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Метрики"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -3005,3 +2865,106 @@ msgid ""
 msgstr ""
 "ШІ може створити сторінку та вміст на основі ваших даних і додати їх до "
 "дерева сторінок"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Перегляди та відвідування"
+
+#~ msgid "Views"
+#~ msgstr "Перегляди"
+
+#~ msgid "Visits"
+#~ msgstr "Відвідування"
+
+#~ msgid "Conversions"
+#~ msgstr "Конверсії"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Тривалість відвідувань (хвилини)"
+
+#~ msgid "Duration"
+#~ msgstr "Тривалість"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Пошук Google: покази та кліки"
+
+#~ msgid "Impressions"
+#~ msgstr "Покази"
+
+#~ msgid "Clicks"
+#~ msgstr "Кліки"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Пошук Google: показник кліків"
+
+#~ msgid "Percentage"
+#~ msgstr "Відсоток"
+
+#~ msgid "Page Views"
+#~ msgstr "Перегляди сторінок"
+
+#~ msgid "Page Visits"
+#~ msgstr "Відвідування сторінок"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Тривалість відвідування (хвилини)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Покази Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Кліки в Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Показник кліків у Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Час приймання-передавання (RTT)"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Час до першого байта"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Перше відображення вмісту"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Відображення найбільшого вмісту"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Взаємодія до наступного відображення"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Сукупне зміщення макета"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Помилка під час отримання статистики"
+
+#~ msgid "Page metrics"
+#~ msgstr "Метрики сторінки"
+
+#~ msgid "Days"
+#~ msgstr "Дні"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Щотижневі інсайти"
+
+#~ msgid "Referrers"
+#~ msgstr "Джерела переходів"
+
+#~ msgid "Countries"
+#~ msgstr "Країни"
+
+#~ msgid "Page Speed"
+#~ msgstr "Швидкість сторінки"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Пошук Google: запити"
+
+#~ msgid "Percent"
+#~ msgstr "Відсоток"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Позиція"
+
+#~ msgid "Metrics"
+#~ msgstr "Метрики"

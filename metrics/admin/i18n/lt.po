@@ -1,0 +1,183 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: lt\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: src/components/PageDetailMetrics.vue:98
+msgctxt "metrics"
+msgid "Views & Visits"
+msgstr "Peržiūros ir apsilankymai"
+
+#: src/components/PageDetailMetrics.vue:100
+msgctxt "metrics"
+msgid "Views"
+msgstr "Peržiūros"
+
+#: src/components/PageDetailMetrics.vue:101
+msgctxt "metrics"
+msgid "Visits"
+msgstr "Apsilankymai"
+
+#: src/components/PageDetailMetrics.vue:102
+#: src/components/PageDetailMetrics.vue:141
+msgctxt "metrics"
+msgid "Conversions"
+msgstr "Konversijos"
+
+#: src/components/PageDetailMetrics.vue:106
+msgctxt "metrics"
+msgid "Visit Durations (minutes)"
+msgstr "Apsilankymų trukmė (minutėmis)"
+
+#: src/components/PageDetailMetrics.vue:107
+msgctxt "metrics"
+msgid "Duration"
+msgstr "Trukmė"
+
+#: src/components/PageDetailMetrics.vue:110
+msgctxt "metrics"
+msgid "Google Search: Impressions & Clicks"
+msgstr "Google paieška: parodymai ir paspaudimai"
+
+#: src/components/PageDetailMetrics.vue:112
+#: src/components/PageDetailMetrics.vue:414
+msgctxt "metrics"
+msgid "Impressions"
+msgstr "Parodymai"
+
+#: src/components/PageDetailMetrics.vue:113
+#: src/components/PageDetailMetrics.vue:415
+msgctxt "metrics"
+msgid "Clicks"
+msgstr "Paspaudimai"
+
+#: src/components/PageDetailMetrics.vue:117
+msgctxt "metrics"
+msgid "Google Search: Click-through rate"
+msgstr "Google paieška: paspaudimų rodiklis"
+
+#: src/components/PageDetailMetrics.vue:118
+msgctxt "metrics"
+msgid "Percentage"
+msgstr "Procentinė dalis"
+
+#: src/components/PageDetailMetrics.vue:138
+msgctxt "metrics"
+msgid "Page Views"
+msgstr "Puslapio peržiūros"
+
+#: src/components/PageDetailMetrics.vue:139
+msgctxt "metrics"
+msgid "Page Visits"
+msgstr "Puslapio apsilankymai"
+
+#: src/components/PageDetailMetrics.vue:142
+msgctxt "metrics"
+msgid "Visit Duration (minutes)"
+msgstr "Apsilankymo trukmė (minutėmis)"
+
+#: src/components/PageDetailMetrics.vue:143
+msgctxt "metrics"
+msgid "Google Impressions"
+msgstr "Google parodymai"
+
+#: src/components/PageDetailMetrics.vue:144
+msgctxt "metrics"
+msgid "Google Clicks"
+msgstr "Google paspaudimai"
+
+#: src/components/PageDetailMetrics.vue:145
+msgctxt "metrics"
+msgid "Google click-through rate"
+msgstr "Google paspaudimų rodiklis"
+
+#: src/components/PageDetailMetrics.vue:151
+msgctxt "metrics"
+msgid "Round trip time"
+msgstr "Užklausos ir atsako laikas"
+
+#: src/components/PageDetailMetrics.vue:152
+msgctxt "metrics"
+msgid "Time to first byte"
+msgstr "Laikas iki pirmojo baito"
+
+#: src/components/PageDetailMetrics.vue:153
+msgctxt "metrics"
+msgid "First contentful paint"
+msgstr "Pirmasis turinio atvaizdavimas"
+
+#: src/components/PageDetailMetrics.vue:154
+msgctxt "metrics"
+msgid "Largest contentful paint"
+msgstr "Didžiausio turinio atvaizdavimas"
+
+#: src/components/PageDetailMetrics.vue:155
+msgctxt "metrics"
+msgid "Interaction to next paint"
+msgstr "Sąveika iki kito atvaizdavimo"
+
+#: src/components/PageDetailMetrics.vue:156
+msgctxt "metrics"
+msgid "Cumulative layout shift"
+msgstr "Kaupiamasis išdėstymo poslinkis"
+
+#: src/components/PageDetailMetrics.vue:237
+msgctxt "metrics"
+msgid "Error fetching metrics"
+msgstr "Klaida gaunant statistiką"
+
+#: src/components/PageDetailMetrics.vue:259
+msgctxt "metrics"
+msgid "Page metrics"
+msgstr "Puslapio rodikliai"
+
+#: src/components/PageDetailMetrics.vue:265
+msgctxt "metrics"
+msgid "Days"
+msgstr "Dienos"
+
+#: src/components/PageDetailMetrics.vue:292
+msgctxt "metrics"
+msgid "Weekly Insights"
+msgstr "Savaitės įžvalgos"
+
+#: src/components/PageDetailMetrics.vue:324
+msgctxt "metrics"
+msgid "Referrers"
+msgstr "Nukreipimo šaltiniai"
+
+#: src/components/PageDetailMetrics.vue:367
+msgctxt "metrics"
+msgid "Countries"
+msgstr "Šalys"
+
+#: src/components/PageDetailMetrics.vue:383
+msgctxt "metrics"
+msgid "Page Speed"
+msgstr "Puslapio greitis"
+
+#: src/components/PageDetailMetrics.vue:408
+msgctxt "metrics"
+msgid "Google Search: Queries"
+msgstr "Google paieška: užklausos"
+
+#: src/components/PageDetailMetrics.vue:416
+msgctxt "metrics"
+msgid "Percent"
+msgstr "Procentai"
+
+#: src/components/PageDetailMetrics.vue:417
+msgctxt "search ranking"
+msgid "Position"
+msgstr ""
+
+#: src/strings.js:9
+msgctxt "metrics"
+msgid "Metrics"
+msgstr "Metrikos"

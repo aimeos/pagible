@@ -357,7 +357,7 @@ msgid "Configuration"
 msgstr "Beállítások"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Tartalom"
 
@@ -592,7 +592,7 @@ msgstr[1] "Alkalmazza a kiválasztott tulajdonságokat %{num} bejegyzésre."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Nyelv"
 
@@ -667,7 +667,7 @@ msgstr "Elemek újratöltése"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Fordítás"
 
@@ -1206,7 +1206,7 @@ msgid "Current changes"
 msgstr "Aktuális változások"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Ütemezett: %{date}"
 
@@ -1548,7 +1548,7 @@ msgid "Clear cache"
 msgstr "Gyorsítótár törlése"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Változások figyelmen kívül hagyása"
 
@@ -1737,144 +1737,8 @@ msgstr "Az elemet már hozzáadták"
 msgid "Remove content element"
 msgstr "Tartalmi elem eltávolítása"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Megtekintések és látogatások"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Megtekintések"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Látogatások"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konverziók"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Látogatások időtartama (percben)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Időtartam"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google-keresés: megjelenések és kattintások"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Megjelenések"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Kattintások"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google-keresés: átkattintási arány"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Százalékos arány"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Oldalmegtekintések"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Oldallátogatások"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Látogatás időtartama (perc)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google-megjelenések"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google-kattintások"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google átkattintási arány"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Körülfordulási idő"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Idő az első bájtig"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "First Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Largest Contentful Paint"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaction to Next Paint"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Halmozott elrendezésváltás"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Hiba a statisztikák lekérésekor"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Oldalmérőszámok"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Napok"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Heti betekintés"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Hivatkozó források"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Országok"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Oldalsebesség"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google-keresés: lekérdezések"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Százalék"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Pozíció"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Frissítésre szorul"
 
@@ -1886,7 +1750,7 @@ msgstr "Hiányzik"
 msgid "AI draft"
 msgstr "MI-vázlat"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Naprakész"
 
@@ -1966,7 +1830,7 @@ msgstr "Gyermekcsomópontok kibontása/összecsukása"
 msgid "Hidden in navigation"
 msgstr "Navigációban elrejtve"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Létrehozás"
 
@@ -2240,24 +2104,24 @@ msgstr "Az oldal sikeresen közzétéve"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Az oldal közzététele ütemezve: %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Hiba az oldal közzétételekor"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr ""
 "Nincs közzétéve, kérjük, ellenőrizze a módosításokat, és tegye közzé újra"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nincs adat"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nincsenek elérhető verzióadatok"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Érvénytelen mezők vannak, kérjük, először oldja meg a hibákat."
 
@@ -2487,49 +2351,49 @@ msgstr "Letiltva"
 msgid "Enabled"
 msgstr "Engedélyezve"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Hiba az oldal mentésekor"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Az oldalak csak a forrásnyelvükön törölhetők teljes oldalként"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Hiba az oldal kukába helyezésekor"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Hiba a nyelv helyreállításakor"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Hiba az oldal helyreállításakor"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Ezen oldalak összes aloldala is véglegesen törlődik."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Hiba az oldal végleges törlésekor"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "A gyorsítótár törölve"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "A gyorsítótár törölve %{num} oldalnál."
 msgstr[1] "A gyorsítótár törölve %{num} oldalnál."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Hiba a gyorsítótár törlésekor"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} oldal nem frissíthető"
@@ -2555,7 +2419,7 @@ msgstr "Mögé"
 msgid "Error inserting page"
 msgstr "Hiba az oldal beszúrásakor"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Hiba az oldal lekérdezésében"
 
@@ -2915,7 +2779,7 @@ msgstr "Hozzáférés megtagadva"
 msgid "Error: %{msg}"
 msgstr "Hiba: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2923,35 +2787,31 @@ msgstr ""
 "Pontozd ezt az oldalt területenként 1–10-ig (tartalom minősége, "
 "olvashatóság, SEO, UX, elköteleződés), és javasolj fejlesztéseket"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Kérjük, várjon, amíg a nyelv átvált"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Az oldal sikeresen mentve"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Oldal"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Forrás"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Kukában"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Szerkesztő"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Mérőszámok"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2988,3 +2848,106 @@ msgid ""
 msgstr ""
 "A mesterséges intelligencia képes létrehozni egy oldalt és tartalmat az Ön "
 "által megadott adatok alapján, és hozzáadni az oldalfához."
+
+#~ msgid "Views & Visits"
+#~ msgstr "Megtekintések és látogatások"
+
+#~ msgid "Views"
+#~ msgstr "Megtekintések"
+
+#~ msgid "Visits"
+#~ msgstr "Látogatások"
+
+#~ msgid "Conversions"
+#~ msgstr "Konverziók"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Látogatások időtartama (percben)"
+
+#~ msgid "Duration"
+#~ msgstr "Időtartam"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google-keresés: megjelenések és kattintások"
+
+#~ msgid "Impressions"
+#~ msgstr "Megjelenések"
+
+#~ msgid "Clicks"
+#~ msgstr "Kattintások"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google-keresés: átkattintási arány"
+
+#~ msgid "Percentage"
+#~ msgstr "Százalékos arány"
+
+#~ msgid "Page Views"
+#~ msgstr "Oldalmegtekintések"
+
+#~ msgid "Page Visits"
+#~ msgstr "Oldallátogatások"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Látogatás időtartama (perc)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google-megjelenések"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google-kattintások"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google átkattintási arány"
+
+#~ msgid "Round trip time"
+#~ msgstr "Körülfordulási idő"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Idő az első bájtig"
+
+#~ msgid "First contentful paint"
+#~ msgstr "First Contentful Paint"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Largest Contentful Paint"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaction to Next Paint"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Halmozott elrendezésváltás"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Hiba a statisztikák lekérésekor"
+
+#~ msgid "Page metrics"
+#~ msgstr "Oldalmérőszámok"
+
+#~ msgid "Days"
+#~ msgstr "Napok"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Heti betekintés"
+
+#~ msgid "Referrers"
+#~ msgstr "Hivatkozó források"
+
+#~ msgid "Countries"
+#~ msgstr "Országok"
+
+#~ msgid "Page Speed"
+#~ msgstr "Oldalsebesség"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google-keresés: lekérdezések"
+
+#~ msgid "Percent"
+#~ msgstr "Százalék"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Pozíció"
+
+#~ msgid "Metrics"
+#~ msgstr "Mérőszámok"

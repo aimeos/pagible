@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "Asetukset"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Sisältö"
 
@@ -589,7 +589,7 @@ msgstr[1] "Käytä valittuja ominaisuuksia %{num} merkintään."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Kieli"
 
@@ -663,7 +663,7 @@ msgstr "Lataa elementit uudelleen"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Käännä"
 
@@ -1200,7 +1200,7 @@ msgid "Current changes"
 msgstr "Nykyiset muutokset"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Ajastettu: %{date}"
 
@@ -1542,7 +1542,7 @@ msgid "Clear cache"
 msgstr "Tyhjennä välimuisti"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ohita muutokset"
 
@@ -1728,144 +1728,8 @@ msgstr "Elementti on jo lisätty"
 msgid "Remove content element"
 msgstr "Irrota sisältöelementti"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Katselukerrat ja vierailut"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Katselukerrat"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Vierailut"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Konversiot"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Vierailujen kesto (minuuttia)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Kesto"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google-haku: näyttökerrat ja klikkaukset"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Näyttökerrat"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Klikkaukset"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google-haku: klikkausprosentti"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Prosenttiosuus"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Sivun katselukerrat"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Sivun vierailut"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Vierailun kesto (minuuttia)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google-näyttökerrat"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google-klikkaukset"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Googlen klikkausprosentti"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Edestakainen viive"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Aika ensimmäiseen tavuun"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Ensimmäinen sisällön piirto"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Suurimman sisällön piirto"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Interaktiosta seuraavaan piirtoon"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulatiivinen layout-siirtymä"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Virhe tilastojen hakemisessa"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Sivun mittarit"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Päivät"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Viikkokatsaus"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Viittauslähteet"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Maat"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Sivun nopeus"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google-haku: kyselyt"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Prosentti"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Sijoitus"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Vaatii päivityksen"
 
@@ -1877,7 +1741,7 @@ msgstr "Puuttuu"
 msgid "AI draft"
 msgstr "Tekoälyluonnos"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Ajan tasalla"
 
@@ -1954,7 +1818,7 @@ msgstr "Näytä tai piilota alasolmut"
 msgid "Hidden in navigation"
 msgstr "Piilotettu navigaatiosta"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Luo"
 
@@ -2228,23 +2092,23 @@ msgstr "Sivu julkaistu onnistuneesti"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Sivu on ajastettu julkaistavaksi %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Virhe sivun julkaisemisessa"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Ei julkaistu, tarkista muutokset ja julkaise uudelleen"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Tietoja ei ole saatavilla"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Versiotietoja ei ole saatavilla"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Joissakin kentissä on virheitä, korjaa ne ensin"
 
@@ -2474,49 +2338,49 @@ msgstr "Pois käytöstä"
 msgid "Enabled"
 msgstr "Käytössä"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Virhe sivun tallentamisessa"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Sivut poistetaan kokonaisina sivuina vain niiden lähdekielellä"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Virhe sivun siirtämisessä roskakoriin"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Virhe kielen palauttamisessa"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Virhe sivun palauttamisessa"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Myös kaikki näiden sivujen alasivut poistetaan pysyvästi."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Virhe sivun pysyvässä poistamisessa"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Välimuisti tyhjennetty"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Välimuisti tyhjennetty %{num} sivulta."
 msgstr[1] "Välimuisti tyhjennetty %{num} sivulta."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Virhe välimuistin tyhjentämisessä"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} sivua ei voitu päivittää"
@@ -2542,7 +2406,7 @@ msgstr "Jälkeen"
 msgid "Error inserting page"
 msgstr "Virhe sivun lisäämisessä"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Virhe sivun noutamisessa"
 
@@ -2901,7 +2765,7 @@ msgstr "Pääsy evätty"
 msgid "Error: %{msg}"
 msgstr "Virhe: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2909,35 +2773,31 @@ msgstr ""
 "Pisteytä tämä sivu osa-alueittain asteikolla 1–10 (sisällön laatu, "
 "luettavuus, SEO, UX, sitoutuminen) ja ehdota parannuksia"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Odota, kunnes kieli on vaihdettu"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Sivu tallennettu onnistuneesti"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Sivu"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Lähde"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Roskakorissa"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Editori"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Mittarit"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2974,3 +2834,106 @@ msgid ""
 msgstr ""
 "Tekoäly voi luoda sivun ja sisällön syöttösi perusteella ja lisätä sen "
 "sivupuuhun."
+
+#~ msgid "Views & Visits"
+#~ msgstr "Katselukerrat ja vierailut"
+
+#~ msgid "Views"
+#~ msgstr "Katselukerrat"
+
+#~ msgid "Visits"
+#~ msgstr "Vierailut"
+
+#~ msgid "Conversions"
+#~ msgstr "Konversiot"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Vierailujen kesto (minuuttia)"
+
+#~ msgid "Duration"
+#~ msgstr "Kesto"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google-haku: näyttökerrat ja klikkaukset"
+
+#~ msgid "Impressions"
+#~ msgstr "Näyttökerrat"
+
+#~ msgid "Clicks"
+#~ msgstr "Klikkaukset"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google-haku: klikkausprosentti"
+
+#~ msgid "Percentage"
+#~ msgstr "Prosenttiosuus"
+
+#~ msgid "Page Views"
+#~ msgstr "Sivun katselukerrat"
+
+#~ msgid "Page Visits"
+#~ msgstr "Sivun vierailut"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Vierailun kesto (minuuttia)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google-näyttökerrat"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google-klikkaukset"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Googlen klikkausprosentti"
+
+#~ msgid "Round trip time"
+#~ msgstr "Edestakainen viive"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Aika ensimmäiseen tavuun"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Ensimmäinen sisällön piirto"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Suurimman sisällön piirto"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Interaktiosta seuraavaan piirtoon"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulatiivinen layout-siirtymä"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Virhe tilastojen hakemisessa"
+
+#~ msgid "Page metrics"
+#~ msgstr "Sivun mittarit"
+
+#~ msgid "Days"
+#~ msgstr "Päivät"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Viikkokatsaus"
+
+#~ msgid "Referrers"
+#~ msgstr "Viittauslähteet"
+
+#~ msgid "Countries"
+#~ msgstr "Maat"
+
+#~ msgid "Page Speed"
+#~ msgstr "Sivun nopeus"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google-haku: kyselyt"
+
+#~ msgid "Percent"
+#~ msgstr "Prosentti"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Sijoitus"
+
+#~ msgid "Metrics"
+#~ msgstr "Mittarit"

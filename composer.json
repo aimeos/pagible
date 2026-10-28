@@ -15,6 +15,7 @@
 		"aimeos/pagible-search": "dev-master",
 		"aimeos/pagible-jsonapi": "dev-master",
 		"aimeos/pagible-mcp": "dev-master",
+		"aimeos/pagible-metrics": "dev-master",
 		"aimeos/pagible-theme": "dev-master"
 	},
 	"require-dev": {
@@ -39,6 +40,7 @@
 		{"type": "path", "url": "search"},
 		{"type": "path", "url": "jsonapi"},
 		{"type": "path", "url": "mcp"},
+		{"type": "path", "url": "metrics"},
 		{"type": "path", "url": "theme"},
 		{"type": "path", "url": "webhooks"},
 		{"type": "path", "url": "cdn"}
@@ -129,6 +131,7 @@
 				"import/tests/",
 				"jsonapi/tests/",
 				"mcp/tests/",
+				"metrics/tests/",
 				"pulse/tests/",
 				"search/tests/",
 				"theme/tests/",

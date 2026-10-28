@@ -1,0 +1,20 @@
+{
+  "name": "@aimeos/pagible-metrics-admin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vue-gettext-compile --config ../../admin/plugin/gettext.config.mjs && vite build --config ../../admin/plugin/vite.config.js",
+    "gettext:compile": "vue-gettext-compile --config ../../admin/plugin/gettext.config.mjs",
+    "gettext:extract": "vue-gettext-extract --config ../../admin/plugin/gettext.config.mjs",
+    "lint": "eslint src cypress",
+    "test:unit": "cd ../../admin && cypress run --component --spec '../metrics/admin/cypress/unit/**/*.cy.{js,ts}'"
+  },
+  "peerDependencies": {
+    "graphql-tag": "^2.12",
+    "vue": "^3.5"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1",
+    "vue-chartjs": "^5.3.3"
+  }
+}

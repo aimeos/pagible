@@ -358,7 +358,7 @@ msgid "Configuration"
 msgstr "Конфигурация"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Съдържание"
 
@@ -595,7 +595,7 @@ msgstr[1] "Приложете избраните свойства към %{num} 
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Език"
 
@@ -670,7 +670,7 @@ msgstr "Презареждане на елементи"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Превод"
 
@@ -1210,7 +1210,7 @@ msgid "Current changes"
 msgstr "Текущи промени"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Насрочено за %{date}"
 
@@ -1552,7 +1552,7 @@ msgid "Clear cache"
 msgstr "Изчистване на кеша"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Игнориране на промените"
 
@@ -1741,144 +1741,8 @@ msgstr "Елементът вече е добавен"
 msgid "Remove content element"
 msgstr "Премахване на елемент от съдържанието"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Прегледи и посещения"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Прегледи"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Посещения"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Конверсии"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Продължителност на посещенията (минути)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Продължителност"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Търсене в Google: Импресии и кликове"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Импресии"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Кликове"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Търсене в Google: Честота на кликване"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Процент"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Прегледи на страници"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Посещения на страницата"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Продължителност на посещението (минути)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Импресии в Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Кликове в Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Честота на кликване в Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Време за двупосочен обмен"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Време до първия байт"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Първо изобразяване на съдържание"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Изобразяване на най-голямото съдържание"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Взаимодействие до следващото изобразяване"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Кумулативна промяна на оформлението"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Грешка при извличане на статистиката"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Метрики на страницата"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Дни"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Седмичен анализ"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Източници на трафик"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Държави"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Скорост на страницата"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Търсене в Google: Запитвания"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Процент"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Позиция"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Нуждае се от обновяване"
 
@@ -1890,7 +1754,7 @@ msgstr "Липсва"
 msgid "AI draft"
 msgstr "AI чернова"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Актуално"
 
@@ -1967,7 +1831,7 @@ msgstr "Превключване на подчинените възли"
 msgid "Hidden in navigation"
 msgstr "Скрито в навигацията"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Създаване"
 
@@ -2241,23 +2105,23 @@ msgstr "Страницата е публикувана успешно"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Страницата е планирана за публикуване на %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Грешка при публикуване на страницата"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Не е публикувано, моля, прегледайте промените и публикувайте отново"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Няма налични данни"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Няма налични данни за версията"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Има невалидни полета, моля, първо отстранете грешките"
 
@@ -2487,49 +2351,49 @@ msgstr "Деактивирано"
 msgid "Enabled"
 msgstr "Активирано"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Грешка при запазване на страницата"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Страниците се изтриват като цели страници само на изходния си език"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Грешка при преместване на страницата в кошчето"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Грешка при възстановяване на език"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Грешка при възстановяване на страницата"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Всички подстраници на тези страници също ще бъдат изтрити завинаги."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Грешка при окончателно изтриване на страницата"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Кешът е изчистен"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Кешът е изчистен за %{num} страница."
 msgstr[1] "Кешът е изчистен за %{num} страници."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Грешка при изчистване на кеша"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} страница не можа да бъде актуализирана"
@@ -2555,7 +2419,7 @@ msgstr "След"
 msgid "Error inserting page"
 msgstr "Грешка при вмъкване на страница"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Грешка при извличането на страница"
 
@@ -2913,7 +2777,7 @@ msgstr "Отказан достъп"
 msgid "Error: %{msg}"
 msgstr "Грешка: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2921,35 +2785,31 @@ msgstr ""
 "Оцени тази страница от 1 до 10 по всяка област (качество на съдържанието, "
 "четимост, SEO, UX, ангажираност) и предложи подобрения"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Моля, изчакайте, докато езикът бъде сменен"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Страницата е запазена успешно"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Страница"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Източник"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "В кошчето"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Редактор на съдържание"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Метрики"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2986,3 +2846,106 @@ msgid ""
 msgstr ""
 "AI може да създаде страница и съдържание въз основа на въведените от вас "
 "данни и да ги добави в дървото на страниците"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Прегледи и посещения"
+
+#~ msgid "Views"
+#~ msgstr "Прегледи"
+
+#~ msgid "Visits"
+#~ msgstr "Посещения"
+
+#~ msgid "Conversions"
+#~ msgstr "Конверсии"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Продължителност на посещенията (минути)"
+
+#~ msgid "Duration"
+#~ msgstr "Продължителност"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Търсене в Google: Импресии и кликове"
+
+#~ msgid "Impressions"
+#~ msgstr "Импресии"
+
+#~ msgid "Clicks"
+#~ msgstr "Кликове"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Търсене в Google: Честота на кликване"
+
+#~ msgid "Percentage"
+#~ msgstr "Процент"
+
+#~ msgid "Page Views"
+#~ msgstr "Прегледи на страници"
+
+#~ msgid "Page Visits"
+#~ msgstr "Посещения на страницата"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Продължителност на посещението (минути)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Импресии в Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Кликове в Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Честота на кликване в Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "Време за двупосочен обмен"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Време до първия байт"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Първо изобразяване на съдържание"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Изобразяване на най-голямото съдържание"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Взаимодействие до следващото изобразяване"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Кумулативна промяна на оформлението"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Грешка при извличане на статистиката"
+
+#~ msgid "Page metrics"
+#~ msgstr "Метрики на страницата"
+
+#~ msgid "Days"
+#~ msgstr "Дни"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Седмичен анализ"
+
+#~ msgid "Referrers"
+#~ msgstr "Източници на трафик"
+
+#~ msgid "Countries"
+#~ msgstr "Държави"
+
+#~ msgid "Page Speed"
+#~ msgstr "Скорост на страницата"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Търсене в Google: Запитвания"
+
+#~ msgid "Percent"
+#~ msgstr "Процент"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Позиция"
+
+#~ msgid "Metrics"
+#~ msgstr "Метрики"

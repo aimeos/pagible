@@ -3,9 +3,7 @@
 <script>
 import gql from 'graphql-tag'
 import { markRaw } from 'vue'
-import { pageUrl } from '../urls'
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
-import LoadingSpinner from './LoadingSpinner.vue'
 import MetricsCharts from './MetricsCharts.vue'
 import { QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, ranked, rating, signed, sortedByValue, timeline, toMinutes, toPercent, weeklySum } from '../metrics'
 
@@ -40,9 +38,10 @@ const FETCH_METRICS = gql`
 
 export default {
   components: {
-    LoadingSpinner,
     MetricsCharts
   },
+
+  inject: ['apollo', 'pageUrl'],
 
   props: {
     item: { type: Object, required: true }
@@ -70,7 +69,7 @@ export default {
   setup() {
     return {
       mdiChevronUp, mdiChevronDown, DAYS_OPTIONS, REFERRER_HEADERS, COUNTRY_HEADERS,
-      QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, rating, signed, sortedByValue, weeklySum
+      QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, rating, signed, sortedByValue
     }
   },
 
@@ -96,27 +95,27 @@ export default {
 
       return [{
         show: this.views.length || this.visits.length || this.conversions.length,
-        title: this.$gettext('Views & Visits'),
+        title: this.$pgettext('metrics', 'Views & Visits'),
         data: this.chart(this.views,
-          [p.primary, this.$gettext('Views'), this.views],
-          [p.warning, this.$gettext('Visits'), this.visits],
-          [p.success, this.$gettext('Conversions'), this.conversions]
+          [p.primary, this.$pgettext('metrics', 'Views'), this.views],
+          [p.warning, this.$pgettext('metrics', 'Visits'), this.visits],
+          [p.success, this.$pgettext('metrics', 'Conversions'), this.conversions]
         )
       }, {
         show: this.durations.length,
-        title: this.$gettext('Visit Durations (minutes)'),
-        data: this.chart(this.durations, [p.primary, this.$gettext('Duration'), this.durations])
+        title: this.$pgettext('metrics', 'Visit Durations (minutes)'),
+        data: this.chart(this.durations, [p.primary, this.$pgettext('metrics', 'Duration'), this.durations])
       }, {
         show: this.impressions.length || this.clicks.length,
-        title: this.$gettext('Google Search: Impressions & Clicks'),
+        title: this.$pgettext('metrics', 'Google Search: Impressions & Clicks'),
         data: this.chart(this.impressions,
-          [p.primary, this.$gettext('Impressions'), this.impressions],
-          [p.warning, this.$gettext('Clicks'), this.clicks]
+          [p.primary, this.$pgettext('metrics', 'Impressions'), this.impressions],
+          [p.warning, this.$pgettext('metrics', 'Clicks'), this.clicks]
         )
       }, {
         show: this.ctrs.length,
-        title: this.$gettext('Google Search: Click-through rate'),
-        data: this.chart(this.ctrs, [p.success, this.$gettext('Percentage'), this.ctrs])
+        title: this.$pgettext('metrics', 'Google Search: Click-through rate'),
+        data: this.chart(this.ctrs, [p.success, this.$pgettext('metrics', 'Percentage'), this.ctrs])
       }]
     },
 
@@ -136,25 +135,25 @@ export default {
       const hasConversions = this.conversions.reduce((acc, item) => acc + Number(item.value), 0)
 
       return markRaw([
-        { label: this.$gettext('Page Views'), data: this.views },
-        { label: this.$gettext('Page Visits'), data: this.visits },
+        { label: this.$pgettext('metrics', 'Page Views'), data: this.views },
+        { label: this.$pgettext('metrics', 'Page Visits'), data: this.visits },
         hasConversions
-          ? { label: this.$gettext('Conversions'), data: this.conversions, average: true }
-          : { label: this.$gettext('Visit Duration (minutes)'), data: this.durations, average: true },
-        { label: this.$gettext('Google Impressions'), data: this.impressions },
-        { label: this.$gettext('Google Clicks'), data: this.clicks },
-        { label: this.$gettext('Google click-through rate'), data: this.ctrs, average: true, suffix: '%' }
-      ])
+          ? { label: this.$pgettext('metrics', 'Conversions'), data: this.conversions, average: true }
+          : { label: this.$pgettext('metrics', 'Visit Duration (minutes)'), data: this.durations, average: true },
+        { label: this.$pgettext('metrics', 'Google Impressions'), data: this.impressions },
+        { label: this.$pgettext('metrics', 'Google Clicks'), data: this.clicks },
+        { label: this.$pgettext('metrics', 'Google click-through rate'), data: this.ctrs, average: true, suffix: '%' }
+      ].map((col) => ({ ...col, current: weeklySum(col.data), previous: weeklySum(col.data, 2) })))
     },
 
     speedMetrics() {
       return markRaw([
-        { key: 'round_trip_time', label: this.$gettext('Round trip time'), good: 200, bad: 500, unit: 'ms' },
-        { key: 'time_to_first_byte', label: this.$gettext('Time to first byte'), good: 800, bad: 1800, unit: 'ms' },
-        { key: 'first_contentful_paint', label: this.$gettext('First contentful paint'), good: 1800, bad: 3000, unit: 'ms' },
-        { key: 'largest_contentful_paint', label: this.$gettext('Largest contentful paint'), good: 2500, bad: 4000, unit: 'ms' },
-        { key: 'interaction_to_next_paint', label: this.$gettext('Interaction to next paint'), good: 200, bad: 500, unit: 'ms' },
-        { key: 'cumulative_layout_shift', label: this.$gettext('Cumulative layout shift'), good: 0.1, bad: 0.25, unit: '' }
+        { key: 'round_trip_time', label: this.$pgettext('metrics', 'Round trip time'), good: 200, bad: 500, unit: 'ms' },
+        { key: 'time_to_first_byte', label: this.$pgettext('metrics', 'Time to first byte'), good: 800, bad: 1800, unit: 'ms' },
+        { key: 'first_contentful_paint', label: this.$pgettext('metrics', 'First contentful paint'), good: 1800, bad: 3000, unit: 'ms' },
+        { key: 'largest_contentful_paint', label: this.$pgettext('metrics', 'Largest contentful paint'), good: 2500, bad: 4000, unit: 'ms' },
+        { key: 'interaction_to_next_paint', label: this.$pgettext('metrics', 'Interaction to next paint'), good: 200, bad: 500, unit: 'ms' },
+        { key: 'cumulative_layout_shift', label: this.$pgettext('metrics', 'Cumulative layout shift'), good: 0.1, bad: 0.25, unit: '' }
       ])
     }
   },
@@ -188,7 +187,7 @@ export default {
       this.loading = true
 
       try {
-        const { data } = await this.$apollo.mutate({
+        const { data } = await this.apollo.mutate({
           mutation: FETCH_METRICS,
           variables: {
             url: this.url(this.item),
@@ -235,7 +234,7 @@ export default {
         if (request === this.request) {
           // don't show the charts of the previous time range next to the error
           this.clear()
-          this.errors.push(this.$gettext('Error fetching metrics'))
+          this.errors.push(this.$pgettext('metrics', 'Error fetching metrics'))
           this.$log('PageDetailMetrics::metrics(): Error fetching metrics', e)
         }
       } finally {
@@ -246,7 +245,7 @@ export default {
     },
 
     url(node) {
-      return pageUrl(node, true)
+      return this.pageUrl(node, true)
     }
   }
 }
@@ -254,17 +253,18 @@ export default {
 
 <template>
   <v-container>
-    <v-sheet class="box scroll">
+    <v-sheet class="box scroll" style="height: var(--cms-detail-height)">
       <v-row>
-        <v-col cols="6" class="title">
-          {{ $gettext('Page metrics') }}
+        <v-col cols="6" class="d-flex align-self-center text-title-large font-weight-medium">
+          {{ $pgettext('metrics', 'Page metrics') }}
         </v-col>
-        <v-col cols="6" class="select-days">
+        <v-col cols="6" class="d-flex justify-end align-self-center">
           <v-select
             v-model="days"
             :items="DAYS_OPTIONS"
-            :label="$gettext('Days')"
+            :label="$pgettext('metrics', 'Days')"
             variant="underlined"
+            max-width="120"
             hide-details
             @update:modelValue="metrics"
           />
@@ -276,34 +276,34 @@ export default {
         :key="idx"
         variant="tonal"
         border="start"
-        class="panel"
+        class="mt-4"
         type="error"
       >
         {{ apiError(err) }}
       </v-alert>
 
-      <div v-if="loading" class="loading-overlay d-flex align-center justify-center">
-        <LoadingSpinner width="32" height="32" />
+      <div v-if="loading" class="loading-overlay position-absolute d-flex align-center justify-center">
+        <CmsLoadingSpinner width="32" height="32" />
       </div>
 
       <!-- Overview -->
       <v-row>
         <v-col cols="12">
-          <v-card class="panel emphasis-bg">
-            <v-card-title>{{ $gettext('Weekly Insights') }}</v-card-title>
+          <v-card class="mt-4 emphasis-bg">
+            <v-card-title class="text-title-medium">{{ $pgettext('metrics', 'Weekly Insights') }}</v-card-title>
             <v-card-text>
               <v-row>
                 <v-col v-for="(col, idx) in insightColumns" :key="idx" cols="6" md="4" lg="2">
-                  <div class="text-caption text-medium-emphasis">{{ col.label }}</div>
+                  <div class="text-caption opacity-70">{{ col.label }}</div>
                   <div class="d-flex align-center justify-space-between text-h6">
                     <div v-if="col.data.length">
-                      <span class="number">{{ insightValue(col, $vuetify.locale.current) }}</span>
+                      <span>{{ insightValue(col, $vuetify.locale.current) }}</span>
                       <span
-                        v-if="weeklySum(col.data, 2)"
-                        class="percent"
-                        :class="weeklySum(col.data) >= weeklySum(col.data, 2) ? 'good' : 'bad'"
+                        v-if="col.previous"
+                        class="text-body-large ms-3"
+                        :class="col.current >= col.previous ? 'good' : 'bad'"
                       >
-                        {{ signed((weeklySum(col.data) * 100) / (weeklySum(col.data, 2) || 1) - 100) }}%
+                        {{ signed((col.current * 100) / col.previous - 100) }}%
                       </span>
                     </div>
                     <div v-else>—</div>
@@ -321,8 +321,8 @@ export default {
       <!-- Top lists -->
       <v-row>
         <v-col v-if="referrers.length" cols="12" md="6">
-          <v-card class="panel">
-            <v-card-title>{{ $gettext('Referrers') }}</v-card-title>
+          <v-card class="mt-4">
+            <v-card-title class="text-title-medium">{{ $pgettext('metrics', 'Referrers') }}</v-card-title>
             <v-card-text>
               <v-data-table
                 :items="referrers"
@@ -364,8 +364,8 @@ export default {
         </v-col>
 
         <v-col v-if="countries.length" cols="12" md="6">
-          <v-card class="panel">
-            <v-card-title>{{ $gettext('Countries') }}</v-card-title>
+          <v-card class="mt-4">
+            <v-card-title class="text-title-medium">{{ $pgettext('metrics', 'Countries') }}</v-card-title>
             <v-card-text>
               <v-data-table
                 :items="countries"
@@ -380,12 +380,12 @@ export default {
       <!-- PageSpeed -->
       <v-row>
         <v-col v-if="pagespeed" cols="12">
-          <v-card class="panel emphasis-bg">
-            <v-card-title>{{ $gettext('Page Speed') }}</v-card-title>
+          <v-card class="mt-4 emphasis-bg">
+            <v-card-title class="text-title-medium">{{ $pgettext('metrics', 'Page Speed') }}</v-card-title>
             <v-card-text>
               <v-row>
                 <v-col v-for="m in speedMetrics" :key="m.key" cols="6" md="4" lg="2">
-                  <div class="text-caption text-medium-emphasis">{{ m.label }}</div>
+                  <div class="text-caption opacity-70">{{ m.label }}</div>
                   <div
                     class="d-flex align-center justify-space-between text-h6"
                     :class="rating(pagespeed?.[m.key], m.good, m.bad)"
@@ -405,23 +405,23 @@ export default {
       <!-- GSC queries -->
       <v-row>
         <v-col v-if="queries.length" cols="12">
-          <v-card class="panel">
-            <v-card-title>{{ $gettext('Google Search: Queries') }}</v-card-title>
-            <v-card-text class="table">
-              <v-row class="header">
-                <v-col cols="12" sm="6" class="key"></v-col>
+          <v-card class="mt-4">
+            <v-card-title class="text-title-medium">{{ $pgettext('metrics', 'Google Search: Queries') }}</v-card-title>
+            <v-card-text>
+              <v-row class="font-weight-bold">
+                <v-col cols="12" sm="6"></v-col>
                 <v-col cols="12" sm="6">
                   <v-row>
-                    <v-col cols="3">{{ $gettext('Impressions') }}</v-col>
-                    <v-col cols="3">{{ $gettext('Clicks') }}</v-col>
-                    <v-col cols="3">{{ $gettext('Percent') }}</v-col>
+                    <v-col cols="3">{{ $pgettext('metrics', 'Impressions') }}</v-col>
+                    <v-col cols="3">{{ $pgettext('metrics', 'Clicks') }}</v-col>
+                    <v-col cols="3">{{ $pgettext('metrics', 'Percent') }}</v-col>
                     <v-col cols="3">{{ $pgettext('search ranking', 'Position') }}</v-col>
                   </v-row>
                 </v-col>
               </v-row>
-              <v-row v-for="(q, i) in paginate(queries, querypage)" :key="i" class="line">
-                <v-col cols="12" sm="6" class="key">{{ q.key }}</v-col>
-                <v-col cols="12" sm="6">
+              <v-row v-for="(q, i) in paginate(queries, querypage)" :key="i" class="border-t py-2">
+                <v-col cols="12" sm="6" class="py-1 font-weight-bold">{{ q.key }}</v-col>
+                <v-col cols="12" sm="6" class="py-1">
                   <v-row>
                     <v-col cols="3">{{ compact(q.impressions, $vuetify.locale.current) }}</v-col>
                     <v-col cols="3">{{ compact(q.clicks, $vuetify.locale.current) }}</v-col>
@@ -445,13 +445,8 @@ export default {
 </template>
 
 <style scoped>
-.v-sheet.scroll {
-  height: var(--cms-detail-height);
-}
-
 .loading-overlay {
   inset: 0;
-  position: absolute;
   background: rgba(var(--v-theme-surface), 0.4);
   backdrop-filter: blur(2px);
   z-index: 10;
@@ -462,81 +457,16 @@ export default {
   color: rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)));
 }
 
-.emphasis-bg .text-medium-emphasis {
-  color: rgba(var(--v-theme-on-emphasis, var(--v-theme-on-surface-light)), var(--v-medium-emphasis-opacity));
-}
-
-.title,
-.select-days {
-  display: flex;
-  justify-content: flex-end;
-  align-self: center;
-}
-
-.title {
-  font-weight: 500;
-  font-size: 125%;
-  justify-content: flex-start;
-}
-
-.select-days .v-select {
-  max-width: 120px;
-}
-
-.v-card-title {
-  font-size: 112.5%;
-}
-
-.panel {
-  margin-top: 16px !important;
-}
-
-.panel .good {
-  color: rgb(var(--v-theme-success));
-}
-
-.panel .bad {
-  color: rgb(var(--v-theme-error));
-}
-
-.panel .warn {
-  color: rgb(var(--v-theme-warning));
-}
-
 /* Blend towards the text color so the trend colors keep AA contrast on the tinted panels */
-.emphasis-bg .good {
+.good {
   color: color-mix(in srgb, rgb(var(--v-theme-success)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
 }
 
-.emphasis-bg .bad {
+.bad {
   color: color-mix(in srgb, rgb(var(--v-theme-error)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
 }
 
-.emphasis-bg .warn {
+.warn {
   color: color-mix(in srgb, rgb(var(--v-theme-warning)) 80%, rgb(var(--v-theme-on-emphasis, var(--v-theme-on-surface))));
-}
-
-.panel .percent {
-  font-size: 80%;
-  margin-inline-start: 12px;
-}
-
-.panel .table .header {
-  font-weight: bold;
-}
-
-.panel .table .line {
-  border-top: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  padding-top: 8px;
-  padding-bottom: 8px;
-}
-
-.panel .table .line > div[class*='v-col'] {
-  padding-bottom: 2px !important;
-  padding-top: 2px !important;
-}
-
-.panel .table .key {
-  font-weight: bold;
 }
 </style>

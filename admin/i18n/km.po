@@ -354,7 +354,7 @@ msgid "Configuration"
 msgstr "ការកំណត់រចនាសម្ព័ន្ធ"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "មាតិកា"
 
@@ -586,7 +586,7 @@ msgstr[0] "អនុវត្តលក្ខណៈសម្បត្តិដែ
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "ភាសា"
 
@@ -659,7 +659,7 @@ msgstr "ផ្ទុកធាតុឡើងវិញ"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "បកប្រែ"
 
@@ -1184,7 +1184,7 @@ msgid "Current changes"
 msgstr "ការផ្លាស់ប្តូរបច្ចុប្បន្ន"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "បានកំណត់ពេលសម្រាប់ %{date}"
 
@@ -1520,7 +1520,7 @@ msgid "Clear cache"
 msgstr "សម្អាតឃ្លាំងសម្ងាត់"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "មិនអើពើការផ្លាស់ប្ដូរ"
 
@@ -1705,144 +1705,8 @@ msgstr "ធាតុនេះត្រូវបានបន្ថែមរួច
 msgid "Remove content element"
 msgstr "ដកធាតុមាតិកាចេញ"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "ការមើល & ការចូលមើល"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "ការមើល"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "ការចូលមើល"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "ការបំប្លែង"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "រយៈពេលចូលមើល (នាទី)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "រយៈពេល"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google Search៖ ការបង្ហាញ & ការចុច"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "ការបង្ហាញ"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "ការចុច"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "ការស្វែងរក Google៖ អត្រាចុច"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "ភាគរយ"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "ការមើលទំព័រ"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "ការចូលមើលទំព័រ"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "រយៈពេលចូលមើល (នាទី)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "ការបង្ហាញលើ Google"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "ការចុចលើ Google"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "អត្រាចុចរបស់ Google"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "រយៈពេលទៅមក"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "រយៈពេលដល់បៃទីមួយ"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "ការបង្ហាញមាតិកាដំបូង"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "ការបង្ហាញមាតិកាធំបំផុត"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "អន្តរកម្មទៅការបង្ហាញបន្ទាប់"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "ការផ្លាស់ប្តូរប្លង់សរុប"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "កំហុសក្នុងការទាញយកស្ថិតិ"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "រង្វាស់ទំព័រ"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "ថ្ងៃ"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "ការយល់ដឹងប្រចាំសប្តាហ៍"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "ប្រភពយោង"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "ប្រទេស"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "ល្បឿនទំព័រ"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google Search៖ សំណួរស្វែងរក"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "ភាគរយ"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "ចំណាត់ថ្នាក់"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "ត្រូវការធ្វើបច្ចុប្បន្នភាព"
 
@@ -1854,7 +1718,7 @@ msgstr "ខ្វះ"
 msgid "AI draft"
 msgstr "សេចក្តីព្រាង AI"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "ទាន់សម័យ"
 
@@ -1928,7 +1792,7 @@ msgstr "បង្ហាញ/លាក់ថ្នាំងកូន"
 msgid "Hidden in navigation"
 msgstr "លាក់ក្នុងការរុករក"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "បង្កើត"
 
@@ -2198,23 +2062,23 @@ msgstr "បានបោះផ្សាយទំព័រដោយជោគជ័
 msgid "Page scheduled for publishing at %{date}"
 msgstr "ទំព័រត្រូវបានកំណត់ពេលបោះផ្សាយនៅ %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "កំហុសក្នុងការបោះផ្សាយទំព័រ"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "មិនទាន់បានបោះពុម្ពផ្សាយ សូមពិនិត្យការផ្លាស់ប្តូរ ហើយបោះពុម្ពផ្សាយម្តងទៀត"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "គ្មានទិន្នន័យ"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "មិនមានទិន្នន័យកំណែទេ"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "មានវាលមិនត្រឹមត្រូវ សូមដោះស្រាយកំហុសជាមុនសិន"
 
@@ -2442,48 +2306,48 @@ msgstr "បានបិទ"
 msgid "Enabled"
 msgstr "បានបើក"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "កំហុសក្នុងការរក្សាទុកទំព័រ"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "ទំព័រត្រូវបានលុបជាទំព័រទាំងមូលតែក្នុងភាសាប្រភពរបស់វាប៉ុណ្ណោះ"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "កំហុសក្នុងការផ្លាស់ទីទំព័រទៅធុងសំរាម"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "កំហុសក្នុងការស្ដារភាសា"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "កំហុសក្នុងការស្ដារទំព័រ"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "ទំព័ររងទាំងអស់នៃទំព័រទាំងនេះក៏នឹងត្រូវលុបជាអចិន្ត្រៃយ៍ផងដែរ។"
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "កំហុសក្នុងការលុបទំព័រជាអចិន្ត្រៃយ៍"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "បានសម្អាតឃ្លាំងសម្ងាត់"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "បានសម្អាតឃ្លាំងសម្ងាត់សម្រាប់ %{num} ទំព័រ។"
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "កំហុសក្នុងការសម្អាតឃ្លាំងសម្ងាត់"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "មិនអាចធ្វើបច្ចុប្បន្នភាព %{num} ទំព័របានទេ"
@@ -2508,7 +2372,7 @@ msgstr "នៅពីក្រោយ"
 msgid "Error inserting page"
 msgstr "កំហុសក្នុងការបញ្ចូលទំព័រ"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "កំហុសក្នុងការទាញយកទំព័រ"
 
@@ -2852,7 +2716,7 @@ msgstr "ការចូលប្រើត្រូវបានបដិសេធ
 msgid "Error: %{msg}"
 msgstr "កំហុស: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2860,35 +2724,31 @@ msgstr ""
 "ដាក់ពិន្ទុទំព័រនេះពី 1–10 តាមផ្នែកនីមួយៗ (គុណភាពមាតិកា ភាពងាយស្រួលអាន SEO UX ការចូលរួម) "
 "និងស្នើការកែលម្អ"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "សូមរង់ចាំរហូតដល់ភាសាត្រូវបានប្តូរ"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "បានរក្សាទុកទំព័រដោយជោគជ័យ"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "ទំព័រ"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "ប្រភព"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "ក្នុងធុងសំរាម"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "កម្មវិធីកែសម្រួល"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "រង្វាស់"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -2923,3 +2783,106 @@ msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"
 msgstr "AI អាចបង្កើតទំព័រ និងមាតិកាដោយផ្អែកលើការបញ្ចូលរបស់អ្នក ហើយបន្ថែមវាទៅមែកធាងទំព័រ"
+
+#~ msgid "Views & Visits"
+#~ msgstr "ការមើល & ការចូលមើល"
+
+#~ msgid "Views"
+#~ msgstr "ការមើល"
+
+#~ msgid "Visits"
+#~ msgstr "ការចូលមើល"
+
+#~ msgid "Conversions"
+#~ msgstr "ការបំប្លែង"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "រយៈពេលចូលមើល (នាទី)"
+
+#~ msgid "Duration"
+#~ msgstr "រយៈពេល"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google Search៖ ការបង្ហាញ & ការចុច"
+
+#~ msgid "Impressions"
+#~ msgstr "ការបង្ហាញ"
+
+#~ msgid "Clicks"
+#~ msgstr "ការចុច"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "ការស្វែងរក Google៖ អត្រាចុច"
+
+#~ msgid "Percentage"
+#~ msgstr "ភាគរយ"
+
+#~ msgid "Page Views"
+#~ msgstr "ការមើលទំព័រ"
+
+#~ msgid "Page Visits"
+#~ msgstr "ការចូលមើលទំព័រ"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "រយៈពេលចូលមើល (នាទី)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "ការបង្ហាញលើ Google"
+
+#~ msgid "Google Clicks"
+#~ msgstr "ការចុចលើ Google"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "អត្រាចុចរបស់ Google"
+
+#~ msgid "Round trip time"
+#~ msgstr "រយៈពេលទៅមក"
+
+#~ msgid "Time to first byte"
+#~ msgstr "រយៈពេលដល់បៃទីមួយ"
+
+#~ msgid "First contentful paint"
+#~ msgstr "ការបង្ហាញមាតិកាដំបូង"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "ការបង្ហាញមាតិកាធំបំផុត"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "អន្តរកម្មទៅការបង្ហាញបន្ទាប់"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "ការផ្លាស់ប្តូរប្លង់សរុប"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "កំហុសក្នុងការទាញយកស្ថិតិ"
+
+#~ msgid "Page metrics"
+#~ msgstr "រង្វាស់ទំព័រ"
+
+#~ msgid "Days"
+#~ msgstr "ថ្ងៃ"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "ការយល់ដឹងប្រចាំសប្តាហ៍"
+
+#~ msgid "Referrers"
+#~ msgstr "ប្រភពយោង"
+
+#~ msgid "Countries"
+#~ msgstr "ប្រទេស"
+
+#~ msgid "Page Speed"
+#~ msgstr "ល្បឿនទំព័រ"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google Search៖ សំណួរស្វែងរក"
+
+#~ msgid "Percent"
+#~ msgstr "ភាគរយ"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "ចំណាត់ថ្នាក់"
+
+#~ msgid "Metrics"
+#~ msgstr "រង្វាស់"

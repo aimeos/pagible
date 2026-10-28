@@ -211,39 +211,6 @@ class PageToolsTest extends McpTestAbstract
     }
 
 
-    public function testGetPageMetrics()
-    {
-        \Aimeos\AnalyticsBridge\Facades\Analytics::shouldReceive('driver->stats')
-            ->once()
-            ->with('https://example.com/blog', 30)
-            ->andReturn([
-                'views' => [['key' => '2026-03-01', 'value' => 100]],
-                'conversions' => [['key' => '2026-03-01', 'value' => 5]],
-            ]);
-
-        \Aimeos\AnalyticsBridge\Facades\Analytics::shouldReceive('search')
-            ->once()
-            ->with('https://example.com/blog', 30)
-            ->andReturn(['impressions' => 50, 'clicks' => 10]);
-
-        \Aimeos\AnalyticsBridge\Facades\Analytics::shouldReceive('queries')
-            ->once()
-            ->with('https://example.com/blog', 30)
-            ->andReturn([['key' => 'test query', 'clicks' => 5]]);
-
-        \Aimeos\AnalyticsBridge\Facades\Analytics::shouldReceive('pagespeed')
-            ->once()
-            ->with('https://example.com/blog')
-            ->andReturn([['key' => 'time_to_first_byte', 'value' => 250]]);
-
-        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\GetPageMetrics::class, [
-            'url' => 'https://example.com/blog',
-        ] );
-
-        $response->assertOk()->assertSee( ['views', 'pagespeed'] )->assertDontSee( 'conversions' );
-    }
-
-
     public function testSearchPagesNoTerm()
     {
         $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [

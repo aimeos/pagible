@@ -28,7 +28,6 @@ import {
 const FieldsAside = defineAsyncComponent(() => import('../components/FieldsAside.vue'))
 const PageDetailItem = defineAsyncComponent(() => import('../components/PageDetailItem.vue'))
 const PageDetailEditor = defineAsyncComponent(() => import('../components/PageDetailEditor.vue'))
-const PageDetailMetrics = defineAsyncComponent(() => import('../components/PageDetailMetrics.vue'))
 
 // copy of the element without the internal "_" properties
 function strip(el) {
@@ -126,8 +125,7 @@ export default {
     FieldsAside,
     PageDetailItem,
     PageDetailEditor,
-    PageDetailContent,
-    PageDetailMetrics
+    PageDetailContent
   },
 
   provide() {
@@ -187,7 +185,7 @@ export default {
         `The user is viewing the "${lang}" language variant of the page with ID "${this.item.id}". ` +
         `When they refer to "this page", use get-page with that ID and lang "${lang}". ` +
         `Rate, suggest and change only this language variant: pass lang "${lang}" to all tools working on the page, ` +
-        `e.g. save-page, get-page-history and publish-page, and use the URL of this variant for get-page-metrics.`
+        `e.g. save-page, get-page-history and publish-page, and use the URL of this variant for tools expecting a page URL.`
       )
     },
 
@@ -697,9 +695,6 @@ export default {
         >
           {{ $gettext('Page') }}
         </v-tab>
-        <v-tab v-if="user.can('page:metrics')" value="metrics" @click="aside = ''">
-          {{ $gettext('Metrics') }}
-        </v-tab>
         <v-tab v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key" @click="aside = ''">
           {{ label(sp) }}
         </v-tab>
@@ -748,10 +743,6 @@ export default {
             @update:aside="asidePage = $event"
             @error="errors.page = $event"
           />
-        </v-window-item>
-
-        <v-window-item v-if="user.can('page:metrics')" value="metrics">
-          <PageDetailMetrics ref="metrics" :item="item" />
         </v-window-item>
 
         <v-window-item v-for="(sp, key) in subpanels" :key="key" :value="'ext-' + key">

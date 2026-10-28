@@ -36,9 +36,6 @@ class CmsServer extends Server
         \Aimeos\Cms\Tools\GetPage::class,
         \Aimeos\Cms\Tools\GetPageTree::class,
         \Aimeos\Cms\Tools\GetPageHistory::class,
-        \Aimeos\Cms\Tools\GetPageMetrics::class,
-        \Aimeos\Cms\Tools\GetKeywordVolume::class,
-        \Aimeos\Cms\Tools\GetRelatedKeywords::class,
         \Aimeos\Cms\Tools\SearchPages::class,
 
         // Read tools - Elements
@@ -95,13 +92,25 @@ class CmsServer extends Server
      */
     public static function register( array $tools ) : void
     {
-        static::$registered = array_merge( static::$registered, $tools );
+        // service providers register their tools again for each new application instance, e.g. in tests
+        static::$registered = array_values( array_unique( array_merge( static::$registered, $tools ) ) );
+    }
+
+
+    /**
+     * Returns the CMS tools including the ones registered by other packages.
+     *
+     * @return array<int, class-string<\Laravel\Mcp\Server\Tool>>
+     */
+    public static function tools() : array
+    {
+        return array_values( array_unique( array_merge( self::TOOLS, static::$registered ) ) );
     }
 
 
     protected function boot() : void
     {
-        $this->tools = array_merge( $this->tools, static::$registered );
+        $this->tools = static::tools();
 
         // Tag content changes made through MCP tools as 'mcp' for the audit log.
         Watch::source( 'mcp' );

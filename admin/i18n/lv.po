@@ -355,7 +355,7 @@ msgid "Configuration"
 msgstr "Konfigurācija"
 
 #: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:691
+#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Saturs"
 
@@ -594,7 +594,7 @@ msgstr[2] "Lietot atlasītos rekvizītus %{num} ierakstiem."
 #: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
 #: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
 #: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:619
+#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Valoda"
 
@@ -667,7 +667,7 @@ msgstr "Atkārtoti ielādēt elementus"
 #: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
 #: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
 #: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:661
+#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Tulkot"
 
@@ -1211,7 +1211,7 @@ msgid "Current changes"
 msgstr "Pašreizējās izmaiņas"
 
 #: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:513
+#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Ieplānots %{date}"
 
@@ -1555,7 +1555,7 @@ msgid "Clear cache"
 msgstr "Notīrīt kešatmiņu"
 
 #: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:664
+#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorēt izmaiņas"
 
@@ -1742,144 +1742,8 @@ msgstr "Šis elements jau ir pievienots"
 msgid "Remove content element"
 msgstr "Noņemt satura elementu"
 
-#: js/components/PageDetailMetrics.vue:99
-msgid "Views & Visits"
-msgstr "Skatījumi un apmeklējumi"
-
-#: js/components/PageDetailMetrics.vue:101
-msgid "Views"
-msgstr "Skatījumi"
-
-#: js/components/PageDetailMetrics.vue:102
-msgid "Visits"
-msgstr "Apmeklējumi"
-
-#: js/components/PageDetailMetrics.vue:103
-#: js/components/PageDetailMetrics.vue:142
-msgid "Conversions"
-msgstr "Reklāmguvumi"
-
-#: js/components/PageDetailMetrics.vue:107
-msgid "Visit Durations (minutes)"
-msgstr "Apmeklējuma ilgums (minūtēs)"
-
-#: js/components/PageDetailMetrics.vue:108
-msgid "Duration"
-msgstr "Ilgums"
-
-#: js/components/PageDetailMetrics.vue:111
-msgid "Google Search: Impressions & Clicks"
-msgstr "Google meklēšana: parādījumi un klikšķi"
-
-#: js/components/PageDetailMetrics.vue:113
-#: js/components/PageDetailMetrics.vue:415
-msgid "Impressions"
-msgstr "Parādījumi"
-
-#: js/components/PageDetailMetrics.vue:114
-#: js/components/PageDetailMetrics.vue:416
-msgid "Clicks"
-msgstr "Klikšķi"
-
-#: js/components/PageDetailMetrics.vue:118
-msgid "Google Search: Click-through rate"
-msgstr "Google meklēšana: vidējais klikšķu skaits"
-
-#: js/components/PageDetailMetrics.vue:119
-msgid "Percentage"
-msgstr "Procentuālā daļa"
-
-#: js/components/PageDetailMetrics.vue:139
-msgid "Page Views"
-msgstr "Lapas skatījumi"
-
-#: js/components/PageDetailMetrics.vue:140
-msgid "Page Visits"
-msgstr "Lapas apmeklējumi"
-
-#: js/components/PageDetailMetrics.vue:143
-msgid "Visit Duration (minutes)"
-msgstr "Apmeklējuma ilgums (minūtes)"
-
-#: js/components/PageDetailMetrics.vue:144
-msgid "Google Impressions"
-msgstr "Google parādījumi"
-
-#: js/components/PageDetailMetrics.vue:145
-msgid "Google Clicks"
-msgstr "Google klikšķi"
-
-#: js/components/PageDetailMetrics.vue:146
-msgid "Google click-through rate"
-msgstr "Google vidējais klikšķu skaits"
-
-#: js/components/PageDetailMetrics.vue:152
-msgid "Round trip time"
-msgstr "Pieprasījuma un atbildes laiks"
-
-#: js/components/PageDetailMetrics.vue:153
-msgid "Time to first byte"
-msgstr "Laiks līdz pirmajam baitam"
-
-#: js/components/PageDetailMetrics.vue:154
-msgid "First contentful paint"
-msgstr "Pirmā satura atveide"
-
-#: js/components/PageDetailMetrics.vue:155
-msgid "Largest contentful paint"
-msgstr "Lielākā satura atveide"
-
-#: js/components/PageDetailMetrics.vue:156
-msgid "Interaction to next paint"
-msgstr "Mijiedarbība līdz nākamajai atveidei"
-
-#: js/components/PageDetailMetrics.vue:157
-msgid "Cumulative layout shift"
-msgstr "Kumulatīvā izkārtojuma maiņa"
-
-#: js/components/PageDetailMetrics.vue:238
-msgid "Error fetching metrics"
-msgstr "Kļūda, iegūstot statistiku"
-
-#: js/components/PageDetailMetrics.vue:260
-msgid "Page metrics"
-msgstr "Lapas metrikas"
-
-#: js/components/PageDetailMetrics.vue:266
-msgid "Days"
-msgstr "Dienas"
-
-#: js/components/PageDetailMetrics.vue:293
-msgid "Weekly Insights"
-msgstr "Iknedēļas ieskats"
-
-#: js/components/PageDetailMetrics.vue:325
-msgid "Referrers"
-msgstr "Novirzīšanas avoti"
-
-#: js/components/PageDetailMetrics.vue:368
-msgid "Countries"
-msgstr "Valstis"
-
-#: js/components/PageDetailMetrics.vue:384
-msgid "Page Speed"
-msgstr "Lapas ātrums"
-
-#: js/components/PageDetailMetrics.vue:409
-msgid "Google Search: Queries"
-msgstr "Google meklēšana: vaicājumi"
-
-#: js/components/PageDetailMetrics.vue:417
-msgid "Percent"
-msgstr "Procenti"
-
-#: js/components/PageDetailMetrics.vue:418
-msgctxt "search ranking"
-msgid "Position"
-msgstr "Pozīcija"
-
 #: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:646 js/views/PageList.vue:150
+#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Nepieciešams atjauninājums"
 
@@ -1891,7 +1755,7 @@ msgstr "Trūkst"
 msgid "AI draft"
 msgstr "AI melnraksts"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:645
+#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Aktuāls"
 
@@ -1971,7 +1835,7 @@ msgstr "Pārslēgt bērnu mezglus"
 msgid "Hidden in navigation"
 msgstr "Slēpts navigācijā"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:648
+#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Izveidot"
 
@@ -2248,23 +2112,23 @@ msgstr "Lapa publicēta veiksmīgi"
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Lapa ieplānota publicēšanai %{date}"
 
-#: js/detail.js:61 js/pageactions.js:82
+#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Kļūda, publicējot lapu"
 
-#: js/detail.js:310
+#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Nav publicēts, lūdzu, pārskatiet izmaiņas un publicējiet vēlreiz"
 
-#: js/detail.js:380 js/fields/Autocomplete.vue:209
+#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Dati nav pieejami"
 
-#: js/detail.js:381
+#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nav pieejami versijas dati"
 
-#: js/detail.js:475
+#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Ir nederīgi lauki, lūdzu, vispirms novērsiet kļūdas"
 
@@ -2496,50 +2360,50 @@ msgstr "Atspējots"
 msgid "Enabled"
 msgstr "Iespējots"
 
-#: js/pageactions.js:125 js/pageactions.js:373 js/views/PageDetail.vue:574
+#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Kļūda, saglabājot lapu"
 
-#: js/pageactions.js:137
+#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Lapas tiek dzēstas kā veselas lapas tikai to avota valodā"
 
-#: js/pageactions.js:142
+#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Kļūda, pārvietojot lapu uz atkritni"
 
-#: js/pageactions.js:167 js/variants.js:178
+#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Kļūda, atjaunojot valodu"
 
-#: js/pageactions.js:167 js/pageactions.js:183
+#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Kļūda, atjaunojot lapu"
 
-#: js/pageactions.js:209
+#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Arī visas šo lapu apakšlapas tiks neatgriezeniski dzēstas."
 
-#: js/pageactions.js:218
+#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Kļūda, neatgriezeniski dzēšot lapu"
 
-#: js/pageactions.js:252
+#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Kešatmiņa notīrīta"
 
-#: js/pageactions.js:253
+#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Kešatmiņa notīrīta %{num} lapai."
 msgstr[1] "Kešatmiņa notīrīta %{num} lapām."
 msgstr[2] "Kešatmiņa notīrīta %{num} lapām."
 
-#: js/pageactions.js:263
+#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Kļūda, notīrot kešatmiņu"
 
-#: js/pageactions.js:362
+#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} lapu nevarēja atjaunināt"
@@ -2566,7 +2430,7 @@ msgstr "Pēc"
 msgid "Error inserting page"
 msgstr "Kļūda, ievietojot lapu"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:232
+#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Kļūda, ielādējot lapu"
 
@@ -2935,7 +2799,7 @@ msgstr "Piekļuve liegta"
 msgid "Error: %{msg}"
 msgstr "Kļūda: %{msg}"
 
-#: js/views/PageDetail.vue:508 js/views/PageDetail.vue:672
+#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2943,35 +2807,31 @@ msgstr ""
 "Novērtē šo lapu katrā jomā no 1 līdz 10 (satura kvalitāte, lasāmība, SEO, "
 "UX, iesaiste) un iesaki uzlabojumus"
 
-#: js/views/PageDetail.vue:515
+#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Lūdzu, uzgaidiet, līdz valoda tiek pārslēgta"
 
-#: js/views/PageDetail.vue:564
+#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Lapa veiksmīgi saglabāta"
 
-#: js/views/PageDetail.vue:616 js/views/PageDetail.vue:679
-#: js/views/PageDetail.vue:698
+#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
+#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Lapa"
 
-#: js/views/PageDetail.vue:643
+#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Avots"
 
-#: js/views/PageDetail.vue:647
+#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Atkritnē"
 
-#: js/views/PageDetail.vue:684
+#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Redaktors"
-
-#: js/views/PageDetail.vue:701
-msgid "Metrics"
-msgstr "Metrikas"
 
 #: js/views/PageList.vue:115
 msgid "view"
@@ -3008,3 +2868,106 @@ msgid ""
 msgstr ""
 "AI var izveidot lapu un saturu, pamatojoties uz jūsu ievadītajiem datiem, un "
 "pievienot to lapu kokam"
+
+#~ msgid "Views & Visits"
+#~ msgstr "Skatījumi un apmeklējumi"
+
+#~ msgid "Views"
+#~ msgstr "Skatījumi"
+
+#~ msgid "Visits"
+#~ msgstr "Apmeklējumi"
+
+#~ msgid "Conversions"
+#~ msgstr "Reklāmguvumi"
+
+#~ msgid "Visit Durations (minutes)"
+#~ msgstr "Apmeklējuma ilgums (minūtēs)"
+
+#~ msgid "Duration"
+#~ msgstr "Ilgums"
+
+#~ msgid "Google Search: Impressions & Clicks"
+#~ msgstr "Google meklēšana: parādījumi un klikšķi"
+
+#~ msgid "Impressions"
+#~ msgstr "Parādījumi"
+
+#~ msgid "Clicks"
+#~ msgstr "Klikšķi"
+
+#~ msgid "Google Search: Click-through rate"
+#~ msgstr "Google meklēšana: vidējais klikšķu skaits"
+
+#~ msgid "Percentage"
+#~ msgstr "Procentuālā daļa"
+
+#~ msgid "Page Views"
+#~ msgstr "Lapas skatījumi"
+
+#~ msgid "Page Visits"
+#~ msgstr "Lapas apmeklējumi"
+
+#~ msgid "Visit Duration (minutes)"
+#~ msgstr "Apmeklējuma ilgums (minūtes)"
+
+#~ msgid "Google Impressions"
+#~ msgstr "Google parādījumi"
+
+#~ msgid "Google Clicks"
+#~ msgstr "Google klikšķi"
+
+#~ msgid "Google click-through rate"
+#~ msgstr "Google vidējais klikšķu skaits"
+
+#~ msgid "Round trip time"
+#~ msgstr "Pieprasījuma un atbildes laiks"
+
+#~ msgid "Time to first byte"
+#~ msgstr "Laiks līdz pirmajam baitam"
+
+#~ msgid "First contentful paint"
+#~ msgstr "Pirmā satura atveide"
+
+#~ msgid "Largest contentful paint"
+#~ msgstr "Lielākā satura atveide"
+
+#~ msgid "Interaction to next paint"
+#~ msgstr "Mijiedarbība līdz nākamajai atveidei"
+
+#~ msgid "Cumulative layout shift"
+#~ msgstr "Kumulatīvā izkārtojuma maiņa"
+
+#~ msgid "Error fetching metrics"
+#~ msgstr "Kļūda, iegūstot statistiku"
+
+#~ msgid "Page metrics"
+#~ msgstr "Lapas metrikas"
+
+#~ msgid "Days"
+#~ msgstr "Dienas"
+
+#~ msgid "Weekly Insights"
+#~ msgstr "Iknedēļas ieskats"
+
+#~ msgid "Referrers"
+#~ msgstr "Novirzīšanas avoti"
+
+#~ msgid "Countries"
+#~ msgstr "Valstis"
+
+#~ msgid "Page Speed"
+#~ msgstr "Lapas ātrums"
+
+#~ msgid "Google Search: Queries"
+#~ msgstr "Google meklēšana: vaicājumi"
+
+#~ msgid "Percent"
+#~ msgstr "Procenti"
+
+#~ msgctxt "search ranking"
+#~ msgid "Position"
+#~ msgstr "Pozīcija"
+
+#~ msgid "Metrics"
+#~ msgstr "Metrikas"

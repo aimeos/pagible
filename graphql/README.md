@@ -1,6 +1,6 @@
 # Pagible GraphQL
 
-GraphQL API for [Pagible CMS](https://pagible.com) built on Lighthouse. Provides full CRUD for pages, elements, files, and metrics.
+GraphQL API for [Pagible CMS](https://pagible.com) built on Lighthouse. Provides full CRUD for pages, elements, and files.
 
 This package is part of the [Pagible CMS monorepo](https://github.com/aimeos/pagible). For full installation, use:
 

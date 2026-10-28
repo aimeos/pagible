@@ -1,4 +1,4 @@
-import { QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, ranked, rating, signed, sortedByValue, timeline, toMinutes, toPercent, weeklySum } from '../../../js/metrics'
+import { QUERY_PAGE_SIZE, apiError, compact, insightValue, paginate, ranked, rating, signed, sortedByValue, timeline, toMinutes, toPercent, weeklySum } from '../../../src/metrics'
 
 describe('metrics', () => {
   it('extracts the message of JSON encoded API errors', () => {
