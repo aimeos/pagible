@@ -17,6 +17,7 @@ describe('pluginUi', () => {
     'VCol',
     'VCombobox',
     'VContainer',
+    'VDataTable',
     'VDialog',
     'VDivider',
     'VFileInput',

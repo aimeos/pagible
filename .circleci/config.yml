@@ -390,9 +390,17 @@ jobs:
           paths:
             - ~/.npm
             - ~/.cache/Cypress
+      # pre-bundled Vite dependencies, a cold cache can re-bundle mid-run and fail loading a spec
+      - restore_cache:
+          keys:
+            - admin-vite-{{ checksum "../package-lock.json" }}-{{ checksum "vite.config.js" }}
       - run:
           name: Run component tests
           command: npx cypress run --component --spec "$SPECS"
+      - save_cache:
+          key: admin-vite-{{ checksum "../package-lock.json" }}-{{ checksum "vite.config.js" }}
+          paths:
+            - node_modules/.vite
 
   "admin-e2e":
     docker:
