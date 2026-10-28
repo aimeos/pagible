@@ -13,43 +13,34 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "(n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Slaptasis raktas nukopijuotas"
 
-#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Nepavyko nukopijuoti slaptojo rakto"
 
-#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Webhooko slaptasis raktas"
 
-#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Redaguoti webhooką"
 
-#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Pridėti webhooką"
 
-#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Nukopijuokite šį slaptąjį raktą dabar. Jis daugiau nebus rodomas."
 
-#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
-#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktyvus"
 
-#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
@@ -57,27 +48,22 @@ msgstr ""
 "Neaktyvūs webhookai negauna jokių įvykių, o jų laukiantys pristatymai "
 "atmetami"
 
-#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "HTTPS galinio taško URL"
 
-#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr "Adresas, gaunantis pasirašytus įvykius, vėliau negali būti keičiamas"
 
-#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Netinkamas URL adresas"
 
-#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Įvykiai"
 
-#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
@@ -85,12 +71,10 @@ msgstr ""
 "Webhookui siunčiami įvykiai, pašalintų įvykių laukiantys pristatymai "
 "atšaukiami"
 
-#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Pavadinimas"
 
-#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -99,104 +83,86 @@ msgstr ""
 "Neprivalomas pavadinimas, skiriantis vienodą galinį tašką turinčius "
 "webhookus, matomas visiems webhookų redaktoriams"
 
-#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testuoti"
 
-#: src/components/WebhookDialog.vue:209
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Atlikta"
 
-#: src/components/WebhookDialog.vue:212
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopijuoti slaptąjį raktą"
 
-#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Atšaukti"
 
-#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Išsaugoti"
 
-#: src/strings.js:9
 msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhookai"
 
-#: src/views/WebhookList.vue:102
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr "Webhookai išjungti serverio konfigūracijoje, įvykiai nesiunčiami"
 
-#: src/views/WebhookList.vue:109
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration: %{reason}"
 msgstr "Visi pristatymai užblokuoti serverio konfigūracijoje: %{reason}"
 
-#: src/views/WebhookList.vue:139
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Statusas"
 
-#: src/views/WebhookList.vue:143
 msgctxt "webhooks"
 msgid "All"
 msgstr "Visi"
 
-#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Neaktyvus"
 
-#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "None"
 msgstr "Nėra"
 
-#: src/views/WebhookList.vue:213
 msgctxt "webhooks"
 msgid "%{reason} · %{date}"
 msgstr "%{reason} · %{date}"
 
-#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Klaida gaunant webhookus"
 
-#: src/views/WebhookList.vue:295
 msgctxt "webhooks"
 msgid "Test event delivered (%{status})"
 msgstr "Bandomasis įvykis pristatytas (%{status})"
 
-#: src/views/WebhookList.vue:302
 msgctxt "webhooks"
 msgid "Test event failed: %{reason}"
 msgstr "Bandomasis įvykis nepavyko: %{reason}"
 
-#: src/views/WebhookList.vue:309
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Bandomasis įvykis nepavyko"
 
-#: src/views/WebhookList.vue:349
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Klaida visam laikui trinant webhooką"
 
-#: src/views/WebhookList.vue:378
 msgctxt "webhooks"
 msgid ""
 "The new webhook secret could not be shown after leaving the page, please "
 "rotate it to get a new one"
-msgstr "Naujos webhook paslapties nepavyko parodyti išėjus iš puslapio, atnaujinkite ją, kad gautumėte naują"
+msgstr ""
+"Naujos webhook paslapties nepavyko parodyti išėjus iš puslapio, atnaujinkite "
+"ją, kad gautumėte naują"
 
-#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -205,138 +171,110 @@ msgstr ""
 "Pakeisti šio webhooko slaptąjį raktą? Gavėjams reikės nurodyti naują "
 "slaptąjį raktą."
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Pakeisti"
 
-#: src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Klaida keičiant webhooko slaptąjį raktą"
 
-#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Klaida išsaugant webhooką"
 
-#: src/views/WebhookList.vue:483
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Siųsti pasirašytus pranešimus, kai pasikeičia paskelbtas turinys."
 
-#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Perjungti pasirinkimą"
 
-#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Purge (%{count})"
 msgstr "Ištrinti visam laikui (%{count})"
 
-#: src/views/WebhookList.vue:538
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Ieškoti"
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Atnaujinti"
 
-#: src/views/WebhookList.vue:587
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Redaguoti"
 
-#: src/views/WebhookList.vue:607
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Ištrinti visam laikui"
 
-#: src/views/WebhookList.vue:647
 msgctxt "webhooks"
 msgid "Last success: %{date}"
 msgstr "Paskutinis sėkmingas bandymas: %{date}"
 
-#: src/views/WebhookList.vue:654
 msgctxt "webhooks"
 msgid "Last error: %{reason}"
 msgstr "Paskutinė klaida: %{reason}"
 
-#: src/views/WebhookList.vue:666
 msgctxt "webhooks"
 msgid "Paused until: %{date}"
 msgstr "Pristabdyta iki: %{date}"
 
-#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Įkeliama"
 
-#: src/views/WebhookList.vue:690
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Įrašų nerasta"
 
-#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Webhookai nesukonfigūruoti."
 
-#: src/webhooks.js:19
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Prisijungti nepavyko"
 
-#: src/webhooks.js:20
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Prieiga uždrausta"
 
-#: src/webhooks.js:21
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Nepavyksta iššifruoti slaptojo rakto, pakeiskite jį"
 
-#: src/webhooks.js:22
 msgctxt "webhooks"
 msgid "Invalid list of denied networks"
 msgstr "Neteisingas draudžiamų tinklų sąrašas"
 
-#: src/webhooks.js:23 src/webhooks.js:25
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Eilė nepasiekiama"
 
-#: src/webhooks.js:26
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Serveris nerastas"
 
-#: src/webhooks.js:27
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Atsakymas per didelis"
 
-#: src/webhooks.js:28
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Baigėsi užklausos laikas"
 
-#: src/webhooks.js:33
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Peradresavimai nevykdomi"
 
-#: src/webhooks.js:34
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Pristatymas nepavyko"
 
-#: src/webhooks.js:37
 msgctxt "webhooks"
 msgid "%{reason} (%{status})"
 msgstr "%{reason} (%{status})"
-

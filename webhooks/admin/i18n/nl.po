@@ -12,43 +12,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Geheim gekopieerd"
 
-#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Kan het geheim niet kopiëren"
 
-#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Webhookgeheim"
 
-#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Webhook bewerken"
 
-#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Webhook toevoegen"
 
-#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Kopieer dit geheim nu. Het wordt niet opnieuw weergegeven."
 
-#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
-#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Actief"
 
-#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
@@ -56,29 +47,24 @@ msgstr ""
 "Inactieve webhooks ontvangen geen gebeurtenissen en hun wachtende "
 "bezorgingen worden verwijderd"
 
-#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL van HTTPS-eindpunt"
 
-#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr ""
 "Adres dat de ondertekende gebeurtenissen ontvangt, kan later niet meer "
 "worden gewijzigd"
 
-#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Geen geldige URL"
 
-#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Gebeurtenissen"
 
-#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
@@ -86,12 +72,10 @@ msgstr ""
 "Gebeurtenissen die naar de webhook worden gestuurd, wachtende bezorgingen "
 "van verwijderde gebeurtenissen worden geannuleerd"
 
-#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Naam"
 
-#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -100,107 +84,89 @@ msgstr ""
 "Optionele naam om webhooks met hetzelfde eindpunt te onderscheiden, "
 "zichtbaar voor alle webhookbeheerders"
 
-#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Testen"
 
-#: src/components/WebhookDialog.vue:209
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Klaar"
 
-#: src/components/WebhookDialog.vue:212
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Geheim kopiëren"
 
-#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Opslaan"
 
-#: src/strings.js:9
 msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: src/views/WebhookList.vue:102
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "Webhooks zijn uitgeschakeld door de serverconfiguratie, er worden geen "
 "gebeurtenissen verzonden"
 
-#: src/views/WebhookList.vue:109
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration: %{reason}"
 msgstr ""
 "Alle bezorgingen worden geblokkeerd door de serverconfiguratie: %{reason}"
 
-#: src/views/WebhookList.vue:139
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Status"
 
-#: src/views/WebhookList.vue:143
 msgctxt "webhooks"
 msgid "All"
 msgstr "Alle"
 
-#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Inactief"
 
-#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "None"
 msgstr "Geen"
 
-#: src/views/WebhookList.vue:213
 msgctxt "webhooks"
 msgid "%{reason} · %{date}"
 msgstr "%{reason} · %{date}"
 
-#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Fout bij het ophalen van webhooks"
 
-#: src/views/WebhookList.vue:295
 msgctxt "webhooks"
 msgid "Test event delivered (%{status})"
 msgstr "Testgebeurtenis bezorgd (%{status})"
 
-#: src/views/WebhookList.vue:302
 msgctxt "webhooks"
 msgid "Test event failed: %{reason}"
 msgstr "Testgebeurtenis mislukt: %{reason}"
 
-#: src/views/WebhookList.vue:309
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Testgebeurtenis mislukt"
 
-#: src/views/WebhookList.vue:349
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Fout bij het definitief verwijderen van de webhook"
 
-#: src/views/WebhookList.vue:378
 msgctxt "webhooks"
 msgid ""
 "The new webhook secret could not be shown after leaving the page, please "
 "rotate it to get a new one"
-msgstr "Het nieuwe webhookgeheim kon na het verlaten van de pagina niet worden getoond, vernieuw het om een nieuw te krijgen"
+msgstr ""
+"Het nieuwe webhookgeheim kon na het verlaten van de pagina niet worden "
+"getoond, vernieuw het om een nieuw te krijgen"
 
-#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -209,139 +175,111 @@ msgstr ""
 "Het geheim van deze webhook vervangen? Ontvangers moeten worden bijgewerkt "
 "met het nieuwe geheim."
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Vervangen"
 
-#: src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Fout bij het vervangen van het webhookgeheim"
 
-#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Fout bij het opslaan van de webhook"
 
-#: src/views/WebhookList.vue:483
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr ""
 "Verstuur ondertekende meldingen wanneer gepubliceerde inhoud verandert."
 
-#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Selectie wijzigen"
 
-#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Purge (%{count})"
 msgstr "Definitief verwijderen (%{count})"
 
-#: src/views/WebhookList.vue:538
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Zoeken naar"
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Vernieuwen"
 
-#: src/views/WebhookList.vue:587
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Bewerk"
 
-#: src/views/WebhookList.vue:607
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Definitief verwijderen"
 
-#: src/views/WebhookList.vue:647
 msgctxt "webhooks"
 msgid "Last success: %{date}"
 msgstr "Laatste succes: %{date}"
 
-#: src/views/WebhookList.vue:654
 msgctxt "webhooks"
 msgid "Last error: %{reason}"
 msgstr "Laatste fout: %{reason}"
 
-#: src/views/WebhookList.vue:666
 msgctxt "webhooks"
 msgid "Paused until: %{date}"
 msgstr "Gepauzeerd tot: %{date}"
 
-#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Laden"
 
-#: src/views/WebhookList.vue:690
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Geen items gevonden"
 
-#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Geen webhooks geconfigureerd."
 
-#: src/webhooks.js:19
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Verbinding mislukt"
 
-#: src/webhooks.js:20
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Toegang geweigerd"
 
-#: src/webhooks.js:21
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Geheim kan niet worden ontsleuteld, vervang het"
 
-#: src/webhooks.js:22
 msgctxt "webhooks"
 msgid "Invalid list of denied networks"
 msgstr "Ongeldige lijst met geweigerde netwerken"
 
-#: src/webhooks.js:23 src/webhooks.js:25
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Wachtrij niet beschikbaar"
 
-#: src/webhooks.js:26
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Host niet gevonden"
 
-#: src/webhooks.js:27
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Antwoord te groot"
 
-#: src/webhooks.js:28
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Time-out van verzoek"
 
-#: src/webhooks.js:33
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Omleidingen worden niet gevolgd"
 
-#: src/webhooks.js:34
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Bezorging mislukt"
 
-#: src/webhooks.js:37
 msgctxt "webhooks"
 msgid "%{reason} (%{status})"
 msgstr "%{reason} (%{status})"
-

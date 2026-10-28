@@ -1,182 +1,145 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: zh\n"
 "MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/components/PageDetailMetrics.vue:98
 msgctxt "metrics"
 msgid "Views & Visits"
 msgstr "浏览量和访问量"
 
-#: src/components/PageDetailMetrics.vue:100
 msgctxt "metrics"
 msgid "Views"
 msgstr "浏览量"
 
-#: src/components/PageDetailMetrics.vue:101
 msgctxt "metrics"
 msgid "Visits"
 msgstr "访问次数"
 
-#: src/components/PageDetailMetrics.vue:102
-#: src/components/PageDetailMetrics.vue:141
 msgctxt "metrics"
 msgid "Conversions"
 msgstr "转化次数"
 
-#: src/components/PageDetailMetrics.vue:106
 msgctxt "metrics"
 msgid "Visit Durations (minutes)"
 msgstr "访问时长（分钟）"
 
-#: src/components/PageDetailMetrics.vue:107
 msgctxt "metrics"
 msgid "Duration"
 msgstr "持续时间"
 
-#: src/components/PageDetailMetrics.vue:110
 msgctxt "metrics"
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google 搜索：展示次数和点击次数"
 
-#: src/components/PageDetailMetrics.vue:112
-#: src/components/PageDetailMetrics.vue:414
 msgctxt "metrics"
 msgid "Impressions"
 msgstr "展示次数"
 
-#: src/components/PageDetailMetrics.vue:113
-#: src/components/PageDetailMetrics.vue:415
 msgctxt "metrics"
 msgid "Clicks"
 msgstr "点击次数"
 
-#: src/components/PageDetailMetrics.vue:117
 msgctxt "metrics"
 msgid "Google Search: Click-through rate"
 msgstr "Google 搜索：点击率"
 
-#: src/components/PageDetailMetrics.vue:118
 msgctxt "metrics"
 msgid "Percentage"
 msgstr "百分比"
 
-#: src/components/PageDetailMetrics.vue:138
 msgctxt "metrics"
 msgid "Page Views"
 msgstr "页面浏览量"
 
-#: src/components/PageDetailMetrics.vue:139
 msgctxt "metrics"
 msgid "Page Visits"
 msgstr "页面访问量"
 
-#: src/components/PageDetailMetrics.vue:142
 msgctxt "metrics"
 msgid "Visit Duration (minutes)"
 msgstr "访问时长（分钟）"
 
-#: src/components/PageDetailMetrics.vue:143
 msgctxt "metrics"
 msgid "Google Impressions"
 msgstr "Google 展示次数"
 
-#: src/components/PageDetailMetrics.vue:144
 msgctxt "metrics"
 msgid "Google Clicks"
 msgstr "Google 点击次数"
 
-#: src/components/PageDetailMetrics.vue:145
 msgctxt "metrics"
 msgid "Google click-through rate"
 msgstr "Google 点击率"
 
-#: src/components/PageDetailMetrics.vue:151
 msgctxt "metrics"
 msgid "Round trip time"
 msgstr "往返时间"
 
-#: src/components/PageDetailMetrics.vue:152
 msgctxt "metrics"
 msgid "Time to first byte"
 msgstr "首字节时间"
 
-#: src/components/PageDetailMetrics.vue:153
 msgctxt "metrics"
 msgid "First contentful paint"
 msgstr "首次内容绘制"
 
-#: src/components/PageDetailMetrics.vue:154
 msgctxt "metrics"
 msgid "Largest contentful paint"
 msgstr "最大内容绘制"
 
-#: src/components/PageDetailMetrics.vue:155
 msgctxt "metrics"
 msgid "Interaction to next paint"
 msgstr "与下一次绘制的交互"
 
-#: src/components/PageDetailMetrics.vue:156
 msgctxt "metrics"
 msgid "Cumulative layout shift"
 msgstr "累积布局偏移"
 
-#: src/components/PageDetailMetrics.vue:237
 msgctxt "metrics"
 msgid "Error fetching metrics"
 msgstr "获取统计数据时出错"
 
-#: src/components/PageDetailMetrics.vue:259
 msgctxt "metrics"
 msgid "Page metrics"
 msgstr "页面指标"
 
-#: src/components/PageDetailMetrics.vue:265
 msgctxt "metrics"
 msgid "Days"
 msgstr "天数"
 
-#: src/components/PageDetailMetrics.vue:292
 msgctxt "metrics"
 msgid "Weekly Insights"
 msgstr "每周洞察"
 
-#: src/components/PageDetailMetrics.vue:324
 msgctxt "metrics"
 msgid "Referrers"
 msgstr "引荐来源"
 
-#: src/components/PageDetailMetrics.vue:367
 msgctxt "metrics"
 msgid "Countries"
 msgstr "国家"
 
-#: src/components/PageDetailMetrics.vue:383
 msgctxt "metrics"
 msgid "Page Speed"
 msgstr "页面速度"
 
-#: src/components/PageDetailMetrics.vue:408
 msgctxt "metrics"
 msgid "Google Search: Queries"
 msgstr "Google 搜索：查询"
 
-#: src/components/PageDetailMetrics.vue:416
 msgctxt "metrics"
 msgid "Percent"
 msgstr "百分比"
 
-#: src/components/PageDetailMetrics.vue:417
 msgctxt "search ranking"
 msgid "Position"
 msgstr ""
 
-#: src/strings.js:9
 msgctxt "metrics"
 msgid "Metrics"
 msgstr "指标"

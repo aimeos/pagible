@@ -1,183 +1,146 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: src/components/PageDetailMetrics.vue:98
 msgctxt "metrics"
 msgid "Views & Visits"
 msgstr "조회수 및 방문 수"
 
-#: src/components/PageDetailMetrics.vue:100
 msgctxt "metrics"
 msgid "Views"
 msgstr "조회수"
 
-#: src/components/PageDetailMetrics.vue:101
 msgctxt "metrics"
 msgid "Visits"
 msgstr "방문 수"
 
-#: src/components/PageDetailMetrics.vue:102
-#: src/components/PageDetailMetrics.vue:141
 msgctxt "metrics"
 msgid "Conversions"
 msgstr "전환"
 
-#: src/components/PageDetailMetrics.vue:106
 msgctxt "metrics"
 msgid "Visit Durations (minutes)"
 msgstr "방문 시간(분)"
 
-#: src/components/PageDetailMetrics.vue:107
 msgctxt "metrics"
 msgid "Duration"
 msgstr "체류 시간"
 
-#: src/components/PageDetailMetrics.vue:110
 msgctxt "metrics"
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google 검색: 노출 및 클릭 수"
 
-#: src/components/PageDetailMetrics.vue:112
-#: src/components/PageDetailMetrics.vue:414
 msgctxt "metrics"
 msgid "Impressions"
 msgstr "노출 수"
 
-#: src/components/PageDetailMetrics.vue:113
-#: src/components/PageDetailMetrics.vue:415
 msgctxt "metrics"
 msgid "Clicks"
 msgstr "클릭 수"
 
-#: src/components/PageDetailMetrics.vue:117
 msgctxt "metrics"
 msgid "Google Search: Click-through rate"
 msgstr "Google 검색: 클릭률"
 
-#: src/components/PageDetailMetrics.vue:118
 msgctxt "metrics"
 msgid "Percentage"
 msgstr "백분율"
 
-#: src/components/PageDetailMetrics.vue:138
 msgctxt "metrics"
 msgid "Page Views"
 msgstr "페이지 조회수"
 
-#: src/components/PageDetailMetrics.vue:139
 msgctxt "metrics"
 msgid "Page Visits"
 msgstr "페이지 방문 수"
 
-#: src/components/PageDetailMetrics.vue:142
 msgctxt "metrics"
 msgid "Visit Duration (minutes)"
 msgstr "방문 시간(분)"
 
-#: src/components/PageDetailMetrics.vue:143
 msgctxt "metrics"
 msgid "Google Impressions"
 msgstr "Google 노출 수"
 
-#: src/components/PageDetailMetrics.vue:144
 msgctxt "metrics"
 msgid "Google Clicks"
 msgstr "Google 클릭 수"
 
-#: src/components/PageDetailMetrics.vue:145
 msgctxt "metrics"
 msgid "Google click-through rate"
 msgstr "Google 클릭률"
 
-#: src/components/PageDetailMetrics.vue:151
 msgctxt "metrics"
 msgid "Round trip time"
 msgstr "왕복 시간"
 
-#: src/components/PageDetailMetrics.vue:152
 msgctxt "metrics"
 msgid "Time to first byte"
 msgstr "첫 바이트까지의 시간"
 
-#: src/components/PageDetailMetrics.vue:153
 msgctxt "metrics"
 msgid "First contentful paint"
 msgstr "최초 콘텐츠풀 페인트"
 
-#: src/components/PageDetailMetrics.vue:154
 msgctxt "metrics"
 msgid "Largest contentful paint"
 msgstr "최대 콘텐츠풀 페인트"
 
-#: src/components/PageDetailMetrics.vue:155
 msgctxt "metrics"
 msgid "Interaction to next paint"
 msgstr "다음 페인트에 대한 상호작용"
 
-#: src/components/PageDetailMetrics.vue:156
 msgctxt "metrics"
 msgid "Cumulative layout shift"
 msgstr "누적 레이아웃 이동"
 
-#: src/components/PageDetailMetrics.vue:237
 msgctxt "metrics"
 msgid "Error fetching metrics"
 msgstr "통계를 가져오는 중 오류가 발생했습니다"
 
-#: src/components/PageDetailMetrics.vue:259
 msgctxt "metrics"
 msgid "Page metrics"
 msgstr "페이지 메트릭"
 
-#: src/components/PageDetailMetrics.vue:265
 msgctxt "metrics"
 msgid "Days"
 msgstr "일수"
 
-#: src/components/PageDetailMetrics.vue:292
 msgctxt "metrics"
 msgid "Weekly Insights"
 msgstr "주간 인사이트"
 
-#: src/components/PageDetailMetrics.vue:324
 msgctxt "metrics"
 msgid "Referrers"
 msgstr "리퍼러"
 
-#: src/components/PageDetailMetrics.vue:367
 msgctxt "metrics"
 msgid "Countries"
 msgstr "국가"
 
-#: src/components/PageDetailMetrics.vue:383
 msgctxt "metrics"
 msgid "Page Speed"
 msgstr "페이지 속도"
 
-#: src/components/PageDetailMetrics.vue:408
 msgctxt "metrics"
 msgid "Google Search: Queries"
 msgstr "Google 검색: 쿼리"
 
-#: src/components/PageDetailMetrics.vue:416
 msgctxt "metrics"
 msgid "Percent"
 msgstr "퍼센트"
 
-#: src/components/PageDetailMetrics.vue:417
 msgctxt "search ranking"
 msgid "Position"
 msgstr ""
 
-#: src/strings.js:9
 msgctxt "metrics"
 msgid "Metrics"
 msgstr "메트릭"

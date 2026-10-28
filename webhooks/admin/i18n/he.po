@@ -12,81 +12,65 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "הסוד הועתק"
 
-#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "לא ניתן להעתיק את הסוד"
 
-#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "סוד Webhook"
 
-#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "עריכת Webhook"
 
-#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "הוספת Webhook"
 
-#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "יש להעתיק את הסוד עכשיו. הוא לא יוצג שוב."
 
-#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
-#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
 msgctxt "webhooks"
 msgid "Active"
 msgstr "פעיל"
 
-#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
 msgstr ""
 "רכיבי Webhook לא פעילים אינם מקבלים אירועים והמסירות הממתינות שלהם נמחקות"
 
-#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "כתובת URL של נקודת קצה HTTPS"
 
-#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr "הכתובת המקבלת את האירועים החתומים, לא ניתן לשנות אותה לאחר מכן"
 
-#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "כתובת URL לא חוקית"
 
-#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "אירועים"
 
-#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
 msgstr "אירועים הנשלחים ל-Webhook, מסירות ממתינות של אירועים שהוסרו מבוטלות"
 
-#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "שם"
 
-#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -95,242 +79,196 @@ msgstr ""
 "שם אופציונלי להבחנה בין רכיבי Webhook בעלי אותה נקודת קצה, גלוי לכל עורכי "
 "ה-Webhook"
 
-#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "בדיקה"
 
-#: src/components/WebhookDialog.vue:209
 msgctxt "webhooks"
 msgid "Done"
 msgstr "בוצע"
 
-#: src/components/WebhookDialog.vue:212
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "העתקת הסוד"
 
-#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "ביטול"
 
-#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "שמור"
 
-#: src/strings.js:9
 msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooks"
 
-#: src/views/WebhookList.vue:102
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr "רכיבי Webhook מושבתים על ידי תצורת השרת, לא נשלחים אירועים"
 
-#: src/views/WebhookList.vue:109
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration: %{reason}"
 msgstr "כל המסירות חסומות על ידי תצורת השרת: %{reason}"
 
-#: src/views/WebhookList.vue:139
 msgctxt "webhooks"
 msgid "Status"
 msgstr "סטטוס"
 
-#: src/views/WebhookList.vue:143
 msgctxt "webhooks"
 msgid "All"
 msgstr "הכל"
 
-#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "לא פעיל"
 
-#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "None"
 msgstr "אין"
 
-#: src/views/WebhookList.vue:213
 msgctxt "webhooks"
 msgid "%{reason} · %{date}"
 msgstr "%{reason} · %{date}"
 
-#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "שגיאה באחזור רכיבי Webhook"
 
-#: src/views/WebhookList.vue:295
 msgctxt "webhooks"
 msgid "Test event delivered (%{status})"
 msgstr "אירוע הבדיקה נמסר (%{status})"
 
-#: src/views/WebhookList.vue:302
 msgctxt "webhooks"
 msgid "Test event failed: %{reason}"
 msgstr "אירוע הבדיקה נכשל: %{reason}"
 
-#: src/views/WebhookList.vue:309
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "אירוע הבדיקה נכשל"
 
-#: src/views/WebhookList.vue:349
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "שגיאה במחיקה לצמיתות של Webhook"
 
-#: src/views/WebhookList.vue:378
 msgctxt "webhooks"
 msgid ""
 "The new webhook secret could not be shown after leaving the page, please "
 "rotate it to get a new one"
-msgstr "לא ניתן היה להציג את הסוד החדש של ה-webhook לאחר עזיבת הדף, החליפו אותו כדי לקבל סוד חדש"
+msgstr ""
+"לא ניתן היה להציג את הסוד החדש של ה-webhook לאחר עזיבת הדף, החליפו אותו כדי "
+"לקבל סוד חדש"
 
-#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
 "secret."
 msgstr "להחליף את הסוד של ה-Webhook הזה? יש לעדכן את המקבלים בסוד החדש."
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "החלפת סוד"
 
-#: src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "שגיאה בהחלפת סוד ה-Webhook"
 
-#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "שגיאה בשמירת Webhook"
 
-#: src/views/WebhookList.vue:483
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "שליחת התראות חתומות כאשר תוכן שפורסם משתנה."
 
-#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "החלף בחירה"
 
-#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Purge (%{count})"
 msgstr "מחיקה לצמיתות (%{count})"
 
-#: src/views/WebhookList.vue:538
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "חפש"
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "רענן"
 
-#: src/views/WebhookList.vue:587
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "ערוך"
 
-#: src/views/WebhookList.vue:607
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "מחיקה לצמיתות"
 
-#: src/views/WebhookList.vue:647
 msgctxt "webhooks"
 msgid "Last success: %{date}"
 msgstr "הצלחה אחרונה: %{date}"
 
-#: src/views/WebhookList.vue:654
 msgctxt "webhooks"
 msgid "Last error: %{reason}"
 msgstr "השגיאה האחרונה: %{reason}"
 
-#: src/views/WebhookList.vue:666
 msgctxt "webhooks"
 msgid "Paused until: %{date}"
 msgstr "מושהה עד: %{date}"
 
-#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "טעינה"
 
-#: src/views/WebhookList.vue:690
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "לא נמצאו רשומות"
 
-#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "לא הוגדרו רכיבי Webhook."
 
-#: src/webhooks.js:19
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "החיבור נכשל"
 
-#: src/webhooks.js:20
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "גישה נדחתה"
 
-#: src/webhooks.js:21
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "לא ניתן לפענח את הסוד, יש להחליף אותו"
 
-#: src/webhooks.js:22
 msgctxt "webhooks"
 msgid "Invalid list of denied networks"
 msgstr "רשימת הרשתות החסומות אינה תקינה"
 
-#: src/webhooks.js:23 src/webhooks.js:25
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "התור אינו זמין"
 
-#: src/webhooks.js:26
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "המארח לא נמצא"
 
-#: src/webhooks.js:27
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "התגובה גדולה מדי"
 
-#: src/webhooks.js:28
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "תם הזמן הקצוב לבקשה"
 
-#: src/webhooks.js:33
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "הפניות מחדש אינן נעקבות"
 
-#: src/webhooks.js:34
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "המסירה נכשלה"
 
-#: src/webhooks.js:37
 msgctxt "webhooks"
 msgid "%{reason} (%{status})"
 msgstr "%{reason} (%{status})"
-

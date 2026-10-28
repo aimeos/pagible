@@ -13,43 +13,34 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3);\n"
 
-#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Skrivnost kopirana"
 
-#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Skrivnosti ni mogoče kopirati"
 
-#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Skrivnost webhooka"
 
-#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Uredi webhook"
 
-#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Dodaj webhook"
 
-#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Kopirajte to skrivnost zdaj. Ne bo več prikazana."
 
-#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
-#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktiven"
 
-#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
@@ -57,27 +48,22 @@ msgstr ""
 "Neaktivni webhooki ne prejemajo dogodkov, njihove čakajoče dostave pa se "
 "zavržejo"
 
-#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL končne točke HTTPS"
 
-#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr "Naslov, ki prejema podpisane dogodke; pozneje ga ni mogoče spremeniti"
 
-#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Ni veljaven naslov URL"
 
-#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Dogodki"
 
-#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
@@ -85,12 +71,10 @@ msgstr ""
 "Dogodki, poslani na webhook, čakajoče dostave odstranjenih dogodkov se "
 "prekličejo"
 
-#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Ime"
 
-#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -99,105 +83,87 @@ msgstr ""
 "Neobvezno ime za razlikovanje webhookov z enako končno točko, vidno vsem "
 "urednikom webhookov"
 
-#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Preizkusi"
 
-#: src/components/WebhookDialog.vue:209
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Končano"
 
-#: src/components/WebhookDialog.vue:212
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopiraj skrivnost"
 
-#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Prekliči"
 
-#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Shrani"
 
-#: src/strings.js:9
 msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooki"
 
-#: src/views/WebhookList.vue:102
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "Webhooki so onemogočeni v konfiguraciji strežnika, dogodki se ne pošiljajo"
 
-#: src/views/WebhookList.vue:109
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration: %{reason}"
 msgstr "Vse dostave so blokirane v konfiguraciji strežnika: %{reason}"
 
-#: src/views/WebhookList.vue:139
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Status"
 
-#: src/views/WebhookList.vue:143
 msgctxt "webhooks"
 msgid "All"
 msgstr "Vse"
 
-#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Neaktiven"
 
-#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "None"
 msgstr "Brez"
 
-#: src/views/WebhookList.vue:213
 msgctxt "webhooks"
 msgid "%{reason} · %{date}"
 msgstr "%{reason} · %{date}"
 
-#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Napaka pri pridobivanju webhookov"
 
-#: src/views/WebhookList.vue:295
 msgctxt "webhooks"
 msgid "Test event delivered (%{status})"
 msgstr "Preskusni dogodek dostavljen (%{status})"
 
-#: src/views/WebhookList.vue:302
 msgctxt "webhooks"
 msgid "Test event failed: %{reason}"
 msgstr "Preskusni dogodek ni uspel: %{reason}"
 
-#: src/views/WebhookList.vue:309
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Preskusni dogodek ni uspel"
 
-#: src/views/WebhookList.vue:349
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Napaka pri trajnem brisanju webhooka"
 
-#: src/views/WebhookList.vue:378
 msgctxt "webhooks"
 msgid ""
 "The new webhook secret could not be shown after leaving the page, please "
 "rotate it to get a new one"
-msgstr "Nove skrivnosti spletnega kljuka ni bilo mogoče prikazati po zapustitvi strani, zamenjajte jo, da dobite novo"
+msgstr ""
+"Nove skrivnosti spletnega kljuka ni bilo mogoče prikazati po zapustitvi "
+"strani, zamenjajte jo, da dobite novo"
 
-#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -206,138 +172,110 @@ msgstr ""
 "Želite obnoviti skrivnost tega webhooka? Prejemnike je treba posodobiti z "
 "novo skrivnostjo."
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Obnovi"
 
-#: src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Napaka pri obnovitvi skrivnosti webhooka"
 
-#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Napaka pri shranjevanju webhooka"
 
-#: src/views/WebhookList.vue:483
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Pošiljanje podpisanih obvestil ob spremembi objavljene vsebine."
 
-#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Preklopi izbiro"
 
-#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Purge (%{count})"
 msgstr "Trajno izbriši (%{count})"
 
-#: src/views/WebhookList.vue:538
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Iskanje"
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Osveži"
 
-#: src/views/WebhookList.vue:587
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Uredi"
 
-#: src/views/WebhookList.vue:607
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Trajno izbriši"
 
-#: src/views/WebhookList.vue:647
 msgctxt "webhooks"
 msgid "Last success: %{date}"
 msgstr "Zadnji uspeh: %{date}"
 
-#: src/views/WebhookList.vue:654
 msgctxt "webhooks"
 msgid "Last error: %{reason}"
 msgstr "Zadnja napaka: %{reason}"
 
-#: src/views/WebhookList.vue:666
 msgctxt "webhooks"
 msgid "Paused until: %{date}"
 msgstr "Začasno ustavljeno do: %{date}"
 
-#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Nalaganje"
 
-#: src/views/WebhookList.vue:690
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Ni bilo najdenih vnosov"
 
-#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Noben webhook ni konfiguriran."
 
-#: src/webhooks.js:19
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Povezava ni uspela"
 
-#: src/webhooks.js:20
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Dostop zavrnjen"
 
-#: src/webhooks.js:21
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Skrivnosti ni mogoče dešifrirati, obnovite jo"
 
-#: src/webhooks.js:22
 msgctxt "webhooks"
 msgid "Invalid list of denied networks"
 msgstr "Neveljaven seznam prepovedanih omrežij"
 
-#: src/webhooks.js:23 src/webhooks.js:25
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Čakalna vrsta ni na voljo"
 
-#: src/webhooks.js:26
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Gostitelja ni mogoče najti"
 
-#: src/webhooks.js:27
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Odgovor je prevelik"
 
-#: src/webhooks.js:28
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Časovna omejitev zahteve je potekla"
 
-#: src/webhooks.js:33
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Preusmeritvam se ne sledi"
 
-#: src/webhooks.js:34
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Dostava ni uspela"
 
-#: src/webhooks.js:37
 msgctxt "webhooks"
 msgid "%{reason} (%{status})"
 msgstr "%{reason} (%{status})"
-

@@ -12,43 +12,34 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: src/components/WebhookDialog.vue:55
 msgctxt "webhooks"
 msgid "Secret copied"
 msgstr "Tajný kľúč skopírovaný"
 
-#: src/components/WebhookDialog.vue:60
 msgctxt "webhooks"
 msgid "Unable to copy secret"
 msgstr "Tajný kľúč sa nepodarilo skopírovať"
 
-#: src/components/WebhookDialog.vue:106 src/components/WebhookDialog.vue:127
 msgctxt "webhooks"
 msgid "Webhook secret"
 msgstr "Tajný kľúč webhooku"
 
-#: src/components/WebhookDialog.vue:108
 msgctxt "webhooks"
 msgid "Edit webhook"
 msgstr "Upraviť webhook"
 
-#: src/components/WebhookDialog.vue:109 src/views/WebhookList.vue:90
 msgctxt "webhooks"
 msgid "Add webhook"
 msgstr "Pridať webhook"
 
-#: src/components/WebhookDialog.vue:119
 msgctxt "webhooks"
 msgid "Copy this secret now. It will not be shown again."
 msgstr "Skopírujte tento tajný kľúč teraz. Už sa znova nezobrazí."
 
-#: src/components/WebhookDialog.vue:136 src/components/WebhookDialog.vue:140
-#: src/views/WebhookList.vue:148 src/views/WebhookList.vue:640
 msgctxt "webhooks"
 msgid "Active"
 msgstr "Aktívny"
 
-#: src/components/WebhookDialog.vue:141
 msgctxt "webhooks"
 msgid ""
 "Inactive webhooks receive no events and their queued deliveries are dropped"
@@ -56,27 +47,22 @@ msgstr ""
 "Neaktívne webhooky nedostávajú žiadne udalosti a ich čakajúce doručenia sa "
 "zahadzujú"
 
-#: src/components/WebhookDialog.vue:150
 msgctxt "webhooks"
 msgid "HTTPS endpoint URL"
 msgstr "URL koncového bodu HTTPS"
 
-#: src/components/WebhookDialog.vue:151
 msgctxt "webhooks"
 msgid "Address receiving the signed events, it cannot be changed later"
 msgstr "Adresa prijímajúca podpísané udalosti, neskôr ju nemožno zmeniť"
 
-#: src/components/WebhookDialog.vue:154 src/webhooks.js:24
 msgctxt "webhooks"
 msgid "Not a valid URL"
 msgstr "Neplatná adresa URL"
 
-#: src/components/WebhookDialog.vue:176
 msgctxt "webhooks"
 msgid "Events"
 msgstr "Udalosti"
 
-#: src/components/WebhookDialog.vue:177
 msgctxt "webhooks"
 msgid ""
 "Events sent to the webhook, queued deliveries of removed events are cancelled"
@@ -84,12 +70,10 @@ msgstr ""
 "Udalosti odosielané na webhook, čakajúce doručenia odstránených udalostí sa "
 "rušia"
 
-#: src/components/WebhookDialog.vue:184
 msgctxt "webhooks"
 msgid "Name"
 msgstr "Názov"
 
-#: src/components/WebhookDialog.vue:185
 msgctxt "webhooks"
 msgid ""
 "Optional name to tell webhooks with the same endpoint apart, visible to all "
@@ -98,105 +82,87 @@ msgstr ""
 "Voliteľný názov na odlíšenie webhookov s rovnakým koncovým bodom, viditeľný "
 "pre všetkých editorov webhookov"
 
-#: src/components/WebhookDialog.vue:202
 msgctxt "webhooks"
 msgid "Test"
 msgstr "Otestovať"
 
-#: src/components/WebhookDialog.vue:209
 msgctxt "webhooks"
 msgid "Done"
 msgstr "Hotovo"
 
-#: src/components/WebhookDialog.vue:212
 msgctxt "webhooks"
 msgid "Copy secret"
 msgstr "Kopírovať tajný kľúč"
 
-#: src/components/WebhookDialog.vue:217
 msgctxt "webhooks"
 msgid "Cancel"
 msgstr "Zrušiť"
 
-#: src/components/WebhookDialog.vue:225
 msgctxt "webhooks"
 msgid "Save"
 msgstr "Uložiť"
 
-#: src/strings.js:9
 msgctxt "webhooks"
 msgid "Webhooks"
 msgstr "Webhooky"
 
-#: src/views/WebhookList.vue:102
 msgctxt "webhooks"
 msgid "Webhooks are disabled by the server configuration, no events are sent"
 msgstr ""
 "Webhooky sú zakázané konfiguráciou servera, neodosielajú sa žiadne udalosti"
 
-#: src/views/WebhookList.vue:109
 msgctxt "webhooks"
 msgid "All deliveries are blocked by the server configuration: %{reason}"
 msgstr "Všetky doručenia sú blokované konfiguráciou servera: %{reason}"
 
-#: src/views/WebhookList.vue:139
 msgctxt "webhooks"
 msgid "Status"
 msgstr "Stav"
 
-#: src/views/WebhookList.vue:143
 msgctxt "webhooks"
 msgid "All"
 msgstr "Všetky"
 
-#: src/views/WebhookList.vue:153 src/views/WebhookList.vue:641
 msgctxt "webhooks"
 msgid "Inactive"
 msgstr "Neaktívny"
 
-#: src/views/WebhookList.vue:209 src/views/WebhookList.vue:454
 msgctxt "webhooks"
 msgid "None"
 msgstr "Žiadne"
 
-#: src/views/WebhookList.vue:213
 msgctxt "webhooks"
 msgid "%{reason} · %{date}"
 msgstr "%{reason} · %{date}"
 
-#: src/views/WebhookList.vue:251 src/views/WebhookList.vue:682
 msgctxt "webhooks"
 msgid "Error fetching webhooks"
 msgstr "Chyba pri načítaní webhookov"
 
-#: src/views/WebhookList.vue:295
 msgctxt "webhooks"
 msgid "Test event delivered (%{status})"
 msgstr "Testovacia udalosť doručená (%{status})"
 
-#: src/views/WebhookList.vue:302
 msgctxt "webhooks"
 msgid "Test event failed: %{reason}"
 msgstr "Testovacia udalosť zlyhala: %{reason}"
 
-#: src/views/WebhookList.vue:309
 msgctxt "webhooks"
 msgid "Test event failed"
 msgstr "Testovacia udalosť zlyhala"
 
-#: src/views/WebhookList.vue:349
 msgctxt "webhooks"
 msgid "Error purging webhook"
 msgstr "Chyba pri trvalom odstraňovaní webhooku"
 
-#: src/views/WebhookList.vue:378
 msgctxt "webhooks"
 msgid ""
 "The new webhook secret could not be shown after leaving the page, please "
 "rotate it to get a new one"
-msgstr "Nový tajný kľúč webhooku sa po opustení stránky nepodarilo zobraziť, obnovte ho a získajte nový"
+msgstr ""
+"Nový tajný kľúč webhooku sa po opustení stránky nepodarilo zobraziť, obnovte "
+"ho a získajte nový"
 
-#: src/views/WebhookList.vue:392
 msgctxt "webhooks"
 msgid ""
 "Rotate the secret of this webhook? Receivers must be updated with the new "
@@ -205,138 +171,110 @@ msgstr ""
 "Zmeniť tajný kľúč tohto webhooku? Príjemcovia musia byť aktualizovaní novým "
 "tajným kľúčom."
 
-#: src/views/WebhookList.vue:399 src/views/WebhookList.vue:597
 msgctxt "webhooks"
 msgid "Rotate"
 msgstr "Zmeniť kľúč"
 
-#: src/views/WebhookList.vue:417
 msgctxt "webhooks"
 msgid "Error rotating webhook secret"
 msgstr "Chyba pri zmene tajného kľúča webhooku"
 
-#: src/views/WebhookList.vue:447
 msgctxt "webhooks"
 msgid "Error saving webhook"
 msgstr "Chyba pri ukladaní webhooku"
 
-#: src/views/WebhookList.vue:483
 msgctxt "webhooks"
 msgid "Send signed notifications when published content changes."
 msgstr "Odosielať podpísané oznámenia pri zmene publikovaného obsahu."
 
-#: src/views/WebhookList.vue:505 src/views/WebhookList.vue:571
 msgctxt "webhooks"
 msgid "Toggle selection"
 msgstr "Prepnúť výber"
 
-#: src/views/WebhookList.vue:523
 msgctxt "webhooks"
 msgid "Purge (%{count})"
 msgstr "Natrvalo odstrániť (%{count})"
 
-#: src/views/WebhookList.vue:538
 msgctxt "webhooks"
 msgid "Search for"
 msgstr "Vyhľadávanie"
 
-#: src/views/WebhookList.vue:547 src/views/WebhookList.vue:684
 msgctxt "webhooks"
 msgid "Refresh"
 msgstr "Obnoviť"
 
-#: src/views/WebhookList.vue:587
 msgctxt "webhooks"
 msgid "Edit"
 msgstr "Upraviť"
 
-#: src/views/WebhookList.vue:607
 msgctxt "webhooks"
 msgid "Purge"
 msgstr "Natrvalo odstrániť"
 
-#: src/views/WebhookList.vue:647
 msgctxt "webhooks"
 msgid "Last success: %{date}"
 msgstr "Posledný úspech: %{date}"
 
-#: src/views/WebhookList.vue:654
 msgctxt "webhooks"
 msgid "Last error: %{reason}"
 msgstr "Posledná chyba: %{reason}"
 
-#: src/views/WebhookList.vue:666
 msgctxt "webhooks"
 msgid "Paused until: %{date}"
 msgstr "Pozastavené do: %{date}"
 
-#: src/views/WebhookList.vue:678
 msgctxt "webhooks"
 msgid "Loading"
 msgstr "Načítanie"
 
-#: src/views/WebhookList.vue:690
 msgctxt "webhooks"
 msgid "No entries found"
 msgstr "Nenašli sa žiadne záznamy"
 
-#: src/views/WebhookList.vue:691
 msgctxt "webhooks"
 msgid "No webhooks configured."
 msgstr "Nie sú nakonfigurované žiadne webhooky."
 
-#: src/webhooks.js:19
 msgctxt "webhooks"
 msgid "Connection failed"
 msgstr "Pripojenie zlyhalo"
 
-#: src/webhooks.js:20
 msgctxt "webhooks"
 msgid "Access denied"
 msgstr "Prístup zamietnutý"
 
-#: src/webhooks.js:21
 msgctxt "webhooks"
 msgid "Secret can't be decrypted, rotate it"
 msgstr "Tajný kľúč sa nedá dešifrovať, zmeňte ho"
 
-#: src/webhooks.js:22
 msgctxt "webhooks"
 msgid "Invalid list of denied networks"
 msgstr "Neplatný zoznam zakázaných sietí"
 
-#: src/webhooks.js:23 src/webhooks.js:25
 msgctxt "webhooks"
 msgid "Queue unavailable"
 msgstr "Front nie je dostupný"
 
-#: src/webhooks.js:26
 msgctxt "webhooks"
 msgid "Host not found"
 msgstr "Hostiteľ sa nenašiel"
 
-#: src/webhooks.js:27
 msgctxt "webhooks"
 msgid "Response too large"
 msgstr "Odpoveď je príliš veľká"
 
-#: src/webhooks.js:28
 msgctxt "webhooks"
 msgid "Request timed out"
 msgstr "Časový limit požiadavky vypršal"
 
-#: src/webhooks.js:33
 msgctxt "webhooks"
 msgid "Redirects aren't followed"
 msgstr "Presmerovania sa nesledujú"
 
-#: src/webhooks.js:34
 msgctxt "webhooks"
 msgid "Delivery failed"
 msgstr "Doručenie zlyhalo"
 
-#: src/webhooks.js:37
 msgctxt "webhooks"
 msgid "%{reason} (%{status})"
 msgstr "%{reason} (%{status})"
-

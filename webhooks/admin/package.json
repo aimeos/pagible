@@ -5,7 +5,7 @@
   "scripts": {
     "build": "vue-gettext-compile --config ../../admin/plugin/gettext.config.mjs && vite build --config ../../admin/plugin/vite.config.js",
     "gettext:compile": "vue-gettext-compile --config ../../admin/plugin/gettext.config.mjs",
-    "gettext:extract": "vue-gettext-extract --config ../../admin/plugin/gettext.config.mjs",
+    "gettext:extract": "vue-gettext-extract --config ../../admin/plugin/gettext.config.mjs && for f in i18n/*.po i18n/messages.pot; do msgcat --no-location -o $f $f; done",
     "lint": "eslint src cypress",
     "test:unit": "cd ../../admin && cypress run --component --spec '../webhooks/admin/cypress/unit/**/*.cy.{js,ts}'"
   },

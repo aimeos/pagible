@@ -1,182 +1,145 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: af\n"
 "MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/components/PageDetailMetrics.vue:98
 msgctxt "metrics"
 msgid "Views & Visits"
 msgstr "Kyke en besoeke"
 
-#: src/components/PageDetailMetrics.vue:100
 msgctxt "metrics"
 msgid "Views"
 msgstr "Kyke"
 
-#: src/components/PageDetailMetrics.vue:101
 msgctxt "metrics"
 msgid "Visits"
 msgstr "Besoeke"
 
-#: src/components/PageDetailMetrics.vue:102
-#: src/components/PageDetailMetrics.vue:141
 msgctxt "metrics"
 msgid "Conversions"
 msgstr "Omskakelings"
 
-#: src/components/PageDetailMetrics.vue:106
 msgctxt "metrics"
 msgid "Visit Durations (minutes)"
 msgstr "Besoekduur (minute)"
 
-#: src/components/PageDetailMetrics.vue:107
 msgctxt "metrics"
 msgid "Duration"
 msgstr "Duur"
 
-#: src/components/PageDetailMetrics.vue:110
 msgctxt "metrics"
 msgid "Google Search: Impressions & Clicks"
 msgstr "Google-soektog: Vertonings en klikke"
 
-#: src/components/PageDetailMetrics.vue:112
-#: src/components/PageDetailMetrics.vue:414
 msgctxt "metrics"
 msgid "Impressions"
 msgstr "Vertonings"
 
-#: src/components/PageDetailMetrics.vue:113
-#: src/components/PageDetailMetrics.vue:415
 msgctxt "metrics"
 msgid "Clicks"
 msgstr "Klikke"
 
-#: src/components/PageDetailMetrics.vue:117
 msgctxt "metrics"
 msgid "Google Search: Click-through rate"
 msgstr "Google-soektog: Deurkliktempo"
 
-#: src/components/PageDetailMetrics.vue:118
 msgctxt "metrics"
 msgid "Percentage"
 msgstr "Persentasie"
 
-#: src/components/PageDetailMetrics.vue:138
 msgctxt "metrics"
 msgid "Page Views"
 msgstr "Bladsykyke"
 
-#: src/components/PageDetailMetrics.vue:139
 msgctxt "metrics"
 msgid "Page Visits"
 msgstr "Bladsybesoeke"
 
-#: src/components/PageDetailMetrics.vue:142
 msgctxt "metrics"
 msgid "Visit Duration (minutes)"
 msgstr "Besoekduur (minute)"
 
-#: src/components/PageDetailMetrics.vue:143
 msgctxt "metrics"
 msgid "Google Impressions"
 msgstr "Google-vertonings"
 
-#: src/components/PageDetailMetrics.vue:144
 msgctxt "metrics"
 msgid "Google Clicks"
 msgstr "Google-klikke"
 
-#: src/components/PageDetailMetrics.vue:145
 msgctxt "metrics"
 msgid "Google click-through rate"
 msgstr "Google-deurkliktempo"
 
-#: src/components/PageDetailMetrics.vue:151
 msgctxt "metrics"
 msgid "Round trip time"
 msgstr "Heen-en-terug-tyd"
 
-#: src/components/PageDetailMetrics.vue:152
 msgctxt "metrics"
 msgid "Time to first byte"
 msgstr "Tyd tot eerste greep"
 
-#: src/components/PageDetailMetrics.vue:153
 msgctxt "metrics"
 msgid "First contentful paint"
 msgstr "Eerste inhoudsvertoning"
 
-#: src/components/PageDetailMetrics.vue:154
 msgctxt "metrics"
 msgid "Largest contentful paint"
 msgstr "Grootste inhoudsvertoning"
 
-#: src/components/PageDetailMetrics.vue:155
 msgctxt "metrics"
 msgid "Interaction to next paint"
 msgstr "Interaksie tot volgende vertoning"
 
-#: src/components/PageDetailMetrics.vue:156
 msgctxt "metrics"
 msgid "Cumulative layout shift"
 msgstr "Kumulatiewe uitlegverskuiwing"
 
-#: src/components/PageDetailMetrics.vue:237
 msgctxt "metrics"
 msgid "Error fetching metrics"
 msgstr "Fout met die haal van statistieke"
 
-#: src/components/PageDetailMetrics.vue:259
 msgctxt "metrics"
 msgid "Page metrics"
 msgstr "Bladsymetrieke"
 
-#: src/components/PageDetailMetrics.vue:265
 msgctxt "metrics"
 msgid "Days"
 msgstr "Dae"
 
-#: src/components/PageDetailMetrics.vue:292
 msgctxt "metrics"
 msgid "Weekly Insights"
 msgstr "Weeklikse insigte"
 
-#: src/components/PageDetailMetrics.vue:324
 msgctxt "metrics"
 msgid "Referrers"
 msgstr "Verwysers"
 
-#: src/components/PageDetailMetrics.vue:367
 msgctxt "metrics"
 msgid "Countries"
 msgstr "Lande"
 
-#: src/components/PageDetailMetrics.vue:383
 msgctxt "metrics"
 msgid "Page Speed"
 msgstr "Bladsyspoed"
 
-#: src/components/PageDetailMetrics.vue:408
 msgctxt "metrics"
 msgid "Google Search: Queries"
 msgstr "Google-soektog: Navrae"
 
-#: src/components/PageDetailMetrics.vue:416
 msgctxt "metrics"
 msgid "Percent"
 msgstr "Persent"
 
-#: src/components/PageDetailMetrics.vue:417
 msgctxt "search ranking"
 msgid "Position"
 msgstr ""
 
-#: src/strings.js:9
 msgctxt "metrics"
 msgid "Metrics"
 msgstr "Metrieke"

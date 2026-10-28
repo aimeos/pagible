@@ -12,477 +12,336 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: js/ai.js:65 js/components/FileDetailItem.vue:256
 msgid "Error transcribing file"
 msgstr "Fayl transkripsiya edilərkən xəta baş verdi"
 
-#: js/ai.js:114 js/components/FileDetailItem.vue:309
-#: js/components/FileDetailItem.vue:316
 msgid "Error translating texts"
 msgstr "Mətnlər tərcümə edilərkən xəta baş verdi"
 
-#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "Mətn yaratmaq üçün sorğu tələb olunur"
 
-#: js/ai.js:161
 msgid "Error generating text"
 msgstr "Mətn yaradılarkən xəta baş verdi"
 
-#: js/App.vue:88 js/components/User.vue:68
 msgid "Error switching language"
 msgstr "Dil dəyişdirilərkən xəta baş verdi"
 
-#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Çat köməkçisi əlçatan deyil."
 
-#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Cavab artıq yaradılır. Zəhmət olmasa, onun bitməsini gözləyin."
 
-#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr ""
 "Həddindən artıq sorğu. Zəhmət olmasa, bir az gözləyin və yenidən cəhd edin."
 
-#: js/commands.js:54
 msgid "Open commands"
 msgstr "Əmrləri aç"
 
-#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "Dialoqu təsdiqlə"
 
-#: js/commands.js:69
 msgid "Save changes"
 msgstr "Dəyişiklikləri yadda saxla"
 
-#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "Dərc menyusunu aç"
 
-#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "Yeni səhifə, fayl və ya element"
 
-#: js/commands.js:91
 msgid "Search in list"
 msgstr "Siyahıda axtar"
 
-#: js/commands.js:97
 msgid "Previous tab"
 msgstr "Əvvəlki tab"
 
-#: js/commands.js:103
 msgid "Next tab"
 msgstr "Növbəti tab"
 
-#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "Yan paneli göstər və ya gizlət"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Siyahı görünüşünə qayıt"
 
-#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "Klaviatura qısayollarını göstər"
 
-#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "Fokuslanmış səhifəni, faylı və ya elementi seç"
 
-#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "Fokuslanmış səhifəni, faylı və ya elementi sil"
 
-#: js/commands.js:143
 msgid "Copy page"
 msgstr "Səhifəni kopyala"
 
-#: js/commands.js:151
 msgid "Cut page"
 msgstr "Səhifəni kəs"
 
-#: js/commands.js:159
 msgid "Paste page"
 msgstr "Səhifəni yapışdır"
 
-#: js/commands.js:178 js/components/CommandPalette.vue:112
-#: js/components/DetailRefs.vue:148 js/components/Navigation.vue:31
-#: js/views/PageList.vue:267 js/views/PageList.vue:271
 msgid "Pages"
 msgstr "Səhifələr"
 
-#: js/commands.js:179
 msgid "Go to pages"
 msgstr "Səhifələrə keç"
 
-#: js/commands.js:184 js/components/CommandPalette.vue:113
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
-#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
-#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "Media"
 
-#: js/commands.js:185
 msgid "Go to media"
 msgstr "Mediaya keç"
 
-#: js/commands.js:190 js/components/CommandPalette.vue:114
-#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "Paylaşılan elementlər"
 
-#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "Paylaşılan elementlərə keç"
 
-#: js/commands.js:196 js/components/Navigation.vue:34
-#: js/views/AccessList.vue:241
 msgid "Users"
 msgstr "İstifadəçilər"
 
-#: js/commands.js:197
 msgid "Go to users"
 msgstr "İstifadəçilərə keç"
 
-#: js/components/AccessUsers.vue:212
 msgid "All languages"
 msgstr "Bütün dillər"
 
-#: js/components/AccessUsers.vue:213 js/components/AccessUsers.vue:574
 msgid "Selected languages"
 msgstr "Seçilmiş dillər"
 
-#: js/components/AccessUsers.vue:214
 msgid "No languages"
 msgstr "Dil yoxdur"
 
-#: js/components/AccessUsers.vue:282
 msgid "Access roles updated"
 msgstr "Giriş rolları yeniləndi"
 
-#: js/components/AccessUsers.vue:282
 msgid "Backend roles updated"
 msgstr "Backend rolları yeniləndi"
 
-#: js/components/AccessUsers.vue:292
 msgid "Error updating access roles"
 msgstr "Giriş rolları yenilənərkən xəta baş verdi"
 
-#: js/components/AccessUsers.vue:293
 msgid "Error updating CMS permissions"
 msgstr "CMS icazələri yenilənərkən xəta baş verdi"
 
-#: js/components/AccessUsers.vue:330
 msgid "User created"
 msgstr "İstifadəçi yaradıldı"
 
-#: js/components/AccessUsers.vue:336
 msgid "Error creating user"
 msgstr "İstifadəçi yaradılarkən xəta baş verdi"
 
-#: js/components/AccessUsers.vue:377 js/components/PageAccess.vue:130
-#: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "Giriş rolları alınarkən xəta baş verdi"
 
-#: js/components/AccessUsers.vue:407
 msgid "Error fetching user access roles"
 msgstr "İstifadəçi giriş rolları alınarkən xəta baş verdi"
 
-#: js/components/AccessUsers.vue:454 js/components/AccessUsers.vue:455
 msgid "Create user"
 msgstr "İstifadəçi yarat"
 
-#: js/components/AccessUsers.vue:462
 msgid "Email address"
 msgstr "E-poçt ünvanı"
 
-#: js/components/AccessUsers.vue:471
 msgid "Search user by email"
 msgstr "İstifadəçini e-poçta görə axtar"
 
-#: js/components/AccessUsers.vue:483 js/components/AccessUsers.vue:484
 msgid "Search"
 msgstr "Axtar"
 
-#: js/components/AccessUsers.vue:499 js/components/AccessUsers.vue:500
-#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Yadda saxla"
 
-#: js/components/AccessUsers.vue:509
 msgid "Account"
 msgstr "Hesab"
 
-#: js/components/AccessUsers.vue:514 js/components/AccessUsers.vue:521
 msgid "Assigned frontend roles"
 msgstr "Təyin edilmiş frontend rolları"
 
-#: js/components/AccessUsers.vue:521
 msgid "Roles granting access to restricted pages"
 msgstr "Məhdud səhifələrə giriş verən rollar"
 
-#: js/components/AccessUsers.vue:534
 msgid "Assigned backend roles"
 msgstr "Təyin edilmiş backend rolları"
 
-#: js/components/AccessUsers.vue:538
 msgid "Custom"
 msgstr "Fərdi"
 
-#: js/components/AccessUsers.vue:544
 msgid "Available roles"
 msgstr "Mövcud rollar"
 
-#: js/components/AccessUsers.vue:544
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "İstifadəçinin admin panelində nə edə biləcəyini müəyyən edən rollar"
 
-#: js/components/AccessUsers.vue:556 js/components/AccessUsers.vue:563
 msgid "Writable languages"
 msgstr "Yazıla bilən dillər"
 
-#: js/components/AccessUsers.vue:563
 msgid "Languages of the pages, elements and files the user can change"
 msgstr ""
 "İstifadəçinin dəyişə biləcəyi səhifələrin, elementlərin və faylların dilləri"
 
-#: js/components/AccessUsers.vue:585 js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "Heç bir qeyd tapılmadı"
 
-#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:110
 msgid "Actions"
 msgstr "Əməliyyatlar"
 
-#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "Bağla"
 
-#: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Sizin üçün nə edim?"
 
-#: js/components/AiPrompt.vue:88
 msgid "Press Enter to open the chat"
 msgstr "Çatı açmaq üçün Enter düyməsini basın"
 
-#: js/components/AiPrompt.vue:105
 msgid "Hide help"
 msgstr "Yardımı gizlət"
 
-#: js/components/AiPrompt.vue:105
 msgid "Show help"
 msgstr "Yardımı göstər"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
-#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Göndər"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
-#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:236 js/components/FileDetailItem.vue:482
 msgid "Dictate"
 msgstr "Diktə et"
 
-#: js/components/AiPrompt.vue:133
 msgid "Help"
 msgstr "Yardım"
 
-#: js/components/AsideCount.vue:60
 msgid "Used elements"
 msgstr "İstifadə olunan elementlər"
 
-#: js/components/AsideList.vue:71
 msgid "Filters"
 msgstr "Filtrlər"
 
-#: js/components/AsideList.vue:78 js/components/ListStatus.vue:43
 msgid "Reset"
 msgstr "Sıfırla"
 
-#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:153
-#: js/components/DetailRefs.vue:183 js/components/DetailRefs.vue:205
 msgid "ID"
 msgstr "ID"
 
-#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
-#: js/fields/File.vue:334
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
 msgid "editor"
 msgstr "Redaktor"
 
-#: js/components/AsideMeta.vue:34
 msgid "created"
 msgstr "Yaradılıb"
 
-#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
 msgid "updated"
 msgstr "Yenilənib"
 
-#: js/components/AsideMeta.vue:36
 msgid "deleted"
 msgstr "Silinib"
 
-#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
-#: js/components/HistoryDialog.vue:46
 msgid "Meta data"
 msgstr "Meta məlumatlar"
 
-#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
-#: js/components/HistoryDialog.vue:46
 msgid "Fields"
 msgstr "Sahələr"
 
-#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "Meta teqlər"
 
-#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
 msgid "Configuration"
 msgstr "Konfiqurasiya"
 
-#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Məzmun"
 
-#: js/components/ChangesDialog.vue:231
 msgid "Conflicts from %{editor}"
 msgstr "%{editor} tərəfindən ziddiyyətlər"
 
-#: js/components/ChangesDialog.vue:237
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
-#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
 msgid "Revert"
 msgstr "Geri qaytar"
 
-#: js/components/ChangesDialog.vue:262
 msgid "Changes"
 msgstr "Dəyişikliklər"
 
-#: js/components/ChangesDialog.vue:281
 msgid "Removed"
 msgstr "Silindi"
 
-#: js/components/ChangesDialog.vue:288
 msgid "Added"
 msgstr "Əlavə edildi"
 
-#: js/components/ChangesDialog.vue:308
 msgid "Use theirs"
 msgstr "Onların versiyasını götür"
 
-#: js/components/ChangesDialog.vue:314
 msgid "Keep mine"
 msgstr "Mənimkini saxla"
 
-#: js/components/ChangesDialog.vue:321
 msgid "Merge both"
 msgstr "Hər ikisini birləşdir"
 
-#: js/components/ChatDialog.vue:210
 msgid "The response was interrupted and may be incomplete."
 msgstr "Cavab kəsildi və natamam ola bilər."
 
-#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Üzr istəyirik, nəsə səhv getdi."
 
-#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Hazırdır"
 
-#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "AI köməkçisi"
 
-#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Yeni çat"
 
-#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Düşünür ..."
 
-#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
-#: js/components/PageDetailContentList.vue:528
-#: js/components/PageDetailContentList.vue:615
-#: js/components/PageListItems.vue:771 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopyala"
 
-#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Mesaj göndərin ..."
 
-#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Söhbət mesajı"
 
-#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Dayandır"
 
-#: js/components/CommandPalette.vue:111
 msgid "Go to"
 msgstr "Keç"
 
-#: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:275 js/components/PageListItems.vue:903
 msgid "New"
 msgstr "Yeni"
 
-#: js/components/CommandPalette.vue:287 js/components/CommandPalette.vue:310
-#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "Əmrlər"
 
-#: js/components/CommandPalette.vue:296
 msgid "Type a command or search pages, files and elements"
 msgstr "Əmr daxil edin və ya səhifələr, fayllar və elementlərdə axtarın"
 
-#: js/components/CommandPalette.vue:297
 msgid "Command or search term"
 msgstr "Əmr və ya axtarış sözü"
 
-#: js/components/CommandPalette.vue:329 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "sonra"
 
-#: js/components/CommandPalette.vue:336
 msgid "Search failed, please try again"
 msgstr "Axtarış uğursuz oldu, zəhmət olmasa, yenidən cəhd edin"
 
-#: js/components/CommandPalette.vue:337
 msgid "No results"
 msgstr "Nəticə yoxdur"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
-#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:119 js/components/PageListItems.vue:807
-#: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Həmişəlik sil"
 
-#: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
 msgid_plural ""
 "The following %{num} entries will be permanently deleted and cannot be "
@@ -490,901 +349,637 @@ msgid_plural ""
 msgstr[0] "Aşağıdakı qeyd həmişəlik silinəcək və bərpa edilə bilməz:"
 msgstr[1] "Aşağıdakı %{num} qeyd həmişəlik silinəcək və bərpa edilə bilməz:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "Ləğv et"
 
-#: js/components/DetailAppBar.vue:164 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Menyu"
 
-#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Tarixçəyə bax"
 
-#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Birləşdirmə dəyişikliklərinə bax"
 
-#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ListBulkMenu.vue:53
-#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:91
-#: js/components/PageListItems.vue:735
 msgid "Publish"
 msgstr "Dərc et"
 
-#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
 msgstr "Dərc et və bağla"
 
-#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Planlaşdır"
 
-#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
 msgstr "Planlaşdır və bağla"
 
-#: js/components/DetailAppBar.vue:289 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Yan menyunu göstər/gizlət"
 
-#: js/components/DetailRefs.vue:78
 msgid "yes"
 msgstr "Bəli"
 
-#: js/components/DetailRefs.vue:81
 msgid "no"
 msgstr "Xeyr"
 
-#: js/components/DetailRefs.vue:134
 msgid "Error fetching references"
 msgstr "İstinadlar alınarkən xəta baş verdi"
 
-#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:238
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
-#: js/components/ElementDetailItem.vue:62 js/components/FileDetailItem.vue:389
-#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Ad"
 
-#: js/components/DetailRefs.vue:167 js/components/PageAccess.vue:187
-#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "Məhdud"
 
-#: js/components/DetailRefs.vue:178 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "Elementlər"
 
-#: js/components/DetailRefs.vue:184 js/components/DetailRefs.vue:206
-#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "Növ"
 
-#: js/components/DetailRefs.vue:200
 msgid "Versions"
 msgstr "Versiyalar"
 
-#: js/components/DetailRefs.vue:207 js/listview.js:90
 msgid "Published"
 msgstr "Dərc edilib"
 
-#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
-#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
-#: js/components/PageBulkMenu.vue:101 js/components/PageListItems.vue:756
 msgid "Edit properties"
 msgstr "Xüsusiyyətləri redaktə et"
 
-#: js/components/EditBulkDialog.vue:59
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Seçilmiş xüsusiyyətləri %{num} qeydə tətbiq et."
 msgstr[1] "Seçilmiş xüsusiyyətləri %{num} qeydə tətbiq et."
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
-#: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
-#: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Dil"
 
-#: js/components/EditBulkDialog.vue:71
 msgid "Language of the content"
 msgstr "Məzmunun dili"
 
-#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
-#: js/components/PageBulkDialog.vue:260
 msgid "Apply"
 msgstr "Tətbiq et"
 
-#: js/components/ElementDetailItem.vue:62
 msgid "Name to find the shared element in the element list"
 msgstr "Paylaşılan elementi element siyahısında tapmaq üçün ad"
 
-#: js/components/ElementDetailItem.vue:75
 msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 "Element məzmununun dili; bütün dillərdə istifadə olunursa, heç birini "
 "seçməyin"
 
-#: js/components/ElementListItems.vue:157
 msgid "Error adding shared element"
 msgstr "Paylaşılan element əlavə edilərkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:163
 msgid "Error trashing shared element"
 msgstr "Paylaşılan element zibil qutusuna köçürülərkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:164
 msgid "Error restoring shared element"
 msgstr "Paylaşılan element bərpa edilərkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:165
 msgid "Error publishing shared element"
 msgstr "Paylaşılan element dərc edilərkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:166
 msgid "Error purging shared element"
 msgstr "Paylaşılan element həmişəlik silinərkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:167
 msgid "Error saving shared element"
 msgstr "Paylaşılan element yadda saxlanılarkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:168
 msgid "Error fetching shared elements"
 msgstr "Paylaşılan elementlər alınarkən xəta baş verdi"
 
-#: js/components/ElementListItems.vue:204
-#: js/components/ElementListItems.vue:246 js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:386
-#: js/components/PageDetailContentList.vue:514
-#: js/components/PageDetailContentList.vue:605
-#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:723
-#: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "Seçimi dəyiş"
 
-#: js/components/ElementListItems.vue:222
-#: js/components/ElementListItems.vue:303
-#: js/components/PageDetailContentList.vue:705
-#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Element əlavə et"
 
-#: js/components/ElementListItems.vue:234 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Elementləri yenidən yüklə"
 
-#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
-#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Tərcümə et"
 
-#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "Mətn yarat"
 
-#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "Başqa redaktor tərəfindən yenilənib"
 
-#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "Üzərinə yazılıb"
 
-#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "Mobil"
 
-#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "Planşet"
 
-#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "Kompüter"
 
-#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "Tam en"
 
-#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "Məzmun elementi"
 
-#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "Əvvəlinə element əlavə et"
 
-#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "Sonrasına element əlavə et"
 
-#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "Elementi çıxar"
 
-#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "Responsiv önizləmə"
 
-#: js/components/FieldsAside.vue:231
-#: js/components/PageDetailContentList.vue:651
 msgid "Change to"
 msgstr "Növünü dəyiş"
 
-#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
-#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
-#: js/fields/Images.vue:340
 msgid "Edit"
 msgstr "Redaktə et"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:259
-#: js/components/FileAiDialog.vue:286 js/components/FileUrlDialog.vue:250
-#: js/components/PageDetailContentList.vue:540
-#: js/components/PageDetailContentList.vue:621 js/fields/Items.vue:283
-#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Çıxar"
 
-#: js/components/FileAiDialog.vue:134 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:170
-#: js/filefield.js:189
 msgid "Error adding file %{path}"
 msgstr "%{path} faylı əlavə edilərkən xəta baş verdi"
 
-#: js/components/FileAiDialog.vue:178
 msgid "Error creating file"
 msgstr "Fayl yaradılarkən xəta baş verdi"
 
-#: js/components/FileAiDialog.vue:225
 msgid "Create image"
 msgstr "Şəkil yarat"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the image content"
 msgstr "Şəklin məzmununu təsvir edin"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Yaradılacaq şəklin mövzusunu, üslubunu və rənglərini təsvir edin"
 
-#: js/components/FileAiDialog.vue:250
 msgid "New image"
 msgstr "Yeni şəkil"
 
-#: js/components/FileAiDialog.vue:254
 msgid "Current images"
 msgstr "Cari şəkillər"
 
-#: js/components/FileAiDialog.vue:279
 msgid "Images used"
 msgstr "İstifadə olunan şəkillər"
 
-#: js/components/FileAiDialog.vue:296
 msgid "Select images"
 msgstr "Şəkilləri seç"
 
-#: js/components/FileDetailItem.vue:142 js/components/FileDetailItem.vue:151
 msgid "Error copying to clipboard"
 msgstr "Mübadilə buferinə kopyalanarkən xəta baş verdi"
 
-#: js/components/FileDetailItem.vue:148
 msgid "Copied to clipboard"
 msgstr "Mübadilə buferinə kopyalandı"
 
-#: js/components/FileDetailItem.vue:175
 msgid "Error describing file"
 msgstr "Fayl təsvir edilərkən xəta baş verdi"
 
-#: js/components/FileDetailItem.vue:224 js/components/FileListItems.vue:190
-#: js/filefield.js:157 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "Fayl yadda saxlanılarkən xəta baş verdi"
 
-#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkripsiya yalnız audio və video fayllar üçün mövcuddur"
 
-#: js/components/FileDetailItem.vue:389
 msgid "Name to find the file in the media list"
 msgstr "Faylı media siyahısında tapmaq üçün ad"
 
-#: js/components/FileDetailItem.vue:401
 msgid "Language of the file content, choose none if used in all languages"
 msgstr ""
 "Fayl məzmununun dili; bütün dillərdə istifadə olunursa, heç birini seçməyin"
 
-#: js/components/FileDetailItem.vue:411
 msgid "Copy URL"
 msgstr "URL-i kopyala"
 
-#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "Təsvirlər"
 
-#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Mətni tərcümə et"
 
-#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "Təsvir yarat"
 
-#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "Təsvir (%{lang})"
 
-#: js/components/FileDetailItem.vue:498
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Ekran oxuyucuları və axtarış sistemləri üçün alternativ mətn, həmçinin "
 "şəkilaltı yazı kimi istifadə olunur"
 
-#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "Transkripsiyalar"
 
-#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "Fayl məzmununu transkripsiya et"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Transcription (%{lang})"
 msgstr "Transkripsiya (%{lang})"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr "WebVTT formatında danışıq mətni, subtitr və transkript kimi göstərilir"
 
-#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "Orijinal nisbət"
 
-#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "Nisbətsiz"
 
-#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "Kvadrat"
 
-#: js/components/FileDetailItemImage.vue:175
 msgid "Error downloading image"
 msgstr "Şəkli endirərkən xəta"
 
-#: js/components/FileDetailItemImage.vue:277
-#: js/components/FileDetailItemImage.vue:362 js/imageai.js:216
 msgid "Error editing image"
 msgstr "Şəkil redaktə edilərkən xəta baş verdi"
 
-#: js/components/FileDetailItemImage.vue:402
-#: js/components/FileDetailItemImage.vue:407
 msgid "Select area"
 msgstr "Sahəni seç"
 
-#: js/components/FileDetailItemImage.vue:426
 msgid "Crop selected area"
 msgstr "Seçilmiş sahəyə görə kəs"
 
-#: js/components/FileDetailItemImage.vue:436
 msgid "Erase selected area"
 msgstr "Seçilmiş sahəni sil"
 
-#: js/components/FileDetailItemImage.vue:448
-#: js/components/FileDetailItemImage.vue:455
-#: js/components/FileDetailItemImage.vue:470
 msgid "Edit image"
 msgstr "Şəkli redaktə et"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe the changes"
 msgstr "Dəyişiklikləri təsvir edin"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr ""
 "Şəkildə nəyin dəyişdirilməli olduğunu təsvir edin, məs. səmanı mavi edin"
 
-#: js/components/FileDetailItemImage.vue:480
 msgid "Remove background"
 msgstr "Fonu sil"
 
-#: js/components/FileDetailItemImage.vue:491
-#: js/components/FileDetailItemImage.vue:498
-#: js/components/FileDetailItemImage.vue:518
 msgid "Expand image"
 msgstr "Şəkli genişləndir"
 
-#: js/components/FileDetailItemImage.vue:526
-#: js/components/FileDetailItemImage.vue:533
 msgid "Upscale image"
 msgstr "Şəklin ölçüsünü böyüt"
 
-#: js/components/FileDetailItemImage.vue:546
 msgid "Scale %{factor}"
 msgstr "Miqyas %{factor}"
 
-#: js/components/FileDetailItemImage.vue:555
 msgid "Rotate counter-clockwise"
 msgstr "Saat əqrəbinin əksinə fırlat"
 
-#: js/components/FileDetailItemImage.vue:562
 msgid "Rotate clockwise"
 msgstr "Saat əqrəbi istiqamətində fırlat"
 
-#: js/components/FileDetailItemImage.vue:570
 msgid "Flip horizontally"
 msgstr "Üfüqi çevir"
 
-#: js/components/FileDetailItemImage.vue:577
 msgid "Flip vertically"
 msgstr "Şaquli çevir"
 
-#: js/components/FileDetailItemImage.vue:585
 msgid "Convert to monochrome"
 msgstr "Ağ-qaraya çevir"
 
-#: js/components/FileDetailItemImage.vue:588
 msgid "Download"
 msgstr "Endir"
 
-#: js/components/FileDetailItemImage.vue:590
-#: js/components/FileDetailItemImage.vue:595 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "Geri al"
 
-#: js/components/FileDetailItemImage.vue:602
 msgid "Previous edit"
 msgstr "Əvvəlki redaktə"
 
-#: js/components/FileDetailItemImage.vue:605
 msgid "Original"
 msgstr "Orijinal"
 
-#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "Video elementi tapılmadı"
 
-#: js/components/FileDetailItemVideo.vue:85
 msgid "Video not loaded yet"
 msgstr "Video hələ yüklənməyib"
 
-#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "Video örtüyü yadda saxlanılarkən xəta baş verdi"
 
-#: js/components/FileDetailItemVideo.vue:158
-#: js/components/FileDetailItemVideo.vue:202
-#: js/components/FileDetailItemVideo.vue:203
 msgid "Remove cover image"
 msgstr "Üz şəklini sil"
 
-#: js/components/FileDetailItemVideo.vue:158
 msgid "Remove the cover image of this video?"
 msgstr "Bu videonun üz şəkli silinsin?"
 
-#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "Video örtüyü silinərkən xəta baş verdi"
 
-#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "Heç bir fayl seçilməyib"
 
-#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "Video örtüyü yüklənərkən xəta baş verdi"
 
-#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "Örtük şəkli kimi istifadə et"
 
-#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "Örtük şəkli yüklə"
 
-#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "Fayl zibil qutusuna köçürülərkən xəta baş verdi"
 
-#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "Fayl bərpa edilərkən xəta baş verdi"
 
-#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Fayl dərc edilərkən xəta baş verdi"
 
-#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "Fayl həmişəlik silinərkən xəta baş verdi"
 
-#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "Fayllar alınarkən xəta baş verdi"
 
-#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "%{num} faylın təsvirləri tərcümə edildi"
 msgstr[1] "%{num} faylın təsvirləri tərcümə edildi"
 
-#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr ""
 "%{total} fayldan %{done} fayldan sonra təsvirlər tərcümə edilərkən xəta baş "
 "verdi"
 
-#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "Təsvirlər tərcümə edilərkən xəta baş verdi"
 
-#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "Tərcümə ediləcək çatışmayan təsvir yoxdur"
 
-#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "Təsvirləri tərcümə et"
 
-#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "Faylları yenidən yüklə"
 
-#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "Şəbəkə görünüşü"
 
-#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
-#: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "Girişi qoru"
 
-#: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
 msgstr ""
 "Faylı yalnız ondan istifadə edən səhifəyə baxmaq icazəsi olan ziyarətçilər "
 "endirə bilər"
 
-#: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:207
-#: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "Fayllar əlavə et"
 
-#: js/components/FileUrlDialog.vue:124
 msgid "At least one URL is longer than 255 characters"
 msgstr "Ən azı bir URL 255 simvoldan uzundur"
 
-#: js/components/FileUrlDialog.vue:160
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Ən azı bir fayl \"%{mime}*\" növündə deyil"
 
-#: js/components/FileUrlDialog.vue:164
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Fayl \"%{mime}*\" növündə deyil"
 
-#: js/components/FileUrlDialog.vue:192 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "URL-lərdən fayllar əlavə et"
 
-#: js/components/FileUrlDialog.vue:207 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Fayl əlavə et"
 
-#: js/components/FileUrlDialog.vue:220
 msgid "Enter one URL per line"
 msgstr "Hər sətirdə bir URL daxil edin"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "URLs"
 msgstr "URL-lər"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "Fayllar bu URL-lərdən endirilir və media siyahısına əlavə olunur"
 
-#: js/components/FileUrlDialog.vue:237
 msgid "Enter URL"
 msgstr "URL daxil edin"
 
-#: js/components/FileUrlDialog.vue:238
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Fayl bu URL-dən endirilir və media siyahısına əlavə olunur"
 
-#: js/components/FileUrlDialog.vue:279
 msgid "Size"
 msgstr "Ölçü"
 
-#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
-#: js/components/PageDetailContentList.vue:664
 msgid "Shared element"
 msgstr "Paylaşılan element"
 
-#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "Məzmun bloku"
 
-#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "Qrup: %{group} · Mövqe %{num}"
 
-#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "%{from} mövqeyindən %{to} mövqeyinə köçürüldü"
 
-#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "%{num} sahə dəyişdirildi"
 msgstr[1] "%{num} sahə dəyişdirildi"
 
-#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "%{total} qeyddən %{selected} seçilib"
 
-#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "Naməlum tarix"
 
-#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "Blokun mövqeyi"
 
-#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "Dəyər"
 
-#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "%{num} blok əlavə edildi"
 msgstr[1] "%{num} blok əlavə edildi"
 
-#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "%{num} blok silindi"
 msgstr[1] "%{num} blok silindi"
 
-#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "%{num} blok dəyişdirildi"
 msgstr[1] "%{num} blok dəyişdirildi"
 
-#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "%{num} blok köçürüldü"
 msgstr[1] "%{num} blok köçürüldü"
 
-#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "%{num} fayl dəyişdirildi"
 msgstr[1] "%{num} fayl dəyişdirildi"
 
-#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
-#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "Dəyişiklik yoxdur"
 
-#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "Tarixçə"
 
-#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
-#: js/fields/Url.vue:173
 msgid "Loading"
 msgstr "Yüklənir"
 
-#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "Versiyalar alınarkən xəta baş verdi"
 
-#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "Yenidən cəhd et"
 
-#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "Cari dəyişikliklər"
 
-#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "%{date} tarixinə planlaşdırılıb"
 
-#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "Hamısını seç"
 
-#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "Blok əlavə edildi"
 
-#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "Blok silindi"
 
-#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "Cari mövqeyi saxla"
 
-#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "Cari dəyəri saxla"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "Əvvəlki versiya: son yadda saxlanılan versiya"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "Əvvəlki versiya: %{date}"
 
-#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "Geri qaytarmaq üçün %{total} qeyddən %{selected} seçilib"
 
-#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "Seçilmiş dəyişiklikləri geri qaytar"
 
-#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "Əvvəlki versiyanı bərpa et"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "Əvvəlki dəyər"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "Yeni dəyər"
 
-#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "%{name} şəklini böyüt"
 
-#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "Önizləmə yüklənir"
 
-#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
-#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
-#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "Önizləmə əlçatan deyil"
 
-#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "Şəkil önizləməsi"
 
-#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "Önizləməni bağla"
 
-#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "Cədvəl önizləməsi"
 
-#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} sətir buraxıldı"
 msgstr[1] "%{num} sətir buraxıldı"
 
-#: js/components/ListAppBar.vue:34
 msgid "Close navigation"
 msgstr "Naviqasiyanı bağla"
 
-#: js/components/ListAppBar.vue:34
 msgid "Open navigation"
 msgstr "Naviqasiyanı aç"
 
-#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:113 js/components/PageListItems.vue:793
 msgid "Delete"
 msgstr "Sil"
 
-#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:116 js/components/PageListItems.vue:799
-#: js/components/PageListItems.vue:929
 msgid "Restore"
 msgstr "Bərpa et"
 
-#: js/components/ListReload.vue:29
 msgid "Updated by another user"
 msgstr "Başqa istifadəçi tərəfindən yenilənib"
 
-#: js/components/ListReload.vue:35
 msgid "Refresh"
 msgstr "Yenilə"
 
-#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:548
-#: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "Axtarış"
 
-#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "Redaktor"
 
-#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "Ən yeni"
 
-#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "Son redaktə"
 
-#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "Ən köhnə"
 
-#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "Ən köhnə redaktə"
 
-#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "Mövqe"
 
-#: js/components/ListSort.vue:37 js/views/PageList.vue:117
 msgid "Tree"
 msgstr "Ağac"
 
-#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "İstifadə"
 
-#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "Sıralama"
 
-#: js/components/ListStatus.vue:46
 msgid "No entries yet"
 msgstr "Hələ qeyd yoxdur"
 
-#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "Panellər"
 
-#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "Klaviatura qısayolları"
 
-#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "Səhifəyə giriş dəyişdirilərkən xəta baş verdi"
 
-#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
 msgstr ""
 "Giriş dəyişiklikləri keşin müddəti bitdikdən dərhal sonra qüvvəyə minir"
 
-#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "Görünürlük"
 
-#: js/components/PageAccess.vue:181
 msgid ""
 "Public pages are visible to everyone, others only to logged in users or "
 "users with the selected roles"
@@ -1392,50 +987,35 @@ msgstr ""
 "Açıq səhifələr hamıya görünür, digərləri isə yalnız daxil olmuş "
 "istifadəçilərə və ya seçilmiş rollara malik istifadəçilərə"
 
-#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "Açıq"
 
-#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "Daxil olmuş istifadəçilər"
 
-#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:104
-#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:759 js/components/PageListItems.vue:983
-#: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Giriş"
 
-#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Səhifəyə yalnız bu rollardan birinə malik ziyarətçilər baxa bilər"
 
-#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:274
 msgid "Page bulk changes are limited to %{count} pages"
 msgstr "Səhifələrdə toplu dəyişikliklər %{count} səhifə ilə məhdudlaşır"
 
-#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:268
 msgid "Apply recursively"
 msgstr "Rekursiv tətbiq et"
 
-#: js/components/PageBulkDialog.vue:151
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Seçilmiş xüsusiyyətləri %{num} səhifəyə tətbiq et."
 msgstr[1] "Seçilmiş xüsusiyyətləri %{num} səhifəyə tətbiq et."
 
-#: js/components/PageBulkDialog.vue:162
 msgid "Change status"
 msgstr "Statusu dəyiş"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid "Status"
 msgstr "Status"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1443,421 +1023,301 @@ msgstr ""
 "Deaktiv səhifələr oflayndır, gizli səhifələr onlayndır, lakin naviqasiyada "
 "göstərilmir"
 
-#: js/components/PageBulkDialog.vue:176
 msgid "Change cache time"
 msgstr "Keş müddətini dəyiş"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
-#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "Keş müddəti"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
 msgid "How long the generated page is cached before it is created again"
 msgstr ""
 "Yaradılan səhifənin yenidən yaradılmazdan əvvəl nə qədər keşdə saxlanılacağı"
 
-#: js/components/PageBulkDialog.vue:190
 msgid "Change source language"
 msgstr "Mənbə dilini dəyişin"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Source language"
 msgstr "Mənbə dili"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Language of the source page content"
 msgstr "Mənbə səhifəsinin məzmununun dili"
 
-#: js/components/PageBulkDialog.vue:202
 msgid "Change theme"
 msgstr "Mövzunu dəyiş"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
-#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "Mövzu"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
 msgid "Design used to display the page"
 msgstr "Səhifəni göstərmək üçün istifadə olunan dizayn"
 
-#: js/components/PageBulkDialog.vue:214
 msgid "Change page type"
 msgstr "Səhifə növünü dəyiş"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
-#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "Səhifə növü"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
 msgid "Template of the theme which defines the page layout"
 msgstr "Səhifə tərtibatını müəyyən edən mövzu şablonu"
 
-#: js/components/PageBulkDialog.vue:226
 msgid "Change tag"
 msgstr "Teqi dəyiş"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
-#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "Səhifə teqi"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Səhifəni şablonlarda tapmaq üçün daxili identifikator, məs. blog"
 
-#: js/components/PageBulkDialog.vue:239
 msgid "Change domain"
 msgstr "Domeni dəyiş"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain"
 msgstr "Domen"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Səhifənin əlçatan olduğu domen, məs. example.com"
 
-#: js/components/PageBulkMenu.vue:94 js/components/PageListItems.vue:742
 msgctxt "page status"
 msgid "Enable"
 msgstr "Aktivləşdir"
 
-#: js/components/PageBulkMenu.vue:97 js/components/PageListItems.vue:748
 msgctxt "page status"
 msgid "Disable"
 msgstr "Deaktiv et"
 
-#: js/components/PageBulkMenu.vue:107 js/components/PageListItems.vue:762
 msgid "Clear cache"
 msgstr "Keşi təmizlə"
 
-#: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Dəyişiklikləri nəzərə alma"
 
-#: js/components/PageBulkMenu.vue:148 js/components/PageListItems.vue:836
 msgid "Delete this language"
 msgstr "Bu dili sil"
 
-#: js/components/PageBulkMenu.vue:156 js/components/PageListItems.vue:844
 msgid "Restore this language"
 msgstr "Bu dili bərpa et"
 
-#: js/components/PageBulkMenu.vue:164 js/components/PageListItems.vue:852
 msgid "Purge language"
 msgstr "Dili həmişəlik sil"
 
-#: js/components/PageDetailContentList.vue:165
-#: js/components/PageDetailContentList.vue:175 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Məzmun elementi tapılmadı"
 
-#: js/components/PageDetailContentList.vue:374
 msgid "Not available for this content element"
 msgstr "Bu məzmun elementi üçün mövcud deyil"
 
-#: js/components/PageDetailContentList.vue:384
 msgid "Error splitting text"
 msgstr "Mətn bölünərkən xəta baş verdi"
 
-#: js/components/PageDetailContentList.vue:499
 msgid "Describe the task you want to perform"
 msgstr "Yerinə yetirmək istədiyiniz tapşırığı təsvir edin"
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refining ..."
 msgstr "Təkmilləşdirilir ..."
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refine content based on prompt"
 msgstr "Məzmunu sorğuya əsasən təkmilləşdir"
 
-#: js/components/PageDetailContentList.vue:504
 msgid "AI can add or improve content based on your input"
 msgstr ""
 "AI daxil etdiyiniz məlumatlara əsasən məzmun əlavə edə və ya təkmilləşdirə "
 "bilər"
 
-#: js/components/PageDetailContentList.vue:505
 msgid "It can take a long time depending on the task and content size"
 msgstr "Tapşırıqdan və məzmunun həcmindən asılı olaraq bu, uzun çəkə bilər"
 
-#: js/components/PageDetailContentList.vue:531
-#: js/components/PageDetailContentList.vue:618
-#: js/components/PageListItems.vue:768 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Kəs"
 
-#: js/components/PageDetailContentList.vue:534 js/pagetree.js:37
 msgid "Paste"
 msgstr "Yapışdır"
 
-#: js/components/PageDetailContentList.vue:537
-#: js/components/PageDetailContentList.vue:657
 msgid "Merge"
 msgstr "Birləşdir"
 
-#: js/components/PageDetailContentList.vue:592 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Elementi köçür"
 
-#: js/components/PageDetailContentList.vue:627 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Əvvəlinə yapışdır"
 
-#: js/components/PageDetailContentList.vue:630 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Sonrasına yapışdır"
 
-#: js/components/PageDetailContentList.vue:633 js/fields/Items.vue:287
-#: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Əvvəlinə daxil et"
 
-#: js/components/PageDetailContentList.vue:636 js/fields/Items.vue:288
-#: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Sonrasına daxil et"
 
-#: js/components/PageDetailContentList.vue:645
 msgid "Make shared"
 msgstr "Paylaşılan et"
 
-#: js/components/PageDetailContentList.vue:648
 msgid "Replace with local copy"
 msgstr "Yerli nüsxə ilə əvəz et"
 
-#: js/components/PageDetailContentList.vue:654
 msgctxt "text element"
 msgid "Split"
 msgstr "Böl"
 
-#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Redaktə etmək üçün iki dəfə klikləyin"
 
-#: js/components/PageDetailEditor.vue:277
 msgid "Preview mode"
 msgstr "Önizləmə rejimi"
 
-#: js/components/PageDetailEditor.vue:280
 msgid "Not CMS content"
 msgstr "CMS məzmunu deyil"
 
-#: js/components/PageDetailItem.vue:83
 msgid "Detail"
 msgstr "Təfərrüat"
 
-#: js/components/PageDetailItem.vue:90
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:97
 msgid "Config"
 msgstr "Konfiqurasiya"
 
-#: js/components/PageDetailItemProps.vue:74
 msgid "Path must not start with a slash (/)"
 msgstr "Yol slaş (/) ilə başlamamalıdır"
 
-#: js/components/PageDetailItemProps.vue:84
 msgid "URL is not valid"
 msgstr "URL etibarlı deyil"
 
-#: js/components/PageDetailItemProps.vue:89 js/views/Login.vue:61
-#: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "Sahə tələb olunur"
 
-#: js/components/PageDetailItemProps.vue:125
 msgid "The path is already in use by another page"
 msgstr "Bu yol artıq başqa səhifə tərəfindən istifadə olunur"
 
-#: js/components/PageDetailItemProps.vue:232
 msgid "Language of the page content"
 msgstr "Səhifə məzmununun dili"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Page title"
 msgstr "Səhifə başlığı"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Shown in the browser tab and search results"
 msgstr "Brauzer tabında və axtarış nəticələrində göstərilir"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Page name"
 msgstr "Səhifə adı"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Short name shown in the navigation menus"
 msgstr "Naviqasiya menyularında göstərilən qısa ad"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "URL path"
 msgstr "URL yolu"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Domendən sonra gələn səhifə URL-inin hissəsi, məs. about-us"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Redirect URL"
 msgstr "Yönləndirmə URL-i"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Ziyarətçilər səhifəni görmək əvəzinə bu URL-ə yönləndirilir"
 
-#: js/components/PageDetailItemSection.vue:63
 msgid "The element has already been added"
 msgstr "Element artıq əlavə edilib"
 
-#: js/components/PageDetailItemSection.vue:178
 msgid "Remove content element"
 msgstr "Məzmun elementini çıxar"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Yenilənməlidir"
 
-#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:156
 msgid "Missing"
 msgstr "Çatışmır"
 
-#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:162
 msgid "AI draft"
 msgstr "Sİ qaralaması"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Aktualdır"
 
-#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:222
 msgid "Error fetching translation states"
 msgstr "Tərcümə vəziyyətləri alınarkən xəta baş verdi"
 
-#: js/components/PageListItems.vue:255
 msgid "Error adding root page"
 msgstr "Kök səhifə əlavə edilərkən xəta baş verdi"
 
-#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "Səhifə tərcümə edilərkən xəta baş verdi"
 
-#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "Dil əlavə edilərkən xəta baş verdi"
 
-#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
-#: js/pagetree.js:152
 msgid "Error fetching pages"
 msgstr "Səhifələr alınarkən xəta baş verdi"
 
-#: js/components/PageListItems.vue:504
 msgid "Error searching pages"
 msgstr "Səhifələr axtarılarkən xəta baş verdi"
 
-#: js/components/PageListItems.vue:540 js/options.js:50
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} dəqiqə"
 msgstr[1] "%{num} dəqiqə"
 
-#: js/components/PageListItems.vue:549
 msgid "Translating into %{langs}"
 msgstr "%{langs} dilinə tərcümə edilir"
 
-#: js/components/PageListItems.vue:645 js/components/PageListItems.vue:959
 msgid "Add page"
 msgstr "Səhifə əlavə et"
 
-#: js/components/PageListItems.vue:657
 msgid "Reload page tree"
 msgstr "Səhifə ağacını yenidən yüklə"
 
-#: js/components/PageListItems.vue:670
 msgid "Translating %{done} of %{total}"
 msgstr "%{total} elementdən %{done} tərcümə edilir"
 
-#: js/components/PageListItems.vue:686
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Naviqasiya üçün ox düymələrindən istifadə edin. Sıranı dəyişmək üçün Alt və "
 "ox düymələrini basın."
 
-#: js/components/PageListItems.vue:688
 msgid "Moved to position %{position} of %{total}"
 msgstr "%{total} mövqedən %{position} mövqeyinə köçürüldü"
 
-#: js/components/PageListItems.vue:690
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "%{level} səviyyəsinə çıxarıldı, mövqe %{position} / %{total}"
 
-#: js/components/PageListItems.vue:696
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "%{level} səviyyəsinə içəri çəkildi, mövqe %{position} / %{total}"
 
-#: js/components/PageListItems.vue:716
 msgid "Toggle child nodes"
 msgstr "Alt düyünləri aç/bağla"
 
-#: js/components/PageListItems.vue:901 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Naviqasiyada gizli"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Yarat"
 
-#: js/components/PageListItems.vue:986
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Giriş parametrlərini %{num} səhifəyə tətbiq et."
 msgstr[1] "Giriş parametrlərini %{num} səhifəyə tətbiq et."
 
-#: js/components/PasswordField.vue:35
 msgid "Password"
 msgstr "Şifrə"
 
-#: js/components/PasswordField.vue:42
 msgid "Hide password"
 msgstr "Şifrəni gizlət"
 
-#: js/components/PasswordField.vue:42
 msgid "Show password"
 msgstr "Şifrəni göstər"
 
-#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "Siz hələ daxil olmamısınız"
 
-#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "Sessiyanın müddəti bitdi"
 
-#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
-#: js/components/User.vue:134
 msgid "Logout"
 msgstr "Çıxış"
 
-#: js/components/ReloginDialog.vue:151
 msgid ""
 "Please sign in again in the new tab and return here to continue. Your "
 "unsaved changes are kept."
@@ -1865,142 +1325,109 @@ msgstr ""
 "Zəhmət olmasa, yeni tabda yenidən daxil olun və davam etmək üçün bura "
 "qayıdın. Yadda saxlanılmamış dəyişiklikləriniz qorunur."
 
-#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr ""
 "Zəhmət olmasa, davam etmək üçün yenidən daxil olun. Yadda saxlanılmamış "
 "dəyişiklikləriniz qorunur."
 
-#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "Daxil ol"
 
-#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "E-poçt"
 
-#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "Davam et"
 
-#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "Daxil ol"
 
-#: js/components/SchemaDialog.vue:42
 msgid "Content elements"
 msgstr "Məzmun elementləri"
 
-#: js/components/SchemaDialog.vue:47
 msgid "New elements"
 msgstr "Yeni elementlər"
 
-#: js/components/SchemaDialog.vue:59
 msgid "Only elements in %{lang}"
 msgstr "Yalnız %{lang} dilindəki elementlər"
 
-#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "Kateqoriyasız"
 
-#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "Məzmun elementləri alınarkən xəta baş verdi"
 
-#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "Ümumi"
 
-#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "Dialoqu və ya menyunu bağla"
 
-#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "Əmrlər və nəticələr arasında keçid et"
 
-#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "Əmri icra et və ya nəticəni aç"
 
-#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "Əmr palitrasını bağla"
 
-#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "Siyahılar"
 
-#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "Redaktə görünüşləri"
 
-#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "Səhifə məzmunu"
 
-#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "Məzmun elementini yuxarı və ya aşağı köçür"
 
-#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "Səhifə ağacı"
 
-#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "Səhifələr arasında keçid et"
 
-#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "Səhifəni genişləndir"
 
-#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "Fokuslanmış səhifəyə alt səhifə əlavə et"
 
-#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "Səhifənin sırasını və ya yerləşməsini dəyiş"
 
-#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "AI çatı"
 
-#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "Mesaj göndər"
 
-#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "Yeni sətir"
 
-#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "Əvvəlki mesajları geri çağır"
 
-#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "Bu dilə tərcümə et"
 
-#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "Dillər"
 
-#: js/components/TranslateDialog.vue:111 js/variants.js:307
 msgid ""
 "Nothing to translate, the pages are up to date or already being translated"
 msgstr ""
 "Tərcümə ediləcək heç nə yoxdur, səhifələr aktualdır və ya artıq tərcümə "
 "olunur"
 
-#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "%{num} səhifə seçilib."
 msgstr[1] "%{num} səhifə seçilib."
 
-#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -2010,666 +1437,512 @@ msgstr ""
 "səhifələr və aktual tərcümələr ötürülür. Tərcümələr arxa planda işləyir və "
 "nəzərdən keçirmək üçün qaralama kimi saxlanılır."
 
-#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Yadda saxlanılmamış dəyişikliklər"
 
-#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "Yadda saxlanılmamış dəyişiklikləriniz var və çıxsanız, onlar itəcək."
 
-#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
 msgstr "İmtina et"
 
-#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "Yadda saxla və çıx"
 
-#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "İstifadəçini yükləmək alınmadı"
 
-#: js/components/User.vue:86
 msgid "Logout failed"
 msgstr "Çıxış alınmadı"
 
-#: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "İşıqlı/qaranlıq rejimi dəyiş"
 
-#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "Dili dəyiş"
 
-#: js/components/User.vue:120
 msgid "User menu"
 msgstr "İstifadəçi menyusu"
 
-#: js/contentrefine.js:125
 msgid "Elements changed during the refinement were kept unchanged"
 msgstr "Təkmilləşdirmə zamanı dəyişdirilən elementlər dəyişməz saxlanıldı"
 
-#: js/contentrefine.js:134
 msgid "Error refining content"
 msgstr "Məzmun təkmilləşdirilərkən xəta baş verdi"
 
-#: js/contentshare.js:51
 msgid "Element not found"
 msgstr "Element tapılmadı"
 
-#: js/contentshare.js:56
 msgid "Element is already shared"
 msgstr "Element artıq paylaşılıb"
 
-#: js/contentshare.js:101
 msgid "Unable to make element shared"
 msgstr "Elementi paylaşılan etmək mümkün deyil"
 
-#: js/contentshare.js:117
 msgid "Element is not shared"
 msgstr "Element paylaşılmayıb"
 
-#: js/detail.js:47
 msgid "Element published successfully"
 msgstr "Element uğurla dərc edildi"
 
-#: js/detail.js:48
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Element %{date} tarixində dərc olunmaq üçün planlaşdırıldı"
 
-#: js/detail.js:49
 msgid "Error publishing element"
 msgstr "Element dərc edilərkən xəta baş verdi"
 
-#: js/detail.js:53
 msgid "File published successfully"
 msgstr "Fayl uğurla dərc edildi"
 
-#: js/detail.js:54
 msgid "File scheduled for publishing at %{date}"
 msgstr "Fayl %{date} tarixində dərc olunmaq üçün planlaşdırıldı"
 
-#: js/detail.js:59
 msgid "Page published successfully"
 msgstr "Səhifə uğurla dərc edildi"
 
-#: js/detail.js:60
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Səhifə %{date} tarixində dərc olunmaq üçün planlaşdırıldı"
 
-#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Səhifə dərc edilərkən xəta baş verdi"
 
-#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr ""
 "Dərc edilmədi, zəhmət olmasa dəyişiklikləri yoxlayın və yenidən dərc edin"
 
-#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Məlumat yoxdur"
 
-#: js/detail.js:386
 msgid "No version data available"
 msgstr "Versiya məlumatı mövcud deyil"
 
-#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Yanlış sahələr var, zəhmət olmasa, əvvəlcə xətaları düzəldin"
 
-#: js/dictation.js:23 js/dictation.js:42
 msgid "Error recording audio"
 msgstr "Səs yazılarkən xəta baş verdi"
 
-#: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
 msgstr "Dəyər hex rəng kodu olmalıdır"
 
-#: js/fields/File.vue:80
 msgid "File is required"
 msgstr "Fayl tələb olunur"
 
-#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "URL-dən fayl əlavə et"
 
-#: js/fields/File.vue:293 js/fields/Images.vue:385
 msgid "Create file"
 msgstr "Fayl yarat"
 
-#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "Fayl yüklə"
 
-#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "Yükləmək üçün faylı bura buraxın"
 
-#: js/fields/File.vue:332
 msgid "name"
 msgstr "Ad"
 
-#: js/fields/File.vue:333
 msgid "description"
 msgstr "Təsvir"
 
-#: js/fields/Images.vue:409
 msgid "Drop files here"
 msgstr "Faylları bura buraxın"
 
-#: js/fields/Map.vue:214
 msgid "Map location"
 msgstr "Xəritədə yer"
 
-#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "Məkanı təyin etmək üçün xəritəyə klikləyin"
 
-#: js/fields/Map.vue:224
 msgid "Clear location"
 msgstr "Məkanı təmizlə"
 
-#: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "Dəyərin formatı yanlışdır"
 
-#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "Sütunu köçür"
 
-#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "Sütun əməliyyatları"
 
-#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "Sətri köçür"
 
-#: js/fields/Table.vue:295
 msgid "Row %{row}, column %{col}"
 msgstr "Sətir %{row}, sütun %{col}"
 
-#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "Sətir əməliyyatları"
 
-#: js/fields/Url.vue:51 js/options.js:93
 msgid "None"
 msgstr "Heç biri"
 
-#: js/fields/Url.vue:52
 msgid "Sponsored"
 msgstr "Sponsorlu"
 
-#: js/fields/Url.vue:53
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:93
 msgid "Not a valid URL"
 msgstr "Etibarlı URL deyil"
 
-#: js/fields/Url.vue:101
 msgid "Invalid URL schema configuration"
 msgstr "Yanlış URL sxemi konfiqurasiyası"
 
-#: js/fields/Url.vue:173
 msgid "No pages found"
 msgstr "Heç bir səhifə tapılmadı"
 
-#: js/fields/Url.vue:185
 msgid "Link attribute"
 msgstr "Keçid atributu"
 
-#: js/filefield.js:119
 msgid "Unsupported file type"
 msgstr "Fayl növü dəstəklənmir"
 
-#: js/graphql.js:127
 msgid "Connection failed, please try again"
 msgstr "Bağlantı alınmadı, zəhmət olmasa yenidən cəhd edin"
 
-#: js/graphql.js:132 js/stores/session.js:337 js/views/Login.vue:163
 msgid "Login failed"
 msgstr "Daxil olmaq alınmadı"
 
-#: js/imageai.js:75
 msgid "Number of pixels added at this side of the image"
 msgstr "Şəklin bu tərəfinə əlavə edilən piksellərin sayı"
 
-#: js/imageai.js:78
 msgctxt "image edge"
 msgid "Top"
 msgstr "Yuxarı"
 
-#: js/imageai.js:80
 msgctxt "image edge"
 msgid "Left"
 msgstr "Sol"
 
-#: js/imageai.js:81
 msgctxt "image edge"
 msgid "Right"
 msgstr "Sağ"
 
-#: js/imageai.js:83
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Aşağı"
 
-#: js/imageai.js:95
 msgid "Error erasing image part"
 msgstr "Şəklin hissəsi silinərkən xəta baş verdi"
 
-#: js/imageai.js:103
 msgid "Error editing image part"
 msgstr "Şəklin hissəsi redaktə edilərkən xəta baş verdi"
 
-#: js/imageai.js:114
 msgid "Error removing background"
 msgstr "Fon silinərkən xəta baş verdi"
 
-#: js/imageai.js:259
 msgid "Error uncropping image"
 msgstr "Şəkil genişləndirilərkən xəta baş verdi"
 
-#: js/imageai.js:281
 msgid "Error upscaling image"
 msgstr "Şəklin ölçüsü böyüdülərkən xəta baş verdi"
 
-#: js/lists.js:92
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "Zibil qutusuna köçürüldü"
 msgstr[1] "%{num} qeyd zibil qutusuna köçürüldü"
 
-#: js/listview.js:87
 msgid "publish"
 msgstr "Dərc"
 
-#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
-#: js/views/PageList.vue:127 js/views/PageList.vue:137
-#: js/views/PageList.vue:148
 msgid "All"
 msgstr "Hamısı"
 
-#: js/listview.js:91
 msgid "Scheduled"
 msgstr "Planlaşdırılmış"
 
-#: js/listview.js:92
 msgid "Drafts"
 msgstr "Qaralamalar"
 
-#: js/listview.js:97
 msgid "trashed"
 msgstr "Zibil qutusu"
 
-#: js/listview.js:100
 msgid "Available only"
 msgstr "Yalnız mövcud olanlar"
 
-#: js/listview.js:101
 msgid "Only trashed"
 msgstr "Yalnız zibil qutusundakılar"
 
-#: js/listview.js:109
 msgid "Edited by me"
 msgstr "Mənim redaktə etdiklərim"
 
-#: js/listview.js:114
 msgid "languages"
 msgstr "Dillər"
 
-#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "%{editor} tərəfindən edilən dəyişikliklərlə birləşdirildi"
 
-#: js/options.js:49 js/views/PageList.vue:138
 msgid "No cache"
 msgstr "Keşsiz"
 
-#: js/options.js:51
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} saat"
 msgstr[1] "%{num} saat"
 
-#: js/options.js:62 js/views/PageList.vue:130
 msgid "Disabled"
 msgstr "Deaktiv"
 
-#: js/options.js:63 js/views/PageList.vue:128
 msgid "Enabled"
 msgstr "Aktiv"
 
-#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Səhifə yadda saxlanılarkən xəta baş verdi"
 
-#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Səhifələr yalnız mənbə dilində bütöv səhifə kimi silinir"
 
-#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Səhifə zibil qutusuna köçürülərkən xəta baş verdi"
 
-#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Dil bərpa edilərkən xəta baş verdi"
 
-#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Səhifə bərpa edilərkən xəta baş verdi"
 
-#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Bu səhifələrin bütün alt səhifələri də həmişəlik silinəcək."
 
-#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Səhifə həmişəlik silinərkən xəta baş verdi"
 
-#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Keş təmizləndi"
 
-#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "%{num} səhifə üçün keş təmizləndi."
 msgstr[1] "%{num} səhifə üçün keş təmizləndi."
 
-#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Keş təmizlənərkən xəta baş verdi"
 
-#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} səhifə yenilənə bilmədi"
 msgstr[1] "%{num} səhifə yenilənə bilmədi"
 
-#: js/pagetree.js:41
 msgid "Insert"
 msgstr "Daxil et"
 
-#: js/pagetree.js:66
 msgid "Before"
 msgstr "Əvvəl"
 
-#: js/pagetree.js:67
 msgid "Into"
 msgstr "İçinə"
 
-#: js/pagetree.js:68
 msgid "After"
 msgstr "Sonra"
 
-#: js/pagetree.js:205
 msgid "Error inserting page"
 msgstr "Səhifə daxil edilərkən xəta baş verdi"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Səhifə alınarkən xəta baş verdi"
 
-#: js/pagetree.js:263
 msgid "Error copying page"
 msgstr "Səhifə kopyalanarkən xəta baş verdi"
 
-#: js/pagetree.js:330
 msgid "Error moving page"
 msgstr "Səhifə köçürülərkən xəta baş verdi"
 
-#: js/pagetree.js:340
 msgid "Page moved"
 msgstr "Səhifə köçürüldü"
 
-#: js/routes.js:111
 msgid "Error checking the session, please try again"
 msgstr "Sessiya yoxlanılarkən xəta baş verdi, yenidən cəhd edin"
 
-#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "%{path} ünvanına giriş icazəniz yoxdur"
 
-#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "Domen adı yanlışdır"
 
-#: js/rules.js:24
 msgid "Value is required"
 msgstr "Dəyər tələb olunur"
 
-#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "Ən azı %{num} qeyd tələb olunur"
 msgstr[1] "Ən azı %{num} qeyd tələb olunur"
 
-#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "Ən çoxu %{num} qeydə icazə verilir"
 msgstr[1] "Ən çoxu %{num} qeydə icazə verilir"
 
-#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "Ən azı %{num} simvol tələb olunur"
 msgstr[1] "Ən azı %{num} simvol tələb olunur"
 
-#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "Ən çoxu %{num} simvola icazə verilir"
 msgstr[1] "Ən çoxu %{num} simvola icazə verilir"
 
-#: js/rules.js:62
 msgid "At least %{num} row is required"
 msgid_plural "At least %{num} rows are required"
 msgstr[0] "Ən azı %{num} sətir tələb olunur"
 msgstr[1] "Ən azı %{num} sətir tələb olunur"
 
-#: js/rules.js:69
 msgid "At most %{num} row is allowed"
 msgid_plural "At most %{num} rows are allowed"
 msgstr[0] "Ən çoxu %{num} sətirə icazə verilir"
 msgstr[1] "Ən çoxu %{num} sətirə icazə verilir"
 
-#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "İcazə verilmədi"
 
-#: js/stores/plugin.js:20
 msgid "Failed to load plugin"
 msgstr "Plagini yükləmək alınmadı"
 
-#: js/stores/setting.js:111
 msgid "Failed to save user settings"
 msgstr "İstifadəçi parametrləri yadda saxlanılmadı"
 
-#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "Tərcümə irəliləyişi alınarkən xəta baş verdi"
 
-#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "Tərcümə hələ də arxa planda davam edir"
 
-#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} tərcümə uğursuz oldu"
 msgstr[1] "%{num} tərcümə uğursuz oldu"
 
-#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "Tərcümə tamamlandı"
 
-#: js/strings.js:37
 msgctxt "cs"
 msgid "main"
 msgstr "Əsas"
 
-#: js/strings.js:38
 msgctxt "cs"
 msgid "header"
 msgstr "Başlıq hissəsi"
 
-#: js/strings.js:39
 msgctxt "cs"
 msgid "footer"
 msgstr "Altlıq hissəsi"
 
-#: js/strings.js:40
 msgctxt "cs"
 msgid "sidebar"
 msgstr "Yan panel"
 
-#: js/strings.js:41
 msgctxt "cs"
 msgid "aside"
 msgstr "Əlavə panel"
 
-#: js/strings.js:44
 msgctxt "sg"
 msgid "basic"
 msgstr "Əsas"
 
-#: js/strings.js:45
 msgctxt "sg"
 msgid "content"
 msgstr "Məzmun"
 
-#: js/strings.js:46
 msgctxt "sg"
 msgid "media"
 msgstr "Media"
 
-#: js/strings.js:47
 msgctxt "sg"
 msgid "forms"
 msgstr "Formalar"
 
-#: js/strings.js:50
 msgctxt "as"
 msgid "type"
 msgstr "Növ"
 
-#: js/strings.js:51
 msgctxt "as"
 msgid "state"
 msgstr "Vəziyyət"
 
-#: js/strings.js:54
 msgctxt "st"
 msgid "valid"
 msgstr "Etibarlı"
 
-#: js/strings.js:55
 msgctxt "st"
 msgid "changed"
 msgstr "Dəyişdirilib"
 
-#: js/strings.js:56
 msgctxt "st"
 msgid "error"
 msgstr "Xəta"
 
-#: js/strings.js:59
 msgctxt "st"
 msgid "reference"
 msgstr "İstinad"
 
-#: js/strings.js:62
 msgctxt "fn"
 msgid "files"
 msgstr "Fayllar"
 
-#: js/strings.js:63
 msgctxt "fn"
 msgid "language"
 msgstr "Dil"
 
-#: js/strings.js:64
 msgctxt "fn"
 msgid "main"
 msgstr "Əsas şəkil"
 
-#: js/strings.js:67
 msgctxt "ai"
 msgid "Done"
 msgstr "Hazırdır"
 
-#: js/strings.js:68
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Artıq mövcuddur"
 
-#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "Mənbə dilindəki səhifələr yalnız bütöv səhifə kimi silinir"
 
-#: js/variants.js:139
 msgid "Delete language"
 msgstr "Dili sil"
 
-#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "\"%{lang}\" dilindəki %{num} səhifə zibil qutusuna köçürülsün?"
 msgstr[1] "\"%{lang}\" dilindəki %{num} səhifə zibil qutusuna köçürülsün?"
 
-#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "Mənbə dilindəki %{num} səhifə ötürülür."
 msgstr[1] "Mənbə dilindəki %{num} səhifə ötürülür."
 
-#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "Dil zibil qutusuna köçürülərkən xəta baş verdi"
 
-#: js/variants.js:199
 msgid "Error purging language"
 msgstr "Dil həmişəlik silinərkən xəta baş verdi"
 
-#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "Dəyişikliklər nəzərə alınmayarkən xəta baş verdi"
 
-#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "Səhifələr tərcümə edilərkən xəta baş verdi"
 
-#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "Tərcümə qaralama kimi yadda saxlanıldı, dəyişiklikləri yoxlayın"
 
-#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "Aktual kimi işarələndi"
 
-#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "Aktual kimi işarələnərkən xəta baş verdi"
 
-#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr ""
 "Tərcümə ediləcək heç nə yoxdur, səhifə aktualdır və ya artıq tərcümə olunur"
 
-#: js/views/AccessList.vue:171
 msgid "Error adding access value"
 msgstr "Giriş dəyəri əlavə edilərkən xəta baş verdi"
 
-#: js/views/AccessList.vue:186
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
@@ -2677,104 +1950,78 @@ msgstr ""
 "Mövcud məhdudiyyətlər dəyişdirilmir və həmişəlik silinmiş giriş dəyərlərinə "
 "istinad etməyə davam edəcək."
 
-#: js/views/AccessList.vue:205
 msgid "Error purging access values"
 msgstr "Giriş dəyərləri həmişəlik silinərkən xəta baş verdi"
 
-#: js/views/AccessList.vue:242
 msgid "Roles"
 msgstr "Rollar"
 
-#: js/views/AccessList.vue:277 js/views/AccessList.vue:322
 msgid "Add access value"
 msgstr "Giriş dəyəri əlavə et"
 
-#: js/views/AccessList.vue:326
 msgid "Access value"
 msgstr "Giriş dəyəri"
 
-#: js/views/AccessList.vue:326
 msgid "Role name which can be assigned to pages and users"
 msgstr "Səhifələrə və istifadəçilərə təyin edilə bilən rol adı"
 
-#: js/views/AccessList.vue:342
 msgid "Add"
 msgstr "Əlavə et"
 
-#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "Element alınarkən xəta baş verdi"
 
-#: js/views/ElementDetail.vue:169
 msgid "Element saved successfully"
 msgstr "Element uğurla yadda saxlanıldı"
 
-#: js/views/ElementDetail.vue:172
 msgid "Error saving element"
 msgstr "Element yadda saxlanılarkən xəta baş verdi"
 
-#: js/views/ElementDetail.vue:200 js/views/ElementDetail.vue:202
-#: js/views/ElementDetail.vue:207
 msgid "Element"
 msgstr "Element"
 
-#: js/views/ElementDetail.vue:209 js/views/FileDetail.vue:300
 msgid "Used by"
 msgstr "İstifadə edənlər"
 
-#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
 "AI daxil etdiyiniz məlumatlara əsasən paylaşılan elementləri tapa və idarə "
 "edə bilər"
 
-#: js/views/ElementList.vue:50 js/views/FileList.vue:50
-#: js/views/PageList.vue:282
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "AI köməkçisini açmaq və çatda təkmilləşdirmək üçün Enter düyməsini və ya oxu "
 "basın"
 
-#: js/views/FileDetail.vue:129
 msgid "Error fetching file"
 msgstr "Fayl alınarkən xəta baş verdi"
 
-#: js/views/FileDetail.vue:246
 msgid "File saved successfully"
 msgstr "Fayl uğurla yadda saxlanıldı"
 
-#: js/views/FileDetail.vue:279 js/views/FileDetail.vue:293
-#: js/views/FileDetail.vue:298
 msgid "File"
 msgstr "Fayl"
 
-#: js/views/FileDetail.vue:285
 msgid "Replace file"
 msgstr "Faylı əvəz et"
 
-#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
 msgstr ""
 "AI daxil etdiyiniz məlumatlara əsasən media fayllarını tapa və idarə edə "
 "bilər"
 
-#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "Yanlış e-poçt ünvanı"
 
-#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "CMS redaktoru deyil"
 
-#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "Giriş qadağandır"
 
-#: js/views/Login.vue:230
 msgid "Error: %{msg}"
 msgstr "Xəta: %{msg}"
 
-#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2782,61 +2029,46 @@ msgstr ""
 "Bu səhifəyə hər sahə üzrə 1–10 bal ver (məzmun keyfiyyəti, oxunaqlılıq, SEO, "
 "UX, cəlbedicilik) və təkmilləşdirmələr təklif et"
 
-#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Zəhmət olmasa dil dəyişənə qədər gözləyin"
 
-#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Səhifə uğurla yadda saxlanıldı"
 
-#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
-#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Səhifə"
 
-#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Mənbə"
 
-#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "Zibil qutusunda"
 
-#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Redaktə aləti"
 
-#: js/views/PageList.vue:115
 msgid "view"
 msgstr "Görünüş"
 
-#: js/views/PageList.vue:118
 msgid "List"
 msgstr "Siyahı"
 
-#: js/views/PageList.vue:125
 msgid "status"
 msgstr "Status"
 
-#: js/views/PageList.vue:129
 msgid "Hidden"
 msgstr "Gizli"
 
-#: js/views/PageList.vue:135
 msgid "cache"
 msgstr "Keş"
 
-#: js/views/PageList.vue:146
 msgid "translation"
 msgstr "Tərcümə"
 
-#: js/views/PageList.vue:278
 msgid "Generate page based on prompt"
 msgstr "Sorğuya əsasən səhifə yarat"
 
-#: js/views/PageList.vue:281
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"

@@ -12,475 +12,334 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
-#: js/ai.js:65 js/components/FileDetailItem.vue:256
 msgid "Error transcribing file"
 msgstr "Chyba při přepisu souboru"
 
-#: js/ai.js:114 js/components/FileDetailItem.vue:309
-#: js/components/FileDetailItem.vue:316
 msgid "Error translating texts"
 msgstr "Chyba při překladu textů"
 
-#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "Pro generování textu je vyžadována výzva"
 
-#: js/ai.js:161
 msgid "Error generating text"
 msgstr "Chyba při generování textu"
 
-#: js/App.vue:88 js/components/User.vue:68
 msgid "Error switching language"
 msgstr "Chyba při přepínání jazyka"
 
-#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Asistent chatu není k dispozici."
 
-#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Odpověď se již generuje. Počkejte prosím na dokončení."
 
-#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Příliš mnoho požadavků. Chvíli počkejte a zkuste to znovu."
 
-#: js/commands.js:54
 msgid "Open commands"
 msgstr "Otevřít příkazy"
 
-#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "Potvrdit dialog"
 
-#: js/commands.js:69
 msgid "Save changes"
 msgstr "Uložit změny"
 
-#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "Otevřít nabídku zveřejnění"
 
-#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "Nová stránka, soubor nebo prvek"
 
-#: js/commands.js:91
 msgid "Search in list"
 msgstr "Hledat v seznamu"
 
-#: js/commands.js:97
 msgid "Previous tab"
 msgstr "Předchozí karta"
 
-#: js/commands.js:103
 msgid "Next tab"
 msgstr "Další karta"
 
-#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "Zobrazit nebo skrýt boční panel"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Zpět na zobrazení seznamu"
 
-#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "Zobrazit klávesové zkratky"
 
-#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "Vybrat aktivní stránku, soubor nebo prvek"
 
-#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "Smazat aktivní stránku, soubor nebo prvek"
 
-#: js/commands.js:143
 msgid "Copy page"
 msgstr "Kopírovat stránku"
 
-#: js/commands.js:151
 msgid "Cut page"
 msgstr "Vyjmout stránku"
 
-#: js/commands.js:159
 msgid "Paste page"
 msgstr "Vložit stránku"
 
-#: js/commands.js:178 js/components/CommandPalette.vue:112
-#: js/components/DetailRefs.vue:148 js/components/Navigation.vue:31
-#: js/views/PageList.vue:267 js/views/PageList.vue:271
 msgid "Pages"
 msgstr "Stránky"
 
-#: js/commands.js:179
 msgid "Go to pages"
 msgstr "Přejít na stránky"
 
-#: js/commands.js:184 js/components/CommandPalette.vue:113
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
-#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
-#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "Média"
 
-#: js/commands.js:185
 msgid "Go to media"
 msgstr "Přejít na média"
 
-#: js/commands.js:190 js/components/CommandPalette.vue:114
-#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "Sdílené prvky"
 
-#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "Přejít na sdílené prvky"
 
-#: js/commands.js:196 js/components/Navigation.vue:34
-#: js/views/AccessList.vue:241
 msgid "Users"
 msgstr "Uživatelé"
 
-#: js/commands.js:197
 msgid "Go to users"
 msgstr "Přejít na uživatele"
 
-#: js/components/AccessUsers.vue:212
 msgid "All languages"
 msgstr "Všechny jazyky"
 
-#: js/components/AccessUsers.vue:213 js/components/AccessUsers.vue:574
 msgid "Selected languages"
 msgstr "Vybrané jazyky"
 
-#: js/components/AccessUsers.vue:214
 msgid "No languages"
 msgstr "Žádné jazyky"
 
-#: js/components/AccessUsers.vue:282
 msgid "Access roles updated"
 msgstr "Přístupové role byly aktualizovány"
 
-#: js/components/AccessUsers.vue:282
 msgid "Backend roles updated"
 msgstr "Role backendu aktualizovány"
 
-#: js/components/AccessUsers.vue:292
 msgid "Error updating access roles"
 msgstr "Chyba při aktualizaci přístupových rolí"
 
-#: js/components/AccessUsers.vue:293
 msgid "Error updating CMS permissions"
 msgstr "Chyba při aktualizaci oprávnění CMS"
 
-#: js/components/AccessUsers.vue:330
 msgid "User created"
 msgstr "Uživatel byl vytvořen"
 
-#: js/components/AccessUsers.vue:336
 msgid "Error creating user"
 msgstr "Chyba při vytváření uživatele"
 
-#: js/components/AccessUsers.vue:377 js/components/PageAccess.vue:130
-#: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "Chyba při načítání přístupových rolí"
 
-#: js/components/AccessUsers.vue:407
 msgid "Error fetching user access roles"
 msgstr "Chyba při načítání přístupových rolí uživatele"
 
-#: js/components/AccessUsers.vue:454 js/components/AccessUsers.vue:455
 msgid "Create user"
 msgstr "Vytvořit uživatele"
 
-#: js/components/AccessUsers.vue:462
 msgid "Email address"
 msgstr "E-mailová adresa"
 
-#: js/components/AccessUsers.vue:471
 msgid "Search user by email"
 msgstr "Vyhledat uživatele podle e-mailu"
 
-#: js/components/AccessUsers.vue:483 js/components/AccessUsers.vue:484
 msgid "Search"
 msgstr "Hledat"
 
-#: js/components/AccessUsers.vue:499 js/components/AccessUsers.vue:500
-#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Uložit"
 
-#: js/components/AccessUsers.vue:509
 msgid "Account"
 msgstr "Účet"
 
-#: js/components/AccessUsers.vue:514 js/components/AccessUsers.vue:521
 msgid "Assigned frontend roles"
 msgstr "Přiřazené role frontendu"
 
-#: js/components/AccessUsers.vue:521
 msgid "Roles granting access to restricted pages"
 msgstr "Role udělující přístup k omezeným stránkám"
 
-#: js/components/AccessUsers.vue:534
 msgid "Assigned backend roles"
 msgstr "Přiřazené role v backendu"
 
-#: js/components/AccessUsers.vue:538
 msgid "Custom"
 msgstr "Vlastní"
 
-#: js/components/AccessUsers.vue:544
 msgid "Available roles"
 msgstr "Dostupné role"
 
-#: js/components/AccessUsers.vue:544
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "Role určující, co může uživatel dělat v administračním panelu"
 
-#: js/components/AccessUsers.vue:556 js/components/AccessUsers.vue:563
 msgid "Writable languages"
 msgstr "Upravitelné jazyky"
 
-#: js/components/AccessUsers.vue:563
 msgid "Languages of the pages, elements and files the user can change"
 msgstr "Jazyky stránek, prvků a souborů, které může uživatel měnit"
 
-#: js/components/AccessUsers.vue:585 js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "Nebyly nalezeny žádné záznamy"
 
-#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:110
 msgid "Actions"
 msgstr "Akce"
 
-#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "Zavřít"
 
-#: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Co pro vás mohu udělat?"
 
-#: js/components/AiPrompt.vue:88
 msgid "Press Enter to open the chat"
 msgstr "Stisknutím klávesy Enter otevřete chat"
 
-#: js/components/AiPrompt.vue:105
 msgid "Hide help"
 msgstr "Skrýt nápovědu"
 
-#: js/components/AiPrompt.vue:105
 msgid "Show help"
 msgstr "Zobrazit nápovědu"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
-#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Odeslat"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
-#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:236 js/components/FileDetailItem.vue:482
 msgid "Dictate"
 msgstr "Diktovat"
 
-#: js/components/AiPrompt.vue:133
 msgid "Help"
 msgstr "Nápověda"
 
-#: js/components/AsideCount.vue:60
 msgid "Used elements"
 msgstr "Použité prvky"
 
-#: js/components/AsideList.vue:71
 msgid "Filters"
 msgstr "Filtry"
 
-#: js/components/AsideList.vue:78 js/components/ListStatus.vue:43
 msgid "Reset"
 msgstr "Resetovat"
 
-#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:153
-#: js/components/DetailRefs.vue:183 js/components/DetailRefs.vue:205
 msgid "ID"
 msgstr "ID"
 
-#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
-#: js/fields/File.vue:334
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
 msgid "editor"
 msgstr "editor"
 
-#: js/components/AsideMeta.vue:34
 msgid "created"
 msgstr "vytvořeno"
 
-#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
 msgid "updated"
 msgstr "aktualizováno"
 
-#: js/components/AsideMeta.vue:36
 msgid "deleted"
 msgstr "smazáno"
 
-#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
-#: js/components/HistoryDialog.vue:46
 msgid "Meta data"
 msgstr "Metadata"
 
-#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
-#: js/components/HistoryDialog.vue:46
 msgid "Fields"
 msgstr "Pole"
 
-#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "Meta tagy"
 
-#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
 msgid "Configuration"
 msgstr "Nastavení"
 
-#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Obsah"
 
-#: js/components/ChangesDialog.vue:231
 msgid "Conflicts from %{editor}"
 msgstr "Konflikty od %{editor}"
 
-#: js/components/ChangesDialog.vue:237
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
-#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
 msgid "Revert"
 msgstr "Vrátit"
 
-#: js/components/ChangesDialog.vue:262
 msgid "Changes"
 msgstr "Změny"
 
-#: js/components/ChangesDialog.vue:281
 msgid "Removed"
 msgstr "Odstraněno"
 
-#: js/components/ChangesDialog.vue:288
 msgid "Added"
 msgstr "Přidáno"
 
-#: js/components/ChangesDialog.vue:308
 msgid "Use theirs"
 msgstr "Použít jejich"
 
-#: js/components/ChangesDialog.vue:314
 msgid "Keep mine"
 msgstr "Ponechat moje"
 
-#: js/components/ChangesDialog.vue:321
 msgid "Merge both"
 msgstr "Sloučit oba"
 
-#: js/components/ChatDialog.vue:210
 msgid "The response was interrupted and may be incomplete."
 msgstr "Odpověď byla přerušena a může být neúplná."
 
-#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Omlouváme se, něco se pokazilo."
 
-#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Hotovo"
 
-#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "Asistent AI"
 
-#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Nový chat"
 
-#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Přemýšlím ..."
 
-#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
-#: js/components/PageDetailContentList.vue:528
-#: js/components/PageDetailContentList.vue:615
-#: js/components/PageListItems.vue:771 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopírovat"
 
-#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Poslat zprávu..."
 
-#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Zpráva chatu"
 
-#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Zastavit"
 
-#: js/components/CommandPalette.vue:111
 msgid "Go to"
 msgstr "Přejít na"
 
-#: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:275 js/components/PageListItems.vue:903
 msgid "New"
 msgstr "Nový"
 
-#: js/components/CommandPalette.vue:287 js/components/CommandPalette.vue:310
-#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "Příkazy"
 
-#: js/components/CommandPalette.vue:296
 msgid "Type a command or search pages, files and elements"
 msgstr "Zadejte příkaz nebo hledejte stránky, soubory a prvky"
 
-#: js/components/CommandPalette.vue:297
 msgid "Command or search term"
 msgstr "Příkaz nebo hledaný výraz"
 
-#: js/components/CommandPalette.vue:329 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "potom"
 
-#: js/components/CommandPalette.vue:336
 msgid "Search failed, please try again"
 msgstr "Vyhledávání selhalo, zkuste to prosím znovu"
 
-#: js/components/CommandPalette.vue:337
 msgid "No results"
 msgstr "Žádné výsledky"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
-#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:119 js/components/PageListItems.vue:807
-#: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Trvale smazat"
 
-#: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
 msgid_plural ""
 "The following %{num} entries will be permanently deleted and cannot be "
@@ -490,903 +349,639 @@ msgstr[1] "Následující %{num} položky budou trvale smazány a nelze je obnov
 msgstr[2] ""
 "Následujících %{num} položek bude trvale smazáno a nelze je obnovit:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: js/components/DetailAppBar.vue:164 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Nabídka"
 
-#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Zobrazit historii"
 
-#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Zobrazit změny po sloučení"
 
-#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ListBulkMenu.vue:53
-#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:91
-#: js/components/PageListItems.vue:735
 msgid "Publish"
 msgstr "Zveřejnit"
 
-#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
 msgstr "Zveřejnit a zavřít"
 
-#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Naplánovat"
 
-#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
 msgstr "Naplánovat a zavřít"
 
-#: js/components/DetailAppBar.vue:289 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Přepnout boční nabídku"
 
-#: js/components/DetailRefs.vue:78
 msgid "yes"
 msgstr "ano"
 
-#: js/components/DetailRefs.vue:81
 msgid "no"
 msgstr "ne"
 
-#: js/components/DetailRefs.vue:134
 msgid "Error fetching references"
 msgstr "Chyba při načítání odkazů"
 
-#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:238
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
-#: js/components/ElementDetailItem.vue:62 js/components/FileDetailItem.vue:389
-#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Název"
 
-#: js/components/DetailRefs.vue:167 js/components/PageAccess.vue:187
-#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "Omezeno"
 
-#: js/components/DetailRefs.vue:178 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "Prvky"
 
-#: js/components/DetailRefs.vue:184 js/components/DetailRefs.vue:206
-#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "Typ"
 
-#: js/components/DetailRefs.vue:200
 msgid "Versions"
 msgstr "Verze"
 
-#: js/components/DetailRefs.vue:207 js/listview.js:90
 msgid "Published"
 msgstr "Zveřejněno"
 
-#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
-#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
-#: js/components/PageBulkMenu.vue:101 js/components/PageListItems.vue:756
 msgid "Edit properties"
 msgstr "Upravit vlastnosti"
 
-#: js/components/EditBulkDialog.vue:59
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Použít vybrané vlastnosti na %{num} položku."
 msgstr[1] "Použít vybrané vlastnosti na %{num} položky."
 msgstr[2] "Použít vybrané vlastnosti na %{num} položek."
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
-#: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
-#: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Jazyk"
 
-#: js/components/EditBulkDialog.vue:71
 msgid "Language of the content"
 msgstr "Jazyk obsahu"
 
-#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
-#: js/components/PageBulkDialog.vue:260
 msgid "Apply"
 msgstr "Použít"
 
-#: js/components/ElementDetailItem.vue:62
 msgid "Name to find the shared element in the element list"
 msgstr "Název pro vyhledání sdíleného prvku v seznamu prvků"
 
-#: js/components/ElementDetailItem.vue:75
 msgid "Language of the element content, choose none if used in all languages"
 msgstr "Jazyk obsahu prvku, zvolte Žádné, pokud se používá ve všech jazycích"
 
-#: js/components/ElementListItems.vue:157
 msgid "Error adding shared element"
 msgstr "Chyba při přidávání sdíleného prvku"
 
-#: js/components/ElementListItems.vue:163
 msgid "Error trashing shared element"
 msgstr "Chyba při přesunu sdíleného prvku do koše"
 
-#: js/components/ElementListItems.vue:164
 msgid "Error restoring shared element"
 msgstr "Chyba při obnovení sdíleného prvku"
 
-#: js/components/ElementListItems.vue:165
 msgid "Error publishing shared element"
 msgstr "Chyba při zveřejňování sdíleného prvku"
 
-#: js/components/ElementListItems.vue:166
 msgid "Error purging shared element"
 msgstr "Chyba při trvalém mazání sdíleného prvku"
 
-#: js/components/ElementListItems.vue:167
 msgid "Error saving shared element"
 msgstr "Chyba při ukládání sdíleného prvku"
 
-#: js/components/ElementListItems.vue:168
 msgid "Error fetching shared elements"
 msgstr "Chyba při načítání sdílených prvků"
 
-#: js/components/ElementListItems.vue:204
-#: js/components/ElementListItems.vue:246 js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:386
-#: js/components/PageDetailContentList.vue:514
-#: js/components/PageDetailContentList.vue:605
-#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:723
-#: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "Přepnout výběr"
 
-#: js/components/ElementListItems.vue:222
-#: js/components/ElementListItems.vue:303
-#: js/components/PageDetailContentList.vue:705
-#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Přidat prvek"
 
-#: js/components/ElementListItems.vue:234 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Znovu načíst prvky"
 
-#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
-#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Přeložit"
 
-#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "Generovat text"
 
-#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "Aktualizováno jiným redaktorem"
 
-#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "Přepsáno"
 
-#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "Mobil"
 
-#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "Tablet"
 
-#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "Počítač"
 
-#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "Plná šířka"
 
-#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "Prvek obsahu"
 
-#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "Přidat prvek před"
 
-#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "Přidat prvek za"
 
-#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "Odstranit prvek"
 
-#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "Responzivní náhled"
 
-#: js/components/FieldsAside.vue:231
-#: js/components/PageDetailContentList.vue:651
 msgid "Change to"
 msgstr "Změnit na"
 
-#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
-#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
-#: js/fields/Images.vue:340
 msgid "Edit"
 msgstr "Upravit"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:259
-#: js/components/FileAiDialog.vue:286 js/components/FileUrlDialog.vue:250
-#: js/components/PageDetailContentList.vue:540
-#: js/components/PageDetailContentList.vue:621 js/fields/Items.vue:283
-#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Odstranit"
 
-#: js/components/FileAiDialog.vue:134 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:170
-#: js/filefield.js:189
 msgid "Error adding file %{path}"
 msgstr "Chyba při přidávání souboru %{path}"
 
-#: js/components/FileAiDialog.vue:178
 msgid "Error creating file"
 msgstr "Chyba při vytváření souboru"
 
-#: js/components/FileAiDialog.vue:225
 msgid "Create image"
 msgstr "Vytvořit obrázek"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the image content"
 msgstr "Popište obsah obrázku"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Popište téma, styl a barvy obrázku, který se má vygenerovat"
 
-#: js/components/FileAiDialog.vue:250
 msgid "New image"
 msgstr "Nový obrázek"
 
-#: js/components/FileAiDialog.vue:254
 msgid "Current images"
 msgstr "Aktuální obrázky"
 
-#: js/components/FileAiDialog.vue:279
 msgid "Images used"
 msgstr "Použité obrázky"
 
-#: js/components/FileAiDialog.vue:296
 msgid "Select images"
 msgstr "Vybrat obrázky"
 
-#: js/components/FileDetailItem.vue:142 js/components/FileDetailItem.vue:151
 msgid "Error copying to clipboard"
 msgstr "Chyba při kopírování do schránky"
 
-#: js/components/FileDetailItem.vue:148
 msgid "Copied to clipboard"
 msgstr "Zkopírováno do schránky"
 
-#: js/components/FileDetailItem.vue:175
 msgid "Error describing file"
 msgstr "Chyba při popisu souboru"
 
-#: js/components/FileDetailItem.vue:224 js/components/FileListItems.vue:190
-#: js/filefield.js:157 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "Chyba při ukládání souboru"
 
-#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "Přepis je k dispozici pouze pro audio a video soubory."
 
-#: js/components/FileDetailItem.vue:389
 msgid "Name to find the file in the media list"
 msgstr "Název pro vyhledání souboru v seznamu médií"
 
-#: js/components/FileDetailItem.vue:401
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "Jazyk obsahu souboru, zvolte Žádné, pokud se používá ve všech jazycích"
 
-#: js/components/FileDetailItem.vue:411
 msgid "Copy URL"
 msgstr "Kopírovat URL"
 
-#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "Popisy"
 
-#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Přeložit text"
 
-#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "Generovat popis"
 
-#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "Popis (%{lang})"
 
-#: js/components/FileDetailItem.vue:498
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Alternativní text pro čtečky obrazovky a vyhledávače, používá se také jako "
 "popisek"
 
-#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "Přepisy"
 
-#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "Přepsat obsah souboru"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Transcription (%{lang})"
 msgstr "Přepis (%{lang})"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr "Mluvený text ve formátu WebVTT, zobrazovaný jako titulky a přepis"
 
-#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "Původní poměr"
 
-#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "Žádný poměr"
 
-#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "Čtverec"
 
-#: js/components/FileDetailItemImage.vue:175
 msgid "Error downloading image"
 msgstr "Chyba při stahování obrázku"
 
-#: js/components/FileDetailItemImage.vue:277
-#: js/components/FileDetailItemImage.vue:362 js/imageai.js:216
 msgid "Error editing image"
 msgstr "Chyba při úpravě obrázku"
 
-#: js/components/FileDetailItemImage.vue:402
-#: js/components/FileDetailItemImage.vue:407
 msgid "Select area"
 msgstr "Vybrat oblast"
 
-#: js/components/FileDetailItemImage.vue:426
 msgid "Crop selected area"
 msgstr "Oříznout vybranou oblast"
 
-#: js/components/FileDetailItemImage.vue:436
 msgid "Erase selected area"
 msgstr "Vymazat vybranou oblast"
 
-#: js/components/FileDetailItemImage.vue:448
-#: js/components/FileDetailItemImage.vue:455
-#: js/components/FileDetailItemImage.vue:470
 msgid "Edit image"
 msgstr "Upravit obrázek"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe the changes"
 msgstr "Popište změny"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "Popište, co se má na obrázku změnit, např. udělat oblohu modrou"
 
-#: js/components/FileDetailItemImage.vue:480
 msgid "Remove background"
 msgstr "Odstranit pozadí"
 
-#: js/components/FileDetailItemImage.vue:491
-#: js/components/FileDetailItemImage.vue:498
-#: js/components/FileDetailItemImage.vue:518
 msgid "Expand image"
 msgstr "Rozšířit obrázek"
 
-#: js/components/FileDetailItemImage.vue:526
-#: js/components/FileDetailItemImage.vue:533
 msgid "Upscale image"
 msgstr "Zvýšit rozlišení obrázku"
 
-#: js/components/FileDetailItemImage.vue:546
 msgid "Scale %{factor}"
 msgstr "Měřítko %{factor}"
 
-#: js/components/FileDetailItemImage.vue:555
 msgid "Rotate counter-clockwise"
 msgstr "Otočit proti směru hodinových ručiček"
 
-#: js/components/FileDetailItemImage.vue:562
 msgid "Rotate clockwise"
 msgstr "Otočit ve směru hodinových ručiček"
 
-#: js/components/FileDetailItemImage.vue:570
 msgid "Flip horizontally"
 msgstr "Překlopit vodorovně"
 
-#: js/components/FileDetailItemImage.vue:577
 msgid "Flip vertically"
 msgstr "Překlopit svisle"
 
-#: js/components/FileDetailItemImage.vue:585
 msgid "Convert to monochrome"
 msgstr "Převést na černobílou verzi"
 
-#: js/components/FileDetailItemImage.vue:588
 msgid "Download"
 msgstr "Stáhnout"
 
-#: js/components/FileDetailItemImage.vue:590
-#: js/components/FileDetailItemImage.vue:595 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "Vrátit zpět"
 
-#: js/components/FileDetailItemImage.vue:602
 msgid "Previous edit"
 msgstr "Předchozí úprava"
 
-#: js/components/FileDetailItemImage.vue:605
 msgid "Original"
 msgstr "Originál"
 
-#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "Nebyl nalezen žádný prvek videa"
 
-#: js/components/FileDetailItemVideo.vue:85
 msgid "Video not loaded yet"
 msgstr "Video ještě není načteno"
 
-#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "Chyba při ukládání obálky videa"
 
-#: js/components/FileDetailItemVideo.vue:158
-#: js/components/FileDetailItemVideo.vue:202
-#: js/components/FileDetailItemVideo.vue:203
 msgid "Remove cover image"
 msgstr "Odstranit titulní obrázek"
 
-#: js/components/FileDetailItemVideo.vue:158
 msgid "Remove the cover image of this video?"
 msgstr "Odstranit titulní obrázek tohoto videa?"
 
-#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "Chyba při odstraňování obálky videa"
 
-#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "Není vybrán žádný soubor"
 
-#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "Chyba při nahrávání obálky videa"
 
-#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "Použít jako obrázek obálky"
 
-#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "Nahrát obrázek obálky"
 
-#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "Chyba při přesunu souboru do koše"
 
-#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "Chyba při obnovení souboru"
 
-#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Chyba při zveřejňování souboru"
 
-#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "Chyba při trvalém mazání souboru"
 
-#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "Chyba při načítání souborů"
 
-#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "Popisy %{num} souboru přeloženy"
 msgstr[1] "Popisy %{num} souborů přeloženy"
 msgstr[2] "Popisy %{num} souborů přeloženy"
 
-#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "Chyba při překladu popisů po %{done} z %{total} souborů"
 
-#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "Chyba při překladu popisů"
 
-#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "Žádné chybějící popisy k překladu"
 
-#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "Přeložit popisy"
 
-#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "Znovu načíst soubory"
 
-#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "Zobrazení mřížky"
 
-#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
-#: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "Chránit pomocí přístupu ke stránce"
 
-#: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
 msgstr ""
 "Soubor si může stáhnout jen návštěvník, který má oprávnění zobrazit stránku "
 "s tímto souborem"
 
-#: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:207
-#: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "Přidat soubory"
 
-#: js/components/FileUrlDialog.vue:124
 msgid "At least one URL is longer than 255 characters"
 msgstr "Alespoň jedna adresa URL je delší než 255 znaků"
 
-#: js/components/FileUrlDialog.vue:160
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Alespoň jeden soubor není typu \"%{mime}*\"."
 
-#: js/components/FileUrlDialog.vue:164
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Soubor není typu \"%{mime}*\"."
 
-#: js/components/FileUrlDialog.vue:192 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "Přidat soubory z adres URL"
 
-#: js/components/FileUrlDialog.vue:207 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Přidat soubor"
 
-#: js/components/FileUrlDialog.vue:220
 msgid "Enter one URL per line"
 msgstr "Zadejte jednu adresu URL na řádek"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "URLs"
 msgstr "URL adresy"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "Soubory se stáhnou z těchto adres URL a přidají se do seznamu médií"
 
-#: js/components/FileUrlDialog.vue:237
 msgid "Enter URL"
 msgstr "Zadejte adresu URL"
 
-#: js/components/FileUrlDialog.vue:238
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Soubor se stáhne z této adresy URL a přidá se do seznamu médií"
 
-#: js/components/FileUrlDialog.vue:279
 msgid "Size"
 msgstr "Velikost"
 
-#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
-#: js/components/PageDetailContentList.vue:664
 msgid "Shared element"
 msgstr "Sdílený prvek"
 
-#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "Blok obsahu"
 
-#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "Skupina: %{group} · Pozice %{num}"
 
-#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "Přesunuto z pozice %{from} do %{to}"
 
-#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "Změněno %{num} pole"
 msgstr[1] "Změněna %{num} pole"
 msgstr[2] "Změněno %{num} polí"
 
-#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "Vybráno %{selected} z %{total}"
 
-#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "Neznámé datum"
 
-#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "Pozice bloku"
 
-#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "Hodnota"
 
-#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "Přidán %{num} blok"
 msgstr[1] "Přidány %{num} bloky"
 msgstr[2] "Přidáno %{num} bloků"
 
-#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "Odstraněn %{num} blok"
 msgstr[1] "Odstraněny %{num} bloky"
 msgstr[2] "Odstraněno %{num} bloků"
 
-#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "Změněn %{num} blok"
 msgstr[1] "Změněny %{num} bloky"
 msgstr[2] "Změněno %{num} bloků"
 
-#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "Přesunut %{num} blok"
 msgstr[1] "Přesunuty %{num} bloky"
 msgstr[2] "Přesunuto %{num} bloků"
 
-#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "Změněn %{num} soubor"
 msgstr[1] "Změněny %{num} soubory"
 msgstr[2] "Změněno %{num} souborů"
 
-#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
-#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "Žádné změny"
 
-#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "Historie"
 
-#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
-#: js/fields/Url.vue:173
 msgid "Loading"
 msgstr "Načítání"
 
-#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "Chyba při načítání verzí"
 
-#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "Zkusit znovu"
 
-#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "Aktuální změny"
 
-#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Naplánováno na %{date}"
 
-#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "Vybrat vše"
 
-#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "Blok přidán"
 
-#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "Blok odstraněn"
 
-#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "Ponechat aktuální pozici"
 
-#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "Ponechat aktuální hodnotu"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "Předchozí verze: Poslední uložená verze"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "Předchozí verze: %{date}"
 
-#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "Vybráno k vrácení: %{selected} z %{total}"
 
-#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "Vrátit zpět vybrané změny"
 
-#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "Obnovit předchozí verzi"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "Předchozí hodnota"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "Nová hodnota"
 
-#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "Zvětšit %{name}"
 
-#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "Načítání náhledu"
 
-#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
-#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
-#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "Náhled není k dispozici"
 
-#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "Náhled obrázku"
 
-#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "Zavřít náhled"
 
-#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "Náhled tabulky"
 
-#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "Vynechán %{num} řádek"
 msgstr[1] "Vynechány %{num} řádky"
 msgstr[2] "Vynecháno %{num} řádků"
 
-#: js/components/ListAppBar.vue:34
 msgid "Close navigation"
 msgstr "Zavřít navigaci"
 
-#: js/components/ListAppBar.vue:34
 msgid "Open navigation"
 msgstr "Otevřít navigaci"
 
-#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:113 js/components/PageListItems.vue:793
 msgid "Delete"
 msgstr "Smazat"
 
-#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:116 js/components/PageListItems.vue:799
-#: js/components/PageListItems.vue:929
 msgid "Restore"
 msgstr "Obnovit"
 
-#: js/components/ListReload.vue:29
 msgid "Updated by another user"
 msgstr "Aktualizováno jiným uživatelem"
 
-#: js/components/ListReload.vue:35
 msgid "Refresh"
 msgstr "Aktualizovat"
 
-#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:548
-#: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "Vyhledávání"
 
-#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "Editor"
 
-#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "Nejnovější"
 
-#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "Naposledy upraveno"
 
-#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "Nejstarší"
 
-#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "Nejstarší úprava"
 
-#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "Pozice"
 
-#: js/components/ListSort.vue:37 js/views/PageList.vue:117
 msgid "Tree"
 msgstr "Strom"
 
-#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "Použití"
 
-#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "Seřadit podle"
 
-#: js/components/ListStatus.vue:46
 msgid "No entries yet"
 msgstr "Zatím žádné položky"
 
-#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "Panely"
 
-#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "Klávesové zkratky"
 
-#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "Při změně přístupu ke stránce došlo k chybě"
 
-#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "Změny přístupu se projeví okamžitě po vypršení platnosti mezipaměti"
 
-#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "Viditelnost"
 
-#: js/components/PageAccess.vue:181
 msgid ""
 "Public pages are visible to everyone, others only to logged in users or "
 "users with the selected roles"
@@ -1394,51 +989,36 @@ msgstr ""
 "Veřejné stránky jsou viditelné pro všechny, ostatní pouze pro přihlášené "
 "uživatele nebo uživatele s vybranými rolemi"
 
-#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "Veřejné"
 
-#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "Ověření uživatelé"
 
-#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:104
-#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:759 js/components/PageListItems.vue:983
-#: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Přístup"
 
-#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Stránku mohou zobrazit pouze návštěvníci s jednou z těchto rolí"
 
-#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:274
 msgid "Page bulk changes are limited to %{count} pages"
 msgstr "Hromadné změny stránek jsou omezeny na %{count} stránek"
 
-#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:268
 msgid "Apply recursively"
 msgstr "Použít rekurzivně"
 
-#: js/components/PageBulkDialog.vue:151
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Použít vybrané vlastnosti na %{num} stránku."
 msgstr[1] "Použít vybrané vlastnosti na %{num} stránky."
 msgstr[2] "Použít vybrané vlastnosti na %{num} stránek."
 
-#: js/components/PageBulkDialog.vue:162
 msgid "Change status"
 msgstr "Změnit stav"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid "Status"
 msgstr "Stav"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1446,424 +1026,304 @@ msgstr ""
 "Zakázané stránky jsou offline, skryté stránky jsou online, ale nejsou "
 "zobrazeny v navigaci"
 
-#: js/components/PageBulkDialog.vue:176
 msgid "Change cache time"
 msgstr "Změnit čas mezipaměti"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
-#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "Doba uložení do mezipaměti"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
 msgid "How long the generated page is cached before it is created again"
 msgstr ""
 "Jak dlouho je vygenerovaná stránka uložena v mezipaměti, než se znovu vytvoří"
 
-#: js/components/PageBulkDialog.vue:190
 msgid "Change source language"
 msgstr "Změnit zdrojový jazyk"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Source language"
 msgstr "Původní jazyk"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Language of the source page content"
 msgstr "Jazyk obsahu zdrojové stránky"
 
-#: js/components/PageBulkDialog.vue:202
 msgid "Change theme"
 msgstr "Změnit motiv"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
-#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "Motiv"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
 msgid "Design used to display the page"
 msgstr "Motiv použitý k zobrazení stránky"
 
-#: js/components/PageBulkDialog.vue:214
 msgid "Change page type"
 msgstr "Změnit typ stránky"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
-#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "Typ stránky"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
 msgid "Template of the theme which defines the page layout"
 msgstr "Šablona motivu, která určuje rozvržení stránky"
 
-#: js/components/PageBulkDialog.vue:226
 msgid "Change tag"
 msgstr "Změnit značku"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
-#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "Značka stránky"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "Interní identifikátor pro vyhledání stránky v šablonách, např. blog"
 
-#: js/components/PageBulkDialog.vue:239
 msgid "Change domain"
 msgstr "Změnit doménu"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain"
 msgstr "Doména"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Doména, na které je stránka dostupná, např. example.com"
 
-#: js/components/PageBulkMenu.vue:94 js/components/PageListItems.vue:742
 msgctxt "page status"
 msgid "Enable"
 msgstr "Povolit"
 
-#: js/components/PageBulkMenu.vue:97 js/components/PageListItems.vue:748
 msgctxt "page status"
 msgid "Disable"
 msgstr "Zakázat"
 
-#: js/components/PageBulkMenu.vue:107 js/components/PageListItems.vue:762
 msgid "Clear cache"
 msgstr "Vymazat mezipaměť"
 
-#: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Ignorovat změny"
 
-#: js/components/PageBulkMenu.vue:148 js/components/PageListItems.vue:836
 msgid "Delete this language"
 msgstr "Smazat tento jazyk"
 
-#: js/components/PageBulkMenu.vue:156 js/components/PageListItems.vue:844
 msgid "Restore this language"
 msgstr "Obnovit tento jazyk"
 
-#: js/components/PageBulkMenu.vue:164 js/components/PageListItems.vue:852
 msgid "Purge language"
 msgstr "Trvale smazat jazyk"
 
-#: js/components/PageDetailContentList.vue:165
-#: js/components/PageDetailContentList.vue:175 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Prvek obsahu nebyl nalezen"
 
-#: js/components/PageDetailContentList.vue:374
 msgid "Not available for this content element"
 msgstr "Pro tento prvek obsahu není k dispozici"
 
-#: js/components/PageDetailContentList.vue:384
 msgid "Error splitting text"
 msgstr "Chyba při rozdělování textu"
 
-#: js/components/PageDetailContentList.vue:499
 msgid "Describe the task you want to perform"
 msgstr "Popište úkol, který chcete provést"
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refining ..."
 msgstr "Upřesňování ..."
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refine content based on prompt"
 msgstr "Upřesnit obsah na základě výzvy"
 
-#: js/components/PageDetailContentList.vue:504
 msgid "AI can add or improve content based on your input"
 msgstr ""
 "Umělá inteligence dokáže přidávat nebo vylepšovat obsah na základě vašeho "
 "zadání"
 
-#: js/components/PageDetailContentList.vue:505
 msgid "It can take a long time depending on the task and content size"
 msgstr "Může to trvat dlouho v závislosti na úkolu a velikosti obsahu."
 
-#: js/components/PageDetailContentList.vue:531
-#: js/components/PageDetailContentList.vue:618
-#: js/components/PageListItems.vue:768 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Vyjmout"
 
-#: js/components/PageDetailContentList.vue:534 js/pagetree.js:37
 msgid "Paste"
 msgstr "Vložit"
 
-#: js/components/PageDetailContentList.vue:537
-#: js/components/PageDetailContentList.vue:657
 msgid "Merge"
 msgstr "Sloučit"
 
-#: js/components/PageDetailContentList.vue:592 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Přesunout prvek"
 
-#: js/components/PageDetailContentList.vue:627 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Vložit před"
 
-#: js/components/PageDetailContentList.vue:630 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Vložit za"
 
-#: js/components/PageDetailContentList.vue:633 js/fields/Items.vue:287
-#: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Přidat před"
 
-#: js/components/PageDetailContentList.vue:636 js/fields/Items.vue:288
-#: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Přidat za"
 
-#: js/components/PageDetailContentList.vue:645
 msgid "Make shared"
 msgstr "Nastavit jako sdílený"
 
-#: js/components/PageDetailContentList.vue:648
 msgid "Replace with local copy"
 msgstr "Nahradit místní kopií"
 
-#: js/components/PageDetailContentList.vue:654
 msgctxt "text element"
 msgid "Split"
 msgstr "Rozdělit"
 
-#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Dvojitým kliknutím upravíte"
 
-#: js/components/PageDetailEditor.vue:277
 msgid "Preview mode"
 msgstr "Režim náhledu"
 
-#: js/components/PageDetailEditor.vue:280
 msgid "Not CMS content"
 msgstr "Není obsah CMS"
 
-#: js/components/PageDetailItem.vue:83
 msgid "Detail"
 msgstr "Detail"
 
-#: js/components/PageDetailItem.vue:90
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:97
 msgid "Config"
 msgstr "Konfigurace"
 
-#: js/components/PageDetailItemProps.vue:74
 msgid "Path must not start with a slash (/)"
 msgstr "Cesta nesmí začínat lomítkem (/)"
 
-#: js/components/PageDetailItemProps.vue:84
 msgid "URL is not valid"
 msgstr "Adresa URL není platná"
 
-#: js/components/PageDetailItemProps.vue:89 js/views/Login.vue:61
-#: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "Pole je povinné"
 
-#: js/components/PageDetailItemProps.vue:125
 msgid "The path is already in use by another page"
 msgstr "Cesta je již použita jinou stránkou"
 
-#: js/components/PageDetailItemProps.vue:232
 msgid "Language of the page content"
 msgstr "Jazyk obsahu stránky"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Page title"
 msgstr "Titulek stránky"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Shown in the browser tab and search results"
 msgstr "Zobrazuje se na kartě prohlížeče a ve výsledcích vyhledávání"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Page name"
 msgstr "Název stránky"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Short name shown in the navigation menus"
 msgstr "Krátký název zobrazený v navigačních nabídkách"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "URL path"
 msgstr "Cesta URL"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Část adresy URL stránky za doménou, např. about-us"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Redirect URL"
 msgstr "Adresa URL přesměrování"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr ""
 "Návštěvníci jsou přesměrováni na tuto adresu URL, místo aby viděli stránku"
 
-#: js/components/PageDetailItemSection.vue:63
 msgid "The element has already been added"
 msgstr "Prvek již byl přidán"
 
-#: js/components/PageDetailItemSection.vue:178
 msgid "Remove content element"
 msgstr "Odstranit prvek obsahu"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Vyžaduje aktualizaci"
 
-#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:156
 msgid "Missing"
 msgstr "Chybí"
 
-#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:162
 msgid "AI draft"
 msgstr "Koncept AI"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Aktuální"
 
-#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:222
 msgid "Error fetching translation states"
 msgstr "Chyba při načítání stavů překladu"
 
-#: js/components/PageListItems.vue:255
 msgid "Error adding root page"
 msgstr "Chyba při přidávání kořenové stránky"
 
-#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "Chyba při překladu stránky"
 
-#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "Chyba při přidávání jazyka"
 
-#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
-#: js/pagetree.js:152
 msgid "Error fetching pages"
 msgstr "Chyba při načítání stránek"
 
-#: js/components/PageListItems.vue:504
 msgid "Error searching pages"
 msgstr "Chyba při hledání stránek"
 
-#: js/components/PageListItems.vue:540 js/options.js:50
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minuta"
 msgstr[1] "%{num} minuty"
 msgstr[2] "%{num} minut"
 
-#: js/components/PageListItems.vue:549
 msgid "Translating into %{langs}"
 msgstr "Překládá se do %{langs}"
 
-#: js/components/PageListItems.vue:645 js/components/PageListItems.vue:959
 msgid "Add page"
 msgstr "Přidat stránku"
 
-#: js/components/PageListItems.vue:657
 msgid "Reload page tree"
 msgstr "Znovu načíst strom stránek"
 
-#: js/components/PageListItems.vue:670
 msgid "Translating %{done} of %{total}"
 msgstr "Překládá se %{done} z %{total}"
 
-#: js/components/PageListItems.vue:686
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "K pohybu používejte šipky. Ke změně pořadí použijte klávesu Alt spolu se "
 "šipkami."
 
-#: js/components/PageListItems.vue:688
 msgid "Moved to position %{position} of %{total}"
 msgstr "Přesunuto na pozici %{position} z %{total}"
 
-#: js/components/PageListItems.vue:690
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Odsazení zmenšeno na úroveň %{level}, pozice %{position} z %{total}"
 
-#: js/components/PageListItems.vue:696
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Odsazeno na úroveň %{level}, pozice %{position} z %{total}"
 
-#: js/components/PageListItems.vue:716
 msgid "Toggle child nodes"
 msgstr "Přepnout podřízené uzly"
 
-#: js/components/PageListItems.vue:901 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Skryté v navigaci"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Vytvořit"
 
-#: js/components/PageListItems.vue:986
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Použít nastavení přístupu na %{num} stránku."
 msgstr[1] "Použít nastavení přístupu na %{num} stránky."
 msgstr[2] "Použít nastavení přístupu na %{num} stránek."
 
-#: js/components/PasswordField.vue:35
 msgid "Password"
 msgstr "Heslo"
 
-#: js/components/PasswordField.vue:42
 msgid "Hide password"
 msgstr "Skrýt heslo"
 
-#: js/components/PasswordField.vue:42
 msgid "Show password"
 msgstr "Zobrazit heslo"
 
-#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "Ještě nejste přihlášeni"
 
-#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "Relace vypršela"
 
-#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
-#: js/components/User.vue:134
 msgid "Logout"
 msgstr "Odhlásit se"
 
-#: js/components/ReloginDialog.vue:151
 msgid ""
 "Please sign in again in the new tab and return here to continue. Your "
 "unsaved changes are kept."
@@ -1871,141 +1331,108 @@ msgstr ""
 "Přihlaste se znovu na nové kartě a vraťte se sem, abyste mohli pokračovat. "
 "Vaše neuložené změny zůstanou zachovány."
 
-#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr ""
 "Pro pokračování se prosím znovu přihlaste. Vaše neuložené změny zůstanou "
 "zachovány."
 
-#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "Přihlásit se"
 
-#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "E-mail"
 
-#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "Pokračovat"
 
-#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "Přihlásit se"
 
-#: js/components/SchemaDialog.vue:42
 msgid "Content elements"
 msgstr "Obsahové prvky"
 
-#: js/components/SchemaDialog.vue:47
 msgid "New elements"
 msgstr "Nové prvky"
 
-#: js/components/SchemaDialog.vue:59
 msgid "Only elements in %{lang}"
 msgstr "Pouze prvky v jazyce %{lang}"
 
-#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "Nezařazené"
 
-#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "Chyba při načítání obsahových prvků"
 
-#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "Obecné"
 
-#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "Zavřít dialog nebo nabídku"
 
-#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "Přecházet mezi příkazy a výsledky"
 
-#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "Spustit příkaz nebo otevřít výsledek"
 
-#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "Zavřít paletu příkazů"
 
-#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "Seznamy"
 
-#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "Editační zobrazení"
 
-#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "Obsah stránky"
 
-#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "Posunout prvek obsahu nahoru nebo dolů"
 
-#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "Strom stránek"
 
-#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "Přecházet mezi stránkami"
 
-#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "Rozbalit stránku"
 
-#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "Přidat podstránku k aktivní stránce"
 
-#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "Přeuspořádat nebo přesunout stránku"
 
-#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "AI chat"
 
-#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "Odeslat zprávu"
 
-#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "Nový řádek"
 
-#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "Vyvolat předchozí zprávy"
 
-#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "Přeložit do"
 
-#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "Jazyky"
 
-#: js/components/TranslateDialog.vue:111 js/variants.js:307
 msgid ""
 "Nothing to translate, the pages are up to date or already being translated"
 msgstr "Není co překládat, stránky jsou aktuální nebo se již překládají"
 
-#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "Vybrána %{num} stránka."
 msgstr[1] "Vybrány %{num} stránky."
 msgstr[2] "Vybráno %{num} stránek."
 
-#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -2015,677 +1442,523 @@ msgstr ""
 "jazyce a aktuální překlady se přeskakují. Překlady běží na pozadí a ukládají "
 "se jako koncepty ke kontrole."
 
-#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Neuložené změny"
 
-#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "Máte neuložené změny, které se ztratí, pokud stránku opustíte."
 
-#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
 msgstr "Zahodit"
 
-#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "Uložit a opustit"
 
-#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "Nepodařilo se načíst uživatele"
 
-#: js/components/User.vue:86
 msgid "Logout failed"
 msgstr "Odhlášení se nezdařilo"
 
-#: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "Přepnout světlý/tmavý režim"
 
-#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "Přepnout jazyk"
 
-#: js/components/User.vue:120
 msgid "User menu"
 msgstr "Uživatelská nabídka"
 
-#: js/contentrefine.js:125
 msgid "Elements changed during the refinement were kept unchanged"
 msgstr "Prvky změněné během vylepšení zůstaly beze změny"
 
-#: js/contentrefine.js:134
 msgid "Error refining content"
 msgstr "Chyba při upřesňování obsahu"
 
-#: js/contentshare.js:51
 msgid "Element not found"
 msgstr "Prvek nebyl nalezen"
 
-#: js/contentshare.js:56
 msgid "Element is already shared"
 msgstr "Prvek je již sdílený"
 
-#: js/contentshare.js:101
 msgid "Unable to make element shared"
 msgstr "Nelze vytvořit sdílený prvek"
 
-#: js/contentshare.js:117
 msgid "Element is not shared"
 msgstr "Prvek není sdílený"
 
-#: js/detail.js:47
 msgid "Element published successfully"
 msgstr "Prvek úspěšně zveřejněn"
 
-#: js/detail.js:48
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Zveřejnění prvku naplánováno na %{date}"
 
-#: js/detail.js:49
 msgid "Error publishing element"
 msgstr "Chyba při zveřejňování prvku"
 
-#: js/detail.js:53
 msgid "File published successfully"
 msgstr "Soubor byl úspěšně zveřejněn"
 
-#: js/detail.js:54
 msgid "File scheduled for publishing at %{date}"
 msgstr "Zveřejnění souboru naplánováno na %{date}"
 
-#: js/detail.js:59
 msgid "Page published successfully"
 msgstr "Stránka byla úspěšně zveřejněna"
 
-#: js/detail.js:60
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Zveřejnění stránky naplánováno na %{date}"
 
-#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Chyba při zveřejňování stránky"
 
-#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Nepublikováno, zkontrolujte prosím změny a publikujte znovu"
 
-#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nejsou k dispozici žádné údaje"
 
-#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nejsou k dispozici žádná data verze"
 
-#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Jsou zde neplatná pole, nejprve prosím vyřešte chyby."
 
-#: js/dictation.js:23 js/dictation.js:42
 msgid "Error recording audio"
 msgstr "Chyba při nahrávání zvuku"
 
-#: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
 msgstr "Hodnota musí být hexadecimální kód barvy"
 
-#: js/fields/File.vue:80
 msgid "File is required"
 msgstr "Soubor je vyžadován"
 
-#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "Přidat soubor z adresy URL"
 
-#: js/fields/File.vue:293 js/fields/Images.vue:385
 msgid "Create file"
 msgstr "Vytvořit soubor"
 
-#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "Nahrát soubor"
 
-#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "Sem přetáhněte soubor k nahrání"
 
-#: js/fields/File.vue:332
 msgid "name"
 msgstr "název"
 
-#: js/fields/File.vue:333
 msgid "description"
 msgstr "popis"
 
-#: js/fields/Images.vue:409
 msgid "Drop files here"
 msgstr "Sem přetáhněte soubory"
 
-#: js/fields/Map.vue:214
 msgid "Map location"
 msgstr "Poloha na mapě"
 
-#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "Kliknutím na mapu nastavíte polohu"
 
-#: js/fields/Map.vue:224
 msgid "Clear location"
 msgstr "Odstranit polohu"
 
-#: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "Hodnota má neplatný formát"
 
-#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "Přesunout sloupec"
 
-#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "Akce sloupce"
 
-#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "Přesunout řádek"
 
-#: js/fields/Table.vue:295
 msgid "Row %{row}, column %{col}"
 msgstr "Řádek %{row}, sloupec %{col}"
 
-#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "Akce řádku"
 
-#: js/fields/Url.vue:51 js/options.js:93
 msgid "None"
 msgstr "Žádné"
 
-#: js/fields/Url.vue:52
 msgid "Sponsored"
 msgstr "Sponzorovaný"
 
-#: js/fields/Url.vue:53
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:93
 msgid "Not a valid URL"
 msgstr "Neplatná adresa URL"
 
-#: js/fields/Url.vue:101
 msgid "Invalid URL schema configuration"
 msgstr "Nesprávná konfigurace schématu URL"
 
-#: js/fields/Url.vue:173
 msgid "No pages found"
 msgstr "Žádné stránky nebyly nalezeny"
 
-#: js/fields/Url.vue:185
 msgid "Link attribute"
 msgstr "Atribut odkazu"
 
-#: js/filefield.js:119
 msgid "Unsupported file type"
 msgstr "Nepodporovaný typ souboru"
 
-#: js/graphql.js:127
 msgid "Connection failed, please try again"
 msgstr "Připojení se nezdařilo, zkuste to prosím znovu"
 
-#: js/graphql.js:132 js/stores/session.js:337 js/views/Login.vue:163
 msgid "Login failed"
 msgstr "Přihlášení se nezdařilo"
 
-#: js/imageai.js:75
 msgid "Number of pixels added at this side of the image"
 msgstr "Počet pixelů přidaných na této straně obrázku"
 
-#: js/imageai.js:78
 msgctxt "image edge"
 msgid "Top"
 msgstr "Nahoře"
 
-#: js/imageai.js:80
 msgctxt "image edge"
 msgid "Left"
 msgstr "Vlevo"
 
-#: js/imageai.js:81
 msgctxt "image edge"
 msgid "Right"
 msgstr "Vpravo"
 
-#: js/imageai.js:83
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Dole"
 
-#: js/imageai.js:95
 msgid "Error erasing image part"
 msgstr "Chyba při mazání části obrazu"
 
-#: js/imageai.js:103
 msgid "Error editing image part"
 msgstr "Chyba při úpravě části obrázku"
 
-#: js/imageai.js:114
 msgid "Error removing background"
 msgstr "Chyba při odstraňování pozadí"
 
-#: js/imageai.js:259
 msgid "Error uncropping image"
 msgstr "Chyba při rozšíření obrázku"
 
-#: js/imageai.js:281
 msgid "Error upscaling image"
 msgstr "Chyba při zvýšení rozlišení obrázku"
 
-#: js/lists.js:92
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "%{num} položka přesunuta do koše"
 msgstr[1] "%{num} položky přesunuty do koše"
 msgstr[2] "%{num} položek přesunuto do koše"
 
-#: js/listview.js:87
 msgid "publish"
 msgstr "zveřejnění"
 
-#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
-#: js/views/PageList.vue:127 js/views/PageList.vue:137
-#: js/views/PageList.vue:148
 msgid "All"
 msgstr "Všechny"
 
-#: js/listview.js:91
 msgid "Scheduled"
 msgstr "Naplánováno"
 
-#: js/listview.js:92
 msgid "Drafts"
 msgstr "Koncepty"
 
-#: js/listview.js:97
 msgid "trashed"
 msgstr "koš"
 
-#: js/listview.js:100
 msgid "Available only"
 msgstr "Pouze dostupné"
 
-#: js/listview.js:101
 msgid "Only trashed"
 msgstr "Pouze v koši"
 
-#: js/listview.js:109
 msgid "Edited by me"
 msgstr "Upraveno mnou"
 
-#: js/listview.js:114
 msgid "languages"
 msgstr "jazyky"
 
-#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "Sloučeno se změnami od %{editor}"
 
-#: js/options.js:49 js/views/PageList.vue:138
 msgid "No cache"
 msgstr "Žádná mezipaměť"
 
-#: js/options.js:51
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} hodina"
 msgstr[1] "%{num} hodiny"
 msgstr[2] "%{num} hodin"
 
-#: js/options.js:62 js/views/PageList.vue:130
 msgid "Disabled"
 msgstr "Zakázáno"
 
-#: js/options.js:63 js/views/PageList.vue:128
 msgid "Enabled"
 msgstr "Povoleno"
 
-#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Chyba při ukládání stránky"
 
-#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Stránky se mažou jako celé stránky pouze ve svém zdrojovém jazyce"
 
-#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Chyba při přesunu stránky do koše"
 
-#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Chyba při obnovování jazyka"
 
-#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Chyba při obnovení stránky"
 
-#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Všechny podstránky těchto stránek budou rovněž trvale smazány."
 
-#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Chyba při trvalém mazání stránky"
 
-#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Mezipaměť vymazána"
 
-#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Mezipaměť vymazána pro %{num} stránku."
 msgstr[1] "Mezipaměť vymazána pro %{num} stránky."
 msgstr[2] "Mezipaměť vymazána pro %{num} stránek."
 
-#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Chyba při mazání mezipaměti"
 
-#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} stránku se nepodařilo aktualizovat"
 msgstr[1] "%{num} stránky se nepodařilo aktualizovat"
 msgstr[2] "%{num} stránek se nepodařilo aktualizovat"
 
-#: js/pagetree.js:41
 msgid "Insert"
 msgstr "Přidat"
 
-#: js/pagetree.js:66
 msgid "Before"
 msgstr "Před"
 
-#: js/pagetree.js:67
 msgid "Into"
 msgstr "Do"
 
-#: js/pagetree.js:68
 msgid "After"
 msgstr "Po"
 
-#: js/pagetree.js:205
 msgid "Error inserting page"
 msgstr "Chyba při vkládání stránky"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Chyba při načítání stránky"
 
-#: js/pagetree.js:263
 msgid "Error copying page"
 msgstr "Chyba při kopírování stránky"
 
-#: js/pagetree.js:330
 msgid "Error moving page"
 msgstr "Chyba při přesunu stránky"
 
-#: js/pagetree.js:340
 msgid "Page moved"
 msgstr "Stránka přesunuta"
 
-#: js/routes.js:111
 msgid "Error checking the session, please try again"
 msgstr "Chyba při kontrole relace, zkuste to prosím znovu"
 
-#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "Nemáte oprávnění k přístupu k %{path}"
 
-#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "Název domény je neplatný"
 
-#: js/rules.js:24
 msgid "Value is required"
 msgstr "Je vyžadována hodnota"
 
-#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "Je vyžadován alespoň %{num} záznam"
 msgstr[1] "Jsou vyžadovány alespoň %{num} záznamy"
 msgstr[2] "Je vyžadováno alespoň %{num} záznamů"
 
-#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "Je povolen nejvýše %{num} záznam"
 msgstr[1] "Jsou povoleny nejvýše %{num} záznamy"
 msgstr[2] "Je povoleno nejvýše %{num} záznamů"
 
-#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "Je vyžadován alespoň %{num} znak"
 msgstr[1] "Jsou vyžadovány alespoň %{num} znaky"
 msgstr[2] "Je vyžadováno alespoň %{num} znaků"
 
-#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "Je povolen nejvýše %{num} znak"
 msgstr[1] "Jsou povoleny nejvýše %{num} znaky"
 msgstr[2] "Je povoleno nejvýše %{num} znaků"
 
-#: js/rules.js:62
 msgid "At least %{num} row is required"
 msgid_plural "At least %{num} rows are required"
 msgstr[0] "Je vyžadován alespoň %{num} řádek"
 msgstr[1] "Jsou vyžadovány alespoň %{num} řádky"
 msgstr[2] "Je vyžadováno alespoň %{num} řádků"
 
-#: js/rules.js:69
 msgid "At most %{num} row is allowed"
 msgid_plural "At most %{num} rows are allowed"
 msgstr[0] "Je povolen nejvýše %{num} řádek"
 msgstr[1] "Jsou povoleny nejvýše %{num} řádky"
 msgstr[2] "Je povoleno nejvýše %{num} řádků"
 
-#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "Přístup odepřen"
 
-#: js/stores/plugin.js:20
 msgid "Failed to load plugin"
 msgstr "Plugin se nepodařilo načíst"
 
-#: js/stores/setting.js:111
 msgid "Failed to save user settings"
 msgstr "Uložení uživatelského nastavení se nezdařilo"
 
-#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "Chyba při načítání průběhu překladu"
 
-#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "Překlad stále běží na pozadí"
 
-#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} překlad selhal"
 msgstr[1] "%{num} překlady selhaly"
 msgstr[2] "%{num} překladů selhalo"
 
-#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "Překlad dokončen"
 
-#: js/strings.js:37
 msgctxt "cs"
 msgid "main"
 msgstr "Hlavní část"
 
-#: js/strings.js:38
 msgctxt "cs"
 msgid "header"
 msgstr "Záhlaví"
 
-#: js/strings.js:39
 msgctxt "cs"
 msgid "footer"
 msgstr "Zápatí"
 
-#: js/strings.js:40
 msgctxt "cs"
 msgid "sidebar"
 msgstr "Postranní panel"
 
-#: js/strings.js:41
 msgctxt "cs"
 msgid "aside"
 msgstr "Vedlejší obsah"
 
-#: js/strings.js:44
 msgctxt "sg"
 msgid "basic"
 msgstr "základní"
 
-#: js/strings.js:45
 msgctxt "sg"
 msgid "content"
 msgstr "obsah"
 
-#: js/strings.js:46
 msgctxt "sg"
 msgid "media"
 msgstr "média"
 
-#: js/strings.js:47
 msgctxt "sg"
 msgid "forms"
 msgstr "formuláře"
 
-#: js/strings.js:50
 msgctxt "as"
 msgid "type"
 msgstr "typ"
 
-#: js/strings.js:51
 msgctxt "as"
 msgid "state"
 msgstr "stav"
 
-#: js/strings.js:54
 msgctxt "st"
 msgid "valid"
 msgstr "platné"
 
-#: js/strings.js:55
 msgctxt "st"
 msgid "changed"
 msgstr "změněno"
 
-#: js/strings.js:56
 msgctxt "st"
 msgid "error"
 msgstr "chyba"
 
-#: js/strings.js:59
 msgctxt "st"
 msgid "reference"
 msgstr "odkaz"
 
-#: js/strings.js:62
 msgctxt "fn"
 msgid "files"
 msgstr "soubory"
 
-#: js/strings.js:63
 msgctxt "fn"
 msgid "language"
 msgstr "jazyk"
 
-#: js/strings.js:64
 msgctxt "fn"
 msgid "main"
 msgstr "Hlavní obrázek"
 
-#: js/strings.js:67
 msgctxt "ai"
 msgid "Done"
 msgstr "Hotovo"
 
-#: js/strings.js:68
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Již existuje"
 
-#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "Stránky ve zdrojovém jazyce se mažou pouze jako celé stránky"
 
-#: js/variants.js:139
 msgid "Delete language"
 msgstr "Smazat jazyk"
 
-#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "Přesunout %{num} stránku v jazyce „%{lang}“ do koše?"
 msgstr[1] "Přesunout %{num} stránky v jazyce „%{lang}“ do koše?"
 msgstr[2] "Přesunout %{num} stránek v jazyce „%{lang}“ do koše?"
 
-#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} stránka ve zdrojovém jazyce bude přeskočena."
 msgstr[1] "%{num} stránky ve zdrojovém jazyce budou přeskočeny."
 msgstr[2] "%{num} stránek ve zdrojovém jazyce bude přeskočeno."
 
-#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "Chyba při přesunu jazyka do koše"
 
-#: js/variants.js:199
 msgid "Error purging language"
 msgstr "Chyba při trvalém mazání jazyka"
 
-#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "Chyba při ignorování změn"
 
-#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "Chyba při překladu stránek"
 
-#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "Překlad uložen jako koncept, zkontrolujte změny"
 
-#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "Označeno jako aktuální"
 
-#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "Chyba při označování jako aktuální"
 
-#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "Není co překládat, stránka je aktuální nebo se již překládá"
 
-#: js/views/AccessList.vue:171
 msgid "Error adding access value"
 msgstr "Chyba při přidávání přístupové hodnoty"
 
-#: js/views/AccessList.vue:186
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
@@ -2693,104 +1966,78 @@ msgstr ""
 "Stávající omezení se nezmění a budou nadále odkazovat na trvale smazané "
 "přístupové hodnoty."
 
-#: js/views/AccessList.vue:205
 msgid "Error purging access values"
 msgstr "Chyba při trvalém mazání přístupových hodnot"
 
-#: js/views/AccessList.vue:242
 msgid "Roles"
 msgstr "Role"
 
-#: js/views/AccessList.vue:277 js/views/AccessList.vue:322
 msgid "Add access value"
 msgstr "Přidat hodnotu přístupu"
 
-#: js/views/AccessList.vue:326
 msgid "Access value"
 msgstr "Přístupová hodnota"
 
-#: js/views/AccessList.vue:326
 msgid "Role name which can be assigned to pages and users"
 msgstr "Název role, kterou lze přiřadit stránkám a uživatelům"
 
-#: js/views/AccessList.vue:342
 msgid "Add"
 msgstr "Přidat"
 
-#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "Chyba při načítání prvku"
 
-#: js/views/ElementDetail.vue:169
 msgid "Element saved successfully"
 msgstr "Prvek byl úspěšně uložen"
 
-#: js/views/ElementDetail.vue:172
 msgid "Error saving element"
 msgstr "Chyba při ukládání prvku"
 
-#: js/views/ElementDetail.vue:200 js/views/ElementDetail.vue:202
-#: js/views/ElementDetail.vue:207
 msgid "Element"
 msgstr "Prvek"
 
-#: js/views/ElementDetail.vue:209 js/views/FileDetail.vue:300
 msgid "Used by"
 msgstr "Používá"
 
-#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
 "Umělá inteligence dokáže na základě vašeho zadání vyhledávat a spravovat "
 "sdílené prvky."
 
-#: js/views/ElementList.vue:50 js/views/FileList.vue:50
-#: js/views/PageList.vue:282
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Stisknutím klávesy Enter nebo šipky otevřete asistenta AI a upřesněte obsah "
 "v chatu"
 
-#: js/views/FileDetail.vue:129
 msgid "Error fetching file"
 msgstr "Došlo k chybě při načítání souboru"
 
-#: js/views/FileDetail.vue:246
 msgid "File saved successfully"
 msgstr "Soubor byl úspěšně uložen"
 
-#: js/views/FileDetail.vue:279 js/views/FileDetail.vue:293
-#: js/views/FileDetail.vue:298
 msgid "File"
 msgstr "Soubor"
 
-#: js/views/FileDetail.vue:285
 msgid "Replace file"
 msgstr "Nahradit soubor"
 
-#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
 msgstr ""
 "Umělá inteligence dokáže na základě vašeho zadání vyhledávat a spravovat "
 "mediální soubory."
 
-#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "Neplatná e-mailová adresa"
 
-#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "Není editor CMS"
 
-#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "Přístup odepřen"
 
-#: js/views/Login.vue:230
 msgid "Error: %{msg}"
 msgstr "Chyba: %{msg}"
 
-#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2798,61 +2045,46 @@ msgstr ""
 "Ohodnoť tuto stránku v každé oblasti na stupnici 1–10 (kvalita obsahu, "
 "čitelnost, SEO, UX, zapojení) a navrhni vylepšení"
 
-#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Počkejte prosím, dokud se jazyk nepřepne"
 
-#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Stránka byla úspěšně uložena"
 
-#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
-#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Stránka"
 
-#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Zdroj"
 
-#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "V koši"
 
-#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Editor"
 
-#: js/views/PageList.vue:115
 msgid "view"
 msgstr "zobrazení"
 
-#: js/views/PageList.vue:118
 msgid "List"
 msgstr "Seznam"
 
-#: js/views/PageList.vue:125
 msgid "status"
 msgstr "stav"
 
-#: js/views/PageList.vue:129
 msgid "Hidden"
 msgstr "Skryto"
 
-#: js/views/PageList.vue:135
 msgid "cache"
 msgstr "mezipaměť"
 
-#: js/views/PageList.vue:146
 msgid "translation"
 msgstr "překlad"
 
-#: js/views/PageList.vue:278
 msgid "Generate page based on prompt"
 msgstr "Generovat stránku na základě výzvy"
 
-#: js/views/PageList.vue:281
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"

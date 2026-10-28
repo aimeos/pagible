@@ -1,182 +1,145 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/components/PageDetailMetrics.vue:98
 msgctxt "metrics"
 msgid "Views & Visits"
 msgstr "Tampilan dan kunjungan"
 
-#: src/components/PageDetailMetrics.vue:100
 msgctxt "metrics"
 msgid "Views"
 msgstr "Tampilan"
 
-#: src/components/PageDetailMetrics.vue:101
 msgctxt "metrics"
 msgid "Visits"
 msgstr "Kunjungan"
 
-#: src/components/PageDetailMetrics.vue:102
-#: src/components/PageDetailMetrics.vue:141
 msgctxt "metrics"
 msgid "Conversions"
 msgstr "Konversi"
 
-#: src/components/PageDetailMetrics.vue:106
 msgctxt "metrics"
 msgid "Visit Durations (minutes)"
 msgstr "Durasi Kunjungan (menit)"
 
-#: src/components/PageDetailMetrics.vue:107
 msgctxt "metrics"
 msgid "Duration"
 msgstr "Durasi"
 
-#: src/components/PageDetailMetrics.vue:110
 msgctxt "metrics"
 msgid "Google Search: Impressions & Clicks"
 msgstr "Penelusuran Google: tayangan dan klik"
 
-#: src/components/PageDetailMetrics.vue:112
-#: src/components/PageDetailMetrics.vue:414
 msgctxt "metrics"
 msgid "Impressions"
 msgstr "Tayangan"
 
-#: src/components/PageDetailMetrics.vue:113
-#: src/components/PageDetailMetrics.vue:415
 msgctxt "metrics"
 msgid "Clicks"
 msgstr "Klik"
 
-#: src/components/PageDetailMetrics.vue:117
 msgctxt "metrics"
 msgid "Google Search: Click-through rate"
 msgstr "Penelusuran Google: Rasio klik-tayang"
 
-#: src/components/PageDetailMetrics.vue:118
 msgctxt "metrics"
 msgid "Percentage"
 msgstr "Persentase"
 
-#: src/components/PageDetailMetrics.vue:138
 msgctxt "metrics"
 msgid "Page Views"
 msgstr "Tampilan Halaman"
 
-#: src/components/PageDetailMetrics.vue:139
 msgctxt "metrics"
 msgid "Page Visits"
 msgstr "Kunjungan Halaman"
 
-#: src/components/PageDetailMetrics.vue:142
 msgctxt "metrics"
 msgid "Visit Duration (minutes)"
 msgstr "Durasi Kunjungan (menit)"
 
-#: src/components/PageDetailMetrics.vue:143
 msgctxt "metrics"
 msgid "Google Impressions"
 msgstr "Tayangan Google"
 
-#: src/components/PageDetailMetrics.vue:144
 msgctxt "metrics"
 msgid "Google Clicks"
 msgstr "Klik Google"
 
-#: src/components/PageDetailMetrics.vue:145
 msgctxt "metrics"
 msgid "Google click-through rate"
 msgstr "Rasio klik-tayang Google"
 
-#: src/components/PageDetailMetrics.vue:151
 msgctxt "metrics"
 msgid "Round trip time"
 msgstr "Waktu bolak-balik"
 
-#: src/components/PageDetailMetrics.vue:152
 msgctxt "metrics"
 msgid "Time to first byte"
 msgstr "Waktu ke byte pertama"
 
-#: src/components/PageDetailMetrics.vue:153
 msgctxt "metrics"
 msgid "First contentful paint"
 msgstr "First Contentful Paint"
 
-#: src/components/PageDetailMetrics.vue:154
 msgctxt "metrics"
 msgid "Largest contentful paint"
 msgstr "Largest Contentful Paint"
 
-#: src/components/PageDetailMetrics.vue:155
 msgctxt "metrics"
 msgid "Interaction to next paint"
 msgstr "Interaction to Next Paint"
 
-#: src/components/PageDetailMetrics.vue:156
 msgctxt "metrics"
 msgid "Cumulative layout shift"
 msgstr "Pergeseran tata letak kumulatif"
 
-#: src/components/PageDetailMetrics.vue:237
 msgctxt "metrics"
 msgid "Error fetching metrics"
 msgstr "Kesalahan saat mengambil metrik"
 
-#: src/components/PageDetailMetrics.vue:259
 msgctxt "metrics"
 msgid "Page metrics"
 msgstr "Metrik halaman"
 
-#: src/components/PageDetailMetrics.vue:265
 msgctxt "metrics"
 msgid "Days"
 msgstr "Hari"
 
-#: src/components/PageDetailMetrics.vue:292
 msgctxt "metrics"
 msgid "Weekly Insights"
 msgstr "Wawasan Mingguan"
 
-#: src/components/PageDetailMetrics.vue:324
 msgctxt "metrics"
 msgid "Referrers"
 msgstr "Sumber rujukan"
 
-#: src/components/PageDetailMetrics.vue:367
 msgctxt "metrics"
 msgid "Countries"
 msgstr "Negara"
 
-#: src/components/PageDetailMetrics.vue:383
 msgctxt "metrics"
 msgid "Page Speed"
 msgstr "Kecepatan Halaman"
 
-#: src/components/PageDetailMetrics.vue:408
 msgctxt "metrics"
 msgid "Google Search: Queries"
 msgstr "Penelusuran Google: Kueri"
 
-#: src/components/PageDetailMetrics.vue:416
 msgctxt "metrics"
 msgid "Percent"
 msgstr "Persen"
 
-#: src/components/PageDetailMetrics.vue:417
 msgctxt "search ranking"
 msgid "Position"
 msgstr ""
 
-#: src/strings.js:9
 msgctxt "metrics"
 msgid "Metrics"
 msgstr "Metrik"

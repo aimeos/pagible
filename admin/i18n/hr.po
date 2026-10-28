@@ -13,475 +13,334 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: js/ai.js:65 js/components/FileDetailItem.vue:256
 msgid "Error transcribing file"
 msgstr "Pogreška pri transkripciji datoteke"
 
-#: js/ai.js:114 js/components/FileDetailItem.vue:309
-#: js/components/FileDetailItem.vue:316
 msgid "Error translating texts"
 msgstr "Pogreška pri prevođenju tekstova"
 
-#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "Za generiranje teksta potreban je upit"
 
-#: js/ai.js:161
 msgid "Error generating text"
 msgstr "Pogreška pri generiranju teksta"
 
-#: js/App.vue:88 js/components/User.vue:68
 msgid "Error switching language"
 msgstr "Pogreška pri promjeni jezika"
 
-#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "Asistent za chat nije dostupan."
 
-#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "Odgovor se već generira. Pričekajte da završi."
 
-#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "Previše zahtjeva. Pričekajte trenutak i pokušajte ponovno."
 
-#: js/commands.js:54
 msgid "Open commands"
 msgstr "Otvori naredbe"
 
-#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "Potvrdi dijalog"
 
-#: js/commands.js:69
 msgid "Save changes"
 msgstr "Spremi promjene"
 
-#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "Otvori izbornik objave"
 
-#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "Nova stranica, datoteka ili element"
 
-#: js/commands.js:91
 msgid "Search in list"
 msgstr "Pretraži popis"
 
-#: js/commands.js:97
 msgid "Previous tab"
 msgstr "Prethodna kartica"
 
-#: js/commands.js:103
 msgid "Next tab"
 msgstr "Sljedeća kartica"
 
-#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "Prikaži ili sakrij bočnu ploču"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "Natrag na prikaz popisa"
 
-#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "Prikaži tipkovničke prečace"
 
-#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "Odaberi označenu stranicu, datoteku ili element"
 
-#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "Izbriši označenu stranicu, datoteku ili element"
 
-#: js/commands.js:143
 msgid "Copy page"
 msgstr "Kopiraj stranicu"
 
-#: js/commands.js:151
 msgid "Cut page"
 msgstr "Izreži stranicu"
 
-#: js/commands.js:159
 msgid "Paste page"
 msgstr "Zalijepi stranicu"
 
-#: js/commands.js:178 js/components/CommandPalette.vue:112
-#: js/components/DetailRefs.vue:148 js/components/Navigation.vue:31
-#: js/views/PageList.vue:267 js/views/PageList.vue:271
 msgid "Pages"
 msgstr "Stranice"
 
-#: js/commands.js:179
 msgid "Go to pages"
 msgstr "Idi na stranice"
 
-#: js/commands.js:184 js/components/CommandPalette.vue:113
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
-#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
-#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "Mediji"
 
-#: js/commands.js:185
 msgid "Go to media"
 msgstr "Idi na medije"
 
-#: js/commands.js:190 js/components/CommandPalette.vue:114
-#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "Zajednički elementi"
 
-#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "Idi na zajedničke elemente"
 
-#: js/commands.js:196 js/components/Navigation.vue:34
-#: js/views/AccessList.vue:241
 msgid "Users"
 msgstr "Korisnici"
 
-#: js/commands.js:197
 msgid "Go to users"
 msgstr "Idi na korisnike"
 
-#: js/components/AccessUsers.vue:212
 msgid "All languages"
 msgstr "Svi jezici"
 
-#: js/components/AccessUsers.vue:213 js/components/AccessUsers.vue:574
 msgid "Selected languages"
 msgstr "Odabrani jezici"
 
-#: js/components/AccessUsers.vue:214
 msgid "No languages"
 msgstr "Nema jezika"
 
-#: js/components/AccessUsers.vue:282
 msgid "Access roles updated"
 msgstr "Pristupne uloge ažurirane"
 
-#: js/components/AccessUsers.vue:282
 msgid "Backend roles updated"
 msgstr "Uloge pozadinskog sustava ažurirane"
 
-#: js/components/AccessUsers.vue:292
 msgid "Error updating access roles"
 msgstr "Pogreška pri ažuriranju pristupnih uloga"
 
-#: js/components/AccessUsers.vue:293
 msgid "Error updating CMS permissions"
 msgstr "Pogreška pri ažuriranju CMS dozvola"
 
-#: js/components/AccessUsers.vue:330
 msgid "User created"
 msgstr "Korisnik stvoren"
 
-#: js/components/AccessUsers.vue:336
 msgid "Error creating user"
 msgstr "Pogreška pri stvaranju korisnika"
 
-#: js/components/AccessUsers.vue:377 js/components/PageAccess.vue:130
-#: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "Pogreška pri dohvaćanju pristupnih uloga"
 
-#: js/components/AccessUsers.vue:407
 msgid "Error fetching user access roles"
 msgstr "Pogreška pri dohvaćanju korisničkih pristupnih uloga"
 
-#: js/components/AccessUsers.vue:454 js/components/AccessUsers.vue:455
 msgid "Create user"
 msgstr "Stvori korisnika"
 
-#: js/components/AccessUsers.vue:462
 msgid "Email address"
 msgstr "Adresa e-pošte"
 
-#: js/components/AccessUsers.vue:471
 msgid "Search user by email"
 msgstr "Traži korisnika po e-pošti"
 
-#: js/components/AccessUsers.vue:483 js/components/AccessUsers.vue:484
 msgid "Search"
 msgstr "Traži"
 
-#: js/components/AccessUsers.vue:499 js/components/AccessUsers.vue:500
-#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "Spremi"
 
-#: js/components/AccessUsers.vue:509
 msgid "Account"
 msgstr "Račun"
 
-#: js/components/AccessUsers.vue:514 js/components/AccessUsers.vue:521
 msgid "Assigned frontend roles"
 msgstr "Dodijeljene frontend uloge"
 
-#: js/components/AccessUsers.vue:521
 msgid "Roles granting access to restricted pages"
 msgstr "Uloge koje daju pristup ograničenim stranicama"
 
-#: js/components/AccessUsers.vue:534
 msgid "Assigned backend roles"
 msgstr "Dodijeljene backend uloge"
 
-#: js/components/AccessUsers.vue:538
 msgid "Custom"
 msgstr "Prilagođeno"
 
-#: js/components/AccessUsers.vue:544
 msgid "Available roles"
 msgstr "Dostupne uloge"
 
-#: js/components/AccessUsers.vue:544
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "Uloge koje određuju što korisnik može raditi u administraciji"
 
-#: js/components/AccessUsers.vue:556 js/components/AccessUsers.vue:563
 msgid "Writable languages"
 msgstr "Jezici za uređivanje"
 
-#: js/components/AccessUsers.vue:563
 msgid "Languages of the pages, elements and files the user can change"
 msgstr "Jezici stranica, elemenata i datoteka koje korisnik može mijenjati"
 
-#: js/components/AccessUsers.vue:585 js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "Nema pronađenih unosa"
 
-#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:110
 msgid "Actions"
 msgstr "Radnje"
 
-#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "Zatvori"
 
-#: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "Što mogu učiniti za Vas?"
 
-#: js/components/AiPrompt.vue:88
 msgid "Press Enter to open the chat"
 msgstr "Pritisnite Enter za otvaranje chata"
 
-#: js/components/AiPrompt.vue:105
 msgid "Hide help"
 msgstr "Sakrij pomoć"
 
-#: js/components/AiPrompt.vue:105
 msgid "Show help"
 msgstr "Prikaži pomoć"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
-#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "Pošalji"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
-#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:236 js/components/FileDetailItem.vue:482
 msgid "Dictate"
 msgstr "Diktiraj"
 
-#: js/components/AiPrompt.vue:133
 msgid "Help"
 msgstr "Pomoć"
 
-#: js/components/AsideCount.vue:60
 msgid "Used elements"
 msgstr "Korišteni elementi"
 
-#: js/components/AsideList.vue:71
 msgid "Filters"
 msgstr "Filtri"
 
-#: js/components/AsideList.vue:78 js/components/ListStatus.vue:43
 msgid "Reset"
 msgstr "Poništi"
 
-#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:153
-#: js/components/DetailRefs.vue:183 js/components/DetailRefs.vue:205
 msgid "ID"
 msgstr "ID"
 
-#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
-#: js/fields/File.vue:334
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
 msgid "editor"
 msgstr "Urednik"
 
-#: js/components/AsideMeta.vue:34
 msgid "created"
 msgstr "Stvoreno"
 
-#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
 msgid "updated"
 msgstr "Ažurirano"
 
-#: js/components/AsideMeta.vue:36
 msgid "deleted"
 msgstr "Izbrisano"
 
-#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
-#: js/components/HistoryDialog.vue:46
 msgid "Meta data"
 msgstr "Metapodaci"
 
-#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
-#: js/components/HistoryDialog.vue:46
 msgid "Fields"
 msgstr "Polja"
 
-#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "Meta oznake"
 
-#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
 msgid "Configuration"
 msgstr "Konfiguracija"
 
-#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "Sadržaj"
 
-#: js/components/ChangesDialog.vue:231
 msgid "Conflicts from %{editor}"
 msgstr "Sukobi s promjenama korisnika %{editor}"
 
-#: js/components/ChangesDialog.vue:237
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
-#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
 msgid "Revert"
 msgstr "Poništi promjenu"
 
-#: js/components/ChangesDialog.vue:262
 msgid "Changes"
 msgstr "Promjene"
 
-#: js/components/ChangesDialog.vue:281
 msgid "Removed"
 msgstr "Uklonjeno"
 
-#: js/components/ChangesDialog.vue:288
 msgid "Added"
 msgstr "Dodano"
 
-#: js/components/ChangesDialog.vue:308
 msgid "Use theirs"
 msgstr "Preuzmi njihovu"
 
-#: js/components/ChangesDialog.vue:314
 msgid "Keep mine"
 msgstr "Zadrži moju"
 
-#: js/components/ChangesDialog.vue:321
 msgid "Merge both"
 msgstr "Spoji obje"
 
-#: js/components/ChatDialog.vue:210
 msgid "The response was interrupted and may be incomplete."
 msgstr "Odgovor je prekinut i možda je nepotpun."
 
-#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "Nažalost, nešto je pošlo po zlu."
 
-#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "Gotovo"
 
-#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "AI asistent"
 
-#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "Novi chat"
 
-#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "Razmišljam ..."
 
-#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
-#: js/components/PageDetailContentList.vue:528
-#: js/components/PageDetailContentList.vue:615
-#: js/components/PageListItems.vue:771 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "Kopiraj"
 
-#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "Pošaljite poruku ..."
 
-#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "Poruka u razgovoru"
 
-#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "Zaustavi"
 
-#: js/components/CommandPalette.vue:111
 msgid "Go to"
 msgstr "Idi na"
 
-#: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:275 js/components/PageListItems.vue:903
 msgid "New"
 msgstr "Novo"
 
-#: js/components/CommandPalette.vue:287 js/components/CommandPalette.vue:310
-#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "Naredbe"
 
-#: js/components/CommandPalette.vue:296
 msgid "Type a command or search pages, files and elements"
 msgstr "Upišite naredbu ili pretražite stranice, datoteke i elemente"
 
-#: js/components/CommandPalette.vue:297
 msgid "Command or search term"
 msgstr "Naredba ili pojam za pretraživanje"
 
-#: js/components/CommandPalette.vue:329 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "zatim"
 
-#: js/components/CommandPalette.vue:336
 msgid "Search failed, please try again"
 msgstr "Pretraživanje nije uspjelo, pokušajte ponovno"
 
-#: js/components/CommandPalette.vue:337
 msgid "No results"
 msgstr "Nema rezultata"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
-#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:119 js/components/PageListItems.vue:807
-#: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "Trajno izbriši"
 
-#: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
 msgid_plural ""
 "The following %{num} entries will be permanently deleted and cannot be "
@@ -491,905 +350,641 @@ msgstr[1] "Sljedeća %{num} unosa bit će trajno izbrisana i ne mogu se vratiti:
 msgstr[2] ""
 "Sljedećih %{num} unosa bit će trajno izbrisano i ne mogu se vratiti:"
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "Odustani"
 
-#: js/components/DetailAppBar.vue:164 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "Izbornik"
 
-#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "Prikaži povijest"
 
-#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "Prikaži promjene spajanja"
 
-#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ListBulkMenu.vue:53
-#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:91
-#: js/components/PageListItems.vue:735
 msgid "Publish"
 msgstr "Objavi"
 
-#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
 msgstr "Objavi i zatvori"
 
-#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "Zakaži"
 
-#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
 msgstr "Zakaži i zatvori"
 
-#: js/components/DetailAppBar.vue:289 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "Prikaži/sakrij bočni izbornik"
 
-#: js/components/DetailRefs.vue:78
 msgid "yes"
 msgstr "da"
 
-#: js/components/DetailRefs.vue:81
 msgid "no"
 msgstr "ne"
 
-#: js/components/DetailRefs.vue:134
 msgid "Error fetching references"
 msgstr "Pogreška pri dohvaćanju referenci"
 
-#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:238
 msgid "URL"
 msgstr "URL"
 
-#: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
-#: js/components/ElementDetailItem.vue:62 js/components/FileDetailItem.vue:389
-#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "Naziv"
 
-#: js/components/DetailRefs.vue:167 js/components/PageAccess.vue:187
-#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "Ograničeno"
 
-#: js/components/DetailRefs.vue:178 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "Elementi"
 
-#: js/components/DetailRefs.vue:184 js/components/DetailRefs.vue:206
-#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "Vrsta"
 
-#: js/components/DetailRefs.vue:200
 msgid "Versions"
 msgstr "Verzije"
 
-#: js/components/DetailRefs.vue:207 js/listview.js:90
 msgid "Published"
 msgstr "Objavljeno"
 
-#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
-#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
-#: js/components/PageBulkMenu.vue:101 js/components/PageListItems.vue:756
 msgid "Edit properties"
 msgstr "Uredi svojstva"
 
-#: js/components/EditBulkDialog.vue:59
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "Primijeni odabrana svojstva na %{num} unos."
 msgstr[1] "Primijeni odabrana svojstva na %{num} unosa."
 msgstr[2] "Primijeni odabrana svojstva na %{num} unosa."
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
-#: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
-#: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "Jezik"
 
-#: js/components/EditBulkDialog.vue:71
 msgid "Language of the content"
 msgstr "Jezik sadržaja"
 
-#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
-#: js/components/PageBulkDialog.vue:260
 msgid "Apply"
 msgstr "Primijeni"
 
-#: js/components/ElementDetailItem.vue:62
 msgid "Name to find the shared element in the element list"
 msgstr "Naziv za pronalaženje zajedničkog elementa na popisu elemenata"
 
-#: js/components/ElementDetailItem.vue:75
 msgid "Language of the element content, choose none if used in all languages"
 msgstr ""
 "Jezik sadržaja elementa, odaberite „nijedan” ako se koristi na svim jezicima"
 
-#: js/components/ElementListItems.vue:157
 msgid "Error adding shared element"
 msgstr "Pogreška pri dodavanju zajedničkog elementa"
 
-#: js/components/ElementListItems.vue:163
 msgid "Error trashing shared element"
 msgstr "Pogreška pri premještanju zajedničkog elementa u smeće"
 
-#: js/components/ElementListItems.vue:164
 msgid "Error restoring shared element"
 msgstr "Pogreška pri vraćanju zajedničkog elementa"
 
-#: js/components/ElementListItems.vue:165
 msgid "Error publishing shared element"
 msgstr "Pogreška pri objavi zajedničkog elementa"
 
-#: js/components/ElementListItems.vue:166
 msgid "Error purging shared element"
 msgstr "Pogreška pri trajnom brisanju zajedničkog elementa"
 
-#: js/components/ElementListItems.vue:167
 msgid "Error saving shared element"
 msgstr "Pogreška pri spremanju zajedničkog elementa"
 
-#: js/components/ElementListItems.vue:168
 msgid "Error fetching shared elements"
 msgstr "Pogreška pri dohvaćanju zajedničkih elemenata"
 
-#: js/components/ElementListItems.vue:204
-#: js/components/ElementListItems.vue:246 js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:386
-#: js/components/PageDetailContentList.vue:514
-#: js/components/PageDetailContentList.vue:605
-#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:723
-#: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "Uključi/isključi odabir"
 
-#: js/components/ElementListItems.vue:222
-#: js/components/ElementListItems.vue:303
-#: js/components/PageDetailContentList.vue:705
-#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "Dodaj element"
 
-#: js/components/ElementListItems.vue:234 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "Ponovno učitaj elemente"
 
-#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
-#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "Prevedi"
 
-#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "Generiraj tekst"
 
-#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "Ažurirao drugi urednik"
 
-#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "Prepisano"
 
-#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "Mobitel"
 
-#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "Tablet"
 
-#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "Računalo"
 
-#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "Puna širina"
 
-#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "Element sadržaja"
 
-#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "Dodaj element ispred"
 
-#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "Dodaj element iza"
 
-#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "Ukloni element"
 
-#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "Responzivni pregled"
 
-#: js/components/FieldsAside.vue:231
-#: js/components/PageDetailContentList.vue:651
 msgid "Change to"
 msgstr "Promijeni u"
 
-#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
-#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
-#: js/fields/Images.vue:340
 msgid "Edit"
 msgstr "Uredi"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:259
-#: js/components/FileAiDialog.vue:286 js/components/FileUrlDialog.vue:250
-#: js/components/PageDetailContentList.vue:540
-#: js/components/PageDetailContentList.vue:621 js/fields/Items.vue:283
-#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "Ukloni"
 
-#: js/components/FileAiDialog.vue:134 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:170
-#: js/filefield.js:189
 msgid "Error adding file %{path}"
 msgstr "Pogreška pri dodavanju datoteke %{path}"
 
-#: js/components/FileAiDialog.vue:178
 msgid "Error creating file"
 msgstr "Pogreška pri stvaranju datoteke"
 
-#: js/components/FileAiDialog.vue:225
 msgid "Create image"
 msgstr "Stvori sliku"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the image content"
 msgstr "Opišite sadržaj slike"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "Opišite motiv, stil i boje slike koju treba generirati"
 
-#: js/components/FileAiDialog.vue:250
 msgid "New image"
 msgstr "Nova slika"
 
-#: js/components/FileAiDialog.vue:254
 msgid "Current images"
 msgstr "Trenutne slike"
 
-#: js/components/FileAiDialog.vue:279
 msgid "Images used"
 msgstr "Korištene slike"
 
-#: js/components/FileAiDialog.vue:296
 msgid "Select images"
 msgstr "Odaberi slike"
 
-#: js/components/FileDetailItem.vue:142 js/components/FileDetailItem.vue:151
 msgid "Error copying to clipboard"
 msgstr "Pogreška pri kopiranju u međuspremnik"
 
-#: js/components/FileDetailItem.vue:148
 msgid "Copied to clipboard"
 msgstr "Kopirano u međuspremnik"
 
-#: js/components/FileDetailItem.vue:175
 msgid "Error describing file"
 msgstr "Pogreška pri opisivanju datoteke"
 
-#: js/components/FileDetailItem.vue:224 js/components/FileListItems.vue:190
-#: js/filefield.js:157 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "Pogreška pri spremanju datoteke"
 
-#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "Transkripcija je dostupna samo za audio i video datoteke"
 
-#: js/components/FileDetailItem.vue:389
 msgid "Name to find the file in the media list"
 msgstr "Naziv za pronalaženje datoteke na popisu medija"
 
-#: js/components/FileDetailItem.vue:401
 msgid "Language of the file content, choose none if used in all languages"
 msgstr ""
 "Jezik sadržaja datoteke, odaberite „nijedan” ako se koristi na svim jezicima"
 
-#: js/components/FileDetailItem.vue:411
 msgid "Copy URL"
 msgstr "Kopiraj URL"
 
-#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "Opisi"
 
-#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "Prevedi tekst"
 
-#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "Generiraj opis"
 
-#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "Opis (%{lang})"
 
-#: js/components/FileDetailItem.vue:498
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr ""
 "Alternativni tekst za čitače zaslona i tražilice, koristi se i kao opis slike"
 
-#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "Transkripcije"
 
-#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "Transkribiraj sadržaj datoteke"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Transcription (%{lang})"
 msgstr "Transkripcija (%{lang})"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr ""
 "Izgovoreni tekst u formatu WebVTT, prikazuje se kao titlovi i transkript"
 
-#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "Izvorni omjer"
 
-#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "Bez omjera"
 
-#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "Kvadrat"
 
-#: js/components/FileDetailItemImage.vue:175
 msgid "Error downloading image"
 msgstr "Pogreška pri preuzimanju slike"
 
-#: js/components/FileDetailItemImage.vue:277
-#: js/components/FileDetailItemImage.vue:362 js/imageai.js:216
 msgid "Error editing image"
 msgstr "Pogreška pri uređivanju slike"
 
-#: js/components/FileDetailItemImage.vue:402
-#: js/components/FileDetailItemImage.vue:407
 msgid "Select area"
 msgstr "Odaberi područje"
 
-#: js/components/FileDetailItemImage.vue:426
 msgid "Crop selected area"
 msgstr "Izreži odabrano područje"
 
-#: js/components/FileDetailItemImage.vue:436
 msgid "Erase selected area"
 msgstr "Izbriši odabrano područje"
 
-#: js/components/FileDetailItemImage.vue:448
-#: js/components/FileDetailItemImage.vue:455
-#: js/components/FileDetailItemImage.vue:470
 msgid "Edit image"
 msgstr "Uredi sliku"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe the changes"
 msgstr "Opišite promjene"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "Opišite što treba promijeniti na slici, npr. neka nebo bude plavo"
 
-#: js/components/FileDetailItemImage.vue:480
 msgid "Remove background"
 msgstr "Ukloni pozadinu"
 
-#: js/components/FileDetailItemImage.vue:491
-#: js/components/FileDetailItemImage.vue:498
-#: js/components/FileDetailItemImage.vue:518
 msgid "Expand image"
 msgstr "Proširi sliku"
 
-#: js/components/FileDetailItemImage.vue:526
-#: js/components/FileDetailItemImage.vue:533
 msgid "Upscale image"
 msgstr "Povećaj razlučivost slike"
 
-#: js/components/FileDetailItemImage.vue:546
 msgid "Scale %{factor}"
 msgstr "Skaliraj %{factor}"
 
-#: js/components/FileDetailItemImage.vue:555
 msgid "Rotate counter-clockwise"
 msgstr "Zakreni suprotno od kazaljke sata"
 
-#: js/components/FileDetailItemImage.vue:562
 msgid "Rotate clockwise"
 msgstr "Zakreni u smjeru kazaljke sata"
 
-#: js/components/FileDetailItemImage.vue:570
 msgid "Flip horizontally"
 msgstr "Zrcali vodoravno"
 
-#: js/components/FileDetailItemImage.vue:577
 msgid "Flip vertically"
 msgstr "Zrcali okomito"
 
-#: js/components/FileDetailItemImage.vue:585
 msgid "Convert to monochrome"
 msgstr "Pretvori u crno-bijelo"
 
-#: js/components/FileDetailItemImage.vue:588
 msgid "Download"
 msgstr "Preuzmi"
 
-#: js/components/FileDetailItemImage.vue:590
-#: js/components/FileDetailItemImage.vue:595 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "Poništi radnju"
 
-#: js/components/FileDetailItemImage.vue:602
 msgid "Previous edit"
 msgstr "Prethodna izmjena"
 
-#: js/components/FileDetailItemImage.vue:605
 msgid "Original"
 msgstr "Izvornik"
 
-#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "Nije pronađen video element"
 
-#: js/components/FileDetailItemVideo.vue:85
 msgid "Video not loaded yet"
 msgstr "Videozapis još nije učitan"
 
-#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "Pogreška pri spremanju naslovne slike videa"
 
-#: js/components/FileDetailItemVideo.vue:158
-#: js/components/FileDetailItemVideo.vue:202
-#: js/components/FileDetailItemVideo.vue:203
 msgid "Remove cover image"
 msgstr "Ukloni naslovnu sliku"
 
-#: js/components/FileDetailItemVideo.vue:158
 msgid "Remove the cover image of this video?"
 msgstr "Ukloniti naslovnu sliku ovog videozapisa?"
 
-#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "Pogreška pri uklanjanju naslovne slike videa"
 
-#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "Nije odabrana datoteka"
 
-#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "Pogreška pri prijenosu naslovne slike videa"
 
-#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "Koristi kao naslovnu sliku"
 
-#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "Prenesi naslovnu sliku"
 
-#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "Pogreška pri premještanju datoteke u smeće"
 
-#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "Pogreška pri vraćanju datoteke"
 
-#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "Pogreška pri objavi datoteke"
 
-#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "Pogreška pri trajnom brisanju datoteke"
 
-#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "Pogreška pri dohvaćanju datoteka"
 
-#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "Opisi %{num} datoteke prevedeni"
 msgstr[1] "Opisi %{num} datoteke prevedeni"
 msgstr[2] "Opisi %{num} datoteka prevedeni"
 
-#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "Pogreška pri prevođenju opisa nakon %{done} od %{total} datoteka"
 
-#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "Pogreška pri prevođenju opisa"
 
-#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "Nema opisa koji nedostaju za prijevod"
 
-#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "Prevedi opise"
 
-#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "Ponovno učitaj datoteke"
 
-#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "Prikaz mreže"
 
-#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
-#: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "Zaštiti pristup"
 
-#: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
 msgstr ""
 "Datoteku mogu preuzeti samo posjetitelji koji smiju vidjeti stranicu na "
 "kojoj se ona koristi"
 
-#: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:207
-#: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "Dodaj datoteke"
 
-#: js/components/FileUrlDialog.vue:124
 msgid "At least one URL is longer than 255 characters"
 msgstr "Barem jedan URL dulji je od 255 znakova"
 
-#: js/components/FileUrlDialog.vue:160
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "Barem jedna datoteka nije vrste \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:164
 msgid "The file is not of type \"%{mime}*\""
 msgstr "Datoteka nije vrste \"%{mime}*\""
 
-#: js/components/FileUrlDialog.vue:192 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "Dodaj datoteke s URL-ova"
 
-#: js/components/FileUrlDialog.vue:207 js/fields/File.vue:278
 msgid "Add file"
 msgstr "Dodaj datoteku"
 
-#: js/components/FileUrlDialog.vue:220
 msgid "Enter one URL per line"
 msgstr "Unesite jedan URL po retku"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "URLs"
 msgstr "URL-ovi"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "Datoteke se preuzimaju s ovih URL-ova i dodaju na popis medija"
 
-#: js/components/FileUrlDialog.vue:237
 msgid "Enter URL"
 msgstr "Unesite URL"
 
-#: js/components/FileUrlDialog.vue:238
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "Datoteka se preuzima s ovog URL-a i dodaje na popis medija"
 
-#: js/components/FileUrlDialog.vue:279
 msgid "Size"
 msgstr "Veličina"
 
-#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
-#: js/components/PageDetailContentList.vue:664
 msgid "Shared element"
 msgstr "Zajednički element"
 
-#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "Blok sadržaja"
 
-#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "Grupa: %{group} · Položaj %{num}"
 
-#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "Premješteno s položaja %{from} na %{to}"
 
-#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "%{num} polje promijenjeno"
 msgstr[1] "%{num} polja promijenjena"
 msgstr[2] "%{num} polja promijenjeno"
 
-#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "Odabrano %{selected} od %{total}"
 
-#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "Nepoznat datum"
 
-#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "Položaj bloka"
 
-#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "Vrijednost"
 
-#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "%{num} blok dodan"
 msgstr[1] "%{num} bloka dodana"
 msgstr[2] "%{num} blokova dodano"
 
-#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "%{num} blok uklonjen"
 msgstr[1] "%{num} bloka uklonjena"
 msgstr[2] "%{num} blokova uklonjeno"
 
-#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "%{num} blok promijenjen"
 msgstr[1] "%{num} bloka promijenjena"
 msgstr[2] "%{num} blokova promijenjeno"
 
-#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "%{num} blok premješten"
 msgstr[1] "%{num} bloka premještena"
 msgstr[2] "%{num} blokova premješteno"
 
-#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "%{num} datoteka promijenjena"
 msgstr[1] "%{num} datoteke promijenjene"
 msgstr[2] "%{num} datoteka promijenjeno"
 
-#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
-#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "Nema promjena"
 
-#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "Povijest"
 
-#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
-#: js/fields/Url.vue:173
 msgid "Loading"
 msgstr "Učitavanje"
 
-#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "Pogreška pri dohvaćanju verzija"
 
-#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "Pokušaj ponovno"
 
-#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "Trenutne promjene"
 
-#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "Zakazano za %{date}"
 
-#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "Odaberi sve"
 
-#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "Blok dodan"
 
-#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "Blok uklonjen"
 
-#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "Zadrži trenutni položaj"
 
-#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "Zadrži trenutnu vrijednost"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "Prethodna verzija: zadnja spremljena verzija"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "Prethodna verzija: %{date}"
 
-#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "Za poništavanje odabrano %{selected} od %{total}"
 
-#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "Poništi odabrane promjene"
 
-#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "Vrati prethodnu verziju"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "Prethodna vrijednost"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "Nova vrijednost"
 
-#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "Povećaj %{name}"
 
-#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "Učitavanje pregleda"
 
-#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
-#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
-#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "Pregled nije dostupan"
 
-#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "Pregled slike"
 
-#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "Zatvori pregled"
 
-#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "Pregled tablice"
 
-#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "%{num} redak izostavljen"
 msgstr[1] "%{num} retka izostavljena"
 msgstr[2] "%{num} redaka izostavljeno"
 
-#: js/components/ListAppBar.vue:34
 msgid "Close navigation"
 msgstr "Zatvori navigaciju"
 
-#: js/components/ListAppBar.vue:34
 msgid "Open navigation"
 msgstr "Otvori navigaciju"
 
-#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:113 js/components/PageListItems.vue:793
 msgid "Delete"
 msgstr "Izbriši"
 
-#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:116 js/components/PageListItems.vue:799
-#: js/components/PageListItems.vue:929
 msgid "Restore"
 msgstr "Vrati"
 
-#: js/components/ListReload.vue:29
 msgid "Updated by another user"
 msgstr "Ažurirao drugi korisnik"
 
-#: js/components/ListReload.vue:35
 msgid "Refresh"
 msgstr "Osvježi"
 
-#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:548
-#: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "Traži"
 
-#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "Urednik"
 
-#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "Najnovije"
 
-#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "Zadnja izmjena"
 
-#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "Najstarije"
 
-#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "Najstarija izmjena"
 
-#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "Položaj"
 
-#: js/components/ListSort.vue:37 js/views/PageList.vue:117
 msgid "Tree"
 msgstr "Stablo"
 
-#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "Upotreba"
 
-#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "Poredaj po"
 
-#: js/components/ListStatus.vue:46
 msgid "No entries yet"
 msgstr "Još nema unosa"
 
-#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "Ploče"
 
-#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "Tipkovnički prečaci"
 
-#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "Pogreška pri promjeni pristupa stranici"
 
-#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "Promjene pristupa stupaju na snagu odmah nakon isteka predmemorije"
 
-#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "Vidljivost"
 
-#: js/components/PageAccess.vue:181
 msgid ""
 "Public pages are visible to everyone, others only to logged in users or "
 "users with the selected roles"
@@ -1397,51 +992,36 @@ msgstr ""
 "Javne stranice vidljive su svima, ostale samo prijavljenim korisnicima ili "
 "korisnicima s odabranim ulogama"
 
-#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "Javno"
 
-#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "Prijavljeni korisnici"
 
-#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:104
-#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:759 js/components/PageListItems.vue:983
-#: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "Pristup"
 
-#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
 msgstr "Stranicu mogu vidjeti samo posjetitelji s jednom od ovih uloga"
 
-#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:274
 msgid "Page bulk changes are limited to %{count} pages"
 msgstr "Skupne promjene stranica ograničene su na %{count} stranica"
 
-#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:268
 msgid "Apply recursively"
 msgstr "Primijeni rekurzivno"
 
-#: js/components/PageBulkDialog.vue:151
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "Primijeni odabrana svojstva na %{num} stranicu."
 msgstr[1] "Primijeni odabrana svojstva na %{num} stranice."
 msgstr[2] "Primijeni odabrana svojstva na %{num} stranica."
 
-#: js/components/PageBulkDialog.vue:162
 msgid "Change status"
 msgstr "Promijeni status"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid "Status"
 msgstr "Status"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
@@ -1449,423 +1029,303 @@ msgstr ""
 "Onemogućene stranice su izvan mreže, skrivene stranice su dostupne, ali se "
 "ne prikazuju u navigaciji"
 
-#: js/components/PageBulkDialog.vue:176
 msgid "Change cache time"
 msgstr "Promijeni vrijeme predmemorije"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
-#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "Vrijeme predmemorije"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
 msgid "How long the generated page is cached before it is created again"
 msgstr ""
 "Koliko dugo se generirana stranica čuva u predmemoriji prije ponovnog "
 "stvaranja"
 
-#: js/components/PageBulkDialog.vue:190
 msgid "Change source language"
 msgstr "Promijeni izvorni jezik"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Source language"
 msgstr "Izvorni jezik"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Language of the source page content"
 msgstr "Jezik sadržaja izvornog web-mjesta"
 
-#: js/components/PageBulkDialog.vue:202
 msgid "Change theme"
 msgstr "Promijeni temu"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
-#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "Tema"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
 msgid "Design used to display the page"
 msgstr "Dizajn kojim se prikazuje stranica"
 
-#: js/components/PageBulkDialog.vue:214
 msgid "Change page type"
 msgstr "Promijeni vrstu stranice"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
-#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "Vrsta stranice"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
 msgid "Template of the theme which defines the page layout"
 msgstr "Predložak teme koji određuje raspored stranice"
 
-#: js/components/PageBulkDialog.vue:226
 msgid "Change tag"
 msgstr "Promijeni oznaku"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
-#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "Oznaka stranice"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr ""
 "Interni identifikator za pronalaženje stranice u predlošcima, npr. blog"
 
-#: js/components/PageBulkDialog.vue:239
 msgid "Change domain"
 msgstr "Promijeni domenu"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain"
 msgstr "Domena"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "Domena na kojoj je stranica dostupna, npr. example.com"
 
-#: js/components/PageBulkMenu.vue:94 js/components/PageListItems.vue:742
 msgctxt "page status"
 msgid "Enable"
 msgstr "Omogući"
 
-#: js/components/PageBulkMenu.vue:97 js/components/PageListItems.vue:748
 msgctxt "page status"
 msgid "Disable"
 msgstr "Onemogući"
 
-#: js/components/PageBulkMenu.vue:107 js/components/PageListItems.vue:762
 msgid "Clear cache"
 msgstr "Očisti predmemoriju"
 
-#: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "Zanemari promjene"
 
-#: js/components/PageBulkMenu.vue:148 js/components/PageListItems.vue:836
 msgid "Delete this language"
 msgstr "Izbriši ovaj jezik"
 
-#: js/components/PageBulkMenu.vue:156 js/components/PageListItems.vue:844
 msgid "Restore this language"
 msgstr "Vrati ovaj jezik"
 
-#: js/components/PageBulkMenu.vue:164 js/components/PageListItems.vue:852
 msgid "Purge language"
 msgstr "Trajno izbriši jezik"
 
-#: js/components/PageDetailContentList.vue:165
-#: js/components/PageDetailContentList.vue:175 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "Element sadržaja nije pronađen"
 
-#: js/components/PageDetailContentList.vue:374
 msgid "Not available for this content element"
 msgstr "Nije dostupno za ovaj element sadržaja"
 
-#: js/components/PageDetailContentList.vue:384
 msgid "Error splitting text"
 msgstr "Pogreška pri dijeljenju teksta"
 
-#: js/components/PageDetailContentList.vue:499
 msgid "Describe the task you want to perform"
 msgstr "Opišite zadatak koji želite izvršiti"
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refining ..."
 msgstr "Dorađujem ..."
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refine content based on prompt"
 msgstr "Doradi sadržaj prema upitu"
 
-#: js/components/PageDetailContentList.vue:504
 msgid "AI can add or improve content based on your input"
 msgstr "AI može dodati ili poboljšati sadržaj na temelju Vašeg unosa"
 
-#: js/components/PageDetailContentList.vue:505
 msgid "It can take a long time depending on the task and content size"
 msgstr "To može potrajati, ovisno o zadatku i opsegu sadržaja"
 
-#: js/components/PageDetailContentList.vue:531
-#: js/components/PageDetailContentList.vue:618
-#: js/components/PageListItems.vue:768 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "Izreži"
 
-#: js/components/PageDetailContentList.vue:534 js/pagetree.js:37
 msgid "Paste"
 msgstr "Zalijepi"
 
-#: js/components/PageDetailContentList.vue:537
-#: js/components/PageDetailContentList.vue:657
 msgid "Merge"
 msgstr "Spoji"
 
-#: js/components/PageDetailContentList.vue:592 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "Premjesti element"
 
-#: js/components/PageDetailContentList.vue:627 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "Zalijepi ispred"
 
-#: js/components/PageDetailContentList.vue:630 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "Zalijepi iza"
 
-#: js/components/PageDetailContentList.vue:633 js/fields/Items.vue:287
-#: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "Umetni ispred"
 
-#: js/components/PageDetailContentList.vue:636 js/fields/Items.vue:288
-#: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "Umetni iza"
 
-#: js/components/PageDetailContentList.vue:645
 msgid "Make shared"
 msgstr "Učini zajedničkim"
 
-#: js/components/PageDetailContentList.vue:648
 msgid "Replace with local copy"
 msgstr "Zamijeni lokalnom kopijom"
 
-#: js/components/PageDetailContentList.vue:654
 msgctxt "text element"
 msgid "Split"
 msgstr "Podijeli"
 
-#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "Dvaput kliknite za uređivanje"
 
-#: js/components/PageDetailEditor.vue:277
 msgid "Preview mode"
 msgstr "Način pregleda"
 
-#: js/components/PageDetailEditor.vue:280
 msgid "Not CMS content"
 msgstr "Nije CMS sadržaj"
 
-#: js/components/PageDetailItem.vue:83
 msgid "Detail"
 msgstr "Detalji"
 
-#: js/components/PageDetailItem.vue:90
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:97
 msgid "Config"
 msgstr "Konfiguracija"
 
-#: js/components/PageDetailItemProps.vue:74
 msgid "Path must not start with a slash (/)"
 msgstr "Putanja ne smije počinjati kosom crtom (/)"
 
-#: js/components/PageDetailItemProps.vue:84
 msgid "URL is not valid"
 msgstr "URL nije valjan"
 
-#: js/components/PageDetailItemProps.vue:89 js/views/Login.vue:61
-#: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "Polje je obavezno"
 
-#: js/components/PageDetailItemProps.vue:125
 msgid "The path is already in use by another page"
 msgstr "Putanju već koristi druga stranica"
 
-#: js/components/PageDetailItemProps.vue:232
 msgid "Language of the page content"
 msgstr "Jezik sadržaja stranice"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Page title"
 msgstr "Naslov stranice"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Shown in the browser tab and search results"
 msgstr "Prikazuje se na kartici preglednika i u rezultatima pretraživanja"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Page name"
 msgstr "Naziv stranice"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Short name shown in the navigation menus"
 msgstr "Kratki naziv koji se prikazuje u navigacijskim izbornicima"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "URL path"
 msgstr "URL putanja"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "Dio URL-a stranice nakon domene, npr. about-us"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Redirect URL"
 msgstr "URL preusmjeravanja"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "Posjetitelji se preusmjeravaju na ovaj URL umjesto da vide stranicu"
 
-#: js/components/PageDetailItemSection.vue:63
 msgid "The element has already been added"
 msgstr "Element je već dodan"
 
-#: js/components/PageDetailItemSection.vue:178
 msgid "Remove content element"
 msgstr "Ukloni element sadržaja"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "Potrebno ažuriranje"
 
-#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:156
 msgid "Missing"
 msgstr "Nedostaje"
 
-#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:162
 msgid "AI draft"
 msgstr "AI nacrt"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "Ažurno"
 
-#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:222
 msgid "Error fetching translation states"
 msgstr "Pogreška pri dohvaćanju stanja prijevoda"
 
-#: js/components/PageListItems.vue:255
 msgid "Error adding root page"
 msgstr "Pogreška pri dodavanju korijenske stranice"
 
-#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "Pogreška pri prevođenju stranice"
 
-#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "Pogreška pri dodavanju jezika"
 
-#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
-#: js/pagetree.js:152
 msgid "Error fetching pages"
 msgstr "Pogreška pri dohvaćanju stranica"
 
-#: js/components/PageListItems.vue:504
 msgid "Error searching pages"
 msgstr "Pogreška pri pretraživanju stranica"
 
-#: js/components/PageListItems.vue:540 js/options.js:50
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} minuta"
 msgstr[1] "%{num} minute"
 msgstr[2] "%{num} minuta"
 
-#: js/components/PageListItems.vue:549
 msgid "Translating into %{langs}"
 msgstr "Prevodi se na %{langs}"
 
-#: js/components/PageListItems.vue:645 js/components/PageListItems.vue:959
 msgid "Add page"
 msgstr "Dodaj stranicu"
 
-#: js/components/PageListItems.vue:657
 msgid "Reload page tree"
 msgstr "Ponovno učitaj stablo stranica"
 
-#: js/components/PageListItems.vue:670
 msgid "Translating %{done} of %{total}"
 msgstr "Prevođenje %{done} od %{total}"
 
-#: js/components/PageListItems.vue:686
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr ""
 "Za navigaciju koristite tipke sa strelicama. Alt i tipke sa strelicama "
 "mijenjaju redoslijed."
 
-#: js/components/PageListItems.vue:688
 msgid "Moved to position %{position} of %{total}"
 msgstr "Premješteno na položaj %{position} od %{total}"
 
-#: js/components/PageListItems.vue:690
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "Izvučeno na razinu %{level}, položaj %{position} od %{total}"
 
-#: js/components/PageListItems.vue:696
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "Uvučeno na razinu %{level}, položaj %{position} od %{total}"
 
-#: js/components/PageListItems.vue:716
 msgid "Toggle child nodes"
 msgstr "Proširi/sažmi podređene čvorove"
 
-#: js/components/PageListItems.vue:901 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "Skriveno u navigaciji"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "Stvori"
 
-#: js/components/PageListItems.vue:986
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "Primijeni postavke pristupa na %{num} stranicu."
 msgstr[1] "Primijeni postavke pristupa na %{num} stranice."
 msgstr[2] "Primijeni postavke pristupa na %{num} stranica."
 
-#: js/components/PasswordField.vue:35
 msgid "Password"
 msgstr "Lozinka"
 
-#: js/components/PasswordField.vue:42
 msgid "Hide password"
 msgstr "Sakrij lozinku"
 
-#: js/components/PasswordField.vue:42
 msgid "Show password"
 msgstr "Prikaži lozinku"
 
-#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "Još niste prijavljeni"
 
-#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "Sesija je istekla"
 
-#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
-#: js/components/User.vue:134
 msgid "Logout"
 msgstr "Odjava"
 
-#: js/components/ReloginDialog.vue:151
 msgid ""
 "Please sign in again in the new tab and return here to continue. Your "
 "unsaved changes are kept."
@@ -1873,140 +1333,107 @@ msgstr ""
 "Ponovno se prijavite u novoj kartici i vratite se ovamo za nastavak. Vaše "
 "nespremljene promjene su sačuvane."
 
-#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr ""
 "Ponovno se prijavite za nastavak. Vaše nespremljene promjene su sačuvane."
 
-#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "Prijavi se"
 
-#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "E-pošta"
 
-#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "Nastavi"
 
-#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "Prijava"
 
-#: js/components/SchemaDialog.vue:42
 msgid "Content elements"
 msgstr "Elementi sadržaja"
 
-#: js/components/SchemaDialog.vue:47
 msgid "New elements"
 msgstr "Novi elementi"
 
-#: js/components/SchemaDialog.vue:59
 msgid "Only elements in %{lang}"
 msgstr "Samo elementi na jeziku %{lang}"
 
-#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "Nekategorizirano"
 
-#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "Pogreška pri dohvaćanju elemenata sadržaja"
 
-#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "Općenito"
 
-#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "Zatvori dijalog ili izbornik"
 
-#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "Kretanje između naredbi i rezultata"
 
-#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "Izvrši naredbu ili otvori rezultat"
 
-#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "Zatvori paletu naredbi"
 
-#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "Popisi"
 
-#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "Prikazi za uređivanje"
 
-#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "Sadržaj stranice"
 
-#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "Premjesti element sadržaja gore ili dolje"
 
-#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "Stablo stranica"
 
-#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "Kretanje između stranica"
 
-#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "Proširi stranicu"
 
-#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "Dodaj podstranicu označenoj stranici"
 
-#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "Promijeni redoslijed ili razinu stranice"
 
-#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "AI chat"
 
-#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "Pošalji poruku"
 
-#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "Novi redak"
 
-#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "Prikaži prethodne poruke"
 
-#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "Prevedi na"
 
-#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "Jezici"
 
-#: js/components/TranslateDialog.vue:111 js/variants.js:307
 msgid ""
 "Nothing to translate, the pages are up to date or already being translated"
 msgstr "Nema ništa za prevođenje, stranice su ažurne ili se već prevode"
 
-#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "Odabrana je %{num} stranica."
 msgstr[1] "Odabrane su %{num} stranice."
 msgstr[2] "Odabrano je %{num} stranica."
 
-#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -2016,678 +1443,524 @@ msgstr ""
 "jeziku i ažurni prijevodi se preskaču. Prijevodi se izvode u pozadini i "
 "spremaju kao skice za pregled."
 
-#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "Nespremljene promjene"
 
-#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr ""
 "Imate nespremljene promjene koje će se izgubiti ako napustite stranicu."
 
-#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
 msgstr "Odbaci"
 
-#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "Spremi i napusti"
 
-#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "Učitavanje korisnika nije uspjelo"
 
-#: js/components/User.vue:86
 msgid "Logout failed"
 msgstr "Odjava nije uspjela"
 
-#: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "Prebaci svijetli/tamni način"
 
-#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "Promijeni jezik"
 
-#: js/components/User.vue:120
 msgid "User menu"
 msgstr "Korisnički izbornik"
 
-#: js/contentrefine.js:125
 msgid "Elements changed during the refinement were kept unchanged"
 msgstr "Elementi promijenjeni tijekom poboljšanja zadržani su nepromijenjeni"
 
-#: js/contentrefine.js:134
 msgid "Error refining content"
 msgstr "Pogreška pri doradi sadržaja"
 
-#: js/contentshare.js:51
 msgid "Element not found"
 msgstr "Element nije pronađen"
 
-#: js/contentshare.js:56
 msgid "Element is already shared"
 msgstr "Element je već zajednički"
 
-#: js/contentshare.js:101
 msgid "Unable to make element shared"
 msgstr "Element nije moguće učiniti zajedničkim"
 
-#: js/contentshare.js:117
 msgid "Element is not shared"
 msgstr "Element nije zajednički"
 
-#: js/detail.js:47
 msgid "Element published successfully"
 msgstr "Element je uspješno objavljen"
 
-#: js/detail.js:48
 msgid "Element scheduled for publishing at %{date}"
 msgstr "Element je zakazan za objavu %{date}"
 
-#: js/detail.js:49
 msgid "Error publishing element"
 msgstr "Pogreška pri objavi elementa"
 
-#: js/detail.js:53
 msgid "File published successfully"
 msgstr "Datoteka je uspješno objavljena"
 
-#: js/detail.js:54
 msgid "File scheduled for publishing at %{date}"
 msgstr "Datoteka je zakazana za objavu %{date}"
 
-#: js/detail.js:59
 msgid "Page published successfully"
 msgstr "Stranica je uspješno objavljena"
 
-#: js/detail.js:60
 msgid "Page scheduled for publishing at %{date}"
 msgstr "Stranica je zakazana za objavu %{date}"
 
-#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "Pogreška pri objavi stranice"
 
-#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "Nije objavljeno, pregledajte promjene i ponovno objavite"
 
-#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "Nema dostupnih podataka"
 
-#: js/detail.js:386
 msgid "No version data available"
 msgstr "Nema dostupnih podataka o verziji"
 
-#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "Neka polja nisu valjana, najprije ispravite pogreške"
 
-#: js/dictation.js:23 js/dictation.js:42
 msgid "Error recording audio"
 msgstr "Pogreška pri snimanju zvuka"
 
-#: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
 msgstr "Vrijednost mora biti heksadecimalni kôd boje"
 
-#: js/fields/File.vue:80
 msgid "File is required"
 msgstr "Datoteka je obavezna"
 
-#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "Dodaj datoteku s URL-a"
 
-#: js/fields/File.vue:293 js/fields/Images.vue:385
 msgid "Create file"
 msgstr "Stvori datoteku"
 
-#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "Prenesi datoteku"
 
-#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "Ispustite datoteku ovdje za prijenos"
 
-#: js/fields/File.vue:332
 msgid "name"
 msgstr "naziv"
 
-#: js/fields/File.vue:333
 msgid "description"
 msgstr "opis"
 
-#: js/fields/Images.vue:409
 msgid "Drop files here"
 msgstr "Ispustite datoteke ovdje"
 
-#: js/fields/Map.vue:214
 msgid "Map location"
 msgstr "Lokacija na karti"
 
-#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "Kliknite na kartu za postavljanje lokacije"
 
-#: js/fields/Map.vue:224
 msgid "Clear location"
 msgstr "Ukloni lokaciju"
 
-#: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "Vrijednost ima nevaljan format"
 
-#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "Premjesti stupac"
 
-#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "Radnje stupca"
 
-#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "Premjesti redak"
 
-#: js/fields/Table.vue:295
 msgid "Row %{row}, column %{col}"
 msgstr "Redak %{row}, stupac %{col}"
 
-#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "Radnje retka"
 
-#: js/fields/Url.vue:51 js/options.js:93
 msgid "None"
 msgstr "Ništa"
 
-#: js/fields/Url.vue:52
 msgid "Sponsored"
 msgstr "Sponzorirano"
 
-#: js/fields/Url.vue:53
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:93
 msgid "Not a valid URL"
 msgstr "Nije valjan URL"
 
-#: js/fields/Url.vue:101
 msgid "Invalid URL schema configuration"
 msgstr "Nevaljana konfiguracija URL sheme"
 
-#: js/fields/Url.vue:173
 msgid "No pages found"
 msgstr "Nema pronađenih stranica"
 
-#: js/fields/Url.vue:185
 msgid "Link attribute"
 msgstr "Atribut poveznice"
 
-#: js/filefield.js:119
 msgid "Unsupported file type"
 msgstr "Nepodržana vrsta datoteke"
 
-#: js/graphql.js:127
 msgid "Connection failed, please try again"
 msgstr "Povezivanje nije uspjelo, pokušajte ponovno"
 
-#: js/graphql.js:132 js/stores/session.js:337 js/views/Login.vue:163
 msgid "Login failed"
 msgstr "Prijava nije uspjela"
 
-#: js/imageai.js:75
 msgid "Number of pixels added at this side of the image"
 msgstr "Broj piksela dodanih na ovoj strani slike"
 
-#: js/imageai.js:78
 msgctxt "image edge"
 msgid "Top"
 msgstr "Gore"
 
-#: js/imageai.js:80
 msgctxt "image edge"
 msgid "Left"
 msgstr "Lijevo"
 
-#: js/imageai.js:81
 msgctxt "image edge"
 msgid "Right"
 msgstr "Desno"
 
-#: js/imageai.js:83
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "Dolje"
 
-#: js/imageai.js:95
 msgid "Error erasing image part"
 msgstr "Pogreška pri brisanju dijela slike"
 
-#: js/imageai.js:103
 msgid "Error editing image part"
 msgstr "Pogreška pri uređivanju dijela slike"
 
-#: js/imageai.js:114
 msgid "Error removing background"
 msgstr "Pogreška pri uklanjanju pozadine"
 
-#: js/imageai.js:259
 msgid "Error uncropping image"
 msgstr "Pogreška pri proširivanju slike"
 
-#: js/imageai.js:281
 msgid "Error upscaling image"
 msgstr "Pogreška pri povećanju razlučivosti slike"
 
-#: js/lists.js:92
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "%{num} unos premješten u smeće"
 msgstr[1] "%{num} unosa premještena u smeće"
 msgstr[2] "%{num} unosa premješteno u smeće"
 
-#: js/listview.js:87
 msgid "publish"
 msgstr "Objava"
 
-#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
-#: js/views/PageList.vue:127 js/views/PageList.vue:137
-#: js/views/PageList.vue:148
 msgid "All"
 msgstr "Sve"
 
-#: js/listview.js:91
 msgid "Scheduled"
 msgstr "Zakazano"
 
-#: js/listview.js:92
 msgid "Drafts"
 msgstr "Skice"
 
-#: js/listview.js:97
 msgid "trashed"
 msgstr "Smeće"
 
-#: js/listview.js:100
 msgid "Available only"
 msgstr "Samo dostupno"
 
-#: js/listview.js:101
 msgid "Only trashed"
 msgstr "Samo u smeću"
 
-#: js/listview.js:109
 msgid "Edited by me"
 msgstr "Uredio/la sam"
 
-#: js/listview.js:114
 msgid "languages"
 msgstr "Jezici"
 
-#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "Spojeno s promjenama korisnika %{editor}"
 
-#: js/options.js:49 js/views/PageList.vue:138
 msgid "No cache"
 msgstr "Bez predmemorije"
 
-#: js/options.js:51
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} sat"
 msgstr[1] "%{num} sata"
 msgstr[2] "%{num} sati"
 
-#: js/options.js:62 js/views/PageList.vue:130
 msgid "Disabled"
 msgstr "Onemogućeno"
 
-#: js/options.js:63 js/views/PageList.vue:128
 msgid "Enabled"
 msgstr "Omogućeno"
 
-#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "Pogreška pri spremanju stranice"
 
-#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "Stranice se brišu kao cijele stranice samo na svom izvornom jeziku"
 
-#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "Pogreška pri premještanju stranice u smeće"
 
-#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "Pogreška pri vraćanju jezika"
 
-#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "Pogreška pri vraćanju stranice"
 
-#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "Sve podstranice ovih stranica također će biti trajno izbrisane."
 
-#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "Pogreška pri trajnom brisanju stranice"
 
-#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "Predmemorija očišćena"
 
-#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "Predmemorija očišćena za %{num} stranicu."
 msgstr[1] "Predmemorija očišćena za %{num} stranice."
 msgstr[2] "Predmemorija očišćena za %{num} stranica."
 
-#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "Pogreška pri čišćenju predmemorije"
 
-#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} stranicu nije bilo moguće ažurirati"
 msgstr[1] "%{num} stranice nije bilo moguće ažurirati"
 msgstr[2] "%{num} stranica nije bilo moguće ažurirati"
 
-#: js/pagetree.js:41
 msgid "Insert"
 msgstr "Umetni"
 
-#: js/pagetree.js:66
 msgid "Before"
 msgstr "Ispred"
 
-#: js/pagetree.js:67
 msgid "Into"
 msgstr "Unutar"
 
-#: js/pagetree.js:68
 msgid "After"
 msgstr "Iza"
 
-#: js/pagetree.js:205
 msgid "Error inserting page"
 msgstr "Pogreška pri umetanju stranice"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "Pogreška pri dohvaćanju stranice"
 
-#: js/pagetree.js:263
 msgid "Error copying page"
 msgstr "Pogreška pri kopiranju stranice"
 
-#: js/pagetree.js:330
 msgid "Error moving page"
 msgstr "Pogreška pri premještanju stranice"
 
-#: js/pagetree.js:340
 msgid "Page moved"
 msgstr "Stranica premještena"
 
-#: js/routes.js:111
 msgid "Error checking the session, please try again"
 msgstr "Pogreška pri provjeri sesije, pokušajte ponovno"
 
-#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "Nemate dozvolu za pristup %{path}"
 
-#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "Naziv domene nije valjan"
 
-#: js/rules.js:24
 msgid "Value is required"
 msgstr "Vrijednost je obavezna"
 
-#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "Potreban je najmanje %{num} unos"
 msgstr[1] "Potrebna su najmanje %{num} unosa"
 msgstr[2] "Potrebno je najmanje %{num} unosa"
 
-#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "Dopušten je najviše %{num} unos"
 msgstr[1] "Dopuštena su najviše %{num} unosa"
 msgstr[2] "Dopušteno je najviše %{num} unosa"
 
-#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "Potreban je najmanje %{num} znak"
 msgstr[1] "Potrebna su najmanje %{num} znaka"
 msgstr[2] "Potrebno je najmanje %{num} znakova"
 
-#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "Dopušten je najviše %{num} znak"
 msgstr[1] "Dopuštena su najviše %{num} znaka"
 msgstr[2] "Dopušteno je najviše %{num} znakova"
 
-#: js/rules.js:62
 msgid "At least %{num} row is required"
 msgid_plural "At least %{num} rows are required"
 msgstr[0] "Potreban je najmanje %{num} redak"
 msgstr[1] "Potrebna su najmanje %{num} retka"
 msgstr[2] "Potrebno je najmanje %{num} redaka"
 
-#: js/rules.js:69
 msgid "At most %{num} row is allowed"
 msgid_plural "At most %{num} rows are allowed"
 msgstr[0] "Dopušten je najviše %{num} redak"
 msgstr[1] "Dopuštena su najviše %{num} retka"
 msgstr[2] "Dopušteno je najviše %{num} redaka"
 
-#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "Pristup odbijen"
 
-#: js/stores/plugin.js:20
 msgid "Failed to load plugin"
 msgstr "Učitavanje dodatka nije uspjelo"
 
-#: js/stores/setting.js:111
 msgid "Failed to save user settings"
 msgstr "Spremanje korisničkih postavki nije uspjelo"
 
-#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "Pogreška pri dohvaćanju napretka prijevoda"
 
-#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "Prijevod se još izvodi u pozadini"
 
-#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} prijevod nije uspio"
 msgstr[1] "%{num} prijevoda nisu uspjela"
 msgstr[2] "%{num} prijevoda nije uspjelo"
 
-#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "Prijevod je završen"
 
-#: js/strings.js:37
 msgctxt "cs"
 msgid "main"
 msgstr "Glavno"
 
-#: js/strings.js:38
 msgctxt "cs"
 msgid "header"
 msgstr "Zaglavlje"
 
-#: js/strings.js:39
 msgctxt "cs"
 msgid "footer"
 msgstr "Podnožje"
 
-#: js/strings.js:40
 msgctxt "cs"
 msgid "sidebar"
 msgstr "Bočna traka"
 
-#: js/strings.js:41
 msgctxt "cs"
 msgid "aside"
 msgstr "Bočni sadržaj"
 
-#: js/strings.js:44
 msgctxt "sg"
 msgid "basic"
 msgstr "Osnovno"
 
-#: js/strings.js:45
 msgctxt "sg"
 msgid "content"
 msgstr "Sadržaj"
 
-#: js/strings.js:46
 msgctxt "sg"
 msgid "media"
 msgstr "Mediji"
 
-#: js/strings.js:47
 msgctxt "sg"
 msgid "forms"
 msgstr "Obrasci"
 
-#: js/strings.js:50
 msgctxt "as"
 msgid "type"
 msgstr "Vrsta"
 
-#: js/strings.js:51
 msgctxt "as"
 msgid "state"
 msgstr "Stanje"
 
-#: js/strings.js:54
 msgctxt "st"
 msgid "valid"
 msgstr "Valjano"
 
-#: js/strings.js:55
 msgctxt "st"
 msgid "changed"
 msgstr "Promijenjeno"
 
-#: js/strings.js:56
 msgctxt "st"
 msgid "error"
 msgstr "Pogreška"
 
-#: js/strings.js:59
 msgctxt "st"
 msgid "reference"
 msgstr "Referenca"
 
-#: js/strings.js:62
 msgctxt "fn"
 msgid "files"
 msgstr "Datoteke"
 
-#: js/strings.js:63
 msgctxt "fn"
 msgid "language"
 msgstr "Jezik"
 
-#: js/strings.js:64
 msgctxt "fn"
 msgid "main"
 msgstr "Glavna slika"
 
-#: js/strings.js:67
 msgctxt "ai"
 msgid "Done"
 msgstr "Gotovo"
 
-#: js/strings.js:68
 msgctxt "ai"
 msgid "Already exists"
 msgstr "Već postoji"
 
-#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "Stranice na izvornom jeziku brišu se samo kao cijele stranice"
 
-#: js/variants.js:139
 msgid "Delete language"
 msgstr "Izbriši jezik"
 
-#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "Premjestiti %{num} stranicu na jeziku \"%{lang}\" u smeće?"
 msgstr[1] "Premjestiti %{num} stranice na jeziku \"%{lang}\" u smeće?"
 msgstr[2] "Premjestiti %{num} stranica na jeziku \"%{lang}\" u smeće?"
 
-#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "%{num} stranica na izvornom jeziku je preskočena."
 msgstr[1] "%{num} stranice na izvornom jeziku su preskočene."
 msgstr[2] "%{num} stranica na izvornom jeziku je preskočeno."
 
-#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "Pogreška pri premještanju jezika u smeće"
 
-#: js/variants.js:199
 msgid "Error purging language"
 msgstr "Pogreška pri trajnom brisanju jezika"
 
-#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "Pogreška pri zanemarivanju promjena"
 
-#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "Pogreška pri prevođenju stranica"
 
-#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "Prijevod je spremljen kao nacrt, pregledajte promjene"
 
-#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "Označeno kao ažurno"
 
-#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "Pogreška pri označavanju kao ažurno"
 
-#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "Nema ništa za prevođenje, stranica je ažurna ili se već prevodi"
 
-#: js/views/AccessList.vue:171
 msgid "Error adding access value"
 msgstr "Pogreška pri dodavanju pristupne vrijednosti"
 
-#: js/views/AccessList.vue:186
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
@@ -2695,101 +1968,75 @@ msgstr ""
 "Postojeća ograničenja ne mijenjaju se i i dalje će upućivati na trajno "
 "izbrisane pristupne vrijednosti."
 
-#: js/views/AccessList.vue:205
 msgid "Error purging access values"
 msgstr "Pogreška pri trajnom brisanju pristupnih vrijednosti"
 
-#: js/views/AccessList.vue:242
 msgid "Roles"
 msgstr "Uloge"
 
-#: js/views/AccessList.vue:277 js/views/AccessList.vue:322
 msgid "Add access value"
 msgstr "Dodaj pristupnu vrijednost"
 
-#: js/views/AccessList.vue:326
 msgid "Access value"
 msgstr "Pristupna vrijednost"
 
-#: js/views/AccessList.vue:326
 msgid "Role name which can be assigned to pages and users"
 msgstr "Naziv uloge koja se može dodijeliti stranicama i korisnicima"
 
-#: js/views/AccessList.vue:342
 msgid "Add"
 msgstr "Dodaj"
 
-#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "Pogreška pri dohvaćanju elementa"
 
-#: js/views/ElementDetail.vue:169
 msgid "Element saved successfully"
 msgstr "Element je uspješno spremljen"
 
-#: js/views/ElementDetail.vue:172
 msgid "Error saving element"
 msgstr "Pogreška pri spremanju elementa"
 
-#: js/views/ElementDetail.vue:200 js/views/ElementDetail.vue:202
-#: js/views/ElementDetail.vue:207
 msgid "Element"
 msgstr "Element"
 
-#: js/views/ElementDetail.vue:209 js/views/FileDetail.vue:300
 msgid "Used by"
 msgstr "Koristi se u"
 
-#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
 msgstr ""
 "AI može pronaći zajedničke elemente i upravljati njima na temelju Vašeg unosa"
 
-#: js/views/ElementList.vue:50 js/views/FileList.vue:50
-#: js/views/PageList.vue:282
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr ""
 "Pritisnite Enter ili strelicu za otvaranje AI asistenta i doradu u chatu"
 
-#: js/views/FileDetail.vue:129
 msgid "Error fetching file"
 msgstr "Pogreška pri dohvaćanju datoteke"
 
-#: js/views/FileDetail.vue:246
 msgid "File saved successfully"
 msgstr "Datoteka je uspješno spremljena"
 
-#: js/views/FileDetail.vue:279 js/views/FileDetail.vue:293
-#: js/views/FileDetail.vue:298
 msgid "File"
 msgstr "Datoteka"
 
-#: js/views/FileDetail.vue:285
 msgid "Replace file"
 msgstr "Zamijeni datoteku"
 
-#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
 msgstr ""
 "AI može pronaći medijske datoteke i upravljati njima na temelju Vašeg unosa"
 
-#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "Nevaljana adresa e-pošte"
 
-#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "Niste CMS urednik"
 
-#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "Pristup odbijen"
 
-#: js/views/Login.vue:230
 msgid "Error: %{msg}"
 msgstr "Greška: %{msg}"
 
-#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2797,61 +2044,46 @@ msgstr ""
 "Ocijeni ovu stranicu od 1 do 10 po području (kvaliteta sadržaja, čitljivost, "
 "SEO, UX, angažman) i predloži poboljšanja"
 
-#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "Pričekajte dok se jezik ne promijeni"
 
-#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "Stranica je uspješno spremljena"
 
-#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
-#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "Stranica"
 
-#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "Izvor"
 
-#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "U smeću"
 
-#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "Uređivač"
 
-#: js/views/PageList.vue:115
 msgid "view"
 msgstr "Prikaz"
 
-#: js/views/PageList.vue:118
 msgid "List"
 msgstr "Popis"
 
-#: js/views/PageList.vue:125
 msgid "status"
 msgstr "Status"
 
-#: js/views/PageList.vue:129
 msgid "Hidden"
 msgstr "Skriveno"
 
-#: js/views/PageList.vue:135
 msgid "cache"
 msgstr "Predmemorija"
 
-#: js/views/PageList.vue:146
 msgid "translation"
 msgstr "Prijevod"
 
-#: js/views/PageList.vue:278
 msgid "Generate page based on prompt"
 msgstr "Generiraj stranicu prema upitu"
 
-#: js/views/PageList.vue:281
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"

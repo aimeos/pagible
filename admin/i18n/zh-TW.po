@@ -12,1954 +12,1381 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: js/ai.js:65 js/components/FileDetailItem.vue:256
 msgid "Error transcribing file"
 msgstr "轉錄檔案時發生錯誤"
 
-#: js/ai.js:114 js/components/FileDetailItem.vue:309
-#: js/components/FileDetailItem.vue:316
 msgid "Error translating texts"
 msgstr "翻譯文字時發生錯誤"
 
-#: js/ai.js:138
 msgid "Prompt is required for generating text"
 msgstr "產生文字需要提示詞"
 
-#: js/ai.js:161
 msgid "Error generating text"
 msgstr "產生文字時發生錯誤"
 
-#: js/App.vue:88 js/components/User.vue:68
 msgid "Error switching language"
 msgstr "切換語言時發生錯誤"
 
-#: js/chat.js:39
 msgid "The chat assistant is not available."
 msgstr "聊天助理目前無法使用。"
 
-#: js/chat.js:77
 msgid "A response is already being generated. Please wait for it to finish."
 msgstr "正在產生回覆，請等候完成。"
 
-#: js/chat.js:79
 msgid "Too many requests. Please wait a moment and try again."
 msgstr "請求次數過多，請稍候再試。"
 
-#: js/commands.js:54
 msgid "Open commands"
 msgstr "開啟指令"
 
-#: js/commands.js:61
 msgid "Confirm dialog"
 msgstr "確認對話框"
 
-#: js/commands.js:69
 msgid "Save changes"
 msgstr "儲存變更"
 
-#: js/commands.js:78
 msgid "Open publish menu"
 msgstr "開啟發佈選單"
 
-#: js/commands.js:85
 msgid "New page, file or element"
 msgstr "新增頁面、檔案或元素"
 
-#: js/commands.js:91
 msgid "Search in list"
 msgstr "在清單中搜尋"
 
-#: js/commands.js:97
 msgid "Previous tab"
 msgstr "上一個分頁"
 
-#: js/commands.js:103
 msgid "Next tab"
 msgstr "下一個分頁"
 
-#: js/commands.js:109
 msgid "Show or hide side panel"
 msgstr "顯示或隱藏側邊面板"
 
-#: js/commands.js:115 js/components/DetailAppBar.vue:168
 msgid "Back to list view"
 msgstr "返回清單檢視"
 
-#: js/commands.js:122
 msgid "Show keyboard shortcuts"
 msgstr "顯示鍵盤快速鍵"
 
-#: js/commands.js:128
 msgid "Select focused page, file or element"
 msgstr "選取目前的頁面、檔案或元素"
 
-#: js/commands.js:135
 msgid "Delete focused page, file or element"
 msgstr "刪除目前的頁面、檔案或元素"
 
-#: js/commands.js:143
 msgid "Copy page"
 msgstr "複製頁面"
 
-#: js/commands.js:151
 msgid "Cut page"
 msgstr "剪下頁面"
 
-#: js/commands.js:159
 msgid "Paste page"
 msgstr "貼上頁面"
 
-#: js/commands.js:178 js/components/CommandPalette.vue:112
-#: js/components/DetailRefs.vue:148 js/components/Navigation.vue:31
-#: js/views/PageList.vue:267 js/views/PageList.vue:271
 msgid "Pages"
 msgstr "頁面"
 
-#: js/commands.js:179
 msgid "Go to pages"
 msgstr "前往頁面"
 
-#: js/commands.js:184 js/components/CommandPalette.vue:113
-#: js/components/FileDialog.vue:25 js/components/HistoryDialog.vue:304
-#: js/components/HistoryDialog.vue:306 js/components/Navigation.vue:32
-#: js/views/FileList.vue:41 js/views/FileList.vue:45
 msgid "Media"
 msgstr "媒體"
 
-#: js/commands.js:185
 msgid "Go to media"
 msgstr "前往媒體"
 
-#: js/commands.js:190 js/components/CommandPalette.vue:114
-#: js/components/Navigation.vue:33 js/components/SchemaDialog.vue:48
-#: js/views/ElementList.vue:41
 msgid "Shared elements"
 msgstr "共用元素"
 
-#: js/commands.js:191
 msgid "Go to shared elements"
 msgstr "前往共用元素"
 
-#: js/commands.js:196 js/components/Navigation.vue:34
-#: js/views/AccessList.vue:241
 msgid "Users"
 msgstr "使用者"
 
-#: js/commands.js:197
 msgid "Go to users"
 msgstr "前往使用者"
 
-#: js/components/AccessUsers.vue:212
 msgid "All languages"
 msgstr "所有語言"
 
-#: js/components/AccessUsers.vue:213 js/components/AccessUsers.vue:574
 msgid "Selected languages"
 msgstr "所選語言"
 
-#: js/components/AccessUsers.vue:214
 msgid "No languages"
 msgstr "無語言"
 
-#: js/components/AccessUsers.vue:282
 msgid "Access roles updated"
 msgstr "存取角色已更新"
 
-#: js/components/AccessUsers.vue:282
 msgid "Backend roles updated"
 msgstr "已更新後台角色"
 
-#: js/components/AccessUsers.vue:292
 msgid "Error updating access roles"
 msgstr "更新存取角色時發生錯誤"
 
-#: js/components/AccessUsers.vue:293
 msgid "Error updating CMS permissions"
 msgstr "更新 CMS 權限時發生錯誤"
 
-#: js/components/AccessUsers.vue:330
 msgid "User created"
 msgstr "使用者已建立"
 
-#: js/components/AccessUsers.vue:336
 msgid "Error creating user"
 msgstr "建立使用者時發生錯誤"
 
-#: js/components/AccessUsers.vue:377 js/components/PageAccess.vue:130
-#: js/views/AccessList.vue:143
 msgid "Error fetching access roles"
 msgstr "取得存取角色時發生錯誤"
 
-#: js/components/AccessUsers.vue:407
 msgid "Error fetching user access roles"
 msgstr "取得使用者存取角色時發生錯誤"
 
-#: js/components/AccessUsers.vue:454 js/components/AccessUsers.vue:455
 msgid "Create user"
 msgstr "建立使用者"
 
-#: js/components/AccessUsers.vue:462
 msgid "Email address"
 msgstr "電子郵件地址"
 
-#: js/components/AccessUsers.vue:471
 msgid "Search user by email"
 msgstr "依電子郵件搜尋使用者"
 
-#: js/components/AccessUsers.vue:483 js/components/AccessUsers.vue:484
 msgid "Search"
 msgstr "搜尋"
 
-#: js/components/AccessUsers.vue:499 js/components/AccessUsers.vue:500
-#: js/components/DetailAppBar.vue:202
 msgid "Save"
 msgstr "儲存"
 
-#: js/components/AccessUsers.vue:509
 msgid "Account"
 msgstr "帳號"
 
-#: js/components/AccessUsers.vue:514 js/components/AccessUsers.vue:521
 msgid "Assigned frontend roles"
 msgstr "已指派的前台角色"
 
-#: js/components/AccessUsers.vue:521
 msgid "Roles granting access to restricted pages"
 msgstr "可存取受限頁面的角色"
 
-#: js/components/AccessUsers.vue:534
 msgid "Assigned backend roles"
 msgstr "已指派的後台角色"
 
-#: js/components/AccessUsers.vue:538
 msgid "Custom"
 msgstr "自訂"
 
-#: js/components/AccessUsers.vue:544
 msgid "Available roles"
 msgstr "可用角色"
 
-#: js/components/AccessUsers.vue:544
 msgid "Roles defining what the user can do in the admin panel"
 msgstr "定義使用者在管理面板中可執行操作的角色"
 
-#: js/components/AccessUsers.vue:556 js/components/AccessUsers.vue:563
 msgid "Writable languages"
 msgstr "可編輯語言"
 
-#: js/components/AccessUsers.vue:563
 msgid "Languages of the pages, elements and files the user can change"
 msgstr "使用者可以變更的頁面、元素和檔案的語言"
 
-#: js/components/AccessUsers.vue:585 js/components/ListStatus.vue:36
-#: js/components/SchemaItems.vue:181 js/views/AccessList.vue:313
 msgid "No entries found"
 msgstr "找不到項目"
 
-#: js/components/ActionMenu.vue:25 js/components/CommandPalette.vue:110
 msgid "Actions"
 msgstr "操作"
 
-#: js/components/ActionMenu.vue:60 js/components/Dialog.vue:46
-#: js/components/FieldsAside.vue:169
 msgid "Close"
 msgstr "關閉"
 
-#: js/components/AiPrompt.vue:88 js/components/AiPrompt.vue:89
-#: js/components/ChatDialog.vue:330
 msgid "What shall I do for you?"
 msgstr "有什麼我可以為您效勞的嗎？"
 
-#: js/components/AiPrompt.vue:88
 msgid "Press Enter to open the chat"
 msgstr "按 Enter 開啟對話"
 
-#: js/components/AiPrompt.vue:105
 msgid "Hide help"
 msgstr "隱藏說明"
 
-#: js/components/AiPrompt.vue:105
 msgid "Show help"
 msgstr "顯示說明"
 
-#: js/components/AiPrompt.vue:116 js/components/ChatDialog.vue:406
-#: js/components/ChatDialog.vue:407
 msgid "Send"
 msgstr "傳送"
 
-#: js/components/AiPrompt.vue:124 js/components/ChatDialog.vue:385
-#: js/components/ChatDialog.vue:386 js/components/FieldActions.vue:134
-#: js/components/FileAiDialog.vue:236 js/components/FileDetailItem.vue:482
 msgid "Dictate"
 msgstr "語音輸入"
 
-#: js/components/AiPrompt.vue:133
 msgid "Help"
 msgstr "說明"
 
-#: js/components/AsideCount.vue:60
 msgid "Used elements"
 msgstr "已使用的元素"
 
-#: js/components/AsideList.vue:71
 msgid "Filters"
 msgstr "篩選"
 
-#: js/components/AsideList.vue:78 js/components/ListStatus.vue:43
 msgid "Reset"
 msgstr "重設"
 
-#: js/components/AsideMeta.vue:22 js/components/DetailRefs.vue:153
-#: js/components/DetailRefs.vue:183 js/components/DetailRefs.vue:205
 msgid "ID"
 msgstr "ID"
 
-#: js/components/AsideMeta.vue:26 js/components/ListSort.vue:32
-#: js/fields/File.vue:334
 msgid "MIME"
 msgstr "MIME"
 
-#: js/components/AsideMeta.vue:30 js/fields/File.vue:335 js/listview.js:106
 msgid "editor"
 msgstr "編輯者"
 
-#: js/components/AsideMeta.vue:34
 msgid "created"
 msgstr "建立時間"
 
-#: js/components/AsideMeta.vue:35 js/fields/File.vue:336
 msgid "updated"
 msgstr "更新時間"
 
-#: js/components/AsideMeta.vue:36
 msgid "deleted"
 msgstr "刪除時間"
 
-#: js/components/AsideMeta.vue:52 js/components/AsideMeta.vue:54
-#: js/components/HistoryDialog.vue:46
 msgid "Meta data"
 msgstr "中繼資料"
 
-#: js/components/ChangesDialog.vue:59 js/components/ChangesDialog.vue:60
-#: js/components/HistoryDialog.vue:46
 msgid "Fields"
 msgstr "欄位"
 
-#: js/components/ChangesDialog.vue:61
 msgid "Meta tags"
 msgstr "Meta 標籤"
 
-#: js/components/ChangesDialog.vue:62 js/components/HistoryDialog.vue:47
 msgid "Configuration"
 msgstr "設定"
 
-#: js/components/ChangesDialog.vue:63 js/components/HistoryDialog.vue:47
-#: js/views/PageDetail.vue:689
 msgid "Content"
 msgstr "內容"
 
-#: js/components/ChangesDialog.vue:231
 msgid "Conflicts from %{editor}"
 msgstr "來自 %{editor} 的衝突"
 
-#: js/components/ChangesDialog.vue:237
 msgid "%{count} / %{total}"
 msgstr "%{count} / %{total}"
 
-#: js/components/ChangesDialog.vue:259 js/components/FieldRow.vue:78
-#: js/components/FieldRow.vue:106 js/components/FieldsAside.vue:239
 msgid "Revert"
 msgstr "回復"
 
-#: js/components/ChangesDialog.vue:262
 msgid "Changes"
 msgstr "變更"
 
-#: js/components/ChangesDialog.vue:281
 msgid "Removed"
 msgstr "已移除"
 
-#: js/components/ChangesDialog.vue:288
 msgid "Added"
 msgstr "已新增"
 
-#: js/components/ChangesDialog.vue:308
 msgid "Use theirs"
 msgstr "使用對方的版本"
 
-#: js/components/ChangesDialog.vue:314
 msgid "Keep mine"
 msgstr "保留我的版本"
 
-#: js/components/ChangesDialog.vue:321
 msgid "Merge both"
 msgstr "合併兩者"
 
-#: js/components/ChatDialog.vue:210
 msgid "The response was interrupted and may be incomplete."
 msgstr "回應已中斷，內容可能不完整。"
 
-#: js/components/ChatDialog.vue:214
 msgid "Sorry, something went wrong."
 msgstr "很抱歉，發生錯誤。"
 
-#: js/components/ChatDialog.vue:290
 msgid "Done"
 msgstr "完成"
 
-#: js/components/ChatDialog.vue:310
 msgid "AI Assistant"
 msgstr "AI 助理"
 
-#: js/components/ChatDialog.vue:318 js/components/ChatDialog.vue:319
 msgid "New chat"
 msgstr "新對話"
 
-#: js/components/ChatDialog.vue:348
 msgid "Thinking ..."
 msgstr "思考中 ..."
 
-#: js/components/ChatDialog.vue:354 js/components/ChatDialog.vue:355
-#: js/components/PageDetailContentList.vue:528
-#: js/components/PageDetailContentList.vue:615
-#: js/components/PageListItems.vue:771 js/fields/Items.vue:281
 msgctxt "clipboard"
 msgid "Copy"
 msgstr "複製"
 
-#: js/components/ChatDialog.vue:369
 msgid "Send a message ..."
 msgstr "傳送訊息..."
 
-#: js/components/ChatDialog.vue:370
 msgid "Chat message"
 msgstr "聊天訊息"
 
-#: js/components/ChatDialog.vue:396 js/components/ChatDialog.vue:397
 msgid "Stop"
 msgstr "停止"
 
-#: js/components/CommandPalette.vue:111
 msgid "Go to"
 msgstr "前往"
 
-#: js/components/CommandPalette.vue:232 js/components/ConfirmDialog.vue:47
-#: js/components/ElementListItems.vue:275 js/components/PageListItems.vue:903
 msgid "New"
 msgstr "新項目"
 
-#: js/components/CommandPalette.vue:287 js/components/CommandPalette.vue:310
-#: js/components/Navigation.vue:78 js/components/ShortcutDialog.vue:39
 msgid "Commands"
 msgstr "指令"
 
-#: js/components/CommandPalette.vue:296
 msgid "Type a command or search pages, files and elements"
 msgstr "輸入指令或搜尋頁面、檔案和元素"
 
-#: js/components/CommandPalette.vue:297
 msgid "Command or search term"
 msgstr "指令或搜尋字詞"
 
-#: js/components/CommandPalette.vue:329 js/components/ShortcutDialog.vue:99
 msgid "then"
 msgstr "然後"
 
-#: js/components/CommandPalette.vue:336
 msgid "Search failed, please try again"
 msgstr "搜尋失敗，請再試一次"
 
-#: js/components/CommandPalette.vue:337
 msgid "No results"
 msgstr "沒有結果"
 
-#: js/components/ConfirmDialog.vue:23 js/components/ConfirmDialog.vue:57
-#: js/components/ListBulkMenu.vue:66 js/components/ListItemMenu.vue:70
-#: js/components/PageBulkMenu.vue:119 js/components/PageListItems.vue:807
-#: js/views/AccessList.vue:267
 msgid "Purge"
 msgstr "永久刪除"
 
-#: js/components/ConfirmDialog.vue:33
 msgid "The following entry will be permanently deleted and cannot be restored:"
 msgid_plural ""
 "The following %{num} entries will be permanently deleted and cannot be "
 "restored:"
 msgstr[0] "以下 %{num} 個項目將被永久刪除且無法復原："
 
-#: js/components/ConfirmDialog.vue:55 js/components/FileDetailItemImage.vue:396
-#: js/components/TranslateDialog.vue:126 js/components/UnsavedDialog.vue:56
-#: js/views/AccessList.vue:334
 msgid "Cancel"
 msgstr "取消"
 
-#: js/components/DetailAppBar.vue:164 js/components/ListAppBar.vue:30
 msgid "Menu"
 msgstr "選單"
 
-#: js/components/DetailAppBar.vue:185
 msgid "View history"
 msgstr "檢視歷史記錄"
 
-#: js/components/DetailAppBar.vue:194
 msgid "View merge changes"
 msgstr "檢視合併變更"
 
-#: js/components/DetailAppBar.vue:218 js/components/DetailAppBar.vue:234
-#: js/components/DetailAppBar.vue:238 js/components/ListBulkMenu.vue:53
-#: js/components/ListItemMenu.vue:51 js/components/PageBulkMenu.vue:91
-#: js/components/PageListItems.vue:735
 msgid "Publish"
 msgstr "發佈"
 
-#: js/components/DetailAppBar.vue:241
 msgid "Publish & Close"
 msgstr "發佈並關閉"
 
-#: js/components/DetailAppBar.vue:246 js/components/DetailAppBar.vue:272
 msgid "Schedule"
 msgstr "排程"
 
-#: js/components/DetailAppBar.vue:281
 msgid "Schedule & Close"
 msgstr "排程並關閉"
 
-#: js/components/DetailAppBar.vue:289 js/components/ListAppBar.vue:49
 msgid "Toggle side menu"
 msgstr "切換側邊選單"
 
-#: js/components/DetailRefs.vue:78
 msgid "yes"
 msgstr "是"
 
-#: js/components/DetailRefs.vue:81
 msgid "no"
 msgstr "否"
 
-#: js/components/DetailRefs.vue:134
 msgid "Error fetching references"
 msgstr "取得參照時發生錯誤"
 
-#: js/components/DetailRefs.vue:154 js/components/FileUrlDialog.vue:238
 msgid "URL"
 msgstr "網址"
 
-#: js/components/DetailRefs.vue:155 js/components/DetailRefs.vue:185
-#: js/components/ElementDetailItem.vue:62 js/components/FileDetailItem.vue:389
-#: js/components/ListSort.vue:33
 msgid "Name"
 msgstr "名稱"
 
-#: js/components/DetailRefs.vue:167 js/components/PageAccess.vue:187
-#: js/components/PageListItems.vue:226
 msgid "Restricted"
 msgstr "受限"
 
-#: js/components/DetailRefs.vue:178 js/views/ElementList.vue:45
 msgid "Elements"
 msgstr "元素"
 
-#: js/components/DetailRefs.vue:184 js/components/DetailRefs.vue:206
-#: js/components/ListSort.vue:38
 msgid "Type"
 msgstr "類型"
 
-#: js/components/DetailRefs.vue:200
 msgid "Versions"
 msgstr "版本"
 
-#: js/components/DetailRefs.vue:207 js/listview.js:90
 msgid "Published"
 msgstr "已發佈"
 
-#: js/components/EditBulkDialog.vue:53 js/components/ListBulkMenu.vue:56
-#: js/components/ListItemMenu.vue:57 js/components/PageBulkDialog.vue:145
-#: js/components/PageBulkMenu.vue:101 js/components/PageListItems.vue:756
 msgid "Edit properties"
 msgstr "編輯屬性"
 
-#: js/components/EditBulkDialog.vue:59
 msgid "Apply the selected properties to %{num} entry."
 msgid_plural "Apply the selected properties to %{num} entries."
 msgstr[0] "將選取的屬性套用至 %{num} 個項目。"
 
-#: js/components/EditBulkDialog.vue:71 js/components/ElementDetailItem.vue:75
-#: js/components/FileDetailItem.vue:401 js/components/ListSort.vue:29
-#: js/components/PageDetailItemProps.vue:232
-#: js/components/PageLangSelect.vue:106 js/views/PageDetail.vue:617
 msgid "Language"
 msgstr "語言"
 
-#: js/components/EditBulkDialog.vue:71
 msgid "Language of the content"
 msgstr "內容的語言"
 
-#: js/components/EditBulkDialog.vue:78 js/components/PageAccess.vue:215
-#: js/components/PageBulkDialog.vue:260
 msgid "Apply"
 msgstr "套用"
 
-#: js/components/ElementDetailItem.vue:62
 msgid "Name to find the shared element in the element list"
 msgstr "用於在元素清單中尋找共用元素的名稱"
 
-#: js/components/ElementDetailItem.vue:75
 msgid "Language of the element content, choose none if used in all languages"
 msgstr "元素內容的語言，若用於所有語言請選擇「無」"
 
-#: js/components/ElementListItems.vue:157
 msgid "Error adding shared element"
 msgstr "新增共用元素時發生錯誤"
 
-#: js/components/ElementListItems.vue:163
 msgid "Error trashing shared element"
 msgstr "將共用元素移至垃圾桶時發生錯誤"
 
-#: js/components/ElementListItems.vue:164
 msgid "Error restoring shared element"
 msgstr "還原共用元素時發生錯誤"
 
-#: js/components/ElementListItems.vue:165
 msgid "Error publishing shared element"
 msgstr "發佈共用元素時發生錯誤"
 
-#: js/components/ElementListItems.vue:166
 msgid "Error purging shared element"
 msgstr "永久刪除共用元素時發生錯誤"
 
-#: js/components/ElementListItems.vue:167
 msgid "Error saving shared element"
 msgstr "儲存共用元素時發生錯誤"
 
-#: js/components/ElementListItems.vue:168
 msgid "Error fetching shared elements"
 msgstr "取得共用元素時發生錯誤"
 
-#: js/components/ElementListItems.vue:204
-#: js/components/ElementListItems.vue:246 js/components/FileListItems.vue:324
-#: js/components/FileListItems.vue:386
-#: js/components/PageDetailContentList.vue:514
-#: js/components/PageDetailContentList.vue:605
-#: js/components/PageListItems.vue:616 js/components/PageListItems.vue:723
-#: js/views/AccessList.vue:262 js/views/AccessList.vue:306
 msgid "Toggle selection"
 msgstr "切換選取"
 
-#: js/components/ElementListItems.vue:222
-#: js/components/ElementListItems.vue:303
-#: js/components/PageDetailContentList.vue:705
-#: js/components/PageDetailItemSection.vue:207 js/fields/Items.vue:329
 msgid "Add element"
 msgstr "新增元素"
 
-#: js/components/ElementListItems.vue:234 js/components/SchemaItems.vue:145
 msgid "Reload elements"
 msgstr "重新載入元素"
 
-#: js/components/FieldActions.vue:101 js/components/FieldActions.vue:105
-#: js/components/PageBulkMenu.vue:131 js/components/PageListItems.vue:814
-#: js/components/TranslateDialog.vue:88 js/components/TranslateDialog.vue:128
-#: js/views/PageDetail.vue:659
 msgid "Translate"
 msgstr "翻譯"
 
-#: js/components/FieldActions.vue:121
 msgid "Generate text"
 msgstr "產生文字"
 
-#: js/components/Fields.vue:196
 msgid "Updated by other editor"
 msgstr "已由其他編輯者更新"
 
-#: js/components/Fields.vue:199
 msgid "Overwritten"
 msgstr "已被覆寫"
 
-#: js/components/FieldsAside.vue:80
 msgid "Mobile"
 msgstr "手機"
 
-#: js/components/FieldsAside.vue:81
 msgid "Tablet"
 msgstr "平板"
 
-#: js/components/FieldsAside.vue:82
 msgid "Computer"
 msgstr "電腦"
 
-#: js/components/FieldsAside.vue:82
 msgid "Full width"
 msgstr "全寬"
 
-#: js/components/FieldsAside.vue:162
 msgid "Content Element"
 msgstr "內容元素"
 
-#: js/components/FieldsAside.vue:175
 msgid "Add element before"
 msgstr "在前方新增元素"
 
-#: js/components/FieldsAside.vue:183
 msgid "Add element after"
 msgstr "在後方新增元素"
 
-#: js/components/FieldsAside.vue:191
 msgid "Remove element"
 msgstr "移除元素"
 
-#: js/components/FieldsAside.vue:199
 msgid "Responsive preview"
 msgstr "響應式預覽"
 
-#: js/components/FieldsAside.vue:231
-#: js/components/PageDetailContentList.vue:651
 msgid "Change to"
 msgstr "變更為"
 
-#: js/components/FileActionMenu.vue:36 js/fields/File.vue:227
-#: js/fields/File.vue:228 js/fields/File.vue:252 js/fields/File.vue:253
-#: js/fields/Images.vue:340
 msgid "Edit"
 msgstr "編輯"
 
-#: js/components/FileActionMenu.vue:39 js/components/FileAiDialog.vue:259
-#: js/components/FileAiDialog.vue:286 js/components/FileUrlDialog.vue:250
-#: js/components/PageDetailContentList.vue:540
-#: js/components/PageDetailContentList.vue:621 js/fields/Items.vue:283
-#: js/fields/Table.vue:88 js/fields/Table.vue:97
 msgid "Remove"
 msgstr "移除"
 
-#: js/components/FileAiDialog.vue:134 js/components/FileListItems.vue:174
-#: js/components/FileUrlDialog.vue:68 js/components/FileUrlDialog.vue:170
-#: js/filefield.js:189
 msgid "Error adding file %{path}"
 msgstr "新增檔案 %{path} 時發生錯誤"
 
-#: js/components/FileAiDialog.vue:178
 msgid "Error creating file"
 msgstr "建立檔案時發生錯誤"
 
-#: js/components/FileAiDialog.vue:225
 msgid "Create image"
 msgstr "建立圖片"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the image content"
 msgstr "描述圖片內容"
 
-#: js/components/FileAiDialog.vue:243
 msgid "Describe the subject, style and colors of the image to generate"
 msgstr "描述要產生的圖片主題、風格和色彩"
 
-#: js/components/FileAiDialog.vue:250
 msgid "New image"
 msgstr "新圖片"
 
-#: js/components/FileAiDialog.vue:254
 msgid "Current images"
 msgstr "目前的圖片"
 
-#: js/components/FileAiDialog.vue:279
 msgid "Images used"
 msgstr "使用的圖片"
 
-#: js/components/FileAiDialog.vue:296
 msgid "Select images"
 msgstr "選取圖片"
 
-#: js/components/FileDetailItem.vue:142 js/components/FileDetailItem.vue:151
 msgid "Error copying to clipboard"
 msgstr "複製到剪貼簿時發生錯誤"
 
-#: js/components/FileDetailItem.vue:148
 msgid "Copied to clipboard"
 msgstr "已複製到剪貼簿"
 
-#: js/components/FileDetailItem.vue:175
 msgid "Error describing file"
 msgstr "描述檔案時發生錯誤"
 
-#: js/components/FileDetailItem.vue:224 js/components/FileListItems.vue:190
-#: js/filefield.js:157 js/views/FileDetail.vue:250
 msgid "Error saving file"
 msgstr "儲存檔案時發生錯誤"
 
-#: js/components/FileDetailItem.vue:237
 msgid "Transcription is only available for audio and video files"
 msgstr "轉錄僅適用於音訊和影片檔案"
 
-#: js/components/FileDetailItem.vue:389
 msgid "Name to find the file in the media list"
 msgstr "用於在媒體清單中尋找檔案的名稱"
 
-#: js/components/FileDetailItem.vue:401
 msgid "Language of the file content, choose none if used in all languages"
 msgstr "檔案內容的語言，若用於所有語言請選擇「無」"
 
-#: js/components/FileDetailItem.vue:411
 msgid "Copy URL"
 msgstr "複製網址"
 
-#: js/components/FileDetailItem.vue:455
 msgid "Descriptions"
 msgstr "說明"
 
-#: js/components/FileDetailItem.vue:463 js/components/FileDetailItem.vue:522
 msgid "Translate text"
 msgstr "翻譯文字"
 
-#: js/components/FileDetailItem.vue:471
 msgid "Generate description"
 msgstr "產生說明"
 
-#: js/components/FileDetailItem.vue:498
 msgid "Description (%{lang})"
 msgstr "說明（%{lang}）"
 
-#: js/components/FileDetailItem.vue:498
 msgid ""
 "Alternative text for screen readers and search engines, also used as caption"
 msgstr "供螢幕閱讀器和搜尋引擎使用的替代文字，也會用作圖說"
 
-#: js/components/FileDetailItem.vue:514
 msgid "Transcriptions"
 msgstr "轉錄"
 
-#: js/components/FileDetailItem.vue:530
 msgid "Transcribe file content"
 msgstr "轉錄檔案內容"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Transcription (%{lang})"
 msgstr "轉錄（%{lang}）"
 
-#: js/components/FileDetailItem.vue:547
 msgid "Spoken text in WebVTT format, shown as subtitles and transcript"
 msgstr "WebVTT 格式的語音文字，顯示為字幕和逐字稿"
 
-#: js/components/FileDetailItemImage.vue:116
 msgid "Original ratio"
 msgstr "原始比例"
 
-#: js/components/FileDetailItemImage.vue:117
 msgid "No ratio"
 msgstr "不限比例"
 
-#: js/components/FileDetailItemImage.vue:118
 msgid "Square"
 msgstr "正方形"
 
-#: js/components/FileDetailItemImage.vue:175
 msgid "Error downloading image"
 msgstr "下載圖片時發生錯誤"
 
-#: js/components/FileDetailItemImage.vue:277
-#: js/components/FileDetailItemImage.vue:362 js/imageai.js:216
 msgid "Error editing image"
 msgstr "編輯圖片時發生錯誤"
 
-#: js/components/FileDetailItemImage.vue:402
-#: js/components/FileDetailItemImage.vue:407
 msgid "Select area"
 msgstr "選取區域"
 
-#: js/components/FileDetailItemImage.vue:426
 msgid "Crop selected area"
 msgstr "裁切選取區域"
 
-#: js/components/FileDetailItemImage.vue:436
 msgid "Erase selected area"
 msgstr "擦除選取區域"
 
-#: js/components/FileDetailItemImage.vue:448
-#: js/components/FileDetailItemImage.vue:455
-#: js/components/FileDetailItemImage.vue:470
 msgid "Edit image"
 msgstr "編輯圖片"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe the changes"
 msgstr "描述變更內容"
 
-#: js/components/FileDetailItemImage.vue:461
 msgid "Describe what should be changed in the image, e.g. make the sky blue"
 msgstr "描述圖片中要變更的內容，例如：把天空變成藍色"
 
-#: js/components/FileDetailItemImage.vue:480
 msgid "Remove background"
 msgstr "移除背景"
 
-#: js/components/FileDetailItemImage.vue:491
-#: js/components/FileDetailItemImage.vue:498
-#: js/components/FileDetailItemImage.vue:518
 msgid "Expand image"
 msgstr "擴展圖片"
 
-#: js/components/FileDetailItemImage.vue:526
-#: js/components/FileDetailItemImage.vue:533
 msgid "Upscale image"
 msgstr "提高圖片解析度"
 
-#: js/components/FileDetailItemImage.vue:546
 msgid "Scale %{factor}"
 msgstr "放大 %{factor}"
 
-#: js/components/FileDetailItemImage.vue:555
 msgid "Rotate counter-clockwise"
 msgstr "逆時針旋轉"
 
-#: js/components/FileDetailItemImage.vue:562
 msgid "Rotate clockwise"
 msgstr "順時針旋轉"
 
-#: js/components/FileDetailItemImage.vue:570
 msgid "Flip horizontally"
 msgstr "水平翻轉"
 
-#: js/components/FileDetailItemImage.vue:577
 msgid "Flip vertically"
 msgstr "垂直翻轉"
 
-#: js/components/FileDetailItemImage.vue:585
 msgid "Convert to monochrome"
 msgstr "轉換為單色"
 
-#: js/components/FileDetailItemImage.vue:588
 msgid "Download"
 msgstr "下載"
 
-#: js/components/FileDetailItemImage.vue:590
-#: js/components/FileDetailItemImage.vue:595 js/lists.js:95 js/pagetree.js:341
 msgid "Undo"
 msgstr "復原"
 
-#: js/components/FileDetailItemImage.vue:602
 msgid "Previous edit"
 msgstr "上一次編輯"
 
-#: js/components/FileDetailItemImage.vue:605
 msgid "Original"
 msgstr "原始版本"
 
-#: js/components/FileDetailItemVideo.vue:80
 msgid "No video element found"
 msgstr "找不到影片元素"
 
-#: js/components/FileDetailItemVideo.vue:85
 msgid "Video not loaded yet"
 msgstr "影片尚未載入"
 
-#: js/components/FileDetailItemVideo.vue:95
 msgid "Error saving video cover"
 msgstr "儲存影片封面時發生錯誤"
 
-#: js/components/FileDetailItemVideo.vue:158
-#: js/components/FileDetailItemVideo.vue:202
-#: js/components/FileDetailItemVideo.vue:203
 msgid "Remove cover image"
 msgstr "移除封面圖片"
 
-#: js/components/FileDetailItemVideo.vue:158
 msgid "Remove the cover image of this video?"
 msgstr "移除此影片的封面圖片？"
 
-#: js/components/FileDetailItemVideo.vue:166
 msgid "Error removing video cover"
 msgstr "移除影片封面時發生錯誤"
 
-#: js/components/FileDetailItemVideo.vue:180
 msgid "No file selected"
 msgstr "未選取檔案"
 
-#: js/components/FileDetailItemVideo.vue:183
 msgid "Error uploading video cover"
 msgstr "上傳影片封面時發生錯誤"
 
-#: js/components/FileDetailItemVideo.vue:215
 msgid "Use as cover image"
 msgstr "用作封面圖片"
 
-#: js/components/FileDetailItemVideo.vue:223
 msgid "Upload cover image"
 msgstr "上傳封面圖片"
 
-#: js/components/FileListItems.vue:186
 msgid "Error trashing file"
 msgstr "將檔案移至垃圾桶時發生錯誤"
 
-#: js/components/FileListItems.vue:187
 msgid "Error restoring file"
 msgstr "還原檔案時發生錯誤"
 
-#: js/components/FileListItems.vue:188 js/detail.js:55
 msgid "Error publishing file"
 msgstr "發佈檔案時發生錯誤"
 
-#: js/components/FileListItems.vue:189
 msgid "Error purging file"
 msgstr "永久刪除檔案時發生錯誤"
 
-#: js/components/FileListItems.vue:191
 msgid "Error fetching files"
 msgstr "取得檔案時發生錯誤"
 
-#: js/components/FileListItems.vue:281
 msgid "Descriptions of %{num} file translated"
 msgid_plural "Descriptions of %{num} files translated"
 msgstr[0] "已翻譯 %{num} 個檔案的說明"
 
-#: js/components/FileListItems.vue:291
 msgid "Error translating descriptions after %{done} of %{total} files"
 msgstr "翻譯說明時發生錯誤（已完成 %{done}/%{total} 個檔案）"
 
-#: js/components/FileListItems.vue:292
 msgid "Error translating descriptions"
 msgstr "翻譯說明時發生錯誤"
 
-#: js/components/FileListItems.vue:297
 msgid "No missing descriptions to translate"
 msgstr "沒有缺少的說明需要翻譯"
 
-#: js/components/FileListItems.vue:345 js/components/FileListItems.vue:409
 msgid "Translate descriptions"
 msgstr "翻譯說明"
 
-#: js/components/FileListItems.vue:360
 msgid "Reload files"
 msgstr "重新載入檔案"
 
-#: js/components/FileListItems.vue:366
 msgid "Grid view"
 msgstr "格狀檢視"
 
-#: js/components/FileListItems.vue:475 js/components/FileProtect.vue:45
-#: js/components/FileUploadButtons.vue:39
 msgid "Protect access"
 msgstr "保護存取"
 
-#: js/components/FileProtect.vue:67
 msgid "Only visitors allowed to view the page using the file can download it"
 msgstr "只有獲准檢視使用此檔案之頁面的訪客才能下載"
 
-#: js/components/FileUploadButtons.vue:29
-#: js/components/FileUploadButtons.vue:39 js/components/FileUrlDialog.vue:207
-#: js/fields/Images.vue:368 js/fields/Images.vue:392
 msgid "Add files"
 msgstr "新增檔案"
 
-#: js/components/FileUrlDialog.vue:124
 msgid "At least one URL is longer than 255 characters"
 msgstr "至少有一個網址超過 255 個字元"
 
-#: js/components/FileUrlDialog.vue:160
 msgid "At least one file is not of type \"%{mime}*\""
 msgstr "至少有一個檔案的類型不是「%{mime}*」"
 
-#: js/components/FileUrlDialog.vue:164
 msgid "The file is not of type \"%{mime}*\""
 msgstr "檔案類型不是「%{mime}*」"
 
-#: js/components/FileUrlDialog.vue:192 js/fields/Images.vue:375
 msgid "Add files from URLs"
 msgstr "從網址新增檔案"
 
-#: js/components/FileUrlDialog.vue:207 js/fields/File.vue:278
 msgid "Add file"
 msgstr "新增檔案"
 
-#: js/components/FileUrlDialog.vue:220
 msgid "Enter one URL per line"
 msgstr "每行輸入一個網址"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "URLs"
 msgstr "網址"
 
-#: js/components/FileUrlDialog.vue:221
 msgid "Files are downloaded from these URLs and added to the media list"
 msgstr "將從這些網址下載檔案並新增至媒體清單"
 
-#: js/components/FileUrlDialog.vue:237
 msgid "Enter URL"
 msgstr "輸入網址"
 
-#: js/components/FileUrlDialog.vue:238
 msgid "The file is downloaded from this URL and added to the media list"
 msgstr "將從此網址下載檔案並新增至媒體清單"
 
-#: js/components/FileUrlDialog.vue:279
 msgid "Size"
 msgstr "大小"
 
-#: js/components/HistoryDialog.vue:68 js/components/HistoryDialog.vue:134
-#: js/components/PageDetailContentList.vue:664
 msgid "Shared element"
 msgstr "共用元素"
 
-#: js/components/HistoryDialog.vue:69
 msgid "Content block"
 msgstr "內容區塊"
 
-#: js/components/HistoryDialog.vue:74
 msgid "Group: %{group} · Position %{num}"
 msgstr "群組：%{group} · 位置 %{num}"
 
-#: js/components/HistoryDialog.vue:82
 msgid "Moved from position %{from} to %{to}"
 msgstr "從位置 %{from} 移至 %{to}"
 
-#: js/components/HistoryDialog.vue:83 js/components/HistoryDialog.vue:172
 msgid "%{num} field changed"
 msgid_plural "%{num} fields changed"
 msgstr[0] "已變更 %{num} 個欄位"
 
-#: js/components/HistoryDialog.vue:84
 msgid "%{selected} of %{total} selected"
 msgstr "已選取 %{selected} / %{total} 個"
 
-#: js/components/HistoryDialog.vue:91
 msgid "Unknown date"
 msgstr "日期不明"
 
-#: js/components/HistoryDialog.vue:130
 msgid "Block position"
 msgstr "區塊位置"
 
-#: js/components/HistoryDialog.vue:135
 msgid "Value"
 msgstr "值"
 
-#: js/components/HistoryDialog.vue:179
 msgid "%{num} block added"
 msgid_plural "%{num} blocks added"
 msgstr[0] "已新增 %{num} 個區塊"
 
-#: js/components/HistoryDialog.vue:180
 msgid "%{num} block removed"
 msgid_plural "%{num} blocks removed"
 msgstr[0] "已移除 %{num} 個區塊"
 
-#: js/components/HistoryDialog.vue:181
 msgid "%{num} block changed"
 msgid_plural "%{num} blocks changed"
 msgstr[0] "已變更 %{num} 個區塊"
 
-#: js/components/HistoryDialog.vue:182
 msgid "%{num} block moved"
 msgid_plural "%{num} blocks moved"
 msgstr[0] "已移動 %{num} 個區塊"
 
-#: js/components/HistoryDialog.vue:183
 msgid "%{num} file changed"
 msgid_plural "%{num} files changed"
 msgstr[0] "已變更 %{num} 個檔案"
 
-#: js/components/HistoryDialog.vue:184 js/components/HistoryDialog.vue:213
-#: js/components/HistoryDialog.vue:309
 msgid "No changes"
 msgstr "沒有變更"
 
-#: js/components/HistoryDialog.vue:198
 msgid "History"
 msgstr "歷史記錄"
 
-#: js/components/HistoryDialog.vue:206 js/components/ListSkeleton.vue:5
-#: js/components/ListStatus.vue:30 js/fields/Autocomplete.vue:210
-#: js/fields/Url.vue:173
 msgid "Loading"
 msgstr "載入中"
 
-#: js/components/HistoryDialog.vue:209
 msgid "Error fetching versions"
 msgstr "取得版本時發生錯誤"
 
-#: js/components/HistoryDialog.vue:210
 msgid "Retry"
 msgstr "重試"
 
-#: js/components/HistoryDialog.vue:224
 msgid "Current changes"
 msgstr "目前的變更"
 
-#: js/components/HistoryDialog.vue:230 js/components/PageListItems.vue:513
-#: js/lists.js:514
 msgid "Scheduled for %{date}"
 msgstr "排程於 %{date}"
 
-#: js/components/HistoryDialog.vue:238
 msgid "Select all"
 msgstr "全選"
 
-#: js/components/HistoryDialog.vue:252
 msgid "Block added"
 msgstr "已新增區塊"
 
-#: js/components/HistoryDialog.vue:253
 msgid "Block removed"
 msgstr "已移除區塊"
 
-#: js/components/HistoryDialog.vue:273
 msgid "Keep current position"
 msgstr "保留目前位置"
 
-#: js/components/HistoryDialog.vue:273 js/components/HistoryDialog.vue:293
 msgid "Keep current value"
 msgstr "保留目前的值"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: Latest saved version"
 msgstr "上一個版本：最近儲存的版本"
 
-#: js/components/HistoryDialog.vue:319
 msgid "Previous version: %{date}"
 msgstr "上一個版本：%{date}"
 
-#: js/components/HistoryDialog.vue:320
 msgid "%{selected} of %{total} selected for reverting"
 msgstr "已選取 %{selected} / %{total} 個要回復的項目"
 
-#: js/components/HistoryDialog.vue:323
 msgid "Revert selected changes"
 msgstr "回復選取的變更"
 
-#: js/components/HistoryDialog.vue:326
 msgid "Restore previous version"
 msgstr "還原上一個版本"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "Previous value"
 msgstr "先前的值"
 
-#: js/components/HistoryField.vue:86 js/components/HistoryField.vue:122
-#: js/components/HistoryField.vue:134 js/components/HistoryField.vue:154
 msgid "New value"
 msgstr "新的值"
 
-#: js/components/HistoryField.vue:92
 msgid "Enlarge %{name}"
 msgstr "放大 %{name}"
 
-#: js/components/HistoryField.vue:98 js/components/HistoryField.vue:125
 msgid "Loading preview"
 msgstr "正在載入預覽"
 
-#: js/components/HistoryField.vue:99 js/components/HistoryField.vue:101
-#: js/components/HistoryField.vue:106 js/components/HistoryField.vue:126
-#: js/components/HistoryField.vue:128
 msgid "Preview unavailable"
 msgstr "無法預覽"
 
-#: js/components/HistoryField.vue:115
 msgid "Image preview"
 msgstr "圖片預覽"
 
-#: js/components/HistoryField.vue:116
 msgid "Close preview"
 msgstr "關閉預覽"
 
-#: js/components/HistoryField.vue:136
 msgid "Table preview"
 msgstr "表格預覽"
 
-#: js/components/HistoryField.vue:140
 msgid "%{num} row omitted"
 msgid_plural "%{num} rows omitted"
 msgstr[0] "已省略 %{num} 列"
 
-#: js/components/ListAppBar.vue:34
 msgid "Close navigation"
 msgstr "關閉導覽"
 
-#: js/components/ListAppBar.vue:34
 msgid "Open navigation"
 msgstr "開啟導覽"
 
-#: js/components/ListBulkMenu.vue:60 js/components/ListItemMenu.vue:64
-#: js/components/PageBulkMenu.vue:113 js/components/PageListItems.vue:793
 msgid "Delete"
 msgstr "刪除"
 
-#: js/components/ListBulkMenu.vue:63 js/components/ListItemMenu.vue:67
-#: js/components/PageBulkMenu.vue:116 js/components/PageListItems.vue:799
-#: js/components/PageListItems.vue:929
 msgid "Restore"
 msgstr "還原"
 
-#: js/components/ListReload.vue:29
 msgid "Updated by another user"
 msgstr "已由其他使用者更新"
 
-#: js/components/ListReload.vue:35
 msgid "Refresh"
 msgstr "重新整理"
 
-#: js/components/ListSearch.vue:35 js/components/PageDetailContentList.vue:548
-#: js/views/AccessList.vue:291
 msgid "Search for"
 msgstr "搜尋"
 
-#: js/components/ListSort.vue:28
 msgctxt "editor person"
 msgid "Editor"
 msgstr "編輯者"
 
-#: js/components/ListSort.vue:30
 msgid "Latest"
 msgstr "最新"
 
-#: js/components/ListSort.vue:31
 msgid "Latest edit"
 msgstr "最近編輯"
 
-#: js/components/ListSort.vue:34
 msgid "Oldest"
 msgstr "最舊"
 
-#: js/components/ListSort.vue:35
 msgid "Oldest edit"
 msgstr "最早編輯"
 
-#: js/components/ListSort.vue:36
 msgid "Position"
 msgstr "位置"
 
-#: js/components/ListSort.vue:37 js/views/PageList.vue:117
 msgid "Tree"
 msgstr "樹狀"
 
-#: js/components/ListSort.vue:39
 msgid "Usage"
 msgstr "使用次數"
 
-#: js/components/ListSort.vue:62
 msgid "Sort by"
 msgstr "排序方式"
 
-#: js/components/ListStatus.vue:46
 msgid "No entries yet"
 msgstr "尚無項目"
 
-#: js/components/Navigation.vue:54
 msgid "Panels"
 msgstr "面板"
 
-#: js/components/Navigation.vue:79 js/components/ShortcutDialog.vue:89
 msgid "Keyboard shortcuts"
 msgstr "鍵盤快速鍵"
 
-#: js/components/PageAccess.vue:104
 msgid "Error changing page access"
 msgstr "變更頁面存取權限時發生錯誤"
 
-#: js/components/PageAccess.vue:177
 msgid "Access changes take effect immediately after cache expiry"
 msgstr "存取權限變更會在快取過期後生效"
 
-#: js/components/PageAccess.vue:181
 msgid "Visibility"
 msgstr "可見性"
 
-#: js/components/PageAccess.vue:181
 msgid ""
 "Public pages are visible to everyone, others only to logged in users or "
 "users with the selected roles"
 msgstr ""
 "公開頁面所有人皆可檢視，其他頁面僅限已登入的使用者或具有所選角色的使用者"
 
-#: js/components/PageAccess.vue:185
 msgid "Public"
 msgstr "公開"
 
-#: js/components/PageAccess.vue:186 js/components/PageListItems.vue:230
 msgid "Authenticated users"
 msgstr "已登入的使用者"
 
-#: js/components/PageAccess.vue:194 js/components/PageBulkMenu.vue:104
-#: js/components/PageDetailItem.vue:104 js/components/PageListItems.vue:229
-#: js/components/PageListItems.vue:759 js/components/PageListItems.vue:983
-#: js/views/AccessList.vue:233 js/views/AccessList.vue:237
 msgid "Access"
 msgstr "存取權限"
 
-#: js/components/PageAccess.vue:194
 msgid "Only visitors with one of these roles can view the page"
 msgstr "只有具備其中一個角色的訪客才能檢視此頁面"
 
-#: js/components/PageAccess.vue:204 js/components/PageBulkDialog.vue:274
 msgid "Page bulk changes are limited to %{count} pages"
 msgstr "頁面批次變更以 %{count} 頁為上限"
 
-#: js/components/PageAccess.vue:224 js/components/PageBulkDialog.vue:268
 msgid "Apply recursively"
 msgstr "遞迴套用"
 
-#: js/components/PageBulkDialog.vue:151
 msgid "Apply the selected properties to %{num} page."
 msgid_plural "Apply the selected properties to %{num} pages."
 msgstr[0] "將選取的屬性套用至 %{num} 個頁面。"
 
-#: js/components/PageBulkDialog.vue:162
 msgid "Change status"
 msgstr "變更狀態"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid "Status"
 msgstr "狀態"
 
-#: js/components/PageBulkDialog.vue:167
-#: js/components/PageDetailItemProps.vue:218
 msgid ""
 "Disabled pages are offline, hidden pages are online but not shown in the "
 "navigation"
 msgstr "已停用的頁面為離線狀態，隱藏的頁面仍在線上但不會顯示在導覽中"
 
-#: js/components/PageBulkDialog.vue:176
 msgid "Change cache time"
 msgstr "變更快取時間"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
-#: js/components/PageListItems.vue:540
 msgid "Cache time"
 msgstr "快取時間"
 
-#: js/components/PageBulkDialog.vue:181
-#: js/components/PageDetailItemProps.vue:336
 msgid "How long the generated page is cached before it is created again"
 msgstr "產生的頁面在重新產生前快取的時間"
 
-#: js/components/PageBulkDialog.vue:190
 msgid "Change source language"
 msgstr "變更來源語言"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Source language"
 msgstr "源語言"
 
-#: js/components/PageBulkDialog.vue:195
 msgid "Language of the source page content"
 msgstr "來源頁面內容的語言"
 
-#: js/components/PageBulkDialog.vue:202
 msgid "Change theme"
 msgstr "變更主題"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
-#: js/components/PageListItems.vue:528
 msgid "Theme"
 msgstr "主題"
 
-#: js/components/PageBulkDialog.vue:207
-#: js/components/PageDetailItemProps.vue:305
 msgid "Design used to display the page"
 msgstr "用於顯示頁面的設計"
 
-#: js/components/PageBulkDialog.vue:214
 msgid "Change page type"
 msgstr "變更頁面類型"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
-#: js/components/PageListItems.vue:532
 msgid "Page type"
 msgstr "頁面類型"
 
-#: js/components/PageBulkDialog.vue:219
-#: js/components/PageDetailItemProps.vue:314
 msgid "Template of the theme which defines the page layout"
 msgstr "定義頁面版面配置的主題範本"
 
-#: js/components/PageBulkDialog.vue:226
 msgid "Change tag"
 msgstr "變更標籤"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
-#: js/components/PageListItems.vue:536
 msgid "Page tag"
 msgstr "頁面標籤"
 
-#: js/components/PageBulkDialog.vue:230
-#: js/components/PageDetailItemProps.vue:325
 msgid "Internal identifier to find the page in templates, e.g. blog"
 msgstr "用於在範本中尋找頁面的內部識別碼，例如 blog"
 
-#: js/components/PageBulkDialog.vue:239
 msgid "Change domain"
 msgstr "變更網域"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain"
 msgstr "網域"
 
-#: js/components/PageBulkDialog.vue:244
-#: js/components/PageDetailItemProps.vue:290
 msgid "Domain the page is available at, e.g. example.com"
 msgstr "頁面所在的網域，例如 example.com"
 
-#: js/components/PageBulkMenu.vue:94 js/components/PageListItems.vue:742
 msgctxt "page status"
 msgid "Enable"
 msgstr "啟用"
 
-#: js/components/PageBulkMenu.vue:97 js/components/PageListItems.vue:748
 msgctxt "page status"
 msgid "Disable"
 msgstr "停用"
 
-#: js/components/PageBulkMenu.vue:107 js/components/PageListItems.vue:762
 msgid "Clear cache"
 msgstr "清除快取"
 
-#: js/components/PageBulkMenu.vue:139 js/components/PageListItems.vue:827
-#: js/views/PageDetail.vue:662
 msgid "Ignore changes"
 msgstr "忽略變更"
 
-#: js/components/PageBulkMenu.vue:148 js/components/PageListItems.vue:836
 msgid "Delete this language"
 msgstr "刪除此語言"
 
-#: js/components/PageBulkMenu.vue:156 js/components/PageListItems.vue:844
 msgid "Restore this language"
 msgstr "還原此語言"
 
-#: js/components/PageBulkMenu.vue:164 js/components/PageListItems.vue:852
 msgid "Purge language"
 msgstr "永久刪除語言"
 
-#: js/components/PageDetailContentList.vue:165
-#: js/components/PageDetailContentList.vue:175 js/contentshare.js:110
 msgid "Content element not found"
 msgstr "找不到內容元素"
 
-#: js/components/PageDetailContentList.vue:374
 msgid "Not available for this content element"
 msgstr "此內容元素無法使用"
 
-#: js/components/PageDetailContentList.vue:384
 msgid "Error splitting text"
 msgstr "分割文字時發生錯誤"
 
-#: js/components/PageDetailContentList.vue:499
 msgid "Describe the task you want to perform"
 msgstr "描述您要執行的工作"
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refining ..."
 msgstr "優化中..."
 
-#: js/components/PageDetailContentList.vue:500
 msgid "Refine content based on prompt"
 msgstr "依據提示詞優化內容"
 
-#: js/components/PageDetailContentList.vue:504
 msgid "AI can add or improve content based on your input"
 msgstr "AI 可依據您的輸入新增或改善內容"
 
-#: js/components/PageDetailContentList.vue:505
 msgid "It can take a long time depending on the task and content size"
 msgstr "視工作與內容大小而定，可能需要較長時間"
 
-#: js/components/PageDetailContentList.vue:531
-#: js/components/PageDetailContentList.vue:618
-#: js/components/PageListItems.vue:768 js/fields/Items.vue:282
 msgctxt "clipboard"
 msgid "Cut"
 msgstr "剪下"
 
-#: js/components/PageDetailContentList.vue:534 js/pagetree.js:37
 msgid "Paste"
 msgstr "貼上"
 
-#: js/components/PageDetailContentList.vue:537
-#: js/components/PageDetailContentList.vue:657
 msgid "Merge"
 msgstr "合併"
 
-#: js/components/PageDetailContentList.vue:592 js/fields/Items.vue:269
 msgid "Move element"
 msgstr "移動元素"
 
-#: js/components/PageDetailContentList.vue:627 js/fields/Items.vue:285
 msgid "Paste before"
 msgstr "貼到前方"
 
-#: js/components/PageDetailContentList.vue:630 js/fields/Items.vue:286
 msgid "Paste after"
 msgstr "貼到後方"
 
-#: js/components/PageDetailContentList.vue:633 js/fields/Items.vue:287
-#: js/fields/Table.vue:86 js/fields/Table.vue:95
 msgid "Insert before"
 msgstr "插入到前方"
 
-#: js/components/PageDetailContentList.vue:636 js/fields/Items.vue:288
-#: js/fields/Table.vue:87 js/fields/Table.vue:96
 msgid "Insert after"
 msgstr "插入到後方"
 
-#: js/components/PageDetailContentList.vue:645
 msgid "Make shared"
 msgstr "設為共用"
 
-#: js/components/PageDetailContentList.vue:648
 msgid "Replace with local copy"
 msgstr "替換為頁面內的副本"
 
-#: js/components/PageDetailContentList.vue:654
 msgctxt "text element"
 msgid "Split"
 msgstr "分割"
 
-#: js/components/PageDetailEditor.vue:78
 msgid "Double-click to edit"
 msgstr "按兩下以編輯"
 
-#: js/components/PageDetailEditor.vue:277
 msgid "Preview mode"
 msgstr "預覽模式"
 
-#: js/components/PageDetailEditor.vue:280
 msgid "Not CMS content"
 msgstr "非 CMS 內容"
 
-#: js/components/PageDetailItem.vue:83
 msgid "Detail"
 msgstr "詳細資料"
 
-#: js/components/PageDetailItem.vue:90
 msgid "Meta"
 msgstr "Meta"
 
-#: js/components/PageDetailItem.vue:97
 msgid "Config"
 msgstr "設定"
 
-#: js/components/PageDetailItemProps.vue:74
 msgid "Path must not start with a slash (/)"
 msgstr "路徑不可以斜線（/）開頭"
 
-#: js/components/PageDetailItemProps.vue:84
 msgid "URL is not valid"
 msgstr "網址無效"
 
-#: js/components/PageDetailItemProps.vue:89 js/views/Login.vue:61
-#: js/views/Login.vue:64
 msgid "Field is required"
 msgstr "此欄位為必填"
 
-#: js/components/PageDetailItemProps.vue:125
 msgid "The path is already in use by another page"
 msgstr "此路徑已被其他頁面使用"
 
-#: js/components/PageDetailItemProps.vue:232
 msgid "Language of the page content"
 msgstr "頁面內容的語言"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Page title"
 msgstr "頁面標題"
 
-#: js/components/PageDetailItemProps.vue:246
 msgid "Shown in the browser tab and search results"
 msgstr "顯示在瀏覽器分頁和搜尋結果中"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Page name"
 msgstr "頁面名稱"
 
-#: js/components/PageDetailItemProps.vue:257
 msgid "Short name shown in the navigation menus"
 msgstr "顯示在導覽選單中的簡短名稱"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "URL path"
 msgstr "網址路徑"
 
-#: js/components/PageDetailItemProps.vue:273
 msgid "Part of the page URL after the domain, e.g. about-us"
 msgstr "頁面網址中網域之後的部分，例如 about-us"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Redirect URL"
 msgstr "重新導向網址"
 
-#: js/components/PageDetailItemProps.vue:352
 msgid "Visitors are forwarded to this URL instead of seeing the page"
 msgstr "訪客將被轉送至此網址，而不會看到此頁面"
 
-#: js/components/PageDetailItemSection.vue:63
 msgid "The element has already been added"
 msgstr "此元素已新增"
 
-#: js/components/PageDetailItemSection.vue:178
 msgid "Remove content element"
 msgstr "移除內容元素"
 
-#: js/components/PageLangSelect.vue:69 js/components/PageListItems.vue:877
-#: js/views/PageDetail.vue:644 js/views/PageList.vue:150
 msgid "Needs update"
 msgstr "需要更新"
 
-#: js/components/PageLangSelect.vue:70 js/views/PageList.vue:156
 msgid "Missing"
 msgstr "缺少"
 
-#: js/components/PageLangSelect.vue:71 js/views/PageList.vue:162
 msgid "AI draft"
 msgstr "AI 草稿"
 
-#: js/components/PageLangSelect.vue:74 js/views/PageDetail.vue:643
 msgid "Up to date"
 msgstr "已是最新"
 
-#: js/components/PageLangSelect.vue:94 js/views/PageList.vue:222
 msgid "Error fetching translation states"
 msgstr "取得翻譯狀態時發生錯誤"
 
-#: js/components/PageListItems.vue:255
 msgid "Error adding root page"
 msgstr "新增根頁面時發生錯誤"
 
-#: js/components/PageListItems.vue:293 js/variants.js:425 js/variants.js:495
 msgid "Error translating page"
 msgstr "翻譯此頁面時發生錯誤"
 
-#: js/components/PageListItems.vue:297 js/variants.js:414
 msgid "Error adding language"
 msgstr "新增語言時發生錯誤"
 
-#: js/components/PageListItems.vue:302 js/components/PageListItems.vue:422
-#: js/pagetree.js:152
 msgid "Error fetching pages"
 msgstr "取得頁面時發生錯誤"
 
-#: js/components/PageListItems.vue:504
 msgid "Error searching pages"
 msgstr "搜尋頁面時發生錯誤"
 
-#: js/components/PageListItems.vue:540 js/options.js:50
 msgid "%{num} minute"
 msgid_plural "%{num} minutes"
 msgstr[0] "%{num} 分鐘"
 
-#: js/components/PageListItems.vue:549
 msgid "Translating into %{langs}"
 msgstr "正在翻譯為 %{langs}"
 
-#: js/components/PageListItems.vue:645 js/components/PageListItems.vue:959
 msgid "Add page"
 msgstr "新增頁面"
 
-#: js/components/PageListItems.vue:657
 msgid "Reload page tree"
 msgstr "重新載入頁面樹狀結構"
 
-#: js/components/PageListItems.vue:670
 msgid "Translating %{done} of %{total}"
 msgstr "正在翻譯 %{done}/%{total}"
 
-#: js/components/PageListItems.vue:686
 msgid "Use arrow keys to navigate. Alt plus arrow keys to reorder."
 msgstr "使用方向鍵瀏覽，按 Alt 加方向鍵可重新排序。"
 
-#: js/components/PageListItems.vue:688
 msgid "Moved to position %{position} of %{total}"
 msgstr "已移至第 %{position} 個位置，共 %{total} 個"
 
-#: js/components/PageListItems.vue:690
 msgid "Outdented to level %{level}, position %{position} of %{total}"
 msgstr "已減少縮排至第 %{level} 層，第 %{position} 個位置，共 %{total} 個"
 
-#: js/components/PageListItems.vue:696
 msgid "Indented to level %{level}, position %{position} of %{total}"
 msgstr "已增加縮排至第 %{level} 層，第 %{position} 個位置，共 %{total} 個"
 
-#: js/components/PageListItems.vue:716
 msgid "Toggle child nodes"
 msgstr "展開或收合子節點"
 
-#: js/components/PageListItems.vue:901 js/options.js:64
 msgid "Hidden in navigation"
 msgstr "在導覽中隱藏"
 
-#: js/components/PageListItems.vue:940 js/views/PageDetail.vue:646
 msgid "Create"
 msgstr "建立"
 
-#: js/components/PageListItems.vue:986
 msgid "Apply access settings to %{num} page."
 msgid_plural "Apply access settings to %{num} pages."
 msgstr[0] "將存取設定套用至 %{num} 個頁面。"
 
-#: js/components/PasswordField.vue:35
 msgid "Password"
 msgstr "密碼"
 
-#: js/components/PasswordField.vue:42
 msgid "Hide password"
 msgstr "隱藏密碼"
 
-#: js/components/PasswordField.vue:42
 msgid "Show password"
 msgstr "顯示密碼"
 
-#: js/components/ReloginDialog.vue:98
 msgid "You are not signed in yet"
 msgstr "您尚未登入"
 
-#: js/components/ReloginDialog.vue:137
 msgid "Session expired"
 msgstr "工作階段已過期"
 
-#: js/components/ReloginDialog.vue:138 js/components/ReloginDialog.vue:192
-#: js/components/User.vue:134
 msgid "Logout"
 msgstr "登出"
 
-#: js/components/ReloginDialog.vue:151
 msgid ""
 "Please sign in again in the new tab and return here to continue. Your "
 "unsaved changes are kept."
 msgstr "請在新分頁中重新登入，然後返回此處繼續。您未儲存的變更會保留。"
 
-#: js/components/ReloginDialog.vue:157
 msgid "Please sign in again to continue. Your unsaved changes are kept."
 msgstr "請重新登入以繼續。您未儲存的變更會保留。"
 
-#: js/components/ReloginDialog.vue:170 js/views/Login.vue:236
 msgid "Sign in"
 msgstr "登入"
 
-#: js/components/ReloginDialog.vue:178 js/views/Login.vue:212
 msgid "E-Mail"
 msgstr "電子郵件"
 
-#: js/components/ReloginDialog.vue:202
 msgid "Continue"
 msgstr "繼續"
 
-#: js/components/ReloginDialog.vue:202 js/views/Login.vue:239
 msgid "Login"
 msgstr "登入"
 
-#: js/components/SchemaDialog.vue:42
 msgid "Content elements"
 msgstr "內容元素"
 
-#: js/components/SchemaDialog.vue:47
 msgid "New elements"
 msgstr "新元素"
 
-#: js/components/SchemaDialog.vue:59
 msgid "Only elements in %{lang}"
 msgstr "僅限 %{lang} 的元素"
 
-#: js/components/SchemaItems.vue:112
 msgid "Uncategorized"
 msgstr "未分類"
 
-#: js/components/SchemaItems.vue:125
 msgid "Error fetching content elements"
 msgstr "取得內容元素時發生錯誤"
 
-#: js/components/ShortcutDialog.vue:30
 msgid "General"
 msgstr "一般"
 
-#: js/components/ShortcutDialog.vue:35
 msgid "Close dialog or menu"
 msgstr "關閉對話框或選單"
 
-#: js/components/ShortcutDialog.vue:41
 msgid "Move between commands and results"
 msgstr "在指令與結果之間移動"
 
-#: js/components/ShortcutDialog.vue:42
 msgid "Run command or open result"
 msgstr "執行指令或開啟結果"
 
-#: js/components/ShortcutDialog.vue:43
 msgid "Close command palette"
 msgstr "關閉指令面板"
 
-#: js/components/ShortcutDialog.vue:47
 msgid "Lists"
 msgstr "清單"
 
-#: js/components/ShortcutDialog.vue:51
 msgid "Edit views"
 msgstr "編輯畫面"
 
-#: js/components/ShortcutDialog.vue:55
 msgid "Page content"
 msgstr "頁面內容"
 
-#: js/components/ShortcutDialog.vue:56
 msgid "Move content element up or down"
 msgstr "上移或下移內容元素"
 
-#: js/components/ShortcutDialog.vue:59
 msgid "Page tree"
 msgstr "頁面樹狀結構"
 
-#: js/components/ShortcutDialog.vue:62
 msgid "Move between pages"
 msgstr "在頁面之間移動"
 
-#: js/components/ShortcutDialog.vue:63
 msgid "Expand page"
 msgstr "展開頁面"
 
-#: js/components/ShortcutDialog.vue:64
 msgid "Add subpage to focused page"
 msgstr "為目前頁面新增子頁面"
 
-#: js/components/ShortcutDialog.vue:65
 msgid "Reorder or re-nest page"
 msgstr "重新排序或調整頁面層級"
 
-#: js/components/ShortcutDialog.vue:71
 msgid "AI chat"
 msgstr "AI 對話"
 
-#: js/components/ShortcutDialog.vue:74
 msgid "Send message"
 msgstr "傳送訊息"
 
-#: js/components/ShortcutDialog.vue:75
 msgid "New line"
 msgstr "換行"
 
-#: js/components/ShortcutDialog.vue:76
 msgid "Recall previous messages"
 msgstr "叫回先前的訊息"
 
-#: js/components/TranslateDialog.vue:92
 msgid "Translate into"
 msgstr "翻譯為"
 
-#: js/components/TranslateDialog.vue:96
 msgid "Languages"
 msgstr "語言"
 
-#: js/components/TranslateDialog.vue:111 js/variants.js:307
 msgid ""
 "Nothing to translate, the pages are up to date or already being translated"
 msgstr "沒有需要翻譯的內容，頁面已是最新或正在翻譯中"
 
-#: js/components/TranslateDialog.vue:114
 msgid "%{num} page selected."
 msgid_plural "%{num} pages selected."
 msgstr[0] "已選擇 %{num} 個頁面。"
 
-#: js/components/TranslateDialog.vue:119
 msgid ""
 "Only missing and outdated translations are created. Pages in their source "
 "language and up to date translations are skipped. The translations run in "
@@ -1968,748 +1395,568 @@ msgstr ""
 "僅建立缺少和過時的翻譯。來源語言的頁面和最新的翻譯將被略過。翻譯會在背景執"
 "行，並儲存為草稿以供審閱。"
 
-#: js/components/UnsavedDialog.vue:33
 msgid "Unsaved changes"
 msgstr "未儲存的變更"
 
-#: js/components/UnsavedDialog.vue:44
 msgid "You have unsaved changes that will be lost if you leave."
 msgstr "您有尚未儲存的變更，若離開將會遺失。"
 
-#: js/components/UnsavedDialog.vue:50
 msgid "Discard"
 msgstr "捨棄"
 
-#: js/components/UnsavedDialog.vue:59
 msgid "Save & leave"
 msgstr "儲存並離開"
 
-#: js/components/User.vue:50
 msgid "Failed to load user"
 msgstr "載入使用者失敗"
 
-#: js/components/User.vue:86
 msgid "Logout failed"
 msgstr "登出失敗"
 
-#: js/components/User.vue:99
 msgid "Toggle light/dark mode"
 msgstr "切換淺色/深色模式"
 
-#: js/components/User.vue:106 js/components/User.vue:111
 msgid "Switch language"
 msgstr "切換語言"
 
-#: js/components/User.vue:120
 msgid "User menu"
 msgstr "使用者選單"
 
-#: js/contentrefine.js:125
 msgid "Elements changed during the refinement were kept unchanged"
 msgstr "優化期間變更的元素已保持不變"
 
-#: js/contentrefine.js:134
 msgid "Error refining content"
 msgstr "優化內容時發生錯誤"
 
-#: js/contentshare.js:51
 msgid "Element not found"
 msgstr "找不到元素"
 
-#: js/contentshare.js:56
 msgid "Element is already shared"
 msgstr "元素已是共用元素"
 
-#: js/contentshare.js:101
 msgid "Unable to make element shared"
 msgstr "無法將元素設為共用"
 
-#: js/contentshare.js:117
 msgid "Element is not shared"
 msgstr "元素不是共用元素"
 
-#: js/detail.js:47
 msgid "Element published successfully"
 msgstr "元素已成功發佈"
 
-#: js/detail.js:48
 msgid "Element scheduled for publishing at %{date}"
 msgstr "元素已排程於 %{date} 發佈"
 
-#: js/detail.js:49
 msgid "Error publishing element"
 msgstr "發佈元素時發生錯誤"
 
-#: js/detail.js:53
 msgid "File published successfully"
 msgstr "檔案已成功發佈"
 
-#: js/detail.js:54
 msgid "File scheduled for publishing at %{date}"
 msgstr "檔案已排程於 %{date} 發佈"
 
-#: js/detail.js:59
 msgid "Page published successfully"
 msgstr "頁面已成功發佈"
 
-#: js/detail.js:60
 msgid "Page scheduled for publishing at %{date}"
 msgstr "頁面已排程於 %{date} 發佈"
 
-#: js/detail.js:61 js/pageactions.js:83
 msgid "Error publishing page"
 msgstr "發佈頁面時發生錯誤"
 
-#: js/detail.js:315
 msgid "Not published, please review the changes and publish again"
 msgstr "未發布，請檢查變更後重新發布"
 
-#: js/detail.js:385 js/fields/Autocomplete.vue:209
 msgid "No data available"
 msgstr "沒有資料"
 
-#: js/detail.js:386
 msgid "No version data available"
 msgstr "沒有可用的版本資料"
 
-#: js/detail.js:480
 msgid "There are invalid fields, please resolve the errors first"
 msgstr "有無效的欄位，請先修正錯誤"
 
-#: js/dictation.js:23 js/dictation.js:42
 msgid "Error recording audio"
 msgstr "錄音時發生錯誤"
 
-#: js/fields/Color.vue:14
 msgid "Value must be a hex color code"
 msgstr "值必須是十六進位色碼"
 
-#: js/fields/File.vue:80
 msgid "File is required"
 msgstr "必須提供檔案"
 
-#: js/fields/File.vue:285
 msgid "Add file from URL"
 msgstr "從網址新增檔案"
 
-#: js/fields/File.vue:293 js/fields/Images.vue:385
 msgid "Create file"
 msgstr "建立檔案"
 
-#: js/fields/File.vue:299
 msgid "Upload file"
 msgstr "上傳檔案"
 
-#: js/fields/File.vue:324
 msgid "Drop file here to upload"
 msgstr "將檔案拖放至此處以上傳"
 
-#: js/fields/File.vue:332
 msgid "name"
 msgstr "名稱"
 
-#: js/fields/File.vue:333
 msgid "description"
 msgstr "說明"
 
-#: js/fields/Images.vue:409
 msgid "Drop files here"
 msgstr "將檔案拖放至此處"
 
-#: js/fields/Map.vue:214
 msgid "Map location"
 msgstr "地圖位置"
 
-#: js/fields/Map.vue:214 js/fields/Map.vue:227
 msgid "Click the map to set the location"
 msgstr "點擊地圖以設定位置"
 
-#: js/fields/Map.vue:224
 msgid "Clear location"
 msgstr "清除位置"
 
-#: js/fields/String.vue:31
 msgid "Value has invalid format"
 msgstr "值的格式無效"
 
-#: js/fields/Table.vue:255
 msgid "Move column"
 msgstr "移動欄"
 
-#: js/fields/Table.vue:262
 msgid "Column actions"
 msgstr "欄操作"
 
-#: js/fields/Table.vue:283
 msgid "Move row"
 msgstr "移動列"
 
-#: js/fields/Table.vue:295
 msgid "Row %{row}, column %{col}"
 msgstr "第 %{row} 列，第 %{col} 欄"
 
-#: js/fields/Table.vue:307
 msgid "Row actions"
 msgstr "列操作"
 
-#: js/fields/Url.vue:51 js/options.js:93
 msgid "None"
 msgstr "無"
 
-#: js/fields/Url.vue:52
 msgid "Sponsored"
 msgstr "贊助"
 
-#: js/fields/Url.vue:53
 msgid "Nofollow"
 msgstr "Nofollow"
 
-#: js/fields/Url.vue:93
 msgid "Not a valid URL"
 msgstr "不是有效的網址"
 
-#: js/fields/Url.vue:101
 msgid "Invalid URL schema configuration"
 msgstr "網址協定設定無效"
 
-#: js/fields/Url.vue:173
 msgid "No pages found"
 msgstr "找不到頁面"
 
-#: js/fields/Url.vue:185
 msgid "Link attribute"
 msgstr "連結屬性"
 
-#: js/filefield.js:119
 msgid "Unsupported file type"
 msgstr "不支援的檔案類型"
 
-#: js/graphql.js:127
 msgid "Connection failed, please try again"
 msgstr "連線失敗，請再試一次"
 
-#: js/graphql.js:132 js/stores/session.js:337 js/views/Login.vue:163
 msgid "Login failed"
 msgstr "登入失敗"
 
-#: js/imageai.js:75
 msgid "Number of pixels added at this side of the image"
 msgstr "在圖片此側新增的像素數"
 
-#: js/imageai.js:78
 msgctxt "image edge"
 msgid "Top"
 msgstr "上"
 
-#: js/imageai.js:80
 msgctxt "image edge"
 msgid "Left"
 msgstr "左"
 
-#: js/imageai.js:81
 msgctxt "image edge"
 msgid "Right"
 msgstr "右"
 
-#: js/imageai.js:83
 msgctxt "image edge"
 msgid "Bottom"
 msgstr "下"
 
-#: js/imageai.js:95
 msgid "Error erasing image part"
 msgstr "擦除圖片區域時發生錯誤"
 
-#: js/imageai.js:103
 msgid "Error editing image part"
 msgstr "編輯圖片區域時發生錯誤"
 
-#: js/imageai.js:114
 msgid "Error removing background"
 msgstr "移除背景時發生錯誤"
 
-#: js/imageai.js:259
 msgid "Error uncropping image"
 msgstr "擴展圖片時發生錯誤"
 
-#: js/imageai.js:281
 msgid "Error upscaling image"
 msgstr "提高圖片解析度時發生錯誤"
 
-#: js/lists.js:92
 msgid "Moved to trash"
 msgid_plural "%{num} entries moved to trash"
 msgstr[0] "已將 %{num} 個項目移至垃圾桶"
 
-#: js/listview.js:87
 msgid "publish"
 msgstr "發佈"
 
-#: js/listview.js:89 js/listview.js:99 js/listview.js:108 js/options.js:80
-#: js/views/PageList.vue:127 js/views/PageList.vue:137
-#: js/views/PageList.vue:148
 msgid "All"
 msgstr "全部"
 
-#: js/listview.js:91
 msgid "Scheduled"
 msgstr "已排程"
 
-#: js/listview.js:92
 msgid "Drafts"
 msgstr "草稿"
 
-#: js/listview.js:97
 msgid "trashed"
 msgstr "垃圾桶"
 
-#: js/listview.js:100
 msgid "Available only"
 msgstr "僅限可用項目"
 
-#: js/listview.js:101
 msgid "Only trashed"
 msgstr "僅限垃圾桶中的項目"
 
-#: js/listview.js:109
 msgid "Edited by me"
 msgstr "由我編輯"
 
-#: js/listview.js:114
 msgid "languages"
 msgstr "語言"
 
-#: js/merge.js:29
 msgid "Merged with changes from %{editor}"
 msgstr "已與 %{editor} 的變更合併"
 
-#: js/options.js:49 js/views/PageList.vue:138
 msgid "No cache"
 msgstr "不快取"
 
-#: js/options.js:51
 msgid "%{num} hour"
 msgid_plural "%{num} hours"
 msgstr[0] "%{num} 小時"
 
-#: js/options.js:62 js/views/PageList.vue:130
 msgid "Disabled"
 msgstr "已停用"
 
-#: js/options.js:63 js/views/PageList.vue:128
 msgid "Enabled"
 msgstr "已啟用"
 
-#: js/pageactions.js:126 js/pageactions.js:374 js/views/PageDetail.vue:572
 msgid "Error saving page"
 msgstr "儲存頁面時發生錯誤"
 
-#: js/pageactions.js:138
 msgid "Pages are deleted as whole pages in their source language only"
 msgstr "頁面只能在其來源語言中整體刪除"
 
-#: js/pageactions.js:143
 msgid "Error trashing page"
 msgstr "將頁面移至垃圾桶時發生錯誤"
 
-#: js/pageactions.js:168 js/variants.js:178
 msgid "Error restoring language"
 msgstr "還原語言時發生錯誤"
 
-#: js/pageactions.js:168 js/pageactions.js:184
 msgid "Error restoring page"
 msgstr "還原頁面時發生錯誤"
 
-#: js/pageactions.js:210
 msgid "All subpages of these pages will be purged as well."
 msgstr "這些頁面的所有子頁面也會一併永久刪除。"
 
-#: js/pageactions.js:219
 msgid "Error purging page"
 msgstr "永久刪除頁面時發生錯誤"
 
-#: js/pageactions.js:253
 msgid "Cache cleared"
 msgstr "快取已清除"
 
-#: js/pageactions.js:254
 msgid "Cache cleared for %{num} page."
 msgid_plural "Cache cleared for %{num} pages."
 msgstr[0] "已清除 %{num} 個頁面的快取。"
 
-#: js/pageactions.js:264
 msgid "Error clearing cache"
 msgstr "清除快取時發生錯誤"
 
-#: js/pageactions.js:363
 msgid "%{num} page could not be updated"
 msgid_plural "%{num} pages could not be updated"
 msgstr[0] "%{num} 個頁面無法更新"
 
-#: js/pagetree.js:41
 msgid "Insert"
 msgstr "插入"
 
-#: js/pagetree.js:66
 msgid "Before"
 msgstr "之前"
 
-#: js/pagetree.js:67
 msgid "Into"
 msgstr "之內"
 
-#: js/pagetree.js:68
 msgid "After"
 msgstr "之後"
 
-#: js/pagetree.js:205
 msgid "Error inserting page"
 msgstr "插入頁面時發生錯誤"
 
-#: js/pagetree.js:245 js/views/PageDetail.vue:230
 msgid "Error fetching page"
 msgstr "取得頁面時發生錯誤"
 
-#: js/pagetree.js:263
 msgid "Error copying page"
 msgstr "複製頁面時發生錯誤"
 
-#: js/pagetree.js:330
 msgid "Error moving page"
 msgstr "移動頁面時發生錯誤"
 
-#: js/pagetree.js:340
 msgid "Page moved"
 msgstr "頁面已移動"
 
-#: js/routes.js:111
 msgid "Error checking the session, please try again"
 msgstr "檢查工作階段時發生錯誤，請重試"
 
-#: js/routes.js:125
 msgid "You do not have permission to access %{path}"
 msgstr "您沒有存取 %{path} 的權限"
 
-#: js/rules.js:21
 msgid "Domain name is invalid"
 msgstr "網域名稱無效"
 
-#: js/rules.js:24
 msgid "Value is required"
 msgstr "必須填寫值"
 
-#: js/rules.js:29
 msgid "At least %{num} entry is required"
 msgid_plural "At least %{num} entries are required"
 msgstr[0] "至少需要 %{num} 個項目"
 
-#: js/rules.js:36
 msgid "At most %{num} entry is allowed"
 msgid_plural "At most %{num} entries are allowed"
 msgstr[0] "最多允許 %{num} 個項目"
 
-#: js/rules.js:44
 msgid "At least %{num} character is required"
 msgid_plural "At least %{num} characters are required"
 msgstr[0] "至少需要 %{num} 個字元"
 
-#: js/rules.js:54
 msgid "At most %{num} character is allowed"
 msgid_plural "At most %{num} characters are allowed"
 msgstr[0] "最多允許 %{num} 個字元"
 
-#: js/rules.js:62
 msgid "At least %{num} row is required"
 msgid_plural "At least %{num} rows are required"
 msgstr[0] "至少需要 %{num} 列"
 
-#: js/rules.js:69
 msgid "At most %{num} row is allowed"
 msgid_plural "At most %{num} rows are allowed"
 msgstr[0] "最多允許 %{num} 列"
 
-#: js/stores/message.js:76
 msgid "Permission denied"
 msgstr "權限遭拒"
 
-#: js/stores/plugin.js:20
 msgid "Failed to load plugin"
 msgstr "載入外掛程式失敗"
 
-#: js/stores/setting.js:111
 msgid "Failed to save user settings"
 msgstr "儲存使用者設定失敗"
 
-#: js/stores/translation.js:132
 msgid "Error fetching translation progress"
 msgstr "取得翻譯進度時發生錯誤"
 
-#: js/stores/translation.js:161
 msgid "Translation is still running in the background"
 msgstr "翻譯仍在背景執行中"
 
-#: js/stores/translation.js:164
 msgid "%{num} translation failed"
 msgid_plural "%{num} translations failed"
 msgstr[0] "%{num} 個翻譯失敗"
 
-#: js/stores/translation.js:170
 msgid "Translation finished"
 msgstr "翻譯完成"
 
-#: js/strings.js:37
 msgctxt "cs"
 msgid "main"
 msgstr "主要內容"
 
-#: js/strings.js:38
 msgctxt "cs"
 msgid "header"
 msgstr "頁首"
 
-#: js/strings.js:39
 msgctxt "cs"
 msgid "footer"
 msgstr "頁尾"
 
-#: js/strings.js:40
 msgctxt "cs"
 msgid "sidebar"
 msgstr "側邊欄"
 
-#: js/strings.js:41
 msgctxt "cs"
 msgid "aside"
 msgstr "側邊區塊"
 
-#: js/strings.js:44
 msgctxt "sg"
 msgid "basic"
 msgstr "基本"
 
-#: js/strings.js:45
 msgctxt "sg"
 msgid "content"
 msgstr "內容"
 
-#: js/strings.js:46
 msgctxt "sg"
 msgid "media"
 msgstr "媒體"
 
-#: js/strings.js:47
 msgctxt "sg"
 msgid "forms"
 msgstr "表單"
 
-#: js/strings.js:50
 msgctxt "as"
 msgid "type"
 msgstr "類型"
 
-#: js/strings.js:51
 msgctxt "as"
 msgid "state"
 msgstr "狀態"
 
-#: js/strings.js:54
 msgctxt "st"
 msgid "valid"
 msgstr "有效"
 
-#: js/strings.js:55
 msgctxt "st"
 msgid "changed"
 msgstr "已變更"
 
-#: js/strings.js:56
 msgctxt "st"
 msgid "error"
 msgstr "錯誤"
 
-#: js/strings.js:59
 msgctxt "st"
 msgid "reference"
 msgstr "參照"
 
-#: js/strings.js:62
 msgctxt "fn"
 msgid "files"
 msgstr "檔案"
 
-#: js/strings.js:63
 msgctxt "fn"
 msgid "language"
 msgstr "語言"
 
-#: js/strings.js:64
 msgctxt "fn"
 msgid "main"
 msgstr "主圖"
 
-#: js/strings.js:67
 msgctxt "ai"
 msgid "Done"
 msgstr "完成"
 
-#: js/strings.js:68
 msgctxt "ai"
 msgid "Already exists"
 msgstr "已存在"
 
-#: js/variants.js:131
 msgid "Pages in their source language are deleted as whole pages only"
 msgstr "來源語言的頁面只能整頁刪除"
 
-#: js/variants.js:139
 msgid "Delete language"
 msgstr "刪除語言"
 
-#: js/variants.js:140
 msgid "Move %{num} page in \"%{lang}\" to the trash?"
 msgid_plural "Move %{num} pages in \"%{lang}\" to the trash?"
 msgstr[0] "要將「%{lang}」中的 %{num} 個頁面移至垃圾桶嗎？"
 
-#: js/variants.js:148
 msgid "%{num} page in its source language is skipped."
 msgid_plural "%{num} pages in their source language are skipped."
 msgstr[0] "已略過 %{num} 個來源語言的頁面。"
 
-#: js/variants.js:162
 msgid "Error trashing language"
 msgstr "將語言移至垃圾桶時發生錯誤"
 
-#: js/variants.js:199
 msgid "Error purging language"
 msgstr "永久刪除語言時發生錯誤"
 
-#: js/variants.js:221
 msgid "Error ignoring changes"
 msgstr "忽略變更時發生錯誤"
 
-#: js/variants.js:314
 msgid "Error translating pages"
 msgstr "翻譯頁面時發生錯誤"
 
-#: js/variants.js:424 js/variants.js:492
 msgid "Translation saved as draft, review the changes"
 msgstr "翻譯已儲存為草稿，請檢查變更"
 
-#: js/variants.js:461
 msgid "Marked as up to date"
 msgstr "已標記為最新"
 
-#: js/variants.js:464
 msgid "Error marking as up to date"
 msgstr "標記為最新時發生錯誤"
 
-#: js/variants.js:485
 msgid ""
 "Nothing to translate, the page is up to date or already being translated"
 msgstr "沒有需要翻譯的內容，頁面已是最新或正在翻譯中"
 
-#: js/views/AccessList.vue:171
 msgid "Error adding access value"
 msgstr "新增存取值時發生錯誤"
 
-#: js/views/AccessList.vue:186
 msgid ""
 "Existing restrictions are not changed and will continue to reference the "
 "purged access values."
 msgstr "現有的限制不會變更，並將繼續參照已永久刪除的存取值。"
 
-#: js/views/AccessList.vue:205
 msgid "Error purging access values"
 msgstr "永久刪除存取值時發生錯誤"
 
-#: js/views/AccessList.vue:242
 msgid "Roles"
 msgstr "角色"
 
-#: js/views/AccessList.vue:277 js/views/AccessList.vue:322
 msgid "Add access value"
 msgstr "新增存取值"
 
-#: js/views/AccessList.vue:326
 msgid "Access value"
 msgstr "存取值"
 
-#: js/views/AccessList.vue:326
 msgid "Role name which can be assigned to pages and users"
 msgstr "可指派給頁面和使用者的角色名稱"
 
-#: js/views/AccessList.vue:342
 msgid "Add"
 msgstr "新增"
 
-#: js/views/ElementDetail.vue:122
 msgid "Error fetching element"
 msgstr "取得元素時發生錯誤"
 
-#: js/views/ElementDetail.vue:169
 msgid "Element saved successfully"
 msgstr "元素已成功儲存"
 
-#: js/views/ElementDetail.vue:172
 msgid "Error saving element"
 msgstr "儲存元素時發生錯誤"
 
-#: js/views/ElementDetail.vue:200 js/views/ElementDetail.vue:202
-#: js/views/ElementDetail.vue:207
 msgid "Element"
 msgstr "元素"
 
-#: js/views/ElementDetail.vue:209 js/views/FileDetail.vue:300
 msgid "Used by"
 msgstr "使用位置"
 
-#: js/views/ElementList.vue:49
 msgid "AI can find and manage shared elements based on your input"
 msgstr "AI 可依據您的輸入尋找及管理共用元素"
 
-#: js/views/ElementList.vue:50 js/views/FileList.vue:50
-#: js/views/PageList.vue:282
 msgid "Press Enter or the arrow to open the AI assistant and refine in a chat"
 msgstr "按 Enter 或箭頭開啟 AI 助理，並在對話中進一步優化"
 
-#: js/views/FileDetail.vue:129
 msgid "Error fetching file"
 msgstr "取得檔案時發生錯誤"
 
-#: js/views/FileDetail.vue:246
 msgid "File saved successfully"
 msgstr "檔案已成功儲存"
 
-#: js/views/FileDetail.vue:279 js/views/FileDetail.vue:293
-#: js/views/FileDetail.vue:298
 msgid "File"
 msgstr "檔案"
 
-#: js/views/FileDetail.vue:285
 msgid "Replace file"
 msgstr "取代檔案"
 
-#: js/views/FileList.vue:49
 msgid "AI can find and manage media files based on your input"
 msgstr "AI 可依據您的輸入尋找及管理媒體檔案"
 
-#: js/views/Login.vue:62
 msgid "Invalid e-mail address"
 msgstr "無效的電子郵件地址"
 
-#: js/views/Login.vue:132
 msgid "Not a CMS editor"
 msgstr "不是 CMS 編輯者"
 
-#: js/views/Login.vue:188
 msgid "Access denied"
 msgstr "拒絕存取"
 
-#: js/views/Login.vue:230
 msgid "Error: %{msg}"
 msgstr "錯誤：%{msg}"
 
-#: js/views/PageDetail.vue:506 js/views/PageDetail.vue:670
 msgid ""
 "Score this page 1–10 per area (content quality, readability, SEO, UX, "
 "engagement) and suggest improvements"
@@ -2717,61 +1964,46 @@ msgstr ""
 "依各面向為此頁面評分 1–10（內容品質、可讀性、SEO、UX、互動性），並提出改善建"
 "議"
 
-#: js/views/PageDetail.vue:513
 msgid "Please wait until the language is switched"
 msgstr "請等待語言切換完成"
 
-#: js/views/PageDetail.vue:562
 msgid "Page saved successfully"
 msgstr "頁面已成功儲存"
 
-#: js/views/PageDetail.vue:614 js/views/PageDetail.vue:677
-#: js/views/PageDetail.vue:696
 msgid "Page"
 msgstr "頁面"
 
-#: js/views/PageDetail.vue:641
 msgid "Source"
 msgstr "來源"
 
-#: js/views/PageDetail.vue:645
 msgid "Trashed"
 msgstr "已移至垃圾桶"
 
-#: js/views/PageDetail.vue:682
 msgctxt "editing interface"
 msgid "Editor"
 msgstr "編輯器"
 
-#: js/views/PageList.vue:115
 msgid "view"
 msgstr "檢視"
 
-#: js/views/PageList.vue:118
 msgid "List"
 msgstr "清單"
 
-#: js/views/PageList.vue:125
 msgid "status"
 msgstr "狀態"
 
-#: js/views/PageList.vue:129
 msgid "Hidden"
 msgstr "已隱藏"
 
-#: js/views/PageList.vue:135
 msgid "cache"
 msgstr "快取"
 
-#: js/views/PageList.vue:146
 msgid "translation"
 msgstr "翻譯"
 
-#: js/views/PageList.vue:278
 msgid "Generate page based on prompt"
 msgstr "依據提示詞產生頁面"
 
-#: js/views/PageList.vue:281
 msgid ""
 "AI can create a page and content based on your input and add it to the page "
 "tree"

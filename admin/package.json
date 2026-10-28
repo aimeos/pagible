@@ -20,7 +20,7 @@
     "test:i18n": "cypress run --component --expose i18nComplete=1 --spec cypress/unit/js/translations.cy.js",
     "lint": "eslint --fix",
     "format": "prettier --write src/",
-    "gettext:extract": "vue-gettext-extract",
+    "gettext:extract": "vue-gettext-extract && for f in i18n/*.po i18n/messages.pot; do msgcat --no-location -o $f $f; done",
     "gettext:compile": "vue-gettext-compile"
   },
   "dependencies": {
