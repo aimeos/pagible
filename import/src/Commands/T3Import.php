@@ -8,6 +8,7 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Files;
+use Aimeos\Cms\Import\Markdown;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\Element;
@@ -668,7 +669,7 @@ class T3Import extends Command
             $result = $this->rewriteHtmlFiles((string) $child->bodytext);
             $items[] = [
                 'title' => $child->header,
-                'text' => $this->htmlToMarkdown($result['html']),
+                'text' => Markdown::fromHtml($result['html']),
             ];
             $fileIds = array_merge($fileIds, $result['fileIds']);
         }
@@ -677,7 +678,7 @@ class T3Import extends Command
             $result = $this->rewriteHtmlFiles((string) $record->bodytext);
             $items[] = [
                 'title' => $record->header ?: 'Item', // @phpstan-ignore property.notFound
-                'text' => $this->htmlToMarkdown($result['html']),
+                'text' => Markdown::fromHtml($result['html']),
             ];
             $fileIds = array_merge($fileIds, $result['fileIds']);
         }
@@ -1747,36 +1748,6 @@ class T3Import extends Command
                 'title' => $record->header,
             ],
         ]];
-    }
-
-    /**
-     * Converts basic HTML to Markdown.
-     */
-    protected function htmlToMarkdown(string $html): string
-    {
-        $text = str_replace(["\r\n", "\r"], "\n", $html);
-
-        $text = (string) preg_replace('/<h([1-6])[^>]*>(.*?)<\/h[1-6]>/is', "\n".'$2'."\n", $text);
-        $text = (string) preg_replace('/<strong>(.*?)<\/strong>/is', '**$1**', $text);
-        $text = (string) preg_replace('/<b>(.*?)<\/b>/is', '**$1**', $text);
-        $text = (string) preg_replace('/<em>(.*?)<\/em>/is', '*$1*', $text);
-        $text = (string) preg_replace('/<i>(.*?)<\/i>/is', '*$1*', $text);
-        $text = (string) preg_replace('/<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)<\/a>/is', '[$2]($1)', $text);
-        $text = (string) preg_replace('/<code>(.*?)<\/code>/is', '`$1`', $text);
-        $text = (string) preg_replace('/<\/li>\s*<li\b/is', '</li><li', $text);
-        $text = (string) preg_replace('/<li[^>]*>(.*?)<\/li>/is', "- $1\n", $text);
-        $text = (string) preg_replace('/<\/?(ul|ol)[^>]*>/is', "\n", $text);
-        $text = (string) preg_replace('/<p[^>]*>(.*?)<\/p>/is', "$1\n\n", $text);
-        $text = (string) preg_replace('/<br\s*\/?>/', "\n", $text);
-        $text = strip_tags($text);
-        $text = html_entity_decode($text, ENT_QUOTES, 'UTF-8');
-        // Indentation between TYPO3 <li> tags is formatting whitespace, not
-        // list nesting. Keeping it would turn sibling items into nested
-        // Markdown lists when the imported feature accordions are rendered.
-        $text = (string) preg_replace('/^[\t ]+(?=-\s)/m', '', $text);
-        $text = (string) preg_replace('/\n{3,}/', "\n\n", $text);
-
-        return trim($text);
     }
 
     /**
