@@ -18,7 +18,8 @@ abstract class MetricsTestAbstract extends \Orchestra\Testbench\TestCase
 
 
     protected ?\App\Models\User $user = null;
-    protected $enablesPackageDiscoveries = true;
+    // the isolated package install (CI) doesn't discover the dependency providers, so all are listed below
+    protected $enablesPackageDiscoveries = false;
 
 
     protected function defineEnvironment( $app )
@@ -51,9 +52,18 @@ abstract class MetricsTestAbstract extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders( $app )
     {
         return [
-            \Aimeos\Cms\CoreServiceProvider::class,
+            \Aimeos\AnalyticsBridge\ServiceProvider::class,
+            \Aimeos\KeywordsBridge\ServiceProvider::class,
             \Aimeos\Nestedset\NestedSetServiceProvider::class,
+            \Laravel\Mcp\Server\McpServiceProvider::class,
             \Nuwave\Lighthouse\LighthouseServiceProvider::class,
+            \Nuwave\Lighthouse\Auth\AuthServiceProvider::class,
+            \Nuwave\Lighthouse\OrderBy\OrderByServiceProvider::class,
+            \Nuwave\Lighthouse\Pagination\PaginationServiceProvider::class,
+            \Nuwave\Lighthouse\SoftDeletes\SoftDeletesServiceProvider::class,
+            \Nuwave\Lighthouse\Testing\TestingServiceProvider::class,
+            \Nuwave\Lighthouse\Validation\ValidationServiceProvider::class,
+            \Aimeos\Cms\CoreServiceProvider::class,
             \Aimeos\Cms\GraphqlServiceProvider::class,
             \Aimeos\Cms\McpServiceProvider::class,
             \Aimeos\Cms\MetricsServiceProvider::class,
