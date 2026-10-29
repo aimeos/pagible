@@ -480,9 +480,9 @@ img {
     margin: auto;
 }
 
-/* Opt-in: skip rendering off-screen sections by setting --cms-content-visibility: auto (clips overflowing content) */
+/* Skip rendering off-screen sections */
 
 .cms-content[data-section="main"] > * + * {
-    content-visibility: var(--cms-content-visibility, visible);
+    content-visibility: auto;
     contain-intrinsic-size: auto var(--cms-content-size, 40rem);
 }

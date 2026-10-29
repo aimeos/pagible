@@ -1385,12 +1385,11 @@ class ThemeTest extends ThemeTestAbstract
 			'--pico-font-family-sans-serif' => 'x}body{color:red',
 			'--pico-border-radius' => ' 0 ',
 			'--pico-nav-breadcrumb-divider' => '›',
-			'--cms-content-visibility' => 'auto',
 			'--evil' => '#444444',
 		]]]] );
 		$page->setRelation( 'ancestors', collect( [$root] ) );
 
-		$this->assertSame( ':root:root{--pico-primary:#333333;--pico-color:#222222;--pico-border-radius:0;--pico-nav-breadcrumb-divider:"›";--cms-content-visibility:auto}', Theme::style( $page ) );
+		$this->assertSame( ':root:root{--pico-primary:#333333;--pico-color:#222222;--pico-border-radius:0;--pico-nav-breadcrumb-divider:"›"}', Theme::style( $page ) );
 		$this->assertSame( '#333333', Theme::vars( $page )['--pico-primary'] );
 	}
 

@@ -113,21 +113,6 @@
                     "type": "string",
                     "hint": "Character shown between the breadcrumb links",
                     "default": "/"
-                },
-                "--cms-content-visibility": {
-                    "type": "select",
-                    "hint": "Skip rendering sections outside the viewport for faster page loads (may clip overflowing content)",
-                    "default": "visible",
-                    "options": [
-                        {
-                            "value": "visible",
-                            "label": "Render all sections"
-                        },
-                        {
-                            "value": "auto",
-                            "label": "Skip off-screen sections"
-                        }
-                    ]
                 }
             }
         }
