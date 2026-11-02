@@ -33,7 +33,7 @@ extend type Mutation {
   upscale(file: Upload!, factor: Int! @rules(apply: ["integer", "min:2", "max:4"])): String @guard @cmsPermission(action: "image:upscale") @throttle(name: "cms-ai")
 
   "Generate texts from prompts and passed file IDs"
-  write(prompt: String! @rules(apply: ["required", "max:2000"]), context: String @rules(apply: ["max:30000"]), files: [String!] @rules(apply: ["max:36"]) @rulesForArray(apply: ["max:10"])): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
+  write(prompt: String! @rules(apply: ["required", "max:10000"]), context: String @rules(apply: ["max:100000"]), files: [String!] @rules(apply: ["max:36"]) @rulesForArray(apply: ["max:10"])): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
 }
 
 extend type Mutation {
