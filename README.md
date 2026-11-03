@@ -1,4 +1,4 @@
-# PagibleAI CMS - Simple as Wordpress, the power of Contentful!
+# PagibleAI CMS - Simple as WordPress, the power of Contentful!
 
 The easy, flexible and scalable API-first PagibleAI CMS package for Laravel.
 
@@ -10,6 +10,8 @@ The easy, flexible and scalable API-first PagibleAI CMS package for Laravel.
 * [Architecture](#architecture)
 * [Project Structure](#project-structure)
 * [Getting Started](#getting-started)
+* [Optional Packages](#optional-packages)
+* [Themes](#themes)
 * [Selling access to restricted pages](#selling-access-to-restricted-pages)
 * [Configuration](#configuration)
 * [Maintenance](#maintenance)
@@ -43,8 +45,13 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 * **Multi-language** - Multi-language support
 * **Multi-domain** - Multi-domain routing
 * **Multi-tenancy** - Multi-tenancy capable
-* **Importers** - Importer for WordPress, etc.
-* **MCP API** - 30+ tools for LLM-driven content management
+* **Frontend Access** - Restrict pages and protected files to logged-in users or roles
+* **Importers** - Importers for WordPress and TYPO3
+* **MCP API** - 40+ tools for LLM-driven content management
+* **AI Chat** - Let the AI create, refine, translate and publish pages for you
+* **Page Metrics** - Views, visits, conversions, search queries and keyword research
+* **Webhooks & CDN** - Signed webhooks and CDN purging when content changes
+* **Themes** - Ready-to-use themes for many industries
 * **Full-text Search** - Across SQLite, MySQL, PostgreSQL and SQL Server
 * **Paid Page Access** - Sell subscriptions and one-time access through Stripe, Paddle, or Mollie
 * **Scalable** - From single page with SQLite to millions of pages with DB clusters
@@ -59,49 +66,60 @@ Whether you need a simple blog or a multi-tenant, multi-domain CMS serving milli
 | **Vue.js 3** | Admin panel frontend |
 | **Vuetify** | Admin UI component library |
 | **Lighthouse** | GraphQL API |
-| **Prism / Prisma PHP** | AI/LLM integration |
+| **Prisma PHP** | Provider-neutral AI/LLM integration |
+| **Laravel Scout** | Full-text search |
+| **Laravel MCP** | MCP server |
 | **Vite** | Frontend build tool |
 
 ## Architecture
 
-PagibleAI CMS is a modular monorepo split into focused sub-packages. Each package
-handles a specific concern and can be used independently:
+PagibleAI CMS is a modular monorepo split into focused sub-packages. `aimeos/pagible` installs
+the core, admin, AI, GraphQL, search, JSON:API, MCP, metrics and theme packages, all others are
+optional:
 
 * **Core** provides the data models (Page, Element, File, Version), multi-tenancy, permissions, and migrations
 * **Admin** delivers the Vue.js-based admin panel with drag & drop page management
 * **GraphQL** exposes the admin API via Lighthouse for content editing
 * **JSON:API** provides a read-only frontend API for content delivery
-* **AI** integrates LLM providers through Prism/Prisma PHP for content generation, image manipulation, and translation
-* **Search** implements a custom Laravel Scout engine supporting FTS5 (SQLite), MATCH/AGAINST (MySQL), tsvector (PostgreSQL), and CONTAINSTABLE (SQL Server)
-* **MCP** offers 30+ tools for LLM-driven content management
+* **AI** integrates LLM providers through Prisma PHP for chat, content generation, image manipulation, transcription and translation
+* **Search** implements a custom Laravel Scout engine supporting FTS5 (SQLite), MATCH/AGAINST (MySQL/MariaDB), tsvector (PostgreSQL), and CONTAINSTABLE (SQL Server)
+* **MCP** offers 40+ tools for LLM-driven content management
+* **Metrics** adds page metrics and keyword research to the admin panel, GraphQL and MCP
 * **Backup** provides per-tenant backup and restore with media files, integrity verification, and cross-tenant support
-* **Import** provides importers from external CMS platforms (WordPress, etc.)
+* **Import** provides importers from external CMS platforms (WordPress, TYPO3)
 * **Cashier** sells frontend page access through subscriptions or one-time payments using Stripe, Paddle, or Mollie
-* **Theme** handles frontend rendering with Blade templates
+* **CDN** purges changed pages and removed files from Cloudflare, Fastly, Nginx, Varnish and Symfony HttpCache
+* **Webhooks** delivers signed, tenant-scoped notifications for CMS events through the Laravel queue
+* **Pulse** adds CMS metrics to the Laravel Pulse dashboard
+* **Theme** handles frontend rendering, navigation, search, sitemaps and complete-page caching with Blade templates
 * **Themes** contains high-quality frontend themes
 
-Pages are organized as a nested set tree (using `_lft`/`_rgt` columns). All content changes are tracked as immutable version snapshots — editors see the latest draft while the public sees the published version. Caching is per-page with configurable duration.
+Pages are organized as a nested set tree. All content changes are tracked as immutable version snapshots — editors see the latest draft while the public sees the published version. Anonymous page responses are cached completely and invalidated automatically when pages are published, deleted or their access rules change.
 
 ## Project Structure
 
 ```
 pagible/
 ├── src/          Meta-package (install orchestrator + serve command)
-├── core/         Models, permissions, tenancy, utilities, migrations
+├── core/         Models, permissions, tenancy, versioning, publishing, migrations
 ├── admin/        Vue.js admin panel (Vuetify + Vite)
-├── ai/           AI features (Prism / Prisma PHP)
+├── ai/           AI features (Prisma PHP)
 ├── graphql/      GraphQL API (Lighthouse)
-├── backup/       Backup and restore
-├── cashier/      Shared payment-backed frontend access
-├── cashier-*/    Stripe, Paddle, and Mollie Cashier adapters
-├── import/       CMS importers (WordPress, etc.)
 ├── search/       Full-text search (Laravel Scout)
 ├── jsonapi/      Read-only JSON:API
-├── mcp/          MCP server (30+ tools)
+├── mcp/          MCP server (40+ tools)
+├── metrics/      Page metrics and keyword research
 ├── theme/        Frontend rendering (Blade templates)
-├── themes/       Frontend themes (CSS)
+├── themes/       Frontend themes
+├── backup/       Backup and restore
+├── benchmark/    Benchmark commands and seeder
+├── cashier/      Shared payment-backed frontend access
+├── cashier-*/    Stripe, Paddle, and Mollie Cashier adapters
+├── cdn/          CDN and caching proxy purging
+├── import/       CMS importers (WordPress, TYPO3)
+├── pulse/        Laravel Pulse integration
+├── webhooks/     Webhook delivery for CMS events
 ├── tests/        Shared test infrastructure
-├── config/       Configuration files
 └── phpunit.xml   Aggregated test runner
 ```
 
@@ -161,6 +179,35 @@ The CMS admin backend is available at (replace "mydomain.tld" with your own one)
 http://mydomain.tld/cmsadmin
 ```
 
+For a quick local test, start the built-in web server with `php artisan cms:serve` and open
+`http://localhost:8000/cmsadmin`.
+
+## Optional Packages
+
+Install these packages in addition to `aimeos/pagible` if you need their features:
+
+| Package | Purpose |
+|---|---|
+| [aimeos/pagible-backup](backup/README.md) | Per-tenant backup and restore including media files (`cms:backup`, `cms:restore`) |
+| [aimeos/pagible-import](import/README.md) | Import content from WordPress (`cms:wp-import`) and TYPO3 (`cms:t3-import`) |
+| [aimeos/pagible-cdn](cdn/README.md) | Purge changed pages and removed files from CDNs and caching proxies |
+| [aimeos/pagible-webhooks](webhooks/README.md) | Signed webhook notifications for CMS lifecycle events |
+| [aimeos/pagible-pulse](pulse/README.md) | CMS cards for the Laravel Pulse dashboard |
+| [aimeos/pagible-cashier-stripe](cashier/README.md) | Sell page access via Stripe (also `-paddle` and `-mollie`) |
+
+## Themes
+
+The `themes/` directory contains independently installable themes, e.g. for portfolios, blogs,
+news sites, restaurants, real estate, fashion, medical practices and craftsmen. Install one with:
+
+```bash
+composer require aimeos/pagible-themes-aura
+php artisan vendor:publish --tag=cms-theme
+```
+
+Each theme's README (e.g. [themes/aura](themes/aura/README.md)) describes its design, page types
+and settings. Theme options like the page cache are documented in the [theme package](theme/README.md).
+
 ## Selling access to restricted pages
 
 Install exactly one Pagible Cashier provider in the Laravel application that
@@ -212,8 +259,7 @@ through the access-controlled CMS route.
 
 To generate texts/images from prompts, analyze image/video/audio content, or execute actions based
 on your prompts, you have to configure one or more of the AI service providers supported by the
-[Prism](https://github.com/prism-php/prism/blob/main/config/prism.php) and
-[Prisma](https://php-prisma.org/#supported-providers) packages.
+[Prisma](https://php-prisma.org/#supported-providers) package.
 
 **Note:** You only need to configure API keys for the AI service providers you are using, not for all!
 
@@ -249,7 +295,7 @@ CMS_AI_UPSCALE_API_KEY="${CLIPDROP_API_KEY}"
 CMS_AI_TRANSCRIBE_API_KEY="${OPENAI_API_KEY}"
 ```
 
-For best results and all features, you need Google, OpenAI, Clipdrop, and DeepL at the moment and they are also configured by default. If you want to use a different provider or model, you can to configure them in your `.env` file too. Please have a look into the [./config/cms/ai.php](https://github.com/aimeos/pagible/blob/master/config/cms.php) for the used environment variables.
+For best results and all features, you need Google, OpenAI, Clipdrop, and DeepL at the moment and they are also configured by default. If you want to use a different provider or model, you can configure them in your `.env` file too (e.g. `CMS_AI_WRITE=anthropic` and `CMS_AI_WRITE_MODEL=...`). Please have a look into the published `config/cms/ai.php` file ([source](ai/config/cms/ai.php)) for all environment variables.
 
 **Note:** You can also configure the base URLs for each provider using the `url` key in each provider configuration, e.g.:
 
@@ -266,23 +312,21 @@ For best results and all features, you need Google, OpenAI, Clipdrop, and DeepL 
 
 ## Maintenance
 
-For scheduled publishing, you need to add this line to the `routes/console.php` class:
+PagibleAI CMS registers its scheduled tasks automatically:
 
-```php
-\Illuminate\Support\Facades\Schedule::command('cms:publish')->daily();
+* `cms:publish` every 30 minutes to publish scheduled versions
+* `model:prune` daily to remove soft-deleted pages, elements and files older than `cms.prune` days (30 by default)
+
+You only have to make sure the Laravel scheduler runs, e.g. by adding this cron entry on your server:
+
+```
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-To clean up soft-deleted pages, elements and files regularly, add these lines to the `routes/console.php` class:
+Useful commands for maintenance:
 
-```php
-\Illuminate\Support\Facades\Schedule::command('model:prune', [
-    '--model' => [
-        \Aimeos\Cms\Models\Page::class,
-        \Aimeos\Cms\Models\Element::class,
-        \Aimeos\Cms\Models\File::class
-    ],
-])->daily();
-```
+* `php artisan cms:index` rebuilds the full-text search index
+* `php artisan cms:publish` publishes all versions whose publish date has passed
 
 ## Multi-domain
 
@@ -292,21 +336,23 @@ Using multiple page trees with different domains is possible by adding `CMS_MULT
 
 PagibleAI CMS supports single database multi-tenancy using existing Laravel tenancy packages or code implemented by your own.
 
-The [Tenancy for Laravel](https://tenancyforlaravel.com/) package is most often used. How to set up the package is described in the [Multi-tenancy SaaS Setup](/multi-tenancy-saas-setup) article.
+The [Tenancy for Laravel](https://tenancyforlaravel.com/) package is most often used. How to set up the package is described in the [Multi-tenancy SaaS Setup](https://pagible.com/multi-tenancy-saas-setup) article.
 
 ## MCP API
 
-PagibleAI CMS offers tools within the Laravel MCP API that LLMs can use to interact with the CMS. Please have a look at the [PagibleAI MCP documentation](https://pagible.com/configure-mcp) page for details how to set up the MCP API and Passport for authentication.
+PagibleAI CMS offers 40+ tools within the Laravel MCP API that LLMs and AI agents like Claude, ChatGPT or Cursor can use to search, create, edit, translate and publish pages, elements and files. Please have a look at the [PagibleAI MCP documentation](https://pagible.com/configure-mcp) page for details how to set up the MCP API and Passport for authentication.
 
 ## Security
 
 If you find a security related issue, please contact `security at aimeos.org`.
 
-* All user-generated content is sanitized with HTMLPurifier
+* Structured input is validated against JSON schemas and HTML is sanitized with HTMLPurifier
+* SVG uploads are sanitized and uploads enforce MIME type, size and pixel limits
 * Content Security Policy (CSP) headers are enforced
 * Forms are protected with HCaptcha
-* All API endpoints are rate-limited
-* URL validation on all user-submitted links
+* All API endpoints are rate-limited and GraphQL queries have depth and complexity limits
+* Remote URLs are validated and resolved hosts are pinned to prevent SSRF
+* Protected files are only delivered after access checks with private, no-store responses
 
 ## Contributing
 
@@ -326,9 +372,7 @@ Please make sure all tests pass and PHPStan reports no new errors before submitt
 ## What's Next
 
 * Extend admin panels and sub-panels by extensions
-* Additional CMS importers (Drupal, Joomla, Statamic, TYPO3)
-* Observability & Audit Trail
-* Webhook & Event System
+* Additional CMS importers (Drupal, Joomla, Statamic)
 * More themes
 
 ## License
