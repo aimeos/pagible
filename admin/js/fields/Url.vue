@@ -138,7 +138,7 @@ export default {
             }
           `,
           variables: {
-            filter: { any: value.replace(/^\/+/, '') },
+            filter: { any: value },
             lang: this.pageLang?.() || null
           }
         })
@@ -169,6 +169,7 @@ export default {
         :items="pages"
         :loading="loading"
         :readonly="readonly"
+        no-filter
         :placeholder="config.placeholder || ''"
         :no-data-text="!loading ? $gettext('No pages found') : $gettext('Loading') + ' ...'"
         :modelValue="modelValue ?? config.default ?? ''"

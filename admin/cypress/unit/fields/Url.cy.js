@@ -198,6 +198,32 @@ describe('Url', () => {
     cy.get('input[role="combobox"]').should('have.attr', 'readonly')
   })
 
+  it('searches paths by prefix and other input in all texts', () => {
+    const query = cy.stub().resolves({ data: { pages: { data: [] } } })
+
+    cy.mount(Url, {
+      props: { config: {} },
+      global: { mocks: { $apollo: { query } } }
+    }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+
+      vm.search('/case')
+      expect(query.lastCall.args[0].variables.filter).to.deep.equal({ prefix: 'case' })
+
+      vm.search('case')
+      expect(query.lastCall.args[0].variables.filter).to.deep.equal({ any: 'case' })
+    })
+  })
+
+  it('shows all suggestions returned by the server', () => {
+    cy.mount(Url, { props: { config: {} } }).then(({ wrapper }) => {
+      const vm = wrapper.findComponent(Url).vm
+      vm.pages = ['/tips/use-case', '/blog']
+    })
+    cy.get('input[role="combobox"]').type('/case')
+    cy.get('.v-list-item').should('have.length', 2)
+  })
+
   it('ignores page suggestions of outdated searches', () => {
     const pending = []
     const query = cy.stub().callsFake(() => new Promise((resolve) => pending.push(resolve)))

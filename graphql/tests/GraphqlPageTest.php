@@ -325,6 +325,37 @@ class GraphqlPageTest extends GraphqlTestAbstract
     }
 
 
+    public function testPagesPrefix()
+    {
+        $response = $this->actingAs($this->user)->graphQL('{
+            pages(filter: {any: "/disabled/"}, first: 10, trashed: WITH) {
+                data {
+                    path
+                }
+            }
+        }');
+
+        $paths = array_column($response->json('data.pages.data'), 'path');
+        sort($paths);
+
+        $this->assertEquals(['disabled', 'disabled-child'], $paths);
+    }
+
+
+    public function testPagesPrefixLiteral()
+    {
+        $response = $this->actingAs($this->user)->graphQL('{
+            pages(filter: {any: "/dis%"}, first: 10, trashed: WITH) {
+                data {
+                    path
+                }
+            }
+        }');
+
+        $this->assertEquals([], $response->json('data.pages.data'));
+    }
+
+
     public function testPagesWithParentid()
     {
         $root = PageView::where('tag', 'root')->firstOrFail();

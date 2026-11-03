@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL;
 
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Query\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -259,7 +260,12 @@ final class Query
             ? array_intersect_key( $filter, array_flip( ['path', 'domain'] ) )
             : [];
 
-        $search = Filter::search( PageView::class, $filter['any'] ?? '' );
+        // input starting with a slash matches the page paths from their start
+        $any = (string) ( $filter['any'] ?? '' );
+        $path = str_starts_with( $any, '/' );
+        $prefix = $path ? trim( $any, '/' ) : '';
+
+        $search = Filter::search( PageView::class, $path ? '' : $any );
         $lang = (string) ( $args['lang'] ?? '' );
         $trashed = $args['trashed'] ?? null;
         $state = null;
@@ -289,10 +295,14 @@ final class Query
 
         Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
 
-        if( $route || $state ) {
-            $search->query( function( \Illuminate\Database\Eloquent\Builder $query ) use ( $route, $state, $lang ) {
+        if( $route || $state || $prefix !== '' ) {
+            $search->query( function( \Illuminate\Database\Eloquent\Builder $query ) use ( $route, $state, $lang, $prefix ) {
                 foreach( $route as $field => $value ) {
                     $query->where( $query->qualifyColumn( $field ), (string) ( $value ?? '' ) );
+                }
+
+                if( $prefix !== '' ) {
+                    DB::wherePrefix( $query, 'cms_page_view.path', $prefix );
                 }
 
                 if( $state ) {
