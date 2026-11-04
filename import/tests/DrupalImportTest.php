@@ -244,7 +244,9 @@ class DrupalImportTest extends ImportTestAbstract
         }
 
         // pending versions of previous imports are still removed
-        $version = PageVariant::whereKey( $page->variant_id )->firstOrFail()->versions()->firstOrFail()->replicate();
+        $latest = PageVariant::whereKey( $page->variant_id )->firstOrFail()->versions()->firstOrFail();
+        // MySQL/MariaDB reject values for the generated "data_*" columns
+        $version = $latest->replicate( preg_grep( '/^data_/', array_keys( $latest->getAttributes() ) ) ?: [] );
         $version->published = false;
         $version->editor = 'drupal-import';
         $version->save();
