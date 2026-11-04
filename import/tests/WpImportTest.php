@@ -673,6 +673,17 @@ class WpImportTest extends ImportTestAbstract
     }
 
 
+    /**
+     * Returns the SQL statement with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * MariaDB and MySQL quote identifiers with backticks, SQL Server with brackets and uses "top" instead of "limit".
+     */
+    protected function sql( string $sql ): string
+    {
+        return (string) preg_replace( '/^select top \d+ /', 'select ', strtr( $sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
+    }
+
+
     protected function article( string $path ): ?object
     {
         return collect( (array) PageView::where( 'domain', 'new.example' )->where( 'path', $path )->firstOrFail()->content )
@@ -771,7 +782,7 @@ class WpImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
         $log = Collection::make( $db->getQueryLog() );
-        $mimes = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => preg_match( '/select "mime", "id" from "cms_files"/', str_replace( '`', '"', $query['query'] ) ) === 1 );
+        $mimes = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => preg_match( '/select "mime", "id" from "cms_files"/', $this->sql( $query['query'] ) ) === 1 );
         $db->disableQueryLog();
         $cms->disableQueryLog();
         $queries = $log->filter( fn( $query ) => str_contains( $query['query'], 'from "wp_postmeta"' ) );
@@ -822,7 +833,7 @@ class WpImportTest extends ImportTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', $args ) );
-        $parents = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => preg_match( '/^select \* from "cms_pages" where "cms_pages"."id" = \?/', str_replace( '`', '"', $query['query'] ) ) === 1
+        $parents = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => preg_match( '/^select \* from "cms_pages" where "cms_pages"."id" = \?/', $this->sql( $query['query'] ) ) === 1
             && $query['bindings'][0] === $blog->id );
         $db->disableQueryLog();
 
@@ -863,7 +874,7 @@ class WpImportTest extends ImportTestAbstract
 
         $updates = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$updates ) {
-            $updates[] = str_contains( str_replace( '`', '"', $query->sql ), 'set "created_at"' ) ? $query->sql : null;
+            $updates[] = str_contains( $this->sql( $query->sql ), 'set "created_at"' ) ? $query->sql : null;
         } );
 
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
@@ -876,8 +887,7 @@ class WpImportTest extends ImportTestAbstract
 
         $queries = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
-            // MariaDB and MySQL quote the identifiers with backticks
-            $queries[] = [str_replace( '`', '"', $query->sql ), $query->bindings];
+            $queries[] = [$this->sql( $query->sql ), $query->bindings];
         } );
 
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
@@ -1333,8 +1343,7 @@ class WpImportTest extends ImportTestAbstract
 
         $queries = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
-            // MariaDB and MySQL quote the identifiers with backticks
-            $queries[] = [str_replace( '`', '"', $query->sql ), $query->bindings];
+            $queries[] = [$this->sql( $query->sql ), $query->bindings];
         } );
 
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example', '--since' => '2026-09-01 12:00:00 UTC'] ) );
