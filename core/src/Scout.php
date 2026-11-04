@@ -18,6 +18,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Scout
 {
+    /** @var array<string, array<class-string<Models\Base>, array<int, array<string, true>>>>|null IDs to index by tenant, model and key type while deferred */
+    private static ?array $deferred = null;
+
+
     /**
      * Reindexes models by ID in bounded batches, queued if Scout uses a queue.
      *
@@ -34,6 +38,15 @@ class Scout
             return;
         }
 
+        if( self::$deferred !== null )
+        {
+            foreach( $ids as $id ) {
+                self::$deferred[Tenancy::value()][$model][(int) $keys][(string) $id] = true;
+            }
+
+            return;
+        }
+
         if( !config( 'scout.queue' ) ) {
             self::sync( $model, $ids, $keys );
             return;
@@ -46,6 +59,64 @@ class Scout
             dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $keys ) )
                 ->onQueue( $instance->syncWithSearchUsingQueue() )
                 ->onConnection( $instance->syncWithSearchUsing() ) );
+        }
+    }
+
+
+    /**
+     * Executes the callback and indexes the models passed to index() at once afterwards.
+     *
+     * Use flush() to index the models collected so far, e.g. after committing a batch of
+     * records. Nested calls index the models when the outermost call returns.
+     *
+     * @template T
+     * @param \Closure(): T $callback Callback to execute
+     * @return T Callback return value
+     */
+    public static function defer( \Closure $callback ) : mixed
+    {
+        if( self::$deferred !== null ) {
+            return $callback();
+        }
+
+        self::$deferred = [];
+
+        try {
+            return $callback();
+        } finally {
+            self::flush();
+            self::$deferred = null;
+        }
+    }
+
+
+    /**
+     * Indexes the models collected by defer() so far.
+     */
+    public static function flush() : void
+    {
+        if( self::$deferred === null ) {
+            return;
+        }
+
+        $pending = self::$deferred;
+        // the collected models are indexed instead of being collected again
+        self::$deferred = null;
+
+        try {
+            foreach( $pending as $tenant => $models )
+            {
+                Tenancy::run( (string) $tenant, function() use ( $models ) {
+                    foreach( $models as $model => $types )
+                    {
+                        foreach( $types as $keys => $ids ) {
+                            self::index( $model, array_map( strval( ... ), array_keys( $ids ) ), (bool) $keys );
+                        }
+                    }
+                } );
+            }
+        } finally {
+            self::$deferred = [];
         }
     }
 
