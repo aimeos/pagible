@@ -256,7 +256,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )
+        $queries = $this->queries( $db )
             ->filter( fn( $query ) => preg_match( '/from "(pages|tt_content)" where .*"sys_language_uid" in \(\?\)/', $query['query'] ) === 1 );
         $db->disableQueryLog();
 
@@ -527,7 +527,7 @@ class T3ImportTest extends ImportTestAbstract
 
         DB::connection()->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--page' => [10, 11]] ) );
-        $lookups = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"path" = ?' ) && in_array( 'about', $query['bindings'], true ) );
+        $lookups = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], '"path" = ?' ) && in_array( 'about', $query['bindings'], true ) );
         DB::connection()->disableQueryLog();
         DB::connection()->flushQueryLog();
 
@@ -548,7 +548,7 @@ class T3ImportTest extends ImportTestAbstract
         DB::connection()->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
         $output = Artisan::output();
-        $lookups = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
+        $lookups = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
         DB::connection()->disableQueryLog();
 
         // the child pages are imported directly before their own children
@@ -575,7 +575,7 @@ class T3ImportTest extends ImportTestAbstract
 
         DB::connection()->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $lookups = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
+        $lookups = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
         DB::connection()->disableQueryLog();
 
         // the URLs of the next pages aren't fetched again because the descendants saved other URLs
@@ -595,7 +595,7 @@ class T3ImportTest extends ImportTestAbstract
 
         DB::connection()->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $lookups = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
+        $lookups = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
         DB::connection()->disableQueryLog();
 
         // the URL of the next page used by the translation of a descendant is fetched again
@@ -650,7 +650,7 @@ class T3ImportTest extends ImportTestAbstract
         $variants = function() {
             DB::connection()->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-            $queries = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'where "cms_page_view"."id" ' ) );
+            $queries = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], 'where "cms_page_view"."id" ' ) );
             DB::connection()->disableQueryLog();
             DB::connection()->flushQueryLog();
 
@@ -684,7 +684,7 @@ class T3ImportTest extends ImportTestAbstract
         DB::connection()->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
         $output = Artisan::output();
-        $lookups = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
+        $lookups = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], '"path" in' ) );
         DB::connection()->disableQueryLog();
 
         $slugs = array_map( fn( $uid ) => "page-{$uid}", range( 100, 219 ) );
@@ -705,7 +705,7 @@ class T3ImportTest extends ImportTestAbstract
 
         DB::connection()->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $lookups = Collection::make( DB::connection()->getQueryLog() )->filter( fn( $query ) => preg_match( '/from "cms_elements" where .*"name" = \?/', $query['query'] ) === 1 );
+        $lookups = $this->queries( DB::connection() )->filter( fn( $query ) => preg_match( '/from "cms_elements" where .*"name" = \?/', $query['query'] ) === 1 );
         DB::connection()->disableQueryLog();
 
         // the shared elements are stored once although they are shown on two pages
@@ -753,7 +753,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $log = Collection::make( $db->getQueryLog() );
+        $log = $this->queries( $db );
         $db->disableQueryLog();
 
         // the targets of the shortcuts of all upcoming pages are fetched together and only once at all
@@ -796,7 +796,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() );
+        $queries = $this->queries( $db );
         $db->disableQueryLog();
 
         // the content and file references for all languages are fetched once for the page and its translations
@@ -837,7 +837,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'from "tx_bootstrappackage_accordion_item"' ) );
+        $queries = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'from "tx_bootstrappackage_accordion_item"' ) );
         $db->disableQueryLog();
 
         // only the used columns of the accordion items are fetched
@@ -889,7 +889,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
-        $sysFiles = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file" where "identifier"' ) );
+        $sysFiles = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file" where "identifier"' ) );
         $db->disableQueryLog();
 
         // the files in the accordion items are looked up at once and downloaded outside the transactions of the pages
@@ -958,7 +958,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         // only the used columns are fetched
@@ -1006,7 +1006,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
-        $queries = Collection::make( $db->getQueryLog() );
+        $queries = $this->queries( $db );
         $db->flushQueryLog();
 
         // the sys_file records are fetched by the UIDs of the references and the hashes of the linked files only
@@ -1027,7 +1027,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( [[1, 2, 6], [1, 2]], $content->map( fn( $query ) => $this->contentPids( $query ) )->filter()->values()->all() );
 
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin', '--page' => [6]] ) );
-        $pids = Collection::make( $db->getQueryLog() )->map( fn( $query ) => $this->contentPids( $query ) )->filter();
+        $pids = $this->queries( $db )->map( fn( $query ) => $this->contentPids( $query ) )->filter();
         $db->disableQueryLog();
 
         // only the content of the selected pages is fetched
@@ -1036,7 +1036,7 @@ class T3ImportTest extends ImportTestAbstract
         $db->flushQueryLog();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin', '--page' => [2, 6]] ) );
-        $pids = Collection::make( $db->getQueryLog() )->map( fn( $query ) => $this->contentPids( $query ) )->filter();
+        $pids = $this->queries( $db )->map( fn( $query ) => $this->contentPids( $query ) )->filter();
         $db->disableQueryLog();
 
         // the content of the selected pages is fetched at once before the first page is imported
@@ -1100,7 +1100,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() );
+        $queries = $this->queries( $db );
         $db->disableQueryLog();
 
         // only the carousel items and their references of the imported content elements are fetched
@@ -1211,7 +1211,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file"' ) );
+        $queries = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file"' ) );
         $db->disableQueryLog();
 
         // the linked files are looked up by the indexed storages and hashes, the storages are fetched once
@@ -1279,7 +1279,7 @@ class T3ImportTest extends ImportTestAbstract
     {
         $queries = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
-            $queries[] = [$query->sql, $query->bindings];
+            $queries[] = [$this->sql( $query->sql ), $query->bindings];
         } );
 
         // the domain of the site root is used for its child pages
@@ -1346,7 +1346,7 @@ class T3ImportTest extends ImportTestAbstract
         $rendered = function() use ( $db ) {
             $db->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--since' => '@2000'] ) );
-            $log = Collection::make( $db->getQueryLog() );
+            $log = $this->queries( $db );
             $db->disableQueryLog();
             $db->flushQueryLog();
 
@@ -1424,7 +1424,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--since' => '@2000'] ) );
-        $pids = Collection::make( $db->getQueryLog() )->flatMap( fn( $query ) => $this->contentPids( $query ) );
+        $pids = $this->queries( $db )->flatMap( fn( $query ) => $this->contentPids( $query ) );
         $db->disableQueryLog();
         $output = Artisan::output();
 
@@ -1599,7 +1599,7 @@ class T3ImportTest extends ImportTestAbstract
         $since = function() use ( $db ) {
             $db->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--since' => '@2000'] ) );
-            $pids = Collection::make( $db->getQueryLog() )->flatMap( fn( $query ) => $this->contentPids( $query ) )->unique()->sort()->values()->all();
+            $pids = $this->queries( $db )->flatMap( fn( $query ) => $this->contentPids( $query ) )->unique()->sort()->values()->all();
             $db->flushQueryLog();
             $db->disableQueryLog();
 
@@ -1636,7 +1636,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--since' => '@2000'] ) );
-        $pids = Collection::make( $db->getQueryLog() )->flatMap( fn( $query ) => $this->contentPids( $query ) )->unique()->values()->all();
+        $pids = $this->queries( $db )->flatMap( fn( $query ) => $this->contentPids( $query ) )->unique()->values()->all();
         $db->disableQueryLog();
 
         // pages with shortcuts to records without modification time are imported again
@@ -1695,7 +1695,7 @@ class T3ImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
         $output = Artisan::output();
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         // the existing pages of the second chunk are fetched after the pages of the first chunk are imported
@@ -1919,7 +1919,7 @@ class T3ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
-        $sysFiles = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file" where "identifier"' ) );
+        $sysFiles = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file" where "identifier"' ) );
         $db->disableQueryLog();
 
         // the sys_file records of all files linked in the content are fetched by one query
@@ -2084,7 +2084,7 @@ class T3ImportTest extends ImportTestAbstract
         $db = DB::connection( 'typo3' );
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )
+        $queries = $this->queries( $db )
             ->filter( fn( $query ) => preg_match( '/^select .* from "pages" where .*"sys_language_uid" > \?/', $query['query'] ) === 1 );
         $selects = $queries->map( fn( $query ) => explode( ' from ', $query['query'] )[0] );
         $db->disableQueryLog();
@@ -2127,6 +2127,28 @@ class T3ImportTest extends ImportTestAbstract
 
         // the bindings of the "deleted" and "hidden" conditions are first
         return array_slice( $query['bindings'], 2, substr_count( $match[1], '?' ) );
+    }
+
+
+    /**
+     * Returns the logged queries with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * @return Collection<int, array{query: string, bindings: array<mixed>, time: float|null}>
+     */
+    protected function queries( \Illuminate\Database\Connection $db ): Collection
+    {
+        return Collection::make( $db->getQueryLog() )->map( fn( $query ) => ['query' => $this->sql( $query['query'] )] + $query );
+    }
+
+
+    /**
+     * Returns the SQL statement with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * MariaDB and MySQL quote identifiers with backticks, SQL Server with brackets and uses "top" instead of "limit".
+     */
+    protected function sql( string $sql ): string
+    {
+        return (string) preg_replace( '/^select top \d+ /', 'select ', strtr( $sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
     }
 
 
