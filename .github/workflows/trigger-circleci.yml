@@ -49,6 +49,9 @@ jobs:
 
           echo "run_php=$([ -n "$DIRS" ] && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "run_perf=$(echo "$DIRS" | grep -qxE 'core|graphql|jsonapi|mcp|search|theme' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run_webhooks=$(echo "$DIRS" | grep -qxE 'core|admin|graphql|webhooks' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run_metrics=$(echo "$DIRS" | grep -qxE 'core|graphql|mcp|metrics' && echo true || echo false)" >> $GITHUB_OUTPUT
+          echo "run_cashier=$(echo "$DIRS" | grep -qxE 'core|cashier(-[a-z]+)?' && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "run_admin=$([ -n "$ADMIN" ] && echo true || echo false)" >> $GITHUB_OUTPUT
           echo "tests=$TESTS" >> $GITHUB_OUTPUT
           echo "admin_tests=$ADMIN_TESTS" >> $GITHUB_OUTPUT
@@ -57,7 +60,8 @@ jobs:
         if: steps.check.outputs.run_php == 'true'
         run: |
           jq -n --arg branch "${{ github.ref_name }}" --arg tests "$TESTS" --argjson perf "$RUN_PERF" \
-            '{branch: $branch, parameters: {run_php: true, run_perf: $perf, tests: $tests}}' |
+            --argjson webhooks "$RUN_WEBHOOKS" --argjson metrics "$RUN_METRICS" --argjson cashier "$RUN_CASHIER" \
+            '{branch: $branch, parameters: {run_php: true, run_perf: $perf, run_webhooks: $webhooks, run_metrics: $metrics, run_cashier: $cashier, tests: $tests}}' |
           curl -s -X POST \
             "https://circleci.com/api/v2/project/gh/aimeos/pagible/pipeline" \
             -H "Circle-Token: $CCI_TOKEN" \
@@ -66,6 +70,9 @@ jobs:
         env:
           CCI_TOKEN: ${{ secrets.CCI_TOKEN }}
           RUN_PERF: ${{ steps.check.outputs.run_perf }}
+          RUN_WEBHOOKS: ${{ steps.check.outputs.run_webhooks }}
+          RUN_METRICS: ${{ steps.check.outputs.run_metrics }}
+          RUN_CASHIER: ${{ steps.check.outputs.run_cashier }}
           TESTS: ${{ steps.check.outputs.tests }}
 
       - name: Trigger CircleCI admin pipeline

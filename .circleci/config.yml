@@ -11,6 +11,15 @@ parameters:
   run_perf:
     type: boolean
     default: false
+  run_webhooks:
+    type: boolean
+    default: false
+  run_metrics:
+    type: boolean
+    default: false
+  run_cashier:
+    type: boolean
+    default: false
   run_admin:
     type: boolean
     default: false
@@ -32,6 +41,21 @@ commands:
       - run:
           name: Skip if no benchmarks are affected
           command: if [ "<< pipeline.parameters.run_perf >>" != "true" ]; then circleci-agent step halt; fi
+  skip-without-webhooks:
+    steps:
+      - run:
+          name: Skip if the webhooks package is not affected
+          command: if [ "<< pipeline.parameters.run_webhooks >>" != "true" ]; then circleci-agent step halt; fi
+  skip-without-metrics:
+    steps:
+      - run:
+          name: Skip if the metrics package is not affected
+          command: if [ "<< pipeline.parameters.run_metrics >>" != "true" ]; then circleci-agent step halt; fi
+  skip-without-cashier:
+    steps:
+      - run:
+          name: Skip if no cashier drivers are affected
+          command: if [ "<< pipeline.parameters.run_cashier >>" != "true" ]; then circleci-agent step halt; fi
   phpunit:
     steps:
       - run: TESTS="<< pipeline.parameters.tests >>"; ./vendor/bin/phpunit ${TESTS#ALL}
@@ -291,6 +315,7 @@ jobs:
           DB_DRIVER: sqlite
     working_directory: ~/project/webhooks
     steps:
+      - skip-without-webhooks
       - checkout:
           path: ~/project
       - restore_cache:
@@ -318,6 +343,7 @@ jobs:
           DB_DRIVER: sqlite
     working_directory: ~/project/metrics
     steps:
+      - skip-without-metrics
       - checkout:
           path: ~/project
       - restore_cache:
@@ -348,6 +374,7 @@ jobs:
       - image: aimeos/ci-php:<< parameters.php >>
     working_directory: ~/project/<< parameters.package >>
     steps:
+      - skip-without-cashier
       - checkout:
           path: ~/project
       - run:
