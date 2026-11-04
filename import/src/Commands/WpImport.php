@@ -102,7 +102,8 @@ class WpImport extends Command
             Tenancy::set( $tenant );
         }
 
-        if( !Database::check( $this, $this->wpConnection, 'WordPress', 'WP', 'wordpress' ) ) {
+        if( ( $reason = Database::check( $this->wpConnection ) ) !== null ) {
+            $this->error( "Cannot connect to WordPress database using connection \"{$this->wpConnection}\": {$reason}" );
             return;
         }
 

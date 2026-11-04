@@ -128,7 +128,8 @@ class T3Import extends Command
             Tenancy::set($tenant);
         }
 
-        if (! Database::check($this, $this->t3Connection, 'TYPO3', 'T3', 'typo3')) {
+        if (($reason = Database::check($this->t3Connection)) !== null) {
+            $this->error("Cannot connect to TYPO3 database using connection \"{$this->t3Connection}\": {$reason}");
             return;
         }
 
