@@ -4,25 +4,33 @@
  * @license LGPL, https://opensource.org/license/lgpl-3-0
  */
 
+
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\Import\Files;
-use Aimeos\Cms\Import\Markdown;
 use Aimeos\Cms\Import\Pages;
-use Aimeos\Cms\Import\Variants;
-use Aimeos\Cms\Models\Element;
+use Aimeos\Cms\Import\Status;
+use Aimeos\Cms\Import\Typo3;
+use Aimeos\Cms\Import\Typo3Destinations;
+use Aimeos\Cms\Import\Typo3Files;
+use Aimeos\Cms\Import\Typo3Html;
+use Aimeos\Cms\Import\Typo3Languages;
+use Aimeos\Cms\Import\Typo3Layouts;
+use Aimeos\Cms\Import\Typo3Reader;
+use Aimeos\Cms\Import\Typo3Records;
+use Aimeos\Cms\Import\Typo3Site;
+use Aimeos\Cms\Import\Typo3Tree;
+use Aimeos\Cms\Import\Typo3Urls;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Utils;
-use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
+use Aimeos\Cms\DB as CmsDB;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 
-class T3Import extends Command
+
+class T3Import extends BaseImport
 {
     /**
      * Command name
@@ -37,6 +45,7 @@ class T3Import extends Command
         {--theme= : Pagible theme name applied to imported pages}
         {--file-base= : Base URL for TYPO3 files (e.g. https://example.com/fileadmin)}
         {--page=* : Import or update only the TYPO3 page with this UID (repeatable)}
+        {--since= : Only import the pages changed since the date (e.g. 2026-01-31) including their translations and content, the pages of the others are kept as imported before}
         {--dry-run : Show what would be imported without making changes}';
 
     /**
@@ -44,2185 +53,1174 @@ class T3Import extends Command
      */
     protected $description = 'Imports TYPO3 pages into Pagible CMS pages';
 
-    protected string $t3Connection;
+    /** Maximum number of existing pages of the next sibling pages kept while the descendants of a page are imported */
+    protected const SIBLING_SIZE = 50;
 
-    protected string $domain;
+    /** Number of the next pages in import order whose content records, file references and files are fetched at once */
+    protected const CONTENT_SIZE = 100;
 
-    protected string $lang;
-
-    protected string $editor;
-
+    protected bool $keepPages = false;
     protected string $theme = '';
 
-    protected string $fileBase;
+    /** @var array<string, array<string, bool>> URL paths of the next sibling pages without existing page by domain, TRUE if a page or translation has been saved with the path since */
+    protected array $watched = [];
 
-    /** @var Collection<int, mixed> */
-    protected Collection $sysFiles;
+    /** @var list<object> TYPO3 pages in import order, so their content and modification times are fetched in chunks */
+    protected array $sequence = [];
 
-    /** @var Collection<string, mixed> */
-    protected Collection $sysFilesByIdentifier;
+    /** @var array<int, int> Positions of the TYPO3 pages in $sequence by UID */
+    protected array $positions = [];
 
-    /** @var Collection<int|string, mixed> */
-    protected Collection $fileRefs;
+    /** @var array{0: int, 1: int} First and next position in $sequence of the pages whose content was prefetched last */
+    protected array $window = [0, 0];
 
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $accordionItems = null;
-
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $carouselItems = null;
-
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $carouselFileRefs = null;
-
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $contentRecords = null;
-
-    /** @var Collection<string, string> */
-    protected Collection $createdFiles;
-
-    /** @var Collection<string, string> */
+    /** @var Collection<string, string> URLs of the created files by source path */
     protected Collection $createdFileUrls;
 
-    /** @var array<int, string> */
-    protected array $domainMap = [];
+    /** Maps the TYPO3 language UIDs to the languages of the pages */
+    protected Typo3Languages $languages;
 
-    /** @var Collection<int, mixed>|null */
-    protected ?Collection $t3Pages = null;
+    /** @var array<int, int> UIDs of the TYPO3 languages whose translations are imported */
+    protected array $langUids = [];
 
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $backendLayouts = null;
+    /** Maps the TYPO3 page trees to their domains */
+    protected Typo3Site $site;
 
-    /** @var Collection<string, array{id: string, latest: string}>|null */
-    protected ?Collection $sharedElements = null;
+    /** @var array<int, array<int, string>> URL paths of the TYPO3 page translations in the known languages by page UID and language UID */
+    protected array $translated = [];
 
-    protected string $contentUid = '?';
+    /** @var array<int, Collection<int, mixed>> TYPO3 page translations of the upcoming pages by page UID */
+    protected array $translations = [];
 
-    /** @var array<int, array{lang: string, domain: string}> */
-    protected array $languages = [];
+    protected ?Typo3 $typo3 = null;
 
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $translatedPages = null;
+    /** Reads the TYPO3 database */
+    protected Typo3Reader $reader;
 
-    /** @var Collection<int|string, mixed>|null */
-    protected ?Collection $translatedContent = null;
+    /** Imports the TYPO3 file references and fileadmin URLs */
+    protected Typo3Files $files;
 
-    /** @var array{uid: int, source: string}|null TYPO3 language of the translated content which is built */
-    protected ?array $translation = null;
+    /** Selects the content records of the TYPO3 pages */
+    protected Typo3Records $records;
+
+    /** Resolves the URLs of the TYPO3 pages */
+    protected Typo3Urls $urls;
+
+    /** Navigates the TYPO3 page tree */
+    protected Typo3Tree $tree;
+
+    /** @var array<string, array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>, elementIds: array<int, string>}> References to the shared elements by TYPO3 content and language */
+    protected array $shared = [];
+
 
     /**
      * Execute command
      */
     public function handle(): void
     {
-        $this->t3Connection = (string) $this->option('connection'); // @phpstan-ignore cast.string
-        $this->domain = $this->parseDomainOption();
-        $this->lang = (string) $this->option('lang'); // @phpstan-ignore cast.string
-        $this->editor = (string) $this->option('editor'); // @phpstan-ignore cast.string
-        $this->theme = (string) ($this->option('theme') ?: ''); // @phpstan-ignore cast.string
-        $this->fileBase = rtrim((string) ($this->option('file-base') ?: ''), '/'); // @phpstan-ignore cast.string
-        $this->createdFiles = Collection::make();
+        $this->theme = $this->stringOption( 'theme' );
         $this->createdFileUrls = Collection::make();
-        $this->sharedElements = Collection::make();
 
-        if ($tenant = (string) $this->option('tenant')) { // @phpstan-ignore cast.string
-            Tenancy::set($tenant);
-        }
-
-        if (($reason = Database::check($this->t3Connection)) !== null) {
-            $this->error("Cannot connect to TYPO3 database using connection \"{$this->t3Connection}\": {$reason}");
+        if( !$this->init( 'TYPO3', 'T3' ) || !$this->sinceOption() ) {
             return;
         }
 
-        if ($this->domain === '') {
-            $this->domainMap += $this->fetchDomains();
-        }
+        $this->reader = new Typo3Reader( DB::connection( $this->connection ) );
 
-        if ($this->fileBase === '') {
-            $this->fileBase = $this->defaultFileBase();
-        }
+        $this->site = new Typo3Site( (array) $this->option( 'domain' ), fn() => $this->reader->domains() );
+        $this->fileBase = $this->site->fileBase( $this->fileBase );
 
-        $pages = $this->fetchPages();
-
-        if ($pages->isEmpty()) {
-            $this->warn('No TYPO3 pages found.');
-
+        if( ( $pages = $this->reader->pages() )->isEmpty() )
+        {
+            $this->warn( 'No TYPO3 pages found.' );
             return;
         }
 
-        $this->languages = $this->fetchLanguages();
-        $this->translatedPages = $translatedPages = $this->fetchTranslatedPages();
+        $this->languages = new Typo3Languages( $this->reader->languages(), (array) $this->option( 'language' ) );
+        $translations = $this->loadTranslations();
 
-        $pageIds = $this->pageIds();
-        $selectedPages = $pageIds === null ? $pages : $this->selectPages($pages, $pageIds);
+        $pagesById = $pages->keyBy( fn( $page ) => (int) $page->uid );
+        $this->tree = new Typo3Tree( $pagesById );
 
-        $this->info($pageIds === null
+        $pageIds = Typo3Tree::uids( (array) $this->option( 'page' ) );
+        $selectedPages = $pageIds === null ? $pages : $this->tree->select( $pageIds );
+
+        $this->info( $pageIds === null
             ? "Found {$pages->count()} TYPO3 pages."
             : "Selected {$selectedPages->count()} of {$pages->count()} TYPO3 pages."
         );
 
-        if ($translatedPages->isNotEmpty()) {
-            $count = $translatedPages->flatten(1)->count();
-            $this->info("Found {$count} TYPO3 page translations.");
+        if( $translations > 0 ) {
+            $this->info( "Found {$translations} TYPO3 page translations." );
         }
 
-        if ($this->option('dry-run')) {
-            $pageIds === null
-                ? $this->printDryRun($pages)
-                : $this->printSelectedDryRun($selectedPages);
-
+        if( $this->option( 'dry-run' ) )
+        {
+            $pageIds === null ? $this->printDryRun( $pages ) : $this->printSelectedDryRun( $selectedPages );
             return;
         }
 
-        $this->sysFiles = $this->fetchSysFiles();
-        $this->sysFilesByIdentifier = $this->sysFiles->keyBy(
-            fn ($file) => '/'.ltrim((string) $file->identifier, '/')
-        );
-        $this->fileRefs = $this->fetchFileReferences();
-        $this->t3Pages = $pages->keyBy(fn ($page) => (int) $page->uid);
-        $this->accordionItems = $this->fetchItems('tx_bootstrappackage_accordion_item');
-        $this->carouselItems = $this->fetchItems('tx_bootstrappackage_carousel_item');
-        $this->carouselFileRefs = $this->fetchCarouselFileReferences();
-        $this->backendLayouts = $this->fetchBackendLayouts();
-        $contentElements = $this->fetchContentElements();
-        $this->translatedContent = $this->fetchTranslatedContent();
-
-        if ($pageIds === null) {
-            $this->importPages($pages, $contentElements);
-        } else {
-            $this->importSelectedPages($selectedPages, $pages, $contentElements);
-        }
-    }
-
-    /**
-     * Returns explicitly selected TYPO3 page UIDs or null for a full import.
-     *
-     * @return list<int>|null
-     */
-    protected function pageIds(): ?array
-    {
-        $values = (array) $this->option('page');
-
-        if ($values === []) {
-            return null;
-        }
-
-        $ids = [];
-
-        foreach ($values as $value) {
-            $value = (string) $value;
-
-            if (! ctype_digit($value) || (int) $value < 1) {
-                throw new \InvalidArgumentException("Invalid TYPO3 page UID: {$value}");
-            }
-
-            $ids[] = (int) $value;
-        }
-
-        return array_values(array_unique($ids));
-    }
-
-    /**
-     * Selects requested pages while keeping the full source collection available
-     * for parent, domain, shortcut and link resolution.
-     *
-     * @param  Collection<int, mixed>  $pages
-     * @param  list<int>  $ids
-     * @return Collection<int, mixed>
-     */
-    protected function selectPages(Collection $pages, array $ids): Collection
-    {
-        $available = $pages->keyBy(fn ($page) => (int) $page->uid);
-        $missing = array_values(array_diff($ids, $available->keys()->map(fn ($uid) => (int) $uid)->all()));
-
-        if ($missing !== []) {
-            throw new \InvalidArgumentException('TYPO3 page UID not found: '.implode(', ', $missing));
-        }
-
-        return Collection::make($ids)->map(fn ($id) => $available->get($id))->values();
-    }
-
-    /**
-     * Runs the callback in a transaction and rolls back created files on failure.
-     *
-     * Stored files of the failed callback are removed and the command-level
-     * file caches are restored before the exception is rethrown.
-     *
-     * @template T
-     *
-     * @param  callable(): T  $callback
-     * @return T
-     */
-    protected function atomic(callable $callback): mixed
-    {
-        $filesBefore = clone $this->createdFiles;
-        $urlsBefore = clone $this->createdFileUrls;
+        $this->prepare( $pagesById );
 
         try {
-            return DB::connection(config('cms.db', 'sqlite'))->transaction(function () use ($callback, $filesBefore) {
-                try {
-                    return $callback();
-                } catch (\Throwable $e) {
-                    $this->removeFilesCreatedAfter($filesBefore);
-
-                    throw $e;
-                }
-            });
-        } catch (\Throwable $e) {
-            $this->createdFiles = $filesBefore;
-            $this->createdFileUrls = $urlsBefore;
-
-            throw $e;
+            $pageIds === null ? $this->importPages( $pages ) : $this->importSelectedPages( $selectedPages );
+        } finally {
+            $this->forgetDownloads();
         }
     }
+
+
+    /**
+     * Collects the URL paths of the page translations in the known languages.
+     *
+     * Only the URL paths of the translations are kept for the links to them, the other
+     * columns are fetched for the upcoming pages when they are imported.
+     *
+     * @return int Number of translations in the known languages
+     */
+    protected function loadTranslations(): int
+    {
+        ['slugs' => $this->translated, 'count' => $count, 'unknown' => $unknown] = $this->languages->translations( $this->reader->translatedSlugs() );
+        $this->translations = [];
+
+        if( $unknown !== [] ) {
+            $this->warn( 'Skipping translations of unknown TYPO3 languages [' . implode( ', ', $unknown ) . '], add --language=<uid>:<code> to import them.' );
+        }
+
+        return $count;
+    }
+
+
+    /**
+     * Creates the objects which import the files, URLs and content of the pages.
+     *
+     * @param Collection<int, mixed> $pagesById TYPO3 pages by UID
+     */
+    protected function prepare( Collection $pagesById ): void
+    {
+        $this->shared = $this->failedFiles = [];
+        $this->langUids = $this->languages->imported( $this->lang );
+        $this->files = new Typo3Files( $this->reader->filesByIdentifier( ... ), $this->fileBase, $this->importFile( ... ),
+            fn( string $path ) => $this->createdFileUrls->get( $path ), $this->knownFile( ... ) );
+        $this->urls = new Typo3Urls( $pagesById, $this->translated );
+        $this->typo3 = new Typo3(
+            fn( object $ref ) => $this->attempt( $this->refLabel( $ref ), fn() => $this->files->reference( $ref ) ),
+            $this->rewriter(),
+            $this->reader->fileReferences( ... ),
+            fn( array $uids ) => $this->reader->items( 'tx_bootstrappackage_accordion_item', $uids ),
+            fn( array $uids ) => $this->reader->items( 'tx_bootstrappackage_carousel_item', $uids ),
+            $this->reader->carouselFileReferences( ... )
+        );
+        $this->records = new Typo3Records( $pagesById, $this->reader->content( ... ), fn( array $pids ) => $this->reader->translatedContent( $pids, $this->langUids ),
+            $this->reader->contentRecords( ... ), $this->reader->shortcuts(), new Typo3Layouts( $pagesById, $this->reader->backendLayouts() ) );
+    }
+
+
+    /**
+     * Keeps only the last references to the shared elements before the batch is committed.
+     *
+     * The shared elements of other TYPO3 content are found by their name again when they are used.
+     */
+    #[\Override]
+    protected function committing(): void
+    {
+        parent::committing();
+        $this->shared = Database::limit( $this->shared, static::PREFETCH_SIZE );
+    }
+
+
+    /**
+     * Keeps only the URLs of the created and reused files which are still known.
+     */
+    #[\Override]
+    protected function forgetFiles(): void
+    {
+        parent::forgetFiles();
+
+        if( $this->createdFileUrls->count() > $this->createdFiles->count() + count( $this->reusedFiles ) ) {
+            $this->createdFileUrls = $this->createdFileUrls->only( [...$this->createdFiles->keys()->all(), ...array_keys( $this->reusedFiles )] );
+        }
+    }
+
+
+    /**
+     * Adds the file of a previous import so it's used instead of creating it again.
+     *
+     * The URLs of the stored files are used in the HTML of the content elements.
+     *
+     * @param string $path Source URL or path of the file
+     */
+    protected function reuseFile( string $path, File $file ): void
+    {
+        parent::reuseFile( $path, $file );
+        $this->createdFileUrls->put( $path, Typo3Files::stored( $file ) );
+    }
+
+
+    /**
+     * Executes the callback and skips it on failure.
+     *
+     * The callback stores its records in nested transactions itself, so a failure doesn't leave partial
+     * records behind and no savepoint is required for every content element, file reference and URL.
+     *
+     * @template T
+     * @param string $label Label of the skipped record in the warning
+     * @param \Closure(): T $fn Callback
+     * @return T|null Result of the callback or NULL on failure
+     */
+    protected function attempt( string $label, \Closure $fn ): mixed
+    {
+        try {
+            return $fn();
+        } catch( \Exception $e ) {
+            // the import of the record and its batch can't continue
+            if( $this->causedByConcurrencyError( $e ) ) {
+                throw $e;
+            }
+
+            $this->warn( "  Skipped {$label}: " . $e->getMessage() );
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Executes the callback within a transaction and forgets the shared elements stored by it on failure.
+     *
+     * @template T
+     * @param \Closure(): T $fn Callback
+     * @param \Closure(\Exception): void $failed Error handler
+     * @return T|null Result of the callback or NULL on failure
+     */
+    #[\Override]
+    protected function guard( \Closure $fn, \Closure $failed ): mixed
+    {
+        // shared elements are only added during the callback, so the ones stored by it are at the end
+        $count = count( $this->shared );
+
+        return parent::guard( $fn, function( \Exception $e ) use ( $failed, $count ) {
+            self::truncate( $this->shared, $count );
+            $failed( $e );
+        } );
+    }
+
+
+    /**
+     * Returns the label of the file reference in the warnings.
+     *
+     * @param object $ref sys_file_reference record
+     */
+    protected function refLabel( object $ref ): string
+    {
+        $data = get_object_vars( $ref );
+        $label = fn( string $key ) => is_scalar( $data[$key] ?? null ) ? (string) $data[$key] : '?';
+
+        return "file reference [{$label( 'uid' )}] of {$label( 'tablenames' )} [{$label( 'uid_foreign' )}]";
+    }
+
 
     /**
      * Builds content elements array from TYPO3 tt_content records.
      *
-     * @param  Collection<int, mixed>  $records
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[], elementIds: string[]}
+     * @param Collection<int, mixed> $records
+     * @param Typo3|null $typo3 Converter of the content elements
+     * @param string $lang Language code of the content elements
+     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>, elementIds: array<int, string>}
      */
-    protected function buildContent(Collection $records): array
+    protected function buildContent( Collection $records, ?Typo3 $typo3, string $lang ): array
     {
-        $records = $this->expandReferencedRecords($records);
-        $elements = [];
-        $fileIds = [];
-        $elementIds = [];
+        $elements = $fileIds = $elementIds = [];
 
-        foreach ($records as $record) {
-            $this->contentUid = (string) ($record->uid ?? '?');
+        // the file references of all content elements of the page and the files of previous imports are fetched at once
+        if( $typo3 )
+        {
+            $typo3->prefetch( $records );
+            $this->prefetchFiles( $this->files->paths( $typo3->references(), $typo3->texts( $records ) ), false );
+        }
 
-            try {
-                $result = $this->atomic(function () use ($record) {
-                    $result = $this->convertContentElement($record);
+        foreach( $records as $record )
+        {
+            $result = $this->attempt( 'content element [' . ( $record->uid ?? '?' ) . ']', fn() => $this->convert( $record, $typo3, $lang ) );
 
-                    if (! $result) {
-                        return null;
-                    }
-
-                    foreach ($result['elements'] as &$element) {
-                        $element['group'] = 'main';
-                    }
-                    unset($element);
-
-                    if (! isset($record->_pagible_shared)) {
-                        return $result + ['elementIds' => []];
-                    }
-
-                    $references = [];
-                    $elementIds = [];
-
-                    foreach ($result['elements'] as $position => $element) {
-                        $id = $this->storeSharedElement(
-                            $record,
-                            $element,
-                            $result['fileIds'] ?? [],
-                            $position,
-                        );
-                        $references[] = ['type' => 'reference', 'refid' => $id, 'group' => 'main'];
-                        $elementIds[] = $id;
-                    }
-
-                    return ['elements' => $references, 'fileIds' => [], 'elementIds' => $elementIds];
-                });
-            } catch (\Throwable $e) {
-                $uid = (string) ($record->uid ?? '?');
-                $this->warn("  Skipped content element [{$uid}]: {$e->getMessage()}");
-
-                continue;
-            } finally {
-                $this->contentUid = '?';
-            }
-
-            if ($result) {
-                $elements = array_merge($elements, $result['elements']);
-                $fileIds = array_merge($fileIds, $result['fileIds'] ?? []);
-                $elementIds = array_merge($elementIds, $result['elementIds'] ?? []);
+            if( $result )
+            {
+                $elements = array_merge( $elements, $result['elements'] );
+                $fileIds = array_merge( $fileIds, $result['fileIds'] );
+                $elementIds = array_merge( $elementIds, $result['elementIds'] );
             }
         }
 
         return [
             'elements' => $elements,
-            'fileIds' => array_values(array_unique($fileIds)),
-            'elementIds' => array_values(array_unique($elementIds)),
+            'fileIds' => array_values( array_unique( $fileIds ) ),
+            'elementIds' => array_values( array_unique( $elementIds ) ),
         ];
     }
 
+
     /**
-     * Creates or updates one reusable Pagible element for a referenced TYPO3 item.
+     * Returns the rewriter for the files and links in the HTML of the content elements.
      *
-     * @param  array<string, mixed>  $element
-     * @param  string[]  $fileIds
+     * @param array{uid: int, source: string}|null $translation TYPO3 language of translated content or NULL for the source content
      */
-    protected function storeSharedElement(object $record, array $element, array $fileIds, int $position): string
+    protected function rewriter( ?array $translation = null ): Typo3Html
     {
-        $key = $this->sharedElementKey($record, $position);
-        $cached = $this->sharedElements?->get($key);
-        $lang = $this->lang;
-        $editor = $this->editor;
-
-        if ($cached && Element::whereKey($cached['id'])->where('latest_id', $cached['latest'])->exists()) {
-            return $cached['id'];
-        }
-
-        $this->sharedElements ??= Collection::make();
-        $name = $this->sharedElementName($record, $position);
-        $shared = Element::withTrashed()
-            ->where('lang', $lang)
-            ->where('name', $name)
-            ->first();
-
-        if ($shared) {
-            if ($shared->trashed()) {
-                $shared->restore();
-            }
-        } else {
-            $shared = Element::forceCreate([
-                'lang' => $lang,
-                'type' => (string) $element['type'],
-                'name' => $name,
-                'data' => (array) ($element['data'] ?? []),
-                'editor' => $editor,
-            ]);
-        }
-
-        $version = $shared->versions()->forceCreate([
-            'lang' => $lang,
-            'data' => [
-                'lang' => $lang,
-                'type' => (string) $element['type'],
-                'name' => $name,
-                'data' => (array) ($element['data'] ?? []),
-            ],
-            'editor' => $editor,
-        ]);
-
-        if ($fileIds !== []) {
-            $version->files()->attach(array_values(array_unique($fileIds)));
-        }
-
-        $shared->forceFill(['latest_id' => $version->id])->saveQuietly();
-        $shared->publish($version);
-
-        $value = ['id' => (string) $shared->id, 'latest' => (string) $version->id];
-        $this->sharedElements->put($key, $value);
-
-        return $value['id'];
+        return new Typo3Html(
+            fn( string $url ) => $this->attempt( "file {$url}", fn() => $this->files->html( $url ) ),
+            fn( int $uid, string $fragment ) => $this->urls->page( $uid, $fragment, $translation )
+        );
     }
+
 
     /**
-     * Returns the stable importer identity of a reusable TYPO3 element.
+     * Converts the tt_content record and stores its elements as shared elements if it's referenced by other pages.
+     *
+     * @param Typo3|null $typo3 Converter of the content element
+     * @param string $lang Language code of the content element
+     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>, elementIds: array<int, string>}|null
      */
-    protected function sharedElementKey(object $record, int $position): string
+    protected function convert( object $record, ?Typo3 $typo3, string $lang ): ?array
     {
-        return implode(':', [
-            sha1($this->t3Connection),
-            (int) ($record->_pagible_shared_page ?? $record->pid ?? 0),
-            (int) ($record->_pagible_shared_uid ?? $record->uid ?? 0),
-            $position,
-            $this->lang,
-        ]);
+        // content shown on several pages is converted and stored only once per language
+        $key = isset( $record->_pagible_shared ) ? $this->sharedElementName( $record, 0 ) . '/' . $lang : null;
+
+        if( $key && isset( $this->shared[$key] ) ) {
+            return $this->shared[$key];
+        }
+
+        if( !$typo3 || !( $result = $typo3->convert( $record ) ) ) {
+            return null;
+        }
+
+        if( !$key ) {
+            return ['elements' => $result['elements'], 'fileIds' => $result['fileIds'] ?? [], 'elementIds' => []];
+        }
+
+        // the shared elements of the record are stored together or not at all
+        $elementIds = CmsDB::connection()->transaction( fn() => array_map(
+            fn( $position, $element ) => Elements::shared( $this->sharedElementName( $record, $position ), $lang, $element, $result['fileIds'] ?? [], $this->editor ),
+            array_keys( $result['elements'] ), $result['elements']
+        ) );
+        $references = array_map( fn( $id ) => ['type' => 'reference', 'refid' => $id, 'group' => 'main'], $elementIds );
+
+        return $this->shared[$key] = ['elements' => $references, 'fileIds' => [], 'elementIds' => $elementIds];
     }
+
 
     /**
      * Returns the persistent, source-specific name used to find shared elements on re-import.
      */
-    protected function sharedElementName(object $record, int $position): string
+    protected function sharedElementName( object $record, int $position ): string
     {
-        $parts = explode(':', $this->sharedElementKey($record, $position));
-
         return sprintf(
             'TYPO3 element %s/%d/%d/%d',
-            substr($parts[0], 0, 12),
-            (int) $parts[1],
-            (int) $parts[2],
-            (int) $parts[3],
+            substr( sha1( $this->connection ), 0, 12 ),
+            (int) ( $record->_pagible_shared_page ?? $record->pid ?? 0 ),
+            (int) ( $record->_pagible_shared_uid ?? $record->uid ?? 0 ),
+            $position
         );
     }
 
-    /**
-     * Removes managed storage files created while converting one content element.
-     *
-     * The database rows are removed by the nested transaction rollback, but
-     * filesystem writes need explicit cleanup before that rollback happens.
-     *
-     * @param  Collection<string, string>  $filesBefore
-     */
-    protected function removeFilesCreatedAfter(Collection $filesBefore): void
-    {
-        $ids = $this->createdFiles
-            ->filter(fn ($id, $path) => $filesBefore->get($path) !== $id)
-            ->values()
-            ->filter()
-            ->unique();
-
-        if ($ids->isEmpty()) {
-            return;
-        }
-
-        File::withoutTenancy()->whereIn('id', $ids)->get()->each(function (File $file): void {
-            $tenant = (string) $file->tenant_id;
-            $paths = Collection::make([
-                $file->path,
-                ...(array) $file->previews,
-            ])->map(
-                fn ($path) => \Aimeos\Cms\FileStorage::normalizePath($path, $tenant)
-            )->filter()->values()->all();
-
-            if ($paths) {
-                Storage::disk(\Aimeos\Cms\FileStorage::diskName((string) $file->disk))->delete($paths);
-            }
-        });
-    }
 
     /**
-     * Imports one file without aborting conversion of its content element.
-     *
-     * @template T
-     *
-     * @param  callable(): T  $callback
-     * @return T|null
+     * Returns the redirect target of the TYPO3 external URL or shortcut page and warns about invalid external URLs.
      */
-    protected function importFileSafely(callable $callback): mixed
+    protected function redirect( object $t3Page ): string
     {
-        try {
-            return $this->atomic($callback);
-        } catch (\Throwable $e) {
-            $this->warn("  Skipped file in content element [{$this->contentUid}]: {$e->getMessage()}");
+        $to = $this->urls->redirect( $t3Page );
 
-            return null;
+        if( $to === '' && (int) ( $t3Page->doktype ?? 0 ) === 3 && trim( (string) ( $t3Page->url ?? '' ) ) !== '' ) {
+            $this->warn( '  Skipped invalid external URL of [' . ( $t3Page->uid ?? '' ) . '] ' . ( $t3Page->title ?? '' ) . ', only http(s) URLs and paths are allowed' );
         }
+
+        return $to;
     }
+
 
     /**
      * Builds the page data array.
      *
      * @return array<string, mixed>
      */
-    protected function buildPageData(object $t3Page, string $slug, string $domain, string $to = ''): array
+    protected function buildPageData( object $t3Page, string $slug, string $domain, string $to = '' ): array
     {
+        // Pagible can't restrict pages to TYPO3 frontend users or publish them later
+        if( ( $reason = $this->tree->restriction( $t3Page ) ) !== null && empty( $t3Page->hidden ) ) {
+            $this->warn( '  Disabled [' . ( $t3Page->uid ?? '' ) . '] ' . ( $t3Page->title ?? '' ) . " because {$reason}" );
+        }
+
         return [
-            'name' => $t3Page->nav_title ?: $t3Page->title, // @phpstan-ignore property.notFound, property.notFound
-            /** @phpstan-ignore property.notFound, property.notFound */
-            'title' => $t3Page->seo_title ?: $t3Page->title,
+            'name' => ( $t3Page->nav_title ?? null ) ?: ( $t3Page->title ?? null ),
+            'title' => ( $t3Page->seo_title ?? null ) ?: ( $t3Page->title ?? null ),
             'path' => $slug,
-            'tag' => $t3Page->is_siteroot ? 'root' : 'page', // @phpstan-ignore property.notFound
+            'tag' => !empty( $t3Page->is_siteroot ) ? 'root' : 'page',
             'domain' => $domain,
             'lang' => $this->lang,
             'to' => $to,
             'theme' => $this->theme,
-            'status' => $t3Page->hidden ? 0 : ($t3Page->nav_hide ? 2 : 1), // @phpstan-ignore property.notFound, property.notFound
+            'status' => !empty( $t3Page->hidden ) || $reason !== null ? 0 : ( !empty( $t3Page->nav_hide ) ? 2 : 1 ),
             'editor' => $this->editor,
         ];
     }
 
+
     /**
-     * Converts a TYPO3 tt_content record into Pagible content elements.
+     * Creates a File record with a published version or returns the one created before by this import.
      *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds?: string[]}|null
-     */
-    protected function convertContentElement(object $record): ?array
-    {
-        return match ((string) ($record->CType ?? '')) {
-            'header' => $this->convertHeader($record),
-            'textpic', 'textmedia' => $this->convertTextpic($record),
-            'image' => $this->convertImage($record),
-            'html' => $this->convertHtml($record),
-            'accordion' => $this->convertAccordion($record),
-            'carousel' => $this->convertCarousel($record),
-            default => $this->convertDefault($record),
-        };
-    }
-
-    /**
-     * Replaces TYPO3 content shortcuts with their canonical target records and
-     * marks every referenced source record for Pagible shared-element storage.
+     * Unlike createFile(), existing files aren't looked up by path because downloaded files get a new one.
      *
-     * @param  Collection<int, mixed>  $records
-     * @return Collection<int, mixed>
+     * @param bool $unknown TRUE if knownFile() has just returned no file for the path, so it isn't looked up again
      */
-    protected function expandReferencedRecords(Collection $records): Collection
+    protected function importFile( string $mime, string $name, string $path, bool $unknown = false ): string
     {
-        $referenced = [];
-        $sourcePages = [];
-
-        foreach ($this->contentRecords ?? Collection::make() as $record) {
-            if ((string) ($record->CType ?? '') !== 'shortcut') {
-                continue;
-            }
-
-            foreach ($this->referencedContentUids($record) as $uid) {
-                $referenced[$uid] = true;
-            }
+        if( !$unknown && ( $existing = $this->knownFile( $path ) ) ) {
+            return $existing;
         }
 
-        foreach ($this->t3Pages ?? Collection::make() as $page) {
-            if (($uid = (int) ($page->content_from_pid ?? 0)) > 0) {
-                $sourcePages[$uid] = true;
-            }
-        }
+        // files used several times are only downloaded once if the download fails
+        $download = str_starts_with( $path, 'http' );
+        $file = $this->downloadOnce( $path, $download, fn() => CmsDB::connection()->transaction(
+            fn() => Files::create( $mime, $name, $path, $this->editor, $download, $download ? $this->downloaded( $path ) : null )
+        ) );
 
-        return $records->flatMap(
-            fn ($record) => $this->expandReferencedRecord($record, $referenced, $sourcePages),
-        )->values();
-    }
-
-    /**
-     * Expands one TYPO3 shortcut recursively while retaining its placement.
-     *
-     * @param  array<int, bool>  $referenced
-     * @param  array<int, bool>  $sourcePages
-     * @param  array<int, bool>  $seen
-     * @return list<object>
-     */
-    protected function expandReferencedRecord(object $record, array $referenced, array $sourcePages,
-        ?object $placement = null, ?string $kind = null, array $seen = []): array
-    {
-        $uid = (int) ($record->uid ?? 0);
-
-        if ((string) ($record->CType ?? '') === 'shortcut') {
-            if (isset($seen[$uid])) {
-                return [];
-            }
-
-            $seen[$uid] = true;
-            $placement ??= $record;
-            $kind ??= (string) ($record->_pagible_shared ?? 'reference');
-            $result = [];
-
-            foreach ($this->referencedContentUids($record) as $targetUid) {
-                $target = $this->contentRecords?->get($targetUid);
-
-                if (! $target || $targetUid === $uid) {
-                    continue;
-                }
-
-                array_push(
-                    $result,
-                    ...$this->expandReferencedRecord($target, $referenced, $sourcePages, $placement, $kind, $seen),
-                );
-            }
-
-            return $result;
-        }
-
-        $kind ??= (string) ($record->_pagible_shared ?? '');
-
-        if ($kind === '' && (isset($referenced[$uid]) || isset($sourcePages[(int) ($record->pid ?? 0)]))) {
-            $kind = 'reference';
-        }
-
-        if (! $placement && $kind === '') {
-            return [$record];
-        }
-
-        $data = get_object_vars($record);
-
-        if ($placement) {
-            $placement = get_object_vars($placement);
-            $data['colPos'] = (int) ($placement['colPos'] ?? $data['colPos'] ?? 0);
-            $data['sorting'] = (int) ($placement['sorting'] ?? $data['sorting'] ?? 0);
-        }
-
-        if ($kind !== '') {
-            $data['_pagible_shared'] = $kind;
-            $data['_pagible_shared_page'] = (int) ($record->_pagible_shared_page ?? $record->pid ?? 0);
-            $data['_pagible_shared_uid'] = $uid;
-        }
-
-        return [(object) $data];
-    }
-
-    /**
-     * Returns canonical tt_content UIDs referenced by a TYPO3 shortcut.
-     *
-     * @return list<int>
-     */
-    protected function referencedContentUids(object $record): array
-    {
-        $uids = [];
-
-        foreach (preg_split('/\s*,\s*/', trim((string) ($record->records ?? ''))) ?: [] as $value) {
-            if (preg_match('/^(?:tt_content[_:]?)?(\d+)$/', $value, $match)) {
-                $uids[] = (int) $match[1];
-            }
-        }
-
-        return array_values(array_unique($uids));
-    }
-
-    /**
-     * Converts a Bootstrap Package accordion into a questions element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertAccordion(object $record): ?array
-    {
-        $items = [];
-        $fileIds = [];
-        $children = $this->accordionItems?->get((int) ($record->uid ?? 0), Collection::make())
-            ?? Collection::make();
-
-        foreach ($children as $child) {
-            if (empty($child->header) || empty($child->bodytext)) {
-                continue;
-            }
-
-            $result = $this->rewriteHtmlFiles((string) $child->bodytext);
-            $items[] = [
-                'title' => $child->header,
-                'text' => Markdown::fromHtml($result['html']),
-            ];
-            $fileIds = array_merge($fileIds, $result['fileIds']);
-        }
-
-        if (empty($items) && ! empty($record->bodytext)) {
-            $result = $this->rewriteHtmlFiles((string) $record->bodytext);
-            $items[] = [
-                'title' => $record->header ?: 'Item', // @phpstan-ignore property.notFound
-                'text' => Markdown::fromHtml($result['html']),
-            ];
-            $fileIds = array_merge($fileIds, $result['fileIds']);
-        }
-
-        if (empty($items)) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'questions',
-            'group' => 'main',
-            'data' => [
-                'title' => (string) ($record->header ?? ''),
-                'items' => $items,
-            ],
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Converts a Bootstrap Package carousel into a slideshow.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertCarousel(object $record): ?array
-    {
-        $files = [];
-        $fileIds = [];
-        $children = $this->carouselItems?->get((int) ($record->uid ?? 0), Collection::make())
-            ?? Collection::make();
-
-        foreach ($children as $child) {
-            foreach ($this->carouselFileRefs?->get((int) ($child->uid ?? 0), Collection::make()) ?? [] as $ref) {
-                $id = $this->importFileSafely(fn () => $this->importFileReference($ref));
-
-                if ($id) {
-                    $files[] = ['id' => $id, 'type' => 'file'];
-                    $fileIds[] = $id;
-                }
-            }
-        }
-
-        if ($files === []) {
-            return $this->convertDefault($record);
-        }
-
-        $type = count($files) > 1 ? 'slideshow' : 'image';
-        $data = $type === 'slideshow'
-            ? ['title' => (string) ($record->header ?? ''), 'files' => $files]
-            : ['file' => $files[0]];
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => $type,
-            'group' => 'main',
-            'data' => $data,
-        ]], 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Converts a default/unknown CType with bodytext into an html element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertDefault(object $record): ?array
-    {
-        $elements = $this->heading($record);
-        $fileIds = [];
-
-        if (! empty($record->bodytext)) {
-            $text = trim($record->bodytext);
-            if (! empty($text)) {
-                $result = $this->rewriteHtmlFiles($text);
-                $elements[] = [
-                    'id' => Utils::uid(),
-                    'type' => 'html',
-                    'group' => 'main',
-                    'data' => ['text' => Utils::html($result['html'])],
-                ];
-                $fileIds = array_merge($fileIds, $result['fileIds']);
-            }
-        }
-
-        if (empty($elements)) {
-            return null;
-        }
-
-        return ['elements' => $elements, 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Converts a header content element into a heading element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>}|null
-     */
-    protected function convertHeader(object $record): ?array
-    {
-        if (empty($record->header)) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'heading',
-            'group' => 'main',
-            'data' => [
-                'level' => $this->headerLevel($record->header_layout), // @phpstan-ignore property.notFound
-                'title' => $record->header,
-            ],
-        ]]];
-    }
-
-    /**
-     * Converts an html content element into a Pagible html element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertHtml(object $record): ?array
-    {
-        if (empty($record->bodytext)) {
-            return null;
-        }
-
-        $result = $this->rewriteHtmlFiles((string) $record->bodytext);
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'group' => 'main',
-            'data' => ['text' => Utils::html($result['html'])],
-        ]], 'fileIds' => $result['fileIds']];
-    }
-
-    /**
-     * Converts an image content element into a Pagible image element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertImage(object $record): ?array
-    {
-        $fileId = $this->importFileForContent($record->uid); // @phpstan-ignore property.notFound
-
-        if (! $fileId) {
-            return null;
-        }
-
-        $elements = $this->heading($record);
-        $elements[] = [
-            'id' => Utils::uid(),
-            'type' => 'image',
-            'group' => 'main',
-            'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-        ];
-
-        return ['elements' => $elements, 'fileIds' => [$fileId]];
-    }
-
-    /**
-     * Converts a textpic/textmedia content element into an image-text element.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: string[]}|null
-     */
-    protected function convertTextpic(object $record): ?array
-    {
-        $elements = $this->heading($record);
-        $fileIds = [];
-
-        $fileId = $this->importFileForContent($record->uid); // @phpstan-ignore property.notFound
-        $text = ! empty($record->bodytext) ? trim($record->bodytext) : '';
-
-        if ($text !== '') {
-            $result = $this->rewriteHtmlFiles($text);
-            $text = $result['html'];
-            $fileIds = array_merge($fileIds, $result['fileIds']);
-        }
-
-        if ($fileId && ! empty($text)) {
-            $position = $this->imagePosition($record->imageorient ?? 0);
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'image-text',
-                'group' => 'main',
-                'data' => [
-                    'text' => $text,
-                    'file' => ['id' => $fileId, 'type' => 'file'],
-                    'position' => $position,
-                ],
-            ];
-            $fileIds[] = $fileId;
-        } elseif ($fileId) {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'image',
-                'group' => 'main',
-                'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-            ];
-            $fileIds[] = $fileId;
-        } elseif (! empty($text)) {
-            $elements[] = [
-                'id' => Utils::uid(),
-                'type' => 'html',
-                'group' => 'main',
-                'data' => ['text' => Utils::html($text)],
-            ];
-        }
-
-        if (empty($elements)) {
-            return null;
-        }
-
-        return ['elements' => $elements, 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Promotes TYPO3 lazy-loading attributes before HTMLPurifier removes them.
-     */
-    protected function promoteLazyAttributes(string $html): string
-    {
-        return (string) preg_replace_callback(
-            '/<(img|source|video)\b[^>]*>/is',
-            function (array $matches): string {
-                $tag = $matches[0];
-
-                if (preg_match('/\sdata-srcset\s*=\s*(["\'])(.*?)\1/is', $tag)) {
-                    if (preg_match('/\ssrcset\s*=/i', $tag)) {
-                        $tag = (string) preg_replace('/\sdata-srcset\s*=\s*(["\']).*?\1/is', '', $tag);
-                    } else {
-                        $tag = (string) preg_replace('/\sdata-srcset(\s*=)/i', ' srcset$1', $tag, 1);
-                    }
-                }
-
-                if (preg_match('/\sdata-src\s*=\s*(["\'])(.*?)\1/is', $tag)) {
-                    if (preg_match('/\ssrc\s*=/i', $tag)) {
-                        $tag = (string) preg_replace('/\sdata-src\s*=\s*(["\']).*?\1/is', '', $tag);
-                    } else {
-                        $tag = (string) preg_replace('/\sdata-src(\s*=)/i', ' src$1', $tag, 1);
-                    }
-                }
-
-                return $tag;
-            },
-            $html
-        );
-    }
-
-    /**
-     * Converts legacy TYPO3 link tags and t3:// page URLs to portable links.
-     */
-    protected function rewriteTypo3Links(string $html): string
-    {
-        $html = (string) preg_replace_callback(
-            '/<link\s+([^>]+)>(.*?)<\/link>/is',
-            function (array $matches): string {
-                $tokens = array_values(array_filter(
-                    str_getcsv(trim($matches[1]), ' ', '"', '\\'),
-                    fn ($value) => $value !== ''
-                ));
-                $url = isset($tokens[0]) ? $this->resolveTypo3Target((string) $tokens[0]) : null;
-
-                if (! $url) {
-                    return $matches[2];
-                }
-
-                $attributes = ' href="'.htmlspecialchars($url, ENT_QUOTES | ENT_HTML5, 'UTF-8').'"';
-
-                if (in_array($tokens[1] ?? '', ['_blank', '_self'], true)) {
-                    $attributes .= ' target="'.$tokens[1].'"';
-                }
-
-                if (! empty($tokens[2]) && $tokens[2] !== '-') {
-                    $attributes .= ' class="'.htmlspecialchars((string) $tokens[2], ENT_QUOTES | ENT_HTML5, 'UTF-8').'"';
-                }
-
-                if (! empty($tokens[3]) && $tokens[3] !== '-') {
-                    $attributes .= ' title="'.htmlspecialchars((string) $tokens[3], ENT_QUOTES | ENT_HTML5, 'UTF-8').'"';
-                }
-
-                return '<a'.$attributes.'>'.$matches[2].'</a>';
-            },
-            $html
-        );
-
-        return (string) preg_replace_callback(
-            '/\bhref\s*=\s*(["\'])(t3:\/\/page\?.*?)\1/is',
-            function (array $matches): string {
-                $url = $this->rewriteTypo3Url(html_entity_decode($matches[2], ENT_QUOTES | ENT_HTML5, 'UTF-8'));
-
-                return $url
-                    ? 'href='.$matches[1].htmlspecialchars($url, ENT_QUOTES | ENT_HTML5, 'UTF-8').$matches[1]
-                    : $matches[0];
-            },
-            $html
-        );
-    }
-
-    /**
-     * Resolves a legacy TYPO3 link target such as "61#c381".
-     */
-    protected function resolveTypo3Target(string $target): ?string
-    {
-        if (preg_match('#^(?:https?://|mailto:|tel:|/)#i', $target)) {
-            return $target;
-        }
-
-        if (! preg_match('/^(\d+)(?:#(.+))?$/', $target, $matches)) {
-            return null;
-        }
-
-        return $this->resolveTypo3Page((int) $matches[1], $matches[2] ?? '');
-    }
-
-    /**
-     * Rewrites one t3://page URL when its target page is part of the import.
-     */
-    protected function rewriteTypo3Url(string $url): ?string
-    {
-        if (! preg_match('~^t3://page\?([^#]+)(?:#(.*))?$~i', trim($url), $matches)) {
-            return null;
-        }
-
-        parse_str(html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5, 'UTF-8'), $query);
-        $uid = (int) ($query['uid'] ?? 0);
-        $fragment = $query['fragment'] ?? $matches[2] ?? '';
-        $fragment = is_string($fragment) ? $fragment : '';
-
-        return $uid > 0 ? $this->resolveTypo3Page($uid, $fragment) : null;
-    }
-
-    /**
-     * Builds a Pagible path for an imported TYPO3 page UID.
-     */
-    protected function resolveTypo3Page(int $uid, string $fragment = ''): ?string
-    {
-        $page = $this->t3Pages?->get($uid);
-
-        if (! $page) {
-            return null;
-        }
-
-        $url = in_array((int) $page->doktype, [3, 4], true)
-            ? $this->redirectDestination($page, $this->t3Pages, [])
-            : $this->pageUrl($page);
-
-        if ($url === '') {
-            return null;
-        }
-
-        return $url.($fragment !== '' ? '#'.ltrim($fragment, '#') : '');
-    }
-
-    /**
-     * Imports TYPO3 files referenced directly by HTML attributes and rewrites their URLs.
-     *
-     * @return array{html: string, fileIds: string[]}
-     */
-    protected function rewriteHtmlFiles(string $html): array
-    {
-        $html = $this->promoteLazyAttributes($this->rewriteTypo3Links($html));
-        $fileIds = [];
-        $replace = function (string $url) use (&$fileIds): array {
-            $path = parse_url(html_entity_decode(trim($url), ENT_QUOTES | ENT_HTML5, 'UTF-8'), PHP_URL_PATH);
-
-            if (! is_string($path) || ! preg_match('#(?:^|/)fileadmin/.+#i', $path)) {
-                return ['url' => null, 'skipped' => false];
-            }
-
-            $file = $this->importFileSafely(fn () => $this->importHtmlFile($url));
-
-            if (! $file) {
-                return ['url' => null, 'skipped' => true];
-            }
-
-            $fileIds[] = $file['id'];
-
-            return [
-                'url' => htmlspecialchars($file['url'], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
-                'skipped' => false,
-            ];
-        };
-
-        $html = (string) preg_replace_callback(
-            '/\b(srcset)\s*=\s*(["\'])(.*?)\2/is',
-            function (array $matches) use ($replace): string {
-                $candidates = explode(',', $matches[3]);
-
-                foreach ($candidates as &$candidate) {
-                    $parts = preg_split('/\s+/', trim($candidate), 2);
-                    $replacement = $replace($parts[0] ?? '');
-
-                    if ($replacement['url'] !== null) {
-                        $candidate = $replacement['url'].(isset($parts[1]) ? ' '.$parts[1] : '');
-                    } elseif ($replacement['skipped']) {
-                        $candidate = '';
-                    }
-                }
-
-                $candidates = array_values(array_filter(array_map('trim', $candidates)));
-
-                return $candidates
-                    ? $matches[1].'='.$matches[2].implode(', ', $candidates).$matches[2]
-                    : '';
-            },
-            $html
-        );
-
-        $html = (string) preg_replace_callback(
-            '/\b(src|href|poster|data-src)\s*=\s*(["\'])(.*?)\2/is',
-            function (array $matches) use ($replace): string {
-                $replacement = $replace($matches[3]);
-
-                if ($replacement['skipped']) {
-                    return '';
-                }
-
-                return $matches[1].'='.$matches[2].($replacement['url'] ?? $matches[3]).$matches[2];
-            },
-            $html
-        );
-
-        $html = (string) preg_replace_callback(
-            '/\b(src|href|poster|data-src)\s*=\s*([^\s"\'=<>`]+)/is',
-            function (array $matches) use ($replace): string {
-                $replacement = $replace($matches[2]);
-
-                if ($replacement['skipped']) {
-                    return '';
-                }
-
-                return $matches[1].'='.($replacement['url'] ?? $matches[2]);
-            },
-            $html
-        );
-
-        // Do not retain empty media placeholders after their only source was
-        // rejected. Linked text and videos with nested <source> elements stay.
-        $html = (string) preg_replace(
-            '/<(?:img|source)\b(?![^>]*\b(?:src|srcset)\s*=)[^>]*>/is',
-            '',
-            $html
-        );
-
-        return ['html' => $html, 'fileIds' => array_values(array_unique($fileIds))];
-    }
-
-    /**
-     * Imports one fileadmin URL found in HTML.
-     *
-     * @return array{id: string, url: string}|null
-     */
-    protected function importHtmlFile(string $url): ?array
-    {
-        $url = html_entity_decode(trim($url), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
-
-        if ($scheme !== '' && ! in_array($scheme, ['http', 'https'], true)) {
-            return null;
-        }
-
-        $urlPath = parse_url($url, PHP_URL_PATH);
-
-        if (! is_string($urlPath) || ! preg_match('#(?:^|/)fileadmin/(.+)$#i', $urlPath, $matches)) {
-            return null;
-        }
-
-        $identifier = '/'.ltrim($matches[1], '/');
-        $decodedIdentifier = '/'.ltrim(rawurldecode($matches[1]), '/');
-        $sysFile = $this->sysFilesByIdentifier->get($identifier)
-            ?? $this->sysFilesByIdentifier->get($decodedIdentifier);
-        $extension = trim((string) ($sysFile->extension ?? ''))
-            ?: pathinfo($decodedIdentifier, PATHINFO_EXTENSION);
-        $name = $sysFile->name ?? basename($decodedIdentifier);
-        $mime = $this->normalizeMime(
-            (string) ($sysFile->mime_type ?? ''),
-            (string) $extension,
-        );
-        $path = $this->resolveFilePath(ltrim($identifier, '/'));
-
-        if ($this->fileBase === '' && in_array($scheme, ['http', 'https'], true)) {
-            $path = preg_replace('/[?#].*$/', '', $url) ?: $url;
-        }
-
-        $id = $this->createFile((string) $mime, (string) $name, $path);
-        $newUrl = $this->createdFileUrls->get($path);
-
-        return $id !== '' && $newUrl ? ['id' => $id, 'url' => $newUrl] : null;
-    }
-
-    /**
-     * Creates a File record with a published version.
-     */
-    protected function createFile(string $mime, string $name, string $path): string
-    {
-        if ($existing = $this->createdFiles->get($path)) {
-            if (File::withoutTenancy()->whereKey($existing)->exists()) {
-                return $existing;
-            }
-
-            // Files are created inside the transaction of the page that first
-            // references them. If that page fails, the database rows are
-            // rolled back while these command-level caches survive for the
-            // remaining pages. Never reuse those stale IDs or URLs.
-            $this->createdFiles->forget($path);
-            $this->createdFileUrls->forget($path);
-        }
-
-        $file = Files::create($mime, $name, $path, $this->editor, str_starts_with($path, 'http'));
         $id = $file->id ?? '';
-        $this->createdFiles->put($path, $id);
-        $disk = \Aimeos\Cms\FileStorage::diskName((string) $file->disk);
-        $url = Storage::disk($disk)->url((string) $file->path);
 
-        // Local managed files must remain portable across hosts and preview ports.
-        // Remote disks keep their absolute provider URL.
-        if (config('filesystems.disks.'.$disk.'.driver') === 'local') {
-            $url = parse_url($url, PHP_URL_PATH) ?: $url;
-        }
-
-        $this->createdFileUrls->put($path, $url);
+        // URLs of rolled back files are overwritten when the file is created again
+        $this->createdFiles->put( $path, $id );
+        $this->createdFileUrls->put( $path, Typo3Files::stored( $file ) );
 
         return $id;
     }
 
-    /**
-     * Fetches active tt_content records grouped by page ID.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchContentElements(): Collection
-    {
-        $this->contentRecords = DB::connection($this->t3Connection)
-            ->table('tt_content')
-            ->where('deleted', 0)
-            ->where('hidden', 0)
-            ->whereIn('sys_language_uid', [0, -1])
-            ->orderBy('sorting', 'asc')
-            ->get()
-            ->keyBy('uid');
-
-        return $this->contentRecords->values()->groupBy('pid');
-    }
 
     /**
-     * Fetches database-backed TYPO3 backend layouts keyed by UID.
+     * Gets, updates or creates the root page for a domain.
      *
-     * @return Collection<int|string, mixed>
+     * Root pages which weren't imported or were changed since are used as they are.
      */
-    protected function fetchBackendLayouts(): Collection
+    protected function getRootPage( object $t3Root, string $domain ): PageView
     {
-        return $this->t3table('backend_layout')
-            ?->where('deleted', 0)
-            ->where('hidden', 0)
-            ->get()
-            ->keyBy('uid') ?? Collection::make();
-    }
+        $page = Pages::find( ['tag' => 'root', 'domain' => $domain] );
 
-    /**
-     * Fetches visible Bootstrap Package accordion or carousel items of all languages grouped by content UID.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchItems(string $table): Collection
-    {
-        // translated items belong to the translated content records
-        return $this->t3table($table)
-            ?->where('deleted', 0)
-            ->where('hidden', 0)
-            ->orderBy('sorting', 'asc')
-            ->get()
-            ->groupBy('tt_content') ?? Collection::make();
-    }
-
-    /**
-     * Fetches the primary TYPO3 domain keyed by its root page UID.
-     *
-     * Legacy TYPO3 installations can assign multiple domains to one page tree.
-     * The first visible record by TYPO3 sorting is the primary domain.
-     *
-     * @return array<int, string>
-     */
-    protected function fetchDomains(): array
-    {
-        $domains = [];
-        $records = $this->t3table('sys_domain')
-            ?->where('hidden', 0)
-            ->where('domainName', '<>', '')
-            ->orderBy('sorting', 'asc')
-            ->orderBy('uid', 'asc')
-            ->get(['pid', 'domainName']) ?? [];
-
-        foreach ($records as $record) {
-            $domains[(int) $record->pid] ??= (string) $record->domainName;
+        if( $page && !$this->isImported( $page ) )
+        {
+            $this->info( "Using existing root page: {$page->name} ({$domain})" );
+        }
+        else
+        {
+            $slug = Typo3Urls::slug( $t3Root->slug ?? null );
+            ['page' => $page, 'status' => $status] = $this->save( $t3Root, ['tag' => 'root'] + $this->buildPageData( $t3Root, $slug, $domain ), $page );
+            $this->info( ( $status === Status::Imported ? 'Created' : $status->label() ) . ' root page: ' . ( $t3Root->title ?? '' ) . " ({$domain})" );
         }
 
-        return $domains;
-    }
-
-    /**
-     * Fetches sys_file_reference records grouped by content element UID.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchFileReferences(): Collection
-    {
-        return DB::connection($this->t3Connection)
-            ->table('sys_file_reference')
-            ->where('deleted', 0)
-            ->where('hidden', 0)
-            ->where('tablenames', 'tt_content')
-            ->whereIn('fieldname', ['image', 'media', 'assets'])
-            ->orderBy('sorting_foreign', 'asc')
-            ->get()
-            ->groupBy('uid_foreign');
-    }
-
-    /**
-     * Fetches carousel background-image references grouped by carousel item UID.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchCarouselFileReferences(): Collection
-    {
-        if (! $this->t3table('tx_bootstrappackage_carousel_item')) {
-            return Collection::make();
-        }
-
-        return DB::connection($this->t3Connection)
-            ->table('sys_file_reference')
-            ->where('deleted', 0)
-            ->where('hidden', 0)
-            ->where('tablenames', 'tx_bootstrappackage_carousel_item')
-            ->where('fieldname', 'background_image')
-            ->orderBy('sorting_foreign', 'asc')
-            ->get()
-            ->groupBy('uid_foreign');
-    }
-
-    /**
-     * Fetches non-deleted TYPO3 pages in default language.
-     *
-     * @return Collection<int, mixed>
-     */
-    protected function fetchPages(): Collection
-    {
-        return DB::connection($this->t3Connection)
-            ->table('pages')
-            ->where('deleted', 0)
-            ->where('sys_language_uid', 0)
-            ->where('t3ver_wsid', 0)
-            ->whereIn('doktype', [1, 3, 4])
-            ->orderBy('sorting', 'asc')
-            ->get();
-    }
-
-    /**
-     * Returns the TYPO3 languages imported as page translations keyed by language UID.
-     *
-     * Languages are read from the sys_language table and the --language options,
-     * which take precedence. The optional base is the URL like "https://example.de/"
-     * if the translations are on a separate domain.
-     *
-     * @return array<int, array{lang: string, domain: string}>
-     */
-    protected function fetchLanguages(): array
-    {
-        $languages = [];
-        $records = $this->t3table('sys_language')?->where('hidden', 0)->get() ?? [];
-
-        foreach ($records as $record) {
-            $code = strtolower(trim((string) ($record->language_isocode ?? '')));
-
-            if ($code !== '' && Utils::isValidLang($code)) {
-                $languages[(int) $record->uid] = Variants::language($code);
-            }
-        }
-
-        foreach (Variants::options((array) $this->option('language'), 'TYPO3', '/^0*[1-9][0-9]*$/D') as $uid => $language) {
-            $languages[(int) $uid] = $language;
-        }
-
-        return $languages;
-    }
-
-    /**
-     * Fetches the TYPO3 page translations grouped by the UID of the page in default language.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchTranslatedPages(): Collection
-    {
-        if (! Schema::connection($this->t3Connection)->hasColumn('pages', 'l10n_parent')) {
-            return Collection::make();
-        }
-
-        $pages = DB::connection($this->t3Connection)
-            ->table('pages')
-            ->where('deleted', 0)
-            ->where('sys_language_uid', '>', 0)
-            ->where('l10n_parent', '>', 0)
-            ->where('t3ver_wsid', 0)
-            ->orderBy('uid', 'asc')
-            ->get();
-
-        $unknown = $pages->pluck('sys_language_uid')->map(fn ($uid) => (int) $uid)->unique()
-            ->diff(array_keys($this->languages))->values()->all();
-
-        if ($unknown !== []) {
-            $this->warn('Skipping translations of unknown TYPO3 languages ['.implode(', ', $unknown).'], add --language=<uid>:<code> to import them.');
-        }
-
-        return $pages->filter(fn ($page) => isset($this->languages[(int) $page->sys_language_uid]))
-            ->groupBy('l10n_parent');
-    }
-
-    /**
-     * Fetches active translated tt_content records grouped by language UID and page ID.
-     *
-     * @return Collection<int|string, mixed>
-     */
-    protected function fetchTranslatedContent(): Collection
-    {
-        if ($this->translatedPages === null || $this->translatedPages->isEmpty()) {
-            return Collection::make();
-        }
-
-        return DB::connection($this->t3Connection)
-            ->table('tt_content')
-            ->where('deleted', 0)
-            ->where('hidden', 0)
-            ->whereIn('sys_language_uid', array_keys($this->languages))
-            ->orderBy('sorting', 'asc')
-            ->get()
-            ->groupBy(['sys_language_uid', 'pid']);
-    }
-
-    /**
-     * Fetches sys_file records keyed by UID.
-     *
-     * @return Collection<int, mixed>
-     */
-    protected function fetchSysFiles(): Collection
-    {
-        return DB::connection($this->t3Connection)
-            ->table('sys_file')
-            ->get()
-            ->keyBy(fn ($file) => (int) $file->uid);
-    }
-
-    /**
-     * Gets or creates the root page for a domain.
-     *
-     * @param  Collection<int|string, mixed>  $contentElements
-     */
-    protected function getRootPage(object $t3Root, string $domain, Collection $contentElements): PageView
-    {
-        $page = Pages::find(['tag' => 'root', 'domain' => $domain]);
-
-        if ($page) {
-            $this->info("Using existing root page: {$page->name} ({$domain})");
-
-            return $page;
-        }
-
-        $slug = $this->slugFromPath($t3Root->slug); // @phpstan-ignore property.notFound
-        $page = $this->save($t3Root, ['tag' => 'root'] + $this->buildPageData($t3Root, $slug, $domain), $contentElements);
-
-        $this->info("Created root page: {$t3Root->title} ({$domain})"); // @phpstan-ignore property.notFound
-
+        $this->usedPages[$page->id ?? ''] = true;
         return $page;
     }
 
-    /**
-     * Returns the source records used by a TYPO3 page.
-     *
-     * For translations, the translated records and the records for all languages are returned.
-     *
-     * @param  Collection<int|string, mixed>  $contentElements
-     * @param  int|null  $langUid  TYPO3 language UID of the translation or NULL for the default language
-     * @return Collection<int, mixed>
-     */
-    protected function recordsForPage(object $t3Page, Collection $contentElements, ?int $langUid = null): Collection
-    {
-        $pageUid = (int) ($t3Page->uid ?? 0);
-        $contentPageUid = $this->contentSourcePageUid($t3Page);
-        $records = $contentElements->get($contentPageUid, Collection::make());
-
-        if ($langUid !== null) {
-            $records = ($this->translatedContent?->get($langUid)?->get($contentPageUid) ?? Collection::make())
-                ->concat($records->filter(fn ($record) => (int) ($record->sys_language_uid ?? 0) === -1))
-                ->sortBy(fn ($record) => [(int) ($record->sorting ?? 0), (int) ($record->uid ?? 0)])->values();
-        }
-
-        $records = $this->sortRecordsBySourceLayout($records, $t3Page);
-
-        return $contentPageUid === $pageUid
-            ? $records
-            : $this->markSharedRecords($records, 'reference', $contentPageUid);
-    }
-
-    /**
-     * Marks cloned TYPO3 records for conversion into reusable Pagible elements.
-     *
-     * @param  Collection<int, mixed>  $records
-     * @return Collection<int, mixed>
-     */
-    protected function markSharedRecords(Collection $records, string $kind, int $sourcePage): Collection
-    {
-        return $records->map(function ($record) use ($kind, $sourcePage) {
-            $data = get_object_vars($record);
-            $data['_pagible_shared'] = $kind;
-            $data['_pagible_shared_page'] = $sourcePage;
-            $data['_pagible_shared_uid'] = (int) ($data['uid'] ?? 0);
-
-            return (object) $data;
-        })->values();
-    }
-
-    /**
-     * Resolves chained TYPO3 page-level content references.
-     */
-    protected function contentSourcePageUid(object $t3Page): int
-    {
-        $page = $t3Page;
-        $uid = (int) ($page->uid ?? 0);
-        $seen = [$uid => true];
-
-        while (($sourceUid = (int) ($page->content_from_pid ?? 0)) > 0) {
-            if (isset($seen[$sourceUid])) {
-                throw new \RuntimeException("Cycle detected in TYPO3 page content references at page [{$sourceUid}].");
-            }
-
-            $seen[$sourceUid] = true;
-            $uid = $sourceUid;
-
-            if (! ($source = $this->t3Pages?->get($sourceUid))) {
-                break;
-            }
-
-            $page = $source;
-        }
-
-        return $uid;
-    }
-
-    /**
-     * Orders records like the TYPO3 frontend: backend-layout row/column order,
-     * followed by the record sorting value inside each content column.
-     *
-     * @param  Collection<int, mixed>  $records
-     * @return Collection<int, mixed>
-     */
-    protected function sortRecordsBySourceLayout(Collection $records, object $t3Page): Collection
-    {
-        $columns = $this->sourceLayoutColumns($t3Page);
-
-        if ($columns === []) {
-            return $records->values();
-        }
-
-        $positions = array_flip($columns);
-        $fallback = count($positions);
-
-        return $records->sort(function ($left, $right) use ($positions, $fallback): int {
-            $leftColumn = (int) ($left->colPos ?? 0);
-            $rightColumn = (int) ($right->colPos ?? 0);
-            $leftPosition = $positions[$leftColumn] ?? $fallback;
-            $rightPosition = $positions[$rightColumn] ?? $fallback;
-
-            return [$leftPosition, (int) ($left->sorting ?? 0), (int) ($left->uid ?? 0)]
-                <=> [$rightPosition, (int) ($right->sorting ?? 0), (int) ($right->uid ?? 0)];
-        })->values();
-    }
-
-    /**
-     * Returns the ordered TYPO3 content columns for the page's backend layout.
-     *
-     * @return list<int>
-     */
-    protected function sourceLayoutColumns(object $t3Page): array
-    {
-        $layout = trim((string) ($t3Page->backend_layout ?? ''));
-
-        if ($layout === '') {
-            $page = $t3Page;
-            $seen = [];
-
-            while ((int) ($page->pid ?? 0) > 0) {
-                $uid = (int) ($page->uid ?? 0);
-
-                if (isset($seen[$uid]) || ! ($page = $this->t3Pages?->get((int) $page->pid))) {
-                    break;
-                }
-
-                $seen[$uid] = true;
-                $layout = trim((string) ($page->backend_layout_next_level ?? ''));
-
-                if ($layout !== '') {
-                    break;
-                }
-            }
-        }
-
-        $config = match (true) {
-            str_starts_with($layout, 'pagets__') => $this->pageTsBackendLayout(
-                $t3Page,
-                substr($layout, strlen('pagets__'))
-            ),
-            str_starts_with($layout, 'db__') => (string) data_get(
-                $this->backendLayouts?->get((int) substr($layout, strlen('db__'))),
-                'config',
-                '',
-            ),
-            default => '',
-        };
-
-        preg_match_all('/\bcolPos\s*=\s*(-?\d+)/i', $config, $matches);
-
-        return array_values(array_unique(array_map('intval', $matches[1])));
-    }
-
-    /**
-     * Returns one inherited PageTSconfig backend-layout block.
-     */
-    protected function pageTsBackendLayout(object $t3Page, string $name): string
-    {
-        $pages = [];
-        $page = $t3Page;
-        $seen = [];
-
-        while ($page) {
-            $uid = (int) ($page->uid ?? 0);
-
-            if (isset($seen[$uid])) {
-                break;
-            }
-
-            $seen[$uid] = true;
-            $pages[] = $page;
-            $pid = (int) ($page->pid ?? 0);
-            $page = $pid > 0 ? $this->t3Pages?->get($pid) : null;
-        }
-
-        $source = Collection::make(array_reverse($pages))
-            ->map(fn ($item) => (string) ($item->TSconfig ?? ''))
-            ->filter()
-            ->implode("\n");
-        $pattern = '/(?:^|\R)\s*mod\.web_layout\.BackendLayouts\.'.preg_quote($name, '/').'\s*\{/m';
-
-        if (! preg_match_all($pattern, $source, $matches, PREG_OFFSET_CAPTURE) || empty($matches[0])) {
-            return '';
-        }
-
-        $match = end($matches[0]);
-        $start = strpos($source, '{', (int) $match[1]);
-
-        if ($start === false) {
-            return '';
-        }
-
-        $depth = 0;
-        $length = strlen($source);
-
-        for ($offset = $start; $offset < $length; $offset++) {
-            if ($source[$offset] === '{') {
-                $depth++;
-            } elseif ($source[$offset] === '}' && --$depth === 0) {
-                return substr($source, $start + 1, $offset - $start - 1);
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Resolves the redirect target of TYPO3 external URL and selected-page shortcut records.
-     *
-     * @param  Collection<int, mixed>  $pages  TYPO3 pages keyed by UID
-     */
-    protected function redirectTarget(object $t3Page, Collection $pages): string
-    {
-        return in_array((int) $t3Page->doktype, [3, 4], true) ? $this->redirectDestination($t3Page, $pages, []) : ''; // @phpstan-ignore property.notFound
-    }
-
-    /**
-     * Resolves a TYPO3 shortcut destination to an external URL or Pagible path.
-     *
-     * @param  Collection<int, mixed>  $pages  TYPO3 pages keyed by UID
-     * @param  array<int, bool>  $seen
-     */
-    protected function redirectDestination(object $t3Page, Collection $pages, array $seen): string
-    {
-        $uid = (int) $t3Page->uid; // @phpstan-ignore property.notFound
-
-        if (isset($seen[$uid])) {
-            return '';
-        }
-
-        $seen[$uid] = true;
-
-        if ($t3Page->doktype == 3) { // @phpstan-ignore property.notFound
-            return trim((string) $t3Page->url); // @phpstan-ignore property.notFound
-        }
-
-        if ($t3Page->doktype == 4) { // @phpstan-ignore property.notFound
-            if ($t3Page->shortcut_mode != 0) { // @phpstan-ignore property.notFound
-                return '';
-            }
-
-            $target = $pages->get((int) $t3Page->shortcut); // @phpstan-ignore property.notFound
-
-            return $target ? $this->redirectDestination($target, $pages, $seen) : '';
-        }
-
-        return $this->pageUrl($t3Page);
-    }
-
-    /**
-     * Returns the URL of an imported TYPO3 page in the language of the content which is built.
-     *
-     * Links in translated content point to the translation of the page. If the page isn't
-     * translated, they point to the page in the default language, using an absolute URL
-     * if the translation is on another domain.
-     */
-    protected function pageUrl(object $t3Page): string
-    {
-        $path = $this->slugFromPath($t3Page->slug ?? '');
-
-        if ($this->translation === null) {
-            return '/'.$path;
-        }
-
-        $langUid = $this->translation['uid'];
-        $record = $this->translatedPages?->get((int) ($t3Page->uid ?? 0))
-            ?->first(fn ($record) => (int) ($record->sys_language_uid ?? 0) === $langUid);
-
-        if ($record) {
-            return '/'.$this->slugFromPath($record->slug ?? '');
-        }
-
-        return $this->translation['source'] !== '' ? 'https://'.$this->translation['source'].'/'.$path : '/'.$path;
-    }
-
-    /**
-     * Maps TYPO3 header_layout to heading level.
-     */
-    protected function headerLevel(?string $layout): int
-    {
-        return in_array($layout, ['1', '2', '3', '4', '5'], true) ? (int) $layout : 2;
-    }
-
-    /**
-     * Returns the heading element of a content record unless its header is hidden.
-     *
-     * @return list<array<string, mixed>>
-     */
-    protected function heading(object $record): array
-    {
-        if (empty($record->header) || ($record->header_layout ?? '0') === '100') {
-            return [];
-        }
-
-        return [[
-            'id' => Utils::uid(),
-            'type' => 'heading',
-            'group' => 'main',
-            'data' => [
-                'level' => $this->headerLevel($record->header_layout ?? null),
-                'title' => $record->header,
-            ],
-        ]];
-    }
-
-    /**
-     * Maps TYPO3 imageorient to Pagible position.
-     */
-    protected function imagePosition(int $orient): string
-    {
-        return match ($orient) {
-            17, 18, 126 => 'start',
-            25, 26, 125 => 'end',
-            default => 'auto',
-        };
-    }
-
-    /**
-     * Imports the first file reference for a tt_content record.
-     */
-    protected function importFileForContent(int $contentUid): ?string
-    {
-        $refs = $this->fileRefs->get($contentUid);
-
-        if (! $refs || $refs->isEmpty()) {
-            return null;
-        }
-
-        return $this->importFileSafely(
-            fn () => $this->importFileReference($refs->first())
-        );
-    }
-
-    /**
-     * Imports one TYPO3 file reference.
-     */
-    protected function importFileReference(object $ref): ?string
-    {
-        $reference = get_object_vars($ref);
-        $sysFile = $this->sysFiles->get((int) ($reference['uid_local'] ?? 0));
-
-        if (! $sysFile) {
-            return null;
-        }
-
-        $name = ($reference['title'] ?? '') ?: ($reference['alternative'] ?? '') ?: $sysFile->name;
-        $extension = trim((string) ($sysFile->extension ?? ''))
-            ?: pathinfo((string) $sysFile->identifier, PATHINFO_EXTENSION);
-        $mime = $this->normalizeMime((string) $sysFile->mime_type, $extension);
-        $path = $this->resolveFilePath($sysFile->identifier);
-
-        return $this->createFile($mime, $name, $path);
-    }
 
     /**
      * Imports only explicitly selected pages, updating matching destination
      * routes with a new published version and creating missing pages when their
      * destination parent already exists.
      *
-     * @param  Collection<int, mixed>  $selectedPages
-     * @param  Collection<int, mixed>  $pages
-     * @param  Collection<int|string, mixed>  $contentElements
+     * @param Collection<int, mixed> $selectedPages
      */
-    protected function importSelectedPages(Collection $selectedPages, Collection $pages, Collection $contentElements): void
+    protected function importSelectedPages( Collection $selectedPages ): void
     {
-        $pagesById = $pages->keyBy(fn ($page) => (int) $page->uid);
         $processed = Collection::make();
-        $imported = 0;
-        $updated = 0;
 
-        $selectedPages = $selectedPages->sortBy(
-            fn ($page) => $this->sourcePageDepth($page, $pagesById)
-        )->values();
+        // parents are imported before their children and new pages are added at the end of the page tree
+        $selectedPages = $selectedPages->sortBy( fn( $page ) => $this->tree->order( $page ), SORT_STRING )->values();
 
-        foreach ($selectedPages as $t3Page) {
-            try {
-                $result = $this->atomic(fn () => $this->importSelectedPage($t3Page, $pagesById, $contentElements, $processed));
-            } catch (\Throwable $e) {
-                $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage());
+        // the existing pages of the parents which aren't selected are fetched together with the ones of the selected pages
+        $selected = $selectedPages->keyBy( fn( $page ) => (int) $page->uid );
+        $parents = $selectedPages->map( fn( $page ) => $this->tree->parent( $page ) )->filter( fn( $page ) => $page
+            && !$selected->has( (int) $page->uid ) && (int) ( $page->pid ?? 0 ) !== 0 && empty( $page->is_siteroot )
+        )->keyBy( fn( $page ) => (int) $page->uid )->values();
+
+        $destinations = new Typo3Destinations( $selectedPages->concat( $parents ), fn( $page ) => $this->site->domain( $this->tree->root( $page ) ) );
+        $this->sequence( $selectedPages->all() );
+
+        foreach( $selectedPages as $t3Page )
+        {
+            // trashed pages are only restored within the transaction of the page, so they stay trashed if its import fails
+            $this->preload( $t3Page, $destinations->peek( $t3Page, $this->site->domain( $this->tree->root( $t3Page ) ) ) );
+            $result = $this->transaction( "[{$t3Page->uid}] {$t3Page->title}",
+                fn() => $this->importSelectedPage( $t3Page, $processed, $destinations )
+            );
+
+            if( !$result )
+            {
+                // the page may have been changed by the failed import
+                $destinations->forget( $t3Page );
 
                 continue;
             }
 
-            $processed->put((int) $t3Page->uid, $result['page']);
-            $result['updated'] ? $updated++ : $imported++;
-            $action = $result['updated'] ? 'Updated' : 'Imported';
-            $path = $result['path'] === '' ? '/' : '/'.$result['path'];
-            $this->info("  {$action}: {$t3Page->title} ({$path}) [{$result['domain']}]");
+            $this->report( $t3Page, $result['page'], $result['path'], $result['domain'], $result['status'] );
+
+            // the imported pages are only used as parents or to detect duplicate URLs, so only their IDs and URLs are kept
+            $slim = $this->slim( $result['page'] );
+            $processed->put( (int) $t3Page->uid, $slim );
+            $destinations->put( $result['domain'], $result['path'], $this->slimPage( $slim ) );
+            unset( $result );
         }
 
-        $importedLabel = $imported === 1 ? 'page' : 'pages';
-        $updatedLabel = $updated === 1 ? 'page' : 'pages';
-        $this->info("Import complete. {$imported} {$importedLabel} imported, {$updated} {$updatedLabel} updated.");
+        $this->totals( $selectedPages->count(), 'pages' );
     }
+
 
     /**
      * Imports or updates one selected TYPO3 page.
      *
-     * @param  Collection<int, mixed>  $pagesById
-     * @param  Collection<int|string, mixed>  $contentElements
-     * @param  Collection<int|string, PageView>  $processed
-     * @return array{page: PageView, updated: bool, path: string, domain: string}
+     * @param Collection<int|string, string> $processed Imported pages packed by slim() by TYPO3 page UID
+     * @param Typo3Destinations $destinations Existing pages of the selected TYPO3 pages
+     * @return array{page: PageView, status: Status, path: string, domain: string}
+     * @throws \RuntimeException If the URL is used by a page which wasn't imported, was changed since or was saved by this import
      */
-    protected function importSelectedPage(object $t3Page, Collection $pagesById, Collection $contentElements, Collection $processed): array
+    protected function importSelectedPage( object $t3Page, Collection $processed, Typo3Destinations $destinations ): array
     {
-        $rootRecord = $this->sourceRootPage($t3Page, $pagesById);
-        $domain = $this->domainMap[(int) $rootRecord->uid] ?? $this->domain; // @phpstan-ignore property.notFound
-        $path = $this->slugFromPath($t3Page->slug); // @phpstan-ignore property.notFound
-        $to = $this->redirectTarget($t3Page, $pagesById);
-        $pageData = $this->buildPageData($t3Page, $path, $domain, $to);
-        $isRoot = (int) ($t3Page->pid ?? 0) === 0 || ! empty($t3Page->is_siteroot);
+        $domain = $this->site->domain( $this->tree->root( $t3Page ) );
+        $path = Typo3Urls::slug( $t3Page->slug ?? null );
+        $pageData = $this->buildPageData( $t3Page, $path, $domain, $this->redirect( $t3Page ) );
+        $isRoot = (int) ( $t3Page->pid ?? 0 ) === 0 || !empty( $t3Page->is_siteroot );
         $pageData['tag'] = $isRoot ? 'root' : $pageData['tag'];
-        $page = $this->findSourcePage($t3Page, $domain);
-        $updated = $page !== null;
+        $page = $destinations->find( $t3Page, $domain );
         $parent = null;
 
-        if (! $page && ! $isRoot) {
-            $parentRecord = $pagesById->get((int) ($t3Page->pid ?? 0));
+        // pages with the same URL must not overwrite each other
+        if( $page && isset( $this->usedPages[$page->id ?? ''] ) ) {
+            throw new \RuntimeException( "URL /{$path} is used by another page of this import" );
+        }
 
-            if (! $parentRecord) {
-                throw new \RuntimeException('TYPO3 parent page is missing from the source tree.');
+        if( $page && !$this->isImported( $page ) ) {
+            throw new \RuntimeException( "URL /{$path} is used by a page which wasn't imported or was changed since" );
+        }
+
+        if( !$page && !$isRoot )
+        {
+            if( !( $parentRecord = $this->tree->parent( $t3Page ) ) ) {
+                throw new \RuntimeException( 'TYPO3 parent page is missing from the source tree.' );
             }
 
-            $parent = $processed->get((int) $parentRecord->uid)
-                ?: $this->findSourcePage($parentRecord, $domain);
+            $packed = $processed->get( (int) $parentRecord->uid );
+            $parent = $packed ? $this->slimPage( $packed ) : $destinations->find( $parentRecord, $domain );
 
-            if (! $parent) {
-                throw new \RuntimeException(sprintf(
-                    'Destination parent page [%d] %s has not been imported.',
-                    (int) $parentRecord->uid,
-                    (string) $parentRecord->title,
-                ));
+            if( !$parent ) {
+                throw new \RuntimeException( sprintf( 'Destination parent page [%d] %s has not been imported.', (int) $parentRecord->uid, (string) $parentRecord->title ) );
             }
         }
 
-        $page = $this->save($t3Page, $pageData, $contentElements, $page, $parent);
+        $saved = $this->save( $t3Page, $pageData, $page, $parent );
+        $this->usedPages[$saved['page']->id ?? ''] = true;
 
-        return ['page' => $page, 'updated' => $updated, 'path' => $path, 'domain' => $domain];
+        return $saved + ['path' => $path, 'domain' => $domain];
     }
 
-    /**
-     * Finds the destination counterpart of a TYPO3 source page.
-     */
-    protected function findSourcePage(object $t3Page, string $domain): ?PageView
-    {
-        if ((int) ($t3Page->pid ?? 0) === 0 || ! empty($t3Page->is_siteroot)) {
-            return Pages::find(['tag' => 'root', 'domain' => $domain]);
-        }
-
-        return Pages::find(['domain' => $domain, 'path' => $this->slugFromPath($t3Page->slug)]); // @phpstan-ignore property.notFound
-    }
 
     /**
      * Creates or updates a page from a TYPO3 page record and publishes its content.
      *
-     * @param  array<string, mixed>  $pageData
-     * @param  Collection<int|string, mixed>  $contentElements
+     * Pages of previous imports get no new version if nothing changed.
+     *
+     * @param array<string, mixed> $pageData
+     * @return array{page: PageView, status: Status} Saved page and its status
      */
-    protected function save(object $t3Page, array $pageData, Collection $contentElements, ?PageView $page = null, ?PageView $parent = null): PageView
+    protected function save( object $t3Page, array $pageData, ?PageView $page = null, ?PageView $parent = null ): array
     {
-        $content = $this->buildContent($this->recordsForPage($t3Page, $contentElements));
-        $new = $page === null;
-        $page ??= Pages::create($pageData, $content['elements'], $parent);
-
-        Pages::publish($page, $pageData, ['content' => $content['elements']], $content['fileIds'], $content['elementIds'], $this->lang, $this->editor);
-
-        if ($new && $parent && (int) ($t3Page->crdate ?? 0) > 0) {
-            $page->variant->forceFill( ['created_at' => date('Y-m-d H:i:s', (int) ($t3Page->crdate ?? 0))] )->save();
+        // pages not changed since the given date are kept as imported before including their translations
+        if( $page && $this->unchangedPage( $t3Page ) ) {
+            return ['page' => $page, 'status' => Status::Unchanged];
         }
 
-        $this->saveTranslations($t3Page, $page, $pageData, $contentElements);
+        $this->prefetchContent( $t3Page );
+        $content = $this->buildContent( $this->records->page( $t3Page ), $this->typo3, $this->lang );
+        $created = $parent && (int) ( $t3Page->crdate ?? 0 ) > 0 ? date( 'Y-m-d H:i:s', (int) ( $t3Page->crdate ?? 0 ) ) : null;
 
-        return $page;
+        if( $page ) {
+            $status = $this->updateVersion( $page, $pageData, $content );
+        } else {
+            $page = $this->createPage( $pageData, $content, $parent, $created );
+            $status = Status::Imported;
+        }
+
+        $this->saveTranslations( $t3Page, $page, $pageData, $status === Status::Imported );
+
+        return ['page' => $page, 'status' => $status];
     }
+
+
+    /**
+     * Tests if the TYPO3 page including its translations and content wasn't changed since the date of the --since option.
+     */
+    protected function unchangedPage( object $t3Page ): bool
+    {
+        $uid = (int) ( $t3Page->uid ?? 0 );
+
+        // the modification times of the next pages in import order are fetched at once
+        if( $this->since !== null && !array_key_exists( $uid, $this->changed ) ) {
+            $this->fetchChanged( isset( $this->positions[$uid] ) ? array_slice( $this->sequence, $this->positions[$uid], CmsDB::IN_SIZE ) : [$t3Page] );
+        }
+
+        return $this->unchangedSince( $uid );
+    }
+
+
+    /**
+     * Remembers the order the TYPO3 pages are imported in, so their content and the modification times for --since are fetched in chunks.
+     *
+     * @param array<int, object> $t3Pages TYPO3 pages in import order
+     */
+    protected function sequence( array $t3Pages ): void
+    {
+        $this->sequence = array_values( $t3Pages );
+        $this->positions = array_flip( array_map( fn( $page ) => (int) ( $page->uid ?? 0 ), $this->sequence ) );
+        $this->window = [0, 0];
+    }
+
+
+    /**
+     * Fetches the last modification times of the TYPO3 pages including the pages their content is taken from.
+     *
+     * The content can be taken from another page or from the pages of the content records shown by
+     * the content shortcuts, e.g. folders which aren't imported themselves.
+     *
+     * @param array<int, object> $t3Pages TYPO3 pages in default language
+     */
+    protected function fetchChanged( array $t3Pages ): void
+    {
+        $sources = array_map( fn( $page ) => (int) ( $page->content_from_pid ?? 0 ), $t3Pages );
+        $uids = array_map( fn( $page ) => (int) ( $page->uid ?? 0 ), $t3Pages );
+        $targets = $this->records->shortcutTargets( array_merge( $uids, array_filter( $sources ) ) );
+        $pids = $targets ? $this->reader->contentPids( array_merge( ...array_values( $targets ) ) ) : [];
+        $times = $this->reader->changed( array_merge( $uids, array_filter( $sources ), array_values( $pids ) ) );
+
+        if( !$times && !$this->changed ) {
+            $this->warn( 'No modification dates of the TYPO3 pages found, all pages are imported.' );
+        }
+
+        foreach( $uids as $idx => $uid )
+        {
+            // pages without modification time are changed
+            $time = $times[$uid] ?? PHP_INT_MAX;
+            $time = $sources[$idx] ? max( $time, $times[$sources[$idx]] ?? PHP_INT_MAX ) : $time;
+
+            // content records which don't exist anymore don't change the page
+            foreach( [...$targets[$uid] ?? [], ...$targets[$sources[$idx]] ?? []] as $content ) {
+                $time = isset( $pids[$content] ) ? max( $time, $times[$pids[$content]] ?? PHP_INT_MAX ) : $time;
+            }
+
+            $this->changed[$uid] = $time;
+        }
+
+        $this->changed = Database::limit( $this->changed, 10000, count( $t3Pages ) );
+    }
+
+
+    /**
+     * Counts the page and reports the result of its import including the domain.
+     */
+    protected function report( object $t3Page, PageView $page, string $path, string $domain, Status $status ): void
+    {
+        $note = " [{$domain}]" . ( $status === Status::Reused ? " (URL is used by a page which wasn't imported, was changed since or was saved by this import)" : '' );
+        $this->imported( (int) ( $t3Page->uid ?? 0 ), $page, (string) ( $t3Page->title ?? '' ), $path, $status, $note );
+    }
+
 
     /**
      * Creates or updates the variants of the page from its TYPO3 translations.
      *
-     * @param  array<string, mixed>  $pageData  Data of the source variant
-     * @param  Collection<int|string, mixed>  $contentElements
+     * @param array<string, mixed> $pageData Data of the source variant
+     * @param bool $new TRUE if the page has just been created and has no variants yet
      */
-    protected function saveTranslations(object $t3Page, PageView $page, array $pageData, Collection $contentElements): void
+    protected function saveTranslations( object $t3Page, PageView $page, array $pageData, bool $new = false ): void
     {
-        $sourceLang = $this->lang;
-        $sourceDomain = (string) ($pageData['domain'] ?? '');
-        $records = $this->translatedPages?->get((int) ($t3Page->uid ?? 0)) ?? Collection::make();
+        $sourceDomain = (string) ( $pageData['domain'] ?? '' );
+        $records = $this->translationRecords( $t3Page );
+        // the variants of all languages including trashed ones are fetched at once
+        $variants = $records->isNotEmpty() && !$new ? $this->variants( $page ) : [];
+        $translations = [];
 
-        foreach ($records->unique('sys_language_uid') as $record) {
-            $langUid = (int) ($record->sys_language_uid ?? 0);
-            $language = $this->languages[$langUid] ?? null;
+        foreach( $records->unique( 'sys_language_uid' ) as $record )
+        {
+            $langUid = (int) ( $record->sys_language_uid ?? 0 );
+            $language = $this->languages->get( $langUid );
 
-            if (! $language || $language['lang'] === $sourceLang) {
+            if( !$language || $language['lang'] === $this->lang ) {
                 continue;
             }
 
-            $this->lang = $language['lang'];
-            $this->translation = [
+            if( $this->skipsTranslation( $variants[$language['lang']] ?? null, (string) ( $record->title ?? '' ), $language['lang'] ) ) {
+                continue;
+            }
+
+            $translations[] = [$record, $langUid, $language, $this->records->page( $t3Page, $langUid )];
+        }
+
+        // the file references and files of all languages are fetched at once before the converters are copied
+        if( $this->typo3 && $translations )
+        {
+            $all = Collection::make( array_column( $translations, 3 ) )->flatten( 1 );
+            $this->typo3->prefetch( $all );
+            $this->prefetchFiles( $this->files->paths( $this->typo3->references(), $this->typo3->texts( $all ) ), false );
+        }
+
+        foreach( $translations as [$record, $langUid, $language, $contentRecords] )
+        {
+            // links in the content point to the translated pages
+            $typo3 = $this->typo3?->withRewriter( $this->rewriter( [
                 'uid' => $langUid,
                 'source' => $language['domain'] !== '' && $language['domain'] !== $sourceDomain ? $sourceDomain : '',
-            ];
+            ] ) );
 
-            try {
-                $content = $this->buildContent($this->recordsForPage($t3Page, $contentElements, $langUid));
-                $data = array_replace($this->buildPageData($record, '', '', (string) ($pageData['to'] ?? '')), [
-                    'tag' => $pageData['tag'] ?? 'page',
-                ]);
-            } finally {
-                $this->lang = $sourceLang;
-                $this->translation = null;
+            $content = $this->buildContent( $contentRecords, $typo3, $language['lang'] );
+            $data = array_replace( $this->buildPageData( $record, '', '', (string) ( $pageData['to'] ?? '' ) ), [
+                'tag' => $pageData['tag'] ?? 'page',
+            ] );
+
+            $this->saveVariant( $page, $language, Typo3Urls::slug( $record->slug ?? '' ), $data, $content, $variants[$language['lang']] ?? null );
+        }
+    }
+
+
+    /**
+     * Returns the translations of the TYPO3 page, fetching them if they aren't prefetched with the upcoming pages.
+     *
+     * @return Collection<int, mixed> TYPO3 page translations ordered by UID
+     */
+    protected function translationRecords( object $t3Page ): Collection
+    {
+        if( !isset( $this->translated[$uid = (int) ( $t3Page->uid ?? 0 )] ) ) {
+            return Collection::make();
+        }
+
+        return $this->translations[$uid] ??= $this->reader->translatedPages( [$uid], $this->langUids );
+    }
+
+
+    /**
+     * Fetches the content and downloads the files of the page and its translations before it's imported, so the batch transaction isn't kept open during the downloads.
+     *
+     * Pages which aren't imported again, e.g. unchanged ones or the ones only used as parent, are skipped.
+     *
+     * @param PageView|null $page Existing page with the URL of the TYPO3 page
+     */
+    protected function preload( object $t3Page, ?PageView $page ): void
+    {
+        if( !( $typo3 = $this->typo3 ) || $page && ( isset( $this->usedPages[$page->id ?? ''] ) || !$this->isImported( $page ) || $this->unchangedPage( $t3Page ) ) ) {
+            return;
+        }
+
+        $this->prefetchContent( $t3Page );
+
+        try
+        {
+            // the content records and file references are used again when the page and its translations are imported
+            $records = $this->records->page( $t3Page );
+
+            foreach( $this->translationRecords( $t3Page )->unique( 'sys_language_uid' ) as $record )
+            {
+                if( ( $language = $this->languages->get( $langUid = (int) ( $record->sys_language_uid ?? 0 ) ) ) && $language['lang'] !== $this->lang ) {
+                    $records = $records->concat( $this->records->page( $t3Page, $langUid ) );
+                }
             }
 
-            $path = $this->slugFromPath($record->slug ?? '');
+            $typo3->prefetch( $records );
+            $paths = $this->files->paths( $typo3->references(), $typo3->texts( $records ) );
+        }
+        catch( \Exception )
+        {
+            // errors are reported when the page is imported
+            return;
+        }
 
-            if (! Variants::save($page, $language, $path, $data, $content, $this->editor)) {
-                $this->warn("  Skipped translation: {$data['title']} (/{$path}) [{$language['lang']}] (URL is used by another page)");
+        $this->prefetchFiles( $paths, false );
+
+        // all files of the page are downloaded because they would be downloaded within the transaction of the page otherwise
+        $this->download( [], array_filter( $paths, fn( $path ) => str_starts_with( $path, 'http' ) ) );
+    }
+
+
+    /**
+     * Fetches the content records, file references and files of the next pages in import order at once if the ones of the page aren't fetched yet.
+     *
+     * The content of unchanged pages isn't fetched for --since and the content of the pages
+     * fetched before is replaced, so only the content of a limited number of pages is in memory.
+     */
+    protected function prefetchContent( object $t3Page ): void
+    {
+        if( !$this->typo3 ) {
+            return;
+        }
+
+        try
+        {
+            if( $this->records->prefetched( $t3Page ) ) {
+                return;
+            }
+
+            $uid = (int) ( $t3Page->uid ?? 0 );
+            $pos = $this->positions[$uid] ?? null;
+
+            // unchanged pages are imported if they don't exist, their content is fetched on its own instead of fetching the upcoming pages again
+            if( $pos !== null && $pos >= $this->window[0] && $pos < $this->window[1] ) {
+                return;
+            }
+
+            $size = $this->contentSize();
+            $this->window = $pos !== null ? [$pos, $pos + $size] : [0, 0];
+            $t3Pages = $pos !== null ? array_slice( $this->sequence, $pos, $size ) : [$t3Page];
+            $t3Pages = array_filter( $t3Pages, fn( $page ) => $page === $t3Page || !$this->unchangedPage( $page ) );
+            $translated = array_filter( $t3Pages, fn( $page ) => isset( $this->translated[(int) ( $page->uid ?? 0 )] ) );
+
+            // the translations of the pages are replaced by the ones of the upcoming pages
+            $this->translations = [];
+            $this->translations = $this->reader->translatedPages( array_map( fn( $page ) => (int) ( $page->uid ?? 0 ), $translated ), $this->langUids )
+                ->groupBy( fn( $page ) => (int) $page->l10n_parent )->all();
+
+            $records = $this->records->prefetch( $t3Pages, $translated );
+            $paths = $this->files->paths( $this->typo3->ahead( $records ), $this->typo3->texts( $records ) );
+        }
+        catch( \Exception )
+        {
+            // errors are reported when the page is imported
+            return;
+        }
+
+        $this->prefetchFiles( $paths );
+    }
+
+
+    /**
+     * Returns the number of the next pages whose content is fetched at once.
+     *
+     * The content of each page is fetched for every imported language, so fewer pages are
+     * fetched for more languages to keep the number of content records in memory similar.
+     * The content of at least ten pages is fetched at once, for two languages or less CONTENT_SIZE.
+     */
+    protected function contentSize(): int
+    {
+        return min( static::CONTENT_SIZE, max( 10, intdiv( static::CONTENT_SIZE * 3, 1 + count( $this->langUids ) ) ) );
+    }
+
+
+    /**
+     * Imports the child page and returns the saved or reused page.
+     *
+     * @param array<string, PageView|null> $found Existing pages of the domain by path
+     * @return array{page: PageView, status: Status, path: string} Imported page, its status and its path
+     */
+    protected function importChild( object $t3Page, PageView $parentPage, string $domain, array $found ): array
+    {
+        $slug = Typo3Urls::slug( $t3Page->slug ?? '' );
+        $page = $found[$slug] ?? null;
+
+        // pages which weren't imported or were saved by this import are only used as parent
+        if( $page && ( !$this->isImported( $page ) || isset( $this->usedPages[$page->id ?? ''] ) ) )
+        {
+            if( $page->trashed() ) {
+                throw new \RuntimeException( "URL /{$slug} is used by a page which wasn't imported or was changed since" );
+            }
+
+            return ['page' => $page, 'status' => Status::Reused, 'path' => $slug];
+        }
+
+        if( $page )
+        {
+            $page = $this->restore( $page );
+            $this->moveBelow( $page, $parentPage );
+        }
+
+        $pageData = $this->buildPageData( $t3Page, $slug, $domain, $this->redirect( $t3Page ) );
+        $saved = $this->save( $t3Page, $pageData, $page, $parentPage );
+        $this->usedPages[$saved['page']->id ?? ''] = true;
+        $this->savedPath( $domain, $slug );
+
+        return $saved + ['path' => $slug];
+    }
+
+
+    /**
+     * Imports the child pages of the TYPO3 page and their descendants.
+     *
+     * @param Collection<int|string, Collection<int, mixed>> $pageMap TYPO3 pages grouped by parent ID
+     */
+    protected function importChildren( Collection $pageMap, int $parentUid, PageView $parentPage, string $domain ): void
+    {
+        // the existing pages of the children are fetched in chunks, so not all pages including their content are in memory
+        foreach( $pageMap->get( $parentUid, Collection::make() )->chunk( CmsDB::IN_SIZE ) as $children )
+        {
+            // pages imported for previous chunks are fetched from the database
+            $slugs = $children->map( fn( $page ) => Typo3Urls::slug( $page->slug ) )->values()->all();
+            $found = Pages::findAll( ['domain' => $domain], 'path', $slugs );
+            // existing pages removed from $found while the descendants are imported, fetched again when needed
+            $unloaded = $watch = [];
+
+            // saved pages and translations are only remembered if they use the URLs of pages which weren't found
+            foreach( $found as $slug => $page )
+            {
+                if( $page === null && !isset( $this->watched[$domain][$slug] ) )
+                {
+                    $this->watched[$domain][$slug] = false;
+                    $watch[] = $slug;
+                }
+            }
+
+            foreach( $children->values() as $pos => $t3Page )
+            {
+                if( isset( $unloaded[$slugs[$pos]] ) ) {
+                    $found = array_replace( $found, $this->reload( $slugs, $pos, $unloaded, $domain ) );
+                }
+
+                $this->prefetchSiblingVariants( $children->values(), $slugs, $pos, $found );
+                $this->preload( $t3Page, $found[$slugs[$pos]] ?? null );
+                $result = $this->transaction( "[{$t3Page->uid}] {$t3Page->title}", fn() => $this->importChild( $t3Page, $parentPage, $domain, $found ) );
+
+                if( !$result ) {
+                    continue;
+                }
+
+                // later pages with the same URL use the imported page, only its IDs and URL are kept
+                $slim = $this->slim( $result['page'] );
+                $found[$result['path']] = $this->slimPage( $slim );
+
+                $this->report( $t3Page, $result['page'], $result['path'], $domain, $result['status'] );
+                unset( $result );
+
+                if( !$pageMap->has( (int) $t3Page->uid ) ) {
+                    continue;
+                }
+
+                // only the pages of the next siblings are kept while the descendants are imported to limit the memory used per tree level
+                foreach( array_slice( $slugs, $pos + 1 + static::SIBLING_SIZE ) as $slug )
+                {
+                    if( ( $page = $found[$slug] ?? null ) && !isset( $this->usedPages[$page->id ?? ''] ) )
+                    {
+                        unset( $found[$slug] );
+                        $unloaded[$slug] = true;
+                    }
+                }
+
+                // the descendants are imported directly after their parent, so new pages are added at the end of the page tree
+                $this->importChildren( $pageMap, (int) $t3Page->uid, $this->slimPage( $slim ), $domain );
+
+                // the descendants may have used the URLs of the next pages which weren't found before
+                foreach( array_slice( $slugs, $pos + 1 ) as $slug )
+                {
+                    if( array_key_exists( $slug, $found ) && $found[$slug] === null && !empty( $this->watched[$domain][$slug] ) )
+                    {
+                        unset( $found[$slug] );
+                        $unloaded[$slug] = true;
+                    }
+                }
+            }
+
+            foreach( $watch as $slug ) {
+                unset( $this->watched[$domain][$slug] );
             }
         }
     }
 
-    /**
-     * Returns the root source record for a TYPO3 page.
-     *
-     * @param  Collection<int, mixed>  $pagesById
-     */
-    protected function sourceRootPage(object $t3Page, Collection $pagesById): object
-    {
-        $page = $t3Page;
-        $seen = [];
-
-        while ((int) ($page->pid ?? 0) > 0 && empty($page->is_siteroot)) {
-            $page = $this->sourceParent($page, $pagesById, $seen);
-        }
-
-        return $page;
-    }
 
     /**
-     * Returns the parent record of a TYPO3 page and detects cycles in the page tree.
+     * Fetches the variants of the existing pages of the next translated sibling pages at once.
      *
-     * @param  Collection<int, mixed>  $pagesById
-     * @param  array<int, bool>  $seen  UIDs of the pages already visited
+     * The variants of the siblings are kept while the descendants of the previous page are imported and
+     * only the ones which aren't prefetched yet are fetched, e.g. if they have been discarded meanwhile.
+     *
+     * @param Collection<int, mixed> $children TYPO3 sibling pages
+     * @param array<int, string> $slugs URL paths of the sibling pages
+     * @param int $pos Position of the sibling page imported next
+     * @param array<string, PageView|null> $found Existing pages of the domain by path
      */
-    protected function sourceParent(object $page, Collection $pagesById, array &$seen): object
+    protected function prefetchSiblingVariants( Collection $children, array $slugs, int $pos, array $found ): void
     {
-        $uid = (int) ($page->uid ?? 0);
+        $page = $this->translatedPage( $children[$pos], $found[$slugs[$pos]] ?? null );
 
-        if (isset($seen[$uid])) {
-            throw new \RuntimeException("Cycle detected in TYPO3 page tree at page [{$uid}].");
+        if( !$page || isset( $this->prefetchedVariants[(string) $page->id] ) ) {
+            return;
         }
 
-        $seen[$uid] = true;
+        $ids = [];
 
-        return $pagesById->get((int) ($page->pid ?? 0)) ?? throw new \RuntimeException(sprintf(
-            'TYPO3 parent page [%d] is missing from the source tree.',
-            (int) ($page->pid ?? 0),
-        ));
+        foreach( array_slice( $slugs, $pos, static::SIBLING_SIZE, true ) as $idx => $slug )
+        {
+            if( $page = $this->translatedPage( $children[$idx], $found[$slug] ?? null ) ) {
+                $ids[] = (string) $page->id;
+            }
+        }
+
+        $this->prefetchVariants( $ids, true );
     }
+
 
     /**
-     * Returns a source page's depth for deterministic parent-first imports.
+     * Returns the existing page of the TYPO3 page if its translations are saved by the import.
      *
-     * @param  Collection<int, mixed>  $pagesById
+     * @param PageView|null $page Existing page with the URL of the TYPO3 page
      */
-    protected function sourcePageDepth(object $t3Page, Collection $pagesById): int
+    protected function translatedPage( object $t3Page, ?PageView $page ): ?PageView
     {
-        $page = $t3Page;
-        $seen = [];
-        $depth = 0;
-
-        while ((int) ($page->pid ?? 0) > 0) {
-            $page = $this->sourceParent($page, $pagesById, $seen);
-            $depth++;
+        if( !$page || !isset( $this->translated[(int) ( $t3Page->uid ?? 0 )] ) ) {
+            return null;
         }
 
-        return $depth;
+        return $this->isImported( $page ) && !isset( $this->usedPages[$page->id ?? ''] ) && !$this->unchangedPage( $t3Page ) ? $page : null;
     }
+
+
+    /**
+     * Fetches the existing pages of the next sibling pages removed before at once.
+     *
+     * @param array<int, string> $slugs URL paths of the sibling pages
+     * @param int $pos Position of the sibling page imported next
+     * @param array<string, bool> $unloaded URL paths of the removed pages, the fetched ones are removed
+     * @param string $domain Domain of the pages
+     * @return array<string, PageView|null> Existing pages by URL path, NULL if no page uses the URL
+     */
+    protected function reload( array $slugs, int $pos, array &$unloaded, string $domain ): array
+    {
+        $next = [];
+
+        foreach( array_slice( $slugs, $pos ) as $slug )
+        {
+            if( count( $next ) >= static::SIBLING_SIZE ) {
+                break;
+            }
+
+            if( isset( $unloaded[$slug] ) )
+            {
+                $next[] = $slug;
+                unset( $unloaded[$slug] );
+            }
+        }
+
+        return Pages::findAll( ['domain' => $domain], 'path', $next );
+    }
+
+
+    /**
+     * Remembers that a page or translation has been saved with the URL path if it's the one of a next sibling page without existing page.
+     */
+    protected function savedPath( string $domain, string $path ): void
+    {
+        if( isset( $this->watched[$domain][$path] ) ) {
+            $this->watched[$domain][$path] = true;
+        }
+    }
+
+
+    /**
+     * Saves the translation of the page and remembers its URL for the next sibling pages.
+     *
+     * @param array{lang: string, domain: string} $language Language code and domain of the translation
+     * @param array<string, mixed> $pageData Page data from pageData()
+     * @param array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>, elementIds?: array<int, string>, meta?: array<string, mixed>} $content Content elements, file IDs, shared element IDs and meta data
+     * @param PageView|false|null $existing Variant in the language including trashed ones if already loaded, NULL if there's none or FALSE to load it
+     * @return PageView|null Saved variant or NULL if its URL is already used
+     */
+    protected function saveVariant( PageView $page, array $language, string $slug, array $pageData, array $content, PageView|false|null $existing = false ): ?PageView
+    {
+        if( $variant = parent::saveVariant( $page, $language, $slug, $pageData, $content, $existing ) ) {
+            $this->savedPath( (string) $variant->domain, (string) $variant->path );
+        }
+
+        return $variant;
+    }
+
 
     /**
      * Imports all pages recursively following the TYPO3 page hierarchy.
      *
-     * @param  Collection<int, mixed>  $pages
-     * @param  Collection<int|string, mixed>  $contentElements
+     * @param Collection<int, mixed> $pages
      */
-    protected function importPages(Collection $pages, Collection $contentElements): void
+    protected function importPages( Collection $pages ): void
     {
-        $pageMap = $pages->groupBy('pid');
-        $pagesById = $pages->keyBy(fn ($page) => (int) $page->uid);
-        $imported = 0;
-        $reused = 0;
+        $pageMap = $pages->groupBy( 'pid' );
+        $rootPages = $pageMap->get( 0, Collection::make() );
+        $this->sequence( $this->treeOrder( $pageMap ) );
 
-        $importChildren = function (int $parentUid, PageView $parentPage, string $domain) use (&$importChildren, $pageMap, $pagesById, $contentElements, &$imported, &$reused) {
-            $children = $pageMap->get($parentUid, Collection::make());
+        foreach( $rootPages as $t3Root )
+        {
+            $domain = $this->site->domain( $t3Root );
+            $root = $this->getRootPage( $t3Root, $domain );
+            $this->info( "Importing tree: {$t3Root->title} ({$domain})" );
 
-            foreach ($children as $t3Page) {
-                try {
-                    $result = $this->atomic(function () use ($t3Page, $parentPage, $domain, $pagesById, $contentElements) {
-                        $slug = $this->slugFromPath($t3Page->slug);
-
-                        if ($page = Pages::find(['domain' => $domain, 'path' => $slug])) {
-                            return ['page' => $page, 'path' => $slug, 'reused' => true];
-                        }
-
-                        $to = $this->redirectTarget($t3Page, $pagesById);
-                        $pageData = $this->buildPageData($t3Page, $slug, $domain, $to);
-                        $page = $this->save($t3Page, $pageData, $contentElements, null, $parentPage);
-
-                        return ['page' => $page, 'path' => $slug, 'reused' => false];
-                    });
-                } catch (\Throwable $e) {
-                    $this->error("  Failed to import [{$t3Page->uid}] {$t3Page->title}: ".$e->getMessage());
-
-                    continue;
-                }
-
-                if ($result['reused']) {
-                    $reused++;
-                    $this->info("  Reused: {$t3Page->title} (/{$result['path']}) [{$domain}] (destination route already exists)");
-                } else {
-                    $imported++;
-                    $this->info("  Imported: {$t3Page->title} (/{$result['path']}) [{$domain}]");
-                }
-
-                /** @var PageView $childParent */
-                $childParent = $result['page'];
-                $importChildren($t3Page->uid, $childParent, $domain);
-            }
-        };
-
-        $rootPages = $pageMap->get(0, Collection::make());
-
-        foreach ($rootPages as $t3Root) {
-            $domain = $this->domainMap[$t3Root->uid] ?? $this->domain;
-            $root = $this->getRootPage($t3Root, $domain, $contentElements);
-            $this->info("Importing tree: {$t3Root->title} ({$domain})");
-            $importChildren($t3Root->uid, $root, $domain);
+            $this->importChildren( $pageMap, $t3Root->uid, $root, $domain );
         }
 
-        $rootCount = $rootPages->count();
-        $total = $imported + $reused + $rootCount;
-        $totalLabel = $total === 1 ? 'page' : 'pages';
-        $pageLabel = $imported === 1 ? 'child page' : 'child pages';
-        $rootLabel = $rootCount === 1 ? 'root page' : 'root pages';
-        $reusedLabel = $reused === 1 ? 'existing child route reused' : 'existing child routes reused';
-        $reusedSummary = $reused > 0 ? ", {$reused} {$reusedLabel}" : '';
-
-        $this->info("Import complete. {$total} TYPO3 {$totalLabel} processed ({$rootCount} {$rootLabel}, {$imported} {$pageLabel} imported{$reusedSummary}).");
+        // root pages aren't counted
+        $this->totals( $pages->count() - $rootPages->count(), 'child pages' );
     }
+
 
     /**
-     * Corrects generic TYPO3 MIME values when the file extension is definitive.
+     * Returns the TYPO3 pages in the order they are imported, the descendants directly after their parent.
+     *
+     * @param Collection<int|string, Collection<int, mixed>> $pageMap TYPO3 pages grouped by parent ID
+     * @return list<object> TYPO3 pages in import order
      */
-    protected function normalizeMime(string $mime, string $extension): string
+    protected function treeOrder( Collection $pageMap ): array
     {
-        $mime = strtolower(trim($mime));
-        $guessed = Files::mime('file.'.$extension);
+        $list = [];
+        $stack = $pageMap->get( 0, Collection::make() )->reverse()->values()->all();
 
-        if ($mime === '' || $mime === 'application/octet-stream'
-            || ($mime === 'text/plain' && $guessed === 'image/svg+xml')) {
-            return $guessed;
+        while( $page = array_pop( $stack ) )
+        {
+            $list[] = $page;
+            array_push( $stack, ...$pageMap->get( (int) $page->uid, Collection::make() )->reverse()->values()->all() );
         }
 
-        return $mime;
+        return $list;
     }
+
 
     /**
      * Prints a dry run summary of page hierarchy.
      *
-     * @param  Collection<int, mixed>  $pages
+     * @param Collection<int, mixed> $pages
      */
-    protected function printDryRun(Collection $pages): void
+    protected function printDryRun( Collection $pages ): void
     {
-        $pageMap = $pages->groupBy('pid');
+        $pageMap = $pages->groupBy( 'pid' );
 
-        $printTree = function (int $pid, int $depth) use (&$printTree, $pageMap) {
-            $children = $pageMap->get($pid, Collection::make());
-
-            foreach ($children as $page) {
-                $indent = str_repeat('  ', $depth);
-                $type = $page->doktype == 4 ? ' [shortcut]' : '';
-                $hidden = $page->hidden ? ' [hidden]' : '';
-                $this->line("{$indent}[{$page->uid}] {$page->title} ({$page->slug}){$type}{$hidden}");
-                $printTree($page->uid, $depth + 1);
+        $printTree = function( int $pid, int $depth ) use ( &$printTree, $pageMap ) {
+            foreach( $pageMap->get( $pid, Collection::make() ) as $page )
+            {
+                $this->line( str_repeat( '  ', $depth ) . $this->dryRunLine( $page ) );
+                $printTree( $page->uid, $depth + 1 );
             }
         };
 
-        $printTree(0, 0);
-        $this->info('Dry run complete. No changes were made.');
+        $printTree( 0, 0 );
+        $this->info( 'Dry run complete. No changes were made.' );
     }
+
 
     /**
      * Prints explicitly selected pages for a dry run.
      *
-     * @param  Collection<int, mixed>  $pages
+     * @param Collection<int, mixed> $pages
      */
-    protected function printSelectedDryRun(Collection $pages): void
+    protected function printSelectedDryRun( Collection $pages ): void
     {
-        foreach ($pages as $page) {
-            $type = $page->doktype == 4 ? ' [shortcut]' : '';
-            $hidden = $page->hidden ? ' [hidden]' : '';
-            $this->line("[{$page->uid}] {$page->title} ({$page->slug}){$type}{$hidden}");
+        foreach( $pages as $page ) {
+            $this->line( $this->dryRunLine( $page ) );
         }
 
-        $this->info('Dry run complete. No changes were made.');
+        $this->info( 'Dry run complete. No changes were made.' );
     }
 
-    /**
-     * Resolves a TYPO3 file identifier to a full URL or path.
-     */
-    protected function resolveFilePath(string $identifier): string
-    {
-        $identifier = ltrim($identifier, '/');
-
-        if ($this->fileBase) {
-            return $this->fileBase.'/'.$identifier;
-        }
-
-        return $identifier;
-    }
 
     /**
-     * Builds the conventional TYPO3 public file base from the first imported domain.
+     * Returns the line of the TYPO3 page printed by the dry run.
      */
-    protected function defaultFileBase(): string
+    protected function dryRunLine( object $page ): string
     {
-        $host = $this->domain;
+        $type = (int) ( $page->doktype ?? 0 ) === 4 ? ' [shortcut]' : '';
+        $hidden = !empty( $page->hidden ) ? ' [hidden]' : '';
 
-        if ($host === '') {
-            $host = (string) reset($this->domainMap);
-        }
-
-        if ($host === '') {
-            return '';
-        }
-
-        $base = str_starts_with($host, 'http') ? $host : 'https://'.$host;
-
-        return rtrim($base, '/').'/fileadmin';
-    }
-
-    /**
-     * Parses --domain options into a default domain and UID-to-domain map.
-     *
-     * Accepts plain domains (e.g. --domain=example.com) as default,
-     * or domains with root page UID (e.g. --domain=example.com:1) for specific trees.
-     */
-    protected function parseDomainOption(): string
-    {
-        $default = '';
-
-        foreach ((array) $this->option('domain') as $entry) {
-            $parts = explode(':', (string) $entry, 2);
-
-            if (! empty($parts[1])) {
-                $this->domainMap[(int) $parts[1]] = $parts[0];
-            } else {
-                $default = $parts[0];
-            }
-        }
-
-        return $default;
-    }
-
-    /**
-     * Returns a query for the TYPO3 table or NULL if the table doesn't exist.
-     */
-    protected function t3table(string $name): ?\Illuminate\Database\Query\Builder
-    {
-        return Schema::connection($this->t3Connection)->hasTable($name)
-            ? DB::connection($this->t3Connection)->table($name)
-            : null;
-    }
-
-    /**
-     * Extracts a clean slug from a TYPO3 page slug/path.
-     */
-    protected function slugFromPath(?string $path): string
-    {
-        return trim($path ?? '', '/');
+        return '[' . ( $page->uid ?? '' ) . '] ' . ( $page->title ?? '' ) . ' (' . ( $page->slug ?? '' ) . "){$type}{$hidden}";
     }
 }
