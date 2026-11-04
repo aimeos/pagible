@@ -7,38 +7,28 @@
 
 namespace Aimeos\Cms\Commands;
 
-use Aimeos\Cms\Models\Page;
-use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Files;
-use Aimeos\Cms\Import\Markdown;
 use Aimeos\Cms\Import\Pages;
+use Aimeos\Cms\Import\Status;
+use Aimeos\Cms\Import\WordPress;
+use Aimeos\Cms\Import\WpArticle;
+use Aimeos\Cms\Import\WpBlog;
+use Aimeos\Cms\Import\WpMedia;
+use Aimeos\Cms\Import\WpReader;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
+use Illuminate\Support\Facades\DB;
 
 
 /**
- * @phpstan-type WpAttachment object{
- *   ID: int|string,
- *   guid: string,
- *   post_title: string,
- *   post_mime_type: string,
- * }
- * @phpstan-type WpPost object{
- *   ID: int,
- *   post_name: string,
- *   post_title: string,
- *   post_excerpt: string,
- *   post_content: string,
- *   post_date_gmt: string|null,
- *   post_date: string,
- * }
+ * @phpstan-import-type WpPost from WpReader
  */
-class WpImport extends Command
+class WpImport extends BaseImport
 {
+    /** Columns of the pages of unchanged posts which are only moved below the blog page by keepPage() */
+    protected const KEEP_COLUMNS = ['id', 'variant_id', 'parent_id', 'tenant_id', 'lang', 'domain', 'path', 'editor', 'to', 'deleted_at'];
+
     /**
      * Command name
      */
@@ -53,6 +43,7 @@ class WpImport extends Command
         {--theme= : Pagible theme name applied to imported pages}
         {--media-url=* : Media base URL; repeatable, first value replaces wp-content/uploads paths}
         {--editor=wp-import : Editor name for imported records}
+        {--since= : Only import the posts changed since the date (e.g. 2026-01-31), the pages of the others are kept as imported before}
         {--dry-run : Show what would be imported without making changes}';
 
     /**
@@ -60,20 +51,14 @@ class WpImport extends Command
      */
     protected $description = 'Imports WordPress posts into Pagible CMS blog article pages';
 
-    protected string $wpConnection;
-    protected string $domain;
-    protected string $lang;
+    protected bool $keepPages = false;
     protected string $type;
     protected string $theme;
-    /** @var array<string> */
-    protected array $mediaUrls = [];
-    protected string $editor;
-    /** @var array<int|string, array{guid: string, title: string, mime: string}> */
-    protected array $attachmentsById = [];
-    /** @var array<string, array{guid: string, title: string, mime: string}> */
-    protected array $attachmentsByBasename = [];
-    /** @var array<string, string> */
-    protected array $createdFileIds = [];
+    /** @var array<string, PageView|null> Existing pages of the posts in the current chunk by path */
+    protected array $postPages = [];
+    protected ?WordPress $wordpress = null;
+    protected WpMedia $media;
+    protected WpReader $reader;
 
 
     /**
@@ -81,38 +66,15 @@ class WpImport extends Command
      */
     public function handle(): void
     {
-        $this->wpConnection = (string) $this->option( 'connection' ); // @phpstan-ignore cast.string
-        $this->domain = (string) $this->option( 'domain' ); // @phpstan-ignore cast.string
-        $this->lang = (string) $this->option( 'lang' ); // @phpstan-ignore cast.string
-        $this->type = (string) $this->option( 'type' ); // @phpstan-ignore cast.string
-        $this->theme = (string) $this->option( 'theme' ); // @phpstan-ignore cast.string
-        $this->editor = (string) $this->option( 'editor' ); // @phpstan-ignore cast.string
-        $this->createdFileIds = [];
-        $this->mediaUrls = [];
+        $this->type = $this->stringOption( 'type' );
+        $this->theme = $this->stringOption( 'theme' );
 
-        foreach( (array) $this->option( 'media-url' ) as $url )
-        {
-            if( is_string( $url ) && ( $url = rtrim( trim( $url ), '/' ) ) !== ''
-                && !in_array( $url, $this->mediaUrls, true ) ) {
-                $this->mediaUrls[] = $url;
-            }
-        }
-
-        if( $tenant = (string) $this->option( 'tenant' ) ) { // @phpstan-ignore cast.string
-            Tenancy::set( $tenant );
-        }
-
-        if( !Database::check( $this, $this->wpConnection, 'WordPress', 'WP', 'wordpress' ) ) {
+        if( !$this->init( 'WordPress', 'WP' ) || !$this->sinceOption() ) {
             return;
         }
 
-        $postQuery = DB::connection( $this->wpConnection )
-            ->table( 'wp_posts' )
-            ->where( 'post_type', 'post' )
-            ->where( 'post_status', 'publish' )
-            ->orderBy( 'post_date', 'asc' );
-
-        $postCount = $postQuery->count();
+        $this->reader = new WpReader( DB::connection( $this->connection ) );
+        $postCount = $this->reader->count();
 
         if( $postCount === 0 ) {
             $this->warn( 'No published WordPress posts found.' );
@@ -122,272 +84,103 @@ class WpImport extends Command
         $this->info( "Found {$postCount} published WordPress posts." );
 
         if( $this->option( 'dry-run' ) ) {
-            $this->printDryRun( $postQuery );
+            $this->printDryRun();
             return;
         }
 
-        $this->fetchAttachments();
+        $this->media = new WpMedia( (array) $this->option( 'media-url' ), $this->createMediaFile( ... ),
+            $this->reader->basenames(), $this->reader->attachments( ... ) );
         $blogPage = $this->getBlogPage();
 
-        $this->importPosts( $postQuery, $blogPage, $postCount );
-    }
-
-
-    /**
-     * Validates a WordPress attachment database row.
-     *
-     * @return WpAttachment
-     */
-    protected function attachment( object $attachment ): object
-    {
-        $data = get_object_vars( $attachment );
-        $id = $data['ID'] ?? null;
-        $guid = $data['guid'] ?? null;
-        $title = $data['post_title'] ?? null;
-        $mime = $data['post_mime_type'] ?? null;
-
-        if( !( is_int( $id ) || is_string( $id ) ) || !is_string( $guid )
-            || !is_string( $title ) || !is_string( $mime ) ) {
-            throw new \UnexpectedValueException( 'Invalid WordPress attachment row.' );
+        try {
+            $this->importPosts( $blogPage, $postCount );
+        } finally {
+            $this->forgetDownloads();
         }
-
-        return (object) ['ID' => $id, 'guid' => $guid, 'post_title' => $title, 'post_mime_type' => $mime];
-    }
-
-
-    /**
-     * Builds the content elements array with article element first.
-     *
-     * @param array<int|string, mixed> $bodyElements
-     * @return array<int|string, mixed>
-     */
-    protected function buildContentElements( string $intro, ?string $coverFileId, array $bodyElements,
-        ?string $previewFileId = null
-    ): array
-    {
-        $articleData = ['text' => $intro];
-        $articleFiles = $previewFileId ? [$previewFileId] : [];
-
-        if( $coverFileId ) {
-            $articleData['file'] = ['id' => $coverFileId, 'type' => 'file'];
-            $articleFiles = [$coverFileId];
-        }
-
-        return array_merge(
-            [['id' => Utils::uid(), 'type' => 'article', 'group' => 'main', 'files' => $articleFiles,
-                'data' => $articleData]],
-            $bodyElements
-        );
     }
 
 
     /**
      * Builds the page data array for an article.
      *
+     * @param int $status 1 for enabled pages, 0 for disabled ones
      * @return array<string, mixed>
      */
-    protected function buildPageData( string $title, string $slug ): array
+    protected function buildPageData( string $title, string $slug, string $tag = 'article', int $status = 1 ): array
     {
-        return [
-            'name' => $title,
-            'title' => $title,
-            'path' => $slug,
-            'tag' => 'article',
-            'type' => $this->type,
-            'theme' => $this->theme,
-            'domain' => $this->domain,
-            'lang' => $this->lang,
-            'status' => 1,
-            'editor' => $this->editor,
-        ];
+        return ['type' => $this->type, 'theme' => $this->theme] + $this->pageData( $title, $slug, $status, $tag );
     }
 
 
     /**
-     * Cleans a code block by removing HTML tags and decoding entities.
+     * Adds the file of a previous import and remembers its MIME type, so preview() doesn't need to fetch it.
+     *
+     * @param string $path Source URL or path of the file
      */
-    protected function cleanCodeBlock( string $code ): string
+    protected function reuseFile( string $path, File $file ): void
     {
-        $code = (string) preg_replace( '/<\/?code>/i', '', $code );
-        $code = strip_tags( $code );
-        $code = html_entity_decode( $code, ENT_QUOTES, 'UTF-8' );
-
-        return trim( $code );
+        parent::reuseFile( $path, $file );
+        $this->media->remember( (string) $file->id, (string) $file->mime );
     }
 
 
     /**
-     * Creates a File record with a published version.
+     * Creates a File record with a published version or returns the one created before by this import.
+     *
+     * Unlike createFile(), files are not looked up by their path because downloaded files get a new one.
+     * The path must be rewritten by the WpMedia object before.
+     *
+     * @param bool $download TRUE to download the file and store it locally
      */
-    protected function createFile( string $mime, string $name, string $path, bool $download = false ): ?string
+    protected function createMediaFile( string $mime, string $name, string $path, bool $download = false ): ?string
     {
-        $path = $this->rewriteMediaUrl( $path );
-
         if( !Utils::isValidUrl( $path, strict: false ) ) {
             return null;
         }
 
-        if( ( $id = $this->createdFileIds[$path] ?? null ) && File::whereKey( $id )->exists() ) {
+        if( $id = $this->knownFile( $path ) ) {
             return $id;
         }
 
-        $id = Files::create( $mime, $name, $path, $this->editor, $download )->id ?? '';
-        $this->createdFileIds[$path] = $id;
+        // files used by several posts are only downloaded once if the download fails
+        // the MIME type of downloaded files is detected from their content
+        $file = $this->downloadOnce( $path, $download, fn() => Files::create( $mime, $name, $path, $this->editor, $download, $download ? $this->downloaded( $path ) : null ) );
+        $id = $file->id ?? '';
+
+        $this->createdFiles->put( $path, $id );
+        $this->media->remember( $id, $file->mime ?? '' );
 
         return $id;
     }
 
 
     /**
-     * Creates a Pagible File record from a URL, e.g. the guid of a WordPress attachment.
+     * Returns the page which uses the URL path including trashed ones.
      *
-     * @param string $url File URL
-     * @param string $name File name, the URL basename if empty
-     * @param string $mime MIME type, detected from the URL if empty
-     */
-    protected function createFileFromUrl( string $url, string $name = '', string $mime = '' ): ?string
-    {
-        $name = $name ?: basename( parse_url( $url, PHP_URL_PATH ) ?: 'image' );
-
-        return $this->createFile( $mime ?: Files::mime( $url ), $name, $url, $this->isManagedMediaUrl( $url ) );
-    }
-
-
-    /**
-     * Extracts the first paragraph of text as an introduction.
-     */
-    protected function extractIntro( string $html ): string
-    {
-        if( str_contains( $html, '<!--more-->' ) ) {
-            $html = explode( '<!--more-->', $html )[0];
-        }
-
-        $text = strip_tags( $html );
-        $text = html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
-        $text = (string) preg_replace( '/\s+/', ' ', $text );
-        $text = trim( $text );
-
-        if( mb_strlen( $text ) > 300 ) {
-            $text = mb_substr( $text, 0, 297 ) . '...';
-        }
-
-        return $text;
-    }
-
-
-    /**
-     * Fetches WordPress image attachments keyed by ID.
-     */
-    protected function fetchAttachments(): void
-    {
-        $this->attachmentsById = [];
-        $this->attachmentsByBasename = [];
-
-        DB::connection( $this->wpConnection )
-            ->table( 'wp_posts' )
-            ->select( 'ID', 'guid', 'post_title', 'post_mime_type' )
-            ->where( 'post_type', 'attachment' )
-            ->whereIn( 'post_mime_type', ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'] )
-            ->orderBy( 'ID' )
-            ->chunk( 100, function( $chunk ) {
-                foreach( $chunk as $attachment )
-                {
-                    $attachment = $this->attachment( $attachment );
-                    $this->attachmentsById[$attachment->ID] = [
-                        'guid' => $attachment->guid,
-                        'title' => $attachment->post_title,
-                        'mime' => $attachment->post_mime_type,
-                    ];
-                    $this->attachmentsByBasename[basename( $attachment->guid )] = &$this->attachmentsById[$attachment->ID];
-                }
-            } );
-    }
-
-
-    /**
-     * Returns a single-file element (audio, image or video) with its file ID.
+     * The pages of the posts in the current chunk are fetched at once before and used until the post is saved.
      *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     * @param string $path URL path with or without leading slash
      */
-    protected function fileElement( string $type, string $fileId ): array
+    protected function pageByPath( string $path ): ?PageView
     {
-        return [
-            'elements' => [[
-                'id' => Utils::uid(),
-                'type' => $type,
-                'data' => ['file' => ['id' => $fileId, 'type' => 'file']],
-            ]],
-            'fileIds' => [$fileId],
-        ];
-    }
-
-
-    /**
-     * Returns the shared footer references inherited from the blog parent.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<string>}
-     */
-    protected function findFooterReferences( PageView $blogPage ): array
-    {
-        $elements = collect( (array) $blogPage->content )
-            ->filter( fn( $item ) => ( $item->type ?? null ) === 'reference'
-                && ( $item->group ?? null ) === 'footer'
-                && is_string( $item->refid ?? null )
-                && $item->refid !== '' )
-            ->map( fn( $item ) => (array) $item )
-            ->values()
-            ->all();
-
-        return [
-            'elements' => $elements,
-            'elementIds' => array_values( array_unique( array_column( $elements, 'refid' ) ) ),
-        ];
-    }
-
-
-    /**
-     * Returns the first imported image file ID while preserving content order.
-     *
-     * @param array<string> $fileIds
-     */
-    protected function findPreviewFileId( array $fileIds ): ?string
-    {
-        $files = File::whereIn( 'id', array_unique( $fileIds ) )->get( ['id', 'mime'] )->keyBy( 'id' );
-
-        foreach( $fileIds as $id ) {
-            if( str_starts_with( (string) $files->get( $id )?->mime, 'image/' ) ) {
-                return $id;
-            }
-        }
-
-        return null;
-    }
-
-
-    /**
-     * Finds a WordPress attachment matching the given image URL.
-     *
-     * @return array{guid: string, title: string, mime: string}|null
-     */
-    protected function findAttachmentByUrl( string $src ): ?array
-    {
-        foreach( $this->attachmentsByBasename as $basename => $attachment )
-        {
-            if( str_contains( $src, $basename ) ) {
-                return $attachment;
-            }
-        }
-
-        return null;
+        return array_key_exists( $path, $this->postPages ) ? $this->postPages[$path] : parent::pageByPath( $path );
     }
 
 
     /**
      * Publishes the selected theme for an existing blog page.
+     *
+     * Blog pages which weren't created by the import or were changed since get no new version.
      */
     protected function updateBlogTheme( PageView $page ): void
     {
         if( $this->theme === '' || $page->theme === $this->theme ) {
+            return;
+        }
+
+        if( !$this->isImported( $page ) )
+        {
+            $this->warn( "Theme of the blog page /{$page->path} isn't changed because it wasn't imported or was changed since" );
             return;
         }
 
@@ -405,1059 +198,248 @@ class WpImport extends Command
      */
     protected function getBlogPage(): PageView
     {
-        $blogPath = (string) $this->option( 'blog-path' ); // @phpstan-ignore cast.string
-        $blogName = (string) $this->option( 'blog-name' ); // @phpstan-ignore cast.string
+        $blogPath = trim( $this->stringOption( 'blog-path' ), '/' );
+        $blogName = $this->stringOption( 'blog-name' );
 
-        if( $page = Pages::find( ['domain' => $this->domain, 'path' => $blogPath] ) )
+        // the blog page is used as parent of the posts even if it wasn't imported
+        if( $page = $this->pageByPath( $blogPath ) )
         {
+            $page = $this->restore( $page );
             $this->updateBlogTheme( $page );
-
             $this->info( "Using existing blog page: {$page->name} (/{$blogPath})" );
-            return $page;
         }
-
-        $content = [
-            ['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]],
-        ];
-
-        $data = ['tag' => ''] + $this->buildPageData( $blogName, $blogPath );
-
-        $root = PageView::where( 'tag', 'root' )->where( 'domain', $this->domain )->first();
-        $page = Pages::create( $data, $content, $root );
-        Pages::publish( $page, $data, ['content' => $content], [], [], $this->lang, $this->editor );
-
-        $this->info( "Created blog page: {$blogName} (/{$blogPath})" );
-        return $page;
-    }
-
-
-    /**
-     * Checks if HTML contains tags that cannot be fully converted to markdown.
-     *
-     * Simple inline formatting (bold, italic, links, code, paragraphs, line breaks,
-     * lists, blockquotes) is convertible. Anything else (tables, divs, figures,
-     * iframes, etc.) is not.
-     */
-    protected function hasUnconvertibleHtml( string $html ): bool
-    {
-        $convertible = 'p|br|strong|b|em|i|a|code|ul|ol|li|blockquote|span|sup|sub|del|s|mark|abbr|hr';
-        $stripped = preg_replace( '/<\/?(' . $convertible . ')(\s[^>]*)?\/?>/i', '', $html );
-
-        return (bool) preg_match( '/<[a-z][a-z0-9]*[\s>\/]/i', $stripped ?? '' );
-    }
-
-
-    /**
-     * Creates an image-text element from an imported image and HTML text.
-     *
-     * Falls back to an image element without text or to a text element without image.
-     *
-     * @return array<string, mixed>
-     */
-    protected function imageText( ?string $fileId, string $html, ?string $position = null ): array
-    {
-        $html = (string) preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $html );
-        $text = Markdown::fromHtml( $html );
-
-        if( $fileId && !empty( $text ) )
+        else
         {
-            $data = ['text' => $text, 'file' => ['id' => $fileId, 'type' => 'file']];
-
-            return [
-                'elements' => [[
-                    'id' => Utils::uid(),
-                    'type' => 'image-text',
-                    'data' => $position ? $data + ['position' => $position] : $data,
-                ]],
-                'fileIds' => [$fileId],
-            ];
+            $content = [['id' => Utils::uid(), 'type' => $this->type, 'group' => 'main', 'data' => ['title' => $blogName]]];
+            $page = $this->createPage( $this->buildPageData( $blogName, $blogPath, '' ), ['elements' => $content, 'fileIds' => []], Pages::root( $this->domain ) );
+            $this->info( "Created blog page: {$blogName} (/{$blogPath})" );
         }
 
-        if( $fileId ) {
-            return $this->fileElement( 'image', $fileId );
-        }
-
-        return ( !empty( $text ) ? $this->parseTextBlock( $text ) : null ) ?? ['elements' => [], 'fileIds' => []];
-    }
-
-
-    /**
-     * Imports the featured image (post thumbnail) for a WordPress post.
-     */
-    protected function importFeaturedImage( int $postId ): ?string
-    {
-        $thumbnailId = DB::connection( $this->wpConnection )
-            ->table( 'wp_postmeta' )
-            ->where( 'post_id', $postId )
-            ->where( 'meta_key', '_thumbnail_id' )
-            ->value( 'meta_value' );
-
-        if( !$thumbnailId || !( $attachment = $this->attachmentsById[$thumbnailId] ?? null ) ) {
-            return null;
-        }
-
-        return $this->createFileFromUrl( $attachment['guid'], $attachment['title'], $attachment['mime'] );
-    }
-
-
-    /**
-     * Imports an image from an HTML img tag.
-     */
-    protected function importImageFromHtml( string $html ): ?string
-    {
-        if( !preg_match( '/src=["\']([^"\']+)["\']/i', $html, $srcMatch ) ) {
-            return null;
-        }
-
-        $src = $srcMatch[1];
-        $alt = '';
-        if( preg_match( '/alt=["\']([^"\']*)["\']/', $html, $altMatch ) ) {
-            $alt = $altMatch[1];
-        }
-
-        if( $attachment = $this->findAttachmentByUrl( $src ) ) {
-            return $this->createFileFromUrl( $attachment['guid'], $alt ?: $attachment['title'], $attachment['mime'] );
-        }
-
-        return $this->createFileFromUrl( $src, $alt );
+        // posts must not overwrite the blog page
+        $this->usedPages[$page->id ?? ''] = true;
+        return $page;
     }
 
 
     /**
      * Imports a single WordPress post as a Pagible blog article page.
      *
+     * Pages of previous imports get no new version if their data and content didn't change.
+     *
      * @param WpPost $post
+     * @return array{page: PageView, status: Status} Imported page and its status
+     * @throws \RuntimeException If the URL is used by a page which wasn't imported, was changed since or was saved by this import
      */
-    protected function importPost( object $post, PageView $blogPage ): bool
+    protected function importPost( object $post, PageView $blogPage ): array
     {
-        $slug = $post->post_name ?: Utils::slugify( $post->post_title );
+        $slug = $this->slug( $post );
+
+        // posts not changed since the given date aren't rendered again
+        if( $kept = $this->keepPage( $post->ID, $slug, $blogPage ) ) {
+            return $kept;
+        }
+
         $title = html_entity_decode( $post->post_title, ENT_QUOTES, 'UTF-8' );
-        $intro = $post->post_excerpt ?: $this->extractIntro( $post->post_content );
-        $page = Pages::find( ['domain' => $this->domain, 'path' => $slug] );
-        $updated = $page !== null;
+        $intro = $post->post_excerpt ?: WpArticle::intro( $post->post_content );
 
-        $content = $this->parseContent( $post->post_content );
-        $coverFileId = $this->importFeaturedImage( $post->ID );
-        $previewFileId = $coverFileId ?? $this->findPreviewFileId( $content['fileIds'] );
-        $footer = $this->findFooterReferences( $blogPage );
+        $content = $this->wordpress()->elements( $post->post_content );
+        $coverFileId = $this->media->featured( $post->ID );
+        $previewFileId = $coverFileId ?? $this->media->preview( $content['fileIds'] );
+        $footer = WpBlog::footer( $blogPage );
 
-        $contentElements = array_merge(
-            $this->buildContentElements( $intro, $coverFileId, $content['elements'], $previewFileId ),
-            $footer['elements']
-        );
+        $elements = [WpArticle::element( $intro, $coverFileId, $previewFileId ), ...$content['elements'], ...$footer['elements']];
         $fileIds = $coverFileId ? [...$content['fileIds'], $coverFileId] : $content['fileIds'];
-        $pageData = $this->buildPageData( $title, $slug );
+        $date = $this->date( $post->post_date_gmt, $post->post_date );
 
-        if( !$page ) {
-            $page = Pages::create( $pageData, $contentElements, $blogPage );
-        } elseif( $page->parent_id !== $blogPage->id ) {
-            $page->page->appendToNode( Page::findOrFail( $blogPage->id ) )->save();
+        // password protected posts are only visible to visitors who know the password, so their pages are disabled
+        if( $post->post_password !== '' ) {
+            $this->warn( "  Disabled [{$post->ID}] {$post->post_title} because it is password protected" );
         }
 
-        Pages::publish( $page, $pageData, ['content' => $contentElements], $fileIds, $footer['elementIds'],
-            $this->lang, $this->editor );
+        $saved = $this->savePage( $slug, $this->buildPageData( $title, $slug, 'article', $post->post_password !== '' ? 0 : 1 ),
+            ['elements' => $elements, 'fileIds' => $fileIds, 'elementIds' => $footer['elementIds']], $blogPage, $date );
+        $page = $saved['page'];
 
-        $date = $post->post_date_gmt ?? null;
-
-        if( !$date || $date === '0000-00-00 00:00:00' ) {
-            $date = $post->post_date ?? null;
-        }
-
-        if( $date && $date !== '0000-00-00 00:00:00' ) {
+        if( $date && $page->created_at?->format( 'Y-m-d H:i:s' ) !== $date ) {
             $page->variant->forceFill( ['created_at' => $date] )->save();
         }
 
-        return $updated;
+        return $saved;
     }
 
 
     /**
      * Imports all posts under the given blog page.
      */
-    protected function importPosts( \Illuminate\Database\Query\Builder $query, PageView $blogPage, int $total ): void
+    protected function importPosts( PageView $blogPage, int $total ): void
     {
-        $imported = 0;
-        $updated = 0;
+        // the texts of posts not changed since the --since date aren't fetched because they aren't rendered again
+        $this->reader->chunk( function( $rows ) use ( $blogPage ) {
+            $posts = [];
 
-        $query->chunk( 100, function( $posts ) use ( $blogPage, &$imported, &$updated ) {
+            foreach( $rows as $idx => $row )
+            {
+                try {
+                    $posts[$idx] = $this->reader->post( $row );
+                } catch( \Exception $e ) {
+                    $this->failedImport( $this->rowLabel( $row ), $e );
+                }
+            }
+
+            $this->changed = $this->since !== null ? array_column( array_map( fn( $post ) => [$post->ID, $this->modified( $post )], $posts ), 1, 0 ) : [];
+            // the pages of all posts in the chunk are fetched at once, the pages of unchanged posts are only moved
+            $unchanged = array_filter( $posts, fn( $post ) => $this->unchangedSince( $post->ID ) );
+            $this->postPages = $this->postPages( array_diff_key( $posts, $unchanged ) )
+                + $this->postPages( $unchanged, static::KEEP_COLUMNS );
+
+            // unchanged posts without page of a previous import are imported again, so their texts are fetched now
+            if( $missing = array_filter( $posts, fn( $post ) => $this->unchangedSince( $post->ID ) && !isset( $this->postPages[$this->slug( $post )] ) ) )
+            {
+                $this->reader->texts( $missingRows = array_intersect_key( $rows->all(), $missing ) );
+
+                foreach( $missingRows as $idx => $row ) {
+                    $posts[$idx] = $this->reader->post( $row );
+                }
+            }
+
+            $render = array_filter( $posts, fn( $post ) => !$this->unchangedSince( $post->ID ) ) + array_intersect_key( $posts, $missing );
+
+            // the featured images and the used images of all posts in the chunk are fetched at once
+            $this->media->prefetch( $this->reader->thumbnails( array_column( $render, 'ID' ) ), array_column( $render, 'post_content', 'ID' ) );
+            $this->prefetchFiles( $this->media->paths() );
+            $postIds = array_column( $posts, 'ID' );
+
             foreach( $posts as $post )
             {
-                $data = get_object_vars( $post );
-                $id = $data['ID'] ?? '?';
-                $title = $data['post_title'] ?? '';
-                $id = is_int( $id ) || is_string( $id ) ? $id : '?';
-                $title = is_string( $title ) ? $title : '';
-
-                try {
-                    $post = $this->post( $post );
-                    $existing = \Aimeos\Cms\DB::transaction( fn() => $this->importPost( $post, $blogPage ) );
-
-                    $existing ? $updated++ : $imported++;
-                    $action = $existing ? 'Updated' : 'Imported';
-                    $this->info( "  {$action}: {$post->post_title}" );
-                } catch( \Exception $e ) {
-                    $this->error( "  Failed to import [{$id}] {$title}: " . $e->getMessage() );
-                }
-            }
-        } );
-
-        $processed = $imported + $updated;
-        $this->info( "Import complete. {$imported} imported, {$updated} updated ({$processed}/{$total} posts processed)." );
-    }
-
-
-    /**
-     * Tests whether a media URL belongs to WordPress-managed uploads.
-     */
-    protected function isManagedMediaUrl( string $url ): bool
-    {
-        $url = html_entity_decode( trim( $url ), ENT_QUOTES | ENT_HTML5, 'UTF-8' );
-        $path = parse_url( $url, PHP_URL_PATH );
-
-        if( is_string( $path ) && preg_match( '#(?:^|/)wp-content/uploads(?:/|$)#i', $path ) === 1 ) {
-            return true;
-        }
-
-        foreach( $this->mediaUrls as $base )
-        {
-            if( $this->matchesMediaBase( $url, $base ) ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Tests whether a URL is located at or below a configured media base URL.
-     */
-    protected function matchesMediaBase( string $url, string $base ): bool
-    {
-        $candidate = parse_url( $url );
-        $configured = parse_url( $base );
-
-        if( !is_array( $candidate ) || !is_array( $configured ) ) {
-            return false;
-        }
-
-        $scheme = strtolower( (string) ( $candidate['scheme'] ?? '' ) );
-        $baseScheme = strtolower( (string) ( $configured['scheme'] ?? '' ) );
-        $host = strtolower( (string) ( $candidate['host'] ?? '' ) );
-        $baseHost = strtolower( (string) ( $configured['host'] ?? '' ) );
-
-        if( !in_array( $scheme, ['http', 'https'], true ) || $scheme !== $baseScheme || $host === '' || $host !== $baseHost ) {
-            return false;
-        }
-
-        $port = (int) ( $candidate['port'] ?? ( $scheme === 'https' ? 443 : 80 ) );
-        $basePort = (int) ( $configured['port'] ?? ( $baseScheme === 'https' ? 443 : 80 ) );
-
-        if( $port !== $basePort ) {
-            return false;
-        }
-
-        $path = '/' . ltrim( (string) ( $candidate['path'] ?? '/' ), '/' );
-        $basePath = rtrim( '/' . ltrim( (string) ( $configured['path'] ?? '/' ), '/' ), '/' ) ?: '/';
-
-        return $basePath === '/' || $path === $basePath || str_starts_with( $path, $basePath . '/' );
-    }
-
-
-    /**
-     * Dispatches a single HTML block to the appropriate parser.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseBlock( string $block, ?string $wpType = null ): ?array
-    {
-        if( $wpType !== null )
-        {
-            // Skip decorative/layout-only Gutenberg blocks
-            if( in_array( $wpType, ['separator', 'spacer', 'buttons', 'button', 'columns', 'column', 'group', 'more'] ) ) {
-                return null;
-            }
-
-            // Use Gutenberg type hints to map to Pagible schema types
-            if( $wpType === 'heading' ) {
-                return $this->parseHeadingBlock( $block ) ?? $this->parseTextBlock( $block );
-            }
-
-            if( in_array( $wpType, ['code', 'preformatted', 'syntaxhighlighter/code'] ) ) {
-                return $this->parseCodeBlock( $block ) ?? $this->parseTextBlock( $block );
-            }
-
-            if( $wpType === 'image' ) {
-                return $this->parseStandaloneImageBlock( $block ) ?? $this->parseImageTextBlock( $block );
-            }
-
-            if( $wpType === 'gallery' ) {
-                return $this->parseGalleryBlock( $block ) ?? $this->parseStandaloneImageBlock( $block );
-            }
-
-            if( in_array( $wpType, ['media-text', 'cover'] ) ) {
-                return $this->parseImageTextBlock( $block );
-            }
-
-            if( $wpType === 'table' ) {
-                return $this->parseTableBlock( $block ) ?? $this->parseTextBlock( $block );
-            }
-
-            if( in_array( $wpType, ['video', 'core-embed/youtube', 'core-embed/vimeo', 'embed'] ) ) {
-                return $this->parseVideoBlock( $block ) ?? $this->parseTextBlock( $block );
-            }
-
-            if( $wpType === 'audio' ) {
-                return $this->parseAudioBlock( $block );
-            }
-
-            if( in_array( $wpType, ['paragraph', 'list', 'quote', 'pullquote', 'verse', 'freeform'] ) ) {
-                if( preg_match( '/<img[^>]+>/i', $block ) ) {
-                    return $this->parseImageTextBlock( $block );
-                }
-                return $this->parseTextBlock( $block );
-            }
-        }
-
-        // Fall through to existing HTML-based detection for unknown/null types
-        if( $result = $this->parseHeadingBlock( $block ) ) {
-            return $result;
-        }
-
-        if( $result = $this->parseCodeBlock( $block ) ) {
-            return $result;
-        }
-
-        if( $result = $this->parseStandaloneImageBlock( $block ) ) {
-            return $result;
-        }
-
-        if( $result = $this->parseNoticeBlock( $block ) ) {
-            return $result;
-        }
-
-        if( preg_match( '/<img[^>]+>/i', $block ) ) {
-            return $this->parseImageTextBlock( $block );
-        }
-
-        return $this->parseTextBlock( $block );
-    }
-
-
-    /**
-     * Parses a <pre> tag into a code element.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseCodeBlock( string $block ): ?array
-    {
-        if( !preg_match( '/^<pre[^>]*>(.*?)<\/pre>$/is', $block, $m ) ) {
-            return null;
-        }
-
-        $language = '';
-        if( preg_match( '/lang=["\']?(\w+)/i', $block, $langMatch ) ) {
-            $language = strtolower( $langMatch[1] );
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'code',
-            'data' => [
-                'language' => $language,
-                'text' => $this->cleanCodeBlock( $m[1] ),
-            ],
-        ]]];
-    }
-
-
-    /**
-     * Parses a wp:columns block into an image-text element if it contains
-     * one image column and one text column, otherwise processes inner content.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseColumnsBlock( string $block ): ?array
-    {
-        // Extract individual column contents using wp:column markers
-        $columnPattern = '/<!--\s*wp:column(?:\s+\{[^}]*\})?\s*-->(.*?)<!--\s*\/wp:column\s*-->/is';
-
-        if( !preg_match_all( $columnPattern, $block, $columns ) ) {
-            return null;
-        }
-
-        $imageCol = null;
-        $imageColIndex = null;
-        $textParts = [];
-
-        foreach( $columns[1] as $i => $colContent )
-        {
-            $colContent = trim( $this->stripWpComments( $colContent ) );
-
-            if( empty( $colContent ) ) {
-                continue;
-            }
-
-            // Check if this column is primarily an image
-            $stripped = strip_tags( $colContent, '<img><a>' );
-            if( preg_match( '/^\s*(?:<a[^>]*>\s*)?<img[^>]+>(?:\s*<\/a>)?\s*$/is', $stripped ) && $imageCol === null ) {
-                $imageCol = $colContent;
-                $imageColIndex = $i;
-            } else {
-                $textParts[] = $colContent;
-            }
-        }
-
-        // If we have exactly one image column and at least one text column, create image-text
-        if( $imageCol !== null && !empty( $textParts ) )
-        {
-            // Image after text = end position, image before text = start position
-            $position = $imageColIndex === 0 ? 'start' : 'end';
-            $result = $this->imageText( $this->importImageFromHtml( $imageCol ), implode( "\n", $textParts ), $position );
-
-            if( ( $result['elements'][0]['type'] ?? null ) === 'image-text' ) {
-                return $result;
-            }
-        }
-
-        // Fallback: process all column content as individual blocks
-        $elements = [];
-        $fileIds = [];
-
-        foreach( $columns[1] as $colContent )
-        {
-            // Unwrap the column div but keep the block comments so the inner block types survive
-            $colContent = (string) preg_replace( '/^<div[^>]*>(.*)<\/div>$/is', '$1', trim( $colContent ) );
-
-            foreach( $this->splitGutenbergBlocks( $colContent ) as $inner )
-            {
-                $innerHtml = trim( $this->stripWpComments( $inner['html'] ) );
-                if( empty( $innerHtml ) ) {
-                    continue;
+                // the files are downloaded before the posts are imported because the downloads would keep the batch transaction open
+                // the files of the next posts are downloaded together when the post uses a file which isn't downloaded yet
+                if( array_filter( $needed = $this->media->downloads( [$post->ID] ), fn( $url ) => $this->downloadable( $url ) ) ) {
+                    $this->download( $this->media->downloads( $postIds ), $needed );
                 }
 
-                if( $result = $this->parseBlock( $innerHtml, $inner['type'] ) ) {
-                    array_push( $elements, ...$result['elements'] );
-                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
-                }
-            }
-        }
-
-        if( !empty( $elements ) ) {
-            return ['elements' => $elements, 'fileIds' => $fileIds];
-        }
-
-        return null;
-    }
-
-
-    /**
-     * Merges consecutive text elements (same type) into a single element.
-     *
-     * Consecutive "text" elements are joined with double newline (markdown).
-     * Consecutive "html" elements are concatenated directly.
-     *
-     * @param array<int|string, mixed> $elements
-     * @return array<int|string, mixed>
-     */
-    protected function mergeConsecutiveText( array $elements ): array
-    {
-        $merged = [];
-
-        foreach( $elements as $el )
-        {
-            $prev = end( $merged );
-
-            if( $prev && $prev['type'] === $el['type']
-                && in_array( $el['type'], ['text', 'html'] )
-                && isset( $prev['data']['text'] ) && isset( $el['data']['text'] ) )
-            {
-                $sep = $el['type'] === 'text' ? "\n\n" : '';
-                $key = array_key_last( $merged ) ?? 0;
-                $merged[$key]['data']['text'] .= $sep . $el['data']['text'];
-            }
-            else
-            {
-                $merged[] = $el;
-            }
-        }
-
-        return $merged;
-    }
-
-
-    /**
-     * Parses an audio block into an audio element.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseAudioBlock( string $block ): ?array
-    {
-        if( !preg_match( '/src=["\']([^"\']+)["\']/', $block, $m ) ) {
-            return null;
-        }
-
-        $fileId = $this->createFileFromUrl( $m[1] );
-
-        if( !$fileId ) {
-            return null;
-        }
-
-        return $this->fileElement( 'audio', $fileId );
-    }
-
-
-    /**
-     * Parses WordPress post content HTML into Pagible content elements.
-     *
-     * @return array<string, mixed>
-     */
-    protected function parseContent( string $html ): array
-    {
-        $html = (string) preg_replace( '/<!--more-->/', '', $html );
-        $html = str_replace( "\r\n", "\n", $html );
-
-        $elements = [];
-        $fileIds = [];
-
-        // Detect Gutenberg content and use block comments as type hints
-        $isGutenberg = (bool) preg_match( '/<!--\s*wp:/', $html );
-
-        if( $isGutenberg )
-        {
-            $entries = $this->splitGutenbergBlocks( $html );
-            $count = count( $entries );
-
-            for( $i = 0; $i < $count; $i++ )
-            {
-                $entry = $entries[$i];
-                $block = trim( $this->stripWpComments( $entry['html'] ) );
-                if( empty( $block ) ) {
-                    continue;
-                }
-
-                // Merge aligned image with following paragraph blocks into image-text
-                $align = $entry['attrs']['align'] ?? '';
-                if( $entry['type'] === 'image' && ( $align === 'left' || $align === 'right' ) )
-                {
-                    $fileId = $this->importImageFromHtml( $block );
-                    $textParts = [];
-
-                    // Collect following paragraph/list/quote blocks as text
-                    while( $i + 1 < $count && in_array( $entries[$i + 1]['type'], ['paragraph', 'list', 'quote', 'pullquote'] ) )
-                    {
-                        $i++;
-                        $nextBlock = trim( $this->stripWpComments( $entries[$i]['html'] ) );
-                        if( !empty( $nextBlock ) ) {
-                            $textParts[] = $nextBlock;
-                        }
-                    }
-
-                    $result = $this->imageText( $fileId, implode( "\n", $textParts ), $align === 'left' ? 'start' : 'end' );
-                    array_push( $elements, ...$result['elements'] );
-                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
-                    continue;
-                }
-
-                // Parse wp:columns with image+text pattern before comments are stripped
-                if( $entry['type'] === 'columns' )
-                {
-                    $result = $this->parseColumnsBlock( $entry['html'] );
-                    if( $result ) {
-                        array_push( $elements, ...$result['elements'] );
-                        array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
-                    }
-                    continue;
-                }
-
-                $result = $this->parseBlock( $block, $entry['type'] );
+                array_shift( $postIds );
+                $result = $this->transaction( "[{$post->ID}] {$post->post_title}", fn() => $this->importPost( $post, $blogPage ) );
+                // the fetched page is outdated after the post was saved or its import failed
+                unset( $this->postPages[$this->slug( $post )] );
 
                 if( $result ) {
-                    array_push( $elements, ...$result['elements'] );
-                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
+                    $this->imported( $post->ID, $result['page'], $post->post_title, $this->slug( $post ), $result['status'] );
                 }
             }
-        }
-        else
-        {
-            foreach( $this->splitIntoBlocks( $html ) as $block )
-            {
-                $block = trim( $block );
-                if( empty( $block ) ) {
-                    continue;
-                }
+        }, $this->since !== null ? fn( object $row ) => $this->modifiedAt( get_object_vars( $row )['post_modified_gmt'] ?? null ) >= $this->since : null );
 
-                $result = $this->parseBlock( $block );
-
-                if( $result ) {
-                    array_push( $elements, ...$result['elements'] );
-                    array_push( $fileIds, ...( $result['fileIds'] ?? [] ) );
-                }
-            }
-        }
-
-        $elements = array_map( fn( $el ) => $el + ['group' => 'main'], $this->mergeConsecutiveText( $elements ) );
-
-        return ['elements' => $elements, 'fileIds' => $fileIds];
+        $this->postPages = [];
+        $this->totals( $total, 'posts' );
     }
 
 
     /**
-     * Parses a gallery block into a slideshow element with multiple images.
+     * Returns the pages which use the URL paths of the posts including trashed ones.
      *
-     * @return array<string, mixed>|null
+     * @param array<int|string, WpPost> $posts WordPress posts
+     * @param array<int, string> $columns Columns of the pages which are fetched
+     * @return array<string, PageView|null> Pages by URL path without leading slash, NULL for posts without page
      */
-    protected function parseGalleryBlock( string $block ): ?array
+    protected function postPages( array $posts, array $columns = ['*'] ): array
     {
-        if( !preg_match_all( '/<img[^>]+>/i', $block, $matches ) || count( $matches[0] ) < 2 ) {
-            return null;
+        if( $posts === [] ) {
+            return [];
         }
 
-        $fileIds = [];
+        $slugs = array_values( array_map( fn( $post ) => $this->slug( $post ), $posts ) );
+        // pages of previous imports may use URL paths with leading slash
+        $pages = Pages::findAll( ['domain' => $this->domain], 'path', array_merge( $slugs, array_map( fn( $slug ) => '/' . $slug, $slugs ) ), $columns );
+        $result = [];
 
-        foreach( $matches[0] as $imgTag )
-        {
-            $fileId = $this->importImageFromHtml( $imgTag );
-            if( $fileId ) {
-                $fileIds[] = $fileId;
-            }
+        foreach( $slugs as $slug ) {
+            $result[$slug] = $pages[$slug] ?? $pages['/' . $slug] ?? null;
         }
 
-        if( count( $fileIds ) < 2 ) {
-            return null;
-        }
-
-        return [
-            'elements' => [[
-                'id' => Utils::uid(),
-                'type' => 'slideshow',
-                'data' => [
-                    'title' => '',
-                    'files' => array_map( fn( $id ) => ['id' => $id, 'type' => 'file'], $fileIds ),
-                ],
-            ]],
-            'fileIds' => $fileIds,
-        ];
+        return $result;
     }
 
 
     /**
-     * Parses an HTML heading tag into a heading element.
+     * Returns the time when the post was modified last.
      *
-     * @return array<string, mixed>|null
+     * @param WpPost $post
+     * @return int Timestamp, posts without modification time are always changed
      */
-    protected function parseHeadingBlock( string $block ): ?array
+    protected function modified( object $post ): int
     {
-        if( !preg_match( '/^<h([1-6])[^>]*>(.*?)<\/h[1-6]>$/is', $block, $m ) ) {
-            return null;
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'heading',
-            'data' => [
-                'level' => (int) $m[1],
-                'title' => strip_tags( $m[2] ),
-            ],
-        ]]];
+        return $this->modifiedAt( $post->post_modified_gmt );
     }
 
 
     /**
-     * Parses a text block containing an inline image into an image-text element.
+     * Returns the timestamp of the modification date of a post row.
      *
-     * @return array<string, mixed>
+     * @param mixed $gmt Modification date in GMT
+     * @return int Timestamp, posts without modification time are always changed
      */
-    protected function parseImageTextBlock( string $html ): array
+    protected function modifiedAt( mixed $gmt ): int
     {
-        if( !preg_match( '/(?:<a[^>]*>\s*)?<img[^>]+>(?:\s*<\/a>)?/i', $html, $imgMatch ) ) {
-            return ['elements' => [], 'fileIds' => []];
-        }
-
-        return $this->imageText( $this->importImageFromHtml( $imgMatch[0] ), str_replace( $imgMatch[0], '', $html ) );
+        $date = $this->date( is_string( $gmt ) ? $gmt : null );
+        return $date && ( $time = strtotime( $date . ' UTC' ) ) !== false ? $time : PHP_INT_MAX;
     }
 
 
     /**
-     * Parses a tip/note/caution div into a styled text element.
+     * Returns the URL path of the post.
      *
-     * @return array<string, mixed>|null
+     * @param WpPost $post
      */
-    protected function parseNoticeBlock( string $block ): ?array
+    protected function slug( object $post ): string
     {
-        if( !preg_match( '/^<div class="(tip|note|caution)">(.*?)<\/div>$/is', $block, $m ) ) {
-            return null;
-        }
-
-        $label = $m[1] === 'caution' ? 'Warning' : ucfirst( $m[1] );
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'text',
-            'data' => ['text' => "**{$label}:** " . strip_tags( $m[2] )],
-        ]]];
+        return $post->post_name ?: Utils::slugify( $post->post_title );
     }
 
 
     /**
-     * Parses a standalone image (or linked image) into an image element.
-     *
-     * @return array<string, mixed>|null
+     * Returns the ID and title of the WordPress post row for messages, also if the row is invalid.
      */
-    protected function parseStandaloneImageBlock( string $block ): ?array
+    protected function rowLabel( object $row ): string
     {
-        $stripped = strip_tags( $block, '<img><a>' );
-        $stripped = trim( $stripped );
+        $data = get_object_vars( $row );
+        $id = $data['ID'] ?? '?';
+        $title = $data['post_title'] ?? '';
+        $id = is_int( $id ) || is_string( $id ) ? $id : '?';
+        $title = is_string( $title ) ? $title : '';
 
-        $isLinkedImage = preg_match( '/^<a[^>]*>\s*<img[^>]+>\s*<\/a>$/is', $stripped );
-        $isBareImage = preg_match( '/^<img[^>]+\/>?$/is', $stripped );
-
-        if( !$isLinkedImage && !$isBareImage ) {
-            return null;
-        }
-
-        $fileId = $this->importImageFromHtml( $block );
-
-        if( !$fileId ) {
-            return null;
-        }
-
-        return $this->fileElement( 'image', $fileId );
-    }
-
-
-    /**
-     * Parses a video block into a video element.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseVideoBlock( string $block ): ?array
-    {
-        $url = null;
-
-        // Try <video> tag, then iframe/embed src attribute
-        if( preg_match( '/<video[^>]+src=["\']([^"\']+)["\']/', $block, $m ) ) {
-            $url = $m[1];
-        } elseif( preg_match( '/<iframe[^>]+src=["\']([^"\']+)["\']/', $block, $m ) ) {
-            $url = $m[1];
-        }
-
-        // Try plain-text URL (YouTube/Vimeo embeds have URL as text content)
-        if( !$url && preg_match( '/https?:\/\/(?:(?:www\.)?youtube\.com\/watch\?v=|youtu\.be\/|(?:www\.)?vimeo\.com\/)[^\s<"]+/i', $block, $m ) ) {
-            $url = $m[0];
-        }
-
-        if( $url )
-        {
-            $fileId = $this->createFileFromUrl( $url );
-
-            if( $fileId ) {
-                return $this->fileElement( 'video', $fileId );
-            }
-        }
-
-        return null;
-    }
-
-
-    /**
-     * Parses an HTML table into a table element.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseTableBlock( string $block ): ?array
-    {
-        if( !preg_match( '/<table[^>]*>(.*?)<\/table>/is', $block, $m ) ) {
-            return null;
-        }
-
-        $rows = [];
-        $header = '';
-
-        if( preg_match( '/<thead[^>]*>(.*?)<\/thead>/is', $m[1], $thead ) ) {
-            $header = 'row';
-            if( preg_match_all( '/<t[hd][^>]*>(.*?)<\/t[hd]>/is', $thead[1], $cells ) ) {
-                $rows[] = array_map( fn( $c ) => strip_tags( $c ), $cells[1] );
-            }
-        }
-
-        if( preg_match( '/<tbody[^>]*>(.*?)<\/tbody>/is', $m[1], $tbody ) ) {
-            $bodyHtml = $tbody[1];
-        } else {
-            $bodyHtml = $m[1];
-        }
-
-        if( preg_match_all( '/<tr[^>]*>(.*?)<\/tr>/is', $bodyHtml, $trs ) ) {
-            foreach( $trs[1] as $tr ) {
-                if( preg_match_all( '/<t[hd][^>]*>(.*?)<\/t[hd]>/is', $tr, $cells ) ) {
-                    $rows[] = array_map( fn( $c ) => strip_tags( $c ), $cells[1] );
-                }
-            }
-        }
-
-        if( empty( $rows ) ) {
-            return null;
-        }
-
-        $title = '';
-        if( preg_match( '/<caption[^>]*>(.*?)<\/caption>/is', $m[1], $cap ) ) {
-            $title = strip_tags( $cap[1] );
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'table',
-            'data' => [
-                'title' => $title,
-                'header' => $header,
-                'table' => $rows,
-            ],
-        ]]];
-    }
-
-
-    /**
-     * Parses a text/HTML block into a text (markdown) or html element.
-     *
-     * If the HTML can be fully converted to markdown, uses the "text" schema
-     * (markdown field). Otherwise falls back to the "html" schema.
-     *
-     * @return array<string, mixed>|null
-     */
-    protected function parseTextBlock( string $block ): ?array
-    {
-        $block = trim( $block );
-
-        if( empty( $block ) ) {
-            return null;
-        }
-
-        $markdown = Markdown::fromHtml( $block );
-
-        if( !empty( $markdown ) && !$this->hasUnconvertibleHtml( $block ) ) {
-            return ['elements' => [[
-                'id' => Utils::uid(),
-                'type' => 'text',
-                'data' => ['text' => $markdown],
-            ]]];
-        }
-
-        return ['elements' => [[
-            'id' => Utils::uid(),
-            'type' => 'html',
-            'data' => ['text' => Utils::html( $block )],
-        ]]];
-    }
-
-
-    /**
-     * Validates a WordPress post database row.
-     *
-     * @return WpPost
-     */
-    protected function post( object $post ): object
-    {
-        $data = get_object_vars( $post );
-        $id = $data['ID'] ?? null;
-        $name = $data['post_name'] ?? null;
-        $title = $data['post_title'] ?? null;
-        $excerpt = $data['post_excerpt'] ?? null;
-        $content = $data['post_content'] ?? null;
-        $dateGmt = $data['post_date_gmt'] ?? null;
-        $date = $data['post_date'] ?? null;
-
-        if( is_string( $id ) && ctype_digit( $id ) ) {
-            $id = filter_var( $id, FILTER_VALIDATE_INT );
-        }
-
-        if( !is_int( $id ) || !is_string( $name ) || !is_string( $title ) || !is_string( $excerpt )
-            || !is_string( $content ) || !( is_string( $dateGmt ) || $dateGmt === null ) || !is_string( $date ) ) {
-            throw new \UnexpectedValueException( 'Invalid WordPress post row.' );
-        }
-
-        return (object) [
-            'ID' => $id,
-            'post_name' => $name,
-            'post_title' => $title,
-            'post_excerpt' => $excerpt,
-            'post_content' => $content,
-            'post_date_gmt' => $dateGmt,
-            'post_date' => $date,
-        ];
+        return "[{$id}] {$title}";
     }
 
 
     /**
      * Prints a dry run summary.
-     *
-     * @param \Illuminate\Database\Query\Builder $query
      */
-    protected function printDryRun( \Illuminate\Database\Query\Builder $query ): void
+    protected function printDryRun(): void
     {
-        foreach( $query->cursor() as $post ) {
-            $post = $this->post( $post );
-            $this->line( "  [{$post->ID}] {$post->post_title} ({$post->post_name})" );
-        }
+        // the texts of the posts aren't fetched because they aren't shown
+        $this->reader->chunk( function( $rows ) {
+            foreach( $rows as $row )
+            {
+                try {
+                    $post = $this->reader->post( $row );
+                    $this->line( "  [{$post->ID}] {$post->post_title} ({$post->post_name})" );
+                } catch( \Exception $e ) {
+                    // invalid posts are reported like in the import
+                    $this->warn( '  Skipped ' . $this->rowLabel( $row ) . ': ' . $e->getMessage() );
+                }
+            }
+        }, fn() => false );
         $this->info( 'Dry run complete. No changes were made.' );
     }
 
 
     /**
-     * Rewrites a WordPress media URL using the configured base URL.
+     * Returns the converter for the content of the WordPress posts.
      */
-    protected function rewriteMediaUrl( string $url ): string
+    protected function wordpress(): WordPress
     {
-        $base = $this->mediaUrls[0] ?? '';
-
-        if( $base === '' ) {
-            return $url;
-        }
-
-        $path = parse_url( html_entity_decode( $url, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), PHP_URL_PATH );
-
-        if( is_string( $path ) && preg_match( '#(?:^|/)wp-content/uploads/(.+)$#i', $path, $m ) ) {
-            return $base . '/' . $m[1];
-        }
-
-        return $url;
-    }
-
-
-    /**
-     * Splits Gutenberg content into blocks with their wp type hints.
-     *
-     * Parses `<!-- wp:type -->...<!-- /wp:type -->` and self-closing `<!-- wp:type /-->` comments.
-     * Nested blocks are flattened — only top-level block types are used as hints.
-     *
-     * @return array<array{type: string|null, attrs: array<string, mixed>, html: string}>
-     */
-    protected function splitGutenbergBlocks( string $html ): array
-    {
-        $blocks = [];
-        $pattern = '/<!--\s*wp:([a-z][a-z0-9\-]*(?:\/[a-z][a-z0-9\-]*)?)(\s+\{[^}]*\})?\s*(\/)?-->/i';
-        $offset = 0;
-        $length = strlen( $html );
-
-        while( $offset < $length )
-        {
-            if( !preg_match( $pattern, $html, $m, PREG_OFFSET_CAPTURE, $offset ) ) {
-                // Remaining content after last block
-                $remaining = trim( substr( $html, $offset ) );
-                if( !empty( $remaining ) ) {
-                    $blocks[] = ['type' => null, 'attrs' => [], 'html' => $remaining];
-                }
-                break;
-            }
-
-            $matchPos = (int) $m[0][1];
-
-            // Content before this block comment (untyped)
-            if( $matchPos > $offset ) {
-                $before = trim( substr( $html, $offset, $matchPos - $offset ) );
-                if( !empty( $before ) ) {
-                    $blocks[] = ['type' => null, 'attrs' => [], 'html' => $before];
-                }
-            }
-
-            $type = $m[1][0];
-            $attrs = !empty( $m[2][0] ) ? (array) json_decode( trim( $m[2][0] ), true ) : [];
-            $selfClosing = !empty( $m[3][0] );
-
-            if( $selfClosing ) {
-                // Self-closing: <!-- wp:type /-->
-                $offset = $matchPos + strlen( $m[0][0] );
-                continue; // No content to extract
-            }
-
-            // Find matching closing comment, tracking depth for nested blocks
-            $searchPos = $matchPos + strlen( $m[0][0] );
-            $depth = 1;
-            $closeEnd = null;
-            $contentEnd = $searchPos;
-            $contentStart = $searchPos;
-
-            while( $depth > 0 && preg_match( '/<!--\s*(\/)?wp:' . preg_quote( $type, '/' ) . '(?:\s+\{[^}]*\})?\s*(\/)?-->/i', $html, $cm, PREG_OFFSET_CAPTURE, $searchPos ) )
-            {
-                $isClosing = !empty( $cm[1][0] );
-                $isSelfClosing = !empty( $cm[2][0] );
-
-                if( $isSelfClosing ) {
-                    $searchPos = (int) $cm[0][1] + strlen( $cm[0][0] );
-                    continue;
-                }
-
-                if( $isClosing ) {
-                    $depth--;
-                    if( $depth === 0 ) {
-                        $closeEnd = (int) $cm[0][1] + strlen( $cm[0][0] );
-                        $contentEnd = (int) $cm[0][1];
-                    }
-                } else {
-                    $depth++;
-                }
-
-                $searchPos = (int) $cm[0][1] + strlen( $cm[0][0] );
-            }
-
-            if( $closeEnd !== null ) {
-                $content = trim( substr( $html, $contentStart, $contentEnd - $contentStart ) );
-                if( !empty( $content ) ) {
-                    $blocks[] = ['type' => $type, 'attrs' => $attrs, 'html' => $content];
-                }
-                $offset = $closeEnd;
-            } else {
-                // No matching close found — skip the opening comment
-                $offset = $matchPos + strlen( $m[0][0] );
-            }
-        }
-
-        return $blocks;
-    }
-
-
-    /**
-     * Strips all WordPress block comments from HTML.
-     */
-    protected function stripWpComments( string $html ): string
-    {
-        return trim( (string) preg_replace( '/<!--\s*\/?wp:[^>]*-->/i', '', $html ) );
-    }
-
-
-    /**
-     * Splits HTML content into logical blocks at heading and pre/div boundaries.
-     *
-     * @return string[]
-     */
-    protected function splitIntoBlocks( string $html ): array
-    {
-        $pattern = '/(<h[1-6][^>]*>.*?<\/h[1-6]>|<pre[^>]*>.*?<\/pre>|<div\s+class="(?:tip|note|caution)"[^>]*>.*?<\/div>)/is';
-        $parts = preg_split( $pattern, $html, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [];
-
-        $blocks = [];
-
-        foreach( $parts as $part )
-        {
-            $part = trim( $part );
-            if( empty( $part ) ) {
-                continue;
-            }
-
-            if( preg_match( '/^<(h[1-6]|pre|div\s+class="(?:tip|note|caution)")/i', $part ) ) {
-                $blocks[] = $part;
-                continue;
-            }
-
-            $subParts = preg_split( '/(\n\s*\n|(?:<a[^>]*>\s*<img[^>]+>\s*<\/a>)|(?:<img[^>]+\/?>))/is', $part, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY ) ?: [];
-
-            foreach( $subParts as $sub ) {
-                $sub = trim( $sub );
-                if( !empty( $sub ) ) {
-                    $blocks[] = $sub;
-                }
-            }
-        }
-
-        return $blocks;
+        return $this->wordpress ??= new WordPress(
+            fn( string $tag ) => $this->media->image( $tag ),
+            fn( string $url ) => $this->media->url( $url )
+        );
     }
 }
