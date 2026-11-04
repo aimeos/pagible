@@ -297,7 +297,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         {
             $db->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--role' => ['premium_member:gold']] ) );
-            $grants = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "node_access" where "nid" in' ) );
+            $grants = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "node_access" where "nid" in' ) );
             $db->disableQueryLog();
 
             // only the used columns of the grants are fetched
@@ -727,7 +727,7 @@ class Drupal7ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/sites/default/files'] ) );
-        $queries = array_column( $db->getQueryLog(), 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' )->all();
         $db->disableQueryLog();
 
         // the records and texts of all images of a field or text are fetched by one query instead of one per image
@@ -1196,7 +1196,7 @@ class Drupal7ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
-        $selects = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'select' ) && str_contains( $query, ' from "taxonomy_index" ' ) );
+        $selects = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'select' ) && str_contains( $query, ' from "taxonomy_index" ' ) );
         $db->disableQueryLog();
 
         // only the term and node IDs of the term index are used
@@ -1403,7 +1403,7 @@ class Drupal7ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
-        $terms = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "taxonomy_term_data" where "tid" in' ) );
+        $terms = $this->queries( $db )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "taxonomy_term_data" where "tid" in' ) );
         $db->disableQueryLog();
         $output = Artisan::output();
 
@@ -1483,7 +1483,7 @@ class Drupal7ImportTest extends ImportTestAbstract
                 return $this->fileText( $fid, 'alt' );
             }
         };
-        $queries = fn( string $sql ) => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], $sql ) )->count();
+        $queries = fn( string $sql ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], $sql ) )->count();
 
         $db->enableQueryLog();
 
@@ -1583,7 +1583,7 @@ class Drupal7ImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $translations = $reader->translations( [1, 5, 6, 7], true );
-        $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_starts_with( $query['query'], 'select "nid", "vid"' ) && str_contains( $query['query'], '"nid" in' ) );
+        $queries = $this->queries( $db )->filter( fn( $query ) => str_starts_with( $query['query'], 'select "nid", "vid"' ) && str_contains( $query['query'], '"nid" in' ) );
         $db->disableQueryLog();
 
         // only the nodes with translation nodes or entity translations are fetched
@@ -1637,7 +1637,7 @@ class Drupal7ImportTest extends ImportTestAbstract
                 return [array_keys( $this->schedules ), array_keys( $this->titles )];
             }
         };
-        $queries = fn() => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "field_data_title_field"' ) )->count();
+        $queries = fn() => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "field_data_title_field"' ) )->count();
 
         $db->enableQueryLog();
 
@@ -1864,7 +1864,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--types' => 'page,article'] ) );
         $this->assertSame( 1, substr_count( Artisan::output(), 'Skipped panel panes of type "views:news", not supported' ) );
-        $queries = array_column( $db->getQueryLog(), 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' )->all();
         $db->disableQueryLog();
 
         // the panes of the default display and of all nodes are fetched once, also of displays without panes
@@ -1945,14 +1945,14 @@ class Drupal7ImportTest extends ImportTestAbstract
         $this->assertSame( 0, PageView::count() );
 
         $queries = [];
-        $db->listen( function( $query ) use ( &$queries ) { $queries[] = $query->sql; } );
+        $db->listen( function( $query ) use ( &$queries ) { $queries[] = $this->sql( $query->sql ); } );
 
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--drupal-domain' => 'site_a'] ) );
         $this->assertNotEmpty( preg_grep( '/^select "nid", "vid", "type", "title", "uid", "status", "promote", "sticky", "created", "changed" from "node" where .*"nid" in \(select "nid" from "domain_access"/', $queries ) );
         $this->assertStringContainsString( 'Using the hostname of the Domain Access domain as --domain=a.example.com', Artisan::output() );
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--drupal-domain' => '2', '--domain' => 'b.example.com'] ) );
 
-        $names = fn( string $domain, string $tag ) => PageView::where( 'domain', $domain )->where( 'tag', $tag )->pluck( 'name' )->all();
+        $names = fn( string $domain, string $tag ) => PageView::where( 'domain', $domain )->where( 'tag', $tag )->orderBy( 'name' )->pluck( 'name' )->all();
 
         $this->assertSame( ['About', 'Legal'], $names( 'a.example.com', 'page' ) );
         $this->assertSame( ['Team'], $names( 'b.example.com', 'root' ) );
@@ -2133,7 +2133,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         $blocks = [$d7->locales( 'blocks', ['block:1:body'] ), $d7->locales( 'blocks', ['block:2:body'] )];
         $menu = [$d7->locales( 'menu', ['item:1:title'] ), $d7->locales( 'menu', ['item:2:title'] )];
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         $this->assertSame( [[], []], $blocks );
@@ -2243,6 +2243,28 @@ class Drupal7ImportTest extends ImportTestAbstract
         foreach( $translations as $language => $translation ) {
             $db->table( 'locales_target' )->insert( ['lid' => $lid, 'language' => $language, 'translation' => $translation] );
         }
+    }
+
+
+    /**
+     * Returns the logged queries with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * @return Collection<int, array{query: string, bindings: array<mixed>, time: float|null}>
+     */
+    protected function queries( \Illuminate\Database\Connection $db ): Collection
+    {
+        return Collection::make( $db->getQueryLog() )->map( fn( $query ) => ['query' => $this->sql( $query['query'] )] + $query );
+    }
+
+
+    /**
+     * Returns the SQL statement with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * MariaDB and MySQL quote identifiers with backticks, SQL Server with brackets and uses "top" instead of "limit".
+     */
+    protected function sql( string $sql ): string
+    {
+        return (string) preg_replace( '/^select top \d+ /', 'select ', strtr( $sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
     }
 
 

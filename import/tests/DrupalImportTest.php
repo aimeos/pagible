@@ -63,6 +63,28 @@ class DrupalImportTest extends ImportTestAbstract
     }
 
 
+    /**
+     * Returns the logged queries with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * @return Collection<int, array{query: string, bindings: array<mixed>, time: float|null}>
+     */
+    protected function queries( \Illuminate\Database\Connection $db ): Collection
+    {
+        return Collection::make( $db->getQueryLog() )->map( fn( $query ) => ['query' => $this->sql( $query['query'] )] + $query );
+    }
+
+
+    /**
+     * Returns the SQL statement with the identifiers quoted like in SQLite and PostgreSQL.
+     *
+     * MariaDB and MySQL quote identifiers with backticks, SQL Server with brackets and uses "top" instead of "limit".
+     */
+    protected function sql( string $sql ): string
+    {
+        return (string) preg_replace( '/^select top \d+ /', 'select ', strtr( $sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
+    }
+
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -174,7 +196,7 @@ class DrupalImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $output = Artisan::output();
-        $sizes = Collection::make( $db->getQueryLog() )->pluck( 'query' )
+        $sizes = $this->queries( $db )->pluck( 'query' )
             ->filter( fn( $query ) => preg_match( '/ from "node_field_data" where "default_langcode" = \? .*"nid" in \(([?, ]+)\)/', $query ) === 1 )
             ->map( fn( $query ) => preg_match( '/"nid" in \(([?, ]+)\)/', $query, $match ) ? substr_count( $match[1], '?' ) : 0 )->values()->all();
         $db->disableQueryLog();
@@ -198,7 +220,7 @@ class DrupalImportTest extends ImportTestAbstract
             $db = DB::connection( config( 'cms.db', 'sqlite' ) );
             $db->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
-            $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+            $queries = $this->queries( $db )->pluck( 'query' );
             $db->flushQueryLog();
             $db->disableQueryLog();
 
@@ -302,7 +324,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'from "path_alias" where "status" = ? and "path" in' ) );
+        $queries = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'from "path_alias" where "status" = ? and "path" in' ) );
         $db->disableQueryLog();
 
         // only the used columns of the aliases are fetched
@@ -331,7 +353,7 @@ class DrupalImportTest extends ImportTestAbstract
         $db = DB::connection( 'drupal' );
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'from "url_alias" where "source" in' ) );
+        $queries = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'from "url_alias" where "source" in' ) );
         $db->disableQueryLog();
 
         // only the used columns of the aliases are fetched
@@ -450,7 +472,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/files'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         // the media embedded into the texts of all nodes and their fields are fetched at once
@@ -804,8 +826,8 @@ class DrupalImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         DB::enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--node-redirects' => true] ) );
-        $selects = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "redirect"' ) );
-        $paths = Collection::make( DB::getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "cms_page_view" where "domain" = ? and "path" in' ) && !str_ends_with( $query['query'], 'limit 1' ) );
+        $selects = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "redirect"' ) );
+        $paths = Collection::make( DB::getQueryLog() )->filter( fn( $query ) => str_contains( $this->sql( $query['query'] ), 'from "cms_page_view" where "domain" = ? and "path" in' ) && !preg_match( '/^select top 1 |limit 1$/', $query['query'] ) );
         DB::disableQueryLog();
         $db->disableQueryLog();
 
@@ -1001,7 +1023,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         $content = (array) PageView::where( 'name', 'About' )->firstOrFail()->content;
@@ -1077,7 +1099,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         $about = (string) json_encode( PageView::where( 'name', 'About' )->firstOrFail()->content );
@@ -1655,7 +1677,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( ['Meet us', 'All about us', (string) $file->id], [$social->title ?? null, $social->description ?? null, $social->file->id ?? null] );
         $this->assertSame( 'https://example.org/about', $page->meta->canonical->data->url ?? null );
         $this->assertEquals( (object) ['index' => 'noindex', 'follow' => 'follow'], $page->meta->robots->data ?? null );
-        $this->assertContains( (string) $file->id, $page->versions()->latest()->firstOrFail()->files()->pluck( 'id' )->map( fn( $id ) => (string) $id )->all() );
+        $this->assertContains( (string) $file->id, $page->versions()->firstOrFail()->files()->pluck( 'id' )->map( fn( $id ) => (string) $id )->all() );
 
         // translations without meta tags don't get them
         $de = PageView::language( 'de' )->findOrFail( $page->id );
@@ -1987,7 +2009,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/files'] ) );
-        $queries = Collection::make( $db->getQueryLog() );
+        $queries = $this->queries( $db );
         $db->disableQueryLog();
 
         // the embedded nodes and files of the texts are fetched at once
@@ -2085,7 +2107,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/drupal/sites/default/files'] ) );
-        $bindings = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "file_managed" where "uri"' ) )->pluck( 'bindings' );
+        $bindings = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "file_managed" where "uri"' ) )->pluck( 'bindings' );
         $db->disableQueryLog();
 
         // the files linked in the texts are fetched at once
@@ -2208,7 +2230,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--role' => ['premium:gold']] ) );
-        $grants = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "node_access" where "nid" in' ) );
+        $grants = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "node_access" where "nid" in' ) );
         $db->disableQueryLog();
         $this->assertStringContainsString( 'Restricted [4] Private to admin roles', Artisan::output() );
 
@@ -2343,7 +2365,7 @@ class DrupalImportTest extends ImportTestAbstract
         $queries = ['permissions_by_term_role' => [], 'cms_page_access' => []];
         DB::listen( function( $query ) use ( &$queries ) {
             foreach( ['permissions_by_term_role', 'cms_page_access'] as $table ) {
-                str_contains( $query->sql, '"' . $table . '"' ) && $queries[$table][] = strtok( $query->sql, ' ' );
+                str_contains( $this->sql( $query->sql ), '"' . $table . '"' ) && $queries[$table][] = strtok( $this->sql( $query->sql ), ' ' );
             }
         } );
 
@@ -2415,7 +2437,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], ' from "node_revision__body" ' ) );
+        $queries = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], ' from "node_revision__body" ' ) );
         $db->disableQueryLog();
 
         // the drafts of all nodes are fetched at once
@@ -2540,7 +2562,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         DB::enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--since' => '2026-02-01'] ) );
-        $queries = Collection::make( DB::getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( DB::connection() )->pluck( 'query' );
         DB::disableQueryLog();
         $output = Artisan::output();
 
@@ -2719,7 +2741,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', $args ) );
         $this->assertStringContainsString( 'Many media', $content( 'Team' ) );
         $this->assertStringContainsString( 'Menu link', $content( 'About' ) );
-        $this->assertFalse( Collection::make( $db->getQueryLog() )->contains( fn( $query ) => str_contains( $query['query'], '"field_text_value" like' ) ) );
+        $this->assertFalse( $this->queries( $db )->contains( fn( $query ) => str_contains( $query['query'], '"field_text_value" like' ) ) );
         $db->disableQueryLog();
 
         // custom blocks are updated without rendering the pages
@@ -2857,7 +2879,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
-        $log = Collection::make( $db->getQueryLog() );
+        $log = $this->queries( $db );
         $selects = $log->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'select' ) && str_contains( $query, ' from "taxonomy_index" ' ) );
         $db->disableQueryLog();
         $output = Artisan::output();
@@ -3094,7 +3116,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
         $about = fn() => PageView::where( 'name', 'About' )->firstOrFail();
-        $variants = fn( array $ids ) => Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], ' from "cms_page_view" where "cms_page_view"."id" = ?' ) )
+        $variants = fn( array $ids ) => $this->queries( $cms )->filter( fn( $query ) => str_contains( $query['query'], ' from "cms_page_view" where "cms_page_view"."id" = ?' ) )
             ->pluck( 'bindings' )->flatten()->filter( fn( $id ) => in_array( $id, $ids, true ) )->countBy()->all();
 
         // the variants of the parent page are fetched once for its translations and once for its menu links, new pages have no variants yet
@@ -3552,7 +3574,7 @@ class DrupalImportTest extends ImportTestAbstract
         $data = new DrupalData( new Drupal8( $db, fn() => null ) );
         $data->sequence( [1, 2, 3, 4], fn( int $nid ) => $nid === 3 );
         $value = fn( int $nid ) => $data->fieldValues( 'node', 'body', $nid, 'en' )->first()->body_value ?? null;
-        $queries = fn() => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )->count();
+        $queries = fn() => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )->count();
 
         $db->enableQueryLog();
 
@@ -3593,7 +3615,7 @@ class DrupalImportTest extends ImportTestAbstract
         $data = new DrupalData( new Drupal8( $db, fn() => null ) );
         $data->sequence( [1, 2, 3, 4, 5], null, [1 => 'page', 2 => 'article', 3 => 'page', 4 => 'article', 5 => 'blog'] );
         $value = fn( int $nid ) => $data->fieldValues( 'node', 'body', $nid, 'en' )->first()->body_value ?? null;
-        $queries = fn() => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )
+        $queries = fn() => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )
             ->map( fn( $query ) => $query['bindings'] )->values()->all();
 
         $db->enableQueryLog();
@@ -3634,7 +3656,7 @@ class DrupalImportTest extends ImportTestAbstract
         $db->table( 'media__field_media_image' )->insert( ['entity_id' => 601, 'langcode' => 'en', 'field_media_image_target_id' => 7] );
 
         $data = new DrupalData( new Drupal8( $db, fn() => null ) );
-        $ids = fn( string $table ) => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
+        $ids = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
             ->map( fn( $query ) => count( $query['bindings'] ) - 1 )->values()->all();
 
         $db->enableQueryLog();
@@ -3676,7 +3698,7 @@ class DrupalImportTest extends ImportTestAbstract
         $data = new class( new Drupal8( $db, fn() => null ) ) extends DrupalData {
             protected const CACHE_SIZE = 4;
         };
-        $ids = fn( string $table ) => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
+        $ids = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
             ->map( fn( $query ) => count( $query['bindings'] ) - 1 )->values()->all();
 
         $db->enableQueryLog();
@@ -3711,7 +3733,7 @@ class DrupalImportTest extends ImportTestAbstract
         $data = new class( new Drupal8( $db, fn() => null ) ) extends DrupalData {
             protected const CACHE_SIZE = 4;
         };
-        $queries = fn( string $table ) => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )->count();
+        $queries = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )->count();
 
         $db->enableQueryLog();
 
@@ -3792,7 +3814,7 @@ class DrupalImportTest extends ImportTestAbstract
         $data = new DrupalData( new Drupal8( $db, fn() => null ) );
         $data->sequence( [1, 2] );
         $text = fn( int $id ) => $data->fieldValues( 'paragraph', 'field_text', $id, 'en' )->first()->field_text_value ?? null;
-        $queries = fn( string $table ) => Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
+        $queries = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
             ->map( fn( $query ) => array_values( array_filter( $query['bindings'], fn( $value ) => is_int( $value ) && $value > 0 ) ) )->values()->all();
 
         $db->enableQueryLog();
@@ -4147,7 +4169,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--since' => '2026-02-01'] ) );
 
         // only the field values of the changed nodes are fetched, not of the unchanged nodes after them
-        $ids = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )
+        $ids = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )
             ->flatMap( fn( $query ) => array_slice( $query['bindings'], 1 ) )->unique()->values()->all();
 
         $db->disableQueryLog();
@@ -4449,7 +4471,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', [
             '--domain' => 'example.com', '--file-base' => 'https://example.com/files', '--terms' => 'tags',
         ] ) );
-        $terms = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], 'from "taxonomy_term_field_data" where "tid" in' ) );
+        $terms = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "taxonomy_term_field_data" where "tid" in' ) );
         $db->disableQueryLog();
         $this->assertSame( [[7, 99, 8], [10, 11]], $terms->pluck( 'bindings' )->values()->all() );
         $this->assertStringNotContainsString( 'entity_reference:block_content', Artisan::output() );
@@ -4765,7 +4787,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $data = new DrupalData( new Drupal8( $db, fn() => null ) );
         $files = function() use ( $db ): Collection {
-            $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], ' from "file_managed" where "status" = ?' ) );
+            $queries = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], ' from "file_managed" where "status" = ?' ) );
             $db->flushQueryLog();
             return $queries->values();
         };
@@ -4815,7 +4837,7 @@ class DrupalImportTest extends ImportTestAbstract
             $db->flushQueryLog();
             $this->assertSame( "<p>Draft " . ( $vid - 10 ) . "</p>", $data->fieldValues( 'node', 'body', $vid, 'en', false, true )->first()->body_value ?? null );
 
-            return Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], ' from "node_revision__body" ' ) )
+            return $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], ' from "node_revision__body" ' ) )
                 ->map( fn( $query ) => array_values( array_filter( $query['bindings'], fn( $value ) => $value > 10 ) ) )->values()->all();
         };
         $init = function( array $sequence, array $drafts ) use ( $db, &$data ) {
@@ -4908,7 +4930,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $cms->enableQueryLog();
         $this->assertSame( 0, $command->run( new ArrayInput( ['--domain' => 'example.com'] ), new BufferedOutput() ) );
-        $updates = Collection::make( $cms->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'UPDATE "cms_page_variants" SET ' ) );
+        $updates = $this->queries( $cms )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'UPDATE "cms_page_variants" SET ' ) );
         $cms->disableQueryLog();
 
         // the dates are written before each batch is committed
@@ -4972,7 +4994,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $trash = $prune->trashable( $variants, Collection::make(), [], 0 );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => preg_match( '/ from "cms_(page|element|version)_file" /', $query ) === 1 )->values();
+        $queries = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => preg_match( '/ from "cms_(page|element|version)_file" /', $query ) === 1 )->values();
         $db->disableQueryLog();
 
         // files used by kept variants, elements which aren't trashed and pending versions are kept
@@ -5060,7 +5082,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( [2, 3, 5], $ids );
 
         // the texts of not more than two entities (1+2, 3+5, 6) are read at once, all texts of an entity together
-        $queries = array_filter( array_column( $db->getQueryLog(), 'query' ), fn( $query ) => str_contains( $query, 'from "node__body"' ) );
+        $queries = array_filter( $this->queries( $db )->pluck( 'query' )->all(), fn( $query ) => str_contains( $query, 'from "node__body"' ) );
         $texts = array_values( array_filter( $queries, fn( $query ) => str_contains( $query, '"body_value"' ) ) );
 
         $this->assertCount( 6, $queries );
@@ -5122,7 +5144,7 @@ class DrupalImportTest extends ImportTestAbstract
             $this->assertSame( ['gold', 'administrator'], $access->node( (object) ['nid' => $nid, 'title' => "Node {$nid}", 'langcode' => 'en'] ) );
         }
 
-        $log = Collection::make( $db->getQueryLog() );
+        $log = $this->queries( $db );
         $db->disableQueryLog();
 
         // nodes inside the window don't fetch the grants and term roles again, nodes outside do
@@ -5175,7 +5197,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], ' from "taxonomy_index" where "tid" in' ) );
+        $queries = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], ' from "taxonomy_index" where "tid" in' ) );
         $db->disableQueryLog();
 
         $this->assertStringContainsString( 'Term pages: 1 imported', Artisan::output() );
@@ -5213,7 +5235,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $db->enableQueryLog();
         $nids = ( new Drupal8( $db, fn() => null ) )->referencing( 2000, ['node__field_blocks' => ['node', 'field_blocks', 'block_content']] );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         // the nodes referencing several changed terms or blocks are only fetched and returned once
@@ -5263,7 +5285,7 @@ class DrupalImportTest extends ImportTestAbstract
         // the existing term pages and their variants are fetched at once
         $cms->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
-        $queries = Collection::make( $cms->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "cms_page_view" where ' ) );
+        $queries = $this->queries( $cms )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "cms_page_view" where ' ) );
         $cms->disableQueryLog();
 
         $this->assertStringContainsString( "Term pages: 0 imported, 0 updated, {$count} unchanged", Artisan::output() );
@@ -5300,7 +5322,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         $cms->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
-        $queries = Collection::make( $cms->getQueryLog() )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "cms_page_view" where ' ) );
+        $queries = $this->queries( $cms )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "cms_page_view" where ' ) );
         $cms->disableQueryLog();
 
         $this->assertStringContainsString( 'Term pages: 0 imported, 0 updated, 1 unchanged', Artisan::output() );
