@@ -128,7 +128,7 @@ trait CommitsInBatches
 
         $this->error( 'Import stopped by a concurrent change in the database, the records imported since the last commit were rolled back. Run the import again' );
         // MySQL rolls back the whole transaction on deadlocks, including the savepoints of outer transactions
-        $db->rollBack( 0 );
+        $db->rollBack( $db->getPdo()->inTransaction() ? $this->batchLevel - 1 : 0 );
     }
 
 

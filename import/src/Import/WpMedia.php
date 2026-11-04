@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\Models\File;
+use Illuminate\Support\Str;
 
 
 /**
@@ -230,7 +231,9 @@ class WpMedia
     {
         // the MIME types of the files of previous imports are fetched once
         if( $missing = array_values( array_diff( array_unique( $fileIds ), array_keys( $this->mimes ) ) ) ) {
-            $this->mimes = File::whereIn( 'id', $missing )->pluck( 'mime', 'id' )->all() + array_fill_keys( $missing, '' ) + $this->mimes;
+            // IDs of failed files aren't UUIDs and PostgreSQL rejects them in UUID columns
+            $ids = array_values( array_filter( $missing, fn( $id ) => Str::isUuid( $id ) ) );
+            $this->mimes = ( $ids ? File::whereIn( 'id', $ids )->pluck( 'mime', 'id' )->all() : [] ) + array_fill_keys( $missing, '' ) + $this->mimes;
         }
 
         $found = null;

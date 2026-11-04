@@ -661,7 +661,7 @@ class WpImportTest extends ImportTestAbstract
         $this->assertNull( $media->preview( [] ) );
         // the MIME types of the files are fetched once
         $this->assertSame( 1, count( $db->getQueryLog() ) );
-        $this->assertSame( [$pdf, 'missing', $image, 'test'], $db->getQueryLog()[0]['bindings'] );
+        $this->assertSame( [$pdf, $image, 'test'], $db->getQueryLog()[0]['bindings'] );
 
         $other = Files::create( 'image/png', 'Other', 'https://cdn.example/other.png', 'test', false )->id ?? '';
         $db->flushQueryLog();
@@ -771,7 +771,7 @@ class WpImportTest extends ImportTestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
         $log = Collection::make( $db->getQueryLog() );
-        $mimes = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => preg_match( '/select "mime", "id" from "cms_files"/', $query['query'] ) === 1 );
+        $mimes = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => preg_match( '/select "mime", "id" from "cms_files"/', str_replace( '`', '"', $query['query'] ) ) === 1 );
         $db->disableQueryLog();
         $cms->disableQueryLog();
         $queries = $log->filter( fn( $query ) => str_contains( $query['query'], 'from "wp_postmeta"' ) );
@@ -822,7 +822,7 @@ class WpImportTest extends ImportTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', $args ) );
-        $parents = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => preg_match( '/^select \* from "cms_pages" where "cms_pages"."id" = \?/', $query['query'] ) === 1
+        $parents = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => preg_match( '/^select \* from "cms_pages" where "cms_pages"."id" = \?/', str_replace( '`', '"', $query['query'] ) ) === 1
             && $query['bindings'][0] === $blog->id );
         $db->disableQueryLog();
 
@@ -863,7 +863,7 @@ class WpImportTest extends ImportTestAbstract
 
         $updates = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$updates ) {
-            $updates[] = str_contains( $query->sql, 'set "created_at"' ) ? $query->sql : null;
+            $updates[] = str_contains( str_replace( '`', '"', $query->sql ), 'set "created_at"' ) ? $query->sql : null;
         } );
 
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
@@ -876,7 +876,8 @@ class WpImportTest extends ImportTestAbstract
 
         $queries = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
-            $queries[] = [$query->sql, $query->bindings];
+            // MariaDB and MySQL quote the identifiers with backticks
+            $queries[] = [str_replace( '`', '"', $query->sql ), $query->bindings];
         } );
 
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
@@ -1332,7 +1333,8 @@ class WpImportTest extends ImportTestAbstract
 
         $queries = [];
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
-            $queries[] = [$query->sql, $query->bindings];
+            // MariaDB and MySQL quote the identifiers with backticks
+            $queries[] = [str_replace( '`', '"', $query->sql ), $query->bindings];
         } );
 
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example', '--since' => '2026-09-01 12:00:00 UTC'] ) );
