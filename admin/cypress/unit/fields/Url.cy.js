@@ -208,7 +208,7 @@ describe('Url', () => {
       const vm = wrapper.findComponent(Url).vm
 
       vm.search('/case')
-      expect(query.lastCall.args[0].variables.filter).to.deep.equal({ prefix: 'case' })
+      expect(query.lastCall.args[0].variables.filter).to.deep.equal({ any: '/case' })
 
       vm.search('case')
       expect(query.lastCall.args[0].variables.filter).to.deep.equal({ any: 'case' })
