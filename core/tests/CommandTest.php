@@ -157,6 +157,26 @@ class CoreCommandTest extends CoreTestAbstract
     }
 
 
+    public function testFilesPathIndex(): void
+    {
+        $index = collect( Schema::connection( config( 'cms.db', 'sqlite' ) )->getIndexes( 'cms_files' ) )
+            ->firstWhere( 'name', 'cms_files_path_tenant_id_index' );
+
+        $this->assertNotNull( $index );
+        $this->assertSame( ['path', 'tenant_id'], $index['columns'] );
+    }
+
+
+    public function testElementsNameIndex(): void
+    {
+        $index = collect( Schema::connection( config( 'cms.db', 'sqlite' ) )->getIndexes( 'cms_elements' ) )
+            ->firstWhere( 'name', 'cms_elements_name_lang_tenant_id_index' );
+
+        $this->assertNotNull( $index );
+        $this->assertSame( ['name', 'lang', 'tenant_id'], $index['columns'] );
+    }
+
+
     public function testPublishOrdersEqualSchedulesByCreation(): void
     {
         Version::whereNotNull( 'publish_at' )->update( ['published' => true] );
