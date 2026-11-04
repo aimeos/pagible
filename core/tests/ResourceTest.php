@@ -1381,6 +1381,41 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testScoutDeferIndexesCollectedModelsAtOnce()
+    {
+        config( ['scout.driver' => 'cms', 'scout.queue' => true] );
+        $queue = Queue::fake();
+
+        Scout::defer( function() {
+            Scout::index( PageView::class, ['a', 'b'], keys: true );
+            Scout::index( PageView::class, ['b', 'c'], keys: true );
+            Scout::index( File::class, ['f'] );
+
+            Queue::assertNothingPushed();
+            Scout::flush();
+            Queue::assertPushed( IndexModels::class, 2 );
+
+            Scout::index( PageView::class, ['d'], keys: true );
+            Scout::defer( fn() => Scout::index( File::class, ['g'] ) );
+            Queue::assertPushed( IndexModels::class, 2 );
+        } );
+
+        Scout::flush();
+        Scout::index( File::class, ['h'] );
+
+        $jobs = $queue->pushed( IndexModels::class )->map( fn( IndexModels $job ) => [$job->model, $job->ids, $job->keys] )->all();
+        config( ['scout.driver' => 'collection', 'scout.queue' => false] );
+
+        $this->assertEquals( [
+            [PageView::class, ['a', 'b', 'c'], true],
+            [File::class, ['f'], false],
+            [PageView::class, ['d'], true],
+            [File::class, ['g'], false],
+            [File::class, ['h'], false],
+        ], $jobs );
+    }
+
+
     public function testIndexJobUsesCapturedTenant()
     {
         $page = $this->page( [['type' => 'heading', 'data' => ['title' => 'Indexed']]] );
