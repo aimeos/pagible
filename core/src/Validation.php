@@ -124,7 +124,6 @@ class Validation
                 if( is_string( $item->type ?? null )
                     && ( is_object( $item->data ?? null ) || is_array( $item->data ?? null ) )
                 ) {
-                    self::html( $item->type, $item->data );
                     $item->data = self::defaults( $item->type, $item->data );
                 }
 
@@ -332,26 +331,6 @@ class Validation
 
 
     /**
-     * Sanitizes HTML content in element data if type is 'html'.
-     *
-     * @param string $type Element type
-     * @param object|array<string, mixed> &$data Element data (modified in place)
-     */
-    private static function html( string $type, object|array &$data ) : void
-    {
-        if( $type !== 'html' ) {
-            return;
-        }
-
-        if( is_object( $data ) && isset( $data->text ) ) {
-            $data->text = Utils::html( (string) $data->text );
-        } elseif( is_array( $data ) && isset( $data['text'] ) ) {
-            $data['text'] = Utils::html( (string) $data['text'] );
-        }
-    }
-
-
-    /**
      * Recursively collects the IDs of {id, type: "file"} references in a data tree.
      *
      * Lets non-browser writers (MCP/LLM, GraphQL) persist the same per-element "files"
@@ -384,7 +363,7 @@ class Validation
 
 
     /**
-     * Applies field defaults and generated collection identities recursively.
+     * Applies field defaults and generated collection identities and sanitizes HTML fields recursively.
      *
      * @param object $data Field data
      * @param array<string, mixed> $fields Field schemas
@@ -398,11 +377,18 @@ class Validation
                 continue;
             }
 
-            if( ( $field['type'] ?? null ) === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
+            $type = $field['type'] ?? null;
+
+            if( $type === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
                 $data->{$name} = $field['value'];
             }
 
-            if( ( $field['type'] ?? null ) !== 'items' || !is_array( $data->{$name} ?? null ) ) {
+            // Views output HTML fields unescaped, so they are purified for all elements, not only "html"
+            if( $type === 'html' && is_string( $data->{$name} ?? null ) ) {
+                $data->{$name} = Utils::html( $data->{$name} );
+            }
+
+            if( $type !== 'items' || !is_array( $data->{$name} ?? null ) ) {
                 continue;
             }
 
@@ -480,7 +466,6 @@ class Validation
             return null;
         }
 
-        self::html( $type, $data );
         return (array) self::defaults( $type, $data, 'content', $schemas );
     }
 
