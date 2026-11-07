@@ -12,6 +12,7 @@ The easy, flexible and scalable API-first PagibleAI CMS package for Laravel.
 * [Getting Started](#getting-started)
 * [Optional Packages](#optional-packages)
 * [Themes](#themes)
+* [Agent Skills](#agent-skills)
 * [Selling access to restricted pages](#selling-access-to-restricted-pages)
 * [Configuration](#configuration)
 * [Maintenance](#maintenance)
@@ -207,6 +208,16 @@ php artisan vendor:publish --tag=cms-theme
 
 Each theme's README (e.g. [themes/aura](themes/aura/README.md)) describes its design, page types
 and settings. Theme options like the page cache are documented in the [theme package](theme/README.md).
+
+## Agent Skills
+
+The [pagible-themes](skills/pagible-themes/SKILL.md) skill teaches coding agents to build content elements
+and themes. It works with Claude Code, Codex, Cursor, OpenCode and other agents supporting
+[Agent Skills](https://agentskills.io). Install it straight from GitHub with:
+
+```bash
+npx skills add aimeos/pagible --skill pagible-themes
+```
 
 ## Selling access to restricted pages
 
