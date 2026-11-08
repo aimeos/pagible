@@ -46,16 +46,19 @@ commands:
       - run:
           name: Skip if the webhooks package is not affected
           command: if [ "<< pipeline.parameters.run_webhooks >>" != "true" ]; then circleci-agent step halt; fi
+          working_directory: ~
   skip-without-metrics:
     steps:
       - run:
           name: Skip if the metrics package is not affected
           command: if [ "<< pipeline.parameters.run_metrics >>" != "true" ]; then circleci-agent step halt; fi
+          working_directory: ~
   skip-without-cashier:
     steps:
       - run:
           name: Skip if no cashier drivers are affected
           command: if [ "<< pipeline.parameters.run_cashier >>" != "true" ]; then circleci-agent step halt; fi
+          working_directory: ~
   phpunit:
     steps:
       - run: TESTS="<< pipeline.parameters.tests >>"; ./vendor/bin/phpunit ${TESTS#ALL}
