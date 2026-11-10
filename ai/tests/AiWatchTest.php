@@ -169,7 +169,7 @@ class AiWatchTest extends AiTestAbstract
     private function observe( Observation $observation, ?string $editor = null ) : void
     {
         if( $editor ) {
-            $this->actingAs( new \Illuminate\Foundation\Auth\User()->forceFill( ['email' => $editor] ) );
+            $this->actingAs( ( new \Illuminate\Foundation\Auth\User() )->forceFill( ['email' => $editor] ) );
         }
 
         ( Generated::observer() )( $observation );
