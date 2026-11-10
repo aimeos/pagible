@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -21,7 +22,7 @@ use Laravel\Mcp\Request;
 #[Description('Edits an existing image based on a text prompt using AI and stores the result as a new draft version of the same file. Returns the updated file.')]
 class RepaintImage extends Tool
 {
-    use HandlesMedia;
+    use Concerns\HandlesMedia;
 
 
     protected const PERMISSIONS = ['image:repaint', 'file:save', 'file:view'];
@@ -34,15 +35,11 @@ class RepaintImage extends Tool
      */
     public function schema( JsonSchema $schema ) : array
     {
-        return [
-            'file' => $schema->string()
-                ->description( 'The UUID of the image file to edit.' )
-                ->required(),
+        return $this->media( $schema, [
             'prompt' => $schema->string()
                 ->description( 'Describe the changes, e.g., "Make the sky look like a sunset".' )
                 ->required(),
-            'latest_id' => $this->latest( $schema ),
-        ];
+        ] );
     }
 
 
@@ -54,8 +51,7 @@ class RepaintImage extends Tool
         return $this->edit( $request, [
             'prompt' => 'required|string|max:2000',
         ], [
-            'file.required' => 'You must specify the UUID of the image file to edit.',
             'prompt.required' => 'You must provide a prompt describing the desired changes.',
-        ], fn( $image, $v ) => Ai::repaint( $image, $v['prompt'] ) );
+        ], fn( Image $image, array $v ) => Ai::repaint( $image, $v['prompt'] ) );
     }
 }

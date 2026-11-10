@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Concerns\FilePreviews;
+use Aimeos\Cms\Concerns\ForTenants;
 use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
@@ -33,6 +34,9 @@ use Aimeos\Cms\DB;
  */
 class Previews extends Command
 {
+    use ForTenants;
+
+
     /**
      * Editor name of the created versions
      */
@@ -77,7 +81,7 @@ class Previews extends Command
      */
     public function handle(): int
     {
-        if( ( $tenants = $this->tenants() ) === null ) {
+        if( ( $tenants = $this->tenants( ['cms_files'] ) ) === null ) {
             return self::FAILURE;
         }
 
@@ -513,37 +517,6 @@ class Previews extends Command
 
         // files changed by editors in the meantime are no error
         return !$stats['failed'] && !$locked;
-    }
-
-
-    /**
-     * Returns the tenants whose files should be updated.
-     *
-     * @return array<string>|null List of tenant IDs or NULL if the tenant can't be processed
-     */
-    protected function tenants() : ?array
-    {
-        $tenant = $this->option( 'tenant' );
-
-        // Stancl only allows operations in the tenant context it has initialized
-        if( Tenancy::managed() )
-        {
-            if( $tenant !== null && $tenant !== Tenancy::value() )
-            {
-                $this->error( 'Run the command for other tenants using: php artisan tenants:run cms:previews' );
-                return null;
-            }
-
-            return [Tenancy::value()];
-        }
-
-        if( $tenant !== null ) {
-            return [Tenancy::check( (string) $tenant )];
-        }
-
-        $db = DB::connection();
-
-        return $db->table( 'cms_files' )->distinct()->orderBy( 'tenant_id' )->pluck( 'tenant_id' )->map( strval(...) )->all();
     }
 
 

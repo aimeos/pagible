@@ -166,18 +166,6 @@ class File extends Base
 
 
     /**
-     * Returns the value of the latest version or the stored value if the latest version has none.
-     *
-     * @param string $name Name of the file property, e.g. "path" or "previews"
-     * @return mixed Value of the latest version or stored value
-     */
-    public function latestValue( string $name ) : mixed
-    {
-        return $this->latest?->data->{$name} ?? $this->getAttribute( $name );
-    }
-
-
-    /**
      * Get the prunable model query.
      *
      * @return Builder<static> Eloquent query builder instance for pruning

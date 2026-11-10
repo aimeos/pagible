@@ -8,14 +8,12 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Cms\Media;
 use Aimeos\Prisma\Files\Audio;
 
 
 final class Transcribe
 {
-    use ValidatesInputs;
-
-
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -23,8 +21,6 @@ final class Transcribe
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        $audio = $this->upload( $args['file'], Audio::class );
-
-        return $this->ai( fn() => Ai::transcribe( $audio ) );
+        return Ai::transcribe( Media::uploaded( $args['file'], Audio::class ), $args['lang'] ?? null );
     }
 }

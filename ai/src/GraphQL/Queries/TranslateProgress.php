@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Queries;
 
-use Aimeos\Cms\Jobs\TranslatePage;
+use Aimeos\Cms\Translation;
 
 
 final class TranslateProgress
@@ -19,6 +19,6 @@ final class TranslateProgress
      */
     public function __invoke( $rootValue, array $args ) : ?array
     {
-        return TranslatePage::progress( (string) $args['batch'] );
+        return Translation\Pages::progress( $args['batch'] );
     }
 }

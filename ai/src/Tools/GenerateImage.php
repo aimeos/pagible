@@ -9,13 +9,14 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
 use Aimeos\Cms\Facades\Files;
-use Aimeos\Prisma\Files\Image;
+use Aimeos\Cms\Media;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Illuminate\Http\UploadedFile;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Request;
 
 
@@ -25,37 +26,12 @@ use Laravel\Mcp\Request;
 Optionally pass IDs of existing image files as visual references. Returns the created file including its ID and preview URLs.')]
 class GenerateImage extends Tool
 {
-    use HandlesMedia;
-
-
     protected const PERMISSIONS = ['image:imagine', 'file:add'];
 
-
     /**
-     * Handle the tool request.
+     * Name of the new file if none is passed.
      */
-    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
-    {
-        $v = $request->validate( [
-            'prompt' => 'required|string|max:2000',
-            'context' => 'string|max:2000',
-            'files' => 'array|max:10',
-            'files.*' => 'string|max:36',
-            'name' => 'string|max:255',
-            'lang' => 'nullable|string|max:5',
-            'description' => 'array',
-        ], [
-            'prompt.required' => 'You must provide a prompt describing the image to generate.',
-        ] );
-
-        $base64 = Ai::imagine( $v['prompt'], Ai::files( $v['files'] ?? [], $request->user(), Image::class ), $v['context'] ?? null );
-
-        $data = array_filter( ['lang' => $v['lang'] ?? null, 'description' => $v['description'] ?? null] );
-
-        return Response::structured( $this->upload( $base64, $v['name'] ?? 'generated-image', fn( UploadedFile $upload ) => Presenter::item(
-            Files::add( $upload, $data, $request->user() )
-        ) ) );
-    }
+    private const NAME = 'generated-image';
 
 
     /**
@@ -72,13 +48,41 @@ class GenerateImage extends Tool
             'context' => $schema->string()
                 ->description( 'Additional context such as style, mood or brand guidelines.' ),
             'files' => $schema->array()
-                ->description( 'Optional UUIDs of existing image files to use as visual references.' ),
+                ->items( $schema->string() )
+                ->description( 'Optional UUIDs of existing JPEG, PNG or WebP image files to use as visual references.' ),
             'name' => $schema->string()
-                ->description( 'Display name for the new file. Defaults to "generated-image".' ),
+                ->description( 'Display name for the new file. Defaults to "' . self::NAME . '".' ),
             'lang' => $schema->string()
                 ->description( 'ISO language code for the file, e.g., "en" or "de".' ),
             'description' => $schema->object()
                 ->description( 'Multilingual alt text, e.g., {"en": "A blue hero banner"}.' ),
         ];
+    }
+
+
+    /**
+     * Handle the tool request.
+     */
+    protected function run( Request $request ) : ResponseFactory
+    {
+        $v = $request->validate( [
+            'prompt' => 'required|string|max:2000',
+            'context' => 'nullable|string|max:2000',
+            'files' => 'array|max:10',
+            'files.*' => 'string|max:36',
+            'name' => 'nullable|string|max:255',
+            'lang' => 'nullable|string|max:10|cms_locale',
+            'description' => 'array',
+        ], [
+            'prompt.required' => 'You must provide a prompt describing the image to generate.',
+        ] );
+
+        $base64 = Ai::imagine( $v['prompt'], Media::load( $v['files'] ?? [], $request->user() ), $v['context'] ?? null );
+
+        $data = array_filter( ['lang' => $v['lang'] ?? null, 'description' => $v['description'] ?? null] );
+
+        return Response::structured( Media::store( $base64, $v['name'] ?? self::NAME, fn( UploadedFile $upload ) => Presenter::item(
+            Files::add( $upload, $data, $request->user() )
+        ) ) );
     }
 }

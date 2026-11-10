@@ -9,10 +9,26 @@ return [
     |
     | Maximum serialized size in bytes accepted from AI API callers before it
     | is sent to a provider, and the nesting depth of structured content.
+    | Files are sent within the requests and held in memory, so their size
+    | is limited in MB by "maxmedia" (0 for no limit).
     |
     */
     'maxdepth' => (int) env( 'CMS_AI_MAXDEPTH', 20 ),
     'maxinput' => (int) env( 'CMS_AI_MAXINPUT', 1024 * 1024 ),
+    'maxmedia' => (float) env( 'CMS_AI_MAXMEDIA', 20 ),
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Request rate limit
+    |--------------------------------------------------------------------------
+    |
+    | Maximum number of AI requests per minute and user made through the GraphQL
+    | API and the chat. Don't confuse it with "ratelimit" below, which limits
+    | the provider calls of translations per tenant. Use 0 for no limit.
+    |
+    */
+    'limit' => (int) env( 'CMS_AI_LIMIT', 10 ),
 
 
     /*
@@ -20,10 +36,11 @@ return [
     | Translation rate limit
     |--------------------------------------------------------------------------
     |
-    | Maximum number of AI provider calls per minute and tenant made by queued
-    | page translations and file description translations. Large pages are
-    | split into several calls, so a page can use more than one. Jobs exceeding
-    | the limit are delayed, file translations are rejected.
+    | Maximum number of AI provider calls per minute and tenant (not per user
+    | like "limit" above) made by queued page translations and file description
+    | translations. Large pages are split into several calls, so a page can use
+    | more than one. Jobs exceeding the limit are delayed, file translations are
+    | rejected.
     |
     */
     'ratelimit' => (int) env( 'CMS_AI_RATELIMIT', 60 ),
@@ -34,9 +51,12 @@ return [
     | Maximum tool steps
     |--------------------------------------------------------------------------
     |
-    | Maximum number of steps an AI tool may take to generate content. Each step
-    | may involve multiple calls to the provider, so this caps the total number
-    | of calls and the cost of content generation.
+    | Maximum number of steps the chat may take when the AI calls tools. Each
+    | step is one request to the provider, so this caps the total number of
+    | calls, the request time and the cost. The content refinement only uses
+    | the tools to look up content and takes five steps at most, fewer for
+    | large content.
+    |
     */
     'maxsteps' => (int) env( 'CMS_AI_MAXSTEPS', 25 ),
 
@@ -47,11 +67,11 @@ return [
     |--------------------------------------------------------------------------
     |
     | Maximum number of tokens an AI provider may generate per request. Caps the
-    | length (and cost) of generated content; leave empty to use the
+    | length (and cost) of generated content; leave empty or use 0 to use the
     | provider/model default.
     |
     */
-    'maxtoken' => env( 'CMS_AI_MAXTOKEN' ),
+    'maxtoken' => (int) env( 'CMS_AI_MAXTOKEN', 0 ),
 
 
     /*
@@ -76,20 +96,25 @@ return [
     | Maximum number of seconds an AI request may run. Applied both to the HTTP
     | client talking to the provider and to the PHP execution time of the
     | request handling it, so long content generations and chat streams are not
-    | killed prematurely by PHP's default 30s limit.
+    | killed prematurely by PHP's default 30s limit. Requests with several
+    | provider calls like chat answers may take "maxtime" seconds together at
+    | most, so they don't occupy a PHP worker for hours (0 for no limit).
     |
     */
     'timeout' => (int) env( 'CMS_AI_TIMEOUT', 300 ),
+    'maxtime' => (int) env( 'CMS_AI_MAXTIME', 900 ),
 
 
     /*
-     |----------------------------------------------------------------------
+    |--------------------------------------------------------------------------
     | AI tools
     |--------------------------------------------------------------------------
     |
     | Define the AI tools used for content generation. Each tool has a provider,
     | model, and API key. The base URL for the provider is optional. Use any
-    | provider supported by Prisma.
+    | provider supported by Prisma. All other keys (e.g. "size" of "imagine")
+    | are passed as request options to the provider, which ignores the ones
+    | it doesn't support.
     |
     */
     'write' => [ // Generate text content based on prompts
@@ -123,6 +148,7 @@ return [
         'provider' => env( 'CMS_AI_IMAGINE', 'gemini' ),
         'model' => env( 'CMS_AI_IMAGINE_MODEL' ),
         'api_key' => env( 'CMS_AI_IMAGINE_API_KEY' ),
+        'size' => ['1536x1024', '1792x1024', '1024x1024'], // preferred image sizes, landscape first
     ],
     'inpaint' => [ // Change selected parts of images based on prompt
         'provider' => env( 'CMS_AI_INPAINT', 'gemini' ),
