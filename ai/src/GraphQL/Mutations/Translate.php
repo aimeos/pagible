@@ -7,14 +7,11 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Ai;
+use Aimeos\Cms\Translation\Translator;
 
 
 final class Translate
 {
-    use ValidatesInputs;
-
-
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -22,6 +19,6 @@ final class Translate
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        return $this->ai( fn() => Ai::translate( $args['texts'], $args['to'], $args['from'] ?? null, $args['context'] ?? null ) );
+        return Translator::translate( $args['texts'], $args['to'], $args['from'] ?? null, $args['context'] ?? null );
     }
 }

@@ -249,6 +249,15 @@ class Utils
 
 
     /**
+     * Returns the CMS job queue name or NULL for the default one.
+     */
+    public static function queueName() : ?string
+    {
+        return config( 'cms.queue.name' ) ?: null;
+    }
+
+
+    /**
      * Generates a slug from the given title.
      *
      * @param string $title The title to generate a slug from

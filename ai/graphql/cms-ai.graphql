@@ -1,51 +1,49 @@
 extend type Mutation {
   "Summarize the content of the file passed by its file ID"
-  describe(file: String! @rules(apply: ["required", "max:36"]), lang: String @rules(apply: ["max:5"])): String @guard @cmsPermission(action: ["file:describe", "file:view"]) @throttle(name: "cms-ai")
+  describe(file: String! @rules(apply: ["required", "max:36"]), lang: String @rules(apply: ["max:10", "cms_locale"])): String @guard @cmsPermission(action: "file:describe") @throttle(name: "cms-ai")
 
-  "Remove the part of the image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
+  "Remove the part of the JPEG, PNG or WebP image covered by the mask (black: keep, white: erase), returns a base64 encoded image"
   erase(file: Upload!, mask: Upload!): String @guard @cmsPermission(action: "image:erase") @throttle(name: "cms-ai")
 
-  "Generate images from prompts and passed file IDs, returns a base64 encoded image"
+  "Generate images from prompts and passed file IDs, the context is appended to the prompt and limited like it; returns a base64 encoded image"
   imagine(prompt: String! @rules(apply: ["required", "max:2000"]), context: String @rules(apply: ["max:2000"]), files: [String!] @rules(apply: ["max:36"]) @rulesForArray(apply: ["max:10"])): String @guard @cmsPermission(action: "image:imagine") @throttle(name: "cms-ai")
 
-  "Edit an image using a mask image and a prompt, returns a base64 encoded image"
-  inpaint(file: Upload!, mask: Upload!, prompt: String! @rules(apply: ["max:2000"])): String @guard @cmsPermission(action: "image:inpaint") @throttle(name: "cms-ai")
+  "Edit a JPEG, PNG or WebP image using a mask image and a prompt, returns a base64 encoded image"
+  inpaint(file: Upload!, mask: Upload!, prompt: String! @rules(apply: ["required", "max:2000"])): String @guard @cmsPermission(action: "image:inpaint") @throttle(name: "cms-ai")
 
-  "Remove image background, returns a base64 encoded image"
+  "Remove the background of a JPEG, PNG or WebP image, returns a base64 encoded image"
   isolate(file: Upload!): String @guard @cmsPermission(action: "image:isolate") @throttle(name: "cms-ai")
 
-  "Edit an image using a prompt, returns a base64 encoded image"
-  repaint(file: Upload!, prompt: String! @rules(apply: ["max:2000"])): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
+  "Edit a JPEG, PNG or WebP image using a prompt, returns a base64 encoded image"
+  repaint(file: Upload!, prompt: String! @rules(apply: ["required", "max:2000"])): String @guard @cmsPermission(action: "image:repaint") @throttle(name: "cms-ai")
 
   "Refine existing page content"
   refine(prompt: String! @rules(apply: ["required", "max:2000"]), content: JSON!, type: String @rules(apply: ["max:255"]), context: String @rules(apply: ["max:30000"]), lang: String @rules(apply: ["max:10", "cms_locale"]), pagetype: String @rules(apply: ["max:255"])): JSON @guard @cmsPermission(action: "page:refine") @throttle(name: "cms-ai")
 
-  "Transcribe uploaded audio file"
-  transcribe(file: Upload!): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
+  "Transcribe an uploaded audio file (audio/* MIME type), optionally in the given language of the speech"
+  transcribe(file: Upload!, lang: String @rules(apply: ["max:10", "cms_lang"])): JSON @guard @cmsPermission(action: "audio:transcribe") @throttle(name: "cms-ai")
 
   "Translate texts"
-  translate(texts: [String!]! @rules(apply: ["max:10000"]) @rulesForArray(apply: ["min:1", "max:50"]), to: String! @rules(apply: ["required", "max:5"]), from: String @rules(apply: ["max:5"]), context: String @rules(apply: ["max:1000"])): [String!]! @guard @cmsPermission(action: "text:translate") @throttle(name: "cms-ai")
+  translate(texts: [String!]! @rules(apply: ["max:10000"]) @rulesForArray(apply: ["min:1", "max:50"]), to: String! @rules(apply: ["required", "max:10", "cms_lang"]), from: String @rules(apply: ["max:10", "cms_lang"]), context: String @rules(apply: ["max:30000"])): [String!]! @guard @cmsPermission(action: "text:translate") @throttle(name: "cms-ai")
 
-  "Extend/outpaint image, returns a base64 encoded image"
-  uncrop(file: Upload!, top: Int! @rules(apply: ["integer", "min:0", "max:4096"]), right: Int @rules(apply: ["integer", "min:0", "max:4096"]), bottom: Int @rules(apply: ["integer", "min:0", "max:4096"]), left: Int @rules(apply: ["integer", "min:0", "max:4096"])): String @guard @cmsPermission(action: "image:uncrop") @throttle(name: "cms-ai")
+  "Extend/outpaint a JPEG, PNG or WebP image, returns a base64 encoded image"
+  uncrop(file: Upload!, top: Int @rules(apply: ["integer", "min:0", "max:4096"]), right: Int @rules(apply: ["integer", "min:0", "max:4096"]), bottom: Int @rules(apply: ["integer", "min:0", "max:4096"]), left: Int @rules(apply: ["integer", "min:0", "max:4096"])): String @guard @cmsPermission(action: "image:uncrop") @throttle(name: "cms-ai")
 
-  "Upscale image, returns a base64 encoded image"
+  "Upscale a JPEG, PNG or WebP image, returns a base64 encoded image"
   upscale(file: Upload!, factor: Int! @rules(apply: ["integer", "min:2", "max:4"])): String @guard @cmsPermission(action: "image:upscale") @throttle(name: "cms-ai")
 
-  "Generate texts from prompts and passed file IDs"
+  "Generate texts from prompts and passed file IDs, the context can contain the content of the whole page"
   write(prompt: String! @rules(apply: ["required", "max:10000"]), context: String @rules(apply: ["max:100000"]), files: [String!] @rules(apply: ["max:36"]) @rulesForArray(apply: ["max:10"])): String @guard @cmsPermission(action: "text:write") @throttle(name: "cms-ai")
-}
 
-extend type Mutation {
   "Queue translations of the pages passed by ID into the languages, which create missing variants and merge source changes into stale ones; source languages and up to date variants are skipped; returns the batch for polling the progress"
   translatePage(
     "IDs of the pages to translate"
-    id: [ID!]! @rulesForArray(apply: ["min:1", "max:1000"]),
+    id: [ID!]! @rules(apply: ["max:36"]) @rulesForArray(apply: ["min:1", "max:1000"]),
     "Languages to translate the pages into"
-    lang: [String!]! @rules(apply: ["max:10", "cms_locale"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: ["page:save", "text:translate"]) @throttle(name: "cms-ai")
+    lang: [String!]! @rules(apply: ["max:10", "cms_lang"]) @rulesForArray(apply: ["min:1", "max:100"])): TranslateBatch! @guard @cmsPermission(action: ["page:save", "text:translate"]) @throttle(name: "cms-ai")
 
   "Translate the descriptions of the files into the languages they are missing in and save them as new file drafts"
-  translateFiles(id: [ID!]! @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10", "cms_locale"]) @rulesForArray(apply: ["min:1", "max:10"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")
+  translateFiles(id: [ID!]! @rules(apply: ["max:36"]) @rulesForArray(apply: ["min:1", "max:100"]), lang: [String!]! @rules(apply: ["max:10", "cms_locale"]) @rulesForArray(apply: ["min:1", "max:5"])): [File!]! @guard @cmsPermission(action: ["file:save", "text:translate"]) @throttle(name: "cms-ai")
 }
 
 extend type Query {

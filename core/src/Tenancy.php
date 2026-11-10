@@ -151,6 +151,19 @@ class Tenancy
 
 
     /**
+     * Returns a cache key for the current tenant, hashed so IDs containing ":" can't collide.
+     *
+     * @param string $prefix Key prefix, e.g. "cms-chat"
+     * @param string ...$parts Additional parts without NUL bytes
+     * @return string Cache key
+     */
+    public static function key( string $prefix, string ...$parts ) : string
+    {
+        return $prefix . ':' . sha1( implode( "\0", [self::value(), ...$parts] ) );
+    }
+
+
+    /**
      * Runs a callback in a transaction with the user row locked and the tenant re-checked.
      *
      * @template T

@@ -8,20 +8,19 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Cms\Media;
+use Aimeos\Prisma\Files\File as PrismaFile;
 use Illuminate\Support\Facades\Auth;
 
 
 final class Write
 {
-    use ValidatesInputs;
-
-
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : string
     {
-        return $this->ai( fn() => Ai::write( $args['prompt'], Ai::files( $args['files'] ?? [], Auth::user() ), $args['context'] ?? null ) );
+        return Ai::write( $args['prompt'], Media::load( $args['files'] ?? [], Auth::user(), PrismaFile::class ), $args['context'] ?? null );
     }
 }

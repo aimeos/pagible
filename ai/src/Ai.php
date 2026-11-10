@@ -7,100 +7,44 @@
 
 namespace Aimeos\Cms;
 
-use Aimeos\Cms\Events\Generated;
-use Aimeos\Cms\Models\File;
-use Aimeos\Cms\Tools as CmsTools;
-use Aimeos\Cms\Watch as CmsWatch;
 use Aimeos\Prisma\Contracts\Provider;
+use Aimeos\Prisma\Exceptions\PrismaException;
 use Aimeos\Prisma\Files\Audio;
+use Aimeos\Prisma\Files\File as PrismaFile;
 use Aimeos\Prisma\Files\Image;
-use Aimeos\Prisma\Prisma;
-use Aimeos\Prisma\Schema\Schema;
-use Aimeos\Prisma\Tools;
-use Aimeos\Prisma\Values\Observation;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use Aimeos\Prisma\Responses\FileResponse;
 
 
 /**
  * AI operations shared by the GraphQL mutations and the MCP tools.
- *
- * Each operation uses the "cms.ai.<op>" provider, configuration and model
- * settings and records the provider call as Generated event for the editor.
- * The editor is resolved from the authenticated user.
  */
-class Ai
+final class Ai
 {
     /**
-     * MCP tools of the AI package, each one sends a request to an AI provider.
+     * Preferred sizes of generated images, landscape first.
      */
-    public const TOOLS = [
-        CmsTools\RefineContent::class,
-        CmsTools\TranslateContent::class,
-        CmsTools\TranslatePage::class,
-        CmsTools\DescribeFile::class,
-        CmsTools\TranscribeAudio::class,
-        CmsTools\GenerateImage::class,
-        CmsTools\RepaintImage::class,
-        CmsTools\IsolateImage::class,
-        CmsTools\UpscaleImage::class,
-        CmsTools\UncropImage::class,
-        CmsTools\EraseImage::class,
-        CmsTools\InpaintImage::class,
-    ];
-
-    /** @var string|null Tenant whose rate limit is used by translations within limited() */
-    private static ?string $limit = null;
-
-
-    /**
-     * Ensures that the JSON encoded input doesn't exceed the "cms.ai.maxinput" size and "cms.ai.maxdepth" nesting depth.
-     *
-     * @param mixed $value Input sent to the AI provider
-     * @param string $name Name of the input used in the error message
-     * @throws Exception If the input can't be encoded, is too large or too deeply nested
-     */
-    public static function checkInput( mixed $value, string $name = 'Content' ) : void
-    {
-        $max = max( 1, (int) config( 'cms.ai.maxinput', 1024 * 1024 ) );
-        $depth = max( 1, (int) config( 'cms.ai.maxdepth', 20 ) );
-        $json = json_encode( $value, 0, $depth );
-
-        if( $json === false && json_last_error() === JSON_ERROR_DEPTH ) {
-            throw new Exception( sprintf( '%s exceeds the maximum nesting depth of %d', $name, $depth ) );
-        }
-
-        if( $json === false || strlen( $json ) > $max ) {
-            throw new Exception( sprintf( '%s exceeds the maximum input size of %d bytes', $name, $max ) );
-        }
-    }
+    private const SIZES = ['1536x1024', '1792x1024', '1024x1024'];
 
 
     /**
      * Describes an image, audio or video file.
      *
-     * @param File|string $file File model with at least disk, path and mime loaded or the file UUID
+     * @param PrismaFile $media Audio, image or video file, e.g. by Media::load() or Media::media()
      * @param string|null $lang ISO language code of the description
      * @return string Description of the file
      * @throws Exception If the file type isn't supported
-     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If no file with the UUID exists
+     * @throws PrismaException If no provider is configured or the request fails
      */
-    public static function describe( File|string $file, ?string $lang = null ) : string
+    public static function describe( PrismaFile $media, ?string $lang = null ) : string
     {
-        if( is_string( $file ) ) {
-            $file = File::select( 'id', 'disk', 'path', 'mime' )->findOrFail( $file );
+        $type = Media::type( $media );
+
+        if( !$type ) {
+            throw new Exception( __( 'Unsupported file type ":mime"', ['mime' => $media->mimeType()] ) );
         }
 
-        $type = explode( '/', (string) $file->mime, 2 )[0];
-        $class = '\\Aimeos\\Prisma\\Files\\' . ucfirst( $type );
-
-        if( !class_exists( $class ) ) {
-            throw new Exception( sprintf( 'Unsupported file type "%s"', $file->mime ) );
-        }
-
-        return self::provider( $type, 'describe' )
-            ->describe( self::media( $file, $class ), $lang, config( 'cms.ai.describe', [] ) ) // @phpstan-ignore-line method.notFound
-            ->text();
+        return AiClient::call( $type, AiClient::DESCRIBE, fn( Provider $p, array $o ) => $p->describe( $media, $lang, $o ) ) // @phpstan-ignore-line method.notFound
+            ->text() ?? throw new Exception( __( 'No description returned' ) );
     }
 
 
@@ -110,40 +54,12 @@ class Ai
      * @param Image $image Image to edit
      * @param Image $mask Mask image (black: keep, white: erase)
      * @return string Base64 encoded edited image
+     * @throws Exception If no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function erase( Image $image, Image $mask ) : string
     {
-        return self::image( 'erase', [$image, $mask] );
-    }
-
-
-    /**
-     * Loads stored files as Prisma file objects.
-     *
-     * Files of other media types are skipped if a specific Prisma class like
-     * Image::class is passed.
-     *
-     * @template T of \Aimeos\Prisma\Files\File
-     * @param array<int, string> $ids UUIDs of the files
-     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User loading the files or NULL inside Permission::system()
-     * @param class-string<T> $class Prisma file class, e.g. Image::class
-     * @return array<int, T> List of Prisma file objects
-     * @throws \Aimeos\Cms\Exceptions\PermissionException If the user isn't allowed to view files
-     */
-    public static function files( array $ids, ?\Illuminate\Contracts\Auth\Authenticatable $user, string $class = \Aimeos\Prisma\Files\File::class ) : array
-    {
-        if( empty( $ids ) ) {
-            return [];
-        }
-
-        Permission::check( 'file:view', $user );
-
-        $type = $class !== \Aimeos\Prisma\Files\File::class ? strtolower( class_basename( $class ) ) . '/' : '';
-
-        return File::whereIn( 'id', $ids )->select( 'id', 'tenant_id', 'disk', 'path', 'mime' )->get()
-            ->filter( fn( File $file ) => str_starts_with( (string) $file->mime, $type ) )
-            ->map( fn( File $file ) => self::media( $file, $class ) )
-            ->values()->all();
+        return self::image( 'erase', fn( Provider $p, array $o ) => $p->erase( $image, $mask, $o ) ); // @phpstan-ignore-line method.notFound
     }
 
 
@@ -154,13 +70,17 @@ class Ai
      * @param array<int, Image> $images Reference images
      * @param string|null $context Additional context like style, mood or brand guidelines
      * @return string Base64 encoded image
+     * @throws Exception If no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function imagine( string $prompt, array $images = [], ?string $context = null ) : string
     {
-        $config = config( 'cms.ai.imagine', [] ) + ['size' => ['1536x1024', '1792x1024', '1024x1024']];
+        // image providers have no system prompt, so the context is part of the prompt
         $prompt .= $context ? "\n\n" . $context : '';
 
-        return self::image( 'imagine', [$prompt, $images], $config );
+        // published configs of older versions have no sizes
+        $fn = fn( Provider $p, array $o ) => $p->imagine( $prompt, $images, $o + ['size' => self::SIZES] ); // @phpstan-ignore-line method.notFound
+        return self::image( 'imagine', $fn );
     }
 
 
@@ -171,10 +91,12 @@ class Ai
      * @param Image $mask Mask image marking the area to replace
      * @param string $prompt Description of the new content
      * @return string Base64 encoded edited image
+     * @throws Exception If no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function inpaint( Image $image, Image $mask, string $prompt ) : string
     {
-        return self::image( 'inpaint', [$image, $mask, $prompt] );
+        return self::image( 'inpaint', fn( Provider $p, array $o ) => $p->inpaint( $image, $mask, $prompt, $o ) ); // @phpstan-ignore-line method.notFound
     }
 
 
@@ -183,100 +105,34 @@ class Ai
      *
      * @param Image $image Image to edit
      * @return string Base64 encoded edited image
+     * @throws Exception If no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function isolate( Image $image ) : string
     {
-        return self::image( 'isolate', [$image] );
+        return self::image( 'isolate', fn( Provider $p, array $o ) => $p->isolate( $image, $o ) ); // @phpstan-ignore-line method.notFound
     }
 
 
     /**
-     * Returns the observer that records AI provider calls as Generated events.
+     * Summarizes a page for its meta description.
      *
-     * The editor and tenant are captured now (editor resolved from the authenticated user when
-     * null) so they are correct when the callback fires after the provider call completes.
+     * The content may contain instructions of other editors, so no web pages are fetched.
      *
-     * @param string|null $editor Editor identifier; resolved from the authenticated user when null
-     * @param string|null $mutation Operation key override
-     * @return \Closure(Observation): void Observer for Prisma::...->observe()
+     * @param string $title Page title
+     * @param string $content Text content of the page
+     * @param string|null $lang ISO language code of the summary
+     * @param int|null $max Maximum number of characters or NULL for no limit
+     * @return string Summary without enclosing quotes
+     * @throws Exception If the content is too large or no text is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
-    public static function observer( ?string $editor = null, ?string $mutation = null ) : \Closure
+    public static function meta( string $title, string $content, ?string $lang = null, ?int $max = null ) : string
     {
-        $editor ??= Utils::editor( Auth::user() );
-        $tenant = Tenancy::value();
+        AiClient::checkInput( $content, __( 'Page content' ) );
 
-        return function( Observation $observation ) use ( $editor, $tenant, $mutation ) {
-            CmsWatch::dispatch( Generated::class, fn() => new Generated(
-                mutation: $mutation ?? $observation->operation,
-                provider: $observation->provider,
-                model: $observation->model ?? '',
-                durationMs: $observation->durationMs,
-                editor: $editor,
-                tenant: $tenant,
-                success: $observation->error === null,
-                error: $observation->error?->getMessage(),
-                inputTokens: $observation->usage?->promptTokens(),
-                outputTokens: $observation->usage?->completionTokens(),
-            ) );
-        };
-    }
-
-
-    /**
-     * Refines page content or structured entries based on a prompt.
-     *
-     * @param string $prompt Description of the changes
-     * @param array<mixed> $content Content elements or structured entries to refine
-     * @param string $type Schema section, e.g. "content" or "meta"
-     * @param string|null $pagetype Page type to limit the content element types
-     * @param string|null $context Additional context like audience or tone
-     * @param string|null $lang ISO language code of the refined content
-     * @return array<mixed> Refined content
-     * @throws Exception If the AI response is invalid
-     */
-    public static function refine( string $prompt, array $content, string $type = 'content', ?string $pagetype = null,
-        ?string $context = null, ?string $lang = null ) : array
-    {
-        $schema = Schema::fromArray( 'response', JsonSchema::build( $type, $pagetype ) );
-        $system = view( 'cms::prompts.refine' )->render() . "\n" . $context . ( $lang ? "\nWrite the content in language: " . $lang : '' );
-
-        $structured = self::lifted( fn() => self::text( 'refine' )->ensure( 'structure' )
-            ->withSystemPrompt( $system )
-            // read-only tools: stored content in the prompt must not be able to change or leak data
-            ->withTools( [
-                Tools::laravel( CmsTools\GetPage::class ),
-                Tools::laravel( CmsTools\GetPageHistory::class ),
-                Tools::laravel( CmsTools\GetPageTree::class ),
-                Tools::laravel( CmsTools\SearchPages::class ),
-                Tools::laravel( CmsTools\GetElement::class ),
-                Tools::laravel( CmsTools\GetFile::class ),
-                // provided by the optional metrics package
-                ...( class_exists( CmsTools\GetPageMetrics::class ) ? [Tools::laravel( CmsTools\GetPageMetrics::class )] : [] )
-            ] )
-            ->structure( $prompt . "\n\nContent as JSON:\n" . json_encode( $content ), $schema ) // @phpstan-ignore-line method.notFound
-            ->structured() );
-
-        if( !$structured ) {
-            throw new Exception( 'No structured content returned in refine response' );
-        }
-
-        if( $errors = $schema->validate( $structured ) ) {
-            Log::warning( 'Invalid refine response', ['errors' => $errors] );
-            throw new Exception( config( 'app.debug' ) ? 'Invalid refine response: ' . implode( '; ', $errors ) : 'Invalid content in refine response' );
-        }
-
-        if( $type === 'content' ) {
-            return Refiner::merge( $content, $structured['contents'] ?? [], $pagetype );
-        }
-
-        foreach( $structured as $key => $data )
-        {
-            if( is_array( $data ) ) {
-                $content[$key] = Validation::entry( $key, array_filter( $data, fn( $v ) => $v !== null ), $type );
-            }
-        }
-
-        return (array) Validation::structured( $content, $type );
+        $system = view( 'cms::prompts.description', ['lang' => $lang, 'max' => $max] )->render();
+        return Text::shorten( self::generate( $system, "Page title: {$title}\n\nPage content:\n{$content}" ), $max );
     }
 
 
@@ -286,10 +142,12 @@ class Ai
      * @param Image $image Image to edit
      * @param string $prompt Description of the changes
      * @return string Base64 encoded edited image
+     * @throws Exception If no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function repaint( Image $image, string $prompt ) : string
     {
-        return self::image( 'repaint', [$image, $prompt] );
+        return self::image( 'repaint', fn( Provider $p, array $o ) => $p->repaint( $image, $prompt, $o ) ); // @phpstan-ignore-line method.notFound
     }
 
 
@@ -297,162 +155,17 @@ class Ai
      * Transcribes the speech in an audio file.
      *
      * @param Audio $audio Audio file
+     * @param string|null $lang ISO language code of the speech or NULL to detect it
      * @return array<int, array{start: string, end: string, text: string}> Transcription segments
+     * @throws Exception If the transcription is invalid
+     * @throws PrismaException If no provider is configured or the request fails
      */
-    public static function transcribe( Audio $audio ) : array
+    public static function transcribe( Audio $audio, ?string $lang = null ) : array
     {
-        $data = self::provider( 'audio', 'transcribe' )
-            ->transcribe( $audio, null, config( 'cms.ai.transcribe', [] ) ) // @phpstan-ignore-line method.notFound
-            ->structured();
+        $data = AiClient::call( 'audio', 'transcribe', fn( Provider $p, array $o ) => $p->transcribe( $audio, $lang, $o ) ) // @phpstan-ignore-line method.notFound
+            ->structured() ?: throw new Exception( __( 'No transcription returned' ) );
 
-        return array_map( fn( $entry ) => [
-            'start' => self::timestamp( $entry['start'] ),
-            'end' => self::timestamp( $entry['end'] ),
-            'text' => $entry['text'],
-        ], $data );
-    }
-
-
-    /**
-     * Translates texts into another language.
-     *
-     * Within limited(), the provider requests are reserved from the rate limit of the tenant first.
-     *
-     * @param array<int, string> $texts Texts to translate
-     * @param string $to Target language code
-     * @param string|null $from Source language code, auto-detected if NULL
-     * @param string|null $context Additional context like the topic of the texts
-     * @return array<int, string> Translated texts in the same order
-     */
-    public static function translate( array $texts, string $to, ?string $from = null, ?string $context = null ) : array
-    {
-        $config = config( 'cms.ai.translate', [] );
-
-        if( strtolower( (string) ( $config['provider'] ?? '' ) ) === 'deepl' )
-        {
-            $config += [
-                'ignore_tags' => ['x'],
-                'tag_handling' => 'xml',
-                'preserve_formatting' => true,
-                'model_type' => 'prefer_quality_optimized',
-            ];
-        }
-
-        // texts and context are parsed as XML, so "&" and "<" must be escaped except for the ignored tags
-        if( $xml = ( $config['tag_handling'] ?? null ) === 'xml' )
-        {
-            $tags = [];
-
-            foreach( (array) ( $config['ignore_tags'] ?? [] ) as $tag ) {
-                $tags['&lt;' . $tag . '&gt;'] = '<' . $tag . '>';
-                $tags['&lt;/' . $tag . '&gt;'] = '</' . $tag . '>';
-            }
-
-            $texts = array_map( fn( $text ) => strtr( htmlspecialchars( (string) $text, ENT_XML1 | ENT_NOQUOTES, 'UTF-8' ), $tags ), $texts );
-            $context = $context !== null ? htmlspecialchars( $context, ENT_XML1 | ENT_NOQUOTES, 'UTF-8' ) : null;
-        }
-
-        $chunks = self::chunks( $texts );
-
-        if( !$chunks ) {
-            return [];
-        }
-
-        // reserve the requests for all chunks at once before sending the first one
-        if( self::$limit !== null ) {
-            Jobs\TranslatePage::reserve( self::$limit, count( $chunks ) );
-        }
-
-        $provider = self::provider( 'text', 'translate', $config );
-        $result = [];
-
-        foreach( $chunks as $chunk )
-        {
-            array_push( $result, ...array_values( $provider->translate( $chunk, $to, $from, $context, $config ) // @phpstan-ignore-line method.notFound
-                ->texts() ) );
-        }
-
-        if( $xml ) {
-            $result = array_map( fn( $text ) => htmlspecialchars_decode( (string) $text, ENT_XML1 | ENT_QUOTES ), $result );
-        }
-
-        return $result;
-    }
-
-
-    /**
-     * Executes translations whose provider requests count against the rate limit of the tenant.
-     *
-     * The requests of each translate() call are reserved from the rate limit of the tenant
-     * before the first one is sent.
-     *
-     * @template T
-     * @param \Closure(): T $callback Callback translating the texts
-     * @param string|null $tenant Tenant ID whose rate limit is used or NULL for no limit
-     * @return T Callback return value
-     * @throws Jobs\Throttled If the rate limit of the tenant would be exceeded
-     */
-    public static function limited( \Closure $callback, ?string $tenant = null ) : mixed
-    {
-        $outer = self::$limit;
-        self::$limit = $tenant;
-
-        try {
-            return $callback();
-        } finally {
-            self::$limit = $outer;
-        }
-    }
-
-
-    /**
-     * Splits texts into chunks which can be sent to the translation provider in one request.
-     *
-     * @param array<int, string> $texts Texts to translate
-     * @param int $max Maximum number of texts per chunk
-     * @param int $size Maximum number of bytes per chunk, larger texts get a chunk of their own
-     * @return array<int, array<int, string>> List of chunks with their texts
-     */
-    public static function chunks( array $texts, int $max = 50, int $size = 50000 ) : array
-    {
-        $chunks = [];
-        $chunk = [];
-        $bytes = 0;
-
-        foreach( array_values( $texts ) as $text )
-        {
-            if( $chunk && ( count( $chunk ) >= $max || $bytes + strlen( $text ) > $size ) )
-            {
-                $chunks[] = $chunk;
-                $chunk = [];
-                $bytes = 0;
-            }
-
-            $chunk[] = $text;
-            $bytes += strlen( $text );
-        }
-
-        if( $chunk ) {
-            $chunks[] = $chunk;
-        }
-
-        return $chunks;
-    }
-
-
-    /**
-     * Returns the callback translating page texts for the user or NULL if the user can't use AI translation.
-     *
-     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user User translating the texts or NULL inside Permission::system()
-     * @return (\Closure(array<int, string>, string, ?string, string): array<int, string>)|null Translate callback
-     */
-    public static function translator( ?\Illuminate\Contracts\Auth\Authenticatable $user ) : ?\Closure
-    {
-        if( !config( 'cms.ai.translate.provider' ) || !Permission::allowed( 'text:translate', $user ) ) {
-            return null;
-        }
-
-        return fn( array $texts, string $to, ?string $from, string $context ) : array => self::translate( $texts, $to, $from, $context ?: null );
+        return array_map( fn( $entry ) => self::segment( $entry ), $data );
     }
 
 
@@ -465,10 +178,18 @@ class Ai
      * @param int $bottom Pixels to add at the bottom
      * @param int $left Pixels to add on the left
      * @return string Base64 encoded edited image
+     * @throws Exception If no side is extended or no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
-    public static function uncrop( Image $image, int $top, int $right, int $bottom, int $left ) : string
+    public static function uncrop( Image $image, int $top = 0, int $right = 0, int $bottom = 0, int $left = 0 ) : string
     {
-        return self::image( 'uncrop', [$image, $top, $right, $bottom, $left] );
+        if( max( $top, $right, $bottom, $left ) < 1 ) {
+            throw new Exception( __( 'At least one side of the image must be extended' ) );
+        }
+
+        self::pixels( $image, 1, $left + $right, $top + $bottom );
+
+        return self::image( 'uncrop', fn( Provider $p, array $o ) => $p->uncrop( $image, $top, $right, $bottom, $left, $o ) ); // @phpstan-ignore-line method.notFound
     }
 
 
@@ -478,10 +199,14 @@ class Ai
      * @param Image $image Image to upscale
      * @param int $factor Upscale factor
      * @return string Base64 encoded edited image
+     * @throws Exception If the result would be too large or no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function upscale( Image $image, int $factor ) : string
     {
-        return self::image( 'upscale', [$image, $factor] );
+        self::pixels( $image, $factor );
+
+        return self::image( 'upscale', fn( Provider $p, array $o ) => $p->upscale( $image, $factor, $o ) ); // @phpstan-ignore-line method.notFound
     }
 
 
@@ -489,127 +214,102 @@ class Ai
      * Writes a text based on a prompt and optional files.
      *
      * @param string $prompt Description of the text
-     * @param array<int, \Aimeos\Prisma\Files\File> $files Files used as source
+     * @param array<int, PrismaFile> $files Files used as source
      * @param string|null $context Additional context like audience or tone
      * @return string Generated text
+     * @throws Exception If no text is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
     public static function write( string $prompt, array $files = [], ?string $context = null ) : string
     {
-        $system = view( 'cms::prompts.write' )->render() . "\n" . $context;
+        $system = AiClient::system( view( 'cms::prompts.write' )->render(), $context );
 
-        return self::lifted( fn() => self::text( 'write' )->ensure( 'write' )
-            ->withSystemPrompt( $system )
-            ->withTools( [Tools::provider( 'web_search' ), Tools::provider( 'web_fetch' )] )
-            ->write( $prompt, $files, config( 'cms.ai.write', [] ) ) // @phpstan-ignore-line method.notFound
-            ->text() );
+        // the context can contain the page content of other editors, so no web pages are fetched
+        return self::generate( $system, $prompt, $files, ['web_search'] );
     }
 
 
     /**
-     * Returns the configured Prisma text provider for the given AI operation.
+     * Writes a text which may use the passed web tools of the provider.
      *
-     * The supported methods aren't checked so callers can choose between alternatives.
-     *
-     * @param string $op Operation name used as "cms.ai.<op>" configuration key, e.g. "write"
-     * @param string|null $editor Name of the editor the usage is logged for
-     * @param string|null $mutation Name of the operation the usage is logged for
-     * @return Provider Text provider with the configured timeout and token limit
-     * @throws \Aimeos\Prisma\Exceptions\PrismaException If no provider is configured
+     * @param string $system System prompt
+     * @param string $prompt Description of the text
+     * @param array<int, PrismaFile> $files Files used as source
+     * @param array<int, string> $web Provider web tools, e.g. "web_fetch" only if the input is trusted
+     * @return string Generated text
+     * @throws PrismaException If no provider is configured or writing isn't supported
+     * @throws Exception If no text is returned
      */
-    public static function text( string $op, ?string $editor = null, ?string $mutation = null ) : Provider
+    private static function generate( string $system, string $prompt, array $files = [], array $web = [] ) : string
     {
-        return Prisma::text()->observe( self::observer( $editor, $mutation ) )
-            ->using( config( "cms.ai.$op.provider" ), config( "cms.ai.$op", [] ) )
-            ->model( config( "cms.ai.$op.model" ) )
-            ->withClientOptions( ['timeout' => (int) config( 'cms.ai.timeout' ), 'connect_timeout' => 10] )
-            ->withMaxTokens( config( 'cms.ai.maxtoken' ) );
-    }
-
-
-    /**
-     * Calls the AI provider without PHP's default execution time limit.
-     *
-     * @param \Closure $fn Function calling the provider
-     * @return mixed Return value of the function
-     */
-    public static function lifted( \Closure $fn ) : mixed
-    {
-        $limit = (int) ini_get( 'max_execution_time' );
-        set_time_limit( (int) config( 'cms.ai.timeout' ) );
-
-        try {
-            return $fn();
-        } finally {
-            set_time_limit( $limit );
-        }
-    }
-
-
-    /**
-     * Builds a Prisma file object from a stored file model.
-     *
-     * @template T of \Aimeos\Prisma\Files\File
-     * @param File $file File model with at least disk, path and mime loaded
-     * @param class-string<T> $class Prisma file class, e.g. Image::class
-     * @return T Prisma file object
-     */
-    protected static function media( File $file, string $class ) : \Aimeos\Prisma\Files\File
-    {
-        if( str_starts_with( (string) $file->path, 'http' ) ) {
-            return $class::fromUrl( (string) $file->path, $file->mime, !(bool) config( 'cms.allow-internal' ) );
-        }
-
-        return $class::fromStoragePath( (string) $file->path, FileStorage::diskName( (string) $file->disk ), $file->mime );
-    }
-
-
-    /**
-     * Returns the configured Prisma provider for the given AI operation.
-     *
-     * @param string $type Media type, e.g. "text", "image" or "audio"
-     * @param string $op Operation name used as "cms.ai.<op>" configuration key
-     * @param array<string, mixed>|null $config Provider configuration, "cms.ai.<op>" if NULL
-     * @return Provider Provider instance supporting the operation
-     * @throws \Aimeos\Prisma\Exceptions\PrismaException If no provider is configured or the operation isn't supported
-     */
-    protected static function provider( string $type, string $op, ?array $config = null ) : Provider
-    {
-        return Prisma::type( $type )->observe( self::observer() )
-            ->using( config( "cms.ai.$op.provider" ), $config ?? config( "cms.ai.$op", [] ) )
-            ->model( config( "cms.ai.$op.model" ) )
-            ->ensure( $op );
+        return AiClient::lifted( fn() => AiClient::prompt( AiClient::WRITE, $system, $web )
+            ->write( $prompt, $files, AiClient::options( AiClient::WRITE ) ) // @phpstan-ignore-line method.notFound
+            ->text() ?? throw new Exception( __( 'No text returned' ) ) );
     }
 
 
     /**
      * Executes an image operation and returns the resulting image.
      *
-     * @param string $op Operation and Prisma method name, e.g. "erase"
-     * @param array<int, mixed> $args Operation arguments without the configuration
-     * @param array<string, mixed>|null $config Provider configuration, defaults to "cms.ai.<op>"
+     * @param string $op Operation name, e.g. "erase"
+     * @param \Closure(Provider, array<string, mixed>): FileResponse $fn Receives the provider and the request options
      * @return string Base64 encoded image
+     * @throws Exception If no image is returned
+     * @throws PrismaException If no provider is configured or the request fails
      */
-    private static function image( string $op, array $args, ?array $config = null ) : string
+    private static function image( string $op, \Closure $fn ) : string
     {
-        return (string) self::provider( 'image', $op )
-            ->{$op}( ...$args, ...[$config ?? config( "cms.ai.$op", [] )] )
-            ->base64();
+        return AiClient::call( 'image', $op, $fn )->base64() ?? throw new Exception( __( 'No image returned' ) );
     }
 
 
     /**
-     * Formats a number of seconds as a "HH:MM:SS.mmm" timestamp.
+     * Ensures that the edited image won't exceed "cms.upload.maxpixels" before the provider charges for it.
      *
-     * @param float $seconds Time in seconds
-     * @return string Formatted timestamp, e.g. "00:01:23.500"
+     * @param Image $image Image to edit
+     * @param int $factor Factor the width and height are multiplied with
+     * @param int $width Pixels added to the width
+     * @param int $height Pixels added to the height
+     * @throws Exception If the image is invalid or the edited image would be too large
      */
-    protected static function timestamp( float $seconds ) : string
+    private static function pixels( Image $image, int $factor = 1, int $width = 0, int $height = 0 ) : void
     {
-        $hours = floor( $seconds / 3600 );
-        $minutes = floor( ( $seconds % 3600 ) / 60 );
-        $secs = floor( $seconds % 60 );
-        $millis = ( $seconds - floor( $seconds ) ) * 1000;
+        $info = @getimagesizefromstring( (string) $image->binary() );
 
-        return sprintf( "%02d:%02d:%02d.%03d", $hours, $minutes, $secs, $millis );
+        if( !$info ) {
+            throw new Exception( __( 'Invalid image' ) );
+        }
+
+        $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
+
+        if( ( $info[0] + $width ) * ( $info[1] + $height ) * $factor * $factor > $max ) {
+            throw new Exception( __( 'The edited image would exceed the maximum size of :max pixels', ['max' => $max] ) );
+        }
+    }
+
+
+    /**
+     * Validates a transcription segment returned by the provider and formats its times.
+     *
+     * @param mixed $entry Segment with start and end in seconds and the text
+     * @return array{start: string, end: string, text: string} Segment with formatted times
+     * @throws Exception If the segment is invalid
+     */
+    private static function segment( mixed $entry ) : array
+    {
+        $valid = is_array( $entry )
+            && is_numeric( $entry['start'] ?? null )
+            && is_numeric( $entry['end'] ?? null )
+            && is_string( $entry['text'] ?? null );
+
+        if( !$valid ) {
+            throw new Exception( __( 'Invalid transcription returned' ) );
+        }
+
+        return [
+            'start' => Text::timestamp( (float) $entry['start'] ),
+            'end' => Text::timestamp( (float) $entry['end'] ),
+            'text' => $entry['text'],
+        ];
     }
 }

@@ -46,19 +46,16 @@ commands:
       - run:
           name: Skip if the webhooks package is not affected
           command: if [ "<< pipeline.parameters.run_webhooks >>" != "true" ]; then circleci-agent step halt; fi
-          working_directory: ~
   skip-without-metrics:
     steps:
       - run:
           name: Skip if the metrics package is not affected
           command: if [ "<< pipeline.parameters.run_metrics >>" != "true" ]; then circleci-agent step halt; fi
-          working_directory: ~
   skip-without-cashier:
     steps:
       - run:
           name: Skip if no cashier drivers are affected
           command: if [ "<< pipeline.parameters.run_cashier >>" != "true" ]; then circleci-agent step halt; fi
-          working_directory: ~
   phpunit:
     steps:
       - run: TESTS="<< pipeline.parameters.tests >>"; ./vendor/bin/phpunit ${TESTS#ALL}
@@ -318,9 +315,9 @@ jobs:
           DB_DRIVER: sqlite
     working_directory: ~/project/webhooks
     steps:
-      - skip-without-webhooks
       - checkout:
           path: ~/project
+      - skip-without-webhooks
       - restore_cache:
           keys:
             - webhooks-php85-{{ checksum "composer.json" }}
@@ -346,9 +343,9 @@ jobs:
           DB_DRIVER: sqlite
     working_directory: ~/project/metrics
     steps:
-      - skip-without-metrics
       - checkout:
           path: ~/project
+      - skip-without-metrics
       - restore_cache:
           keys:
             - metrics-php85-{{ checksum "composer.json" }}
@@ -377,9 +374,9 @@ jobs:
       - image: aimeos/ci-php:<< parameters.php >>
     working_directory: ~/project/<< parameters.package >>
     steps:
-      - skip-without-cashier
       - checkout:
           path: ~/project
+      - skip-without-cashier
       - run:
           name: Install isolated provider
           command: |

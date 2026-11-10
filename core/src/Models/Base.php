@@ -225,6 +225,30 @@ abstract class Base extends Model
 
 
     /**
+     * Returns the latest auxiliary value or the stored one.
+     *
+     * @param string $name Property name, e.g. "content", "meta" or "description"
+     * @return mixed Latest or stored value
+     */
+    public function latestAux( string $name ) : mixed
+    {
+        return $this->latest?->aux->{$name} ?? $this->getAttribute( $name );
+    }
+
+
+    /**
+     * Returns the latest value or the stored one.
+     *
+     * @param string $name Property name, e.g. "title" or "path"
+     * @return mixed Latest or stored value
+     */
+    public function latestValue( string $name ) : mixed
+    {
+        return $this->latest?->data->{$name} ?? $this->getAttribute( $name );
+    }
+
+
+    /**
      * Scope that filters by version-level fields of the latest versions.
      *
      * By default, the latest version of each record is checked, which is fast if the other

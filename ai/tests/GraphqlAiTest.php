@@ -207,13 +207,13 @@ class GraphqlAiTest extends AiTestAbstract
             }
         ', [
             'content' => json_encode( [] ),
-        ] )->assertGraphQLErrorMessage( $error->getMessage() )
+        ] )->assertGraphQLErrorMessage( 'The AI service failed' )
             ->assertJsonPath( 'data.refine', null )
             ->assertJsonMissingPath( 'errors.0.extensions.debugMessage' )
             ->assertJsonMissingPath( 'errors.0.extensions.trace' );
 
         Log::shouldHaveReceived( 'error' )->once()->with( 'AI service error', [
-            'mutation' => 'Refine',
+            'field' => 'Mutation.refine',
             'message' => $error->getMessage(),
             'trace' => $error->getTraceAsString(),
         ] );
@@ -296,6 +296,70 @@ class GraphqlAiTest extends AiTestAbstract
 
         $this->assertSame( ['id' => $uuid, 'type' => 'file'], $refine[0]['data']['file'] );
         $this->assertSame( [$uuid], $refine[0]['files'] );
+    }
+
+
+    public function testRefineKeepsType()
+    {
+        Prisma::fake( [
+            TextResponse::fromText( '' )->withStructured( [
+                'contents' => [
+                    ['id' => 'txt-1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'Refined', 'level' => '2']],
+                    ['id' => 'new-1', 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'New', 'level' => '2']],
+                ]
+            ] )
+        ] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!) {
+                refine(prompt: $prompt, content: $content)
+            }
+        ', [
+            'prompt' => 'Refine',
+            'content' => json_encode( [['id' => 'txt-1', 'type' => 'text', 'group' => 'main', 'data' => ['text' => 'Old']]] ),
+        ] );
+
+        $refine = json_decode( (string) $response->json( 'data.refine' ), true );
+
+        // existing elements keep their type, new elements get the type of the response
+        $this->assertSame( 'text', $refine[0]['type'] );
+        $this->assertSame( 'heading', $refine[1]['type'] );
+        $this->assertNotSame( 'new-1', $refine[1]['id'] );
+    }
+
+
+    public function testRefineNewWithoutId()
+    {
+        Prisma::fake( [
+            TextResponse::fromText( '' )->withStructured( [
+                'contents' => [
+                    ['id' => 'txt-1', 'type' => 'text', 'group' => 'main', 'data' => ['text' => 'Refined']],
+                    ['id' => null, 'type' => 'heading', 'group' => 'main', 'data' => ['title' => 'New', 'level' => '2']],
+                ]
+            ] )
+        ] );
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation($prompt: String!, $content: JSON!) {
+                refine(prompt: $prompt, content: $content)
+            }
+        ', [
+            'prompt' => 'Refine',
+            'content' => json_encode( [
+                ['id' => 'txt-1', 'type' => 'text', 'group' => 'main', 'data' => ['text' => 'Old']],
+                ['id' => 'txt-2', 'type' => 'text', 'group' => 'main', 'data' => ['text' => 'Other']],
+            ] ),
+        ] );
+
+        $refine = json_decode( (string) $response->json( 'data.refine' ), true );
+
+        // new elements without ID don't get the existing elements merged into them
+        $this->assertCount( 2, $refine );
+        $this->assertSame( 'heading', $refine[1]['type'] );
+        $this->assertSame( ['title' => 'New', 'level' => '2'], array_intersect_key( $refine[1]['data'], ['title' => 1, 'level' => 1] ) );
+        $this->assertArrayNotHasKey( 'txt-2', $refine[1] );
+        $this->assertArrayNotHasKey( 'txt-2', $refine[1]['data'] );
+        $this->assertNotEmpty( $refine[1]['id'] );
     }
 
 
@@ -443,16 +507,17 @@ class GraphqlAiTest extends AiTestAbstract
 
     public function testTranscribe()
     {
-        Prisma::fake( [
+        $fake = Prisma::fake( [
             TextResponse::fromText( 'test transcription' )->withStructured( [
-                ['start' => 0, 'end' => 1, 'text' => 'test transcription'],
+                ['start' => 0, 'end' => 3723.25, 'text' => 'test transcription'],
+                ['start' => 3723.25, 'end' => 3724.001, 'text' => 'rounded'],
             ] )
         ] );
 
         $response = $this->actingAs( $this->user )->multipartGraphQL( [
             'query' => '
                 mutation($file: Upload!) {
-                    transcribe(file: $file)
+                    transcribe(file: $file, lang: "en")
                 }
             ',
             'variables' => [
@@ -464,13 +529,13 @@ class GraphqlAiTest extends AiTestAbstract
             '0' => UploadedFile::fake()->createWithContent( 'test.mp3', "\xFF\xFB\x90\x64" . str_repeat( "\0", 1024 ) ),
         ] )->assertJson( [
             'data' => [
-                'transcribe' => '[{"start":"00:00:00.000","end":"00:00:01.000","text":"test transcription"}]'
+                'transcribe' => '[{"start":"00:00:00.000","end":"01:02:03.250","text":"test transcription"},{"start":"01:02:03.250","end":"01:02:04.001","text":"rounded"}]'
             ]
         ] );
+
+        $fake->assertCalled( 'transcribe', fn( $args ) => $args[1] === 'en' );
     }
 
-
-    // --- Permission denial tests ---
 
     public function testImagineNoPermission()
     {
@@ -700,6 +765,17 @@ class GraphqlAiTest extends AiTestAbstract
 
 
     // --- Input validation tests ---
+
+    public function testImageUploadFormat()
+    {
+        config( ['cms.upload.mimetypes' => ['image/gif']] );
+
+        $this->isolateUpload( UploadedFile::fake()->createWithContent(
+            'test.gif',
+            base64_decode( 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' ),
+        ) )->assertGraphQLErrorMessage( 'Image type "image/gif" is not allowed' );
+    }
+
 
     public function testImageUploadMimePolicy()
     {

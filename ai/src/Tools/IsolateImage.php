@@ -21,7 +21,7 @@ use Laravel\Mcp\Request;
 #[Description('Removes the background of an existing image using AI and stores the result as a new draft version of the same file. Returns the updated file.')]
 class IsolateImage extends Tool
 {
-    use HandlesMedia;
+    use Concerns\HandlesMedia;
 
 
     protected const PERMISSIONS = ['image:isolate', 'file:save', 'file:view'];
@@ -34,12 +34,7 @@ class IsolateImage extends Tool
      */
     public function schema( JsonSchema $schema ) : array
     {
-        return [
-            'file' => $schema->string()
-                ->description( 'The UUID of the image file whose background to remove.' )
-                ->required(),
-            'latest_id' => $this->latest( $schema ),
-        ];
+        return $this->media( $schema, [], 'The UUID of the image file whose background to remove.' );
     }
 
 
@@ -48,8 +43,6 @@ class IsolateImage extends Tool
      */
     protected function run( Request $request ) : ResponseFactory
     {
-        return $this->edit( $request, [], [
-            'file.required' => 'You must specify the UUID of the image file to isolate.',
-        ], fn( $image ) => Ai::isolate( $image ) );
+        return $this->edit( $request, [], [], Ai::isolate( ... ) );
     }
 }
