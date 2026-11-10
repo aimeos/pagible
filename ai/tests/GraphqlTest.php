@@ -63,7 +63,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testDescribe()
     {
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $expected = 'Description of the file content.';
         Prisma::fake( [TextResponse::fromText( $expected )] );
 
@@ -81,7 +81,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testImagine()
     {
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $image = base64_encode( $this->pngBinary() );
         $fake = Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
 
@@ -155,7 +155,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testWrite()
     {
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $expected = 'Generated content based on the prompt.';
         Prisma::fake( [TextResponse::fromText( $expected )] );
 
