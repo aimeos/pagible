@@ -174,6 +174,7 @@ class Resource
 
             $page = new Page();
             $page->fill( $input );
+            $page->status = 0; // disabled until published because the live columns come from the draft
             $page->editor = $editor;
 
             $page->position( $ref, $parent );

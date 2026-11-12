@@ -170,6 +170,22 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testAddPageDisabledUntilPublished()
+    {
+        $page = Resource::addPage( [
+            'lang' => 'en', 'name' => 'Redirect', 'title' => 'Redirect', 'path' => 'redirect-test',
+            'to' => 'https://example.org/redirect', 'status' => 1,
+        ], $this->user, parent: $this->root()->id );
+
+        $this->assertEquals( 0, $page->fresh()->status );
+        $this->assertEquals( 1, $page->latest->data->status );
+
+        $page->publish( $page->latest );
+
+        $this->assertEquals( 1, $page->fresh()->status );
+    }
+
+
     public function testSavePageAttachesReferencedElement()
     {
         $element = Element::where( 'type', 'footer' )->firstOrFail();
