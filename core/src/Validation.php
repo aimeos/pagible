@@ -146,11 +146,11 @@ class Validation
         }
 
         if( array_key_exists( 'meta', $input ) ) {
-            $input['meta'] = self::structured( $input['meta'], 'meta' );
+            $input['meta'] = self::structured( $input['meta'], 'meta', true );
         }
 
         if( array_key_exists( 'config', $input ) ) {
-            $input['config'] = self::structured( $input['config'], 'config' );
+            $input['config'] = self::structured( $input['config'], 'config', true );
         }
 
         return $input;
@@ -262,12 +262,15 @@ class Validation
      * {type, data, files}. The type key is the stable identity; structured
      * meta/config entries deliberately don't carry a separate ID. Legacy shapes
      * are handled exclusively by the data migration and are rejected at runtime.
+     * Entries of types missing in the schema section are never rendered unsanitized:
+     * new input is rejected while stored data drops them so publishing old versions works.
      *
      * @param array<mixed>|object|null $items Canonical meta/config entries
      * @param string $section Schema section ('meta' or 'config')
+     * @param bool $strict TRUE to reject unknown entry types, FALSE to drop them
      * @return object Structured meta/config object
      */
-    public static function structured( array|object|null $items, string $section ) : object
+    public static function structured( array|object|null $items, string $section, bool $strict = false ) : object
     {
         $schemas = Schema::schemas( section: $section );
 
@@ -300,6 +303,15 @@ class Validation
 
             if( !is_string( $key ) || $key === '' || !is_string( $entryType ) || $entryType !== $key ) {
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": key and type must match', $section, $key ) );
+            }
+
+            if( !isset( $schemas[$entryType] ) )
+            {
+                if( $strict ) {
+                    throw new InvalidInputException( sprintf( 'Unknown %s type "%s"', $section, $entryType ) );
+                }
+
+                continue;
             }
 
             if( !is_array( $value['data'] ) && !is_object( $value['data'] ) ) {

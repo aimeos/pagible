@@ -568,14 +568,14 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $this->assertEquals($expectedData, json_decode($version['data'], true));
 
         $expectedAux = [
-            'meta' => ['meta' => [
-                'type' => 'meta',
-                'data' => ['text' => 'Laravel CMS is outstanding'],
+            'meta' => ['social-media' => [
+                'type' => 'social-media',
+                'data' => ['title' => 'Laravel CMS is outstanding'],
                 'files' => [],
             ]],
-            'config' => ['test' => [
-                'type' => 'test',
-                'data' => ['key' => 'value'],
+            'config' => ['styles' => [
+                'type' => 'styles',
+                'data' => ['text' => 'body {}'],
                 'files' => [],
             ]],
             'content' => [
@@ -1089,6 +1089,27 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         $response->assertJsonPath( 'data.bulkPage', null );
         $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
+    public function testSavePageUnknownMetaType()
+    {
+        $this->user->cmsperms = ['page:save', 'page:view'];
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                savePage(id: "' . $root->id . '", input: {
+                    meta: "{\\"html\\":{\\"type\\":\\"html\\",\\"data\\":{\\"text\\":\\"<script src=\\\\\\"/x.txt\\\\\\"></script>\\"},\\"files\\":[]}}"
+                }) {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.savePage', null );
+        $this->assertStringContainsString( 'Unknown meta type "html"', $response->json( 'errors.0.message' ) );
+        $this->assertStringNotContainsString( '<script', json_encode( PageView::findOrFail( $root->id )->latest?->aux ) );
     }
 
 

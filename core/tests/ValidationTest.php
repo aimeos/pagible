@@ -454,7 +454,33 @@ class ValidationTest extends CoreTestAbstract
             ],
         ], 'meta' );
 
-        $this->assertIsObject( $result );
+        $this->assertEquals( new \stdClass(), $result );
+    }
+
+
+    public function testStructuredUnknownTypeStrict()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Unknown meta type "html"' );
+
+        Validation::structured( [
+            'html' => [
+                'type' => 'html',
+                'data' => ['text' => '<script src="/x.txt"></script>'],
+                'files' => [],
+            ],
+        ], 'meta', true );
+    }
+
+
+    public function testPageRejectsUnknownMetaType()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Unknown meta type "html"' );
+
+        Validation::page( ['meta' => [
+            'html' => ['type' => 'html', 'data' => ['text' => '<script></script>'], 'files' => []],
+        ]] );
     }
 
 

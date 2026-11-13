@@ -318,7 +318,7 @@ class SyncTest extends CoreTestAbstract
                 'meta-tags' => ['type' => 'meta-tags', 'data' => ['description' => 'About us', 'keywords' => 'cms'], 'files' => []],
                 'canonical' => ['type' => 'canonical', 'data' => ['url' => 'https://example.com/about'], 'files' => []],
             ],
-            'config' => ['website-title' => ['type' => 'website-title', 'data' => ['title' => 'My site'], 'files' => []]],
+            'config' => ['website' => ['type' => 'website', 'data' => ['title' => 'My site'], 'files' => []]],
             'theme' => 'cms',
         ] );
 
@@ -326,12 +326,12 @@ class SyncTest extends CoreTestAbstract
 
         $this->assertEquals( '[de] About us', $de->latest->aux->meta->{'meta-tags'}->data->description );
         $this->assertObjectNotHasProperty( 'canonical', $de->latest->aux->meta );
-        $this->assertEquals( 'My site', $de->latest->aux->config->{'website-title'}->data->title );
+        $this->assertEquals( 'My site', $de->latest->aux->config->{'website'}->data->title );
 
         // the translation uses another theme and keeps it with "Ignore changes"
         $this->savePage( $page->id, ['theme' => 'other'], 'de' );
         $this->savePage( $page->id, ['theme' => 'new', 'config' => [
-            'website-title' => ['type' => 'website-title', 'data' => ['title' => 'New title'], 'files' => []],
+            'website' => ['type' => 'website', 'data' => ['title' => 'New title'], 'files' => []],
         ]] );
         Pages::publishMany( [$page->id], $this->user );
 
