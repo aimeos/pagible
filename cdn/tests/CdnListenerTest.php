@@ -209,9 +209,14 @@ class CdnListenerTest extends CdnTestCase
 
         Exceptions::assertNothingReported();
 
-        // Reported by the exception handler of the application after the response is sent
-        $this->expectException( ExceptionCollection::class );
-        $this->app->terminate();
+        // Reported after the response is sent, Laravel before 13.42 throws the exception instead
+        try {
+            $this->app->terminate();
+        } catch( ExceptionCollection $e ) {
+            report( $e );
+        }
+
+        Exceptions::assertReported( ExceptionCollection::class );
     }
 
 
