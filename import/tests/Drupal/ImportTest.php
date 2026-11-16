@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Drupal;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Commands\DrupalImport;
@@ -33,9 +33,11 @@ use Aimeos\Cms\Import\Status;
 use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Tests\CmsWithMigrations;
+use Tests\ImportTestAbstract;
 
 
-class DrupalImportTest extends ImportTestAbstract
+class ImportTest extends ImportTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
@@ -50,28 +52,6 @@ class DrupalImportTest extends ImportTestAbstract
             'database' => ':memory:',
             'foreign_key_constraints' => true,
         ] );
-    }
-
-
-    /**
-     * Returns the logged queries with the identifiers quoted like in SQLite and PostgreSQL.
-     *
-     * @return Collection<int, array{query: string, bindings: array<mixed>, time: float|null}>
-     */
-    protected function queries( \Illuminate\Database\Connection $db ): Collection
-    {
-        return Collection::make( $db->getQueryLog() )->map( fn( $query ) => ['query' => $this->sql( $query['query'] )] + $query );
-    }
-
-
-    /**
-     * Returns the SQL statement with the identifiers quoted like in SQLite and PostgreSQL.
-     *
-     * MariaDB and MySQL quote identifiers with backticks, SQL Server with brackets and uses "top" instead of "limit".
-     */
-    protected function sql( string $sql ): string
-    {
-        return (string) preg_replace( '/^select top \d+ /', 'select ', strtr( $sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
     }
 
 

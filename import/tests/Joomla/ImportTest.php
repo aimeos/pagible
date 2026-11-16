@@ -227,7 +227,7 @@ class ImportTest extends TestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         // the pages using the URLs of the articles are fetched at once and the variants of the new pages not at all
@@ -586,7 +586,7 @@ class ImportTest extends TestAbstract
 
         $cms = DB::connection();
         $urlQueries = function() use ( $cms ) {
-            $queries = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => str_starts_with( $query['query'], 'select "id", "domain", "path" from "cms_page_variants"' ) );
+            $queries = $this->queries( $cms )->filter( fn( $query ) => str_starts_with( $query['query'], 'select "id", "domain", "path" from "cms_page_variants"' ) );
             $cms->flushQueryLog();
             return $queries->count();
         };
@@ -1537,6 +1537,10 @@ class ImportTest extends TestAbstract
         PageVariant::where( 'lang', 'de' )->where( 'page_id', $page->id )->forceDelete();
         PageVariant::where( 'page_id', $root->id )->update( ['path' => 'Ueber-Uns'] );
 
+        if( PageVariant::where( 'page_id', $root->id )->where( 'path', 'ueber-uns' )->exists() ) {
+            $this->markTestSkipped( 'Paths differing in case are the same URL with case-insensitive collations' );
+        }
+
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', $args + ['--since' => '2020-01-01'] ) );
         $this->assertSame( 'ueber-uns', PageView::language( 'de' )->findOrFail( $page->id )->path );
     }
@@ -1744,7 +1748,7 @@ class ImportTest extends TestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com', '--since' => '2020-01-01'] ) );
         $output = Artisan::output();
         // the variants of the kept article are fetched once for the whole chunk, not again for each check
-        $variantQueries = Collection::make( DB::getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"cms_page_view"."id" in' )
+        $variantQueries = $this->queries( DB::connection() )->filter( fn( $query ) => str_contains( $query['query'], '"cms_page_view"."id" in' )
             && in_array( $page->id, $query['bindings'], true ) );
         DB::disableQueryLog();
         DB::flushQueryLog();

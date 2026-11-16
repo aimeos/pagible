@@ -38,7 +38,7 @@ class MenuImportTest extends TestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
         $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"introtext"' ) );
-        $lookups = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => preg_match( '/"path" in \(\?, \?\).* limit 1/', $query['query'] ) === 1 );
+        $lookups = $this->queries( $cms )->filter( fn( $query ) => preg_match( '/"path" in \(\?, \?\).* limit 1/', $query['query'] ) === 1 );
         $db->disableQueryLog();
         $cms->disableQueryLog();
 
@@ -81,7 +81,7 @@ class MenuImportTest extends TestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
         $texts = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"introtext"' ) );
-        $nodes = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_pages"' ) );
+        $nodes = $this->queries( $cms )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_pages"' ) );
         $db->disableQueryLog();
         $cms->disableQueryLog();
 
@@ -158,7 +158,7 @@ class MenuImportTest extends TestAbstract
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
         $texts = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], '"introtext"' ) );
-        $queries = Collection::make( $cms->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $cms )->pluck( 'query' );
         $db->disableQueryLog();
         $cms->disableQueryLog();
 
@@ -1884,7 +1884,9 @@ class MenuImportTest extends TestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
 
         // links to other components, to views without menu item and to unknown menu items can't be resolved, so they claim no URL paths
-        $this->assertSame( 0, PageView::whereIn( 'name', ['Login', 'Contact', 'Gone', 'Loop'] )->count() );
+        // the names are compared in PHP because case-insensitive collations match the name "contact" of the redirect page too
+        $names = ['Login', 'Contact', 'Gone', 'Loop'];
+        $this->assertSame( [], PageView::whereIn( 'name', $names )->pluck( 'name' )->intersect( $names )->values()->all() );
         $this->assertSame( 'login', PageView::where( 'name', 'Nur Deutsch' )->firstOrFail()->path );
         $this->assertSame( 'https://example.org/contact', PageView::where( 'path', 'contact' )->firstOrFail()->to );
         // internal links to articles are still supported

@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Drupal;
 
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Commands\DrupalImport;
@@ -22,9 +22,11 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Tests\CmsWithMigrations;
+use Tests\ImportTestAbstract;
 
 
-class Drupal7ImportTest extends ImportTestAbstract
+class V7ImportTest extends ImportTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;
@@ -2242,28 +2244,6 @@ class Drupal7ImportTest extends ImportTestAbstract
         foreach( $translations as $language => $translation ) {
             $db->table( 'locales_target' )->insert( ['lid' => $lid, 'language' => $language, 'translation' => $translation] );
         }
-    }
-
-
-    /**
-     * Returns the logged queries with the identifiers quoted like in SQLite and PostgreSQL.
-     *
-     * @return Collection<int, array{query: string, bindings: array<mixed>, time: float|null}>
-     */
-    protected function queries( \Illuminate\Database\Connection $db ): Collection
-    {
-        return Collection::make( $db->getQueryLog() )->map( fn( $query ) => ['query' => $this->sql( $query['query'] )] + $query );
-    }
-
-
-    /**
-     * Returns the SQL statement with the identifiers quoted like in SQLite and PostgreSQL.
-     *
-     * MariaDB and MySQL quote identifiers with backticks, SQL Server with brackets and uses "top" instead of "limit".
-     */
-    protected function sql( string $sql ): string
-    {
-        return (string) preg_replace( '/^select top \d+ /', 'select ', strtr( $sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
     }
 
 

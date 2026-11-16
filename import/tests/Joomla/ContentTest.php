@@ -535,7 +535,7 @@ class ContentTest extends TestAbstract
         $reader = $this->reader( $db, '', function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } );
 
         // functions known to be harmless, conditions, the table prefix and quoted keywords as aliases are allowed
-        $this->assertSame( ['1' => 'Alice!'], $reader->sqlOptions()->fetch( 'SELECT id AS value, CONCAT( name, \'!\' ) AS text FROM #__users WHERE id IN (1)' ) );
+        $this->assertSame( ['1' => 'ALICE'], $reader->sqlOptions()->fetch( 'SELECT id AS value, UPPER( name ) AS text FROM #__users WHERE id IN (1)' ) );
         $this->assertSame( ['2' => 'Bob'], $reader->sqlOptions()->fetch( 'SELECT id AS value, name AS text, 0 AS "into" FROM #__users WHERE name = \'Bob\'' ) );
         $this->assertSame( ['1' => 'select; --'], $reader->sqlOptions()->fetch( 'SELECT 1 AS value, \'select; --\' AS text' ) );
         $this->assertSame( [], $warnings );

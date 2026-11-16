@@ -30,7 +30,7 @@ class ContentImportTest extends TestAbstract
 
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
 
-        $files = File::orderBy( 'name' )->get();
+        $files = File::orderBy( 'path' )->get();
         // the alternative text is used as name
         $this->assertSame( ['Photo', 'inline.png'], $files->pluck( 'name' )->all() );
         $this->assertSame( ['image/jpeg', 'image/png'], $files->pluck( 'mime' )->all() );
@@ -47,7 +47,7 @@ class ContentImportTest extends TestAbstract
             $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
             $cms->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
-            $queries = Collection::make( $cms->getQueryLog() )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_files" where "path"' ) );
+            $queries = $this->queries( $cms )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_files" where "path"' ) );
             $cms->flushQueryLog();
             $cms->disableQueryLog();
 
