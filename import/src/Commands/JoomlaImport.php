@@ -8,11 +8,11 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Commands;
-use Aimeos\Cms\Concerns\Joomla\Imports;
-use Aimeos\Cms\Concerns\Joomla\ImportsArticles;
-use Aimeos\Cms\Concerns\Joomla\ImportsHome;
-use Aimeos\Cms\Concerns\Joomla\ImportsMenu;
-use Aimeos\Cms\Concerns\Joomla\ImportsVanished;
+use Aimeos\Cms\Concerns\Joomla\Shared;
+use Aimeos\Cms\Concerns\Joomla\Articles;
+use Aimeos\Cms\Concerns\Joomla\Home;
+use Aimeos\Cms\Concerns\Joomla\Menu;
+use Aimeos\Cms\Concerns\Joomla\Vanished;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Pages;
@@ -23,11 +23,11 @@ use Illuminate\Support\Facades\DB;
 
 class JoomlaImport extends Commands
 {
-    use Imports;
-    use ImportsArticles;
-    use ImportsHome;
-    use ImportsMenu;
-    use ImportsVanished;
+    use Shared;
+    use Articles;
+    use Home;
+    use Menu;
+    use Vanished;
 
 
     /**

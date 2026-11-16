@@ -15,7 +15,7 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Imports the Drupal front page node into the root page of the imported site.
  */
-trait ImportsFront
+trait Front
 {
     /** @var int|null Node ID of the Drupal front page imported into the root page or NULL if none is imported */
     protected ?int $front = null;

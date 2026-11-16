@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Concerns\Drupal;
 
-use Aimeos\Cms\Access;
+use Aimeos\Cms\Access as CmsAccess;
 use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\PageAccess;
@@ -19,7 +19,7 @@ use Aimeos\Cms\Permission;
 /**
  * Sets the access values of the imported pages and disables the pages of restricted Drupal nodes which failed to import.
  */
-trait ImportsAccess
+trait Access
 {
     /** @var array<string, array<int, string>>|null Sorted access values of the restricted pages by page ID */
     protected ?array $accessValues = null;
@@ -46,7 +46,7 @@ trait ImportsAccess
             ->map( fn( $rules ) => (array) PageAccess::values( $rules ) )->all();
 
         $id = (string) $page->id;
-        $values = $values !== null ? Access::normalize( $values ) : null;
+        $values = $values !== null ? CmsAccess::normalize( $values ) : null;
 
         if( ( $this->accessValues[$id] ?? null ) === $values ) {
             return;

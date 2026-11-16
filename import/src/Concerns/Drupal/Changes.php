@@ -14,7 +14,7 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Keeps the pages of the Drupal nodes which weren't changed since the date of the --since option.
  */
-trait ImportsChanges
+trait Changes
 {
     /**
      * Returns the last modification timestamps of the nodes including their translations and draft revisions.

@@ -24,9 +24,9 @@ use Illuminate\Support\Collection;
  * import with the same editor, language and domain are disabled, i.e. not the root page, link pages of menu items and
  * redirects, pages and variants changed in Pagible since or pages of other domains and languages.
  *
- * Requires the Imports trait used by the same class for the objects of the run.
+ * Requires the Shared trait used by the same class for the objects of the run.
  */
-trait ImportsVanished
+trait Vanished
 {
     /**
      * Disables the pages of previous imports whose Joomla records aren't imported any more and their variants.

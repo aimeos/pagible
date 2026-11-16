@@ -18,9 +18,9 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Imports the Joomla articles in chunks below the pages of their categories.
  *
- * Requires the Imports trait used by the same class for the objects of the run and the shared methods.
+ * Requires the Shared trait used by the same class for the objects of the run and the shared methods.
  */
-trait ImportsArticles
+trait Articles
 {
     /** @var array<string, list<string>> IDs of the variants using the domains and URL paths of the missing or moved variants of the current chunk by urlKey() */
     private array $usedTranslationUrls = [];

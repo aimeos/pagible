@@ -8,15 +8,15 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Commands;
-use Aimeos\Cms\Concerns\Drupal\ImportsAccess;
-use Aimeos\Cms\Concerns\Drupal\ImportsChanges;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrafts;
-use Aimeos\Cms\Concerns\Drupal\ImportsFront;
-use Aimeos\Cms\Concerns\Drupal\ImportsMenu;
-use Aimeos\Cms\Concerns\Drupal\ImportsRedirects;
-use Aimeos\Cms\Concerns\Drupal\ImportsTerms;
+use Aimeos\Cms\Concerns\Drupal\Access;
+use Aimeos\Cms\Concerns\Drupal\Changes;
+use Aimeos\Cms\Concerns\Drupal\Drafts;
+use Aimeos\Cms\Concerns\Drupal\Front;
+use Aimeos\Cms\Concerns\Drupal\Menu;
+use Aimeos\Cms\Concerns\Drupal\Redirects;
+use Aimeos\Cms\Concerns\Drupal\Terms;
 use Aimeos\Cms\Concerns\Drupal\ReportsImport;
-use Aimeos\Cms\Access;
+use Aimeos\Cms\Access as CmsAccess;
 use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\DB as CmsDB;
@@ -33,13 +33,13 @@ use Aimeos\Cms\Models\PageView;
 
 class DrupalImport extends Commands
 {
-    use ImportsAccess;
-    use ImportsChanges;
-    use ImportsDrafts;
-    use ImportsFront;
-    use ImportsMenu;
-    use ImportsRedirects;
-    use ImportsTerms;
+    use Access;
+    use Changes;
+    use Drafts;
+    use Front;
+    use Menu;
+    use Redirects;
+    use Terms;
     use ReportsImport;
 
     /**
@@ -138,7 +138,7 @@ class DrupalImport extends Commands
             return;
         }
 
-        $this->access = new Drupal\Access( $this->reader, $this->data, app( Access::class ), $roles,
+        $this->access = new Drupal\Access( $this->reader, $this->data, app( CmsAccess::class ), $roles,
             fn( int $nid ) => $this->nextNodes( $nid, CmsDB::IN_SIZE * 4 ),
             fn( object $node ) => $this->restricted[$node->nid] = $this->urls->slug( $node, true ),
             fn( string $msg ) => $this->warn( $msg ),
