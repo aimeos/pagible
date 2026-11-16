@@ -45,14 +45,14 @@ trait ImportsDrupalDrafts
         $base = $draft ?? [$data, $content];
 
         if( ( $at = (int) ( $node->publish_on ?? 0 ) ) > time() ) {
-            $versions[] = $base = [array_replace( $base[0], ['status' => 1] ), $base[1], $at];
+            $versions[] = $base = [array_replace( $base[0], ['status' => Pages::STATUS_PUBLISHED] ), $base[1], $at];
         } elseif( $draft ) {
             $versions[] = [$draft[0], $draft[1], null];
             $base = [$data, $content];
         }
 
         if( ( $at = (int) ( $node->unpublish_on ?? 0 ) ) > time() ) {
-            $versions[] = [array_replace( $base[0], ['status' => 0] ), $base[1], $at];
+            $versions[] = [array_replace( $base[0], ['status' => Pages::STATUS_DISABLED] ), $base[1], $at];
         }
 
         $this->saveVersions( $page, $versions );

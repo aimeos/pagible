@@ -73,11 +73,11 @@ trait ImportsDrupalAccess
         {
             $page = $this->createdPages->has( $nid ) ? null : $this->pages->path( $slug );
 
-            if( !$page || $page->editor !== $this->editor || $page->to !== '' || $page->tag === 'root' ) {
+            if( !$page || $page->editor !== $this->editor || $page->to !== '' || $page->tag === Pages::TAG_ROOT ) {
                 continue;
             }
 
-            foreach( PageVariant::where( 'page_id', $page->id )->where( 'editor', $this->editor )->where( 'status', '!=', 0 )->pluck( 'lang' ) as $lang )
+            foreach( PageVariant::where( 'page_id', $page->id )->where( 'editor', $this->editor )->where( 'status', '!=', Pages::STATUS_DISABLED )->pluck( 'lang' ) as $lang )
             {
                 if( $variant = PageView::language( (string) $lang, true )->find( $page->id ) ) {
                     $this->disable( $variant );
@@ -96,7 +96,7 @@ trait ImportsDrupalAccess
             return;
         }
 
-        $data = array_replace( array_diff_key( (array) $version->data, ['scheduled' => null] ), ['status' => 0] );
+        $data = array_replace( array_diff_key( (array) $version->data, ['scheduled' => null] ), ['status' => Pages::STATUS_DISABLED] );
         $aux = (array) json_decode( (string) json_encode( $version->aux ), true );
 
         Pages::publish( $page, $data, $aux, $version->files()->allRelatedIds()->map( strval( ... ) )->all(),

@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Import\Elements;
+use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Tally;
 use Aimeos\Cms\Models\PageView;
@@ -113,7 +114,7 @@ trait ImportsDrupalMenu
             return;
         }
 
-        $path = $this->linkPath( $link['title'] ?: $link['uuid'], $parent->tag !== 'root' ? trim( (string) $parent->path, '/' ) : '', $this->domain );
+        $path = $this->linkPath( $link['title'] ?: $link['uuid'], $parent->tag !== Pages::TAG_ROOT ? trim( (string) $parent->path, '/' ) : '', $this->domain );
         $result = $this->transaction( "menu link {$link['title']}", function() use ( $link, $path, $to, $parent ) {
             if( $result = $this->importRedirect( $path, $to, $parent, $link['title'], 1 ) ) {
                 $this->saveLinkTranslations( $link, $to, $result['page'], $parent, $result['status'] === Status::Imported );

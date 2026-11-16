@@ -123,7 +123,7 @@ class DrupalPrune
     {
         // variants of trashed pages aren't listed, the saved ones are skipped while reading because the list can be too long for the query
         $stale = PageVariant::whereHas( 'page', fn( $query ) => $query->withoutTrashed() )->whereIn( 'domain', $domains )->where( 'editor', $this->editor )
-            ->where( 'tag', '!=', 'root' )->orderBy( 'path' )->select( ['id', 'page_id', 'path', 'lang'] )->cursor()
+            ->where( 'tag', '!=', Pages::TAG_ROOT )->orderBy( 'path' )->select( ['id', 'page_id', 'path', 'lang'] )->cursor()
             ->filter( fn( $variant ) => !isset( $saved[self::key( (string) $variant->id )] ) )->values()->collect();
 
         if( $stale->isNotEmpty() )

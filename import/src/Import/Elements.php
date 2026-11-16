@@ -9,13 +9,30 @@ namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Utils;
+use Illuminate\Support\Str;
 
 
 /**
  * Builds Pagible content and shared elements for the importers.
+ *
+ * ContentElements: content elements and IDs of the files they use
+ *
+ * @phpstan-type ContentElements array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
  */
 class Elements
 {
+    /**
+     * Returns the content consisting of the elements, which use no files.
+     *
+     * @param array<string, mixed> ...$elements Content elements
+     * @return ContentElements Content elements without file IDs
+     */
+    public static function content( array ...$elements ): array
+    {
+        return ['elements' => array_values( $elements ), 'fileIds' => []];
+    }
+
+
     /**
      * Returns a content element of the main group.
      *
@@ -63,7 +80,7 @@ class Elements
      *
      * @param string|null $fileId File ID or NULL if the image couldn't be imported
      * @param string $text Text next to the image or empty for an image element
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null Content or NULL without file
+     * @return ContentElements|null Content or NULL without file
      */
     public static function imageContent( ?string $fileId, string $text = '' ): ?array
     {
@@ -80,10 +97,51 @@ class Elements
 
 
     /**
+     * Returns the meta tags of the page with the description and the keywords.
+     *
+     * @param string $description Meta description, the whitespace is collapsed and long descriptions are shortened
+     * @param string $keywords Comma separated meta keywords, long ones are shortened
+     * @return array{type: string, data: array<string, string>, files: array<int, string>}|null Meta tags or NULL without description
+     */
+    public static function metaTags( string $description, string $keywords = '' ): ?array
+    {
+        $description = trim( (string) preg_replace( '/\s+/', ' ', $description ) );
+
+        // the description is required by the meta tags
+        if( $description === '' ) {
+            return null;
+        }
+
+        return ['type' => 'meta-tags', 'data' => array_filter( [
+            'description' => Str::limit( $description, 159, '…', true ),
+            'keywords' => Str::limit( trim( $keywords ), 254, '…', true ),
+        ] ), 'files' => []];
+    }
+
+
+    /**
+     * Returns the robots settings of the page.
+     *
+     * @param string $robots Comma separated robots values like "noindex, follow"
+     * @return array{type: string, data: array<string, string>, files: array<int, string>}|null Robots settings or NULL if neither indexing nor following is set
+     */
+    public static function robots( string $robots ): ?array
+    {
+        $robots = array_map( 'trim', explode( ',', strtolower( $robots ) ) );
+        $data = array_filter( [
+            'index' => in_array( 'noindex', $robots, true ) ? 'noindex' : ( in_array( 'index', $robots, true ) ? 'index' : null ),
+            'follow' => in_array( 'nofollow', $robots, true ) ? 'nofollow' : ( in_array( 'follow', $robots, true ) ? 'follow' : null ),
+        ] );
+
+        return $data ? ['type' => 'robots', 'data' => $data, 'files' => []] : null;
+    }
+
+
+    /**
      * Merges content parts into one content in their order.
      *
      * @param array{elements?: array<int, array<string, mixed>>, fileIds?: array<int, string>}|null ...$contents Content parts, NULL parts are skipped
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>} Merged content with unique file IDs
+     * @return ContentElements Merged content with unique file IDs
      */
     public static function merge( ?array ...$contents ): array
     {

@@ -106,7 +106,7 @@ class WpImport extends BaseImport
      * @param int $status 1 for enabled pages, 0 for disabled ones
      * @return array<string, mixed>
      */
-    protected function buildPageData( string $title, string $slug, string $tag = 'article', int $status = 1 ): array
+    protected function buildPageData( string $title, string $slug, string $tag = 'article', int $status = Pages::STATUS_PUBLISHED ): array
     {
         return ['type' => $this->type, 'theme' => $this->theme] + $this->pageData( $title, $slug, $status, $tag );
     }
@@ -256,7 +256,7 @@ class WpImport extends BaseImport
             $this->warn( "  Disabled [{$post->ID}] {$post->post_title} because it is password protected" );
         }
 
-        $saved = $this->savePage( $slug, $this->buildPageData( $title, $slug, 'article', $post->post_password !== '' ? 0 : 1 ),
+        $saved = $this->savePage( $slug, $this->buildPageData( $title, $slug, 'article', $post->post_password !== '' ? Pages::STATUS_DISABLED : Pages::STATUS_PUBLISHED ),
             ['elements' => $elements, 'fileIds' => $fileIds, 'elementIds' => $footer['elementIds']], $blogPage, $date );
         $page = $saved['page'];
 

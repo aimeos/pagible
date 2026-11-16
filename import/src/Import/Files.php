@@ -156,14 +156,23 @@ class Files
     /**
      * Returns the URL of a file path relative to the base URL.
      *
-     * @param string $path Absolute URL or file path
+     * Absolute URLs are recognized by their scheme, so URLs with spaces or non-ASCII characters are absolute too.
+     * URIs without authority like "mailto:", "tel:" or "data:" are returned unchanged as well, so are values
+     * whose first path segment contains a colon, which isn't allowed in relative URLs by RFC 3986.
+     * Scheme-relative URLs like "//cdn.example.com/a.jpg" use the scheme of the base URL or HTTPS.
+     *
+     * @param string $path Absolute URL, URI with scheme, scheme-relative URL or file path
      * @param string $base Base URL without trailing slash or empty string to return the path only
      * @return string Absolute URL or path without leading slash
      */
     public static function url( string $path, string $base ) : string
     {
-        if( filter_var( $path, FILTER_VALIDATE_URL ) ) {
+        if( preg_match( '#^[a-z][a-z0-9+.\-]*:#i', $path ) ) {
             return $path;
+        }
+
+        if( str_starts_with( $path, '//' ) ) {
+            return ( parse_url( $base, PHP_URL_SCHEME ) ?: 'https' ) . ':' . $path;
         }
 
         $path = ltrim( $path, '/' );

@@ -15,6 +15,8 @@ class DrupalFiles
 {
     /** TRUE if the warning about private files was shown */
     protected bool $privateWarned = false;
+    /** TRUE if the warning about removed inline images was shown */
+    protected bool $inlineWarned = false;
 
 
     /**
@@ -77,12 +79,25 @@ class DrupalFiles
     /**
      * Imports the image of the HTML tag from the Drupal site.
      *
+     * Inline images with data URIs aren't files and are removed like by the other importers because they can be
+     * very large. Like the removed HTML of DrupalHtml, this is reported by a warning, but only once.
+     *
      * @param string $tag HTML image tag
-     * @return string|null File ID or NULL if the tag has no source
+     * @return string|null File ID or NULL if the tag has no source or the image is an inline image
      */
     public function image( string $tag ): ?string
     {
         if( !( $image = Html::source( $tag ) ) ) {
+            return null;
+        }
+
+        if( strncasecmp( ltrim( $image['src'] ), 'data:', 5 ) === 0 )
+        {
+            if( !$this->inlineWarned ) {
+                ( $this->warn )( '  Removed inline images with data: URIs from the content, they are not imported as files' );
+                $this->inlineWarned = true;
+            }
+
             return null;
         }
 

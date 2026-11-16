@@ -454,12 +454,12 @@ class T3Import extends BaseImport
             'name' => ( $t3Page->nav_title ?? null ) ?: ( $t3Page->title ?? null ),
             'title' => ( $t3Page->seo_title ?? null ) ?: ( $t3Page->title ?? null ),
             'path' => $slug,
-            'tag' => !empty( $t3Page->is_siteroot ) ? 'root' : 'page',
+            'tag' => !empty( $t3Page->is_siteroot ) ? Pages::TAG_ROOT : Pages::TAG_PAGE,
             'domain' => $domain,
             'lang' => $this->lang,
             'to' => $to,
             'theme' => $this->theme,
-            'status' => !empty( $t3Page->hidden ) || $reason !== null ? 0 : ( !empty( $t3Page->nav_hide ) ? 2 : 1 ),
+            'status' => !empty( $t3Page->hidden ) || $reason !== null ? Pages::STATUS_DISABLED : ( !empty( $t3Page->nav_hide ) ? Pages::STATUS_HIDDEN : Pages::STATUS_PUBLISHED ),
             'editor' => $this->editor,
         ];
     }
@@ -501,7 +501,7 @@ class T3Import extends BaseImport
      */
     protected function getRootPage( object $t3Root, string $domain ): PageView
     {
-        $page = Pages::find( ['tag' => 'root', 'domain' => $domain] );
+        $page = Pages::find( ['tag' => Pages::TAG_ROOT, 'domain' => $domain] );
 
         if( $page && !$this->isImported( $page ) )
         {
@@ -510,7 +510,7 @@ class T3Import extends BaseImport
         else
         {
             $slug = Typo3Urls::slug( $t3Root->slug ?? null );
-            ['page' => $page, 'status' => $status] = $this->save( $t3Root, ['tag' => 'root'] + $this->buildPageData( $t3Root, $slug, $domain ), $page );
+            ['page' => $page, 'status' => $status] = $this->save( $t3Root, ['tag' => Pages::TAG_ROOT] + $this->buildPageData( $t3Root, $slug, $domain ), $page );
             $this->info( ( $status === Status::Imported ? 'Created' : $status->label() ) . ' root page: ' . ( $t3Root->title ?? '' ) . " ({$domain})" );
         }
 
@@ -585,7 +585,7 @@ class T3Import extends BaseImport
         $path = Typo3Urls::slug( $t3Page->slug ?? null );
         $pageData = $this->buildPageData( $t3Page, $path, $domain, $this->redirect( $t3Page ) );
         $isRoot = (int) ( $t3Page->pid ?? 0 ) === 0 || !empty( $t3Page->is_siteroot );
-        $pageData['tag'] = $isRoot ? 'root' : $pageData['tag'];
+        $pageData['tag'] = $isRoot ? Pages::TAG_ROOT : $pageData['tag'];
         $page = $destinations->find( $t3Page, $domain );
         $parent = null;
 
@@ -776,7 +776,7 @@ class T3Import extends BaseImport
 
             $content = $this->buildContent( $contentRecords, $typo3, $language['lang'] );
             $data = array_replace( $this->buildPageData( $record, '', '', (string) ( $pageData['to'] ?? '' ) ), [
-                'tag' => $pageData['tag'] ?? 'page',
+                'tag' => $pageData['tag'] ?? Pages::TAG_PAGE,
             ] );
 
             $this->saveVariant( $page, $language, Typo3Urls::slug( $record->slug ?? '' ), $data, $content, $variants[$language['lang']] ?? null );

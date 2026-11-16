@@ -41,6 +41,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Aimeos\Cms\Import\Status;
+use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
@@ -851,6 +853,51 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( '/about', PageView::where( 'path', 'node/1' )->firstOrFail()->to );
         $this->assertSame( '/', PageView::where( 'path', 'home' )->firstOrFail()->to );
         $this->assertNull( PageView::where( 'path', 'disabled' )->first() );
+    }
+
+
+    public function testLaterRedirectsOverwriteEarlierOnesAndAreKept(): void
+    {
+        $command = new class extends DrupalImport {
+            public function start(): PageView
+            {
+                $this->editor = 'drupal-import';
+                $this->lang = 'en';
+                $this->domain = '';
+                $this->usedPages = $this->saved = [];
+
+                return $this->getOrCreateRoot();
+            }
+
+            /**
+             * @return array{page: PageView, status: Status}|null
+             */
+            public function redirect( string $path, string $to, PageView $parent ): ?array
+            {
+                return $this->importRedirect( $path, $to, $parent );
+            }
+
+            public function saved( PageView $page ): bool
+            {
+                return isset( $this->saved[DrupalPrune::key( $page->variant_id )] );
+            }
+        };
+        $command->setOutput( new OutputStyle( new ArrayInput( [] ), new BufferedOutput() ) );
+
+        $root = $command->start();
+        $first = $command->redirect( 'old', '/first', $root );
+        $this->assertSame( Status::Imported, $first['status'] ?? null );
+        $this->assertTrue( $command->saved( $first['page'] ?? $root ) );
+
+        // a later redirect for the same URL path in the same import replaces the earlier one
+        $this->assertSame( Status::Updated, $command->redirect( 'old', '/second', $root )['status'] ?? null );
+        $this->assertSame( '/second', PageView::where( 'path', 'old' )->firstOrFail()->to );
+
+        // redirect pages of previous imports are kept by the next import
+        $command->start();
+        $kept = $command->redirect( 'old', '/second', $root );
+        $this->assertSame( Status::Unchanged, $kept['status'] ?? null );
+        $this->assertTrue( $command->saved( $kept['page'] ?? $root ) );
     }
 
 
@@ -1976,6 +2023,24 @@ class DrupalImportTest extends ImportTestAbstract
         // the same image with another scheme or host name is imported only once
         $this->assertSame( 1, File::count() );
         $this->assertSame( (string) $file->id, $page->meta->{'social-media'}->data->file->id ?? null );
+    }
+
+
+    public function testImportSkipsInlineImages(): void
+    {
+        $db = DB::connection( 'drupal' );
+        $db->table( 'node__body' )->where( 'langcode', 'en' )->update( ['body_value' => '<p>Intro</p><img src=" data:image/png;base64,AAAA" alt="Inline" />'
+            . '<img src="/sites/default/files/photo.png" alt="Photo" /><img src="DATA:image/gif;base64,BBBB" />'] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/sites/default/files'] ) );
+        $output = Artisan::output();
+
+        // inline images aren't imported as files and are reported once
+        $this->assertSame( ['https://example.com/sites/default/files/photo.png'], File::pluck( 'path' )->all() );
+        $this->assertSame( 1, substr_count( $output, 'Removed inline images with data: URIs' ) );
+        $content = json_encode( PageView::where( 'name', 'About' )->firstOrFail()->content );
+        $this->assertStringNotContainsString( 'data:image', (string) $content );
+        $this->assertStringNotContainsString( 'Inline', (string) $content );
     }
 
 

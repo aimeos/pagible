@@ -22,8 +22,6 @@ use Illuminate\Support\Collection;
  */
 trait ReportsDrupalImport
 {
-    /** @var array<string, bool> Warnings which are only shown once */
-    protected array $warned = [];
     /** @var int Number of shown warnings */
     protected int $warnings = 0;
 
@@ -141,17 +139,5 @@ trait ReportsDrupalImport
     {
         $this->warnings++;
         parent::warn( $string, $verbosity );
-    }
-
-
-    /**
-     * Shows the warning only once.
-     */
-    protected function warnOnce( string $key, string $message ): void
-    {
-        if( !isset( $this->warned[$key] ) ) {
-            $this->warn( $message );
-            $this->warned[$key] = true;
-        }
     }
 }

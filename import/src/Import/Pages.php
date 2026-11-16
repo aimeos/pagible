@@ -20,6 +20,18 @@ use Aimeos\Cms\Scout;
  */
 class Pages
 {
+    /** Status of disabled pages */
+    public const STATUS_DISABLED = 0;
+    /** Status of published pages */
+    public const STATUS_PUBLISHED = 1;
+    /** Status of published pages hidden in the navigation */
+    public const STATUS_HIDDEN = 2;
+    /** Tag of the imported pages */
+    public const TAG_PAGE = 'page';
+    /** Tag of the root pages */
+    public const TAG_ROOT = 'root';
+
+
     /**
      * Creates a page and appends it to the parent page if given.
      *
@@ -115,7 +127,7 @@ class Pages
      */
     public static function root( ?string $domain = null ) : ?PageView
     {
-        return PageView::where( 'tag', 'root' )->when( $domain !== null, fn( $query ) => $query->where( 'domain', $domain ) )->first();
+        return PageView::where( 'tag', self::TAG_ROOT )->when( $domain !== null, fn( $query ) => $query->where( 'domain', $domain ) )->first();
     }
 
 

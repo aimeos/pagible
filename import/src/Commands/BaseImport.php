@@ -27,8 +27,6 @@ abstract class BaseImport extends Command
 {
     use CommitsInBatches;
 
-    /** Empty date of MySQL databases used by Joomla and WordPress */
-    protected const ZERO_DATE = '0000-00-00 00:00:00';
     /** Maximum number of pages and files kept by prefetchPages() and prefetchFiles() */
     protected const PREFETCH_SIZE = DB::IN_SIZE * 4;
     /** Maximum number of error messages of failed imports kept for the summary */
@@ -82,6 +80,8 @@ abstract class BaseImport extends Command
     protected ?int $since = null;
     /** @var array<int|string, int> Last modification timestamps of the source records by ID */
     protected array $changed = [];
+    /** @var array<string, bool> Keys of the warnings which are only shown once */
+    protected array $warned = [];
 
 
     /**
@@ -109,6 +109,7 @@ abstract class BaseImport extends Command
         $this->tally = new Tally();
         $this->failed = 0;
         $this->failures = [];
+        $this->warned = [];
 
         if( $tenant = $this->stringOption( 'tenant' ) ) {
             Tenancy::set( $tenant );
@@ -120,6 +121,21 @@ abstract class BaseImport extends Command
 
         $this->connectionHelp( $label, $prefix ?: strtoupper( $label ), strtolower( $label ), $reason );
         return false;
+    }
+
+
+    /**
+     * Shows the warning only once.
+     *
+     * @param string $key Key of the warning, warnings with the same key are only shown once
+     * @param string $message Warning message
+     */
+    protected function warnOnce( string $key, string $message ): void
+    {
+        if( !isset( $this->warned[$key] ) ) {
+            $this->warn( $message );
+            $this->warned[$key] = true;
+        }
     }
 
 
@@ -562,6 +578,48 @@ abstract class BaseImport extends Command
 
 
     /**
+     * Creates the link page below the parent or updates the one of a previous import with the same URL.
+     *
+     * Only link pages saved by an import with the same editor and language are updated, they are restored
+     * if they are trashed and get no new version if nothing changed.
+     *
+     * @param string $slug URL path of the page
+     * @param array<string, mixed> $pageData Page data from pageData() including the link target
+     * @param PageView $parent Parent page
+     * @param PageView|false|null $page Page using the URL path, NULL if there's none or FALSE to look it up in the domain of the imported pages
+     * @param bool $replace TRUE to update a link page saved before by this import too
+     * @param \Closure(PageView): void|null $claimed Called with the page before it's moved and updated
+     * @return array{page: PageView, status: Status}|null Saved page and its status or NULL if the URL is used by another page
+     */
+    protected function saveLink( string $slug, array $pageData, PageView $parent, PageView|false|null $page = false, bool $replace = false, ?\Closure $claimed = null ): ?array
+    {
+        $content = Elements::merge();
+
+        if( !( $page = $page === false ? $this->pageByPath( $slug ) : $page ) )
+        {
+            $page = $this->createPage( $pageData, $content, $parent );
+            $this->usedPages[$page->id ?? ''] = true;
+            $claimed && $claimed( $page );
+
+            return ['page' => $page, 'status' => Status::Imported];
+        }
+
+        if( $page->to === '' || $page->editor !== $this->editor || $page->lang !== ( $pageData['lang'] ?? $this->lang )
+            || !$replace && isset( $this->usedPages[$page->id ?? ''] )
+        ) {
+            return null;
+        }
+
+        $this->usedPages[$page->id ?? ''] = true;
+        $page = $this->restore( $page );
+        $claimed && $claimed( $page );
+        $this->moveBelow( $page, $parent );
+
+        return ['page' => $page, 'status' => $this->updateVersion( $page, $pageData, $content )];
+    }
+
+
+    /**
      * Returns the page imported before for the record which wasn't changed since the date of the --since option.
      *
      * The page is only moved below the parent page, records without page imported before are imported.
@@ -818,7 +876,7 @@ abstract class BaseImport extends Command
         if( $page ) {
             $this->info( "Using existing root page: {$page->name}" );
         } else {
-            $page = $this->createPage( $this->pageData( 'Home', '/', 1, 'root' ), Elements::merge() );
+            $page = $this->createPage( $this->pageData( 'Home', '/', Pages::STATUS_PUBLISHED, Pages::TAG_ROOT ), Elements::merge() );
             $this->info( 'Created root page.' );
         }
 
@@ -833,11 +891,11 @@ abstract class BaseImport extends Command
      *
      * @param string $title Page name and title
      * @param string $slug URL path of the page
-     * @param int $status Page status (0 = disabled, 1 = enabled)
-     * @param string $tag Page tag
+     * @param int $status Page status, one of the Pages::STATUS_* constants
+     * @param string $tag Page tag, Pages::TAG_PAGE or Pages::TAG_ROOT
      * @return array<string, mixed> Page data
      */
-    protected function pageData( string $title, string $slug, int $status, string $tag = 'page' ): array
+    protected function pageData( string $title, string $slug, int $status, string $tag = Pages::TAG_PAGE ): array
     {
         return [
             'name' => $title,
@@ -895,14 +953,7 @@ abstract class BaseImport extends Command
      */
     protected function date( ?string ...$dates ): ?string
     {
-        foreach( $dates as $date )
-        {
-            if( $date && $date !== self::ZERO_DATE ) {
-                return $date;
-            }
-        }
-
-        return null;
+        return Database::firstDate( $dates );
     }
 
 
@@ -1045,6 +1096,19 @@ abstract class BaseImport extends Command
 
         // the variants contain the full pages in all languages, so only a limited number is kept
         $this->prefetchedVariants = Database::limit( $this->prefetchedVariants, DB::IN_SIZE, count( $pageIds ) );
+    }
+
+
+    /**
+     * Returns the variants of the page prefetched by prefetchVariants() without using them up, unlike variants().
+     *
+     * Used for checks before the translations are saved, e.g. to compare the variants with the source records.
+     *
+     * @return array<string, PageView>|null Variants by language code or NULL if they weren't prefetched
+     */
+    protected function prefetchedVariants( PageView $page ): ?array
+    {
+        return $this->prefetchedVariants[(string) $page->id] ?? null;
     }
 
 

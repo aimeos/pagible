@@ -35,20 +35,11 @@ class DrupalHtml extends Html
 
 
     /**
-     * Returns the decoded value of the HTML attribute in the tag.
-     */
-    public static function attribute( string $tag, string $name ): string
-    {
-        return preg_match( '/\s' . preg_quote( $name, '/' ) . '=(["\'])(.*?)\1/is', $tag, $m ) ? html_entity_decode( $m[2], ENT_QUOTES, 'UTF-8' ) : '';
-    }
-
-
-    /**
      * Returns the caption of the tag added by filter_caption as Markdown.
      */
     public static function caption( string $tag ): string
     {
-        return trim( Markdown::fromHtml( self::attribute( $tag, 'data-caption' ) ) );
+        return trim( Markdown::fromHtml( self::decodedAttribute( $tag, 'data-caption' ) ) );
     }
 
 
@@ -135,13 +126,13 @@ class DrupalHtml extends Html
 
 
     /**
-     * Returns the block elements including the Drupal media elements.
+     * Returns the embedded media which are kept as separate blocks including the Drupal media elements.
      *
      * @return string[]
      */
-    protected function blockTags(): array
+    protected function mediaTags(): array
     {
-        return [...parent::blockTags(), 'drupal-entity', 'drupal-media', 'iframe', 'video', 'audio'];
+        return ['drupal-entity', 'drupal-media', 'iframe', 'video', 'audio'];
     }
 
 
@@ -156,17 +147,13 @@ class DrupalHtml extends Html
      */
     protected function iframe( string $tag ): ?array
     {
-        $src = html_entity_decode( self::attribute( $tag, 'src' ), ENT_QUOTES, 'UTF-8' );
-        $src = Embeds::src( str_starts_with( $src, '//' ) ? 'https:' . $src : ( self::streamUrl( $src ) ?: $src ) );
-        $size = fn( string $name ) => preg_match( '/^\d+%?$/', $value = self::attribute( $tag, $name ) ) ? $value : '';
+        $src = fn( string $src ) => str_starts_with( $src, '//' ) ? 'https:' . $src : ( self::streamUrl( $src ) ?: $src );
 
-        if( !( $html = Embeds::iframe( $src, html_entity_decode( self::attribute( $tag, 'title' ), ENT_QUOTES, 'UTF-8' ), $size( 'width' ), $size( 'height' ) ) ) )
-        {
+        if( !( $content = Embeds::iframeTag( $tag, $src ) ) ) {
             $this->removed['iframe'] = true;
-            return null;
         }
 
-        return ['elements' => [Elements::create( 'html', ['text' => $html] )], 'fileIds' => []];
+        return $content;
     }
 
 
@@ -182,7 +169,7 @@ class DrupalHtml extends Html
         }
 
         if( preg_match( '/^<p\b[^>]*>\s*(<a\b[^>]*>)(.*?)<\/a>\s*<\/p>$/is', $block, $link ) && !preg_match( '/<img\b/i', $link[2] )
-            && ( $content = ( $this->link )( self::attribute( $link[1], 'href' ), trim( html_entity_decode( strip_tags( $link[2] ), ENT_QUOTES, 'UTF-8' ) ) ) )
+            && ( $content = ( $this->link )( self::decodedAttribute( $link[1], 'href' ), trim( self::decode( strip_tags( $link[2] ) ) ) ) )
         ) {
             return $content;
         }
@@ -202,6 +189,8 @@ class DrupalHtml extends Html
     /**
      * Parses a standalone image including its caption added by Drupal's filter_caption.
      *
+     * If the image can't be imported, the caption is kept as text after the remaining content.
+     *
      * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null
      */
     protected function parseStandaloneImageBlock( string $block ): ?array
@@ -210,9 +199,19 @@ class DrupalHtml extends Html
             return null;
         }
 
-        $caption = preg_match( '/<img[^>]+>/i', $block, $m ) ? self::caption( $m[0] ) : '';
+        $tag = preg_match( self::IMAGE_PATTERN, $block, $m ) ? $m[0] : '';
 
-        return $caption !== '' ? Elements::imageContent( $content['fileIds'][0] ?? null, $caption ) : $content;
+        if( ( $caption = self::caption( $tag ) ) === '' ) {
+            return $content;
+        }
+
+        if( $fileId = $content['fileIds'][0] ?? null ) {
+            return Elements::imageContent( $fileId, $caption ) ?? $content;
+        }
+
+        $text = $this->text( self::decodedAttribute( $tag, 'data-caption' ) )['elements'] ?? [];
+
+        return Elements::content( ...$content['elements'], ...$text );
     }
 
 
@@ -226,13 +225,13 @@ class DrupalHtml extends Html
     protected function player( string $type, string $block ): ?array
     {
         preg_match( '/^<' . $type . '\b[^>]*>/i', $block, $tag );
-        $src = self::attribute( $tag[0] ?? '', 'src' );
+        $src = self::decodedAttribute( $tag[0] ?? '', 'src' );
 
         if( $src === '' && preg_match( '/<source\b[^>]*>/i', $block, $source ) ) {
-            $src = self::attribute( $source[0], 'src' );
+            $src = self::decodedAttribute( $source[0], 'src' );
         }
 
-        if( ( $src = html_entity_decode( $src, ENT_QUOTES, 'UTF-8' ) ) === '' || str_starts_with( $src, 'data:' ) )
+        if( $src === '' || str_starts_with( $src, 'data:' ) )
         {
             $this->removed[$type] = true;
             return null;
@@ -260,7 +259,7 @@ class DrupalHtml extends Html
             return '';
         }
 
-        $align = strtolower( self::attribute( $tag[0], 'data-align' ) . ' ' . self::attribute( $tag[0], 'class' ) . ' ' . self::attribute( $tag[0], 'style' ) );
+        $align = strtolower( self::decodedAttribute( $tag[0], 'data-align' ) . ' ' . self::decodedAttribute( $tag[0], 'class' ) . ' ' . self::decodedAttribute( $tag[0], 'style' ) );
 
         return match( preg_match( '/(?:^|[\s-])(left|right)\b|float:\s*(left|right)/', $align, $m ) ? ( $m[1] ?: $m[2] ) : '' ) {
             'left' => 'start',

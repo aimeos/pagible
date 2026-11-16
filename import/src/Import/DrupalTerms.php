@@ -161,7 +161,7 @@ class DrupalTerms
             $html .= '<li><a href="' . htmlspecialchars( $url, ENT_COMPAT ) . '">' . htmlspecialchars( $title, ENT_NOQUOTES ) . '</a></li>';
         }
 
-        return ['elements' => [Elements::create( 'html', ['text' => '<ul>' . $html . '</ul>'] )], 'fileIds' => []];
+        return Elements::content( Elements::create( 'html', ['text' => '<ul>' . $html . '</ul>'] ) );
     }
 
 

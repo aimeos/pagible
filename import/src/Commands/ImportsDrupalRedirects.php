@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\DB;
-use Aimeos\Cms\Import\Elements;
+use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Tally;
 use Aimeos\Cms\Models\PageView;
@@ -74,32 +74,18 @@ trait ImportsDrupalRedirects
      * @param string $name Page name or empty string to use the path
      * @param int $status 1 to show the page in the navigation, 2 to hide it
      * @param array{lang: string, domain: string}|null $language Language with its own domain or NULL for the imported pages
-     * @param PageView|false|null $page Page using the URL path, NULL if there's none or FALSE to look it up
+     * @param PageView|false|null $page Page using the URL path, NULL if there's none or FALSE to look it up in the domain of the imported pages
      * @return array{page: PageView, status: Status}|null Page and its status, NULL if the URL is used by another page
      */
-    protected function importRedirect( string $path, string $to, PageView $parent, string $name = '', int $status = 2, ?array $language = null, PageView|false|null $page = false ): ?array
+    protected function importRedirect( string $path, string $to, PageView $parent, string $name = '', int $status = Pages::STATUS_HIDDEN, ?array $language = null, PageView|false|null $page = false ): ?array
     {
         $data = array_replace( ['to' => $to] + $this->pageData( $name !== '' ? $name : $path, $path, $status ), $language ?? [] );
 
-        if( !( $page = $page === false ? $this->pages->path( $path, $data['domain'] ) : $page ) )
-        {
-            $page = $this->createPage( $data, Elements::merge(), $parent );
-            $this->markSaved( $page->variant_id );
-
-            return ['page' => $page, 'status' => Status::Imported];
-        }
-
-        if( $page->to === '' || $page->editor !== $this->editor || $page->lang !== $data['lang'] )
-        {
+        // later redirects for the same URL path overwrite earlier ones
+        if( !( $result = $this->saveLink( $path, $data, $parent, $page, true, fn( PageView $page ) => $this->markSaved( $page->variant_id ) ) ) ) {
             $this->warn( '  Skipped redirect: ' . ( $language['domain'] ?? '' ) . "/{$path} (URL is used by another page)" );
-            return null;
         }
 
-        $page = $this->restore( $page );
-        $this->markSaved( $page->variant_id );
-
-        $this->moveBelow( $page, $parent );
-
-        return ['page' => $page, 'status' => $this->updateVersion( $page, $data, Elements::merge() )];
+        return $result;
     }
 }

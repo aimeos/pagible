@@ -51,7 +51,7 @@ class DrupalEmbeds
             return $this->entity( $tag, $langcode );
         }
 
-        $uuid = DrupalHtml::attribute( $tag, 'data-entity-uuid' );
+        $uuid = DrupalHtml::decodedAttribute( $tag, 'data-entity-uuid' );
         $media = $this->data->entity( 'media', 'uuid', $uuid );
 
         if( !$media ) {
@@ -59,7 +59,7 @@ class DrupalEmbeds
             return null;
         }
 
-        return $this->media->render( $media, $langcode, DrupalHtml::attribute( $tag, 'alt' ), DrupalHtml::caption( $tag ) );
+        return $this->media->render( $media, $langcode, DrupalHtml::decodedAttribute( $tag, 'alt' ), DrupalHtml::caption( $tag ) );
     }
 
 
@@ -76,9 +76,9 @@ class DrupalEmbeds
      */
     protected function entity( string $tag, string $langcode ): ?array
     {
-        $type = DrupalHtml::attribute( $tag, 'data-entity-type' );
-        $uuid = DrupalHtml::attribute( $tag, 'data-entity-uuid' );
-        $id = DrupalHtml::attribute( $tag, 'data-entity-id' );
+        $type = DrupalHtml::decodedAttribute( $tag, 'data-entity-type' );
+        $uuid = DrupalHtml::decodedAttribute( $tag, 'data-entity-uuid' );
+        $id = DrupalHtml::decodedAttribute( $tag, 'data-entity-id' );
 
         [$table, $key] = match( $type ) {
             'media' => ['media', 'mid'],
@@ -99,7 +99,7 @@ class DrupalEmbeds
             return null;
         }
 
-        $alt = DrupalHtml::attribute( $tag, 'alt' );
+        $alt = DrupalHtml::decodedAttribute( $tag, 'alt' );
 
         if( $type === 'media' ) {
             return $this->media->render( $entity, $langcode, $alt, DrupalHtml::caption( $tag ) );
@@ -112,7 +112,7 @@ class DrupalEmbeds
             }
 
             // nodes embedded with a view mode like "teaser" show their summary below the title
-            $display = DrupalHtml::attribute( $tag, 'data-entity-embed-display' );
+            $display = DrupalHtml::decodedAttribute( $tag, 'data-entity-embed-display' );
             $summary = str_contains( $display, 'label' ) ? '' : $this->meta->summary( (int) $entity->nid, $langcode );
 
             return $this->converters->html( $langcode )->text( $summary !== '' ? '<h3>' . $link . '</h3><p>' . e( $summary ) . '</p>' : '<p>' . $link . '</p>' );

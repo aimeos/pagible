@@ -221,7 +221,7 @@ class WordPress extends Html
             return $this->fileElement( 'image', $fileId );
         }
 
-        return ['elements' => ( !empty( $text ) ? $this->text( $text ) : null )['elements'] ?? [], 'fileIds' => []];
+        return Elements::content( ...( !empty( $text ) ? $this->text( $text ) : null )['elements'] ?? [] );
     }
 
 
@@ -503,7 +503,7 @@ class WordPress extends Html
     protected function parseImageTextBlock( string $html ): array
     {
         if( !preg_match( '/(?:<a[^>]*>\s*)?<img[^>]+>(?:\s*<\/a>)?/i', $html, $imgMatch ) ) {
-            return ['elements' => [], 'fileIds' => []];
+            return Elements::content();
         }
 
         return $this->imageText( $this->image( $imgMatch[0] ), str_replace( $imgMatch[0], '', $html ) );

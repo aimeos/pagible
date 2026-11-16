@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Models\PageView;
 
@@ -45,7 +46,7 @@ trait ImportsDrupalFront
             $access = empty( $node->status ) ? false : $this->access->node( $node );
 
             $content = $this->nodeContent( $node, $node->langcode ?? '', true );
-            $data = array_replace( $this->nodePageData( $node, '/' ), ['tag' => 'root', 'status' => 1] );
+            $data = array_replace( $this->nodePageData( $node, '/' ), ['tag' => Pages::TAG_ROOT, 'status' => Pages::STATUS_PUBLISHED] );
 
             $status = $this->updateVersion( $root, $data, $content );
             $this->touch( $root, $node );

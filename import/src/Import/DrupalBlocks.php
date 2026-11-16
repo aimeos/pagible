@@ -180,7 +180,7 @@ class DrupalBlocks
             ??= $this->share( ['key' => "block_content.{$id}", 'uuid' => (string) $block->uuid, 'group' => 'main'], $langcode );
         array_push( $this->referenced, ...$refs['elementIds'] );
 
-        return ['elements' => $refs['elements'], 'fileIds' => []];
+        return Elements::content( ...$refs['elements'] );
     }
 
 

@@ -69,13 +69,8 @@ class DrupalMeta
         $tags = $this->tags( $node, $langcode );
         $summary = $this->data->nodeValues( 'body', $node->nid, $langcode, $fallback )->first()->body_summary ?? '';
         $description = $tags['description'] ?? trim( html_entity_decode( strip_tags( (string) $summary ), ENT_QUOTES, 'UTF-8' ) );
-        $description = Str::limit( (string) preg_replace( '/\s+/', ' ', $description ), 159, '…', true );
         $keywords = $tags['keywords'] ?? implode( ', ', $this->terms( $node, $langcode, $fallback ) );
-        $meta = [];
-
-        if( $description !== '' ) {
-            $meta['meta-tags'] = ['type' => 'meta-tags', 'data' => array_filter( ['description' => $description, 'keywords' => Str::limit( $keywords, 254, '…', true )] ), 'files' => []];
-        }
+        $meta = array_filter( ['meta-tags' => Elements::metaTags( $description, $keywords )] );
 
         // Twitter card tags are used if the Open Graph tags are missing
         $image = $tags['og_image'] ?? $tags['og_image_url'] ?? $tags['og_image_secure_url'] ?? $tags['twitter_cards_image'] ?? '';
@@ -95,14 +90,8 @@ class DrupalMeta
             $meta['canonical'] = ['type' => 'canonical', 'data' => ['url' => $url], 'files' => []];
         }
 
-        $robots = array_map( 'trim', explode( ',', strtolower( $tags['robots'] ?? '' ) ) );
-        $data = array_filter( [
-            'index' => in_array( 'noindex', $robots, true ) ? 'noindex' : ( in_array( 'index', $robots, true ) ? 'index' : null ),
-            'follow' => in_array( 'nofollow', $robots, true ) ? 'nofollow' : ( in_array( 'follow', $robots, true ) ? 'follow' : null ),
-        ] );
-
-        if( $data ) {
-            $meta['robots'] = ['type' => 'robots', 'data' => $data, 'files' => []];
+        if( $robots = Elements::robots( $tags['robots'] ?? '' ) ) {
+            $meta['robots'] = $robots;
         }
 
         return $meta;

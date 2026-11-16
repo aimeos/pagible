@@ -213,7 +213,7 @@ class Variants
         }
         else
         {
-            $variant = PageRows::insert( $source, $data + ['status' => 1], $hashes, $linked === null, $editor );
+            $variant = PageRows::insert( $source, $data + ['status' => Pages::STATUS_PUBLISHED], $hashes, $linked === null, $editor );
         }
 
         Pages::publish( $variant, $data, $aux, $content['fileIds'] ?? [], $content['elementIds'] ?? [], $lang, $editor );

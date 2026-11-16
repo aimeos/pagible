@@ -12,9 +12,49 @@ use Aimeos\Cms\Utils;
 
 /**
  * Creates iframes for embedded pages and videos.
+ *
+ * @phpstan-import-type ContentElements from Elements
  */
 class Embeds
 {
+    /**
+     * Returns the content with an HTML element containing the iframe created again from the attributes of the iframe tag.
+     *
+     * @param string $tag Opening iframe tag whose attributes contain HTML entities
+     * @param \Closure(string): string $src Returns the URL of the embedded page for the decoded URL of the tag
+     * @return ContentElements|null Content or NULL if the URL isn't a web URL
+     */
+    public static function iframeTag( string $tag, \Closure $src ): ?array
+    {
+        $attr = fn( string $name ) => Html::decodedAttribute( $tag, $name );
+        return self::iframeContent( $src( $attr( 'src' ) ), $attr( 'title' ), $attr( 'width' ), $attr( 'height' ) );
+    }
+
+
+    /**
+     * Returns the content with an HTML element containing the iframe created again from its attributes.
+     *
+     * The iframe is created again because the HTML element isn't sanitized. Video page URLs are
+     * replaced by their player URLs and sizes other than pixels or percent are skipped.
+     *
+     * @param string $src Decoded URL of the embedded page or video
+     * @param string $title Decoded title of the iframe for screen readers
+     * @param string $width Decoded width of the iframe
+     * @param string $height Decoded height of the iframe
+     * @return ContentElements|null Content or NULL if the URL isn't a web URL
+     */
+    public static function iframeContent( string $src, string $title = '', string $width = '', string $height = '' ): ?array
+    {
+        $size = fn( string $value ) => preg_match( '/^\d+%?$/', $value ) ? $value : '';
+
+        if( !( $html = self::iframe( self::src( $src ), $title, $size( $width ), $size( $height ) ) ) ) {
+            return null;
+        }
+
+        return Elements::content( Elements::create( 'html', ['text' => $html] ) );
+    }
+
+
     /**
      * Returns the HTML code of the iframe or an empty string if the URL isn't a web URL.
      *
@@ -25,7 +65,7 @@ class Embeds
      * @param string $width Width in pixels or percent, empty for none
      * @param string $height Height in pixels or percent, empty for none
      */
-    public static function iframe( string $url, string $title = '', string $width = '', string $height = '' ): string
+    protected static function iframe( string $url, string $title = '', string $width = '', string $height = '' ): string
     {
         if( !preg_match( '#^https?://#i', $url ) || !Utils::isValidUrl( $url, strict: false ) ) {
             return '';
@@ -66,7 +106,7 @@ class Embeds
      *
      * @param string $url URL of the embedded page or video
      */
-    public static function src( string $url ): string
+    protected static function src( string $url ): string
     {
         return !preg_match( '#/(?:embed|video)/#', $url ) && ( $player = self::player( $url ) ) ? $player : $url;
     }

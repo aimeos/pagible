@@ -78,15 +78,15 @@ class DrupalMedia
 
                 foreach( $matches as $match )
                 {
-                    $type = strtolower( $match[1] ) === 'media' ? 'media' : DrupalHtml::attribute( $match[0], 'data-entity-type' );
+                    $type = strtolower( $match[1] ) === 'media' ? 'media' : DrupalHtml::decodedAttribute( $match[0], 'data-entity-type' );
 
                     if( !isset( $uuids[$type] ) ) {
                         continue;
                     }
 
-                    if( ( $uuid = DrupalHtml::attribute( $match[0], 'data-entity-uuid' ) ) !== '' ) {
+                    if( ( $uuid = DrupalHtml::decodedAttribute( $match[0], 'data-entity-uuid' ) ) !== '' ) {
                         $uuids[$type][] = $uuid;
-                    } elseif( ctype_digit( $id = DrupalHtml::attribute( $match[0], 'data-entity-id' ) ) ) {
+                    } elseif( ctype_digit( $id = DrupalHtml::decodedAttribute( $match[0], 'data-entity-id' ) ) ) {
                         $ids[$type][] = (int) $id;
                     }
                 }
@@ -157,12 +157,12 @@ class DrupalMedia
         if( !empty( $url = $row->{$field . '_value'} ?? null ) && filter_var( $url, FILTER_VALIDATE_URL ) )
         {
             // YouTube and Vimeo videos are embedded, other remote media are linked
-            if( $html = Embeds::iframe( Embeds::player( (string) $url ), $alt ?: $name ) ) {
-                return ['elements' => [Elements::create( 'html', ['text' => $html] )], 'fileIds' => []];
+            if( $content = Embeds::iframeContent( Embeds::player( (string) $url ), $alt ?: $name ) ) {
+                return $content;
             }
 
             $link = '<a href="' . e( $url ) . '">' . e( $alt ?: $name ?: $url ) . '</a>';
-            return ['elements' => [Elements::create( 'html', ['text' => Utils::html( '<p>' . $link . '</p>' )] )], 'fileIds' => []];
+            return Elements::content( Elements::create( 'html', ['text' => Utils::html( '<p>' . $link . '</p>' )] ) );
         }
 
         // the media name is used for files without alternative text, e.g. documents
@@ -220,8 +220,8 @@ class DrupalMedia
      */
     public function video( string $url, string $langcode ): ?array
     {
-        if( $html = Embeds::iframe( Embeds::player( $url ) ) ) {
-            return ['elements' => [Elements::create( 'html', ['text' => $html] )], 'fileIds' => []];
+        if( $content = Embeds::iframeContent( Embeds::player( $url ) ) ) {
+            return $content;
         }
 
         return preg_match( '#^https?://#i', $url ) ? $this->converters->html( $langcode )->text( '<p><a href="' . e( $url ) . '">' . e( $url ) . '</a></p>' ) : null;
