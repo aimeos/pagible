@@ -15,7 +15,7 @@ use Aimeos\Cms\Concerns\Drupal\Front;
 use Aimeos\Cms\Concerns\Drupal\Menu;
 use Aimeos\Cms\Concerns\Drupal\Redirects;
 use Aimeos\Cms\Concerns\Drupal\Terms;
-use Aimeos\Cms\Concerns\Drupal\ReportsImport;
+use Aimeos\Cms\Concerns\Drupal\Reports;
 use Aimeos\Cms\Access as CmsAccess;
 use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Elements;
@@ -40,7 +40,7 @@ class DrupalImport extends Commands
     use Menu;
     use Redirects;
     use Terms;
-    use ReportsImport;
+    use Reports;
 
     /**
      * Command name

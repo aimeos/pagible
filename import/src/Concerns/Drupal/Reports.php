@@ -20,7 +20,7 @@ use Illuminate\Support\Collection;
 /**
  * Reports the nodes of dry runs, the stale pages and elements, the failures and the warnings of the Drupal import.
  */
-trait ReportsImport
+trait Reports
 {
     /** @var int Number of shown warnings */
     protected int $warnings = 0;
