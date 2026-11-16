@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Import\JoomlaFieldContext;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Schema\Blueprint;
@@ -1124,10 +1124,10 @@ class JoomlaContentImportTest extends JoomlaTestAbstract
         $db->table( 'extensions' )->where( 'folder', 'fields' )->where( 'element', 'imagelist' )->update( ['params' => '{"directory":"photos"}'] );
 
         $field = (object) ['id' => 4, 'title' => 'Gallery', 'type' => 'imagelist', 'params' => '{"showlabel":"0"}', 'fieldparams' => '{"directory":""}'];
-        $this->assertSame( '<p><img src="images/photos/a.jpg" alt=""></p>', $this->fields( [$field] )->field( 4, new JoomlaFieldContext( [4 => ['a.jpg']] ) ) );
+        $this->assertSame( '<p><img src="images/photos/a.jpg" alt=""></p>', $this->fields( [$field] )->field( 4, new Joomla\FieldContext( [4 => ['a.jpg']] ) ) );
         // options set by the fields are used before the ones of the field plugins
         $field->fieldparams = '{"directory":"logos"}';
-        $this->assertSame( '<p><img src="images/logos/a.jpg" alt=""></p>', $this->fields( [$field] )->field( 4, new JoomlaFieldContext( [4 => ['a.jpg']] ) ) );
+        $this->assertSame( '<p><img src="images/logos/a.jpg" alt=""></p>', $this->fields( [$field] )->field( 4, new Joomla\FieldContext( [4 => ['a.jpg']] ) ) );
     }
 
 

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Commands;
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\Import\Files;
@@ -30,7 +31,7 @@ use Aimeos\Cms\DB as CmsDB;
 use Illuminate\Support\Facades\DB;
 
 
-class T3Import extends BaseImport
+class T3Import extends Commands
 {
     /**
      * Command name

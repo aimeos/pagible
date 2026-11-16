@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Commands;
 use Aimeos\Cms\Concerns\Drupal\ImportsDrupalAccess;
 use Aimeos\Cms\Concerns\Drupal\ImportsDrupalChanges;
 use Aimeos\Cms\Concerns\Drupal\ImportsDrupalDrafts;
@@ -16,27 +17,8 @@ use Aimeos\Cms\Concerns\Drupal\ImportsDrupalRedirects;
 use Aimeos\Cms\Concerns\Drupal\ImportsDrupalTerms;
 use Aimeos\Cms\Concerns\Drupal\ReportsDrupalImport;
 use Aimeos\Cms\Access;
-use Aimeos\Cms\Import\Drupal7;
-use Aimeos\Cms\Import\Drupal8;
-use Aimeos\Cms\Import\DrupalAccess;
-use Aimeos\Cms\Import\DrupalBlocks;
-use Aimeos\Cms\Import\DrupalContent;
-use Aimeos\Cms\Import\DrupalData;
-use Aimeos\Cms\Import\DrupalDomains;
+use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Elements;
-use Aimeos\Cms\Import\DrupalFiles;
-use Aimeos\Cms\Import\DrupalLanguages;
-use Aimeos\Cms\Import\DrupalMeta;
-use Aimeos\Cms\Import\DrupalPages;
-use Aimeos\Cms\Import\DrupalPlacements;
-use Aimeos\Cms\Import\DrupalPrune;
-use Aimeos\Cms\Import\DrupalReader;
-use Aimeos\Cms\Import\DrupalRedirects;
-use Aimeos\Cms\Import\DrupalSite;
-use Aimeos\Cms\Import\DrupalTracker;
-use Aimeos\Cms\Import\DrupalTree;
-use Aimeos\Cms\Import\DrupalUrls;
-use Aimeos\Cms\Import\DrupalViews;
 use Aimeos\Cms\DB as CmsDB;
 use Illuminate\Database\Connection;
 use Aimeos\Cms\Import\Pages;
@@ -49,7 +31,7 @@ use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 
 
-class DrupalImport extends BaseImport
+class DrupalImport extends Commands
 {
     use ImportsDrupalAccess;
     use ImportsDrupalChanges;
@@ -100,34 +82,34 @@ class DrupalImport extends BaseImport
     protected array $translationRows = [];
 
     /** Reads the Drupal database */
-    protected DrupalReader $reader;
+    protected Drupal\Reader $reader;
     /** Detects the nodes and blocks changed since the last import */
-    protected DrupalTracker $tracker;
+    protected Drupal\Tracker $tracker;
     /** Returns the access values of the pages from the view grants of Drupal's node access modules */
-    protected DrupalAccess $access;
+    protected Drupal\Access $access;
     /** Renders the fields of the Drupal entities as content elements */
-    protected DrupalContent $content;
+    protected Drupal\Content $content;
     /** Reads and caches the configuration, entities, field values and files of the Drupal database */
-    protected DrupalData $data;
+    protected Drupal\Data $data;
     /** Maps the Drupal language codes to the languages, domains and URL path prefixes of the imported pages */
-    protected DrupalLanguages $languages;
+    protected Drupal\Languages $languages;
     /** Maps the Drupal nodes and terms to the URLs of the imported pages */
-    protected DrupalUrls $urls;
+    protected Drupal\Urls $urls;
     /** Imports the files of the Drupal site */
-    protected DrupalFiles $files;
+    protected Drupal\Files $files;
     /** Imports the meta data of the nodes */
-    protected DrupalMeta $meta;
+    protected Drupal\Meta $meta;
     /** Imports the custom blocks as shared elements */
-    protected DrupalBlocks $blocks;
+    protected Drupal\Blocks $blocks;
     /** Collects the redirects of the Redirect module, the front page and the node paths */
-    protected DrupalRedirects $redirects;
+    protected Drupal\Redirects $redirects;
     /** Page hierarchy of the nodes from the menu, the book outlines and the URL aliases */
-    protected DrupalTree $tree;
+    protected Drupal\Tree $tree;
     /** Page displays of the Drupal Views which menu links can refer to */
-    protected DrupalViews $views;
+    protected Drupal\Views $views;
     /** Finds the pages of previous imports by their URL path */
-    protected DrupalPages $pages;
-    /** @var array<string, bool> Compact IDs of the page variants created or updated by this import, see DrupalPrune::key() */
+    protected Drupal\Pages $pages;
+    /** @var array<string, bool> Compact IDs of the page variants created or updated by this import, see Drupal\Prune::key() */
     protected array $saved = [];
     /** @var array<string, array<string, string>> Creation and modification dates of the Drupal nodes not written yet by page variant ID */
     protected array $dates = [];
@@ -156,7 +138,7 @@ class DrupalImport extends BaseImport
             return;
         }
 
-        $this->access = new DrupalAccess( $this->reader, $this->data, app( Access::class ), $roles,
+        $this->access = new Drupal\Access( $this->reader, $this->data, app( Access::class ), $roles,
             fn( int $nid ) => $this->nextNodes( $nid, CmsDB::IN_SIZE * 4 ),
             fn( object $node ) => $this->restricted[$node->nid] = $this->urls->slug( $node, true ),
             fn( string $msg ) => $this->warn( $msg ),
@@ -343,7 +325,7 @@ class DrupalImport extends BaseImport
      */
     protected function domainAccess(): bool
     {
-        $domains = new DrupalDomains( $this->data );
+        $domains = new Drupal\Domains( $this->data );
 
         if( $this->drupalDomain === '' )
         {
@@ -432,7 +414,7 @@ class DrupalImport extends BaseImport
         }
 
         $this->reader = $this->createReader( DB::connection( $this->connection ) );
-        $this->data = new DrupalData( $this->reader, $this->stringOption( 'drupal-domain' ) );
+        $this->data = new Drupal\Data( $this->reader, $this->stringOption( 'drupal-domain' ) );
         $this->tracker = $this->reader->tracker( $this->menuName(), fn( \stdClass $link ) => $this->urls->linkNid( $link ) );
 
         return true;
@@ -446,9 +428,9 @@ class DrupalImport extends BaseImport
      */
     protected function setup( array $languages ): void
     {
-        $this->languages = new DrupalLanguages( $this->data, $languages );
-        $this->pages = new DrupalPages( $this->domain );
-        $this->views = new DrupalViews( $this->data );
+        $this->languages = new Drupal\Languages( $this->data, $languages );
+        $this->pages = new Drupal\Pages( $this->domain );
+        $this->views = new Drupal\Views( $this->data );
     }
 
 
@@ -461,29 +443,29 @@ class DrupalImport extends BaseImport
         $warnOnce = fn( string $key, string $msg ) => $this->warnOnce( $key, $msg );
         $vocabularies = array_values( array_filter( array_map( 'trim', explode( ',', $this->stringOption( 'terms' ) ) ) ) );
 
-        $this->urls = new DrupalUrls( $this->reader, $this->data, $this->languages, $this->lang, $this->nodes, $this->translated,
+        $this->urls = new Drupal\Urls( $this->reader, $this->data, $this->languages, $this->lang, $this->nodes, $this->translated,
             fn() => $this->front, $this->drupalDomain, $vocabularies );
-        $site = new DrupalSite( $this->fileBase, $this->domain, $this->languages->domains() );
-        $this->files = new DrupalFiles( $this->data, $site, fn( string $mime, string $name, string $path, bool $rename = true ) => $this->createFile( $mime, $name, $path, $rename ),
+        $site = new Drupal\Site( $this->fileBase, $this->domain, $this->languages->domains() );
+        $this->files = new Drupal\Files( $this->data, $site, fn( string $mime, string $name, string $path, bool $rename = true ) => $this->createFile( $mime, $name, $path, $rename ),
             $warn, fn( array $paths ) => $this->prefetchFiles( $paths ) );
-        $this->meta = new DrupalMeta( $this->data, $this->files );
-        $this->content = DrupalContent::create( $this->data, $this->languages, $this->urls, $site, $this->files, $this->meta,
+        $this->meta = new Drupal\Meta( $this->data, $this->files );
+        $this->content = Drupal\Content::create( $this->data, $this->languages, $this->urls, $site, $this->files, $this->meta,
             fn( int $id, string $langcode, bool $fallback, int $depth ) => $this->blocks->render( $id, $langcode, $fallback, $depth ), $warn, $warnOnce );
-        $placements = new DrupalPlacements( $this->data, $this->urls, $this->menuName(), $this->drupalDomain, $warn, $warnOnce );
-        $this->blocks = new DrupalBlocks( $this->reader, $this->data, $this->content, $this->languages, $placements,
+        $placements = new Drupal\Placements( $this->data, $this->urls, $this->menuName(), $this->drupalDomain, $warn, $warnOnce );
+        $this->blocks = new Drupal\Blocks( $this->reader, $this->data, $this->content, $this->languages, $placements,
             fn( string $name, string $lang, array $element, array $fileIds ) => Elements::shared( $name, $lang, $element, $fileIds, $this->editor ), $warnOnce );
-        $this->redirects = new DrupalRedirects( $this->reader, $this->data, $this->languages, $this->urls, $this->nodes );
-        $this->tree = new DrupalTree( $this->reader, $this->data, $this->urls, $this->nodes, $this->reader->menu( $this->menuName() ) );
+        $this->redirects = new Drupal\Redirects( $this->reader, $this->data, $this->languages, $this->urls, $this->nodes );
+        $this->tree = new Drupal\Tree( $this->reader, $this->data, $this->urls, $this->nodes, $this->reader->menu( $this->menuName() ) );
     }
 
 
     /**
      * Returns the reader for the Drupal 7 or Drupal 8+ database.
      */
-    protected function createReader( Connection $db ): DrupalReader
+    protected function createReader( Connection $db ): Drupal\Reader
     {
         $warn = fn( string $msg ) => $this->warn( $msg );
-        return Drupal7::is( $db ) ? new Drupal7( $db, $warn ) : new Drupal8( $db, $warn );
+        return Drupal\V7::is( $db ) ? new Drupal\V7( $db, $warn ) : new Drupal\V8( $db, $warn );
     }
 
 
@@ -816,6 +798,6 @@ class DrupalImport extends BaseImport
      */
     protected function markSaved( string $variantId ): void
     {
-        $this->saved[DrupalPrune::key( $variantId )] = true;
+        $this->saved[Drupal\Prune::key( $variantId )] = true;
     }
 }

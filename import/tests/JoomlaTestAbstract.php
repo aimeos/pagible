@@ -7,33 +7,13 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Import\JoomlaFolders;
-use Aimeos\Cms\Import\JoomlaKind;
-use Aimeos\Cms\Import\JoomlaFieldLookups;
-use Aimeos\Cms\Import\JoomlaFields;
-use Aimeos\Cms\Import\JoomlaFieldTypes;
-use Aimeos\Cms\Import\JoomlaLevels;
-use Aimeos\Cms\Import\JoomlaMenuLink;
-use Aimeos\Cms\Import\JoomlaMenuRules;
-use Aimeos\Cms\Import\JoomlaHost;
-use Aimeos\Cms\Import\JoomlaOrigin;
-use Aimeos\Cms\Import\JoomlaReader;
-use Aimeos\Cms\Import\JoomlaRoutePath;
-use Aimeos\Cms\Import\JoomlaRun;
-use Aimeos\Cms\Import\JoomlaWiring;
-use Aimeos\Cms\Import\JoomlaSite;
-use Aimeos\Cms\Import\JoomlaRoutes;
-use Aimeos\Cms\Import\JoomlaRouteCategories;
-use Aimeos\Cms\Import\JoomlaRouteOptions;
-use Aimeos\Cms\Import\JoomlaArticles;
-use Aimeos\Cms\Import\JoomlaHomeRoot;
-use Aimeos\Cms\Import\JoomlaTranslationRoute;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Aimeos\Cms\Import\Joomla;
 
 
 /**
@@ -371,9 +351,9 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
      * @param string $prefix Prefix of the Joomla tables
      * @param \Closure|null $warn Receives the warnings of the reader, they are ignored if NULL
      */
-    protected function reader( ?Connection $db = null, string $prefix = '', ?\Closure $warn = null ): JoomlaReader
+    protected function reader( ?Connection $db = null, string $prefix = '', ?\Closure $warn = null ): Joomla\Reader
     {
-        return new JoomlaReader( $db ?? DB::connection( 'joomla' ), $prefix, $warn ?? fn() => null );
+        return new Joomla\Reader( $db ?? DB::connection( 'joomla' ), $prefix, $warn ?? fn() => null );
     }
 
 
@@ -427,28 +407,28 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
      * @param Collection<array-key, \stdClass> $categories Categories of all states by ID
      * @param array<int|string, mixed> $options Joomla language tags imported as translations with their codes and optional URLs like "de-DE:de"
      * @param string $lang Language code of the imported pages
-     * @param JoomlaReader|null $reader Reader for the Joomla database, a new one if NULL
+     * @param Joomla\Reader|null $reader Reader for the Joomla database, a new one if NULL
      */
-    protected function site( Collection $categories, array $options = [], string $lang = 'en', ?JoomlaReader $reader = null ): JoomlaSite
+    protected function site( Collection $categories, array $options = [], string $lang = 'en', ?Joomla\Reader $reader = null ): Joomla\Site
     {
-        return new JoomlaSite( $reader ?? $this->reader(), $categories, $options, $lang );
+        return new Joomla\Site( $reader ?? $this->reader(), $categories, $options, $lang );
     }
 
 
     /**
      * Returns the objects importing the Joomla site like the import creates them.
      *
-     * @param JoomlaSite $site Settings of the Joomla site
+     * @param Joomla\Site $site Settings of the Joomla site
      * @param Collection<int, \stdClass>|null $items Menu items of all menus, none if NULL
      * @param Collection<int, \stdClass>|null $menu Menu items of the imported menu, none if NULL
-     * @param JoomlaOrigin|null $origin Domain and file base of the imported site, none if NULL
-     * @param JoomlaHost|null $host Functions and settings of the import command, ones doing nothing if NULL
-     * @param JoomlaReader|null $reader Reader for the Joomla database, a new one if NULL
+     * @param Joomla\Origin|null $origin Domain and file base of the imported site, none if NULL
+     * @param Joomla\Host|null $host Functions and settings of the import command, ones doing nothing if NULL
+     * @param Joomla\Reader|null $reader Reader for the Joomla database, a new one if NULL
      */
-    protected function wiring( JoomlaSite $site, ?Collection $items = null, ?Collection $menu = null, ?JoomlaOrigin $origin = null,
-        ?JoomlaHost $host = null, ?JoomlaReader $reader = null ): JoomlaWiring
+    protected function wiring( Joomla\Site $site, ?Collection $items = null, ?Collection $menu = null, ?Joomla\Origin $origin = null,
+        ?Joomla\Host $host = null, ?Joomla\Reader $reader = null ): Joomla\Wiring
     {
-        return new JoomlaWiring( $reader ?? $this->reader(), $host ?? JoomlaHost::forTests(), $origin ?? new JoomlaOrigin(), $site,
+        return new Joomla\Wiring( $reader ?? $this->reader(), $host ?? Joomla\Host::forTests(), $origin ?? new Joomla\Origin(), $site,
             $menu ?? Collection::make(), $items ?? Collection::make() );
     }
 
@@ -459,16 +439,16 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
      * Use named arguments for everything after the site or wiring. Tests with menu items or an origin pass the wiring
      * returned by wiring(), tests which also need the router, the menu or the category items keep the wiring themselves.
      *
-     * @param JoomlaSite|JoomlaWiring $from Settings of the Joomla site without menu items and origin or the objects importing it
-     * @param JoomlaArticles|null $articles Imported articles, none if NULL
-     * @param JoomlaFolders $folders Categories and menu items imported as folders, none by default
-     * @param JoomlaHomeRoot $home Article imported into the root page with its translations, none by default
+     * @param Joomla\Site|Joomla\Wiring $from Settings of the Joomla site without menu items and origin or the objects importing it
+     * @param Joomla\Articles|null $articles Imported articles, none if NULL
+     * @param Joomla\Folders $folders Categories and menu items imported as folders, none by default
+     * @param Joomla\HomeRoot $home Article imported into the root page with its translations, none by default
      * @param iterable<\stdClass> $redirects Joomla redirects
      */
-    protected function importRun( JoomlaSite|JoomlaWiring $from, ?JoomlaArticles $articles = null, JoomlaFolders $folders = new JoomlaFolders(),
-        JoomlaHomeRoot $home = new JoomlaHomeRoot(), iterable $redirects = [] ): JoomlaRun
+    protected function importRun( Joomla\Site|Joomla\Wiring $from, ?Joomla\Articles $articles = null, Joomla\Folders $folders = new Joomla\Folders(),
+        Joomla\HomeRoot $home = new Joomla\HomeRoot(), iterable $redirects = [] ): Joomla\Run
     {
-        $wiring = $from instanceof JoomlaWiring ? $from : $this->wiring( $from );
+        $wiring = $from instanceof Joomla\Wiring ? $from : $this->wiring( $from );
         return $wiring->assemble( articles: $articles ?? $this->articles(), folders: $folders, home: $home, redirects: $redirects );
     }
 
@@ -476,15 +456,15 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
     /**
      * Returns the imported articles with only the URL paths Joomla uses for them and their translations.
      *
-     * @param array<int|string, JoomlaRoutePath> $routes Routes of the articles by article ID
-     * @param array<int|string, JoomlaTranslationRoute> $translations Routes of the translations by article ID
+     * @param array<int|string, Joomla\RoutePath> $routes Routes of the articles by article ID
+     * @param array<int|string, Joomla\TranslationRoute> $translations Routes of the translations by article ID
      * @param array<int|string, int> $categoryIds Category IDs of the articles imported as pages by article ID, their categories get own pages
      * @param array<int|string, list<int|string>> $translated IDs of the translations by article ID
      */
-    protected function articles( array $routes = [], array $translations = [], array $categoryIds = [], array $translated = [] ): JoomlaArticles
+    protected function articles( array $routes = [], array $translations = [], array $categoryIds = [], array $translated = [] ): Joomla\Articles
     {
-        return new JoomlaArticles( categoryIds: $categoryIds, translations: $translated, times: [], items: [], visible: [],
-            routes: [JoomlaKind::ARTICLE => $routes, JoomlaKind::ARTICLE_TRANSLATION => $translations] );
+        return new Joomla\Articles( categoryIds: $categoryIds, translations: $translated, times: [], items: [], visible: [],
+            routes: [Joomla\Kind::ARTICLE => $routes, Joomla\Kind::ARTICLE_TRANSLATION => $translations] );
     }
 
 
@@ -493,37 +473,37 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
      *
      * @param Collection<array-key, \stdClass> $categories Categories Joomla routes by ID
      * @param iterable<\stdClass> $items Public menu items ordered by their position in the menu
-     * @param JoomlaRouteOptions $options Router options, the modern router with IDs and without strict routing by default
-     * @param JoomlaMenuRules $rules Menu rules, the ones with language filter by default
+     * @param Joomla\RouteOptions $options Router options, the modern router with IDs and without strict routing by default
+     * @param Joomla\MenuRules $rules Menu rules, the ones with language filter by default
      */
-    protected function routes( Collection $categories, iterable $items, JoomlaRouteOptions $options = new JoomlaRouteOptions( noIds: false, strict: false ),
-        JoomlaMenuRules $rules = new JoomlaMenuRules( true ) ): JoomlaRoutes
+    protected function routes( Collection $categories, iterable $items, Joomla\RouteOptions $options = new Joomla\RouteOptions( noIds: false, strict: false ),
+        Joomla\MenuRules $rules = new Joomla\MenuRules( true ) ): Joomla\Routes
     {
-        return new JoomlaRoutes( new JoomlaRouteCategories( $categories ), $items, $options, $rules );
+        return new Joomla\Routes( new Joomla\RouteCategories( $categories ), $items, $options, $rules );
     }
 
 
     /**
      * Returns the kind of the menu item.
      *
-     * @return string Kind from JoomlaMenuLink::of(), e.g. JoomlaMenuLink::KIND_ARTICLE
+     * @return string Kind from Joomla\MenuLink::of(), e.g. Joomla\MenuLink::KIND_ARTICLE
      */
     protected function kindOf( \stdClass $item ): string
     {
-        return JoomlaMenuLink::of( $item )->kind;
+        return Joomla\MenuLink::of( $item )->kind;
     }
 
 
     /**
      * Asserts the kind of the menu item and the ID of the article or category it shows.
      *
-     * @param string $kind Expected kind from JoomlaMenuLink::of(), e.g. JoomlaMenuLink::KIND_ARTICLE
+     * @param string $kind Expected kind from Joomla\MenuLink::of(), e.g. Joomla\MenuLink::KIND_ARTICLE
      * @param int|null $id Expected ID of the article or category or NULL if the menu item shows none
      * @param \stdClass $item Menu item
      */
     protected function assertMenuLink( string $kind, ?int $id, \stdClass $item ): void
     {
-        $link = JoomlaMenuLink::of( $item );
+        $link = Joomla\MenuLink::of( $item );
 
         $this->assertSame( $kind, $link->kind, 'kind of ' . ( $item->link ?? '' ) );
         $this->assertSame( $id, $link->id, 'ID of ' . ( $item->link ?? '' ) );
@@ -533,23 +513,23 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
     /**
      * Returns the custom fields using the reader of the Joomla test database and its field plugins.
      *
-     * Like JoomlaExtras::shownFields(), fields whose values aren't renderable() are skipped.
-     * The fields are created like JoomlaWiring::fields() does, so they are rendered like Joomla 3 if the database is of Joomla 3.
+     * Like Joomla\Extras::shownFields(), fields whose values aren't renderable() are skipped.
+     * The fields are created like Joomla\Wiring::fields() does, so they are rendered like Joomla 3 if the database is of Joomla 3.
      *
      * @param iterable<\stdClass> $list Fields ordered by their position
-     * @param JoomlaOrigin $origin Domain and file base of the imported site, none by default
+     * @param Joomla\Origin $origin Domain and file base of the imported site, none by default
      * @param \DateTimeZone|null $timezone Time zone of the Joomla site, the one of the import command if NULL
-     * @param JoomlaReader|null $reader Reader for the Joomla database, a new one if NULL
+     * @param Joomla\Reader|null $reader Reader for the Joomla database, a new one if NULL
      */
-    protected function fields( iterable $list, JoomlaOrigin $origin = new JoomlaOrigin(), ?\DateTimeZone $timezone = null, ?JoomlaReader $reader = null ): JoomlaFields
+    protected function fields( iterable $list, Joomla\Origin $origin = new Joomla\Origin(), ?\DateTimeZone $timezone = null, ?Joomla\Reader $reader = null ): Joomla\Fields
     {
         $reader ??= $this->reader();
-        $list = collect( $list )->filter( JoomlaFields::renderable( ... ) );
+        $list = collect( $list )->filter( Joomla\Fields::renderable( ... ) );
         $site = $this->site( $this->categories( [] ), reader: $reader );
 
-        $types = new JoomlaFieldTypes( $origin, ( JoomlaHost::forTests( timezone: $timezone ) )->timezone, $site->version );
+        $types = new Joomla\FieldTypes( $origin, ( Joomla\Host::forTests( timezone: $timezone ) )->timezone, $site->version );
 
-        return new JoomlaFields( $list, $site->plugins, new JoomlaFieldLookups( $reader ), $types );
+        return new Joomla\Fields( $list, $site->plugins, new Joomla\FieldLookups( $reader ), $types );
     }
 
 
@@ -559,7 +539,7 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
      * @param array<int, int> $ids View level IDs
      * @return array<int, bool>
      */
-    protected function publicLevels( JoomlaLevels $levels, array $ids ): array
+    protected function publicLevels( Joomla\Levels $levels, array $ids ): array
     {
         return array_map( fn( $id ) => $levels->isPublic( $id ), $ids );
     }

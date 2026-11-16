@@ -11,6 +11,7 @@ use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Tally;
+use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 

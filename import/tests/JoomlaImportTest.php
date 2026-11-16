@@ -209,12 +209,12 @@ class JoomlaImportTest extends JoomlaTestAbstract
              * @param array<int|string, int> $scheduled
              * @return array<int|string, int>
              */
-            public function changed( \Aimeos\Cms\Import\JoomlaArticles $articles, array $scheduled ): array
+            public function changed( \Aimeos\Cms\Import\Joomla\Articles $articles, array $scheduled ): array
             {
                 return $this->changedTimes( $articles, $scheduled );
             }
         };
-        $articles = new \Aimeos\Cms\Import\JoomlaArticles( categoryIds: [1 => 0, 2 => 0, 3 => 0], translations: [3 => [9]],
+        $articles = new \Aimeos\Cms\Import\Joomla\Articles( categoryIds: [1 => 0, 2 => 0, 3 => 0], translations: [3 => [9]],
             times: [1 => 100, 3 => 100, 9 => 100], items: [], visible: [], routes: ['a' => [], 'ta' => []] );
 
         // passed publishing dates are later changes, but articles without known modification time stay changed
@@ -1114,7 +1114,7 @@ class JoomlaImportTest extends JoomlaTestAbstract
 
         // the publishing date of the category menu item counts for the articles of the category and its subcategories
         $reader = $this->reader();
-        $wiring = \Aimeos\Cms\Import\JoomlaWiring::read( $reader, \Aimeos\Cms\Import\JoomlaHost::forTests(), new \Aimeos\Cms\Import\JoomlaOrigin( 'example.com' ), '', [], 'en' );
+        $wiring = \Aimeos\Cms\Import\Joomla\Wiring::read( $reader, \Aimeos\Cms\Import\Joomla\Host::forTests(), new \Aimeos\Cms\Import\Joomla\Origin( 'example.com' ), '', [], 'en' );
         ( new \ReflectionProperty( $command, 'wiring' ) )->setValue( $command, $wiring );
         $times = ( new \ReflectionMethod( $command, 'scheduledTimes' ) )->invoke( $command, $reader, $since, $wiring->articles( true ) );
 

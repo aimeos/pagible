@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Commands\JoomlaImport;
-use Aimeos\Cms\Import\JoomlaMenuRules;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Schema\Blueprint;
@@ -1718,7 +1718,7 @@ class JoomlaMenuImportTest extends JoomlaTestAbstract
         $empty = $this->routes( collect(), [(object) ['id' => 9, 'language' => '*', 'link' => 'index.php?option=com_content&view=featured&layout=']] );
         $this->assertSame( 9, $empty->viewItem( 'featured' )?->id );
         // without language filter, only the menu items for all languages are used
-        $this->assertSame( 4, $this->routes( collect(), $items, rules: new JoomlaMenuRules( false ) )->viewItem( 'archive' )?->id );
+        $this->assertSame( 4, $this->routes( collect(), $items, rules: new Joomla\MenuRules( false ) )->viewItem( 'archive' )?->id );
     }
 
 

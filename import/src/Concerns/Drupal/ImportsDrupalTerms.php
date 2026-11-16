@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Concerns\Drupal;
 
 use Aimeos\Cms\DB;
-use Aimeos\Cms\Import\DrupalTerms;
+use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Tally;
 use Aimeos\Cms\Models\PageView;
@@ -34,7 +34,7 @@ trait ImportsDrupalTerms
     protected function importTerms( PageView $root ): void
     {
         $vocabularies = array_values( array_filter( array_map( 'trim', explode( ',', $this->stringOption( 'terms' ) ) ) ) );
-        $terms = new DrupalTerms( $this->reader, $this->data, $this->languages, $this->urls, $this->content, $this->nodes, $this->translated, fn( string $msg ) => $this->warn( $msg ) );
+        $terms = new Drupal\Terms( $this->reader, $this->data, $this->languages, $this->urls, $this->content, $this->nodes, $this->translated, fn( string $msg ) => $this->warn( $msg ) );
 
         foreach( LazyCollection::make( fn() => $terms->all( $vocabularies ) )->chunk( DB::IN_SIZE ) as $items )
         {
@@ -60,14 +60,14 @@ trait ImportsDrupalTerms
     /**
      * Imports the taxonomy term as hidden page below the root page.
      *
-     * @param DrupalTerms $terms Renders the content of the term pages
+     * @param Drupal\Terms $terms Renders the content of the term pages
      * @param \stdClass $term Record of the taxonomy_term_field_data table
      * @param string $slug URL path of the page
      * @param array<int, int> $nids IDs of the imported nodes tagged with the term
      * @param array<int, array{term: \stdClass, slug: string}> $translations Translations of the term and their URL paths
      * @return Status Status of the term page
      */
-    protected function importTerm( DrupalTerms $terms, \stdClass $term, string $slug, array $nids, PageView $root, array $translations = [] ): Status
+    protected function importTerm( Drupal\Terms $terms, \stdClass $term, string $slug, array $nids, PageView $root, array $translations = [] ): Status
     {
         $content = $terms->content( $term, $nids );
         $data = $this->pageData( (string) $term->name, $slug, 2 );

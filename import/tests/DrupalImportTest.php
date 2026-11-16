@@ -10,21 +10,9 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Commands\DrupalImport;
 use Aimeos\Cms\Facades\Pages as PageResource;
+use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\Import\Drupal8;
-use Aimeos\Cms\Import\DrupalAccess;
-use Aimeos\Cms\Import\DrupalContent;
-use Aimeos\Cms\Import\DrupalData;
-use Aimeos\Cms\Import\DrupalDomains;
-use Aimeos\Cms\Import\DrupalLanguages;
-use Aimeos\Cms\Import\DrupalLayout;
-use Aimeos\Cms\Import\DrupalPages;
-use Aimeos\Cms\Import\DrupalPrune;
-use Aimeos\Cms\Import\DrupalRedirects;
-use Aimeos\Cms\Import\DrupalSite;
-use Aimeos\Cms\Import\DrupalUrls;
-use Aimeos\Cms\Import\DrupalViews;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Translation\Hashes;
@@ -275,7 +263,7 @@ class DrupalImportTest extends ImportTestAbstract
     public function testEmbedRequiresRenderer(): void
     {
         $embeds = null;
-        $method = new \ReflectionMethod( DrupalContent::class, 'embed' );
+        $method = new \ReflectionMethod( Drupal\Content::class, 'embed' );
         $embed = $method->invokeArgs( null, [&$embeds] );
 
         $this->assertInstanceOf( \Closure::class, $embed );
@@ -879,7 +867,7 @@ class DrupalImportTest extends ImportTestAbstract
 
             public function saved( PageView $page ): bool
             {
-                return isset( $this->saved[DrupalPrune::key( $page->variant_id )] );
+                return isset( $this->saved[Drupal\Prune::key( $page->variant_id )] );
             }
         };
         $command->setOutput( new OutputStyle( new ArrayInput( [] ), new BufferedOutput() ) );
@@ -3004,15 +2992,15 @@ class DrupalImportTest extends ImportTestAbstract
         $titles = [1 => 'Tom & "Jerry" <b>', 2 => "Tab\tbed", 3 => 'Plain', 4 => 'External'];
         $nodes = $this->rows( array_map( fn( $title ) => (object) ['langcode' => 'en', 'title' => $title], $titles ) );
         $paths = [1 => "/a/b?x=1&y=%202&z='a'#top", 2 => '/tab', 3 => '/über uns', 4 => '//example.com/a'];
-        $html = new \Aimeos\Cms\Import\DrupalHtml( fn() => null, fn() => null, fn() => null, fn() => null );
+        $html = new \Aimeos\Cms\Import\Drupal\Html( fn() => null, fn() => null, fn() => null, fn() => null );
 
-        $urls = $this->createStub( DrupalUrls::class );
+        $urls = $this->createStub( Drupal\Urls::class );
         $urls->method( 'node' )->willReturnCallback( fn( int $nid ) => $paths[$nid] );
-        $content = $this->createMock( DrupalContent::class );
+        $content = $this->createMock( Drupal\Content::class );
         $content->expects( $this->exactly( 5 ) )->method( 'html' )->with( 'en' )->willReturn( $html );
 
-        $terms = new \Aimeos\Cms\Import\DrupalTerms( $this->createStub( \Aimeos\Cms\Import\DrupalReader::class ), $this->createStub( DrupalData::class ),
-            $this->createStub( DrupalLanguages::class ), $urls, $content, $nodes, [], fn() => null );
+        $terms = new \Aimeos\Cms\Import\Drupal\Terms( $this->createStub( \Aimeos\Cms\Import\Drupal\Reader::class ), $this->createStub( Drupal\Data::class ),
+            $this->createStub( Drupal\Languages::class ), $urls, $content, $nodes, [], fn() => null );
         $term = (object) ['name' => 'News', 'langcode' => 'en'];
         $list = fn( array $nids ) => '<ul>' . implode( '', array_map( fn( $nid ) => '<li><a href="' . e( $paths[$nid] ) . '">' . e( $titles[$nid] ) . '</a></li>', $nids ) ) . '</ul>';
 
@@ -3036,14 +3024,14 @@ class DrupalImportTest extends ImportTestAbstract
         $nodes = $this->rows( array_map( fn( $nid ) => (object) ['langcode' => 'en', 'title' => "Node {$nid}"], array_combine( range( 1, 5 ), range( 1, 5 ) ) ) );
         $resolved = [];
 
-        $urls = $this->createStub( DrupalUrls::class );
+        $urls = $this->createStub( Drupal\Urls::class );
         $urls->method( 'node' )->willReturnCallback( function( int $nid ) use ( &$resolved ) {
             $resolved[] = $nid;
             return $nid === 2 ? null : "/node-{$nid}";
         } );
 
-        $terms = new class( $this->createStub( \Aimeos\Cms\Import\DrupalReader::class ), $this->createStub( DrupalData::class ),
-            $this->createStub( DrupalLanguages::class ), $urls, $this->createStub( DrupalContent::class ), $nodes, [], fn() => null ) extends \Aimeos\Cms\Import\DrupalTerms {
+        $terms = new class( $this->createStub( \Aimeos\Cms\Import\Drupal\Reader::class ), $this->createStub( Drupal\Data::class ),
+            $this->createStub( Drupal\Languages::class ), $urls, $this->createStub( Drupal\Content::class ), $nodes, [], fn() => null ) extends \Aimeos\Cms\Import\Drupal\Terms {
             protected const LINK_SIZE = 2;
         };
 
@@ -3066,10 +3054,10 @@ class DrupalImportTest extends ImportTestAbstract
             ['path' => '/taxonomy/term/8', 'alias' => '/schlagworte/andere', 'langcode' => 'de'],
         ] );
 
-        $data = new DrupalData( $reader = new Drupal8( $db, fn() => null ) );
-        $languages = new DrupalLanguages( $data, [] );
+        $data = new Drupal\Data( $reader = new Drupal\V8( $db, fn() => null ) );
+        $languages = new Drupal\Languages( $data, [] );
         $nodes = $this->rows( [1 => (object) ['nid' => 1], 2 => (object) ['nid' => 2]] );
-        $urls = new DrupalUrls( $reader, $data, $languages, 'en', $nodes, [], fn() => null );
+        $urls = new Drupal\Urls( $reader, $data, $languages, 'en', $nodes, [], fn() => null );
 
         // the newest alias of each language wins, language neutral aliases are used for all languages
         $this->assertSame( '/about-us', $urls->alias( 1, 'en' ) );
@@ -3088,8 +3076,8 @@ class DrupalImportTest extends ImportTestAbstract
             $table->boolean( 'default_langcode' )->default( true );
         } );
         $db->table( 'taxonomy_term_field_data' )->insert( [['tid' => 7, 'vid' => 'tags'], ['tid' => 8, 'vid' => 'tags'], ['tid' => 9, 'vid' => 'tags']] );
-        $data = new DrupalData( $reader = new Drupal8( $db, fn() => null ) );
-        $urls = new DrupalUrls( $reader, $data, new DrupalLanguages( $data, [] ), 'en', Collection::make(), [], fn() => null, '', ['tags'] );
+        $data = new Drupal\Data( $reader = new Drupal\V8( $db, fn() => null ) );
+        $urls = new Drupal\Urls( $reader, $data, new Drupal\Languages( $data, [] ), 'en', Collection::make(), [], fn() => null, '', ['tags'] );
 
         $this->assertSame( '/tags/news', $urls->termAlias( 7, 'en' ) );
         $this->assertNull( $urls->termAlias( 8, 'en' ) );
@@ -3103,19 +3091,19 @@ class DrupalImportTest extends ImportTestAbstract
         $rows = [[7, 1], [8, 1], [7, 99], [7, 2], [7, 3], [8, 2], [7, 4]];
         $consumed = 0;
 
-        $reader = $this->createMock( \Aimeos\Cms\Import\DrupalReader::class );
+        $reader = $this->createMock( \Aimeos\Cms\Import\Drupal\Reader::class );
         $reader->expects( $this->once() )->method( 'termIndex' )->with( [7, 8], 2 )->willReturn( LazyCollection::make( function() use ( $rows, &$consumed ) {
             foreach( $rows as [$tid, $nid] ) {
                 $consumed++;
                 yield (object) ['tid' => $tid, 'nid' => $nid];
             }
         } ) );
-        $data = $this->createStub( DrupalData::class );
+        $data = $this->createStub( Drupal\Data::class );
         $data->method( 'hasTable' )->willReturn( true );
         $nodes = $this->rows( array_map( fn( $nid ) => (object) ['nid' => $nid], array_combine( range( 1, 4 ), range( 1, 4 ) ) ) );
 
-        $terms = new class( $reader, $data, $this->createStub( DrupalLanguages::class ), $this->createStub( DrupalUrls::class ),
-            $this->createStub( DrupalContent::class ), $nodes, [], fn() => null ) extends \Aimeos\Cms\Import\DrupalTerms {
+        $terms = new class( $reader, $data, $this->createStub( Drupal\Languages::class ), $this->createStub( Drupal\Urls::class ),
+            $this->createStub( Drupal\Content::class ), $nodes, [], fn() => null ) extends \Aimeos\Cms\Import\Drupal\Terms {
             protected const INDEX_SIZE = 2;
 
             /**
@@ -3146,7 +3134,7 @@ class DrupalImportTest extends ImportTestAbstract
             ['nid' => 4, 'tid' => 7, 'sticky' => 0, 'created' => 200],
             ['nid' => 5, 'tid' => 8, 'sticky' => 0, 'created' => 100],
         ] );
-        $reader = new Drupal8( $db, fn() => null );
+        $reader = new Drupal\V8( $db, fn() => null );
         $rows = fn( ?int $limit ) => $reader->termIndex( [7, 8, 7], $limit )->map( fn( $row ) => [(int) $row->tid, (int) $row->nid] )->values()->all();
 
         // only the newest rows of each term are fetched in the order of the term pages
@@ -3468,7 +3456,7 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testSiteHosts(): void
     {
-        $site = new DrupalSite( 'http://www.drupal.test:8080/sites/default/files', 'example.com', ['example.de'] );
+        $site = new Drupal\Site( 'http://www.drupal.test:8080/sites/default/files', 'example.com', ['example.de'] );
 
         // host names with and without "www." and with port are the same site
         $this->assertTrue( $site->host( 'drupal.test' ) );
@@ -3491,7 +3479,7 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testSiteUrls(): void
     {
-        $site = new DrupalSite( 'http://drupal.test:8080/drupal/sites/default/files', 'example.com' );
+        $site = new Drupal\Site( 'http://drupal.test:8080/drupal/sites/default/files', 'example.com' );
 
         $this->assertSame( 'http://drupal.test:8080', $site->origin() );
         $this->assertSame( 'http://drupal.test:8080/drupal', $site->base() );
@@ -3507,8 +3495,8 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( 'http://drupal.test:8080/drupal/sites/default/files/x.png', $site->image( 'x.png' ) );
 
         // without "/sites/" in the file base, the origin is the base
-        $this->assertSame( 'https://drupal.test', ( new DrupalSite( 'https://drupal.test/files', '' ) )->base() );
-        $this->assertSame( '', ( new DrupalSite( 'files', '' ) )->base() );
+        $this->assertSame( 'https://drupal.test', ( new Drupal\Site( 'https://drupal.test/files', '' ) )->base() );
+        $this->assertSame( '', ( new Drupal\Site( 'files', '' ) )->base() );
     }
 
 
@@ -3528,10 +3516,10 @@ class DrupalImportTest extends ImportTestAbstract
             ['redirect_source__path' => 'node/2', 'redirect_redirect__uri' => 'internal:/other'],
         ] );
 
-        $data = new DrupalData( $reader = new Drupal8( $db, fn() => null ) );
-        $languages = new DrupalLanguages( $data, [] );
-        $urls = new DrupalUrls( $reader, $data, $languages, 'en', Collection::make(), [], fn() => null );
-        $redirects = new DrupalRedirects( $reader, $data, $languages, $urls, Collection::make() );
+        $data = new Drupal\Data( $reader = new Drupal\V8( $db, fn() => null ) );
+        $languages = new Drupal\Languages( $data, [] );
+        $urls = new Drupal\Urls( $reader, $data, $languages, 'en', Collection::make(), [], fn() => null );
+        $redirects = new Drupal\Redirects( $reader, $data, $languages, $urls, Collection::make() );
 
         $all = $redirects->all( $this->paths( [1 => 'about'] ), [1], true );
 
@@ -3549,10 +3537,10 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testRedirectsTargetOfPages(): void
     {
-        $data = new DrupalData( $reader = new Drupal8( DB::connection( 'drupal' ), fn() => null ) );
-        $languages = new DrupalLanguages( $data, [] );
-        $urls = new DrupalUrls( $reader, $data, $languages, 'en', Collection::make(), [], fn() => null );
-        $redirects = new DrupalRedirects( $reader, $data, $languages, $urls, Collection::make() );
+        $data = new Drupal\Data( $reader = new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) );
+        $languages = new Drupal\Languages( $data, [] );
+        $urls = new Drupal\Urls( $reader, $data, $languages, 'en', Collection::make(), [], fn() => null );
+        $redirects = new Drupal\Redirects( $reader, $data, $languages, $urls, Collection::make() );
         $pages = $this->paths( [42 => 'about'] );
 
         // node targets only resolve to the pages passed
@@ -3583,8 +3571,8 @@ class DrupalImportTest extends ImportTestAbstract
             2 => (object) ['nid' => 2, 'title' => 'Team', 'langcode' => 'en', 'type' => 'page'],
             3 => (object) ['nid' => 3, 'title' => 'Contact', 'langcode' => 'en', 'type' => 'page'],
         ] );
-        $data = new DrupalData( $reader = new Drupal8( $db, fn() => null ) );
-        $urls = new DrupalUrls( $reader, $data, new DrupalLanguages( $data, [] ), 'en', $nodes, [], fn() => null );
+        $data = new Drupal\Data( $reader = new Drupal\V8( $db, fn() => null ) );
+        $urls = new Drupal\Urls( $reader, $data, new Drupal\Languages( $data, [] ), 'en', $nodes, [], fn() => null );
 
         // the newest alias of the language wins, then the one without language and of any language if allowed
         $this->assertSame( '/about-us', $urls->alias( 1, 'en' ) );
@@ -3600,7 +3588,7 @@ class DrupalImportTest extends ImportTestAbstract
 
         // only the alias strings of the first records per language are kept
         $this->assertSame( [3 => ['de' => '/kontakt'], 1 => ['zxx' => '/neutral', 'en' => '/about-us', 'de' => '/ueber-uns']],
-            ( new \ReflectionProperty( DrupalUrls::class, 'aliases' ) )->getValue( $urls ) );
+            ( new \ReflectionProperty( Drupal\Urls::class, 'aliases' ) )->getValue( $urls ) );
     }
 
 
@@ -3615,9 +3603,9 @@ class DrupalImportTest extends ImportTestAbstract
         ] );
 
         $nodes = $this->rows( array_map( fn( $nid ) => (object) ['nid' => $nid, 'title' => "Node {$nid}", 'langcode' => 'en', 'type' => 'page'], array_combine( range( 1, 6 ), range( 1, 6 ) ) ) );
-        $data = new DrupalData( $reader = new Drupal8( $db, fn() => null ) );
-        $urls = new DrupalUrls( $reader, $data, new DrupalLanguages( $data, [] ), 'en', $nodes, [], fn() => 4 );
-        $placements = new \Aimeos\Cms\Import\DrupalPlacements( $data, $urls, '', '', fn() => null, fn() => null );
+        $data = new Drupal\Data( $reader = new Drupal\V8( $db, fn() => null ) );
+        $urls = new Drupal\Urls( $reader, $data, new Drupal\Languages( $data, [] ), 'en', $nodes, [], fn() => 4 );
+        $placements = new \Aimeos\Cms\Import\Drupal\Placements( $data, $urls, '', '', fn() => null, fn() => null );
 
         $block = ['key' => 'promo', 'visibility' => ['request_path' => ['id' => 'request_path', 'pages' => "/TEAM\r\n\n/blog/*\n<front>\n/node/5"]]];
         $visible = array_filter( range( 1, 6 ), fn( $nid ) => $placements->visible( $block, $nodes->get( $nid ), 'en' ) );
@@ -3625,7 +3613,7 @@ class DrupalImportTest extends ImportTestAbstract
         // patterns match case-insensitively with wildcards, the front page and the system paths
         $this->assertSame( [2, 3, 4, 5], array_values( $visible ) );
         // the patterns are compiled once for all pages
-        $this->assertSame( ["/TEAM\r\n\n/blog/*\n<front>\n/node/5"], array_keys( ( new \ReflectionProperty( \Aimeos\Cms\Import\DrupalPlacements::class, 'patterns' ) )->getValue( $placements ) ) );
+        $this->assertSame( ["/TEAM\r\n\n/blog/*\n<front>\n/node/5"], array_keys( ( new \ReflectionProperty( \Aimeos\Cms\Import\Drupal\Placements::class, 'patterns' ) )->getValue( $placements ) ) );
     }
 
 
@@ -3638,7 +3626,7 @@ class DrupalImportTest extends ImportTestAbstract
             ['entity_id' => 4, 'langcode' => 'en', 'body_value' => 'Four'],
         ] );
 
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         $data->sequence( [1, 2, 3, 4], fn( int $nid ) => $nid === 3 );
         $value = fn( int $nid ) => $data->fieldValues( 'node', 'body', $nid, 'en' )->first()->body_value ?? null;
         $queries = fn() => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )->count();
@@ -3679,7 +3667,7 @@ class DrupalImportTest extends ImportTestAbstract
             ['entity_id' => 3, 'langcode' => 'en', 'body_value' => 'Three'],
         ] );
 
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         $data->sequence( [1, 2, 3, 4, 5], null, [1 => 'page', 2 => 'article', 3 => 'page', 4 => 'article', 5 => 'blog'] );
         $value = fn( int $nid ) => $data->fieldValues( 'node', 'body', $nid, 'en' )->first()->body_value ?? null;
         $queries = fn() => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "node__body"' ) )
@@ -3696,7 +3684,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->assertSame( [[0, 1, 3, 5], [0, 2, 4]], $queries() );
 
         // rendered nodes, e.g. embedded ones, are fetched alone
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         $data->sequence( [1, 2, 3, 4, 5] );
         $data->forget( 2 );
         $this->assertSame( 'Two', $data->fieldValues( 'node', 'body', 2, 'en' )->first()->body_value ?? null );
@@ -3722,7 +3710,7 @@ class DrupalImportTest extends ImportTestAbstract
         $db = DB::connection( 'drupal' );
         $db->table( 'media__field_media_image' )->insert( ['entity_id' => 601, 'langcode' => 'en', 'field_media_image_target_id' => 7] );
 
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         $ids = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
             ->map( fn( $query ) => count( $query['bindings'] ) - 1 )->values()->all();
 
@@ -3762,7 +3750,7 @@ class DrupalImportTest extends ImportTestAbstract
         }
 
         $db = DB::connection( 'drupal' );
-        $data = new class( new Drupal8( $db, fn() => null ) ) extends DrupalData {
+        $data = new class( new Drupal\V8( $db, fn() => null ) ) extends Drupal\Data {
             protected const CACHE_SIZE = 4;
         };
         $ids = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
@@ -3797,7 +3785,7 @@ class DrupalImportTest extends ImportTestAbstract
         $this->createBlockTables();
         $db->table( 'block_content__body' )->insert( array_map( fn( $id ) => ['entity_id' => $id, 'langcode' => 'en', 'body_value' => "<p>Block {$id}</p>"], range( 1, 5 ) ) );
 
-        $data = new class( new Drupal8( $db, fn() => null ) ) extends DrupalData {
+        $data = new class( new Drupal\V8( $db, fn() => null ) ) extends Drupal\Data {
             protected const CACHE_SIZE = 4;
         };
         $queries = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )->count();
@@ -3878,7 +3866,7 @@ class DrupalImportTest extends ImportTestAbstract
         $db->table( 'paragraphs_item_field_data' )->insert( array_map( fn( $id ) => ['id' => $id, 'type' => 'text', 'langcode' => 'en'], [1, 2, 3, 4] ) );
         $db->table( 'paragraph__field_text' )->insert( array_map( fn( $id ) => ['entity_id' => $id, 'langcode' => 'en', 'field_text_value' => "Text {$id}"], [1, 2, 3, 4] ) );
 
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         $data->sequence( [1, 2] );
         $text = fn( int $id ) => $data->fieldValues( 'paragraph', 'field_text', $id, 'en' )->first()->field_text_value ?? null;
         $queries = fn( string $table ) => $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], "from \"{$table}\"" ) )
@@ -3926,8 +3914,8 @@ class DrupalImportTest extends ImportTestAbstract
         // more IDs than the database allows in one query
         $many = array_map( fn( $num ) => 'id-' . $num, range( 1, 40000 ) );
 
-        $prune = new DrupalPrune( 'importer', fn() => null );
-        $variants = $prune->stale( ['example.com'], array_fill_keys( array_map( DrupalPrune::key( ... ), [...$many, (string) $saved->variant_id] ), true ) );
+        $prune = new Drupal\Prune( 'importer', fn() => null );
+        $variants = $prune->stale( ['example.com'], array_fill_keys( array_map( Drupal\Prune::key( ... ), [...$many, (string) $saved->variant_id] ), true ) );
         $elements = $prune->elements( ['example.com'], [...$many, (string) $used->id], false );
 
         $this->assertSame( [(string) $stale->variant_id], $variants->pluck( 'id' )->map( strval( ... ) )->all() );
@@ -4651,7 +4639,7 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testLayoutComponentsOrder(): void
     {
-        $layout = new DrupalLayout( new DrupalData( new Drupal8( DB::connection( 'drupal' ), fn() => null ) ) );
+        $layout = new Drupal\Layout( new Drupal\Data( new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) ) );
         $components = $layout->components( [
             ['components' => [
                 'a' => ['uuid' => 'a', 'region' => 'second', 'weight' => -5],
@@ -4684,7 +4672,7 @@ class DrupalImportTest extends ImportTestAbstract
             ['name' => 'views.view.frontpage', 'data' => $view( 'Front', 'node' )],
         ] );
 
-        $views = new DrupalViews( new DrupalData( new Drupal8( DB::connection( 'drupal' ), fn() => null ) ) );
+        $views = new Drupal\Views( new Drupal\Data( new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) ) );
         $news = ['id' => 'news', 'display' => 'page_1', 'label' => 'News', 'path' => 'news'];
 
         $this->assertSame( ['events', 'news'], array_keys( $views->all() ) );
@@ -4701,7 +4689,7 @@ class DrupalImportTest extends ImportTestAbstract
         $other = Pages::create( ['name' => 'About', 'path' => 'about', 'domain' => 'example.org'], [] );
         $slashed->page->delete();
 
-        $pages = new DrupalPages( 'example.com' );
+        $pages = new Drupal\Pages( 'example.com' );
 
         $this->assertSame( $page->id, $pages->path( '/about/' )?->id );
         $this->assertSame( $other->id, $pages->path( 'about', 'example.org' )?->id );
@@ -4725,8 +4713,8 @@ class DrupalImportTest extends ImportTestAbstract
             ['path' => '/node/1', 'alias' => '/ueber', 'langcode' => 'de'],
         ] );
 
-        $data = new DrupalData( $reader = new Drupal8( DB::connection( 'drupal' ), fn() => null ) );
-        $languages = new DrupalLanguages( $data, ['fr' => ['lang' => 'fr', 'domain' => 'example.fr'], 'it' => null, 'es' => ['lang' => 'es', 'domain' => 'example.fr']] );
+        $data = new Drupal\Data( $reader = new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) );
+        $languages = new Drupal\Languages( $data, ['fr' => ['lang' => 'fr', 'domain' => 'example.fr'], 'it' => null, 'es' => ['lang' => 'es', 'domain' => 'example.fr']] );
 
         $this->assertSame( ['example.fr'], $languages->domains() );
         $this->assertSame( 'de', $languages->language( 'de' )['lang'] ?? null );
@@ -4744,7 +4732,7 @@ class DrupalImportTest extends ImportTestAbstract
         ] );
         $translations = [1 => ['de' => 'Über']];
         $front = null;
-        $urls = new DrupalUrls( $reader, $data, $languages, 'en', $nodes, $translations, function() use ( &$front ): ?int {
+        $urls = new Drupal\Urls( $reader, $data, $languages, 'en', $nodes, $translations, function() use ( &$front ): ?int {
             return $front;
         } );
 
@@ -4768,8 +4756,8 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testDomainAccessHostnames(): void
     {
-        $data = new DrupalData( new Drupal8( DB::connection( 'drupal' ), fn() => null ) );
-        $domains = new DrupalDomains( $data );
+        $data = new Drupal\Data( new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) );
+        $domains = new Drupal\Domains( $data );
 
         $this->assertFalse( $domains->used() );
 
@@ -4790,8 +4778,8 @@ class DrupalImportTest extends ImportTestAbstract
             ['name' => 'domain.record.site_b', 'data' => serialize( ['id' => 'site_b'] )],
         ] );
 
-        $data = new DrupalData( new Drupal8( DB::connection( 'drupal' ), fn() => null ) );
-        $domains = new DrupalDomains( $data );
+        $data = new Drupal\Data( new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) );
+        $domains = new Drupal\Domains( $data );
 
         $this->assertTrue( $domains->used() );
         $this->assertSame( 'a.example.com', $domains->hostname( 'site_a' ) );
@@ -4819,23 +4807,23 @@ class DrupalImportTest extends ImportTestAbstract
         $bin = pack( 'H*', '0190a5b2c3d47e8f9a0b1c2d3e4f5a6b' );
 
         // UUIDs are packed into 16 bytes with or without dashes in any case
-        $this->assertSame( 16, strlen( DrupalPrune::key( '0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b' ) ) );
-        $this->assertSame( $bin, DrupalPrune::key( '0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b' ) );
-        $this->assertSame( $bin, DrupalPrune::key( '0190A5B2-C3D4-7E8F-9A0B-1C2D3E4F5A6B' ) );
-        $this->assertSame( $bin, DrupalPrune::key( '0190a5b2c3d47e8f9a0b1c2d3e4f5a6b' ) );
+        $this->assertSame( 16, strlen( Drupal\Prune::key( '0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b' ) ) );
+        $this->assertSame( $bin, Drupal\Prune::key( '0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6b' ) );
+        $this->assertSame( $bin, Drupal\Prune::key( '0190A5B2-C3D4-7E8F-9A0B-1C2D3E4F5A6B' ) );
+        $this->assertSame( $bin, Drupal\Prune::key( '0190a5b2c3d47e8f9a0b1c2d3e4f5a6b' ) );
 
         // other IDs are prefixed and never collide with packed UUIDs
-        $this->assertSame( '#42', DrupalPrune::key( '42' ) );
-        $this->assertSame( '#0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6g', DrupalPrune::key( '0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6g' ) );
-        $this->assertSame( '#0190a5b2c3d47e8f9a0b1c2d3e4f5a6', DrupalPrune::key( '0190a5b2c3d47e8f9a0b1c2d3e4f5a6' ) );
-        $this->assertSame( '#' . $bin, DrupalPrune::key( $bin ) );
+        $this->assertSame( '#42', Drupal\Prune::key( '42' ) );
+        $this->assertSame( '#0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6g', Drupal\Prune::key( '0190a5b2-c3d4-7e8f-9a0b-1c2d3e4f5a6g' ) );
+        $this->assertSame( '#0190a5b2c3d47e8f9a0b1c2d3e4f5a6', Drupal\Prune::key( '0190a5b2c3d47e8f9a0b1c2d3e4f5a6' ) );
+        $this->assertSame( '#' . $bin, Drupal\Prune::key( $bin ) );
 
         // the saved variants are compared by their keys
         $data = fn( string $name ) => ['name' => $name, 'title' => $name, 'path' => strtolower( $name ), 'domain' => 'example.com', 'lang' => 'en', 'status' => 1, 'editor' => 'importer'];
         $saved = Pages::create( $data( 'Saved' ), [] );
         $stale = Pages::create( $data( 'Stale' ), [] );
 
-        $variants = ( new DrupalPrune( 'importer', fn() => null ) )->stale( ['example.com'], [DrupalPrune::key( strtoupper( (string) $saved->variant_id ) ) => true] );
+        $variants = ( new Drupal\Prune( 'importer', fn() => null ) )->stale( ['example.com'], [Drupal\Prune::key( strtoupper( (string) $saved->variant_id ) ) => true] );
         $this->assertSame( [(string) $stale->variant_id], $variants->pluck( 'id' )->map( strval( ... ) )->all() );
     }
 
@@ -4852,7 +4840,7 @@ class DrupalImportTest extends ImportTestAbstract
             ['fid' => 4, 'uuid' => 'uuid-4', 'filename' => 'd.png', 'filemime' => 'image/png', 'uri' => 'public://d.png', 'status' => 0],
         ] );
 
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         $files = function() use ( $db ): Collection {
             $queries = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], ' from "file_managed" where "status" = ?' ) );
             $db->flushQueryLog();
@@ -4898,7 +4886,7 @@ class DrupalImportTest extends ImportTestAbstract
             $db->table( 'node_revision__body' )->insert( ['entity_id' => $nid, 'revision_id' => 10 + $nid, 'langcode' => 'en', 'body_value' => "<p>Draft {$nid}</p>"] );
         }
 
-        $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+        $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
         // returns the revision IDs fetched by each query to get the draft text
         $body = function( int $vid ) use ( $db, &$data ): array {
             $db->flushQueryLog();
@@ -4908,7 +4896,7 @@ class DrupalImportTest extends ImportTestAbstract
                 ->map( fn( $query ) => array_values( array_filter( $query['bindings'], fn( $value ) => $value > 10 ) ) )->values()->all();
         };
         $init = function( array $sequence, array $drafts ) use ( $db, &$data ) {
-            $data = new DrupalData( new Drupal8( $db, fn() => null ) );
+            $data = new Drupal\Data( new Drupal\V8( $db, fn() => null ) );
             $data->sequence( $sequence );
             $data->drafts( $drafts );
         };
@@ -5056,8 +5044,8 @@ class DrupalImportTest extends ImportTestAbstract
             ['version_id' => $published->id, 'file_id' => $files['published']],
         ] );
 
-        $prune = new DrupalPrune( 'importer', fn() => null );
-        $variants = $prune->stale( ['example.com'], [DrupalPrune::key( (string) $kept->variant_id ) => true] );
+        $prune = new Drupal\Prune( 'importer', fn() => null );
+        $variants = $prune->stale( ['example.com'], [Drupal\Prune::key( (string) $kept->variant_id ) => true] );
 
         $db->enableQueryLog();
         $trash = $prune->trashable( $variants, Collection::make(), [], 0 );
@@ -5081,7 +5069,7 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testEmbeddingWithManyUuids(): void
     {
-        $reader = new class( DB::connection( 'drupal' ), fn() => null ) extends Drupal8 {
+        $reader = new class( DB::connection( 'drupal' ), fn() => null ) extends Drupal\V8 {
             /**
              * @param array<int, string> $uuids
              * @return array<int, mixed>
@@ -5113,7 +5101,7 @@ class DrupalImportTest extends ImportTestAbstract
 
     public function testEmbeddingReadsTextsOfFewEntitiesAtOnce(): void
     {
-        $reader = new class( DB::connection( 'drupal' ), fn() => null ) extends Drupal8 {
+        $reader = new class( DB::connection( 'drupal' ), fn() => null ) extends Drupal\V8 {
             protected const TEXT_SIZE = 2;
 
             /**
@@ -5200,9 +5188,9 @@ class DrupalImportTest extends ImportTestAbstract
                 return parent::known( $values );
             }
         };
-        $reader = new Drupal8( $db, fn() => null );
+        $reader = new Drupal\V8( $db, fn() => null );
         // the grants of the node and the next one are fetched together
-        $access = new DrupalAccess( $reader, new DrupalData( $reader ), $known, [], fn( int $nid ) => array_values( array_filter( [$nid, $nid + 1], fn( $id ) => $id <= 5 ) ),
+        $access = new Drupal\Access( $reader, new Drupal\Data( $reader ), $known, [], fn( int $nid ) => array_values( array_filter( [$nid, $nid + 1], fn( $id ) => $id <= 5 ) ),
             fn() => null, fn() => null, fn() => null );
 
         $db->enableQueryLog();
@@ -5301,7 +5289,7 @@ class DrupalImportTest extends ImportTestAbstract
         ] );
 
         $db->enableQueryLog();
-        $nids = ( new Drupal8( $db, fn() => null ) )->referencing( 2000, ['node__field_blocks' => ['node', 'field_blocks', 'block_content']] );
+        $nids = ( new Drupal\V8( $db, fn() => null ) )->referencing( 2000, ['node__field_blocks' => ['node', 'field_blocks', 'block_content']] );
         $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 

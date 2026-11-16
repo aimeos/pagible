@@ -7,31 +7,21 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Commands;
 use Aimeos\Cms\Concerns\Joomla\ImportsJoomla;
 use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaArticles;
 use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaHome;
 use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaMenu;
 use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaVanished;
 use Aimeos\Cms\Import\Files;
-use Aimeos\Cms\Import\JoomlaArticles;
-use Aimeos\Cms\Import\JoomlaCategoryTree;
-use Aimeos\Cms\Import\JoomlaChunks;
-use Aimeos\Cms\Import\JoomlaDate;
-use Aimeos\Cms\Import\JoomlaHost;
-use Aimeos\Cms\Import\JoomlaImage;
-use Aimeos\Cms\Import\JoomlaMenuItem;
-use Aimeos\Cms\Import\JoomlaMenuLink;
-use Aimeos\Cms\Import\JoomlaOrigin;
-use Aimeos\Cms\Import\JoomlaReader;
-use Aimeos\Cms\Import\JoomlaRow;
-use Aimeos\Cms\Import\JoomlaWiring;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 
-class JoomlaImport extends BaseImport
+class JoomlaImport extends Commands
 {
     use ImportsJoomla;
     use ImportsJoomlaArticles;
@@ -86,13 +76,13 @@ class JoomlaImport extends BaseImport
         }
 
         // base URLs without scheme would be relative paths of the files and couldn't recognize the URLs of the site
-        if( ( $fileBase = JoomlaOrigin::baseUrl( $this->fileBase ) ) !== $this->fileBase )
+        if( ( $fileBase = Joomla\Origin::baseUrl( $this->fileBase ) ) !== $this->fileBase )
         {
             $this->warn( "Using {$fileBase} for --file-base without scheme." );
             $this->fileBase = $fileBase;
         }
 
-        $host = new JoomlaHost(
+        $host = new Joomla\Host(
             warn: $this->warn( ... ),
             warnOnce: fn( string $msg ) => $this->warnOnce( $msg, $msg ),
             // texts, tags and field values of articles which weren't prefetched are only reported in the debug output
@@ -101,9 +91,9 @@ class JoomlaImport extends BaseImport
             pageData: $this->pageData( ... ),
             timezone: $timezone
         );
-        $reader = new JoomlaReader( DB::connection( $this->connection ), $this->stringOption( 'prefix' ), $host->warn );
-        $origin = new JoomlaOrigin( $this->domain, $this->fileBase, !empty( $this->option( 'suffix' ) ) );
-        $this->wiring = JoomlaWiring::read( $reader, $host, $origin, $this->stringOption( 'menu' ), (array) $this->option( 'language' ), $this->lang );
+        $reader = new Joomla\Reader( DB::connection( $this->connection ), $this->stringOption( 'prefix' ), $host->warn );
+        $origin = new Joomla\Origin( $this->domain, $this->fileBase, !empty( $this->option( 'suffix' ) ) );
+        $this->wiring = Joomla\Wiring::read( $reader, $host, $origin, $this->stringOption( 'menu' ), (array) $this->option( 'language' ), $this->lang );
 
         $articles = $this->wiring->articles( $this->since !== null );
 
@@ -200,7 +190,7 @@ class JoomlaImport extends BaseImport
     protected function timezoneOption(): ?\DateTimeZone
     {
         try {
-            return new \DateTimeZone( $this->stringOption( 'timezone' ) ?: JoomlaDate::TIMEZONE );
+            return new \DateTimeZone( $this->stringOption( 'timezone' ) ?: Joomla\Date::TIMEZONE );
         } catch( \Exception ) {
             $this->error( 'Invalid time zone for --timezone: ' . $this->stringOption( 'timezone' ) );
             return null;
@@ -218,7 +208,7 @@ class JoomlaImport extends BaseImport
     protected function imageFile( string $path, string $alt ): ?string
     {
         // the article, category, field and HTML images are all imported here, so the suffix is removed in one place
-        if( ( $path = JoomlaImage::path( $path ) ) === '' ) {
+        if( ( $path = Joomla\Image::path( $path ) ) === '' ) {
             return null;
         }
 
@@ -246,7 +236,7 @@ class JoomlaImport extends BaseImport
         }
 
         // the articles and menu items are split into chunks whose texts are fetched at once
-        $chunks = new JoomlaChunks( $articles->translations, static::TEXT_SIZE );
+        $chunks = new Joomla\Chunks( $articles->translations, static::TEXT_SIZE );
         $this->importMenu( $root, $chunks, $homeImported );
 
         $order = $this->articleOrder( $this->wiring->site->categories, $articles->categoryIds );
@@ -278,11 +268,11 @@ class JoomlaImport extends BaseImport
      * The article of the root page is rendered in every run, so the articles of the home menu items of the other languages
      * shown by the variants of the root page aren't included.
      *
-     * @param JoomlaArticles $articles Imported articles with the modification times of the articles and translations
+     * @param Joomla\Articles $articles Imported articles with the modification times of the articles and translations
      * @param array<int|string, int> $scheduled Publishing dates passed since the --since date by article ID, see scheduledTimes()
      * @return array<int|string, int> Latest modification times by article ID, unknown ones are the newest
      */
-    protected function changedTimes( JoomlaArticles $articles, array $scheduled = [] ): array
+    protected function changedTimes( Joomla\Articles $articles, array $scheduled = [] ): array
     {
         $changed = [];
         $times = $articles->times;
@@ -319,12 +309,12 @@ class JoomlaImport extends BaseImport
      * articles. The dates of other menu items like URLs or aliases aren't used, pages whose URL path changed
      * because of them aren't found by their previous path and are rendered anyway.
      *
-     * @param JoomlaReader $reader Reader for the Joomla database
+     * @param Joomla\Reader $reader Reader for the Joomla database
      * @param int $since Timestamp of the --since date
-     * @param JoomlaArticles $articles Imported articles and translations whose categories are checked
+     * @param Joomla\Articles $articles Imported articles and translations whose categories are checked
      * @return array<int|string, int> Latest passed publishing or category modification date as timestamp by article ID
      */
-    protected function scheduledTimes( JoomlaReader $reader, int $since, JoomlaArticles $articles ): array
+    protected function scheduledTimes( Joomla\Reader $reader, int $since, Joomla\Articles $articles ): array
     {
         // the same time as used by the access checks of the articles and menu items
         $now = $this->wiring->site->access->now;
@@ -338,7 +328,7 @@ class JoomlaImport extends BaseImport
 
             foreach( [$item->publish_up ?? null, $item->publish_down ?? null] as $date )
             {
-                if( ( $time = JoomlaDate::time( $date ) ) !== null && $time >= $since && $time <= $now ) {
+                if( ( $time = Joomla\Date::time( $date ) ) !== null && $time >= $since && $time <= $now ) {
                     $latest = max( $latest ?? $time, $time );
                 }
             }
@@ -347,9 +337,9 @@ class JoomlaImport extends BaseImport
                 continue;
             }
 
-            if( ( $id = JoomlaMenuItem::article( $item ) ) !== null ) {
+            if( ( $id = Joomla\MenuItem::article( $item ) ) !== null ) {
                 $times[$id] = max( $times[$id] ?? $latest, $latest );
-            } elseif( ( $catId = JoomlaMenuItem::category( $item ) ) !== null ) {
+            } elseif( ( $catId = Joomla\MenuItem::category( $item ) ) !== null ) {
                 $categoryTimes[$catId] = max( $categoryTimes[$catId] ?? $latest, $latest );
             }
         }
@@ -363,7 +353,7 @@ class JoomlaImport extends BaseImport
 
         foreach( $this->wiring->site->categories->keys() as $catId )
         {
-            $lineage = JoomlaCategoryTree::lineage( $this->wiring->site->categories, (int) $catId )->categories;
+            $lineage = Joomla\CategoryTree::lineage( $this->wiring->site->categories, (int) $catId )->categories;
 
             if( ( $time = max( [0, ...array_intersect_key( $categoryTimes, $lineage )] ) ) > 0 ) {
                 $latest[$catId] = $time;
@@ -399,7 +389,7 @@ class JoomlaImport extends BaseImport
 
         foreach( $this->wiring->site->categories as $catId => $category )
         {
-            if( ( $time = JoomlaDate::time( $category->modified_time ?? null ) ) !== null && $time >= $since && $time <= $now ) {
+            if( ( $time = Joomla\Date::time( $category->modified_time ?? null ) ) !== null && $time >= $since && $time <= $now ) {
                 $times[$catId] = $time;
             }
         }
@@ -523,7 +513,7 @@ class JoomlaImport extends BaseImport
      */
     protected function otherHomeArticles(): array
     {
-        $ids = array_map( JoomlaMenuItem::article( ... ), $this->wiring->homes->otherHomes() );
+        $ids = array_map( Joomla\MenuItem::article( ... ), $this->wiring->homes->otherHomes() );
         return array_values( array_filter( $ids, fn( $id ) => $id !== null && isset( $this->run->articles->visible[$id] ) ) );
     }
 
@@ -619,7 +609,7 @@ class JoomlaImport extends BaseImport
      */
     protected function tryImportArticle( \stdClass $article, PageView $parent ): ?PageView
     {
-        $page = $this->transaction( JoomlaRow::label( $article ), fn() => $this->importArticle( $article, $parent ) );
+        $page = $this->transaction( Joomla\Row::label( $article ), fn() => $this->importArticle( $article, $parent ) );
 
         if( $page === null ) {
             $this->run->markHandled( $article->id );
@@ -637,10 +627,10 @@ class JoomlaImport extends BaseImport
      * The root page is read but not created and the same decisions are made as by an import using the same chunks
      * and prefetchArticles(), only the texts of the articles aren't fetched.
      *
-     * @param JoomlaReader $reader Reader for the Joomla database
-     * @param JoomlaArticles $articles Imported articles in the order Joomla uses
+     * @param Joomla\Reader $reader Reader for the Joomla database
+     * @param Joomla\Articles $articles Imported articles in the order Joomla uses
      */
-    protected function printDryRun( JoomlaReader $reader, JoomlaArticles $articles ): void
+    protected function printDryRun( Joomla\Reader $reader, Joomla\Articles $articles ): void
     {
         // an import creates the root page if there's none, so the article of the home menu item is imported into it
         $root = Pages::root( $this->domain );
@@ -650,7 +640,7 @@ class JoomlaImport extends BaseImport
             : [];
 
         // the articles are listed in the order the import uses and fetched in the same chunks by the same prefetch as by importContent()
-        $chunks = new JoomlaChunks( $articles->translations, static::TEXT_SIZE );
+        $chunks = new Joomla\Chunks( $articles->translations, static::TEXT_SIZE );
         $kept = [];
 
         foreach( $chunks->articles( $this->articleOrder( $this->wiring->site->categories, $articles->categoryIds ) ) as $chunk )
@@ -670,7 +660,7 @@ class JoomlaImport extends BaseImport
                 if( !$this->run->home->isArticle( $id ) && ( $article = $this->run->row( $id ) ) )
                 {
                     $featured = !empty( $article->featured ) ? ' [featured]' : '';
-                    $this->line( '  ' . JoomlaRow::label( $article ) . ' (' . JoomlaRow::aliasOrSlug( $article ) . "){$featured}" );
+                    $this->line( '  ' . Joomla\Row::label( $article ) . ' (' . Joomla\Row::aliasOrSlug( $article ) . "){$featured}" );
                 }
             }
         }
@@ -680,7 +670,7 @@ class JoomlaImport extends BaseImport
         $homeRoot = $home ? $this->updatesHomeRoot( $home, !$root || $this->isImported( $root ) ) : null;
 
         if( $home && $homeRoot ) {
-            $this->line( '  Menu item ' . JoomlaRow::label( $home ) . ' (root page)' );
+            $this->line( '  Menu item ' . Joomla\Row::label( $home ) . ' (root page)' );
         }
 
         // menu items linking to an article imported before reuse its page, the article of the root page uses the root page,
@@ -690,7 +680,7 @@ class JoomlaImport extends BaseImport
         foreach( $this->wiring->menu->tree() as $node )
         {
             if( !( $homeRoot !== null && $this->run->home->is( $node->item ) ) && $this->importsMenuItem( $node->item, $articleIds ) ) {
-                $this->line( '  Menu item ' . JoomlaRow::label( $node->item ) );
+                $this->line( '  Menu item ' . Joomla\Row::label( $node->item ) );
             }
         }
 
@@ -717,10 +707,10 @@ class JoomlaImport extends BaseImport
      */
     protected function updatesHomeRoot( \stdClass $menuItem, bool $rootImported ): ?bool
     {
-        $link = JoomlaMenuLink::of( $menuItem );
+        $link = Joomla\MenuLink::of( $menuItem );
 
         // only the category Joomla shows on the home page uses the root page, see importCategoryHome()
-        if( $link->kind === JoomlaMenuLink::KIND_CATEGORY && $link->id ) {
+        if( $link->kind === Joomla\MenuLink::KIND_CATEGORY && $link->id ) {
             return $this->wiring->categoryItems->homeCatId() === $link->id ? $rootImported : null;
         }
 
@@ -745,14 +735,14 @@ class JoomlaImport extends BaseImport
      */
     protected function importsMenuItem( \stdClass $menuItem, array &$articleIds = [] ): bool
     {
-        $link = JoomlaMenuLink::of( $menuItem );
+        $link = Joomla\MenuLink::of( $menuItem );
         $articleId = $link->article();
         $catId = $link->category();
         $site = $this->wiring->site;
 
         return match( true ) {
-            $link->kind === JoomlaMenuLink::KIND_FOLDER || ( $link->kind === JoomlaMenuLink::KIND_CATEGORIES && $link->id === null ) => true,
-            $link->kind === JoomlaMenuLink::KIND_LINK => $this->run->links->menuItemLink( $menuItem ) !== null,
+            $link->kind === Joomla\MenuLink::KIND_FOLDER || ( $link->kind === Joomla\MenuLink::KIND_CATEGORIES && $link->id === null ) => true,
+            $link->kind === Joomla\MenuLink::KIND_LINK => $this->run->links->menuItemLink( $menuItem ) !== null,
             $site->access->restriction( $menuItem ) !== null => false,
             // the article is remembered, so the later menu items linking to it aren't listed
             $articleId !== null => isset( $this->run->articles->categoryIds[$articleId] ) && !isset( $articleIds[$articleId] )

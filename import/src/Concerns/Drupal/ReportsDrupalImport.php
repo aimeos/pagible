@@ -11,7 +11,7 @@ use Aimeos\Cms\Facades\Elements as ElementResource;
 use Aimeos\Cms\Facades\Files as FileResource;
 use Aimeos\Cms\Facades\Pages as PageResource;
 use Aimeos\Cms\Facades\Variants as VariantResource;
-use Aimeos\Cms\Import\DrupalPrune;
+use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Permission;
 use Illuminate\Support\Collection;
@@ -54,7 +54,7 @@ trait ReportsDrupalImport
      */
     protected function reportStale(): void
     {
-        $prune = new DrupalPrune( $this->editor, fn( string $msg ) => $this->warn( $msg ) );
+        $prune = new Drupal\Prune( $this->editor, fn( string $msg ) => $this->warn( $msg ) );
         $domains = array_unique( [$this->domain, ...$this->languages->domains()] );
 
         $stale = $prune->stale( $domains, $this->saved );

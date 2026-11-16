@@ -8,38 +8,8 @@
 namespace Tests;
 
 use Aimeos\Cms\Import\Html;
-use Aimeos\Cms\Import\JoomlaAccess;
-use Aimeos\Cms\Import\JoomlaArticle;
-use Aimeos\Cms\Import\JoomlaCategoryTree;
-use Aimeos\Cms\Import\JoomlaChunks;
-use Aimeos\Cms\Import\JoomlaExtensions;
-use Aimeos\Cms\Import\JoomlaKind;
-use Aimeos\Cms\Import\JoomlaLanguages;
-use Aimeos\Cms\Import\JoomlaLevels;
-use Aimeos\Cms\Import\JoomlaMenuItem;
-use Aimeos\Cms\Import\JoomlaMenuLink;
-use Aimeos\Cms\Import\JoomlaHost;
-use Aimeos\Cms\Import\JoomlaOrigin;
-use Aimeos\Cms\Import\JoomlaPlugin;
-use Aimeos\Cms\Import\JoomlaReader;
 use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
-use Aimeos\Cms\Import\JoomlaRedirects;
-use Aimeos\Cms\Import\JoomlaRoutePath;
-use Aimeos\Cms\Import\JoomlaRow;
-use Aimeos\Cms\Import\JoomlaSchema;
-use Aimeos\Cms\Import\JoomlaSite;
-use Aimeos\Cms\Import\JoomlaTexts;
-use Aimeos\Cms\Import\JoomlaText;
-use Aimeos\Cms\Import\JoomlaShortcodes;
-use Aimeos\Cms\Import\JoomlaEmails;
-use Aimeos\Cms\Import\JoomlaArticles;
-use Aimeos\Cms\Import\JoomlaChunkRows;
-use Aimeos\Cms\Import\JoomlaHomeRoot;
-use Aimeos\Cms\Import\JoomlaTranslationRoute;
-use Aimeos\Cms\Import\JoomlaUri;
-use Aimeos\Cms\Import\JoomlaValue;
-use Aimeos\Cms\Import\JoomlaVersion;
-use Aimeos\Cms\Import\JoomlaDate;
+use Aimeos\Cms\Import\Joomla;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -54,7 +24,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     public function testTextsAreFetchedInChunksIncludingTranslations(): void
     {
         $chunks = fn( array $translations ) => array_map( fn( $chunk ) => $chunk->keys()->all(), iterator_to_array(
-            ( new JoomlaChunks( array_map( fn( $count ) => array_fill( 0, $count, 0 ), $translations ), 4 ) )->articles( array_map( fn( $count ) => 0, $translations ) ), false
+            ( new Joomla\Chunks( array_map( fn( $count ) => array_fill( 0, $count, 0 ), $translations ), 4 ) )->articles( array_map( fn( $count ) => 0, $translations ) ), false
         ) );
 
         // articles with more texts than the chunk size are fetched on their own
@@ -63,11 +33,11 @@ class JoomlaReaderTest extends JoomlaTestAbstract
 
         // menu items count the texts of their articles, the ones without article have none
         $items = ['a' => 1, 'b' => null, 'c' => 2, 'd' => 3];
-        $split = ( new JoomlaChunks( [1 => [11, 12], 2 => [21]], 4 ) )->items( $items, fn( $id ) => $id );
+        $split = ( new Joomla\Chunks( [1 => [11, 12], 2 => [21]], 4 ) )->items( $items, fn( $id ) => $id );
         $this->assertSame( [['a' => 1, 'b' => null], ['c' => 2, 'd' => 3]], array_map( fn( $chunk ) => $chunk->all(), iterator_to_array( $split, false ) ) );
 
         // chunks of menu items without article are limited by the number of items
-        $split = ( new JoomlaChunks( [], 2 ) )->items( array_fill( 0, 5, null ), fn( $id ) => $id );
+        $split = ( new Joomla\Chunks( [], 2 ) )->items( array_fill( 0, 5, null ), fn( $id ) => $id );
         $this->assertSame( [2, 2, 1], array_map( fn( $chunk ) => $chunk->count(), iterator_to_array( $split, false ) ) );
     }
 
@@ -126,7 +96,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( [false, false, false, false, false, false, false, false, null],
             [$plugins->contentFields(), $plugins->systemFields(), $plugins->loadModule(), $plugins->pageBreak(), $plugins->emailCloak(),
             $plugins->mailto(), $plugins->sef(), $plugins->strictRouting(), $plugins->redirectParams()] );
-        $this->assertSame( JoomlaShortcodes::NO_STYLE, $plugins->style() );
+        $this->assertSame( Joomla\Shortcodes::NO_STYLE, $plugins->style() );
 
         $this->accessColumns();
         $db->table( 'extensions' )->insert( [
@@ -151,7 +121,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $plugins = $this->site( $this->categories( [] ), reader: $this->reader( $db ) )->plugins;
 
         $this->assertSame( [true, false, false, true], [$plugins->emailCloak(), $plugins->mailto(), $plugins->strictRouting(), $plugins->sef()] );
-        $this->assertSame( JoomlaShortcodes::NO_STYLE, $plugins->style() );
+        $this->assertSame( Joomla\Shortcodes::NO_STYLE, $plugins->style() );
     }
 
 
@@ -176,8 +146,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertTrue( $site( 3 )->version->upTo( 4 ) );
         $this->assertFalse( $site( 4 )->version->upTo( 3 ) );
         $this->assertTrue( $site( 4 )->version->upTo( 4 ) );
-        $this->assertTrue( ( new JoomlaVersion( 2 ) )->upTo( 3 ) );
-        $this->assertFalse( ( new JoomlaVersion() )->upTo( 3 ) );
+        $this->assertTrue( ( new Joomla\Version( 2 ) )->upTo( 3 ) );
+        $this->assertFalse( ( new Joomla\Version() )->upTo( 3 ) );
     }
 
 
@@ -219,9 +189,9 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     public function testReaderImages(): void
     {
 
-        $this->assertSame( ['image_intro' => 'images/intro.jpg'], JoomlaArticle::images( (object) ['images' => '{"image_intro":"images/intro.jpg"}'] ) );
-        $this->assertSame( [], JoomlaArticle::images( (object) ['images' => 'invalid'] ) );
-        $this->assertSame( [], JoomlaArticle::images( (object) [] ) );
+        $this->assertSame( ['image_intro' => 'images/intro.jpg'], Joomla\Article::images( (object) ['images' => '{"image_intro":"images/intro.jpg"}'] ) );
+        $this->assertSame( [], Joomla\Article::images( (object) ['images' => 'invalid'] ) );
+        $this->assertSame( [], Joomla\Article::images( (object) [] ) );
     }
 
 
@@ -251,7 +221,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $rows = array_map( fn( $id ) => ['id' => $id, 'title' => "Article {$id}", 'alias' => "article-{$id}", 'introtext' => "<p>{$id}</p>", 'fulltext' => ''], range( 1001, 1300 ) );
         DB::connection( 'joomla' )->table( 'content' )->insert( $rows );
 
-        $texts = new JoomlaTexts( $this->reader(), new JoomlaOrigin() );
+        $texts = new Joomla\Texts( $this->reader(), new Joomla\Origin() );
         $texts->prefetch( range( 1001, 1150 ) );
         $texts->prefetch( range( 1151, 1300 ) );
 
@@ -270,7 +240,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     public function testTextsFetchTextsPerArticle(): void
     {
         $reader = $this->reader();
-        $texts = new JoomlaTexts( $reader, new JoomlaOrigin() );
+        $texts = new Joomla\Texts( $reader, new Joomla\Origin() );
         $articles = collect( $reader->articles( [1, 3] ) );
 
         // the texts aren't fetched with the articles because they can be large
@@ -278,8 +248,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertFalse( property_exists( $articles->firstOrFail( 'id', 1 ), 'introtext' ) );
         $this->assertFalse( property_exists( $articles->firstOrFail( 'id', 1 ), 'fulltext' ) );
         $this->assertEqualsCanonicalizing( ['id', 'title', 'alias', 'catid', 'created', 'modified', 'featured', 'language', 'metadesc'], array_keys( get_object_vars( $articles->firstOrFail( 'id', 1 ) ) ) );
-        $this->assertEquals( new JoomlaText( '<p>Bonjour</p>' ), $texts->text( 3 ) );
-        $this->assertEquals( new JoomlaText(), $texts->text( 99 ) );
+        $this->assertEquals( new Joomla\Text( '<p>Bonjour</p>' ), $texts->text( 3 ) );
+        $this->assertEquals( new Joomla\Text(), $texts->text( 99 ) );
 
         $db = DB::connection( 'joomla' );
         $db->table( 'content' )->where( 'id', 2 )->update( ['images' => '{"image_intro":"images/teaser.jpg","image_fulltext":"images/intro.jpg"}'] );
@@ -292,7 +262,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( ['images/intro.jpg'], $texts->imagePaths( [2] ) );
 
         // the prefetched texts are kept when they are read
-        $this->assertEquals( new JoomlaText( '<h2>Willkommen</h2><p>Hallo</p>', images: ['image_intro' => 'images/teaser.jpg', 'image_fulltext' => 'images/intro.jpg'] ), $texts->text( 2 ) );
+        $this->assertEquals( new Joomla\Text( '<h2>Willkommen</h2><p>Hallo</p>', images: ['image_intro' => 'images/teaser.jpg', 'image_fulltext' => 'images/intro.jpg'] ), $texts->text( 2 ) );
         $this->assertSame( '<h2>Welcome</h2><p>Hello</p>', $texts->text( 1 )->introtext );
         $this->assertSame( '<h2>Welcome</h2><p>Hello</p>', $texts->text( 1 )->introtext );
         $this->assertSame( 1, count( $db->getQueryLog() ) );
@@ -318,13 +288,13 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             . '"image_fulltext":"images/b.jpg#joomlaImage://local-images/b.jpg?width=30&height=40"}';
         $expected = ['image_intro' => 'images/a.jpg', 'image_intro_alt' => 'A#b', 'image_fulltext' => 'images/b.jpg'];
 
-        $this->assertSame( $expected, JoomlaArticle::images( (object) ['images' => $images] ) );
+        $this->assertSame( $expected, Joomla\Article::images( (object) ['images' => $images] ) );
     }
 
 
     public function testPendingArticlesMustBePrefetched(): void
     {
-        $chunk = new JoomlaChunkRows( [1, 2, 5], [1 => (object) ['id' => 1], 5 => (object) ['id' => 5], 6 => (object) ['id' => 6]] );
+        $chunk = new Joomla\ChunkRows( [1, 2, 5], [1 => (object) ['id' => 1], 5 => (object) ['id' => 5], 6 => (object) ['id' => 6]] );
 
         $this->assertSame( 1, $chunk->article( 1 )?->id );
         // prefetched articles which don't exist any more have no row
@@ -356,7 +326,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $redirects = function() use ( $reader ) {
             $instance = $reader();
             $site = $this->site( $instance->categories(), reader: $instance );
-            return JoomlaRedirects::all( $instance, $site->plugins );
+            return Joomla\Redirects::all( $instance, $site->plugins );
         };
 
         // the reader returns all published redirects, Joomla only redirects if the "System - Redirect" plugin is enabled
@@ -415,10 +385,10 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $home = (object) ( ['home' => 1] + $this->menuItem( 101, 'Start', 1, 1, 1 ) );
         $article = (object) ['id' => 1, 'title' => 'About', 'alias' => 'about', 'language' => 'en-GB', 'catid' => 0];
         $translation = (object) ['id' => 2, 'title' => 'Über uns', 'alias' => 'ueber-uns', 'language' => 'de-DE', 'catid' => 0];
-        $articles = new JoomlaArticles( categoryIds: [1 => 0, 4 => 0], translations: [1 => [2]], times: [], items: [], visible: [],
-            routes: [JoomlaKind::ARTICLE => [], JoomlaKind::ARTICLE_TRANSLATION => []] );
+        $articles = new Joomla\Articles( categoryIds: [1 => 0, 4 => 0], translations: [1 => [2]], times: [], items: [], visible: [],
+            routes: [Joomla\Kind::ARTICLE => [], Joomla\Kind::ARTICLE_TRANSLATION => []] );
         $run = $this->importRun( $this->site( $this->categories( [] ) ), articles: $articles,
-            home: JoomlaHomeRoot::withArticle( $home, 1, [$translation], $article ) );
+            home: Joomla\HomeRoot::withArticle( $home, 1, [$translation], $article ) );
 
         $db = DB::connection( 'joomla' );
         $db->flushQueryLog();
@@ -512,7 +482,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->extensionsTable();
         $db->table( 'extensions' )->insert( ['type' => 'plugin', 'folder' => 'system', 'element' => 'languagefilter', 'params' => '{}', 'access' => null] );
 
-        $this->assertEquals( new JoomlaPlugin( JoomlaLevels::PUBLIC_LEVEL, [] ), ( $this->reader( $db ) )->extensions()->plugin( 'system', 'languagefilter' ) );
+        $this->assertEquals( new Joomla\Plugin( Joomla\Levels::PUBLIC_LEVEL, [] ), ( $this->reader( $db ) )->extensions()->plugin( 'system', 'languagefilter' ) );
         $this->assertTrue( $this->site( $this->categories( [] ), reader: $this->reader( $db ) )->plugins->languageFilter() );
     }
 
@@ -533,10 +503,10 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             $table->unsignedInteger( 'tag_id' );
         } );
         $db->table( 'tags' )->insert( ['id' => 2, 'title' => 'News', 'published' => 1, 'access' => 1] );
-        $db->table( 'contentitem_tag_map' )->insert( ['type_alias' => JoomlaReader::ARTICLE_TAGS, 'content_item_id' => 1, 'tag_id' => 2] );
+        $db->table( 'contentitem_tag_map' )->insert( ['type_alias' => Joomla\Reader::ARTICLE_TAGS, 'content_item_id' => 1, 'tag_id' => 2] );
 
         // tags of Joomla versions without the language column are fetched without it
-        $tags = ( $this->reader( $db ) )->tags( [1], JoomlaReader::ARTICLE_TAGS );
+        $tags = ( $this->reader( $db ) )->tags( [1], Joomla\Reader::ARTICLE_TAGS );
         $this->assertSame( [1 => [['content_item_id' => 1, 'title' => 'News', 'access' => 1]]], array_map( fn( $rows ) => array_map( fn( $row ) => (array) $row, $rows ), $tags ) );
     }
 
@@ -579,17 +549,17 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $rows = [(object) ['id' => 2, 'title' => 'Guest', 'rules' => '[13]'], (object) ['id' => 3, 'title' => 'Parent', 'rules' => '["12"]']];
 
         // without user groups, the configured guest group is used even if it doesn't exist
-        $this->assertSame( [true, false], $this->publicLevels( JoomlaLevels::read( $rows, null, 13 ), [2, 3] ) );
+        $this->assertSame( [true, false], $this->publicLevels( Joomla\Levels::read( $rows, null, 13 ), [2, 3] ) );
         // the guest group is 1 if it's not configured
-        $this->assertSame( [false, false], $this->publicLevels( JoomlaLevels::read( $rows ), [2, 3] ) );
-        $this->assertSame( [true], $this->publicLevels( JoomlaLevels::read( [(object) ['id' => 4, 'title' => 'Root', 'rules' => '[1]']], [1 => 0, 13 => 1] ), [4] ) );
+        $this->assertSame( [false, false], $this->publicLevels( Joomla\Levels::read( $rows ), [2, 3] ) );
+        $this->assertSame( [true], $this->publicLevels( Joomla\Levels::read( [(object) ['id' => 4, 'title' => 'Root', 'rules' => '[1]']], [1 => 0, 13 => 1] ), [4] ) );
         // groups which are their own parents don't loop
-        $this->assertSame( [true, true], $this->publicLevels( JoomlaLevels::read( $rows, [13 => 12, 12 => 12], 13 ), [2, 3] ) );
+        $this->assertSame( [true, true], $this->publicLevels( Joomla\Levels::read( $rows, [13 => 12, 12 => 12], 13 ), [2, 3] ) );
         // Joomla doesn't use a missing guest group itself but the public root group, so only the levels of group 1 are public
         $missing = [...$rows, (object) ['id' => 4, 'title' => 'Root', 'rules' => '[1]']];
-        $this->assertSame( [false, false, true], $this->publicLevels( JoomlaLevels::read( $missing, [1 => 0, 12 => 1], 13 ), [2, 3, 4] ) );
-        $this->assertSame( [false, false, true], $this->publicLevels( JoomlaLevels::read( $missing, [1 => 0, 12 => 1], 0 ), [2, 3, 4] ) );
-        $this->assertTrue( ( new JoomlaLevels() )->isPublic( JoomlaLevels::PUBLIC_LEVEL ) );
+        $this->assertSame( [false, false, true], $this->publicLevels( Joomla\Levels::read( $missing, [1 => 0, 12 => 1], 13 ), [2, 3, 4] ) );
+        $this->assertSame( [false, false, true], $this->publicLevels( Joomla\Levels::read( $missing, [1 => 0, 12 => 1], 0 ), [2, 3, 4] ) );
+        $this->assertTrue( ( new Joomla\Levels() )->isPublic( Joomla\Levels::PUBLIC_LEVEL ) );
     }
 
 
@@ -600,18 +570,18 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $db->table( 'extensions' )->insert( ['element' => 'com_menus', 'params' => '{"show_page_heading":"1"}'] );
         $reader = $this->reader( $db );
 
-        $this->assertSame( '1', JoomlaSite::read( $reader, [], 'en' )->defaults['show_page_heading'] ?? null );
+        $this->assertSame( '1', Joomla\Site::read( $reader, [], 'en' )->defaults['show_page_heading'] ?? null );
 
         // unset and empty options of the menus component aren't used
         foreach( ['{}', '{"show_page_heading":""}'] as $params )
         {
             $db->table( 'extensions' )->where( 'element', 'com_menus' )->update( ['params' => $params] );
-            $this->assertArrayNotHasKey( 'show_page_heading', JoomlaSite::read( $this->reader( $db ), [], 'en' )->defaults );
+            $this->assertArrayNotHasKey( 'show_page_heading', Joomla\Site::read( $this->reader( $db ), [], 'en' )->defaults );
         }
 
         $db->table( 'extensions' )->where( 'element', 'com_content' )->delete();
         $db->table( 'extensions' )->insert( ['element' => 'com_content', 'params' => '{"show_page_heading":"0","show_title":""}'] );
-        $defaults = JoomlaSite::read( $this->reader( $db ), [], 'en' )->defaults;
+        $defaults = Joomla\Site::read( $this->reader( $db ), [], 'en' )->defaults;
 
         $this->assertSame( '0', $defaults['show_page_heading'] ?? null );
         $this->assertArrayNotHasKey( 'show_title', $defaults );
@@ -627,7 +597,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             5 => (object) ['id' => 5, 'title' => 'Sub', 'parent_id' => 6, 'published' => 1],
             6 => (object) ['id' => 6, 'title' => 'Members', 'parent_id' => 0, 'published' => 1, 'access' => 5],
         ] );
-        $access = new JoomlaAccess( $this->reader()->levels(), $categories );
+        $access = new Joomla\Access( $this->reader()->levels(), $categories );
 
         // only published categories guests can see are visible, their parents aren't checked
         $this->assertTrue( $access->categoryPublic( (object) ['id' => 5, 'parent_id' => 6, 'published' => 1] ) );
@@ -705,7 +675,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( "it's scheduled for 2999-01-02 03:04, enable it then", $access->restriction( (object) ['publish_up' => '2999-01-02 03:04:05'] ) );
 
         // the publishing dates are compared with the same time for the whole run
-        $fixed = new JoomlaAccess( new JoomlaLevels(), collect(), 1577934245 );
+        $fixed = new Joomla\Access( new Joomla\Levels(), collect(), 1577934245 );
         $this->assertSame( 1577934245, $fixed->now );
         $this->assertNull( $fixed->dateRestriction( (object) ['publish_up' => '2020-01-02 03:04:05', 'publish_down' => '2020-01-02 03:04:05'] ) );
         $this->assertSame( "it's scheduled for 2020-01-02 03:04, enable it then", $fixed->dateRestriction( (object) ['publish_up' => '2020-01-02 03:04:06'] ) );
@@ -722,8 +692,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         try
         {
             // Joomla stores the dates in UTC, so the server time zone isn't used
-            $this->assertSame( 1577934245, JoomlaDate::time( null, '0000-00-00 00:00:00', '2020-01-02 03:04:05' ) );
-            $this->assertNull( JoomlaDate::time( '', null ) );
+            $this->assertSame( 1577934245, Joomla\Date::time( null, '0000-00-00 00:00:00', '2020-01-02 03:04:05' ) );
+            $this->assertNull( Joomla\Date::time( '', null ) );
         }
         finally
         {
@@ -734,7 +704,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
 
     public function testAccessRestricted(): void
     {
-        $access = new JoomlaAccess( new JoomlaLevels( [2 => ['title' => 'Registered', 'public' => false], 3 => ['title' => 'Guests', 'public' => true]] ), collect() );
+        $access = new Joomla\Access( new Joomla\Levels( [2 => ['title' => 'Registered', 'public' => false], 3 => ['title' => 'Guests', 'public' => true]] ), collect() );
 
         $this->assertSame( [false, false, false, true, false, true], array_map( fn( $level ) => $access->restricted( $level ), [null, 'x', 1, '2', 3, 9] ) );
         // access level 0 of languages is public
@@ -745,45 +715,45 @@ class JoomlaReaderTest extends JoomlaTestAbstract
 
     public function testValues(): void
     {
-        $this->assertSame( '2020-01-02 03:04:05', JoomlaDate::first( null, '0000-00-00 00:00:00', '1970-01-01 00:00:00', '', '2020-01-02 03:04:05' ) );
-        $this->assertNull( JoomlaDate::first( '1900-01-01 00:00:00' ) );
-        $this->assertNull( JoomlaDate::first( '0000-00-00 00:00:00.000' ) );
-        $this->assertNull( JoomlaDate::first( '0000-00-00' ) );
-        $this->assertSame( ['a' => '0', 'c' => false], JoomlaValue::filled( ['a' => '0', 'b' => '', 'c' => false, 'd' => null] ) );
-        $this->assertSame( 1, JoomlaRow::state( (object) [] ) );
-        $this->assertSame( 2, JoomlaRow::state( (object) ['published' => '2'] ) );
+        $this->assertSame( '2020-01-02 03:04:05', Joomla\Date::first( null, '0000-00-00 00:00:00', '1970-01-01 00:00:00', '', '2020-01-02 03:04:05' ) );
+        $this->assertNull( Joomla\Date::first( '1900-01-01 00:00:00' ) );
+        $this->assertNull( Joomla\Date::first( '0000-00-00 00:00:00.000' ) );
+        $this->assertNull( Joomla\Date::first( '0000-00-00' ) );
+        $this->assertSame( ['a' => '0', 'c' => false], Joomla\Value::filled( ['a' => '0', 'b' => '', 'c' => false, 'd' => null] ) );
+        $this->assertSame( 1, Joomla\Row::state( (object) [] ) );
+        $this->assertSame( 2, Joomla\Row::state( (object) ['published' => '2'] ) );
 
-        $this->assertTrue( JoomlaValue::enabled( [], 'show' ) );
-        $this->assertFalse( JoomlaValue::enabled( [], 'show', false ) );
-        $this->assertFalse( JoomlaValue::enabled( ['show' => '0'], 'show' ) );
-        $this->assertTrue( JoomlaValue::enabled( ['show' => '1'], 'show', false ) );
+        $this->assertTrue( Joomla\Value::enabled( [], 'show' ) );
+        $this->assertFalse( Joomla\Value::enabled( [], 'show', false ) );
+        $this->assertFalse( Joomla\Value::enabled( ['show' => '0'], 'show' ) );
+        $this->assertTrue( Joomla\Value::enabled( ['show' => '1'], 'show', false ) );
 
-        $this->assertSame( 'text', JoomlaValue::string( ' text ' ) );
-        $this->assertSame( '5', JoomlaValue::string( 5 ) );
-        $this->assertSame( '', JoomlaValue::string( ['text'] ) );
-        $this->assertSame( '', JoomlaValue::string( null ) );
-        $this->assertTrue( JoomlaRow::published( (object) [] ) );
-        $this->assertTrue( JoomlaRow::published( (object) ['published' => '1'] ) );
-        $this->assertFalse( JoomlaRow::published( (object) ['published' => 2] ) );
-        $this->assertFalse( JoomlaRow::published( (object) ['published' => 0] ) );
+        $this->assertSame( 'text', Joomla\Value::string( ' text ' ) );
+        $this->assertSame( '5', Joomla\Value::string( 5 ) );
+        $this->assertSame( '', Joomla\Value::string( ['text'] ) );
+        $this->assertSame( '', Joomla\Value::string( null ) );
+        $this->assertTrue( Joomla\Row::published( (object) [] ) );
+        $this->assertTrue( Joomla\Row::published( (object) ['published' => '1'] ) );
+        $this->assertFalse( Joomla\Row::published( (object) ['published' => 2] ) );
+        $this->assertFalse( Joomla\Row::published( (object) ['published' => 0] ) );
         // articles store their state in the "state" column
-        $this->assertTrue( JoomlaRow::published( (object) ['state' => 1] ) );
-        $this->assertFalse( JoomlaRow::published( (object) ['state' => 2] ) );
+        $this->assertTrue( Joomla\Row::published( (object) ['state' => 1] ) );
+        $this->assertFalse( Joomla\Row::published( (object) ['state' => 2] ) );
 
-        $this->assertSame( 'de-DE', JoomlaRow::language( (object) ['language' => 'de-DE'] ) );
-        $this->assertSame( '*', JoomlaRow::language( (object) [] ) );
-        $this->assertSame( '*', JoomlaRow::language( null ) );
+        $this->assertSame( 'de-DE', Joomla\Row::language( (object) ['language' => 'de-DE'] ) );
+        $this->assertSame( '*', Joomla\Row::language( (object) [] ) );
+        $this->assertSame( '*', Joomla\Row::language( null ) );
 
         // IDs 0 and 1 are the root category or no parent at all
-        $this->assertTrue( JoomlaRow::isRootId( 0 ) );
-        $this->assertTrue( JoomlaRow::isRootId( 1 ) );
-        $this->assertFalse( JoomlaRow::isRootId( 2 ) );
+        $this->assertTrue( Joomla\Row::isRootId( 0 ) );
+        $this->assertTrue( Joomla\Row::isRootId( 1 ) );
+        $this->assertFalse( Joomla\Row::isRootId( 2 ) );
         // the root rows are found by their level or without level by their ID
-        $this->assertTrue( JoomlaRow::isRootRow( (object) ['id' => 5, 'level' => 0] ) );
-        $this->assertFalse( JoomlaRow::isRootRow( (object) ['id' => 1, 'level' => 1] ) );
-        $this->assertTrue( JoomlaRow::isRootRow( (object) ['id' => 1] ) );
-        $this->assertFalse( JoomlaRow::isRootRow( (object) ['id' => 2] ) );
-        $this->assertFalse( JoomlaRow::isRootRow( (object) [] ) );
+        $this->assertTrue( Joomla\Row::isRootRow( (object) ['id' => 5, 'level' => 0] ) );
+        $this->assertFalse( Joomla\Row::isRootRow( (object) ['id' => 1, 'level' => 1] ) );
+        $this->assertTrue( Joomla\Row::isRootRow( (object) ['id' => 1] ) );
+        $this->assertFalse( Joomla\Row::isRootRow( (object) ['id' => 2] ) );
+        $this->assertFalse( Joomla\Row::isRootRow( (object) [] ) );
 
         // the lineage stops at the first unknown parent and categories which are their own parents
         $categories = collect( [
@@ -792,7 +762,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             4 => (object) ['id' => 4, 'parent_id' => 9],
             5 => (object) ['id' => 5, 'parent_id' => 5],
         ] );
-        $lineage = fn( int $catId ) => JoomlaCategoryTree::lineage( $categories, $catId );
+        $lineage = fn( int $catId ) => Joomla\CategoryTree::lineage( $categories, $catId );
         $this->assertSame( [[3, 2], 1, true], [$lineage( 3 )->ids(), $lineage( 3 )->stop, $lineage( 3 )->reachesRoot()] );
         $this->assertSame( [[4], 9, false], [$lineage( 4 )->ids(), $lineage( 4 )->stop, $lineage( 4 )->reachesRoot()] );
         $this->assertSame( [[5], 5, false], [$lineage( 5 )->ids(), $lineage( 5 )->stop, $lineage( 5 )->reachesRoot()] );
@@ -807,15 +777,15 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( [3, 2, 1], $lineage( 3 )->pathIds() );
         $this->assertSame( [4, 9], $lineage( 4 )->pathIds() );
         $this->assertSame( [5], $lineage( 5 )->pathIds() );
-        $this->assertSame( [6, 7], JoomlaCategoryTree::lineage( $cyclic, 6 )->pathIds() );
-        $this->assertSame( 6, JoomlaCategoryTree::lineage( $cyclic, 6 )->stop );
+        $this->assertSame( [6, 7], Joomla\CategoryTree::lineage( $cyclic, 6 )->pathIds() );
+        $this->assertSame( 6, Joomla\CategoryTree::lineage( $cyclic, 6 )->stop );
 
-        $this->assertSame( JoomlaMenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'heading'] ) );
-        $this->assertSame( JoomlaMenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'separator'] ) );
-        $this->assertSame( JoomlaMenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'url', 'link' => ' # '] ) );
-        $this->assertSame( JoomlaMenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'url'] ) );
-        $this->assertNotSame( JoomlaMenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'url', 'link' => '#top'] ) );
-        $this->assertNotSame( JoomlaMenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'component', 'link' => ''] ) );
+        $this->assertSame( Joomla\MenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'heading'] ) );
+        $this->assertSame( Joomla\MenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'separator'] ) );
+        $this->assertSame( Joomla\MenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'url', 'link' => ' # '] ) );
+        $this->assertSame( Joomla\MenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'url'] ) );
+        $this->assertNotSame( Joomla\MenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'url', 'link' => '#top'] ) );
+        $this->assertNotSame( Joomla\MenuLink::KIND_FOLDER, $this->kindOf( (object) ['type' => 'component', 'link' => ''] ) );
     }
 
 
@@ -830,7 +800,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $db->table( 'languages' )->insert( ['lang_id' => 0, 'lang_code' => '*', 'sef' => 'all', 'published' => 1, 'metadesc' => 'All'] );
 
         // pages for all languages use the description of the site language
-        $this->assertSame( 'English site', JoomlaSite::read( $this->reader( $db ), [], 'en' )->description( '*' ) );
+        $this->assertSame( 'English site', Joomla\Site::read( $this->reader( $db ), [], 'en' )->description( '*' ) );
     }
 
 
@@ -894,28 +864,28 @@ class JoomlaReaderTest extends JoomlaTestAbstract
 
     public function testRowValueAndTextHelpers(): void
     {
-        $this->assertSame( [], JoomlaRow::params( null ) );
-        $this->assertSame( [], JoomlaRow::params( (object) [] ) );
-        $this->assertSame( ['a' => 1], JoomlaRow::params( (object) ['params' => '{"a":1}'] ) );
-        $this->assertSame( '', JoomlaRow::storedAlias( null ) );
-        $this->assertSame( '', JoomlaRow::storedAlias( (object) ['title' => 'About'] ) );
-        $this->assertSame( 'about', JoomlaRow::storedAlias( (object) ['alias' => 'about'] ) );
+        $this->assertSame( [], Joomla\Row::params( null ) );
+        $this->assertSame( [], Joomla\Row::params( (object) [] ) );
+        $this->assertSame( ['a' => 1], Joomla\Row::params( (object) ['params' => '{"a":1}'] ) );
+        $this->assertSame( '', Joomla\Row::storedAlias( null ) );
+        $this->assertSame( '', Joomla\Row::storedAlias( (object) ['title' => 'About'] ) );
+        $this->assertSame( 'about', Joomla\Row::storedAlias( (object) ['alias' => 'about'] ) );
         // rows without language and no row at all are for all languages
-        $this->assertTrue( JoomlaRow::allLanguages( null ) );
-        $this->assertTrue( JoomlaRow::allLanguages( (object) [] ) );
-        $this->assertTrue( JoomlaRow::allLanguages( (object) ['language' => '*'] ) );
-        $this->assertFalse( JoomlaRow::allLanguages( (object) ['language' => 'de-DE'] ) );
+        $this->assertTrue( Joomla\Row::allLanguages( null ) );
+        $this->assertTrue( Joomla\Row::allLanguages( (object) [] ) );
+        $this->assertTrue( Joomla\Row::allLanguages( (object) ['language' => '*'] ) );
+        $this->assertFalse( Joomla\Row::allLanguages( (object) ['language' => 'de-DE'] ) );
 
         // like Joomla, IDs can contain the alias
-        $this->assertSame( 5, JoomlaUri::id( '5:about' ) );
-        $this->assertSame( 7, JoomlaUri::id( 7 ) );
-        $this->assertSame( 0, JoomlaUri::id( null ) );
-        $this->assertSame( 0, JoomlaUri::id( ['5'] ) );
-        $this->assertSame( 0, JoomlaUri::id( 'abc' ) );
+        $this->assertSame( 5, Joomla\Uri::id( '5:about' ) );
+        $this->assertSame( 7, Joomla\Uri::id( 7 ) );
+        $this->assertSame( 0, Joomla\Uri::id( null ) );
+        $this->assertSame( 0, Joomla\Uri::id( ['5'] ) );
+        $this->assertSame( 0, Joomla\Uri::id( 'abc' ) );
 
-        $this->assertTrue( JoomlaMenuItem::home( (object) ['home' => 1] ) );
-        $this->assertFalse( JoomlaMenuItem::home( (object) ['home' => '0'] ) );
-        $this->assertFalse( JoomlaMenuItem::home( (object) [] ) );
+        $this->assertTrue( Joomla\MenuItem::home( (object) ['home' => 1] ) );
+        $this->assertFalse( Joomla\MenuItem::home( (object) ['home' => '0'] ) );
+        $this->assertFalse( Joomla\MenuItem::home( (object) [] ) );
         $this->assertMenuLink( 'article', 5, (object) ['type' => 'component', 'link' => 'index.php?option=com_content&view=article&id=5:about'] );
 
         // without extensions table, the installed extensions are unknown
@@ -925,8 +895,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
 
     public function testUriQueriesAreParsedLikePhp(): void
     {
-        $this->assertSame( ['a' => '1', 'b' => ['2']], JoomlaUri::query( 'a=1&b[]=2' ) );
-        $this->assertSame( [], JoomlaUri::query( '' ) );
+        $this->assertSame( ['a' => '1', 'b' => ['2']], Joomla\Uri::query( 'a=1&b[]=2' ) );
+        $this->assertSame( [], Joomla\Uri::query( '' ) );
     }
 
 
@@ -963,26 +933,26 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             (object) ['lang_code' => 'fr-FR', 'metadesc' => 'Francais'],
             (object) ['lang_code' => 'it-IT'],
         ] );
-        $usable = new JoomlaLanguages( $rows, [], 'en', fn( $row ) => $row->lang_code !== 'fr-FR' );
+        $usable = new Joomla\Languages( $rows, [], 'en', fn( $row ) => $row->lang_code !== 'fr-FR' );
         $this->assertSame( ['English', '', ''], [$usable->description( 'en-GB' ), $usable->description( 'it-IT' ), $usable->description( 'fr-FR' )] );
         $this->assertSame( ['en-GB', 'it-IT'], $usable->tags() );
         $this->assertNull( $usable->language( 'fr-FR' ) );
         $this->assertSame( 'es', $usable->language( 'es-ES' )['lang'] ?? null );
 
         // with language filter, tags missing from a non-empty languages table are unknown, only without languages table they are guessed
-        $filtered = new JoomlaLanguages( $rows, [], 'en', null, true );
+        $filtered = new Joomla\Languages( $rows, [], 'en', null, true );
         $this->assertNull( $filtered->language( 'es-ES' ) );
         $this->assertNull( $filtered->language( 'en-AU' ) );
         $this->assertFalse( $filtered->source( 'en-AU' ) );
         $this->assertSame( 'en', $filtered->language( 'en-GB' )['lang'] ?? null );
-        $this->assertSame( 'es', ( new JoomlaLanguages( $this->items( [] ), [], 'en', null, true ) )->language( 'es-ES' )['lang'] ?? null );
-        $this->assertSame( 'Francais', ( new JoomlaLanguages( $rows, [], 'en' ) )->description( 'fr-FR' ) );
+        $this->assertSame( 'es', ( new Joomla\Languages( $this->items( [] ), [], 'en', null, true ) )->language( 'es-ES' )['lang'] ?? null );
+        $this->assertSame( 'Francais', ( new Joomla\Languages( $rows, [], 'en' ) )->description( 'fr-FR' ) );
     }
 
 
     public function testLanguagesOtherThanTheImportedOne(): void
     {
-        $languages = new JoomlaLanguages( $this->items( [
+        $languages = new Joomla\Languages( $this->items( [
             (object) ['lang_code' => 'en-GB', 'sef' => 'en'],
             (object) ['lang_code' => 'de-DE', 'sef' => 'de'],
             (object) ['lang_code' => 'fr-FR', 'sef' => 'fr', 'published' => 0],
@@ -997,7 +967,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
 
     public function testGroupKeepsTheFirstTranslationOfEachLanguage(): void
     {
-        $languages = new JoomlaLanguages( $this->items( [
+        $languages = new Joomla\Languages( $this->items( [
             (object) ['lang_code' => 'en-GB', 'sef' => 'en'],
             (object) ['lang_code' => 'de-DE', 'sef' => 'de'],
         ] ), [], 'en' );
@@ -1013,8 +983,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     {
         // the import keeps the pages of unchanged articles by comparing their names with the ones the pages are built with
         $items = [1 => (object) ['id' => 101, 'title' => 'About us', 'params' => '{}'], 2 => (object) ['id' => 201, 'title' => '', 'params' => '{}']];
-        $articles = new JoomlaArticles( categoryIds: [1 => 0], translations: [1 => [2]], times: [], items: $items, visible: [1 => true, 2 => true],
-            routes: [JoomlaKind::ARTICLE => [], JoomlaKind::ARTICLE_TRANSLATION => []] );
+        $articles = new Joomla\Articles( categoryIds: [1 => 0], translations: [1 => [2]], times: [], items: $items, visible: [1 => true, 2 => true],
+            routes: [Joomla\Kind::ARTICLE => [], Joomla\Kind::ARTICLE_TRANSLATION => []] );
         $run = $this->importRun( $this->site( Collection::make() ), $articles );
         $run->prefetchTexts( [1, 2, 3] );
         $routes = $this->routes( Collection::make(), [] );
@@ -1031,7 +1001,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     public function testGuessedLanguagesDontUseTheCodesOfLanguageOptions(): void
     {
         $rows = $this->items( [(object) ['lang_code' => 'en-GB', 'sef' => 'en']] );
-        $languages = new JoomlaLanguages( $rows, ['de-AT:de'], 'en' );
+        $languages = new Joomla\Languages( $rows, ['de-AT:de'], 'en' );
 
         // "de-DE" would replace the translations of "de-AT", so it's unknown instead of guessed as "de"
         $this->assertSame( 'de', $languages->language( 'de-AT' )['lang'] ?? null );
@@ -1045,7 +1015,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( [], $groups->duplicates );
 
         // guessed tags with the same code as each other are reported as duplicates
-        $groups = ( new JoomlaLanguages( $rows, [], 'en' ) )->group( [1 => 'en-GB', 2 => 'de-AT', 3 => 'de-DE'], [[1, 2, 3]] );
+        $groups = ( new Joomla\Languages( $rows, [], 'en' ) )->group( [1 => 'en-GB', 2 => 'de-AT', 3 => 'de-DE'], [[1, 2, 3]] );
 
         $this->assertSame( [1 => [2]], $groups->translations );
         $this->assertSame( [3 => ['lang' => 'de', 'tag' => 'de-DE', 'used' => 2]], $groups->duplicates );
@@ -1061,14 +1031,14 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         ] );
 
         // options replacing the derived language of the same tag or using the code of an unknown language are fine
-        $this->assertSame( 'de', ( new JoomlaLanguages( $rows, ['de-DE:de', 'fr-CA:fr'], 'en' ) )->language( 'de-DE' )['lang'] ?? null );
-        $this->assertSame( 'de-AT', ( new JoomlaLanguages( $rows, ['de-AT:de-AT'], 'en' ) )->language( 'de-AT' )['lang'] ?? null );
+        $this->assertSame( 'de', ( new Joomla\Languages( $rows, ['de-DE:de', 'fr-CA:fr'], 'en' ) )->language( 'de-DE' )['lang'] ?? null );
+        $this->assertSame( 'de-AT', ( new Joomla\Languages( $rows, ['de-AT:de-AT'], 'en' ) )->language( 'de-AT' )['lang'] ?? null );
 
         // two tags with the same code would replace the translations of each other
         foreach( [['de-AT:de'], ['de-AT:de-at', 'de-CH:de-at'], ['en-US:en']] as $options )
         {
             try {
-                new JoomlaLanguages( $rows, $options, 'en' );
+                new Joomla\Languages( $rows, $options, 'en' );
                 $this->fail( 'No exception for ' . implode( ' ', $options ) );
             } catch( \InvalidArgumentException $e ) {
                 $this->assertStringContainsString( 'use the same language code', $e->getMessage() );
@@ -1076,7 +1046,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         }
 
         $this->expectExceptionMessage( 'Joomla languages de-AT, de-DE use the same language code "de", map each one to its own code with --language' );
-        new JoomlaLanguages( $rows, ['de-AT:de'], 'en' );
+        new Joomla\Languages( $rows, ['de-AT:de'], 'en' );
     }
 
 
@@ -1085,8 +1055,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $a = (object) ['id' => 1];
         $c = (object) ['id' => 3];
         // rows are returned in the order of the IDs, missing ones are skipped
-        $this->assertSame( [$c, $a], JoomlaRow::pick( [1 => $a, 3 => $c], [3, 2, '1'] ) );
-        $this->assertSame( [], JoomlaRow::pick( [1 => $a], [] ) );
+        $this->assertSame( [$c, $a], Joomla\Row::pick( [1 => $a, 3 => $c], [3, 2, '1'] ) );
+        $this->assertSame( [], Joomla\Row::pick( [1 => $a], [] ) );
 
         $categories = Collection::make( [
             2 => (object) ['id' => 2, 'parent_id' => 1, 'published' => 2],
@@ -1095,30 +1065,30 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         ] );
         $archived = fn( $category ) => (int) $category->published === 2;
         // the category itself is tested first, then its parents
-        $this->assertSame( 4, JoomlaCategoryTree::firstAncestor( $categories, 4, $archived )?->id );
-        $this->assertSame( 2, JoomlaCategoryTree::firstAncestor( $categories, 3, $archived )?->id );
-        $this->assertNull( JoomlaCategoryTree::firstAncestor( $categories, 3, fn() => false ) );
-        $this->assertNull( JoomlaCategoryTree::firstAncestor( $categories, 99, $archived ) );
+        $this->assertSame( 4, Joomla\CategoryTree::firstAncestor( $categories, 4, $archived )?->id );
+        $this->assertSame( 2, Joomla\CategoryTree::firstAncestor( $categories, 3, $archived )?->id );
+        $this->assertNull( Joomla\CategoryTree::firstAncestor( $categories, 3, fn() => false ) );
+        $this->assertNull( Joomla\CategoryTree::firstAncestor( $categories, 99, $archived ) );
 
         // a plus sign in the path is no encoded space
-        $this->assertSame( '/a+b', JoomlaUri::decodedPath( 'a+b' ) );
+        $this->assertSame( '/a+b', Joomla\Uri::decodedPath( 'a+b' ) );
 
         // only the lower case shortcode disables the e-mail cloaking plugin like in Joomla, all shortcodes are removed then
-        $this->assertSame( 'a  b', JoomlaEmails::cloakOff( 'a {emailcloak=off} b' ) );
-        $this->assertSame( 'a  b ', JoomlaEmails::cloakOff( 'a {emailcloak=off} b {EmailCloak=Off}' ) );
-        $this->assertNull( JoomlaEmails::cloakOff( '{EMAILCLOAK=OFF}' ) );
+        $this->assertSame( 'a  b', Joomla\Emails::cloakOff( 'a {emailcloak=off} b' ) );
+        $this->assertSame( 'a  b ', Joomla\Emails::cloakOff( 'a {emailcloak=off} b {EmailCloak=Off}' ) );
+        $this->assertNull( Joomla\Emails::cloakOff( '{EMAILCLOAK=OFF}' ) );
         $this->assertSame( "\"a' & b\u{a0}<", Html::decode( '&quot;a&#039; &amp; b&nbsp;&lt;' ) );
         $this->assertSame( "'", Html::decode( '&apos;' ) );
 
         $home = (object) ['home' => 1];
         $item = (object) ['home' => 0];
-        $this->assertSame( $item, JoomlaMenuItem::withoutHome( $item ) );
-        $this->assertNull( JoomlaMenuItem::withoutHome( $home ) );
-        $this->assertNull( JoomlaMenuItem::withoutHome( null ) );
-        $this->assertSame( 'article', JoomlaMenuItem::queryView( ['option' => 'com_content', 'view' => 'article'] ) );
-        $this->assertNull( JoomlaMenuItem::queryView( ['option' => 'com_contact', 'view' => 'article'] ) );
-        $this->assertNull( JoomlaMenuItem::queryView( ['option' => 'com_content', 'view' => ['article']] ) );
-        $this->assertNull( JoomlaMenuItem::queryView( ['option' => 'com_content'] ) );
+        $this->assertSame( $item, Joomla\MenuItem::withoutHome( $item ) );
+        $this->assertNull( Joomla\MenuItem::withoutHome( $home ) );
+        $this->assertNull( Joomla\MenuItem::withoutHome( null ) );
+        $this->assertSame( 'article', Joomla\MenuItem::queryView( ['option' => 'com_content', 'view' => 'article'] ) );
+        $this->assertNull( Joomla\MenuItem::queryView( ['option' => 'com_contact', 'view' => 'article'] ) );
+        $this->assertNull( Joomla\MenuItem::queryView( ['option' => 'com_content', 'view' => ['article']] ) );
+        $this->assertNull( Joomla\MenuItem::queryView( ['option' => 'com_content'] ) );
     }
 
 
@@ -1154,7 +1124,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( [12, 11, 10, 13, 16, 17, 18, 19, 20, 21, 22], $ids( $reader->menuItems() ) );
         $this->assertSame( [12, 11, 10, 13, 16, 17, 18, 19, 20, 21, 22], $reader->menuItems()->keys()->all() );
         // the lists of the articles component and the home menu items of all components
-        $this->assertSame( [12, 11, 13, 17, 18], $ids( $reader->menuItems()->filter( JoomlaMenuItem::routing( ... ) ) ) );
+        $this->assertSame( [12, 11, 13, 17, 18], $ids( $reader->menuItems()->filter( Joomla\MenuItem::routing( ... ) ) ) );
         $this->assertSame( [11, 10], $ids( $reader->menuItems()->only( [10, '11', 14, 15, 99] ) ) );
         // the root menu item isn't a menu item of the site
         $this->assertNull( $reader->menuItems()->get( 1 ) );
@@ -1167,7 +1137,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     {
         $db = DB::connection( 'joomla' );
         // the options of a database without extensions table are empty
-        $this->assertSame( [], ( $this->reader( $db ) )->extensions()->componentParams( JoomlaExtensions::COMPONENT_CONTENT ) );
+        $this->assertSame( [], ( $this->reader( $db ) )->extensions()->componentParams( Joomla\Extensions::COMPONENT_CONTENT ) );
         $this->extensionsTable();
         $db->table( 'extensions' )->insert( [
             ['type' => 'component', 'element' => 'com_content', 'params' => '{"show_intro":"0"}'],
@@ -1178,11 +1148,11 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $reader = $this->reader( $db );
 
         $db->enableQueryLog();
-        $this->assertSame( ['show_intro' => '0'], $reader->extensions()->componentParams( JoomlaExtensions::COMPONENT_CONTENT ) );
+        $this->assertSame( ['show_intro' => '0'], $reader->extensions()->componentParams( Joomla\Extensions::COMPONENT_CONTENT ) );
         $this->assertSame( ['guest_usergroup' => '13'], $reader->extensions()->componentParams( 'com_users' ) );
         // missing components are only looked up once too
         $this->assertSame( [], $reader->extensions()->componentParams( 'com_missing' ) );
-        $this->assertSame( [], $reader->extensions()->componentParams( JoomlaExtensions::COMPONENT_TAGS ) );
+        $this->assertSame( [], $reader->extensions()->componentParams( Joomla\Extensions::COMPONENT_TAGS ) );
         $this->assertCount( 0, $reader->extensions()->componentParams( 'com_missing' ) );
         $this->assertSame( 4, count( Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_contains( $query['query'], ' from "extensions"' ) ) ) );
         $db->disableQueryLog();
@@ -1219,12 +1189,12 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $reader = $this->reader( $db );
 
         $db->enableQueryLog();
-        $this->assertEquals( new JoomlaPlugin( 1, ['strictrouting' => '1'] ), $reader->extensions()->plugin( 'system', 'sef' ) );
+        $this->assertEquals( new Joomla\Plugin( 1, ['strictrouting' => '1'] ), $reader->extensions()->plugin( 'system', 'sef' ) );
         $this->assertNull( $reader->extensions()->plugin( 'content', 'pagebreak' ) );
         $count = count( $db->getQueryLog() );
 
         // the plugins, also the disabled ones, and the existence of the tables are only fetched once
-        $this->assertEquals( new JoomlaPlugin( 1, ['strictrouting' => '1'] ), $reader->extensions()->plugin( 'system', 'sef' ) );
+        $this->assertEquals( new Joomla\Plugin( 1, ['strictrouting' => '1'] ), $reader->extensions()->plugin( 'system', 'sef' ) );
         $this->assertNull( $reader->extensions()->plugin( 'content', 'pagebreak' ) );
         $this->assertSame( $count, count( $db->getQueryLog() ) );
         $this->assertTrue( $reader->extensions()->version()->upTo( 5 ) );
@@ -1232,8 +1202,8 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $reader->extensions()->version();
         $this->assertSame( $count + 1, count( $db->getQueryLog() ) );
         // without tags table, only its existence is checked once
-        $reader->tags( [1], JoomlaReader::ARTICLE_TAGS );
-        $this->assertSame( [], $reader->tags( [1], JoomlaReader::ARTICLE_TAGS ) );
+        $reader->tags( [1], Joomla\Reader::ARTICLE_TAGS );
+        $this->assertSame( [], $reader->tags( [1], Joomla\Reader::ARTICLE_TAGS ) );
         $this->assertSame( $count + 2, count( $db->getQueryLog() ) );
         $db->disableQueryLog();
     }
@@ -1242,7 +1212,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     public function testSchemaPrefixesAndQualifiesNames(): void
     {
         $db = DB::connection( 'joomla' );
-        $schema = new JoomlaSchema( $db, 'jos_' );
+        $schema = new Joomla\Schema( $db, 'jos_' );
 
         $this->assertSame( 'jos_content', $schema->table( 'content' ) );
         $this->assertSame( 'SELECT * FROM ' . $db->getTablePrefix() . 'jos_content', $schema->sql( 'SELECT * FROM #__content' ) );
@@ -1256,10 +1226,10 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             $db->setTablePrefix( $prefix );
         }
         $this->assertNull( $schema->tableIfExists( 'content' ) );
-        $this->assertSame( 'content', ( new JoomlaSchema( $db, '' ) )->tableIfExists( 'content' ) );
-        $this->assertSame( ['id', 'title'], ( new JoomlaSchema( $db, '' ) )->existingColumns( 'content', ['id', 'unknown', 'title'] ) );
-        $this->assertTrue( ( new JoomlaSchema( $db, '' ) )->hasColumn( 'content', 'title' ) );
-        $this->assertFalse( ( new JoomlaSchema( $db, '' ) )->hasColumn( 'content', 'unknown' ) );
+        $this->assertSame( 'content', ( new Joomla\Schema( $db, '' ) )->tableIfExists( 'content' ) );
+        $this->assertSame( ['id', 'title'], ( new Joomla\Schema( $db, '' ) )->existingColumns( 'content', ['id', 'unknown', 'title'] ) );
+        $this->assertTrue( ( new Joomla\Schema( $db, '' ) )->hasColumn( 'content', 'title' ) );
+        $this->assertFalse( ( new Joomla\Schema( $db, '' ) )->hasColumn( 'content', 'unknown' ) );
     }
 
 
@@ -1269,7 +1239,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
             ['id' => 2, 'extension' => 'com_content', 'title' => 'News', 'alias' => 'news', 'published' => 0],
             ['id' => 3, 'extension' => 'com_contact', 'title' => 'Contacts', 'alias' => 'contacts', 'published' => 1],
         ] );
-        $site = JoomlaSite::read( $this->reader(), [], 'en' );
+        $site = Joomla\Site::read( $this->reader(), [], 'en' );
 
         // the article categories of all states are read, so the unpublished ones hide their articles
         $this->assertSame( [2], $site->categories->keys()->all() );
@@ -1301,7 +1271,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $categories );
         $warnings = [];
-        $host = JoomlaHost::forTests( warn: function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } );
+        $host = Joomla\Host::forTests( warn: function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } );
         $index = $this->wiring( $site, host: $host );
 
         $result = $index->articles( true );
@@ -1328,40 +1298,40 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertSame( [2], array_keys( $folders->categories ) );
 
         // the URL paths of the articles and translations are returned, translated categories don't claim paths of their own
-        $this->assertEquals( [JoomlaKind::ARTICLE => [1 => new JoomlaRoutePath( null, 'about' )], JoomlaKind::ARTICLE_TRANSLATION => [2 => new JoomlaTranslationRoute( 'ueber-uns', 'de-DE' )]], $result->routes );
+        $this->assertEquals( [Joomla\Kind::ARTICLE => [1 => new Joomla\RoutePath( null, 'about' )], Joomla\Kind::ARTICLE_TRANSLATION => [2 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' )]], $result->routes );
         $this->assertSame( [], $result->items );
-        $links = $this->importRun( $this->wiring( $site, menu: $menuItems, origin: new JoomlaOrigin( 'example.com' ) ), articles: $result, folders: $folders )->links;
-        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], JoomlaLanguages::ALL );
+        $links = $this->importRun( $this->wiring( $site, menu: $menuItems, origin: new Joomla\Origin( 'example.com' ) ), articles: $result, folders: $folders )->links;
+        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], Joomla\Languages::ALL );
         $this->assertSame( '/about', $article( 1 ) );
         $this->assertSame( '/ueber-uns', $article( 2 ) );
         $this->assertNull( $article( 4 ) );
-        $this->assertSame( '/item-10', $links->resolve( ['Itemid' => '10'], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/item-10', $links->resolve( ['Itemid' => '10'], Joomla\Languages::ALL ) );
         // links of other components aren't article links even with the same view
-        $this->assertNull( $links->resolve( ['option' => 'com_contact', 'view' => 'article', 'id' => '1:alias'], JoomlaLanguages::ALL ) );
+        $this->assertNull( $links->resolve( ['option' => 'com_contact', 'view' => 'article', 'id' => '1:alias'], Joomla\Languages::ALL ) );
     }
 
 
     public function testDatesAreParsedAndFormattedInUtc(): void
     {
-        $date = JoomlaDate::parse( '2020-01-02 03:04:05' );
+        $date = Joomla\Date::parse( '2020-01-02 03:04:05' );
 
         $this->assertSame( 1577934245, $date?->getTimestamp() );
-        $this->assertNull( JoomlaDate::parse( 'invalid' ) );
-        $this->assertSame( '2020-01-02 03:04', JoomlaDate::format( 1577934245 ) );
-        $this->assertSame( '2020-01-02', JoomlaDate::format( 1577934245, JoomlaDate::DATE_FORMAT ) );
+        $this->assertNull( Joomla\Date::parse( 'invalid' ) );
+        $this->assertSame( '2020-01-02 03:04', Joomla\Date::format( 1577934245 ) );
+        $this->assertSame( '2020-01-02', Joomla\Date::format( 1577934245, Joomla\Date::DATE_FORMAT ) );
         // dates in other time zones are shown in UTC unless a time zone is given
-        $this->assertSame( '2020-01-02 03:04', JoomlaDate::format( new \DateTimeImmutable( '2020-01-02 04:04:05', new \DateTimeZone( 'Europe/Berlin' ) ) ) );
-        $this->assertSame( '2020-01-02 04:04', JoomlaDate::format( 1577934245, JoomlaDate::DATETIME_FORMAT, new \DateTimeZone( 'Europe/Berlin' ) ) );
+        $this->assertSame( '2020-01-02 03:04', Joomla\Date::format( new \DateTimeImmutable( '2020-01-02 04:04:05', new \DateTimeZone( 'Europe/Berlin' ) ) ) );
+        $this->assertSame( '2020-01-02 04:04', Joomla\Date::format( 1577934245, Joomla\Date::DATETIME_FORMAT, new \DateTimeZone( 'Europe/Berlin' ) ) );
     }
 
 
     public function testRowsAndMenuItemsOfTheLanguage(): void
     {
-        $this->assertTrue( JoomlaRow::inLanguage( (object) ['language' => '*'], 'de-DE' ) );
-        $this->assertTrue( JoomlaRow::inLanguage( (object) ['language' => 'de-DE'], 'de-DE' ) );
-        $this->assertFalse( JoomlaRow::inLanguage( (object) ['language' => 'en-GB'], 'de-DE' ) );
-        // unlike JoomlaSite::shows(), rows of a language don't match the tag for all languages
-        $this->assertFalse( JoomlaRow::inLanguage( (object) ['language' => 'en-GB'], '*' ) );
+        $this->assertTrue( Joomla\Row::inLanguage( (object) ['language' => '*'], 'de-DE' ) );
+        $this->assertTrue( Joomla\Row::inLanguage( (object) ['language' => 'de-DE'], 'de-DE' ) );
+        $this->assertFalse( Joomla\Row::inLanguage( (object) ['language' => 'en-GB'], 'de-DE' ) );
+        // unlike Joomla\Site::shows(), rows of a language don't match the tag for all languages
+        $this->assertFalse( Joomla\Row::inLanguage( (object) ['language' => 'en-GB'], '*' ) );
 
         $categories = $this->categories( [] );
         $site = function( int $version, bool $filter ) use ( $categories ) {
@@ -1393,7 +1363,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
         $this->assertTrue( $site->languageFilter );
         $this->assertTrue( $site->plugins->languageFilter() );
         DB::connection( 'joomla' )->table( 'extensions' )->where( 'element', 'languagefilter' )->update( ['enabled' => 0] );
-        $site = JoomlaSite::read( $this->reader(), [], 'en' );
+        $site = Joomla\Site::read( $this->reader(), [], 'en' );
         $this->assertFalse( $site->languageFilter );
         $this->assertFalse( $site->plugins->itemAssociations() );
     }
@@ -1402,7 +1372,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     public function testLanguageTagsKeepTheirOrder(): void
     {
         $rows = $this->items( [(object) ['lang_code' => 'de-DE', 'metadesc' => 'Deutsch'], (object) ['lang_code' => 'en-GB']] );
-        $languages = new JoomlaLanguages( $rows, [], 'en' );
+        $languages = new Joomla\Languages( $rows, [], 'en' );
 
         $this->assertSame( ['de-DE', 'en-GB'], $languages->tags() );
         $this->assertSame( ['Deutsch', ''], [$languages->description( 'de-DE' ), $languages->description( 'en-GB' )] );

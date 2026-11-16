@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Commands;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * @phpstan-import-type WpPost from WpReader
  */
-class WpImport extends BaseImport
+class WpImport extends Commands
 {
     /** Columns of the pages of unchanged posts which are only moved below the blog page by keepPage() */
     protected const KEEP_COLUMNS = ['id', 'variant_id', 'parent_id', 'tenant_id', 'lang', 'domain', 'path', 'editor', 'to', 'deleted_at'];

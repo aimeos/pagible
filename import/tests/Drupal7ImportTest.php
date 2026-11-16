@@ -10,8 +10,7 @@ namespace Tests;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Commands\DrupalImport;
 use Aimeos\Cms\Import\Database;
-use Aimeos\Cms\Import\Drupal7;
-use Aimeos\Cms\Import\Drupal7Db;
+use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageVariant;
@@ -1462,7 +1461,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         $db->table( 'file_managed' )->insert( array_map( fn( $fid ) => ['fid' => $fid, 'filename' => "img{$fid}.jpg", 'uri' => "public://img{$fid}.jpg", 'filemime' => 'image/jpeg'], range( 1, 6 ) ) );
         $db->table( 'field_data_field_file_image_alt_text' )->insert( array_map( fn( $fid ) => $this->row( 'field_file_image_alt_text', $fid, ['value' => "Alt {$fid}"], 'und', 0, 'image', 'file' ), range( 1, 6 ) ) );
 
-        $reader = new class( $db, fn() => null ) extends Drupal7 {
+        $reader = new class( $db, fn() => null ) extends Drupal\V7 {
             protected const CACHE_SIZE = 4;
 
             /**
@@ -1531,7 +1530,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         ] );
 
         $warnings = [];
-        $reader = new class( $db, function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } ) extends Drupal7 {
+        $reader = new class( $db, function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } ) extends Drupal\V7 {
             /** @return array{0: array<int, int>, 1: array<int, array<int, int>>, 2: array<int, array{nid: int, langcode: string, set: bool}>} */
             public function mapped(): array
             {
@@ -1579,7 +1578,7 @@ class Drupal7ImportTest extends ImportTestAbstract
             ['entity_type' => 'taxonomy_term', 'entity_id' => 5, 'language' => 'fr'],
         ] );
 
-        $reader = new Drupal7( $db, fn() => null );
+        $reader = new Drupal\V7( $db, fn() => null );
 
         $db->enableQueryLog();
         $translations = $reader->translations( [1, 5, 6, 7], true );
@@ -1608,7 +1607,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         ] );
 
         // the timestamps of the current and older revisions aren't used, only the ones of the drafts
-        $this->assertSame( [1 => 3000, 2 => 1000], ( new Drupal7( $db, fn() => null ) )->changed( [1, 2] ) );
+        $this->assertSame( [1 => 3000, 2 => 1000], ( new Drupal\V7( $db, fn() => null ) )->changed( [1, 2] ) );
     }
 
 
@@ -1620,7 +1619,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         $db->table( 'node' )->insert( array_map( fn( $nid ) => ['nid' => $nid, 'vid' => $nid, 'type' => 'page', 'title' => "Node {$nid}"], range( 2, 5 ) ) );
         $db->table( 'field_data_title_field' )->insert( array_map( fn( $nid ) => $this->row( 'title_field', $nid, ['value' => "Title {$nid}"] ), range( 1, 5 ) ) );
 
-        $reader = new class( $db, fn() => null ) extends Drupal7 {
+        $reader = new class( $db, fn() => null ) extends Drupal\V7 {
             protected const CACHE_SIZE = 4;
 
             /**
@@ -1681,7 +1680,7 @@ class Drupal7ImportTest extends ImportTestAbstract
             ['nid' => 15, 'tid' => 3, 'sticky' => 0, 'created' => 300],
             ['nid' => 16, 'tid' => 3, 'sticky' => 0, 'created' => 200],
         ] );
-        $reader = new Drupal7( $db, fn() => null );
+        $reader = new Drupal\V7( $db, fn() => null );
         $rows = fn( ?int $limit ) => $reader->termIndex( [1, 3], $limit )->map( fn( $row ) => [(int) $row->tid, (int) $row->nid] )->values()->all();
 
         // the newest rows of a term and its translations are limited together and mapped to the source term
@@ -1694,7 +1693,7 @@ class Drupal7ImportTest extends ImportTestAbstract
     public function testConfigsAreBuiltOnce(): void
     {
         $db = DB::connection( 'drupal' );
-        $reader = new Drupal7( $db, fn() => null );
+        $reader = new Drupal\V7( $db, fn() => null );
         $configs = $reader->configs();
 
         $db->enableQueryLog();
@@ -2128,7 +2127,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         $this->locale( 'menu', 'item:1:title', 'Home', ['de' => 'Start'] );
 
         $db = DB::connection( 'drupal' );
-        $d7 = new Drupal7Db( $db );
+        $d7 = new Drupal\V7Db( $db );
 
         $db->enableQueryLog();
         $blocks = [$d7->locales( 'blocks', ['block:1:body'] ), $d7->locales( 'blocks', ['block:2:body'] )];
@@ -2152,7 +2151,7 @@ class Drupal7ImportTest extends ImportTestAbstract
 
         $db = DB::connection( 'drupal' );
         $db->table( 'variable' )->insert( ['name' => 'disabled', 'value' => serialize( false )] );
-        $d7 = new Drupal7Db( $db );
+        $d7 = new Drupal\V7Db( $db );
 
         $this->assertSame( ['item:1:title' => ['de' => 'Start']], $d7->locales( 'menu', ['item:1:title'] ) );
         $this->assertSame( [], $d7->locales( 'menu', [] ) );
@@ -2166,7 +2165,7 @@ class Drupal7ImportTest extends ImportTestAbstract
         } );
         $db->table( 'i18n_string' )->insert( ['lid' => 1, 'textgroup' => 'menu', 'context' => 'item:1:title'] );
         $db->table( 'locales_source' )->where( 'lid', 1 )->update( ['context' => ''] );
-        $d7 = new Drupal7Db( $db );
+        $d7 = new Drupal\V7Db( $db );
 
         $this->assertSame( ['item:1:title' => ['de' => 'Start']], $d7->locales( 'menu', ['item:1:title'] ) );
         $this->assertSame( [], $d7->locales( 'blocks', ['item:1:title'] ) );
@@ -2194,10 +2193,10 @@ class Drupal7ImportTest extends ImportTestAbstract
 
         // the default language is English without language in the language_default variable
         $db->table( 'variable' )->where( 'name', 'language_default' )->update( ['value' => serialize( (object) ['name' => 'English'] )] );
-        $this->assertSame( 'en', ( new Drupal7Db( $db ) )->langcode() );
+        $this->assertSame( 'en', ( new Drupal\V7Db( $db ) )->langcode() );
 
         $db->table( 'variable' )->where( 'name', 'language_default' )->delete();
-        $this->assertSame( 'en', ( new Drupal7Db( $db ) )->langcode() );
+        $this->assertSame( 'en', ( new Drupal\V7Db( $db ) )->langcode() );
     }
 
 

@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Import\JoomlaHomeRoot;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Schema\Blueprint;
@@ -1058,8 +1058,8 @@ class JoomlaHomeImportTest extends JoomlaTestAbstract
 
     public function testHomeRootComparesIdsOfAllTypes(): void
     {
-        $home = JoomlaHomeRoot::withArticle( (object) ['id' => '101'], 5 );
-        $none = JoomlaHomeRoot::withoutArticle( (object) ['id' => 101] );
+        $home = Joomla\HomeRoot::withArticle( (object) ['id' => '101'], 5 );
+        $none = Joomla\HomeRoot::withoutArticle( (object) ['id' => 101] );
 
         // IDs from array keys and database rows can be integers or strings, missing IDs never match
         $this->assertTrue( $home->isArticle( 5 ) );
@@ -1071,8 +1071,8 @@ class JoomlaHomeImportTest extends JoomlaTestAbstract
         $this->assertTrue( $home->is( (object) ['id' => 101] ) );
         $this->assertTrue( $none->is( (object) ['id' => '101'] ) );
         $this->assertFalse( $none->is( (object) ['id' => 102] ) );
-        $this->assertFalse( JoomlaHomeRoot::withoutArticle( (object) [] )->is( (object) [] ) );
-        $this->assertFalse( JoomlaHomeRoot::withoutArticle()->is( (object) ['id' => 101] ) );
+        $this->assertFalse( Joomla\HomeRoot::withoutArticle( (object) [] )->is( (object) [] ) );
+        $this->assertFalse( Joomla\HomeRoot::withoutArticle()->is( (object) ['id' => 101] ) );
     }
 
 

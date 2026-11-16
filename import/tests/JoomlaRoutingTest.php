@@ -7,37 +7,10 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Import\JoomlaAccess;
-use Aimeos\Cms\Import\JoomlaCategoryItems;
-use Aimeos\Cms\Import\JoomlaClaims;
-use Aimeos\Cms\Import\JoomlaFolders;
-use Aimeos\Cms\Import\JoomlaKind;
-use Aimeos\Cms\Import\JoomlaLanguages;
-use Aimeos\Cms\Import\JoomlaLevels;
-use Aimeos\Cms\Import\JoomlaLinks;
-use Aimeos\Cms\Import\JoomlaMenu;
-use Aimeos\Cms\Import\JoomlaMenuItem;
-use Aimeos\Cms\Import\JoomlaMenuLink;
-use Aimeos\Cms\Import\JoomlaMenuNode;
-use Aimeos\Cms\Import\JoomlaMenuRules;
-use Aimeos\Cms\Import\JoomlaOrigin;
-use Aimeos\Cms\Import\JoomlaKeptRedirect;
-use Aimeos\Cms\Import\JoomlaReader;
-use Aimeos\Cms\Import\JoomlaRedirects;
-use Aimeos\Cms\Import\JoomlaRoutePath;
-use Aimeos\Cms\Import\JoomlaRow;
-use Aimeos\Cms\Import\JoomlaRouteOptions;
-use Aimeos\Cms\Import\JoomlaHtmlUrls;
-use Aimeos\Cms\Import\JoomlaAssignedUrls;
-use Aimeos\Cms\Import\JoomlaHomeRoot;
-use Aimeos\Cms\Import\JoomlaLanguageDomains;
-use Aimeos\Cms\Import\JoomlaTranslationRoute;
-use Aimeos\Cms\Import\JoomlaUrlAssignment;
-use Aimeos\Cms\Import\JoomlaUrlClaim;
-use Aimeos\Cms\Import\JoomlaUrls;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Aimeos\Cms\Import\Joomla;
 
 
 /**
@@ -49,10 +22,10 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
     {
         $all = (object) ['language' => '*'];
         $de = (object) ['language' => 'de-DE'];
-        $select = fn( JoomlaMenuRules $rules, string $target, \stdClass $item, string $layout = '' ): bool => $rules->take( $target, $item, $layout );
+        $select = fn( Joomla\MenuRules $rules, string $target, \stdClass $item, string $layout = '' ): bool => $rules->take( $target, $item, $layout );
 
         // items for all languages are used once per target and layout, the first one also claims the default layout
-        $rules = new JoomlaMenuRules( true );
+        $rules = new Joomla\MenuRules( true );
         $this->assertTrue( $select( $rules, 'article1', $all, 'blog' ) );
         $this->assertFalse( $select( $rules, 'article1', $all, 'blog' ) );
         $this->assertFalse( $select( $rules, 'article1', $all ) );
@@ -69,7 +42,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         // language specific items always replace the selected ones if languages are filtered and are ignored otherwise
         $this->assertTrue( $select( $rules, 'article2', $de ) );
         $this->assertTrue( $select( $rules, 'article2', $de ) );
-        $this->assertFalse( $select( new JoomlaMenuRules( false ), 'article1', $de ) );
+        $this->assertFalse( $select( new Joomla\MenuRules( false ), 'article1', $de ) );
     }
 
 
@@ -77,36 +50,36 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
     {
         $root = (object) ['id' => 2, 'parent_id' => 1];
         $child = (object) ['id' => 3, 'parent_id' => 2];
-        $menu = new JoomlaMenu( $this->items( [$root, $child, (object) ['id' => 4, 'parent_id' => 99], (object) ['id' => 5, 'parent_id' => 2]] ), new JoomlaAccess( new JoomlaLevels(), collect() ) );
+        $menu = new Joomla\Menu( $this->items( [$root, $child, (object) ['id' => 4, 'parent_id' => 99], (object) ['id' => 5, 'parent_id' => 2]] ), new Joomla\Access( new Joomla\Levels(), collect() ) );
 
-        $roots = array_filter( iterator_to_array( $menu->tree() ), fn( JoomlaMenuNode $node ) => $node->parent === null );
+        $roots = array_filter( iterator_to_array( $menu->tree() ), fn( Joomla\MenuNode $node ) => $node->parent === null );
 
-        $this->assertSame( [2, 4], array_values( array_map( fn( JoomlaMenuNode $node ) => $node->item->id, $roots ) ) );
+        $this->assertSame( [2, 4], array_values( array_map( fn( Joomla\MenuNode $node ) => $node->item->id, $roots ) ) );
         $this->assertSame( [3, 5], array_column( $menu->children( 2 ), 'id' ) );
         $this->assertSame( [], $menu->children( 3 ) );
-        $this->assertSame( 42, JoomlaMenuItem::article( (object) ['link' => 'index.php?option=com_content&view=article&id=42'] ) );
-        $this->assertNull( JoomlaMenuItem::article( (object) ['link' => 'index.php?option=com_content&view=category&id=42'] ) );
-        $this->assertNull( JoomlaMenuItem::article( (object) ['link' => 'index.php?option=com_contact&view=article&id=42'] ) );
+        $this->assertSame( 42, Joomla\MenuItem::article( (object) ['link' => 'index.php?option=com_content&view=article&id=42'] ) );
+        $this->assertNull( Joomla\MenuItem::article( (object) ['link' => 'index.php?option=com_content&view=category&id=42'] ) );
+        $this->assertNull( Joomla\MenuItem::article( (object) ['link' => 'index.php?option=com_contact&view=article&id=42'] ) );
         // menu items showing a category or listing its subcategories show the category, lists of the root category none
-        $this->assertSame( 42, JoomlaMenuItem::category( (object) ['link' => 'index.php?option=com_content&view=category&id=42'] ) );
-        $this->assertSame( 42, JoomlaMenuItem::category( (object) ['link' => 'index.php?option=com_content&view=categories&id=42'] ) );
-        $this->assertNull( JoomlaMenuItem::category( (object) ['link' => 'index.php?option=com_content&view=categories&id=1'] ) );
-        $this->assertNull( JoomlaMenuItem::category( (object) ['link' => 'index.php?option=com_content&view=article&id=42'] ) );
-        $this->assertSame( ['option' => 'com_content', 'view' => 'category', 'layout' => 'blog'], JoomlaMenuItem::query( (object) ['link' => 'index.php?option=com_content&view=category&layout=blog'] ) );
-        $this->assertSame( [], JoomlaMenuItem::query( (object) [] ) );
-        $this->assertSame( [], JoomlaMenuItem::query( null ) );
+        $this->assertSame( 42, Joomla\MenuItem::category( (object) ['link' => 'index.php?option=com_content&view=category&id=42'] ) );
+        $this->assertSame( 42, Joomla\MenuItem::category( (object) ['link' => 'index.php?option=com_content&view=categories&id=42'] ) );
+        $this->assertNull( Joomla\MenuItem::category( (object) ['link' => 'index.php?option=com_content&view=categories&id=1'] ) );
+        $this->assertNull( Joomla\MenuItem::category( (object) ['link' => 'index.php?option=com_content&view=article&id=42'] ) );
+        $this->assertSame( ['option' => 'com_content', 'view' => 'category', 'layout' => 'blog'], Joomla\MenuItem::query( (object) ['link' => 'index.php?option=com_content&view=category&layout=blog'] ) );
+        $this->assertSame( [], Joomla\MenuItem::query( (object) [] ) );
+        $this->assertSame( [], Joomla\MenuItem::query( null ) );
     }
 
 
     public function testMenuTreeIsInPreOrder(): void
     {
         $item = fn( int $id, int $parentId ) => (object) ['id' => $id, 'parent_id' => $parentId];
-        $menu = new JoomlaMenu( $this->items( [$item( 2, 1 ), $item( 3, 2 ), $item( 4, 99 ), $item( 5, 2 ), $item( 6, 3 ), $item( 7, 6 )] ), new JoomlaAccess( new JoomlaLevels(), collect() ) );
-        $tree = array_map( fn( JoomlaMenuNode $node ) => [$node->item->id, $node->parent], iterator_to_array( $menu->tree() ) );
+        $menu = new Joomla\Menu( $this->items( [$item( 2, 1 ), $item( 3, 2 ), $item( 4, 99 ), $item( 5, 2 ), $item( 6, 3 ), $item( 7, 6 )] ), new Joomla\Access( new Joomla\Levels(), collect() ) );
+        $tree = array_map( fn( Joomla\MenuNode $node ) => [$node->item->id, $node->parent], iterator_to_array( $menu->tree() ) );
 
         // each item is directly followed by its descendants and refers to the position of its parent item
         $this->assertSame( [[2, null], [3, 0], [6, 1], [7, 2], [5, 0], [4, null]], $tree );
-        $this->assertSame( [], iterator_to_array( ( new JoomlaMenu( $this->items( [] ), new JoomlaAccess( new JoomlaLevels(), collect() ) ) )->tree() ) );
+        $this->assertSame( [], iterator_to_array( ( new Joomla\Menu( $this->items( [] ), new Joomla\Access( new Joomla\Levels(), collect() ) ) )->tree() ) );
     }
 
 
@@ -149,12 +122,12 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $items = $this->items( [$home( 21, '*' ), $home( 22, 'de-DE', $article ), $home( 24, 'en-GB' )] );
 
         $this->languageFilter();
-        $links = $this->importRun( $this->wiring( $this->site( $categories, ['de-DE:de:https://example.de'] ), $items, origin: new JoomlaOrigin( 'example.com' ) ),
-            articles: $this->articles( translations: [2 => new JoomlaTranslationRoute( 'ueber-uns', 'de-DE' )], translated: [1 => [2]] ),
-            home: new JoomlaHomeRoot( $home( 24, 'en-GB' ), 1, [(object) ['id' => 2, 'language' => 'de-DE']] ),
+        $links = $this->importRun( $this->wiring( $this->site( $categories, ['de-DE:de:https://example.de'] ), $items, origin: new Joomla\Origin( 'example.com' ) ),
+            articles: $this->articles( translations: [2 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' )], translated: [1 => [2]] ),
+            home: new Joomla\HomeRoot( $home( 24, 'en-GB' ), 1, [(object) ['id' => 2, 'language' => 'de-DE']] ),
         )->links;
-        $this->assertSame( 'https://example.de/', $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '2'], JoomlaLanguages::ALL ) );
-        $this->assertSame( '/', $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '1'], JoomlaLanguages::ALL ) );
+        $this->assertSame( 'https://example.de/', $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '2'], Joomla\Languages::ALL ) );
+        $this->assertSame( '/', $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '1'], Joomla\Languages::ALL ) );
     }
 
 
@@ -166,15 +139,15 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $items = $this->items( [$home( 22, 'de-DE' ), $home( 24, 'en-GB' )] );
 
         $this->languageFilter();
-        $run = $this->importRun( $this->wiring( $this->site( $categories, ['de-DE:de:https://example.de'] ), $items, origin: new JoomlaOrigin( 'example.com' ) ),
-            articles: $this->articles( [1 => new JoomlaRoutePath( null, 'about' ), 3 => new JoomlaRoutePath( null, 'about' )],
-                [2 => new JoomlaTranslationRoute( 'ueber-uns', 'de-DE' )], [1 => 0, 3 => 0], [1 => [2]] ),
-            home: new JoomlaHomeRoot( $home( 24, 'en-GB' ), 1, [(object) ['id' => 2, 'language' => 'de-DE']] ),
+        $run = $this->importRun( $this->wiring( $this->site( $categories, ['de-DE:de:https://example.de'] ), $items, origin: new Joomla\Origin( 'example.com' ) ),
+            articles: $this->articles( [1 => new Joomla\RoutePath( null, 'about' ), 3 => new Joomla\RoutePath( null, 'about' )],
+                [2 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' )], [1 => 0, 3 => 0], [1 => [2]] ),
+            home: new Joomla\HomeRoot( $home( 24, 'en-GB' ), 1, [(object) ['id' => 2, 'language' => 'de-DE']] ),
         );
-        $this->assertNull( $run->links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '2'], JoomlaLanguages::ALL ) );
-        $this->assertSame( '/', $run->links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '1'], JoomlaLanguages::ALL ) );
+        $this->assertNull( $run->links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '2'], Joomla\Languages::ALL ) );
+        $this->assertSame( '/', $run->links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '1'], Joomla\Languages::ALL ) );
         // the article of the root page and its translations claim no URL paths, so other rows keep their aliases
-        $this->assertSame( '/about', $run->links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '3'], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/about', $run->links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '3'], Joomla\Languages::ALL ) );
     }
 
 
@@ -202,26 +175,26 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $target( '', null, 'index.php?option=com_content&view=archive' );
         $target( '', null, 'index.php?option=com_content&view=form&id=3' );
         // the view and the layout are parsed separately from the kind
-        $link = fn( string $link ) => JoomlaMenuLink::of( (object) ['type' => 'component', 'link' => $link] );
-        $this->assertEquals( new JoomlaMenuLink( JoomlaMenuLink::KIND_OTHER, null, 'featured', 'blog' ), $link( 'index.php?option=com_content&view=featured&layout=blog&id=3' ) );
-        $this->assertEquals( new JoomlaMenuLink( JoomlaMenuLink::KIND_CATEGORY, 7, 'category' ), $link( 'index.php?option=com_content&view=category&layout=default&id=7' ) );
-        $this->assertEquals( new JoomlaMenuLink( JoomlaMenuLink::KIND_LINK ), JoomlaMenuLink::of( (object) ['type' => 'url', 'link' => 'index.php?option=com_content&view=article&id=42'] ) );
-        $this->assertSame( 'featured', JoomlaMenuItem::view( (object) ['link' => 'index.php?option=com_content&view=featured&id=3'] ) );
+        $link = fn( string $link ) => Joomla\MenuLink::of( (object) ['type' => 'component', 'link' => $link] );
+        $this->assertEquals( new Joomla\MenuLink( Joomla\MenuLink::KIND_OTHER, null, 'featured', 'blog' ), $link( 'index.php?option=com_content&view=featured&layout=blog&id=3' ) );
+        $this->assertEquals( new Joomla\MenuLink( Joomla\MenuLink::KIND_CATEGORY, 7, 'category' ), $link( 'index.php?option=com_content&view=category&layout=default&id=7' ) );
+        $this->assertEquals( new Joomla\MenuLink( Joomla\MenuLink::KIND_LINK ), Joomla\MenuLink::of( (object) ['type' => 'url', 'link' => 'index.php?option=com_content&view=article&id=42'] ) );
+        $this->assertSame( 'featured', Joomla\MenuItem::view( (object) ['link' => 'index.php?option=com_content&view=featured&id=3'] ) );
         // menu items of other types aren't views even if their links are
-        $this->assertNull( JoomlaMenuItem::view( (object) ['type' => 'url', 'link' => 'index.php?option=com_content&view=category&id=3'] ) );
-        $this->assertNull( JoomlaMenuItem::view( null ) );
+        $this->assertNull( Joomla\MenuItem::view( (object) ['type' => 'url', 'link' => 'index.php?option=com_content&view=category&id=3'] ) );
+        $this->assertNull( Joomla\MenuItem::view( null ) );
         // Joomla builds the URLs from the lists of the articles component and the home menu items
-        $this->assertTrue( JoomlaMenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=category&id=3'] ) );
-        $this->assertTrue( JoomlaMenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=categories&id=1'] ) );
-        $this->assertTrue( JoomlaMenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=archive'] ) );
-        $this->assertTrue( JoomlaMenuItem::routing( (object) ['link' => 'index.php?option=com_users&view=login', 'home' => 1] ) );
-        $this->assertFalse( JoomlaMenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=article&id=3'] ) );
-        $this->assertFalse( JoomlaMenuItem::routing( (object) ['type' => 'url', 'link' => 'index.php?option=com_content&view=category&id=3'] ) );
+        $this->assertTrue( Joomla\MenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=category&id=3'] ) );
+        $this->assertTrue( Joomla\MenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=categories&id=1'] ) );
+        $this->assertTrue( Joomla\MenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=archive'] ) );
+        $this->assertTrue( Joomla\MenuItem::routing( (object) ['link' => 'index.php?option=com_users&view=login', 'home' => 1] ) );
+        $this->assertFalse( Joomla\MenuItem::routing( (object) ['link' => 'index.php?option=com_content&view=article&id=3'] ) );
+        $this->assertFalse( Joomla\MenuItem::routing( (object) ['type' => 'url', 'link' => 'index.php?option=com_content&view=category&id=3'] ) );
         // the default layout is the same as none
-        $this->assertSame( '', JoomlaMenuItem::layout( (object) ['link' => 'index.php?option=com_content&view=category&layout=default&id=3'] ) );
-        $this->assertSame( 'blog', JoomlaMenuItem::layout( (object) ['link' => 'index.php?option=com_content&view=category&layout=blog&id=3'] ) );
-        $this->assertSame( '', JoomlaMenuItem::layout( null ) );
-        $this->assertSame( 'blog', JoomlaMenuItem::normalLayout( 'blog' ) );
+        $this->assertSame( '', Joomla\MenuItem::layout( (object) ['link' => 'index.php?option=com_content&view=category&layout=default&id=3'] ) );
+        $this->assertSame( 'blog', Joomla\MenuItem::layout( (object) ['link' => 'index.php?option=com_content&view=category&layout=blog&id=3'] ) );
+        $this->assertSame( '', Joomla\MenuItem::layout( null ) );
+        $this->assertSame( 'blog', Joomla\MenuItem::normalLayout( 'blog' ) );
         // URL menu items linking to articles aren't articles, items without type are components
         $target( 'link', null, 'index.php?option=com_content&view=article&id=42', 'url' );
         $target( 'link', null, '', 'alias' );
@@ -230,10 +203,10 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $target( '', null, 'index.php?option=com_content&view=article&id=42', 'container' );
         $this->assertMenuLink( 'article', 42, (object) ['link' => 'index.php?option=com_content&view=article&id=42'] );
         // only URL and alias menu items with URL are links
-        $this->assertSame( JoomlaMenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'url', 'link' => 'https://example.com'] ) );
-        $this->assertSame( JoomlaMenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'alias', 'link' => ''] ) );
-        $this->assertNotSame( JoomlaMenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'url', 'link' => '#'] ) );
-        $this->assertNotSame( JoomlaMenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'component', 'link' => 'index.php?option=com_content&view=article&id=42'] ) );
+        $this->assertSame( Joomla\MenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'url', 'link' => 'https://example.com'] ) );
+        $this->assertSame( Joomla\MenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'alias', 'link' => ''] ) );
+        $this->assertNotSame( Joomla\MenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'url', 'link' => '#'] ) );
+        $this->assertNotSame( Joomla\MenuLink::KIND_LINK, $this->kindOf( (object) ['type' => 'component', 'link' => 'index.php?option=com_content&view=article&id=42'] ) );
     }
 
 
@@ -257,7 +230,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         ];
         $routes = $this->routes( $categories, [$items[0], $items[2], $items[1], $items[4]] );
         // with strict routing, the active menu item is the one of the categories without the home menu item
-        $strict = $this->routes( $categories, [$items[0], $items[2], $items[1], $items[4]], new JoomlaRouteOptions( noIds: false, strict: true ) );
+        $strict = $this->routes( $categories, [$items[0], $items[2], $items[1], $items[4]], new Joomla\RouteOptions( noIds: false, strict: true ) );
 
         // the last menu item in a specific language is used before the ones for all languages
         $this->assertSame( 102, $routes->categoryItem( 2 )?->id );
@@ -279,15 +252,15 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( 105, $strict->active( 6 )?->id );
 
         // without language filter, Joomla uses only the menu items for all languages
-        $routes = $this->routes( $categories, [$items[1], $items[0], $items[2]], rules: new JoomlaMenuRules( false ) );
+        $routes = $this->routes( $categories, [$items[1], $items[0], $items[2]], rules: new Joomla\MenuRules( false ) );
         $this->assertSame( 101, $routes->categoryItem( 2 )?->id );
         $this->assertSame( 'company/blog/3-local', $routes->category( 3 ) );
-        $routes = $this->routes( $categories, [$items[1], (object) ['id' => 106, 'alias' => 'themen', 'language' => 'de-DE', 'link' => 'index.php?option=com_content&view=categories&id=0']], rules: new JoomlaMenuRules( false ) );
+        $routes = $this->routes( $categories, [$items[1], (object) ['id' => 106, 'alias' => 'themen', 'language' => 'de-DE', 'link' => 'index.php?option=com_content&view=categories&id=0']], rules: new Joomla\MenuRules( false ) );
         $this->assertNull( $routes->categoryItem( 2 ) );
         $this->assertNull( $routes->active( 3 ) );
         $this->assertNull( $routes->category( 3 ) );
 
-        $routes = $this->routes( $categories, array_slice( $items, 0, 1 ), new JoomlaRouteOptions( noIds: true, strict: false ) );
+        $routes = $this->routes( $categories, array_slice( $items, 0, 1 ), new Joomla\RouteOptions( noIds: true, strict: false ) );
         $this->assertSame( 'company/blog/local/about', $routes->article( (object) ['id' => 7, 'alias' => 'about', 'catid' => 3] ) );
         $this->assertNull( $routes->active( 5 ) );
 
@@ -304,7 +277,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( 'topics/5-sport', $routes->category( 5 ) );
 
         // the legacy router of Joomla 3 adds the ID of the category to the first category segment only
-        $legacy = new JoomlaRouteOptions( noIds: false, strict: false, legacy: true );
+        $legacy = new Joomla\RouteOptions( noIds: false, strict: false, legacy: true );
         $routes = $this->routes( $categories, [$items[0]], $legacy );
         $this->assertSame( 'company/blog/4-local/9-deep', $routes->article( (object) ['id' => 9, 'alias' => 'deep', 'catid' => 4] ) );
         $this->assertSame( 'company/blog/7-about', $routes->article( (object) ['id' => 7, 'alias' => 'about', 'catid' => 2] ) );
@@ -322,7 +295,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         // categories whose parents don't lead to the root category aren't routed
         $this->assertNull( $routes->category( 6 ) );
         // the hidden "sef_advanced_link" option removes the IDs
-        $routes = $this->routes( $categories, [$home], new JoomlaRouteOptions( noIds: true, strict: false, legacy: true ) );
+        $routes = $this->routes( $categories, [$home], new Joomla\RouteOptions( noIds: true, strict: false, legacy: true ) );
         $this->assertSame( 'news/local/about', $routes->article( (object) ['id' => 7, 'alias' => 'about', 'catid' => 3] ) );
         // home menu items of other components aren't used
         $routes = $this->routes( $categories, [(object) ( ['link' => 'index.php?option=com_contact&view=featured'] + (array) $home )], $legacy );
@@ -353,7 +326,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertNull( $routes->category( 3 ) );
         $this->assertNull( $this->routes( $categories, [$home] )->article( (object) ['id' => 7, 'alias' => 'about', 'catid' => 3] ) );
         // with strict routing of Joomla 5.2+, the home menu item isn't used
-        $this->assertNull( $this->routes( $categories, [$start], new JoomlaRouteOptions( noIds: false, strict: true ) )->article( (object) ['id' => 7, 'alias' => 'about', 'catid' => 3] ) );
+        $this->assertNull( $this->routes( $categories, [$start], new Joomla\RouteOptions( noIds: false, strict: true ) )->article( (object) ['id' => 7, 'alias' => 'about', 'catid' => 3] ) );
 
         // the legacy router of Joomla 3.7+ uses the menu rules too, so the first menu item of a layout replaces the existing ones
         $this->assertSame( 109, $this->routes( $categories, [$list, $blog], $legacy )->categoryItem( 5 )?->id );
@@ -365,10 +338,10 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( 104, $routes->listItem( 1 )?->id );
         $this->assertNull( $routes->listItem( 2 ) );
 
-        $this->assertSame( 'blog', JoomlaMenuItem::path( (object) ['alias' => 'blog'] ) );
-        $this->assertSame( 'my-blog', JoomlaMenuItem::path( (object) ['title' => 'My blog'] ) );
-        $this->assertSame( '', JoomlaMenuItem::path( (object) ['home' => 1, 'alias' => 'home'] ) );
-        $this->assertSame( 'company/blog', JoomlaMenuItem::path( (object) ['path' => '/company/blog/', 'alias' => 'blog'] ) );
+        $this->assertSame( 'blog', Joomla\MenuItem::path( (object) ['alias' => 'blog'] ) );
+        $this->assertSame( 'my-blog', Joomla\MenuItem::path( (object) ['title' => 'My blog'] ) );
+        $this->assertSame( '', Joomla\MenuItem::path( (object) ['home' => 1, 'alias' => 'home'] ) );
+        $this->assertSame( 'company/blog', Joomla\MenuItem::path( (object) ['path' => '/company/blog/', 'alias' => 'blog'] ) );
     }
 
 
@@ -386,7 +359,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
             $db->table( 'extensions' )->where( 'element', 'redirect' )->update( ['params' => json_encode( $params )] );
             $reader = $this->reader( $db );
 
-            return JoomlaRedirects::all( $reader, $this->site( $reader->categories(), reader: $reader )->plugins )->pluck( 'old_url' )->all();
+            return Joomla\Redirects::all( $reader, $this->site( $reader->categories(), reader: $reader )->plugins )->pluck( 'old_url' )->all();
         };
         $row = fn( int $header, string $url = 'old' ) => [['header' => $header, 'old_url' => $url]];
 
@@ -423,7 +396,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( 203, $router->linkRoutes( 'de-DE' )->viewItem( 'archive' )?->id );
         $this->assertSame( 201, $router->linkRoutes( 'de-DE' )->viewItem( 'featured' )?->id );
         $this->assertSame( 103, $router->linkRoutes( 'en-GB' )->viewItem( 'archive' )?->id );
-        $this->assertSame( 103, $router->linkRoutes( JoomlaLanguages::ALL )->viewItem( 'archive' )?->id );
+        $this->assertSame( 103, $router->linkRoutes( Joomla\Languages::ALL )->viewItem( 'archive' )?->id );
         $this->assertSame( 103, $router->contentRoutes( 'de-DE' )->viewItem( 'archive' )?->id );
         // the routes of each language select only the menu items of the language and for all languages
         $this->assertSame( 203, $router->languageRoutes( 'de-DE' )->viewItem( 'archive' )?->id );
@@ -457,12 +430,12 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         // Joomla 4+ also uses a home menu item listing categories for articles without menu item
         $article = (object) ['id' => 7, 'alias' => 'about', 'catid' => 3];
         $this->assertSame( '7-about', $this->routes( $categories, [$home] )->article( $article ) );
-        $this->assertNull( $this->routes( $categories, [$home], new JoomlaRouteOptions( noIds: false, strict: true ) )->article( $article ) );
+        $this->assertNull( $this->routes( $categories, [$home], new Joomla\RouteOptions( noIds: false, strict: true ) )->article( $article ) );
 
         // the home menu item is the active menu item if there's none for the categories, except with strict routing
         $this->assertSame( 104, $this->routes( $categories, [$home] )->active( 3 )?->id );
         $this->assertSame( 102, $this->routes( $categories, [$home, $blog] )->active( 3 )?->id );
-        $this->assertNull( $this->routes( $categories, [$home], new JoomlaRouteOptions( noIds: false, strict: true ) )->active( 3 ) );
+        $this->assertNull( $this->routes( $categories, [$home], new Joomla\RouteOptions( noIds: false, strict: true ) )->active( 3 ) );
         $this->assertNull( $this->routes( $categories, [] )->active( 3 ) );
     }
 
@@ -481,25 +454,25 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         // both routers use the menu item of the parent category instead of the home menu item showing the category itself
         foreach( [false, true] as $legacy )
         {
-            $options = new JoomlaRouteOptions( noIds: false, strict: false, legacy: $legacy );
+            $options = new Joomla\RouteOptions( noIds: false, strict: false, legacy: $legacy );
             $this->assertNull( $this->routes( $categories, [$home], $options )->category( 3 ) );
             $this->assertSame( 'blog/3-local', $this->routes( $categories, [$blog, $home], $options )->category( 3 ) );
         }
 
         // parent categories without alias add no empty segment, the ID is added to the first category with alias
-        $this->assertSame( '5-sport', $this->routes( $categories, [$home], new JoomlaRouteOptions( noIds: false, strict: false, legacy: true ) )->category( 5 ) );
-        $this->assertSame( 'sport', $this->routes( $categories, [$home], new JoomlaRouteOptions( noIds: true, strict: false, legacy: true ) )->category( 5 ) );
+        $this->assertSame( '5-sport', $this->routes( $categories, [$home], new Joomla\RouteOptions( noIds: false, strict: false, legacy: true ) )->category( 5 ) );
+        $this->assertSame( 'sport', $this->routes( $categories, [$home], new Joomla\RouteOptions( noIds: true, strict: false, legacy: true ) )->category( 5 ) );
     }
 
 
     public function testClaimsAppendIdsToUsedPaths(): void
     {
-        $claims = new JoomlaClaims();
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::ARTICLE, 1, 'about' ) );
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::ARTICLE, 5, 'about' ) );
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::CATEGORY, 5, 'about' ) );
-        $claims->claim( JoomlaUrlClaim::translation( JoomlaKind::ARTICLE, 7, 'about', 'de' ) );
-        $claims->claim( JoomlaUrlClaim::translation( JoomlaKind::ARTICLE, 8, 'about', 'de' ) );
+        $claims = new Joomla\Claims();
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 1, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 5, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::CATEGORY, 5, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::translation( Joomla\Kind::ARTICLE, 7, 'about', 'de' ) );
+        $claims->claim( Joomla\UrlClaim::translation( Joomla\Kind::ARTICLE, 8, 'about', 'de' ) );
 
         // the paths are claimed per language domain, later rows get their ID and a counter appended, only the changed paths are kept
         $this->assertSame( ['' => ['a5' => 'about-5', 'c5' => 'about-5-2'], 'de' => ['ta8' => 'about-8']], $claims->slugs() );
@@ -512,9 +485,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
     public function testClaimsComparePathsCaseInsensitive(): void
     {
-        $claims = new JoomlaClaims();
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::ARTICLE, 1, 'About' ) );
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::ARTICLE, 5, 'about' ) );
+        $claims = new Joomla\Claims();
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 1, 'About' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 5, 'about' ) );
 
         // the unique index of the page paths is case insensitive in MySQL, so paths differing only in case are the same, the claimed ones keep their case
         $this->assertSame( ['' => ['a5' => 'about-5']], $claims->slugs() );
@@ -525,9 +498,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
     public function testClaimsComparePathsAccentInsensitive(): void
     {
-        $claims = new JoomlaClaims();
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::ARTICLE, 1, 'café' ) );
-        $claims->claim( JoomlaUrlClaim::row( JoomlaKind::ARTICLE, 5, 'cafe' ) );
+        $claims = new Joomla\Claims();
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 1, 'café' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 5, 'cafe' ) );
 
         // the unique index of the page paths in MySQL also ignores accents, the claimed paths keep them
         $this->assertSame( ['' => ['a5' => 'cafe-5']], $claims->slugs() );
@@ -538,9 +511,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
     public function testKindKeys(): void
     {
-        $this->assertSame( 'a5', JoomlaKind::key( JoomlaKind::ARTICLE, 5 ) );
-        $this->assertSame( 'tc7', JoomlaKind::translationKey( JoomlaKind::CATEGORY, '7' ) );
-        $this->assertSame( JoomlaKind::ARTICLE_TRANSLATION . '3', JoomlaKind::translationKey( JoomlaKind::ARTICLE, 3 ) );
+        $this->assertSame( 'a5', Joomla\Kind::key( Joomla\Kind::ARTICLE, 5 ) );
+        $this->assertSame( 'tc7', Joomla\Kind::translationKey( Joomla\Kind::CATEGORY, '7' ) );
+        $this->assertSame( Joomla\Kind::ARTICLE_TRANSLATION . '3', Joomla\Kind::translationKey( Joomla\Kind::ARTICLE, 3 ) );
     }
 
 
@@ -555,43 +528,43 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         // the menu items of other menus are fetched once when the import is set up and passed to the wiring
         $local = (object) ['id' => 22, 'menutype' => 'footer', 'title' => 'Local', 'alias' => 'local', 'parent_id' => 1, 'level' => 1, 'lft' => 1,
             'type' => 'component', 'link' => 'index.php?option=com_content&view=categories&id=3', 'published' => 1, 'language' => '*'];
-        $run = $this->importRun( $this->wiring( $site, origin: new JoomlaOrigin( 'example.com' ), items: $this->items( [$local] ), menu: $this->items( [
+        $run = $this->importRun( $this->wiring( $site, origin: new Joomla\Origin( 'example.com' ), items: $this->items( [$local] ), menu: $this->items( [
             // the home menu item shows the article with the same ID as the category
             (object) ( ['id' => 20, 'home' => 1, 'title' => 'Home', 'alias' => 'home', 'link' => 'index.php?option=com_content&view=article&id=2'] + $item ),
             (object) ( ['id' => 21, 'title' => 'Topics', 'alias' => 'topics', 'link' => 'index.php?option=com_content&view=categories&id=2'] + $item ),
-        ] ) ), articles: $this->articles( categoryIds: [9 => 3] ), folders: new JoomlaFolders( categories: [3 => $categories[3]] ) );
+        ] ) ), articles: $this->articles( categoryIds: [9 => 3] ), folders: new Joomla\Folders( categories: [3 => $categories[3]] ) );
         $urls = $run->urls;
         $links = $run->links;
 
         $this->assertSame( '/topics', $urls->categoryUrl( 2 ) );
         // menu items of other menus listing the subcategories link to the page of their category
         $this->assertNotNull( $local = $urls->categoryUrl( 3 ) );
-        $this->assertSame( $local, $links->resolve( ['Itemid' => '22'], JoomlaLanguages::ALL ) );
+        $this->assertSame( $local, $links->resolve( ['Itemid' => '22'], Joomla\Languages::ALL ) );
         // links with menu item ID use it only if it shows the same, IDs with alias are the same as their numeric part like in Joomla
-        $this->assertSame( $local, $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '3:local', 'Itemid' => '22'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '4', 'Itemid' => '22'], JoomlaLanguages::ALL ) );
+        $this->assertSame( $local, $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '3:local', 'Itemid' => '22'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '4', 'Itemid' => '22'], Joomla\Languages::ALL ) );
         // the IDs are compared as integers like Joomla does
-        $this->assertSame( $local, $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '03', 'Itemid' => '022'], JoomlaLanguages::ALL ) );
-        $this->assertSame( $local, $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '3abc', 'Itemid' => '22'], JoomlaLanguages::ALL ) );
+        $this->assertSame( $local, $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '03', 'Itemid' => '022'], Joomla\Languages::ALL ) );
+        $this->assertSame( $local, $links->resolve( ['option' => 'com_content', 'view' => 'categories', 'id' => '3abc', 'Itemid' => '22'], Joomla\Languages::ALL ) );
 
         // the menu items of other menus are taken from the published menu items fetched at once
         $db = DB::connection( 'joomla' );
         $db->enableQueryLog();
-        $this->assertNull( $links->resolve( ['option' => 'com_content', 'view' => 'featured', 'Itemid' => '22'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['Itemid' => '99'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['option' => 'com_content', 'view' => 'featured', 'Itemid' => '99'], JoomlaLanguages::ALL ) );
-        $this->assertSame( '/topics', $links->resolve( ['Itemid' => '21'], JoomlaLanguages::ALL ) );
+        $this->assertNull( $links->resolve( ['option' => 'com_content', 'view' => 'featured', 'Itemid' => '22'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => '99'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['option' => 'com_content', 'view' => 'featured', 'Itemid' => '99'], Joomla\Languages::ALL ) );
+        $this->assertSame( '/topics', $links->resolve( ['Itemid' => '21'], Joomla\Languages::ALL ) );
         $this->assertSame( [], $db->getQueryLog() );
         $db->disableQueryLog();
 
         // categories shown by menu items of the menu don't claim their aliases, so later rows keep them
         $news = (object) ['id' => 2, 'title' => 'News', 'alias' => 'news', 'parent_id' => 1, 'level' => 1, 'published' => 1];
         $topics = (object) ( ['id' => 21, 'title' => 'Topics', 'alias' => 'topics', 'link' => 'index.php?option=com_content&view=category&id=2'] + $item );
-        $links = $this->importRun( $this->wiring( $site, menu: $this->items( [$topics] ), origin: new JoomlaOrigin( 'example.com' ) ),
-            articles: $this->articles( translations: [5 => new JoomlaTranslationRoute( 'news', 'de-DE' )] ),
-            folders: new JoomlaFolders( categories: [2 => $news] ),
+        $links = $this->importRun( $this->wiring( $site, menu: $this->items( [$topics] ), origin: new Joomla\Origin( 'example.com' ) ),
+            articles: $this->articles( translations: [5 => new Joomla\TranslationRoute( 'news', 'de-DE' )] ),
+            folders: new Joomla\Folders( categories: [2 => $news] ),
         )->links;
-        $this->assertSame( '/news', $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '5'], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/news', $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => '5'], Joomla\Languages::ALL ) );
     }
 
 
@@ -641,7 +614,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
         // only the home menu item of the site uses the root page, also one of another menu, other home menu items are imported like the other ones
         $start = $item( 30, 'index.php?option=com_content&view=category&id=3', ['home' => 1, 'menutype' => 'footer'] );
-        $selected = new JoomlaCategoryItems( $site, $wiring->router, $menu, $items->keyBy( 'id' ), $start );
+        $selected = new Joomla\CategoryItems( $site, $wiring->router, $menu, $items->keyBy( 'id' ), $start );
         $this->assertSame( $start, $selected->categoryPageItem( 3 ) );
         $this->assertSame( $cat, $selected->categoryPageItem( 2 ) );
         $this->assertSame( [2, 4, 7, 8, 11], array_keys( $selected->menuPages() ) );
@@ -708,7 +681,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $team = $item( 24, 'team', 'view=article&id=1' );
         $wiring = $this->wiring( $site, $this->items( [$otherNews, $otherBlog, $home, $list, $inMenu, $team] ), $this->items( [$inMenu] ) );
         // the article in the category "Blog" is imported below its page
-        $urls = $wiring->assemble( articles: $this->articles( categoryIds: [8 => 3] ), folders: new JoomlaFolders( [3 => $blog] ), home: new JoomlaHomeRoot(), redirects: [] )->urls;
+        $urls = $wiring->assemble( articles: $this->articles( categoryIds: [8 => 3] ), folders: new Joomla\Folders( [3 => $blog] ), home: new Joomla\HomeRoot(), redirects: [] )->urls;
         $paths = $wiring->urlContext->paths;
         $pages = $wiring->categoryItems;
 
@@ -756,8 +729,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $site = $this->site( $categories );
         $heading = (object) ['id' => 10, 'type' => 'heading', 'title' => 'About', 'alias' => 'about', 'link' => '', 'parent_id' => 1];
         $articles = $this->articles(
-            [1 => new JoomlaRoutePath( null, 'about' ), 5 => new JoomlaRoutePath( 'company/about', 'about' ), 6 => new JoomlaRoutePath( null, 'company/about' )],
-            [2 => new JoomlaTranslationRoute( 'ueber-uns', 'de-DE' ), 4 => new JoomlaTranslationRoute( 'ueber-uns', 'de-DE' )]
+            [1 => new Joomla\RoutePath( null, 'about' ), 5 => new Joomla\RoutePath( 'company/about', 'about' ), 6 => new Joomla\RoutePath( null, 'company/about' )],
+            [2 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' ), 4 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' )]
         );
         $redirects = [
             (object) ['old_url' => 'company/about.html', 'new_url' => 'https://example.org/'],
@@ -765,9 +738,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
             (object) ['old_url' => 'https://example.org/other', 'new_url' => '/'],
             (object) ['old_url' => 'index.php/old-page', 'new_url' => '/'],
         ];
-        $origin = new JoomlaOrigin( 'example.com', 'https://Example.com/joomla/', true );
+        $origin = new Joomla\Origin( 'example.com', 'https://Example.com/joomla/', true );
         $wiring = $this->wiring( $site, menu: $this->items( [$heading] ), origin: $origin );
-        $run = $wiring->assemble( articles: $articles, folders: new JoomlaFolders(), home: new JoomlaHomeRoot(), redirects: $redirects );
+        $run = $wiring->assemble( articles: $articles, folders: new Joomla\Folders(), home: new Joomla\HomeRoot(), redirects: $redirects );
         $urls = $run->urls;
         $links = $run->links;
         $paths = $wiring->urlContext->paths;
@@ -775,56 +748,56 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $router = $wiring->router;
 
         // menu items and URL paths Joomla uses are claimed first, later rows with the same path get their ID appended
-        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], JoomlaLanguages::ALL );
+        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], Joomla\Languages::ALL );
         $this->assertSame( '/about-1', $article( 1 ) );
         $this->assertSame( '/company/about', $article( 5 ) );
         $this->assertSame( '/company/about-6', $article( 6 ) );
         $this->assertSame( '/ueber-uns', $article( 2 ) );
         $this->assertSame( '/ueber-uns-4', $article( 4 ) );
         $this->assertNull( $article( 3 ) );
-        $this->assertSame( '/about', $links->resolve( ['Itemid' => '10'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['Itemid' => '10', 'view' => 'article'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['Itemid' => 'x'], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/about', $links->resolve( ['Itemid' => '10'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => '10', 'view' => 'article'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => 'x'], Joomla\Languages::ALL ) );
         // like Joomla, the menu item ID is the integer at the start
-        $this->assertSame( '/about', $links->resolve( ['Itemid' => '10:about'], JoomlaLanguages::ALL ) );
-        $this->assertSame( '/about', $links->resolve( ['Itemid' => 10], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['Itemid' => '0'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['Itemid' => ['10']], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/about', $links->resolve( ['Itemid' => '10:about'], Joomla\Languages::ALL ) );
+        $this->assertSame( '/about', $links->resolve( ['Itemid' => 10], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => '0'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => ['10']], Joomla\Languages::ALL ) );
         $this->assertNotNull( $menu->item( 10 ) );
         $this->assertNull( $menu->item( 11 ) );
         $this->assertSame( 'about-1', $urls->articlePath( (object) ['id' => 1, 'alias' => 'about'] ) );
         // redirects from URL paths of imported pages, of other domains or already redirected ones are skipped
-        $this->assertEquals( [new JoomlaKeptRedirect( 'old-page', 'index.php?Itemid=10' )], $urls->redirects() );
+        $this->assertEquals( [new Joomla\KeptRedirect( 'old-page', 'index.php?Itemid=10' )], $urls->redirects() );
         $this->assertSame( 'other', $urls->articlePath( (object) ['id' => 7, 'alias' => 'other'] ) );
         $this->assertSame( 'company/about-6', $urls->articlePath( (object) ['id' => 6, 'alias' => 'company/about', 'catid' => 2] ) );
 
         // translations on the domain of the imported pages link to the home pages of their languages
-        $home = new JoomlaHomeRoot( articleId: 1, translations: [(object) ['id' => 2, 'language' => 'de-DE'], (object) ['id' => 4, 'language' => '1-XX']] );
-        $run = $this->wiring( $site, menu: $this->items( [$heading] ), origin: $origin )->assemble( articles: $articles, folders: new JoomlaFolders(), home: $home, redirects: $redirects );
+        $home = new Joomla\HomeRoot( articleId: 1, translations: [(object) ['id' => 2, 'language' => 'de-DE'], (object) ['id' => 4, 'language' => '1-XX']] );
+        $run = $this->wiring( $site, menu: $this->items( [$heading] ), origin: $origin )->assemble( articles: $articles, folders: new Joomla\Folders(), home: $home, redirects: $redirects );
         $urls = $run->urls;
         $links = $run->links;
-        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], JoomlaLanguages::ALL );
+        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], Joomla\Languages::ALL );
         $this->assertSame( '/', $article( 1 ) );
         $this->assertSame( '/de', $article( 2 ) );
         $this->assertSame( '/ueber-uns-4', $article( 4 ) );
 
         // absolute URLs of the site (case insensitive host, default port only) are URL paths without the suffix, relative ones are relative to the directory
-        $this->assertSame( '/page', $links->urlTarget( 'https://EXAMPLE.com:443/page.html', JoomlaLanguages::ALL ) );
-        $this->assertSame( 'https://EXAMPLE.com:8080/page.html', $links->urlTarget( 'https://EXAMPLE.com:8080/page.html', JoomlaLanguages::ALL ) );
-        $this->assertSame( 'https://other.org/x', $links->urlTarget( '//other.org/x', JoomlaLanguages::ALL ) );
-        $this->assertSame( 'https://other.org/', $links->urlTarget( ' https://other.org/ ', JoomlaLanguages::ALL ) );
-        $this->assertSame( 'mailto:a@example.org', $links->urlTarget( 'mailto:a@example.org', JoomlaLanguages::ALL ) );
-        $this->assertSame( '/old/new#top', $links->urlTarget( 'new.html#top', JoomlaLanguages::ALL, 'old' ) );
-        $this->assertSame( '/new', $links->urlTarget( 'index.php/new.html', JoomlaLanguages::ALL, 'old' ) );
-        $this->assertSame( '/about', $links->urlTarget( 'index.php?Itemid=10', JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->urlTarget( '', JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->urlTarget( " \t", JoomlaLanguages::ALL ) );
+        $this->assertSame( '/page', $links->urlTarget( 'https://EXAMPLE.com:443/page.html', Joomla\Languages::ALL ) );
+        $this->assertSame( 'https://EXAMPLE.com:8080/page.html', $links->urlTarget( 'https://EXAMPLE.com:8080/page.html', Joomla\Languages::ALL ) );
+        $this->assertSame( 'https://other.org/x', $links->urlTarget( '//other.org/x', Joomla\Languages::ALL ) );
+        $this->assertSame( 'https://other.org/', $links->urlTarget( ' https://other.org/ ', Joomla\Languages::ALL ) );
+        $this->assertSame( 'mailto:a@example.org', $links->urlTarget( 'mailto:a@example.org', Joomla\Languages::ALL ) );
+        $this->assertSame( '/old/new#top', $links->urlTarget( 'new.html#top', Joomla\Languages::ALL, 'old' ) );
+        $this->assertSame( '/new', $links->urlTarget( 'index.php/new.html', Joomla\Languages::ALL, 'old' ) );
+        $this->assertSame( '/about', $links->urlTarget( 'index.php?Itemid=10', Joomla\Languages::ALL ) );
+        $this->assertNull( $links->urlTarget( '', Joomla\Languages::ALL ) );
+        $this->assertNull( $links->urlTarget( " \t", Joomla\Languages::ALL ) );
 
         // menu items of other menus are looked up in the menu items the reader fetched once, also if they don't exist
         $db = DB::connection( 'joomla' );
-        $this->assertNull( $links->resolve( ['Itemid' => '99'], JoomlaLanguages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => '99'], Joomla\Languages::ALL ) );
         $db->enableQueryLog();
-        $this->assertNull( $links->resolve( ['Itemid' => '99'], JoomlaLanguages::ALL ) );
+        $this->assertNull( $links->resolve( ['Itemid' => '99'], Joomla\Languages::ALL ) );
         $this->assertCount( 0, $db->getQueryLog() );
         $db->disableQueryLog();
         $db->flushQueryLog();
@@ -841,15 +814,15 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertNull( $origin->redirectPath( 'page?id=1' ) );
         $this->assertNull( $origin->redirectPath( 'index.php' ) );
         // the suffix is only removed if Joomla adds it to the URLs
-        $this->assertSame( 'page.html', ( new JoomlaOrigin( 'example.com' ) )->redirectPath( 'https://example.com/page.html' ) );
+        $this->assertSame( 'page.html', ( new Joomla\Origin( 'example.com' ) )->redirectPath( 'https://example.com/page.html' ) );
         // the script name is removed from the targets without suffix option too, which keeps the suffix
-        $this->assertSame( 'page.html', ( new JoomlaOrigin() )->targetPath( 'index.php/page.html' ) );
-        $this->assertSame( 'page', ( new JoomlaOrigin( '', '', true ) )->targetPath( 'index.php/page.html' ) );
-        $this->assertSame( 'about', ( new JoomlaOrigin() )->targetPath( 'index.php/about' ) );
-        $this->assertSame( 'https://any.org/x', ( new JoomlaOrigin() )->local( 'https://any.org/x' ) );
+        $this->assertSame( 'page.html', ( new Joomla\Origin() )->targetPath( 'index.php/page.html' ) );
+        $this->assertSame( 'page', ( new Joomla\Origin( '', '', true ) )->targetPath( 'index.php/page.html' ) );
+        $this->assertSame( 'about', ( new Joomla\Origin() )->targetPath( 'index.php/about' ) );
+        $this->assertSame( 'https://any.org/x', ( new Joomla\Origin() )->local( 'https://any.org/x' ) );
         $this->assertSame( '/x', $origin->local( '//user@example.com:80/x' ) );
         // the path of Joomla sites in subdirectories is removed, URLs outside are only local if the host is the domain too
-        $subdir = new JoomlaOrigin( 'new.org', 'https://Old.ORG/joomla/' );
+        $subdir = new Joomla\Origin( 'new.org', 'https://Old.ORG/joomla/' );
         $this->assertSame( '/x', $subdir->local( 'https://old.org/joomla/x' ) );
         $this->assertSame( '/', $subdir->local( 'https://old.org/joomla' ) );
         // URL paths are case sensitive, so the directory is compared case sensitive too
@@ -865,20 +838,20 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( '/Joomla#top', $subdir->local( '/Joomla#top' ) );
         $this->assertSame( '/joomla2/x', $subdir->local( '/joomla2/x' ) );
         $this->assertSame( 'joomla/x', $subdir->local( 'joomla/x' ) );
-        $this->assertSame( '/joomla/x', ( new JoomlaOrigin( 'new.org', 'https://old.org' ) )->local( '/joomla/x' ) );
+        $this->assertSame( '/joomla/x', ( new Joomla\Origin( 'new.org', 'https://old.org' ) )->local( '/joomla/x' ) );
         $this->assertSame( '/joomla/x', $origin->local( 'https://example.com/joomla/joomla/x' ) );
         $this->assertSame( '/x', $origin->local( 'https://example.com/x' ) );
-        $this->assertSame( '/x', ( new JoomlaOrigin( 'new.org', 'https://Old.ORG' ) )->local( 'https://old.org/x' ) );
+        $this->assertSame( '/x', ( new Joomla\Origin( 'new.org', 'https://Old.ORG' ) )->local( 'https://old.org/x' ) );
         // Joomla 3 with language filter only uses the menu items for all languages for the articles for all languages
-        $this->assertSame( $router->contentRoutes( 'en-GB' ), $router->contentRoutes( JoomlaLanguages::ALL ) );
+        $this->assertSame( $router->contentRoutes( 'en-GB' ), $router->contentRoutes( Joomla\Languages::ALL ) );
         $this->assertSame( '/', $urls->articleUrl( 1 ) );
         $this->assertSame( '/company/about', $urls->articleUrl( 5 ) );
         $this->assertNull( $urls->articleUrl( 3 ) );
         $this->assertSame( '/about', $urls->menuUrl( $heading ) );
         $item = (object) ['id' => 11, 'type' => 'component', 'title' => 'Team', 'alias' => 'team', 'link' => 'index.php?option=com_content&view=article&id=6'];
         $this->assertNull( $urls->menuUrl( $item ) );
-        $this->assertSame( 'about', JoomlaRow::aliasOrSlug( (object) ['alias' => 'about', 'title' => 'Other'] ) );
-        $this->assertSame( 'about-us', JoomlaRow::aliasOrSlug( (object) ['title' => 'About us'] ) );
+        $this->assertSame( 'about', Joomla\Row::aliasOrSlug( (object) ['alias' => 'about', 'title' => 'Other'] ) );
+        $this->assertSame( 'about-us', Joomla\Row::aliasOrSlug( (object) ['title' => 'About us'] ) );
         $this->assertSame( 'team', $paths->itemPath( $item ) );
         $this->assertSame( 'start', $paths->itemPath( (object) ['home' => 1, 'alias' => 'start', 'path' => 'start'] ) );
         $this->assertSame( 'company/team', $paths->itemPath( (object) ['path' => 'company/team', 'alias' => 'team'] ) );
@@ -892,8 +865,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $legacy = $this->wiring( $this->site( $this->categories( [] ) ) )->router;
 
         // Joomla 3 with language filter only uses the menu items for all languages for the articles for all languages
-        $this->assertSame( $legacy->languageRoutes( JoomlaLanguages::ALL ), $legacy->contentRoutes( JoomlaLanguages::ALL ) );
-        $this->assertNotSame( $legacy->languageRoutes( JoomlaLanguages::ALL ), $legacy->contentRoutes( 'en-GB' ) );
+        $this->assertSame( $legacy->languageRoutes( Joomla\Languages::ALL ), $legacy->contentRoutes( Joomla\Languages::ALL ) );
+        $this->assertNotSame( $legacy->languageRoutes( Joomla\Languages::ALL ), $legacy->contentRoutes( 'en-GB' ) );
     }
 
 
@@ -925,9 +898,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->languageFilter();
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $categories, ['de-DE:de:https://de.example.com'] );
-        $urls = $this->importRun( $this->wiring( $site, menu: $this->items( [$about] ), origin: new JoomlaOrigin( 'example.com' ) ),
+        $urls = $this->importRun( $this->wiring( $site, menu: $this->items( [$about] ), origin: new Joomla\Origin( 'example.com' ) ),
             articles: $this->articles( categoryIds: [8 => 3] ),
-            folders: new JoomlaFolders( [3 => $blog], [3 => [$kategorie]], [10 => [$ueber]] ),
+            folders: new Joomla\Folders( [3 => $blog], [3 => [$kategorie]], [10 => [$ueber]] ),
         )->urls;
 
         // the categories and translations use the URL paths they claimed, the translations the ones of their language domain
@@ -951,8 +924,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->languageFilter();
         $this->setJoomlaVersion( 4 );
         $site = fn() => $this->site( $this->categories( [2 => $news, 3 => $blog, 4 => $kategorie] ), ['de-DE:de:https://de.example.com'] );
-        $run = fn( array $menuTranslations ) => $this->importRun( $this->wiring( $site(), menu: $this->items( [$menu] ), origin: new JoomlaOrigin( 'example.com' ) ),
-            folders: new JoomlaFolders( [3 => $blog], [3 => [$kategorie]], $menuTranslations ),
+        $run = fn( array $menuTranslations ) => $this->importRun( $this->wiring( $site(), menu: $this->items( [$menu] ), origin: new Joomla\Origin( 'example.com' ) ),
+            folders: new Joomla\Folders( [3 => $blog], [3 => [$kategorie]], $menuTranslations ),
         )->urls;
 
         // the page of the menu item shows the category, so its translation uses the variant of the translated menu item
@@ -983,10 +956,10 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $this->categories( [2 => $news, 3 => $blog, 4 => $kategorie] ), ['de-DE:de:https://de.example.com', 'fr-FR:fr:https://example.com'] );
         $homeItem = (object) ['id' => 50, 'type' => 'component', 'home' => 1, 'language' => '*', 'link' => 'index.php?option=com_content&view=article&id=1'];
-        $run = $this->importRun( $this->wiring( $site, $this->items( [$footer] ), $this->items( [$about, $fr] ), new JoomlaOrigin( 'example.com' ) ),
+        $run = $this->importRun( $this->wiring( $site, $this->items( [$footer] ), $this->items( [$about, $fr] ), new Joomla\Origin( 'example.com' ) ),
             articles: $this->articles( categoryIds: [8 => 3] ),
-            folders: new JoomlaFolders( [3 => $blog], [3 => [$kategorie]], [10 => [$hallo]] ),
-            home: new JoomlaHomeRoot( $homeItem, 1, [(object) ['id' => 7, 'language' => 'fr-FR']] ),
+            folders: new Joomla\Folders( [3 => $blog], [3 => [$kategorie]], [10 => [$hallo]] ),
+            home: new Joomla\HomeRoot( $homeItem, 1, [(object) ['id' => 7, 'language' => 'fr-FR']] ),
         );
         $urls = $run->urls;
         $links = $run->links;
@@ -997,21 +970,21 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         // links to translated categories and to menu items of other menus showing them use the page variant in the language domain
         $this->assertSame( 'https://de.example.com/hallo-4', $urls->categoryUrl( 4 ) );
         $this->assertSame( 'https://de.example.com/hallo-4', $urls->listUrl( 4 ) );
-        $this->assertSame( 'https://de.example.com/hallo-4', $links->resolve( ['option' => 'com_content', 'view' => 'category', 'id' => '4'], JoomlaLanguages::ALL ) );
-        $this->assertSame( 'https://de.example.com/hallo-4', $links->resolve( ['Itemid' => '40'], JoomlaLanguages::ALL ) );
+        $this->assertSame( 'https://de.example.com/hallo-4', $links->resolve( ['option' => 'com_content', 'view' => 'category', 'id' => '4'], Joomla\Languages::ALL ) );
+        $this->assertSame( 'https://de.example.com/hallo-4', $links->resolve( ['Itemid' => '40'], Joomla\Languages::ALL ) );
         // the root path of the home page variant of a language on the imported domain is reserved before the menu items
         $this->assertSame( '/fr', $urls->homeUrl( 'fr-FR' ) );
         $this->assertSame( '/fr-12', $urls->menuUrl( $fr ) );
         $this->assertSame( '/about', $urls->menuUrl( $about ) );
 
         // host names are case insensitive, so language domains differing only in case are the domain of the imported pages
-        $domains = new JoomlaLanguageDomains( $this->site( $this->categories( [] ), ['de-DE:de:https://DE.Example.com', 'fr-FR:fr:https://Example.COM'] )->languages, new JoomlaOrigin( 'example.com' ) );
+        $domains = new Joomla\LanguageDomains( $this->site( $this->categories( [] ), ['de-DE:de:https://DE.Example.com', 'fr-FR:fr:https://Example.COM'] )->languages, new Joomla\Origin( 'example.com' ) );
         $this->assertSame( 'de.example.com', $domains->domain( 'de-DE' ) );
         $this->assertSame( '', $domains->domain( 'fr-FR' ) );
         $this->assertSame( '/fr', $domains->homeUrl( 'fr-FR' ) );
 
-        // like JoomlaOrigin, the --domain value is compared without whitespace and default port
-        $domains = new JoomlaLanguageDomains( $this->site( $this->categories( [] ), ['de-DE:de:https://DE.example.com:8080', 'fr-FR:fr:https://Example.COM:443/'] )->languages, new JoomlaOrigin( ' Example.com:443 ' ) );
+        // like Joomla\Origin, the --domain value is compared without whitespace and default port
+        $domains = new Joomla\LanguageDomains( $this->site( $this->categories( [] ), ['de-DE:de:https://DE.example.com:8080', 'fr-FR:fr:https://Example.COM:443/'] )->languages, new Joomla\Origin( ' Example.com:443 ' ) );
         $this->assertSame( 'de.example.com', $domains->domain( 'de-DE' ) );
         $this->assertSame( '', $domains->domain( 'fr-FR' ) );
         $this->assertSame( '/fr', $domains->homeUrl( 'fr-FR' ) );
@@ -1031,9 +1004,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->languageFilter();
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $this->categories( [2 => $news, 3 => $blog, 4 => $kategorie] ), ['de-DE:de:https://de.example.com'] );
-        $run = $this->importRun( $this->wiring( $site, $this->items( [$home, $homeDe] ), $this->items( [$home] ), new JoomlaOrigin( 'example.com' ) ),
-            folders: new JoomlaFolders( [3 => $blog], [3 => [$kategorie]], [20 => [$homeDe]] ),
-            home: new JoomlaHomeRoot( $home ),
+        $run = $this->importRun( $this->wiring( $site, $this->items( [$home, $homeDe] ), $this->items( [$home] ), new Joomla\Origin( 'example.com' ) ),
+            folders: new Joomla\Folders( [3 => $blog], [3 => [$kategorie]], [20 => [$homeDe]] ),
+            home: new Joomla\HomeRoot( $home ),
         );
 
         // the category shown by the home menu item is the root page and its translation the root page variant of its language
@@ -1054,8 +1027,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $home = (object) ['id' => 30, 'menutype' => 'main', 'type' => 'component', 'title' => 'Home', 'alias' => 'home', 'home' => 1,
             'language' => '*', 'parent_id' => 1, 'level' => 1, 'link' => 'index.php?option=com_content&view=featured'];
         $site = $this->site( $this->categories( [] ), ['fr-FR:fr:https://example.com'] );
-        $run = $this->importRun( $this->wiring( $site, $this->items( [$home, $accueil] ), $this->items( [$fr] ), new JoomlaOrigin( 'example.com' ) ),
-            home: new JoomlaHomeRoot( $home ) );
+        $run = $this->importRun( $this->wiring( $site, $this->items( [$home, $accueil] ), $this->items( [$fr] ), new Joomla\Origin( 'example.com' ) ),
+            home: new Joomla\HomeRoot( $home ) );
 
         // with language filter, the home menu items of other languages are root page variants, so their paths are reserved too
         $this->assertSame( '/fr', $run->urls->homeUrl( 'fr-FR' ) );
@@ -1076,16 +1049,16 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->languageFilter();
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $this->categories( [] ), ['fr-FR:fr:https://example.com'] );
-        $urls = fn( JoomlaHomeRoot $root, array $items = [] ) => $this->importRun( $this->wiring( $site, $this->items( [$home, ...$items] ), $this->items( [$fr] ),
-            new JoomlaOrigin( 'example.com' ) ), folders: new JoomlaFolders( menuTranslations: [30 => [$homeFr]] ), home: $root )->urls;
+        $urls = fn( Joomla\HomeRoot $root, array $items = [] ) => $this->importRun( $this->wiring( $site, $this->items( [$home, ...$items] ), $this->items( [$fr] ),
+            new Joomla\Origin( 'example.com' ) ), folders: new Joomla\Folders( menuTranslations: [30 => [$homeFr]] ), home: $root )->urls;
 
         // without home menu item of the site, the home pages of the other languages aren't imported as root page variants
-        $this->assertSame( '/fr', $urls( new JoomlaHomeRoot(), [$accueil] )->menuUrl( $fr ) );
+        $this->assertSame( '/fr', $urls( new Joomla\HomeRoot(), [$accueil] )->menuUrl( $fr ) );
         // home menu items whose article isn't imported into the root page are imported like the other ones, the root page gets no variants
-        $this->assertSame( '/fr', $urls( new JoomlaHomeRoot( $home ) )->menuUrl( $fr ) );
+        $this->assertSame( '/fr', $urls( new Joomla\HomeRoot( $home ) )->menuUrl( $fr ) );
         // the variants of the root page are the translations of its article, not the ones of the home menu item
-        $this->assertSame( '/fr', $urls( new JoomlaHomeRoot( $home, 1 ) )->menuUrl( $fr ) );
-        $this->assertSame( '/fr-12', $urls( new JoomlaHomeRoot( $home, 1, [(object) ['id' => 3, 'language' => 'fr-FR']] ) )->menuUrl( $fr ) );
+        $this->assertSame( '/fr', $urls( new Joomla\HomeRoot( $home, 1 ) )->menuUrl( $fr ) );
+        $this->assertSame( '/fr-12', $urls( new Joomla\HomeRoot( $home, 1, [(object) ['id' => 3, 'language' => 'fr-FR']] ) )->menuUrl( $fr ) );
     }
 
 
@@ -1111,25 +1084,25 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->languageFilter();
         $this->setJoomlaVersion( 4 );
         $articles = $this->articles( [
-            1 => new JoomlaRoutePath( null, 'about' ),
-            8 => new JoomlaRoutePath( null, 'blog' ),
-            9 => new JoomlaRoutePath( null, 'hello' ),
-            11 => new JoomlaRoutePath( null, 'willkommen' ),
+            1 => new Joomla\RoutePath( null, 'about' ),
+            8 => new Joomla\RoutePath( null, 'blog' ),
+            9 => new Joomla\RoutePath( null, 'hello' ),
+            11 => new Joomla\RoutePath( null, 'willkommen' ),
         ], [
-            2 => new JoomlaTranslationRoute( 'hallo', 'de-DE' ),
-            4 => new JoomlaTranslationRoute( 'hallo', 'fr-FR' ),
-            5 => new JoomlaTranslationRoute( 'hello', 'fr-FR' ),
-            12 => new JoomlaTranslationRoute( 'willkommen', 'de-DE' ),
+            2 => new Joomla\TranslationRoute( 'hallo', 'de-DE' ),
+            4 => new Joomla\TranslationRoute( 'hallo', 'fr-FR' ),
+            5 => new Joomla\TranslationRoute( 'hello', 'fr-FR' ),
+            12 => new Joomla\TranslationRoute( 'willkommen', 'de-DE' ),
         ], [8 => 3] );
-        $run = $this->importRun( $this->wiring( $this->site( $categories, $languages ), $others, $this->items( [...$headings, $restricted] ), new JoomlaOrigin( 'example.com' ) ),
+        $run = $this->importRun( $this->wiring( $this->site( $categories, $languages ), $others, $this->items( [...$headings, $restricted] ), new Joomla\Origin( 'example.com' ) ),
             articles: $articles,
-            folders: new JoomlaFolders( categories: [3 => $blog], menuTranslations: [10 => [$ueber]] ),
+            folders: new Joomla\Folders( categories: [3 => $blog], menuTranslations: [10 => [$ueber]] ),
             redirects: $reader->redirects(),
         );
         $urls = $run->urls;
         $links = $run->links;
 
-        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], JoomlaLanguages::ALL );
+        $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], Joomla\Languages::ALL );
         // the ID is appended to the alias until the path is unused, articles are claimed before categories and translations
         $this->assertSame( '/about-1-2', $article( 1 ) );
         $this->assertSame( '/blog', $article( 8 ) );
@@ -1148,8 +1121,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( '/fr', $urls->homeUrl( 'fr-FR' ) );
         $this->assertNull( $urls->homeUrl( 'x1-YY' ) );
         // the home menu items of the other languages link to their home pages, the ones on own domains to the domain
-        $this->assertSame( 'https://de.example.com/', $links->resolve( ['Itemid' => '30'], JoomlaLanguages::ALL ) );
-        $this->assertSame( '/fr', $links->resolve( ['Itemid' => '31'], JoomlaLanguages::ALL ) );
+        $this->assertSame( 'https://de.example.com/', $links->resolve( ['Itemid' => '30'], Joomla\Languages::ALL ) );
+        $this->assertSame( '/fr', $links->resolve( ['Itemid' => '31'], Joomla\Languages::ALL ) );
         // links to translated menu items use the variant of the page of the translated menu item
         $this->assertSame( 'https://de.example.com/hello', $links->resolve( ['Itemid' => '16'], 'de-DE' ) );
         $this->assertSame( 'https://de.example.com/hello', $links->urlTarget( 'index.php?Itemid=16', 'de-DE' ) );
@@ -1168,14 +1141,14 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
         // without domain and base URL of the files, the absolute old URLs of the redirects are URLs of the site
         $assigned = $this->importRun( $this->site( $categories ), redirects: $reader->redirects() )->urls->redirects();
-        $this->assertEquals( [new JoomlaKeptRedirect( 'moved', 'about' )], $assigned );
+        $this->assertEquals( [new Joomla\KeptRedirect( 'moved', 'about' )], $assigned );
     }
 
 
     public function testUrlsKeepOnlyRedirectsWhoseTargetsAreImported(): void
     {
         $site = $this->site( $this->categories( [] ) );
-        $articles = $this->articles( [7 => new JoomlaRoutePath( null, 'about' )] );
+        $articles = $this->articles( [7 => new Joomla\RoutePath( null, 'about' )] );
         $gone = (object) ['old_url' => 'about', 'new_url' => 'index.php?option=com_content&view=article&id=99'];
         $assign = fn( array $redirects ) => $this->importRun( $site, articles: $articles, redirects: $redirects )->urls;
 
@@ -1185,7 +1158,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( 'about', $urls->articlePath( (object) ['id' => 7, 'alias' => 'about'] ) );
         // later redirects of the same old URL path with imported targets are kept
         $urls = $assign( [$gone, (object) ['old_url' => 'about', 'new_url' => 'https://example.org/']] );
-        $this->assertEquals( [new JoomlaKeptRedirect( 'about', 'https://example.org/' )], $urls->redirects() );
+        $this->assertEquals( [new Joomla\KeptRedirect( 'about', 'https://example.org/' )], $urls->redirects() );
         $this->assertSame( 'about-7', $urls->articlePath( (object) ['id' => 7, 'alias' => 'about'] ) );
     }
 
@@ -1193,7 +1166,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
     public function testUrlsSkipRedirectsWithUnsupportedTargets(): void
     {
         $site = $this->site( $this->categories( [] ) );
-        $articles = $this->articles( [7 => new JoomlaRoutePath( 'about', 'about' )] );
+        $articles = $this->articles( [7 => new Joomla\RoutePath( 'about', 'about' )] );
         $redirects = [
             (object) ['old_url' => 'ftp', 'new_url' => 'ftp://files.example.com/x'],
             (object) ['old_url' => 'script', 'new_url' => 'javascript:alert(1)'],
@@ -1214,12 +1187,12 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         }
 
         $this->assertSame( ['mail' => 'mailto:a@example.com', 'web' => 'https://example.org/x', 'shop' => '/shop/cart'], $targets );
-        $this->assertSame( ['ftp', 'script', 'anchor', 'blank'], array_map( fn( JoomlaKeptRedirect $redirect ) => $redirect->path, $run->urls->unsupportedRedirects() ) );
+        $this->assertSame( ['ftp', 'script', 'anchor', 'blank'], array_map( fn( Joomla\KeptRedirect $redirect ) => $redirect->path, $run->urls->unsupportedRedirects() ) );
         $this->assertSame( '/about', $run->urls->articleUrl( 7 ) );
         // the same rules as for URL menu items
-        $this->assertNull( $run->links->urlTarget( 'ftp://files.example.com/x', JoomlaLanguages::ALL ) );
-        $this->assertNull( $run->links->urlTarget( '#top', JoomlaLanguages::ALL ) );
-        $this->assertSame( '/page#top', $run->links->urlTarget( 'page#top', JoomlaLanguages::ALL ) );
+        $this->assertNull( $run->links->urlTarget( 'ftp://files.example.com/x', Joomla\Languages::ALL ) );
+        $this->assertNull( $run->links->urlTarget( '#top', Joomla\Languages::ALL ) );
+        $this->assertSame( '/page#top', $run->links->urlTarget( 'page#top', Joomla\Languages::ALL ) );
     }
 
 
@@ -1229,10 +1202,10 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $this->categories( [] ) );
         $heading = (object) ['id' => 10, 'type' => 'heading', 'title' => 'Team', 'alias' => 'team', 'link' => '', 'parent_id' => 1];
-        $articles = $this->articles( [7 => new JoomlaRoutePath( null, 'about' )] );
-        $wiring = $this->wiring( $site, menu: $this->items( [$heading] ), origin: new JoomlaOrigin( 'example.com', '', true ) );
+        $articles = $this->articles( [7 => new Joomla\RoutePath( null, 'about' )] );
+        $wiring = $this->wiring( $site, menu: $this->items( [$heading] ), origin: new Joomla\Origin( 'example.com', '', true ) );
         $links = $this->importRun( $wiring, articles: $articles )->links;
-        $target = fn( string $url ) => $links->urlTarget( $url, JoomlaLanguages::ALL, 'a/b' );
+        $target = fn( string $url ) => $links->urlTarget( $url, Joomla\Languages::ALL, 'a/b' );
 
         // the fragments of the routed Joomla URLs are kept, also of absolute URLs of the site
         $this->assertSame( '/about#top', $target( 'index.php?option=com_content&view=article&id=7#top' ) );
@@ -1255,11 +1228,11 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $this->assertSame( '/team', $target( 'https://example.com?Itemid=10' ) );
         // the language parameter alone shows the home page of the language like the language switcher links, unknown ones the one of the content
         $this->assertSame( '/de', $target( 'index.php?lang=de' ) );
-        $this->assertSame( '/de', $links->resolve( ['lang' => 'DE-de'], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/de', $links->resolve( ['lang' => 'DE-de'], Joomla\Languages::ALL ) );
         $this->assertSame( '/', $links->resolve( ['lang' => 'en'], 'de-DE' ) );
         $this->assertSame( '/de', $links->resolve( ['lang' => 'xx'], 'de-DE' ) );
-        $this->assertSame( '/', $links->resolve( ['lang' => 'xx'], JoomlaLanguages::ALL ) );
-        $this->assertNull( $links->resolve( ['lang' => 'de', 'Itemid' => '99'], JoomlaLanguages::ALL ) );
+        $this->assertSame( '/', $links->resolve( ['lang' => 'xx'], Joomla\Languages::ALL ) );
+        $this->assertNull( $links->resolve( ['lang' => 'de', 'Itemid' => '99'], Joomla\Languages::ALL ) );
         // dot segments are removed before the script name and the suffix like browsers resolve them before Joomla routes the URLs
         $this->assertSame( '/page', $target( '../../index.php/page.html' ) );
         $this->assertSame( '/team', $target( '../../index.php?Itemid=10' ) );
@@ -1275,7 +1248,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
         // the URL menu items are supported by the same rules
         $item = fn( string $link ) => (object) ['id' => 20, 'type' => 'url', 'link' => $link, 'language' => '*'];
-        $linkable = fn( string $link ) => JoomlaLinks::linkable( $item( $link ), $wiring->menu, $this->items( [] ), $wiring->router );
+        $linkable = fn( string $link ) => Joomla\Links::linkable( $item( $link ), $wiring->menu, $this->items( [] ), $wiring->router );
         $this->assertTrue( $linkable( 'index.php?' ) );
         $this->assertTrue( $linkable( '?Itemid=10' ) );
         $this->assertTrue( $linkable( '/?Itemid=10' ) );
@@ -1289,7 +1262,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
     public function testUrlsReportUnsupportedRedirectsOnlyIfTheirPathsAreUnused(): void
     {
         $site = $this->site( $this->categories( [] ) );
-        $articles = $this->articles( [7 => new JoomlaRoutePath( 'routed', 'routed' ), 8 => new JoomlaRoutePath( null, 'aliased' )] );
+        $articles = $this->articles( [7 => new Joomla\RoutePath( 'routed', 'routed' ), 8 => new Joomla\RoutePath( null, 'aliased' )] );
         $redirects = [
             (object) ['old_url' => 'routed', 'new_url' => 'javascript:x'],
             // the alias is claimed after the redirects but used by the article in the end
@@ -1301,8 +1274,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         ];
         $urls = $this->importRun( $site, articles: $articles, redirects: $redirects )->urls;
 
-        $this->assertSame( ['unused'], array_map( fn( JoomlaKeptRedirect $redirect ) => $redirect->path, $urls->unsupportedRedirects() ) );
-        $this->assertEquals( [new JoomlaKeptRedirect( 'dup', 'https://example.org/' )], $urls->redirects() );
+        $this->assertSame( ['unused'], array_map( fn( Joomla\KeptRedirect $redirect ) => $redirect->path, $urls->unsupportedRedirects() ) );
+        $this->assertEquals( [new Joomla\KeptRedirect( 'dup', 'https://example.org/' )], $urls->redirects() );
         $this->assertSame( '/aliased', $urls->articleUrl( 8 ) );
         $this->assertSame( '/routed', $urls->articleUrl( 7 ) );
     }
@@ -1325,13 +1298,13 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
     public function testHostsAreNormalizedTheSameWay(): void
     {
-        $this->assertSame( 'example.com', JoomlaOrigin::host( ' https://user@Example.COM:443/path?x#y ' ) );
-        $this->assertSame( 'example.com:8080', JoomlaOrigin::host( 'Example.com:8080' ) );
-        $this->assertSame( 'example.com', JoomlaOrigin::host( 'example.com:' ) );
-        $this->assertSame( 'example.com', JoomlaOrigin::host( 'user@example.com:80' ) );
+        $this->assertSame( 'example.com', Joomla\Origin::host( ' https://user@Example.COM:443/path?x#y ' ) );
+        $this->assertSame( 'example.com:8080', Joomla\Origin::host( 'Example.com:8080' ) );
+        $this->assertSame( 'example.com', Joomla\Origin::host( 'example.com:' ) );
+        $this->assertSame( 'example.com', Joomla\Origin::host( 'user@example.com:80' ) );
         // the domain of the imported pages may be given with scheme like the domains of the languages
-        $this->assertSame( '/x', ( new JoomlaOrigin( 'https://Example.com/' ) )->local( 'https://example.com:443/x' ) );
-        $domains = new JoomlaLanguageDomains( $this->site( $this->categories( [] ), ['fr-FR:fr:example.com:443'] )->languages, new JoomlaOrigin( 'https://Example.com/' ) );
+        $this->assertSame( '/x', ( new Joomla\Origin( 'https://Example.com/' ) )->local( 'https://example.com:443/x' ) );
+        $domains = new Joomla\LanguageDomains( $this->site( $this->categories( [] ), ['fr-FR:fr:example.com:443'] )->languages, new Joomla\Origin( 'https://Example.com/' ) );
         $this->assertSame( '', $domains->domain( 'fr-FR' ) );
     }
 
@@ -1343,14 +1316,14 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
             (object) ['old_url' => 'nested/page#x/', 'new_url' => 'https://example.org/b'],
             (object) ['old_url' => 'query/page?x=1/', 'new_url' => 'https://example.org/c'],
         ];
-        $kept = fn( JoomlaOrigin $origin ) => $this->importRun( $this->wiring( $this->site( $this->categories( [] ) ), origin: $origin ),
+        $kept = fn( Joomla\Origin $origin ) => $this->importRun( $this->wiring( $this->site( $this->categories( [] ) ), origin: $origin ),
             redirects: $redirects )->urls->redirects();
 
         // the directory of absolute nested URLs of the site is the one of their path, slashes in the fragment don't make old URLs directories
         // and old URLs with query aren't kept
-        $expected = [new JoomlaKeptRedirect( 'old/page', 'https://example.org/a', 'old' ), new JoomlaKeptRedirect( 'nested/page', 'https://example.org/b', 'nested' )];
-        $this->assertEquals( $expected, $kept( new JoomlaOrigin() ) );
-        $this->assertEquals( $expected, $kept( new JoomlaOrigin( 'example.com' ) ) );
+        $expected = [new Joomla\KeptRedirect( 'old/page', 'https://example.org/a', 'old' ), new Joomla\KeptRedirect( 'nested/page', 'https://example.org/b', 'nested' )];
+        $this->assertEquals( $expected, $kept( new Joomla\Origin() ) );
+        $this->assertEquals( $expected, $kept( new Joomla\Origin( 'example.com' ) ) );
     }
 
 
@@ -1372,8 +1345,8 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $featured = $translation( 25, ['type' => 'component', 'link' => 'index.php?option=com_content&view=featured'] );
         $rows = [$first, $second, $script, $folder, $article, $featured];
         $menu = $this->items( array_map( fn( int $id ) => $heading( $id ), [10, 11, 12, 13, 14, 15] ) );
-        $folders = new JoomlaFolders( menuTranslations: array_combine( [10, 11, 12, 13, 14, 15], array_map( fn( $row ) => [$row], $rows ) ) );
-        $urls = $this->importRun( $this->wiring( $site, $this->items( $rows ), $menu, new JoomlaOrigin( 'example.com' ) ), folders: $folders )->urls;
+        $folders = new Joomla\Folders( menuTranslations: array_combine( [10, 11, 12, 13, 14, 15], array_map( fn( $row ) => [$row], $rows ) ) );
+        $urls = $this->importRun( $this->wiring( $site, $this->items( $rows ), $menu, new Joomla\Origin( 'example.com' ) ), folders: $folders )->urls;
 
         // only the translated folder gets a page variant and claims a URL path, the others aren't imported
         $this->assertSame( [20 => false, 21 => false, 22 => false, 23 => true, 24 => false, 25 => false],
@@ -1397,12 +1370,12 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         ] );
         $reader = $this->reader( $db );
         $plugins = $this->site( $reader->categories(), reader: $reader )->plugins;
-        $performed = fn( ?JoomlaOrigin $origin ) => JoomlaRedirects::all( $reader, $plugins, null, $origin )->pluck( 'old_url' )->values()->all();
+        $performed = fn( ?Joomla\Origin $origin ) => Joomla\Redirects::all( $reader, $plugins, null, $origin )->pluck( 'old_url' )->values()->all();
 
         // like the redirect plugin, the exclude terms are compared with the request URI including the base directory of the site
-        $this->assertSame( ['other'], $performed( new JoomlaOrigin( 'example.com', 'https://example.com/joomla' ) ) );
+        $this->assertSame( ['other'], $performed( new Joomla\Origin( 'example.com', 'https://example.com/joomla' ) ) );
         // without the host of the base URL, the base directory is unknown
-        $this->assertSame( ['old', '/old', 'other'], $performed( new JoomlaOrigin( 'example.com' ) ) );
+        $this->assertSame( ['old', '/old', 'other'], $performed( new Joomla\Origin( 'example.com' ) ) );
         $this->assertSame( ['old', '/old', 'other'], $performed( null ) );
     }
 
@@ -1418,14 +1391,14 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $topCategories = $this->categories( [2 => $top, 6 => $topFr] );
         // French is imported into the domain of the imported pages, which has no domain name here
         $topSite = fn() => $this->site( $topCategories, ['de-DE:de:https://de.example.com', 'fr-FR:fr'] );
-        $folders = new JoomlaFolders( [2 => $top], [2 => [$topFr]], [17 => [$itemFr]] );
+        $folders = new Joomla\Folders( [2 => $top], [2 => [$topFr]], [17 => [$itemFr]] );
         $assigned = $this->importRun( $topSite(), folders: $folders, redirects: $reader->redirects() )->urls->redirects();
-        $this->assertEquals( [new JoomlaKeptRedirect( 'moved', 'about' )], $assigned );
+        $this->assertEquals( [new Joomla\KeptRedirect( 'moved', 'about' )], $assigned );
         // the translations of menu items with own page use them
         $folder = (object) ['id' => 17, 'type' => 'heading', 'title' => 'Folder', 'alias' => 'folder', 'link' => '', 'parent_id' => 1];
         $site = $topSite();
         $wiring = $this->wiring( $site, menu: $this->items( [$folder] ) );
-        $this->assertSame( [], $wiring->assemble( articles: $this->articles(), folders: $folders, home: new JoomlaHomeRoot(), redirects: $reader->redirects() )->urls->redirects() );
+        $this->assertSame( [], $wiring->assemble( articles: $this->articles(), folders: $folders, home: new Joomla\HomeRoot(), redirects: $reader->redirects() )->urls->redirects() );
     }
 
 
@@ -1435,14 +1408,14 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $wiring = $this->wiring( $this->site( $this->categories( [] ) ) );
 
         // each assignment starts again and returns new URL paths, the earlier ones aren't changed
-        $linker = fn( JoomlaAssignedUrls $assigned ) => new JoomlaLinks( $wiring->site, collect(), new JoomlaUrls( $wiring->urlContext, $assigned ),
-            $wiring->router, $wiring->menu, new JoomlaOrigin() );
-        $assignment = new JoomlaUrlAssignment( $wiring->urlContext, new JoomlaOrigin(), $linker );
-        $articleUrl = fn( JoomlaAssignedUrls $assigned, int $id ) => ( new JoomlaUrls( $wiring->urlContext, $assigned ) )->articleUrl( $id );
-        $first = $assignment->assign( $this->articles( [7 => new JoomlaRoutePath( 'seven', 'seven' )] ), new JoomlaFolders(), new JoomlaHomeRoot(), $reader->redirects() );
-        $this->assertEquals( [new JoomlaKeptRedirect( 'moved', 'about' )], $first->redirects() );
+        $linker = fn( Joomla\AssignedUrls $assigned ) => new Joomla\Links( $wiring->site, collect(), new Joomla\Urls( $wiring->urlContext, $assigned ),
+            $wiring->router, $wiring->menu, new Joomla\Origin() );
+        $assignment = new Joomla\UrlAssignment( $wiring->urlContext, new Joomla\Origin(), $linker );
+        $articleUrl = fn( Joomla\AssignedUrls $assigned, int $id ) => ( new Joomla\Urls( $wiring->urlContext, $assigned ) )->articleUrl( $id );
+        $first = $assignment->assign( $this->articles( [7 => new Joomla\RoutePath( 'seven', 'seven' )] ), new Joomla\Folders(), new Joomla\HomeRoot(), $reader->redirects() );
+        $this->assertEquals( [new Joomla\KeptRedirect( 'moved', 'about' )], $first->redirects() );
         $this->assertSame( '/seven', $articleUrl( $first, 7 ) );
-        $second = $assignment->assign( $this->articles(), new JoomlaFolders(), new JoomlaHomeRoot(), [] );
+        $second = $assignment->assign( $this->articles(), new Joomla\Folders(), new Joomla\HomeRoot(), [] );
         $this->assertSame( [], $second->redirects() );
         $this->assertNull( $articleUrl( $second, 7 ) );
         $this->assertSame( '/seven', $articleUrl( $first, 7 ) );
@@ -1465,7 +1438,7 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
     /**
      * Adds the tables of the redirects with an absolute old URL and returns the reader of the Joomla database.
      */
-    protected function redirectReader(): JoomlaReader
+    protected function redirectReader(): Joomla\Reader
     {
         $this->extraTables();
         $db = DB::connection( 'joomla' );
@@ -1478,11 +1451,11 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
     public function testMenuRuleTargets(): void
     {
-        $this->assertSame( 'article/5', JoomlaMenuRules::target( 'article', 5 ) );
-        $this->assertSame( 'category/7', JoomlaMenuRules::target( 'category', '7' ) );
-        $this->assertSame( 'featured:', JoomlaMenuRules::layoutTarget( 'featured' ) );
-        $this->assertSame( 'category:', JoomlaMenuRules::layoutTarget( 'category', 'default' ) );
-        $this->assertSame( 'category:blog', JoomlaMenuRules::layoutTarget( 'category', 'blog' ) );
+        $this->assertSame( 'article/5', Joomla\MenuRules::target( 'article', 5 ) );
+        $this->assertSame( 'category/7', Joomla\MenuRules::target( 'category', '7' ) );
+        $this->assertSame( 'featured:', Joomla\MenuRules::layoutTarget( 'featured' ) );
+        $this->assertSame( 'category:', Joomla\MenuRules::layoutTarget( 'category', 'default' ) );
+        $this->assertSame( 'category:blog', Joomla\MenuRules::layoutTarget( 'category', 'blog' ) );
     }
 
 
@@ -1490,19 +1463,19 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
     {
         $item = (object) ['id' => 101, 'type' => 'component', 'link' => 'index.php?option=com_content&view=article&id=5'];
         $other = (object) ['id' => 102, 'type' => 'component', 'link' => 'index.php?option=com_content&view=category&id=5'];
-        $this->assertMenuLink( JoomlaMenuLink::KIND_ARTICLE, 5, $item );
-        $this->assertMenuLink( JoomlaMenuLink::KIND_CATEGORY, 5, $other );
+        $this->assertMenuLink( Joomla\MenuLink::KIND_ARTICLE, 5, $item );
+        $this->assertMenuLink( Joomla\MenuLink::KIND_CATEGORY, 5, $other );
 
         // the kind is derived from the current row, no state outlives the change of the menu item
         $item->link = 'index.php?option=com_content&view=category&id=7';
-        $this->assertMenuLink( JoomlaMenuLink::KIND_CATEGORY, 7, $item );
-        $this->assertNull( JoomlaMenuItem::article( $item ) );
+        $this->assertMenuLink( Joomla\MenuLink::KIND_CATEGORY, 7, $item );
+        $this->assertNull( Joomla\MenuItem::article( $item ) );
 
         $item->type = 'url';
-        $this->assertMenuLink( JoomlaMenuLink::KIND_LINK, null, $item );
+        $this->assertMenuLink( Joomla\MenuLink::KIND_LINK, null, $item );
 
         $item->link = '#';
-        $this->assertMenuLink( JoomlaMenuLink::KIND_FOLDER, null, $item );
+        $this->assertMenuLink( Joomla\MenuLink::KIND_FOLDER, null, $item );
     }
 
 
@@ -1511,9 +1484,9 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
         $resolve = fn( array $query ) => '/page-' . ( $query['id'] ?? '' );
         $html = '<a href="https://a.com/index.php?id=1">A</a><a href="https://b.com/index.php?id=2">B</a>';
 
-        $this->assertSame( '<a href="/page-1">A</a><a href="https://b.com/index.php?id=2">B</a>', JoomlaHtmlUrls::links( $html, $resolve, ['a.com'] ) );
-        $this->assertSame( '<a href="https://a.com/index.php?id=1">A</a><a href="/page-2">B</a>', JoomlaHtmlUrls::links( $html, $resolve, ['b.com'] ) );
-        $this->assertSame( '<a href="/page-1">A</a><a href="/page-2">B</a>', JoomlaHtmlUrls::links( $html, $resolve, ['a.com', 'b.com'] ) );
+        $this->assertSame( '<a href="/page-1">A</a><a href="https://b.com/index.php?id=2">B</a>', Joomla\HtmlUrls::links( $html, $resolve, ['a.com'] ) );
+        $this->assertSame( '<a href="https://a.com/index.php?id=1">A</a><a href="/page-2">B</a>', Joomla\HtmlUrls::links( $html, $resolve, ['b.com'] ) );
+        $this->assertSame( '<a href="/page-1">A</a><a href="/page-2">B</a>', Joomla\HtmlUrls::links( $html, $resolve, ['a.com', 'b.com'] ) );
     }
 
 
@@ -1523,20 +1496,20 @@ class JoomlaRoutingTest extends JoomlaTestAbstract
 
         // query strings relative to the script or the root and the script without query string are routed like by urlTarget()
         $this->assertSame( '<a href="/page-10">A</a><a href="/page-10#x">B</a><a href="/page-home">C</a><a href=\'/page-home#top\'>D</a>',
-            JoomlaHtmlUrls::links( '<a href="?Itemid=10">A</a><a href="/?Itemid=10#x">B</a><a href="index.php">C</a><a href=\'index.php#top\'>D</a>', $resolve ) );
+            Joomla\HtmlUrls::links( '<a href="?Itemid=10">A</a><a href="/?Itemid=10#x">B</a><a href="index.php">C</a><a href=\'index.php#top\'>D</a>', $resolve ) );
         $this->assertSame( '<a href="/page-10">A</a><a href="/page-10">B</a><a href="/page-10">C</a>',
-            JoomlaHtmlUrls::links( '<a href="https://a.com/?Itemid=10">A</a><a href="https://a.com?Itemid=10">B</a><a href="/joomla?Itemid=10">C</a>', $resolve, ['a.com', 'a.com/joomla'] ) );
+            Joomla\HtmlUrls::links( '<a href="https://a.com/?Itemid=10">A</a><a href="https://a.com?Itemid=10">B</a><a href="/joomla?Itemid=10">C</a>', $resolve, ['a.com', 'a.com/joomla'] ) );
         // other URL paths starting like the script, other sites and URLs without query string are kept
         $kept = '<a href="index.php/about">A</a><a href="index.phpx">B</a><a href="/">C</a><a href="https://b.com/?Itemid=10">D</a><a href="https://a.comx?Itemid=10">E</a><a href="#top">F</a>';
-        $this->assertSame( $kept, JoomlaHtmlUrls::links( $kept, $resolve, ['a.com'] ) );
+        $this->assertSame( $kept, Joomla\HtmlUrls::links( $kept, $resolve, ['a.com'] ) );
 
         $site = $this->site( $this->categories( [] ) );
         $heading = (object) ['id' => 10, 'type' => 'heading', 'title' => 'Team', 'alias' => 'team', 'link' => '', 'parent_id' => 1];
-        $articles = $this->articles( [7 => new JoomlaRoutePath( null, 'about' )] );
-        $wiring = $this->wiring( $site, menu: $this->items( [$heading] ), origin: new JoomlaOrigin( 'example.com', '', true ) );
+        $articles = $this->articles( [7 => new Joomla\RoutePath( null, 'about' )] );
+        $wiring = $this->wiring( $site, menu: $this->items( [$heading] ), origin: new Joomla\Origin( 'example.com', '', true ) );
         $links = $this->importRun( $wiring, articles: $articles )->links;
 
         $this->assertSame( '<a href="/team">x</a> <a href="/team">y</a> <a href="/">z</a> <a href="about.html">s</a> <a href="?Itemid=99">u</a>',
-            $links->replace( '<a href="?Itemid=10">x</a> <a href="/?Itemid=10">y</a> <a href="index.php">z</a> <a href="about.html">s</a> <a href="?Itemid=99">u</a>', JoomlaLanguages::ALL ) );
+            $links->replace( '<a href="?Itemid=10">x</a> <a href="/?Itemid=10">y</a> <a href="index.php">z</a> <a href="about.html">s</a> <a href="?Itemid=99">u</a>', Joomla\Languages::ALL ) );
     }
 }

@@ -7,13 +7,10 @@
 
 namespace Aimeos\Cms\Concerns\Joomla;
 
-use Aimeos\Cms\Import\JoomlaKind;
-use Aimeos\Cms\Import\JoomlaRow;
-use Aimeos\Cms\Import\JoomlaRun;
-use Aimeos\Cms\Import\JoomlaTranslation;
-use Aimeos\Cms\Import\JoomlaWiring;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
+use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\PageView;
 
 
@@ -26,9 +23,9 @@ use Aimeos\Cms\Models\PageView;
 trait ImportsJoomla
 {
     /** Objects importing the Joomla site, set by handle() together with the run before anything is imported */
-    private JoomlaWiring $wiring;
+    private Joomla\Wiring $wiring;
     /** Imported articles and folders and the objects building the pages, set by handle() before anything is imported */
-    private JoomlaRun $run;
+    private Joomla\Run $run;
 
 
     /**
@@ -59,7 +56,7 @@ trait ImportsJoomla
      *
      * @param array{page: PageView, status: Status} $saved Saved page and its status
      * @param \stdClass $row Category or menu item of the page
-     * @param JoomlaKind::CATEGORY|JoomlaKind::MENU $kind Type of the row
+     * @param Joomla\Kind::CATEGORY|Joomla\Kind::MENU $kind Type of the row
      * @param string $slug URL path of the page
      * @param string|null $reason Why the page is disabled or NULL if it's published
      * @return PageView Saved page
@@ -67,12 +64,12 @@ trait ImportsJoomla
     protected function savedPage( array $saved, \stdClass $row, string $kind, string $slug, ?string $reason ): PageView
     {
         $page = $saved['page'];
-        $translations = $kind === JoomlaKind::CATEGORY ? $this->run->categoryTranslations( $row ) : $this->run->menuTranslations( $row );
+        $translations = $kind === Joomla\Kind::CATEGORY ? $this->run->categoryTranslations( $row ) : $this->run->menuTranslations( $row );
 
-        $this->notice( 'Disabled', JoomlaRow::title( $row ) . " (/{$slug})", $reason );
+        $this->notice( 'Disabled', Joomla\Row::title( $row ) . " (/{$slug})", $reason );
         $variants = $this->savedVariants( $page, $saved['status'], $translations );
         $this->saveTranslations( $page, $translations, $kind, $variants, $reason !== null );
-        $this->formerTranslations( $page, $translations, $variants, JoomlaRow::title( $row ) . " (/{$slug})" );
+        $this->formerTranslations( $page, $translations, $variants, Joomla\Row::title( $row ) . " (/{$slug})" );
 
         return $page;
     }
@@ -96,14 +93,14 @@ trait ImportsJoomla
      * Creates or updates the variants of the page from the associated articles, categories or menu items.
      *
      * @param list<\stdClass> $rows Associated articles, categories or menu items in other languages
-     * @param JoomlaKind::ARTICLE|JoomlaKind::CATEGORY|JoomlaKind::MENU $kind Type of the rows
+     * @param Joomla\Kind::ARTICLE|Joomla\Kind::CATEGORY|Joomla\Kind::MENU $kind Type of the rows
      * @param array<string, PageView> $variants Variants of the page fetched before by language code
      * @param bool $disabled TRUE if the page is disabled, so its translations are disabled too, FALSE to use their own status
      */
     protected function saveTranslations( PageView $page, array $rows, string $kind, array $variants, bool $disabled = false ): void
     {
         foreach( $rows as $row ) {
-            $this->saveTranslation( $page, JoomlaTranslation::of( $row, $kind ), $variants, $disabled );
+            $this->saveTranslation( $page, Joomla\Translation::of( $row, $kind ), $variants, $disabled );
         }
     }
 
@@ -113,11 +110,11 @@ trait ImportsJoomla
      *
      * Variants of the root page use the language code as URL path or the root of their separate domain.
      *
-     * @param JoomlaTranslation $translation Associated row and the language it's shown in
+     * @param Joomla\Translation $translation Associated row and the language it's shown in
      * @param array<string, PageView> $variants Variants of the page fetched before by language code
      * @param bool $disabled TRUE if the page is disabled, so the translation is disabled too, FALSE to use its own status
      */
-    protected function saveTranslation( PageView $page, JoomlaTranslation $translation, array $variants, bool $disabled = false ): void
+    protected function saveTranslation( PageView $page, Joomla\Translation $translation, array $variants, bool $disabled = false ): void
     {
         $row = $translation->row;
         $status = $disabled ? Pages::STATUS_DISABLED : null;
@@ -129,15 +126,15 @@ trait ImportsJoomla
         // translations changed in Pagible aren't overwritten
         $existing = $variants[$language['lang']] ?? null;
 
-        if( $this->skipsTranslation( $existing, JoomlaRow::title( $row ), $language['lang'] ) ) {
+        if( $this->skipsTranslation( $existing, Joomla\Row::title( $row ), $language['lang'] ) ) {
             return;
         }
 
         $urls = $this->run->urls;
         $slug = $page->tag === Pages::TAG_ROOT ? $urls->rootPath( $language ) : match( $translation->kind ) {
-            JoomlaKind::ARTICLE => $urls->articleTranslationPath( $row ),
-            JoomlaKind::CATEGORY => $urls->categoryTranslationPath( $row ),
-            JoomlaKind::MENU => $urls->menuTranslationPath( $row ),
+            Joomla\Kind::ARTICLE => $urls->articleTranslationPath( $row ),
+            Joomla\Kind::CATEGORY => $urls->categoryTranslationPath( $row ),
+            Joomla\Kind::MENU => $urls->menuTranslationPath( $row ),
         };
         // translations without own menu item are shown in the menu item of their category in their language
         $routes = $this->wiring->router->languageRoutes( $translation->tag );
@@ -145,17 +142,17 @@ trait ImportsJoomla
 
         // translations are restricted like the pages of the articles, categories and menu items in the import language
         $variant = match( $translation->kind ) {
-            JoomlaKind::ARTICLE => $translation->showing
+            Joomla\Kind::ARTICLE => $translation->showing
                 ? $pages->homeTranslation( $row, $slug, $routes, $translation->showing, $translation->tag )
                 : $pages->articlePage( $row, $slug, $routes, $status ),
             // the translation uses the menu item linking to the category, the home menu item of its language is used for the root page instead
-            JoomlaKind::CATEGORY => $pages->categoryPage( $row, $slug, $routes, $routes->ownCategoryItem( (int) $row->id ), $status ),
-            JoomlaKind::MENU => $pages->menuTranslation( $row, $slug, $status ),
+            Joomla\Kind::CATEGORY => $pages->categoryPage( $row, $slug, $routes, $routes->ownCategoryItem( (int) $row->id ), $status ),
+            Joomla\Kind::MENU => $pages->menuTranslation( $row, $slug, $status ),
         };
 
         if( $variant )
         {
-            $this->notice( $variant->translationNotice(), JoomlaRow::title( $row ) . " (/{$slug}) [{$language['lang']}]", $variant->reason );
+            $this->notice( $variant->translationNotice(), Joomla\Row::title( $row ) . " (/{$slug}) [{$language['lang']}]", $variant->reason );
             $this->saveVariant( $page, $language, $slug, $variant->data, $variant->content, $existing );
         }
     }
@@ -180,7 +177,7 @@ trait ImportsJoomla
 
         foreach( $rows as $row )
         {
-            if( $language = $languages->language( JoomlaRow::language( $row ) ) ) {
+            if( $language = $languages->language( Joomla\Row::language( $row ) ) ) {
                 $langs[$language['lang']] = true;
             }
         }

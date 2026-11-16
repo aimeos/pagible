@@ -7,12 +7,7 @@
 
 namespace Aimeos\Cms\Concerns\Joomla;
 
-use Aimeos\Cms\Import\JoomlaKind;
-use Aimeos\Cms\Import\JoomlaMenuItem;
-use Aimeos\Cms\Import\JoomlaMenuLink;
-use Aimeos\Cms\Import\JoomlaPage;
-use Aimeos\Cms\Import\JoomlaRow;
-use Aimeos\Cms\Import\JoomlaTranslation;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Models\PageView;
 
@@ -34,10 +29,10 @@ trait ImportsJoomlaHome
      */
     protected function importHome( \stdClass $menuItem, PageView $root ): bool
     {
-        $link = JoomlaMenuLink::of( $menuItem );
+        $link = Joomla\MenuLink::of( $menuItem );
 
         // home menu items listing the subcategories show no category themselves
-        if( $link->kind === JoomlaMenuLink::KIND_CATEGORY && $link->id ) {
+        if( $link->kind === Joomla\MenuLink::KIND_CATEGORY && $link->id ) {
             return $this->importCategoryHome( $menuItem, $link->id, $root );
         }
 
@@ -96,21 +91,21 @@ trait ImportsJoomlaHome
         if( !$run->home->isArticle( $id ) )
         {
             // the reason is NULL if the article doesn't exist, the message isn't shown then
-            $this->notice( 'Imported home page as normal page', JoomlaRow::label( $article ), $run->home->reason );
+            $this->notice( 'Imported home page as normal page', Joomla\Row::label( $article ), $run->home->reason );
             return false;
         }
 
         // the result is ignored because the URLs were assigned for the article in the root page, so it isn't imported
         // as normal page if its content fails, the failure is reported by transaction() and the root page is used anyway
         $run->markHandled( $id );
-        $this->rootTransaction( JoomlaRow::label( $article ), $root, function() use ( $article, $menuItem, $root, $run ) {
+        $this->rootTransaction( Joomla\Row::label( $article ), $root, function() use ( $article, $menuItem, $root, $run ) {
             // the root page is rendered with --since too because the pages don't store which article or menu item it showed
             // before, e.g. the home menu item can be moved to another unchanged article. Like its variants, which are saved
             // anyway because the home menu items of other languages can change too, an unchanged root page keeps its version
             $rendered = $run->pages->homeArticlePage( $article, $menuItem );
-            $status = $this->updateRoot( $root, $rendered, $run->translations( $article ), JoomlaKind::ARTICLE );
+            $status = $this->updateRoot( $root, $rendered, $run->translations( $article ), Joomla\Kind::ARTICLE );
 
-            return $this->imported( $article->id, $root, JoomlaRow::title( $article ), '', $this->newRoot ? Status::Imported : $status );
+            return $this->imported( $article->id, $root, Joomla\Row::title( $article ), '', $this->newRoot ? Status::Imported : $status );
         } );
 
         return true;
@@ -135,8 +130,8 @@ trait ImportsJoomlaHome
         $data = $this->pageData( $root->name, $root->path, $root->status, $root->tag );
         $rendered = $run->pages->homePage( $menuItem, $data, $category );
 
-        $this->rootTransaction( JoomlaRow::label( $menuItem ), $root,
-            fn() => $this->updateRoot( $root, $rendered, $run->menuTranslations( $menuItem ), JoomlaKind::MENU ) );
+        $this->rootTransaction( Joomla\Row::label( $menuItem ), $root,
+            fn() => $this->updateRoot( $root, $rendered, $run->menuTranslations( $menuItem ), Joomla\Kind::MENU ) );
     }
 
 
@@ -166,12 +161,12 @@ trait ImportsJoomlaHome
     /**
      * Updates the root page and its variants.
      *
-     * @param JoomlaPage $rendered Page data and content of the root page
+     * @param Joomla\Page $rendered Page data and content of the root page
      * @param list<\stdClass> $rows Associated articles or menu items in other languages
-     * @param JoomlaKind::ARTICLE|JoomlaKind::MENU $kind Type of the rows
+     * @param Joomla\Kind::ARTICLE|Joomla\Kind::MENU $kind Type of the rows
      * @return Status Status of the root page
      */
-    protected function updateRoot( PageView $root, JoomlaPage $rendered, array $rows, string $kind ): Status
+    protected function updateRoot( PageView $root, Joomla\Page $rendered, array $rows, string $kind ): Status
     {
         $status = $this->updateVersion( $root, $rendered->data, $rendered->content );
         $this->saveHomeTranslations( $root, $rows, $kind );
@@ -188,30 +183,30 @@ trait ImportsJoomlaHome
      * menu item are reported like the former translations of the other pages, see formerTranslations().
      *
      * @param list<\stdClass> $rows Associated articles or menu items in other languages
-     * @param JoomlaKind::ARTICLE|JoomlaKind::MENU $kind Type of the rows
+     * @param Joomla\Kind::ARTICLE|Joomla\Kind::MENU $kind Type of the rows
      */
     protected function saveHomeTranslations( PageView $root, array $rows, string $kind ): void
     {
         $homes = $this->wiring->homes->otherHomes();
-        $rows = array_values( array_filter( $rows, fn( $row ) => !isset( $homes[JoomlaRow::language( $row )] ) ) );
+        $rows = array_values( array_filter( $rows, fn( $row ) => !isset( $homes[Joomla\Row::language( $row )] ) ) );
         // each language is saved once, so the variants of all languages are fetched once too
         $variants = $rows !== [] || $homes !== [] ? $this->variants( $root ) : [];
         $this->saveTranslations( $root, $rows, $kind, $variants );
-        $articles = $this->run->visibleArticles( array_filter( array_map( JoomlaMenuItem::article( ... ), $homes ) ) );
+        $articles = $this->run->visibleArticles( array_filter( array_map( Joomla\MenuItem::article( ... ), $homes ) ) );
         // the home menu items are in the languages of their tags, so they count as translations of the root page
         $saved = $rows;
 
         foreach( $homes as $tag => $item )
         {
-            if( !( $id = JoomlaMenuItem::article( $item ) ) ) {
-                $this->saveTranslation( $root, JoomlaTranslation::of( $item, JoomlaKind::MENU ), $variants );
+            if( !( $id = Joomla\MenuItem::article( $item ) ) ) {
+                $this->saveTranslation( $root, Joomla\Translation::of( $item, Joomla\Kind::MENU ), $variants );
                 $saved[] = $item;
             } elseif( isset( $articles[$id] ) ) {
                 // articles for all languages are shown in the language of the home menu item, the same article can be shown by several ones
-                $this->saveTranslation( $root, JoomlaTranslation::home( $articles[$id], $item, $tag ), $variants );
+                $this->saveTranslation( $root, Joomla\Translation::home( $articles[$id], $item, $tag ), $variants );
                 $saved[] = $item;
             } else {
-                $this->notice( 'Skipped home page', JoomlaRow::label( $item ) . " [{$tag}]", "its article [{$id}] isn't shown by Joomla" );
+                $this->notice( 'Skipped home page', Joomla\Row::label( $item ) . " [{$tag}]", "its article [{$id}] isn't shown by Joomla" );
             }
         }
 

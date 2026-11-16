@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Concerns\Joomla;
 
 use Aimeos\Cms\Import\Pages;
+use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Support\Collection;

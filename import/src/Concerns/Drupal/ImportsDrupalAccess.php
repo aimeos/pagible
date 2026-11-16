@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Concerns\Drupal;
 
 use Aimeos\Cms\Access;
+use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageVariant;
@@ -33,7 +34,7 @@ trait ImportsDrupalAccess
      * unpublished because Drupal doesn't use the grants of unpublished nodes. The access values of
      * all restricted pages are loaded once, so unchanged access doesn't cause any query.
      *
-     * @param array<int, string>|false|null $values Access values from DrupalAccess::node() or FALSE to keep the access
+     * @param array<int, string>|false|null $values Access values from Drupal\Access::node() or FALSE to keep the access
      */
     protected function setAccess( PageView $page, array|false|null $values ): void
     {

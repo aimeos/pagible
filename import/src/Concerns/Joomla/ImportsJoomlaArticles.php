@@ -8,10 +8,7 @@
 namespace Aimeos\Cms\Concerns\Joomla;
 
 use Aimeos\Cms\DB;
-use Aimeos\Cms\Import\JoomlaDate;
-use Aimeos\Cms\Import\JoomlaKind;
-use Aimeos\Cms\Import\JoomlaRoutes;
-use Aimeos\Cms\Import\JoomlaRow;
+use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Models\PageVariant;
@@ -38,7 +35,7 @@ trait ImportsJoomlaArticles
     {
         $run = $this->run;
         $slug = $run->urls->articlePath( $article );
-        $title = JoomlaRow::title( $article );
+        $title = Joomla\Row::title( $article );
 
         // articles whose translations and menu item names also weren't changed since the given date aren't rendered again,
         // which was decided once by prefetch() because their texts weren't fetched then
@@ -50,15 +47,15 @@ trait ImportsJoomlaArticles
             return $this->imported( $article->id, $page, $title, $slug, Status::Unchanged );
         }
 
-        $rendered = $run->pages->articlePage( $article, $slug, $this->wiring->router->contentRoutes( JoomlaRow::language( $article ) ) );
-        $created = JoomlaDate::first( $article->created ?? null );
+        $rendered = $run->pages->articlePage( $article, $slug, $this->wiring->router->contentRoutes( Joomla\Row::language( $article ) ) );
+        $created = Joomla\Date::first( $article->created ?? null );
         ['page' => $page, 'status' => $status] = $this->savePage( $slug, $rendered->data, $rendered->content, $parent, $created );
         $this->notice( $rendered->notice(), "{$title} (/{$slug})", $rendered->reason );
 
         // teasers are published, so their translations are published too
         $translations = $run->translations( $article );
         $variants = $this->savedVariants( $page, $status, $translations );
-        $this->saveTranslations( $page, $translations, JoomlaKind::ARTICLE, $variants, !$rendered->teaser && $rendered->reason !== null );
+        $this->saveTranslations( $page, $translations, Joomla\Kind::ARTICLE, $variants, !$rendered->teaser && $rendered->reason !== null );
         $this->formerTranslations( $page, $translations, $variants, "{$title} (/{$slug})" );
 
         return $this->imported( $article->id, $page, $title, $slug, $status );
@@ -110,7 +107,7 @@ trait ImportsJoomlaArticles
         foreach( $rows as $row )
         {
             // translations in languages which aren't imported have no variant
-            if( !( $language = $languages->language( JoomlaRow::language( $row ) ) ) ) {
+            if( !( $language = $languages->language( Joomla\Row::language( $row ) ) ) ) {
                 continue;
             }
 
@@ -170,7 +167,7 @@ trait ImportsJoomlaArticles
 
             foreach( $this->run->translations( $article ) as $row )
             {
-                if( !( $language = $languages->language( JoomlaRow::language( $row ) ) ) ) {
+                if( !( $language = $languages->language( Joomla\Row::language( $row ) ) ) ) {
                     continue;
                 }
 
@@ -300,11 +297,11 @@ trait ImportsJoomlaArticles
         }
 
         $parent = $category->parent_id ? $this->parentForCategory( (int) $category->parent_id, $root ) : $root;
-        $routes = $this->wiring->router->contentRoutes( JoomlaRow::language( $category ) );
+        $routes = $this->wiring->router->contentRoutes( Joomla\Row::language( $category ) );
         // category() already ruled out the menu items of the imported menu, so the own menu item of the category is one of another menu
         $other = $categoryItems->otherItem( $category );
         // the articles are imported below the parent if the page of the category can't be saved, the error is reported once
-        $page = $this->transaction( 'category ' . JoomlaRow::label( $category ),
+        $page = $this->transaction( 'category ' . Joomla\Row::label( $category ),
             fn() => $this->createCategoryFolder( $category, $routes, $other, $parent ) ) ?? $parent;
         $run->addCategoryPage( $catId, $this->slim( $page ) );
 
@@ -317,16 +314,16 @@ trait ImportsJoomlaArticles
      *
      * Category pages contain the description and the image of the category like Joomla shows them above the articles.
      *
-     * @param JoomlaRoutes $routes Routes of the language of the category
+     * @param Joomla\Routes $routes Routes of the language of the category
      * @param \stdClass|null $item Menu item of another menu linking to the category or NULL if there's none
      * @return PageView Saved page
      */
-    protected function createCategoryFolder( \stdClass $category, JoomlaRoutes $routes, ?\stdClass $item, PageView $parent ): PageView
+    protected function createCategoryFolder( \stdClass $category, Joomla\Routes $routes, ?\stdClass $item, PageView $parent ): PageView
     {
         $slug = $this->run->urls->categoryPath( $category );
         $rendered = $this->run->pages->categoryPage( $category, $slug, $routes, $item );
         $saved = $this->savePage( $slug, $rendered->data, $rendered->content, $parent );
 
-        return $this->savedPage( $saved, $category, JoomlaKind::CATEGORY, $slug, $rendered->reason );
+        return $this->savedPage( $saved, $category, Joomla\Kind::CATEGORY, $slug, $rendered->reason );
     }
 }
