@@ -16,9 +16,9 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Imports the Joomla menu items of the imported menu and the Joomla redirects as pages.
  *
- * Requires the ImportsJoomla trait used by the same class for the objects of the run and the shared methods.
+ * Requires the Imports trait used by the same class for the objects of the run and the shared methods.
  */
-trait ImportsJoomlaMenu
+trait ImportsMenu
 {
     /**
      * Imports the menu items in tree order, so new pages are added at the end of the page tree.

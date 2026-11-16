@@ -161,7 +161,7 @@ final class UrlAssignment
      * Like the import of the home menu item, the variants are the translations of the article imported into the root page or the
      * translated home menu items if the home menu item shows no article. With language filter, the home menu items of the other
      * languages are root page variants instead of the translations in their languages, except the ones whose article Joomla
-     * doesn't show like ImportsJoomlaHome::saveHomeTranslations() skips them. The root page gets no variants if the home menu
+     * doesn't show like ImportsHome::saveHomeTranslations() skips them. The root page gets no variants if the home menu
      * item is imported like the other ones.
      *
      * @param Claims $claims URL paths claimed during the assignment
@@ -381,7 +381,7 @@ final class UrlAssignment
 
 
     /**
-     * Returns the Joomla redirects of page URLs whose targets are supported, see ImportsJoomlaMenu::importRedirects().
+     * Returns the Joomla redirects of page URLs whose targets are supported, see ImportsMenu::importRedirects().
      *
      * Redirects whose targets aren't supported, e.g. Joomla URLs of articles which aren't imported or "javascript:" URLs,
      * would keep their old URL paths from the aliases claimed later although they aren't imported themselves. Their

@@ -19,7 +19,7 @@ use Aimeos\Cms\Permission;
 /**
  * Sets the access values of the imported pages and disables the pages of restricted Drupal nodes which failed to import.
  */
-trait ImportsDrupalAccess
+trait ImportsAccess
 {
     /** @var array<string, array<int, string>>|null Sorted access values of the restricted pages by page ID */
     protected ?array $accessValues = null;

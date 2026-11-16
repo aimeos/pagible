@@ -15,9 +15,9 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Imports the Joomla home menu item into the root page and the home menu items of the other languages into its variants.
  *
- * Requires the ImportsJoomla trait used by the same class for the objects of the run and the shared methods.
+ * Requires the Imports trait used by the same class for the objects of the run and the shared methods.
  */
-trait ImportsJoomlaHome
+trait ImportsHome
 {
     /**
      * Imports the article of the Joomla home menu item into the root page or uses the root page for the articles of its category.

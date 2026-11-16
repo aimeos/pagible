@@ -8,14 +8,14 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Commands;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalAccess;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalChanges;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalDrafts;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalFront;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalMenu;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalRedirects;
-use Aimeos\Cms\Concerns\Drupal\ImportsDrupalTerms;
-use Aimeos\Cms\Concerns\Drupal\ReportsDrupalImport;
+use Aimeos\Cms\Concerns\Drupal\ImportsAccess;
+use Aimeos\Cms\Concerns\Drupal\ImportsChanges;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrafts;
+use Aimeos\Cms\Concerns\Drupal\ImportsFront;
+use Aimeos\Cms\Concerns\Drupal\ImportsMenu;
+use Aimeos\Cms\Concerns\Drupal\ImportsRedirects;
+use Aimeos\Cms\Concerns\Drupal\ImportsTerms;
+use Aimeos\Cms\Concerns\Drupal\ReportsImport;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Elements;
@@ -33,14 +33,14 @@ use Aimeos\Cms\Models\PageView;
 
 class DrupalImport extends Commands
 {
-    use ImportsDrupalAccess;
-    use ImportsDrupalChanges;
-    use ImportsDrupalDrafts;
-    use ImportsDrupalFront;
-    use ImportsDrupalMenu;
-    use ImportsDrupalRedirects;
-    use ImportsDrupalTerms;
-    use ReportsDrupalImport;
+    use ImportsAccess;
+    use ImportsChanges;
+    use ImportsDrafts;
+    use ImportsFront;
+    use ImportsMenu;
+    use ImportsRedirects;
+    use ImportsTerms;
+    use ReportsImport;
 
     /**
      * Command name

@@ -8,7 +8,7 @@
 namespace Tests;
 
 use Aimeos\Cms\Import\Html;
-use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
+use Aimeos\Cms\Concerns\Joomla\Remembers;
 use Aimeos\Cms\Import\Joomla;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
@@ -904,7 +904,7 @@ class JoomlaReaderTest extends JoomlaTestAbstract
     {
         // NULL values are cached too
         $memo = new class {
-            use JoomlaRemembers;
+            use Remembers;
 
             /** @var array<array-key, mixed> */
             public array $cache = [];

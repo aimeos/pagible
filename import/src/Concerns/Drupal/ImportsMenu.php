@@ -19,7 +19,7 @@ use Aimeos\Cms\Utils;
 /**
  * Imports the pages of the Drupal menu tree including the menu links to other targets and the Views pages.
  */
-trait ImportsDrupalMenu
+trait ImportsMenu
 {
     /** Counts of the imported menu links which don't point to nodes */
     protected Tally $linkTally;

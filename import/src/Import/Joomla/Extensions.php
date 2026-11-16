@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
+use Aimeos\Cms\Concerns\Joomla\Remembers;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 
@@ -17,7 +17,7 @@ use Illuminate\Database\Query\Builder;
  */
 class Extensions
 {
-    use JoomlaRemembers;
+    use Remembers;
 
     /** Name of the articles component */
     public const COMPONENT_CONTENT = 'com_content';

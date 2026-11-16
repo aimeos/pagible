@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
+use Aimeos\Cms\Concerns\Joomla\Remembers;
 use Illuminate\Support\Collection;
 
 
@@ -25,7 +25,7 @@ use Illuminate\Support\Collection;
  */
 class Access
 {
-    use JoomlaRemembers;
+    use Remembers;
 
     /** Reasons why guests can't see a row with the placeholders for the date, the title or the access level */
     protected const EXPIRED = 'it expired on %s';

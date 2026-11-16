@@ -11,7 +11,7 @@ namespace Aimeos\Cms\Concerns\Joomla;
 /**
  * Remembers values fetched once per key in a cache property of the object.
  */
-trait JoomlaRemembers
+trait Remembers
 {
     /**
      * Returns the value fetched once for the cache key, NULL values are cached too unlike with "??=".

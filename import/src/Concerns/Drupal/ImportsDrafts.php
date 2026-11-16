@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 /**
  * Imports the newer draft revisions and the scheduled publication of the Drupal nodes as pending page versions.
  */
-trait ImportsDrupalDrafts
+trait ImportsDrafts
 {
     /** @var array<int, array<string, \stdClass>>|null Newest draft revisions by node ID and Drupal language code */
     protected ?array $drafts = null;

@@ -17,10 +17,10 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Objects of the current run and methods of the Joomla import shared by the traits importing the articles, the home pages and the menu.
  *
- * Used once by JoomlaImport, so the objects of the run are declared in one place only. The traits ImportsJoomlaArticles,
- * ImportsJoomlaHome and ImportsJoomlaMenu rely on the class using this trait too.
+ * Used once by JoomlaImport, so the objects of the run are declared in one place only. The traits ImportsArticles,
+ * ImportsHome and ImportsMenu rely on the class using this trait too.
  */
-trait ImportsJoomla
+trait Imports
 {
     /** Objects importing the Joomla site, set by handle() together with the run before anything is imported */
     private Joomla\Wiring $wiring;

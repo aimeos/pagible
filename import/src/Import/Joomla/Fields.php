@@ -7,14 +7,14 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
+use Aimeos\Cms\Concerns\Joomla\Remembers;
 
 /**
  * Renders the values of the Joomla custom fields of the articles and categories as HTML.
  */
 class Fields
 {
-    use JoomlaRemembers;
+    use Remembers;
 
     /** Contexts of the custom fields of the articles and categories */
     public const ARTICLE_CONTEXT = 'com_content.article';

@@ -18,7 +18,7 @@ use Illuminate\Support\LazyCollection;
 /**
  * Imports the redirects of the Drupal site as hidden redirect pages.
  */
-trait ImportsDrupalRedirects
+trait ImportsRedirects
 {
     /**
      * Imports the redirects of the Redirect module and the /node/{nid} paths as hidden redirect pages.

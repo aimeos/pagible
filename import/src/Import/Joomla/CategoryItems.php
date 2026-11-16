@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
  * Categories shown by a menu item of the imported menu use its page, the category of the home menu item uses the
  * root page. Other categories get own pages below the top level or if a menu item of another menu shows them, but
  * only if articles are imported below them, see pages(). The menu items with own pages are selected like
- * ImportsJoomlaMenu::importMenuItem() imports them, so the URL paths are only claimed for pages which are created.
+ * ImportsMenu::importMenuItem() imports them, so the URL paths are only claimed for pages which are created.
  * The category of the home menu item of the site is computed once, see homeCatId().
  */
 class CategoryItems
@@ -238,7 +238,7 @@ class CategoryItems
     /**
      * Selects the menu items of the imported menu which get own pages and the ones whose pages show the categories.
      *
-     * Like ImportsJoomlaMenu::importMenuItem(), folders, links with supported targets and lists of all categories get own pages,
+     * Like ImportsMenu::importMenuItem(), folders, links with supported targets and lists of all categories get own pages,
      * also restricted ones, because their pages are disabled. Links whose targets aren't supported get no page, see Links::linkable(). Menu items of categories only get pages if guests can see them, Joomla shows their
      * categories and no other menu item shows the category already. The home menu item uses the root page unless guests
      * can't see its category, see homeCategory(). Other home menu items, e.g. the ones of other languages without

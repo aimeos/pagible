@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
+use Aimeos\Cms\Concerns\Joomla\Remembers;
 use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Utils;
 use Illuminate\Support\Collection;
@@ -18,7 +18,7 @@ use Illuminate\Support\Collection;
  */
 class Languages
 {
-    use JoomlaRemembers;
+    use Remembers;
 
     /** Joomla language tag of the articles, categories and menu items for all languages */
     public const ALL = '*';

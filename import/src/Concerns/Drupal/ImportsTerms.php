@@ -18,7 +18,7 @@ use Illuminate\Support\LazyCollection;
 /**
  * Imports the taxonomy terms of the Drupal site as hidden pages.
  */
-trait ImportsDrupalTerms
+trait ImportsTerms
 {
     /** Counts of the imported term pages */
     protected Tally $termTally;
