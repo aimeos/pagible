@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Commands;
+namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Scout;

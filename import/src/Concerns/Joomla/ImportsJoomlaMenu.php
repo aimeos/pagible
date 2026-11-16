@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Commands;
+namespace Aimeos\Cms\Concerns\Joomla;
 
 use Aimeos\Cms\Import\JoomlaChunks;
 use Aimeos\Cms\Import\JoomlaKind;

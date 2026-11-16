@@ -24,6 +24,13 @@ use Illuminate\Support\Facades\Schema;
  */
 class JoomlaImportTest extends JoomlaTestAbstract
 {
+    public function testCommandIsRegisteredByTheServiceProvider(): void
+    {
+        $this->assertArrayHasKey( 'cms:joomla-import', Artisan::all() );
+        $this->assertInstanceOf( JoomlaImport::class, Artisan::all()['cms:joomla-import'] );
+    }
+
+
     public function testImportTranslations(): void
     {
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );

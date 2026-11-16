@@ -22,7 +22,7 @@ use Aimeos\Cms\Import\JoomlaHost;
 use Aimeos\Cms\Import\JoomlaOrigin;
 use Aimeos\Cms\Import\JoomlaPlugin;
 use Aimeos\Cms\Import\JoomlaReader;
-use Aimeos\Cms\Import\JoomlaRemembers;
+use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
 use Aimeos\Cms\Import\JoomlaRedirects;
 use Aimeos\Cms\Import\JoomlaRoutePath;
 use Aimeos\Cms\Import\JoomlaRow;

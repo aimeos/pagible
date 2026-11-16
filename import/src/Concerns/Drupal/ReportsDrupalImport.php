@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Commands;
+namespace Aimeos\Cms\Concerns\Drupal;
 
 use Aimeos\Cms\Facades\Elements as ElementResource;
 use Aimeos\Cms\Facades\Files as FileResource;

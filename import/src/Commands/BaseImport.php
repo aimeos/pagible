@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\CommitsInBatches;
 use Aimeos\Cms\Import\Database;
 use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\Import\Files;

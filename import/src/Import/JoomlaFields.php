@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Import;
 
+use Aimeos\Cms\Concerns\Joomla\JoomlaRemembers;
 
 /**
  * Renders the values of the Joomla custom fields of the articles and categories as HTML.

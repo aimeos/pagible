@@ -7,7 +7,6 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Commands\JoomlaImport;
 use Aimeos\Cms\Import\JoomlaFolders;
 use Aimeos\Cms\Import\JoomlaKind;
 use Aimeos\Cms\Import\JoomlaFieldLookups;
@@ -33,7 +32,6 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -141,9 +139,6 @@ abstract class JoomlaTestAbstract extends ImportTestAbstract
             ['id' => 2, 'context' => 'com_content.item', 'key' => 'abc'],
             ['id' => 3, 'context' => 'com_content.item', 'key' => 'abc'],
         ] );
-
-        $app = $this->app ?? throw new \RuntimeException( 'Application not initialized' );
-        Artisan::registerCommand( $app->make( JoomlaImport::class ) );
     }
 
 

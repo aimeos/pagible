@@ -7,6 +7,11 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\Joomla\ImportsJoomla;
+use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaArticles;
+use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaHome;
+use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaMenu;
+use Aimeos\Cms\Concerns\Joomla\ImportsJoomlaVanished;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\JoomlaArticles;
 use Aimeos\Cms\Import\JoomlaCategoryTree;

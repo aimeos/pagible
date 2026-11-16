@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Commands;
+namespace Aimeos\Cms\Concerns\Drupal;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Import\Pages;

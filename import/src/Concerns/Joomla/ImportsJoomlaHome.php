@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Commands;
+namespace Aimeos\Cms\Concerns\Joomla;
 
 use Aimeos\Cms\Import\JoomlaKind;
 use Aimeos\Cms\Import\JoomlaMenuItem;

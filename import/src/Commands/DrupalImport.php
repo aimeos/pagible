@@ -7,6 +7,14 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalAccess;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalChanges;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalDrafts;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalFront;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalMenu;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalRedirects;
+use Aimeos\Cms\Concerns\Drupal\ImportsDrupalTerms;
+use Aimeos\Cms\Concerns\Drupal\ReportsDrupalImport;
 use Aimeos\Cms\Access;
 use Aimeos\Cms\Import\Drupal7;
 use Aimeos\Cms\Import\Drupal8;

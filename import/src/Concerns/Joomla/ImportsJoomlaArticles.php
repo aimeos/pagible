@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Commands;
+namespace Aimeos\Cms\Concerns\Joomla;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Import\JoomlaDate;
