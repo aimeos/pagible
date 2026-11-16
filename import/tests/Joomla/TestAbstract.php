@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,12 +14,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Aimeos\Cms\Import\Joomla;
+use Tests\CmsWithMigrations;
+use Tests\ImportTestAbstract;
 
 
 /**
  * Base class of the Joomla import tests with the Joomla test database and the helpers creating the import objects.
  */
-abstract class JoomlaTestAbstract extends ImportTestAbstract
+abstract class TestAbstract extends ImportTestAbstract
 {
     use CmsWithMigrations;
     use RefreshDatabase;

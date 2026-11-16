@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Aimeos\Cms\Import\Html;
 use Aimeos\Cms\Concerns\Joomla\Remembers;
@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Tests of reading the Joomla database: reader, schema, site settings, languages, extensions, plugins, access and view levels.
  */
-class JoomlaReaderTest extends JoomlaTestAbstract
+class ReaderTest extends TestAbstract
 {
     public function testTextsAreFetchedInChunksIncludingTranslations(): void
     {

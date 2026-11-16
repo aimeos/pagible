@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Aimeos\Cms\Commands\JoomlaImport;
 use Aimeos\Cms\Translation\Hashes;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Command-level tests importing Joomla sites end-to-end with the "cms:joomla-import" command.
  */
-class JoomlaImportTest extends JoomlaTestAbstract
+class ImportTest extends TestAbstract
 {
     public function testCommandIsRegisteredByTheServiceProvider(): void
     {

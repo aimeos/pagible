@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Html;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Tests of the content of the Joomla articles and categories: texts, HTML, shortcodes, modules, custom fields, tags and page breaks.
  */
-class JoomlaContentTest extends JoomlaTestAbstract
+class ContentTest extends TestAbstract
 {
     public function testTextBuildsEscapedLinksAndImages(): void
     {

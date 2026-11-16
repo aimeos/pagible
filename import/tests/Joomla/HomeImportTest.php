@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Models\PageVariant;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Command-level tests importing the Joomla home menu items into the root page and the home pages of the languages.
  */
-class JoomlaHomeImportTest extends JoomlaTestAbstract
+class HomeImportTest extends TestAbstract
 {
     public function testFeaturedHomeMenuItemKeepsRootPage(): void
     {

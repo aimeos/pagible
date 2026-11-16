@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Models\File;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Command-level tests importing the content of the Joomla articles and categories: layouts, fields, modules, tags, images and page breaks.
  */
-class JoomlaContentImportTest extends JoomlaTestAbstract
+class ContentImportTest extends TestAbstract
 {
     public function testImageFileNamesIgnoreTheQuery(): void
     {

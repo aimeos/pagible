@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Aimeos\Cms\Commands\JoomlaImport;
 use Aimeos\Cms\Import\Joomla;
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Command-level tests importing the Joomla menus with the URLs, links, menu item options and redirects of the pages.
  */
-class JoomlaMenuImportTest extends JoomlaTestAbstract
+class MenuImportTest extends TestAbstract
 {
     public function testImportsMenuFetchingTextsAtOnce(): void
     {

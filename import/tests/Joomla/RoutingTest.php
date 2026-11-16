@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Joomla;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +16,7 @@ use Aimeos\Cms\Import\Joomla;
 /**
  * Tests of the Joomla routes, menus, URL paths, URL claims, links and redirects.
  */
-class JoomlaRoutingTest extends JoomlaTestAbstract
+class RoutingTest extends TestAbstract
 {
     public function testMenuRulesSelectFirstItemPerTarget(): void
     {
