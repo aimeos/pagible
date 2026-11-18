@@ -93,10 +93,12 @@ class Row
 
 
     /**
-     * Returns the title of the article, category, menu item, module or tag.
+     * Returns the title of the article, category, menu item, module or tag as stored, i.e. untrimmed.
+     *
+     * Use menuTitle() for the titles of menu items Joomla trims.
      *
      * @param \stdClass|null $row Row or NULL if there's none
-     * @return string Title or an empty string if there's none
+     * @return string Untrimmed title or an empty string if there's none
      */
     public static function title( ?\stdClass $row ): string
     {

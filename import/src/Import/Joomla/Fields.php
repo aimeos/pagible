@@ -28,17 +28,6 @@ class Fields
     /** Field group ID of the "{fieldgroup *}" shortcode showing all fields */
     public const ALL_GROUPS = '*';
 
-    /** Field types whose values are the values of options */
-    protected const OPTION_TYPES = ['list', 'radio', 'checkboxes'];
-
-    /** Field types whose values aren't supported */
-    protected const SKIPPED_TYPES = ['subform', 'repeatable'];
-
-    /** Field types with special values */
-    protected const TYPE_SQL = 'sql';
-    protected const TYPE_USER = 'user';
-    protected const TYPE_USER_GROUPS = 'usergrouplist';
-
     /** CSS class of the lists of the fields */
     protected const LIST_CLASS = 'fields';
 
@@ -115,7 +104,19 @@ class Fields
     public static function renderable( \stdClass $field ): bool
     {
         $type = self::type( $field );
-        return $type !== '' && !in_array( $type, self::SKIPPED_TYPES, true );
+        return $type !== '' && !FieldTypes::skipped( $type );
+    }
+
+
+    /**
+     * Tests if Joomla renders the field, i.e. its values are renderable() and its field plugin is enabled.
+     *
+     * @param \stdClass $field Custom field with its type
+     * @param Plugins $plugins Enabled plugins, the field plugins render the fields
+     */
+    public static function rendered( \stdClass $field, Plugins $plugins ): bool
+    {
+        return self::renderable( $field ) && $plugins->fieldParams( self::type( $field ) ) !== null;
     }
 
 
@@ -261,7 +262,7 @@ class Fields
         $texts = $this->texts( $field, $type, $params, $this->valuesOrDefault( $field, $values ) );
         $html = array_map( fn( $value ) => $this->types->render( $type, $value, $params, $context ), $texts );
 
-        return implode( $this->types->images( $type ) ? '' : ', ', array_filter( $html, fn( $value ) => $value !== '' ) );
+        return implode( FieldTypes::separator( $type ), array_filter( $html, fn( $value ) => $value !== '' ) );
     }
 
 
@@ -316,13 +317,27 @@ class Fields
     protected function texts( \stdClass $field, string $type, array $params, array $values ): array
     {
         return match( true ) {
-            in_array( $type, self::OPTION_TYPES, true ) => $this->choose( $this->choices( $params ), $values ),
-            $type === self::TYPE_SQL => $this->choose( $this->lookups->sqlOptions( $field->id, Value::string( $params[self::OPTION_QUERY] ?? null ) ), $values ),
-            $type === self::TYPE_USER_GROUPS => $this->choose( $this->lookups->groups(), $values ),
+            FieldTypes::options( $type ) => $this->choose( $this->choices( $params ), $values ),
+            $type === FieldTypes::TYPE_SQL => $this->choose( $this->sqlOptions( $field, $params ), $values ),
+            $type === FieldTypes::TYPE_USER_GROUPS => $this->choose( $this->lookups->groups(), $values ),
             // like Joomla, the names are joined first, so unknown users are shown as empty names
-            $type === self::TYPE_USER => [implode( ', ', $this->lookups->names( $values ) )],
+            $type === FieldTypes::TYPE_USER => [implode( ', ', $this->lookups->names( $values ) )],
             default => $values,
         };
+    }
+
+
+    /**
+     * Returns the options of a SQL field fetched by its query.
+     *
+     * @param \stdClass $field SQL field with its ID and title
+     * @param array<array-key, mixed> $params Field parameters
+     * @return array<int|string, string> Option texts by value
+     */
+    protected function sqlOptions( \stdClass $field, array $params ): array
+    {
+        $name = '[' . $field->id . '] ' . Value::string( $field->title ?? null );
+        return $this->lookups->sqlOptions( $field->id, Value::string( $params[self::OPTION_QUERY] ?? null ), $name );
     }
 
 

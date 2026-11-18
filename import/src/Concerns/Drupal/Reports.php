@@ -37,7 +37,7 @@ trait Reports
 
         foreach( $nodes as $node )
         {
-            if( $this->since === null || ( $changed[$node->nid] ?? PHP_INT_MAX ) >= $this->since ) {
+            if( $this->since === null || ( $changed[$node->nid] ?? static::UNKNOWN_TIME ) >= $this->since ) {
                 $this->line( "  [{$node->nid}] {$node->title} ({$node->type})" );
             }
         }
@@ -112,19 +112,7 @@ trait Reports
      */
     protected function summary(): void
     {
-        if( $this->failures )
-        {
-            $this->error( $this->failed . ' imports failed:' );
-
-            foreach( $this->failures as $failure ) {
-                $this->error( '  ' . $failure );
-            }
-
-            if( $this->failed > count( $this->failures ) ) {
-                $this->error( '  ... and ' . ( $this->failed - count( $this->failures ) ) . ' more' );
-            }
-        }
-
+        $this->printFailures();
         $this->info( "Finished with {$this->failed} failures and {$this->warnings} warnings." );
     }
 

@@ -13,23 +13,29 @@ namespace Aimeos\Cms\Import\Joomla;
  */
 final readonly class Rendering
 {
+    /** Article text, also used for the content of modules, see embedded() */
+    private const ARTICLE = 'article';
+    /** Intro text of an article guests can't access, see teaser() */
+    private const TEASER = 'teaser';
+    /** Category description */
+    private const DESCRIPTION = 'description';
+
+
     /**
      * Initializes the object.
      *
      * Use article(), category() or teaser() to create the renderings.
      *
-     * @param bool $description TRUE for category descriptions, FALSE for article texts, teasers and the content of modules
+     * @param string $kind What is prepared, one of the ARTICLE, TEASER and DESCRIPTION constants
      * @param array<int|string, list<string>> $values Custom field values of the article or category by field ID
      * @param string $language Joomla language tag of the article or category
      * @param int $itemId ID of the menu item Joomla shows the article or category in, 0 for none
-     * @param bool $teaser TRUE for the intro text of articles guests can't access, FALSE otherwise
      */
     private function __construct(
-        private bool $description,
+        private string $kind,
         public array $values,
         public string $language,
-        public int $itemId,
-        private bool $teaser = false
+        public int $itemId
     ) {
     }
 
@@ -43,7 +49,7 @@ final readonly class Rendering
      */
     public static function article( array $values, string $language, int $itemId ): self
     {
-        return new self( false, $values, $language, $itemId );
+        return new self( self::ARTICLE, $values, $language, $itemId );
     }
 
 
@@ -56,7 +62,7 @@ final readonly class Rendering
      */
     public static function category( array $values, string $language, int $itemId ): self
     {
-        return new self( true, $values, $language, $itemId );
+        return new self( self::DESCRIPTION, $values, $language, $itemId );
     }
 
 
@@ -72,7 +78,7 @@ final readonly class Rendering
      */
     public function teaser(): self
     {
-        return new self( $this->description, $this->values, $this->language, $this->itemId, true );
+        return new self( self::TEASER, $this->values, $this->language, $this->itemId );
     }
 
 
@@ -84,15 +90,16 @@ final readonly class Rendering
      */
     public function componentContext(): string
     {
-        return $this->description ? Fields::CATEGORY_CONTEXT : Fields::ARTICLE_CONTEXT;
+        return $this->kind === self::DESCRIPTION ? Fields::CATEGORY_CONTEXT : Fields::ARTICLE_CONTEXT;
     }
 
 
     /**
-     * Returns the rendering of the modules embedded by shortcodes.
+     * Returns the rendering of the modules embedded by shortcodes, an article rendering without field values.
      *
-     * Joomla's mod_custom prepares them in its "mod_custom.content" context, which has no field values, in the language
-     * and menu item of the page. Otherwise, they are prepared like article texts.
+     * The language and menu item of the page are kept because they select the modules. The differences of the
+     * "mod_custom.content" context of Joomla's mod_custom, i.e. removed field shortcodes and kept page breaks,
+     * aren't part of the rendering but applied by ModulePreparer::module().
      */
     public function embedded(): self
     {
@@ -105,7 +112,7 @@ final readonly class Rendering
      */
     public function pageBreaks(): bool
     {
-        return !$this->description && !$this->teaser;
+        return $this->kind === self::ARTICLE;
     }
 
 
@@ -114,6 +121,6 @@ final readonly class Rendering
      */
     public function preparedTwice(): bool
     {
-        return $this->description;
+        return $this->kind === self::DESCRIPTION;
     }
 }

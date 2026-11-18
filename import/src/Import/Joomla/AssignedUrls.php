@@ -11,7 +11,7 @@ namespace Aimeos\Cms\Import\Joomla;
 /**
  * URL paths assigned to the imported Joomla menu items, categories, articles, translations and redirects.
  *
- * Returned by UrlAssignment::assign().
+ * Returned by UrlAssignment::assign(), which creates the keys first and adds the claimed URL paths by withClaims().
  */
 final readonly class AssignedUrls
 {
@@ -26,7 +26,7 @@ final readonly class AssignedUrls
      * @param array<string, array<string, string>> $slugs URL paths which differ from the aliases or Joomla routes by language domain and record key
      * @param array<int|string, string> $homes URLs of the home pages used by the article imported into the root page and its translations by ID
      * @param list<KeptRedirect> $redirects Joomla redirects whose old URL paths aren't used by the imported pages
-     * @param array<int|string, bool> $translatedCategories IDs of all translated categories as keys, also the ones without page variant
+     * @param array<int|string, true> $translatedCategories IDs of all translated categories as keys, also the ones without page variant
      * @param array<int|string, string> $categoryHomes URLs of the home pages showing the category of the home menu item and its translations by ID
      * @param list<KeptRedirect> $unsupportedRedirects Joomla redirects skipped because their targets aren't supported,
      *  without the ones whose old URL paths are used by the imported pages or kept redirects, also the paths claimed after the redirects
@@ -43,6 +43,31 @@ final readonly class AssignedUrls
         private array $categoryHomes = [],
         private array $unsupportedRedirects = []
     ) {
+    }
+
+
+    /**
+     * Returns the assigned URLs with the URL paths of the claims and the redirects.
+     *
+     * @param Claims $claims URL paths claimed by the rows and the redirects
+     * @param list<KeptRedirect> $redirects Joomla redirects whose old URL paths aren't used by the imported pages
+     * @param list<KeptRedirect> $unsupportedRedirects Joomla redirects skipped because their targets aren't supported
+     * @return self New object with the same keys and home pages
+     */
+    public function withClaims( Claims $claims, array $redirects = [], array $unsupportedRedirects = [] ): self
+    {
+        return new self(
+            articleKeys: $this->articleKeys,
+            menuKeys: $this->menuKeys,
+            categoryKeys: $this->categoryKeys,
+            routePaths: $claims->paths(),
+            slugs: $claims->slugs(),
+            homes: $this->homes,
+            redirects: $redirects,
+            translatedCategories: $this->translatedCategories,
+            categoryHomes: $this->categoryHomes,
+            unsupportedRedirects: $unsupportedRedirects
+        );
     }
 
 
@@ -156,7 +181,7 @@ final readonly class AssignedUrls
      * @param string $route URL path Joomla uses or alias of the row used if no other path was assigned
      * @param string $domain Domain of the language or empty string for the domain of the imported pages
      */
-    public function path( string $key, string $route, string $domain = '' ): string
+    private function path( string $key, string $route, string $domain = '' ): string
     {
         return $this->slugs[$domain][$key] ?? $route;
     }
@@ -165,7 +190,7 @@ final readonly class AssignedUrls
     /**
      * Returns the URL path assigned to the row, the one Joomla uses if the row didn't claim a path.
      *
-     * @param string $key Record key of the row, e.g. "c5" or "tm7"
+     * @param string $key Record key of the row, e.g. "c5", "m3" or "tm7"
      * @param \Closure(): RoutePath $route Returns the URL path Joomla uses for rows which didn't claim a path
      * @param string $domain Domain of the language or empty string for the domain of the imported pages
      */

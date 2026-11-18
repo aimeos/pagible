@@ -10,6 +10,8 @@ namespace Aimeos\Cms\Import\Joomla;
 
 /**
  * What a Joomla menu item shows, parsed once from its type and link.
+ *
+ * The parsed links are cached per menu item and parsed again if the type or link of the menu item changes, see of().
  */
 final readonly class MenuLink
 {
@@ -57,12 +59,37 @@ final readonly class MenuLink
      * Menu items of the article, category and categories views of the articles component get the ID of the article
      * or category. Lists of the root category have no ID because it's 1 in the database but 0 or missing in the links
      * of most menu items. Other views like the featured articles are of kind KIND_OTHER.
+     *
+     * The parsed link is cached for the menu item as long as its type and link don't change.
      */
     public static function of( \stdClass $menuItem ): self
     {
+        /** @var \WeakMap<\stdClass, array{0: mixed, 1: mixed, 2: self}>|null $cache Parsed links with the type and link they were parsed from by menu item */
+        static $cache = null;
+        $cache ??= new \WeakMap();
+
+        $type = $menuItem->type ?? null;
+        $link = $menuItem->link ?? null;
+
+        if( isset( $cache[$menuItem] ) && $cache[$menuItem][0] === $type && $cache[$menuItem][1] === $link ) {
+            return $cache[$menuItem][2];
+        }
+
+        $parsed = self::parse( $menuItem );
+        $cache[$menuItem] = [$type, $link, $parsed];
+
+        return $parsed;
+    }
+
+
+    /**
+     * Parses what the menu item shows from its type and link.
+     */
+    protected static function parse( \stdClass $menuItem ): self
+    {
         $type = MenuItem::type( $menuItem );
 
-        if( MenuItem::folderType( $type, $menuItem ) ) {
+        if( MenuItem::folderType( $menuItem ) ) {
             return new self( self::KIND_FOLDER );
         }
 

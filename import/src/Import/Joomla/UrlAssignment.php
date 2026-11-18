@@ -93,10 +93,11 @@ final class UrlAssignment
 
         // like the Joomla router, the articles whose URL paths are the ones of their menu items come before the categories
         $menuArticles = array_intersect_key( $articleRoutes, $this->menuRouted( $articles, $articleRoutes ) );
-        $deferred = $this->claimArticles( $claims, $menuArticles );
+        $deferred = $this->claimRoutes( $claims, Kind::ARTICLE, $menuArticles );
 
-        $categories = $this->claimCategories( $claims, array_intersect_key( $folders->categories, $pages ) );
-        $deferred = [...$deferred, ...$this->claimArticles( $claims, array_diff_key( $articleRoutes, $menuArticles ) )];
+        $categoryRoutes = array_map( $this->context->paths->categoryRoute( ... ), array_intersect_key( $folders->categories, $pages ) );
+        $categories = $this->claimRoutes( $claims, Kind::CATEGORY, $categoryRoutes );
+        $deferred = [...$deferred, ...$this->claimRoutes( $claims, Kind::ARTICLE, array_diff_key( $articleRoutes, $menuArticles ) )];
 
         $menuRows = $this->pagedTranslations( Arr::flatten( array_intersect_key( $folders->menuTranslations, $menuPages ), 1 ) );
         $menuKeys = $this->claimTranslations( $claims, Kind::MENU, $menuRows, $this->context->paths->menuTranslationRoute( ... ) );
@@ -111,35 +112,34 @@ final class UrlAssignment
 
         $categoryRows = Arr::flatten( array_intersect_key( $folders->categoryTranslations, $pages ), 1 );
         $categoryKeys = $this->claimTranslations( $claims, Kind::CATEGORY, $categoryRows, $this->context->paths->categoryTranslationRoute( ... ) );
-        $categoryKeys += $this->menuCategoryKeys( $folders, $menuKeys, $homeCatId );
-        $translatedCategories = array_fill_keys( array_column( Arr::flatten( $folders->categoryTranslations, 1 ), 'id' ), true );
-
-        // the IDs of the articles and their translations don't overlap
-        $articleKeys = array_map( fn( $claim ) => $claim->urlKey(), $translations );
-
-        foreach( array_keys( $articleRoutes ) as $id ) {
-            $articleKeys[$id] = new UrlKey( Kind::key( Kind::ARTICLE, $id ) );
-        }
-
-        $homes = $home->articleId !== null ? $this->homes( $home->articleId, $home->translations, $otherHomes ) : [];
-        $categoryHomes = $home->item && $homeCatId !== null ? $this->categoryHomes( $folders, $home->item, $homeCatId, $otherHomes ) : [];
 
         // the URL paths are assigned without redirects first to resolve their targets, see importedRedirects()
-        $assigned = fn( Claims $claims, array $kept = [], array $unsupported = [] ) => new AssignedUrls(
-            articleKeys: $articleKeys,
+        $keys = new AssignedUrls(
+            articleKeys: $this->articleKeys( $translations, $articleRoutes ),
             menuKeys: $menuKeys,
-            categoryKeys: $categoryKeys,
-            routePaths: $claims->paths(),
-            slugs: $claims->slugs(),
-            homes: $homes,
-            redirects: array_values( $kept ),
-            translatedCategories: $translatedCategories,
-            categoryHomes: $categoryHomes,
-            unsupportedRedirects: array_values( $unsupported )
+            categoryKeys: $categoryKeys + $this->menuCategoryKeys( $folders, $menuKeys, $homeCatId ),
+            homes: $home->articleId !== null ? $this->homes( $home->articleId, $home->translations, $otherHomes ) : [],
+            translatedCategories: array_fill_keys( array_column( Arr::flatten( $folders->categoryTranslations, 1 ), 'id' ), true ),
+            categoryHomes: $home->item && $homeCatId !== null ? $this->categoryHomes( $folders, $home->item, $homeCatId, $otherHomes ) : []
         );
 
         $later = [...$deferred, ...$categories, ...array_diff_key( $translations, $menuTranslations )];
-        [$imported, $unsupported] = $this->importedRedirects( $redirects, $claims, $later, $assigned );
+        return $this->claimRedirects( $claims, $redirects, $later, $keys );
+    }
+
+
+    /**
+     * Claims the old URL paths of the imported redirects and afterwards the paths of the rows claimed after them.
+     *
+     * @param Claims $claims URL paths claimed before the redirects
+     * @param iterable<\stdClass> $redirects Joomla redirects with their old and new URLs
+     * @param array<int|string, UrlClaim> $later Claims of the rows claiming their paths after the redirects
+     * @param AssignedUrls $keys Keys and home pages of the rows without the claimed URL paths
+     * @return AssignedUrls Assigned URL paths and the kept redirects
+     */
+    private function claimRedirects( Claims $claims, iterable $redirects, array $later, AssignedUrls $keys ): AssignedUrls
+    {
+        [$imported, $unsupported] = $this->importedRedirects( $redirects, $claims, $later, $keys );
         $kept = $this->keepRedirects( $claims, $imported );
 
         foreach( $later as $claim ) {
@@ -150,7 +150,26 @@ final class UrlAssignment
         // silently, also the paths claimed after the redirects, so they are checked against the final claims without changing them
         $unsupported = $this->keepRedirects( clone $claims, $unsupported );
 
-        return $assigned( $claims, $kept, $unsupported );
+        return $keys->withClaims( $claims, $kept, $unsupported );
+    }
+
+
+    /**
+     * Returns the record keys and language domains of the imported articles and translated articles.
+     *
+     * @param array<int|string, UrlClaim> $translations Claims of the translated articles by ID
+     * @param array<int|string, RoutePath> $articleRoutes URL paths of the articles by ID
+     * @return array<int|string, UrlKey> Keys by article ID, the IDs of the articles and their translations don't overlap
+     */
+    private function articleKeys( array $translations, array $articleRoutes ): array
+    {
+        $keys = array_map( fn( UrlClaim $claim ) => $claim->urlKey, $translations );
+
+        foreach( array_keys( $articleRoutes ) as $id ) {
+            $keys[$id] = new UrlKey( Kind::key( Kind::ARTICLE, $id ) );
+        }
+
+        return $keys;
     }
 
 
@@ -195,7 +214,7 @@ final class UrlAssignment
 
         $tags = [];
 
-        // the home menu items of the other languages replace the translations in their languages
+        // the home menu items of the other languages replace the translations in their languages, see homeShows()
         foreach( $rows as $row )
         {
             if( !isset( $otherHomes[$tag = Row::language( $row )] ) ) {
@@ -220,39 +239,21 @@ final class UrlAssignment
 
 
     /**
-     * Claims the URL paths Joomla uses for the categories without menu item of the imported menu.
+     * Claims the URL paths Joomla uses for the articles or for the categories without menu item of the imported menu.
      *
-     * Categories with own menu item use the page of the menu item, the ones without own page claim nothing.
+     * Categories with own menu item use the page of the menu item, the ones without own page aren't passed.
      *
      * @param Claims $claims URL paths claimed during the assignment
-     * @param array<int|string, \stdClass> $categories Visible categories which aren't translations and get own pages by ID
-     * @return list<UrlClaim> Aliases of the categories without URL path in Joomla
+     * @param Kind::ARTICLE|Kind::CATEGORY $kind Type of the rows
+     * @param array<int|string, RoutePath> $routes URL paths Joomla uses or NULL and aliases of the rows by ID
+     * @return list<UrlClaim> Aliases of the rows without URL path in Joomla, which are claimed later
      */
-    private function claimCategories( Claims $claims, array $categories ): array
+    private function claimRoutes( Claims $claims, string $kind, array $routes ): array
     {
         $deferred = [];
 
-        foreach( $categories as $id => $category ) {
-            $deferred[] = $this->claimOrDefer( $claims, Kind::CATEGORY, $id, $this->context->paths->categoryRoute( $category ) );
-        }
-
-        return array_values( array_filter( $deferred ) );
-    }
-
-
-    /**
-     * Claims the URL paths Joomla uses for the articles.
-     *
-     * @param Claims $claims URL paths claimed during the assignment
-     * @param array<int|string, RoutePath> $articles URL paths Joomla uses or NULL and aliases of the articles by ID
-     * @return list<UrlClaim> Aliases of the articles without URL path in Joomla
-     */
-    private function claimArticles( Claims $claims, array $articles ): array
-    {
-        $deferred = [];
-
-        foreach( $articles as $id => $route ) {
-            $deferred[] = $this->claimOrDefer( $claims, Kind::ARTICLE, $id, $route );
+        foreach( $routes as $id => $route ) {
+            $deferred[] = $this->claimOrDefer( $claims, $kind, $id, $route );
         }
 
         return array_values( array_filter( $deferred ) );
@@ -346,7 +347,7 @@ final class UrlAssignment
             $claim = UrlClaim::translation( $kind, $row->id, $route( $row )->path(), $domain );
 
             $claims->claim( $claim );
-            $keys[$row->id] = $claim->urlKey();
+            $keys[$row->id] = $claim->urlKey;
         }
 
         return $keys;
@@ -357,8 +358,9 @@ final class UrlAssignment
      * Returns the translated menu items which get page variants, see CategoryItems::translationPaged().
      *
      * Translated URL and alias menu items can point to other translated menu items, which only have page variants
-     * if they pass the check themselves. So the check is repeated until no more translations are dropped, then the
-     * translations pointing to dropped ones are dropped too like Urls::menuVariant() returns FALSE for them.
+     * if they pass the check themselves. So translations pointing to dropped ones are dropped too like Urls::menuVariant()
+     * returns FALSE for them. Dropping translations never adds ones, so only the translations which asked for a dropped
+     * one are checked again until no more translations are dropped.
      *
      * @param array<int, \stdClass> $rows Translations of the menu items of the imported menu with own pages
      * @return array<int, \stdClass> Translations with page variants
@@ -366,17 +368,37 @@ final class UrlAssignment
     private function pagedTranslations( array $rows ): array
     {
         $categoryItems = $this->context->categoryItems;
+        $paged = $dependents = [];
 
-        do
-        {
-            $count = count( $rows );
-            $ids = array_fill_keys( array_map( fn( \stdClass $row ) => (string) $row->id, $rows ), true );
-            $variant = fn( int|string $id ) => isset( $ids[(string) $id] );
-            $rows = array_values( array_filter( $rows, fn( \stdClass $row ) => $categoryItems->translationPaged( $row, $variant ) ) );
+        foreach( $rows as $row ) {
+            $paged[(string) $row->id] = true;
         }
-        while( count( $rows ) < $count );
 
-        return $rows;
+        $queue = array_keys( $rows );
+
+        while( $queue !== [] )
+        {
+            $idx = array_shift( $queue );
+            $row = $rows[$idx];
+
+            if( !isset( $paged[(string) $row->id] ) ) {
+                continue;
+            }
+
+            // remember which translations the check asked for, they decide if it must be repeated
+            $variant = function( int|string $id ) use ( &$paged, &$dependents, $idx ) {
+                $dependents[(string) $id][$idx] = $idx;
+                return isset( $paged[(string) $id] );
+            };
+
+            if( !$categoryItems->translationPaged( $row, $variant ) )
+            {
+                unset( $paged[(string) $row->id] );
+                $queue = [...$queue, ...array_values( $dependents[(string) $row->id] ?? [] )];
+            }
+        }
+
+        return array_values( array_filter( $rows, fn( \stdClass $row ) => isset( $paged[(string) $row->id] ) ) );
     }
 
 
@@ -394,11 +416,11 @@ final class UrlAssignment
      * @param iterable<\stdClass> $redirects Joomla redirects with their old and new URLs
      * @param Claims $claims URL paths claimed before the redirects, they aren't changed
      * @param array<int|string, UrlClaim> $later Claims of the rows claiming their paths after the redirects
-     * @param \Closure(Claims): AssignedUrls $assigned Returns the assigned URL paths of the claims
+     * @param AssignedUrls $keys Keys and home pages of the rows the claimed URL paths are added to
      * @return array{0: list<KeptRedirect>, 1: list<KeptRedirect>} Redirects with the old URL paths of pages whose targets
      *  are supported and the ones whose targets aren't, the ones of other sites or with query strings are skipped
      */
-    private function importedRedirects( iterable $redirects, Claims $claims, array $later, \Closure $assigned ): array
+    private function importedRedirects( iterable $redirects, Claims $claims, array $later, AssignedUrls $keys ): array
     {
         $list = [];
 
@@ -419,7 +441,7 @@ final class UrlAssignment
             $all->claim( $claim );
         }
 
-        $links = ( $this->linker )( $assigned( $all ) );
+        $links = ( $this->linker )( $keys->withClaims( $all ) );
         $imported = $unsupported = [];
 
         foreach( $list as $redirect )
@@ -459,7 +481,7 @@ final class UrlAssignment
      */
     private function redirectDir( string $url, string $path ): string
     {
-        $raw = preg_replace( '/[?#].*$/s', '', trim( $url ) ) ?? '';
+        [$raw] = Uri::split( trim( $url ) );
         return str_ends_with( $raw, '/' ) ? $path : ltrim( dirname( '/' . $path ), '/' );
     }
 
@@ -526,14 +548,10 @@ final class UrlAssignment
 
         foreach( $translations as $row )
         {
-            $tag = Row::language( $row );
-
-            if( isset( $otherHomes[$tag] ) && MenuItem::article( $otherHomes[$tag] ) !== (int) $row->id ) {
-                continue;
-            }
+            $shown = $this->homeShows( $row, $otherHomes, fn( \stdClass $other ) => MenuItem::article( $other ) === (int) $row->id, true );
 
             // translations in known languages link to the home page of their language, the root of the language domain if it has one
-            if( ( $url = $this->context->domains->homeUrl( $tag ) ) !== null ) {
+            if( $shown && ( $url = $this->context->domains->homeUrl( Row::language( $row ) ) ) !== null ) {
                 $homes[$row->id] = $url;
             }
         }
@@ -567,14 +585,40 @@ final class UrlAssignment
         foreach( $folders->categoryTranslations[$catId] ?? [] as $row )
         {
             $tag = Row::language( $row );
-            $other = isset( $otherHomes[$tag] ) ? MenuLink::of( $otherHomes[$tag] ) : null;
-            $shown = $other ? $other->kind === MenuLink::KIND_CATEGORY && $other->id === (int) $row->id : isset( $translated[$tag] );
+            $shows = function( \stdClass $other ) use ( $row ) {
+                $link = MenuLink::of( $other );
+                return $link->kind === MenuLink::KIND_CATEGORY && $link->id === (int) $row->id;
+            };
 
-            if( $shown && ( $url = $this->context->domains->homeUrl( $tag ) ) !== null ) {
+            if( $this->homeShows( $row, $otherHomes, $shows, isset( $translated[$tag] ) ) && ( $url = $this->context->domains->homeUrl( $tag ) ) !== null ) {
                 $urls[$row->id] = $url;
             }
         }
 
         return $urls;
+    }
+
+
+    /**
+     * Tests if the root page variant of the language of the translation shows it, so the translation links to the home page.
+     *
+     * This is the single rule of the home menu items of the other languages: with language filter, they replace the
+     * translations of the home menu item or of its article in their languages, see Homes::otherHomes(). So in languages with
+     * own home menu item, the translation is only shown if that menu item shows it, otherwise if the root page variant of
+     * the language is the translation or shows it. The callers only differ in what "shows" means: homes() compares the
+     * articles, categoryHomes() the categories and the root page variant of a category exists if the home menu item is
+     * translated into the language. reserveHomes() applies the same rule to the languages instead of single translations:
+     * the languages of the translations without own home menu item and the ones of the home menu items Joomla shows get
+     * root page variants.
+     *
+     * @param \stdClass $row Translated article or category
+     * @param array<string, \stdClass> $otherHomes Home menu items of the other languages by language tag
+     * @param \Closure(\stdClass): bool $shows Tests if the home menu item of the language shows the translation
+     * @param bool $variant TRUE if the root page variant of the language shows the translation if there's no home menu item of the language
+     */
+    private function homeShows( \stdClass $row, array $otherHomes, \Closure $shows, bool $variant ): bool
+    {
+        $other = $otherHomes[Row::language( $row )] ?? null;
+        return $other !== null ? $shows( $other ) : $variant;
     }
 }

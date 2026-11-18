@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
+use Aimeos\Cms\Concerns\Joomla\Remembers;
 use Illuminate\Support\Collection;
 
 
@@ -19,6 +20,8 @@ use Illuminate\Support\Collection;
  */
 class Modules
 {
+    use Remembers;
+
     /** Prefix of the module types, which can be omitted in the shortcodes */
     protected const PREFIX = 'mod_';
     /** Type of the custom modules, the only supported ones */
@@ -46,10 +49,14 @@ class Modules
 
     /** @var Collection<int, \stdClass>|null Published modules of the site guests can see, fetched on first use */
     protected ?Collection $modules = null;
-    /** @var array<int|string, list<int>>|false|null Menu assignments of the modules, NULL if unknown, FALSE until they are fetched on first use */
-    protected array|false|null $menus = false;
+    /** @var array<string, Collection<int, \stdClass>>|null Published modules guests can see by lower case position, built on first use */
+    protected ?array $positions = null;
+    /** @var array<string, mixed> Values fetched once by cache key like the menu assignments, NULL ones are cached too */
+    protected array $cache = [];
     /** @var array<string, bool> Texts of the module shortcodes replaced at the moment as keys, so modules loading themselves aren't inserted again */
     protected array $loading = [];
+    /** Number of shortcodes kept because their modules were loading at the moment, see kept() */
+    protected int $kept = 0;
 
 
     /**
@@ -82,7 +89,9 @@ class Modules
         $key = $shortcode->text();
 
         // like Joomla, shortcodes in modules loading themselves are kept to avoid endless loops
-        if( isset( $this->loading[$key] ) ) {
+        if( isset( $this->loading[$key] ) )
+        {
+            $this->kept++;
             return null;
         }
 
@@ -115,6 +124,18 @@ class Modules
 
 
     /**
+     * Returns the number of shortcodes kept so far because their modules were loading at the moment.
+     *
+     * Modules prepared without keeping a shortcode don't depend on the shortcodes replaced around them,
+     * so their prepared contents can be reused, see ModulePreparer::module().
+     */
+    public function kept(): int
+    {
+        return $this->kept;
+    }
+
+
+    /**
      * Returns the published modules of the site guests can see.
      *
      * @return Collection<int, \stdClass> Modules ordered by their position
@@ -134,12 +155,23 @@ class Modules
      */
     protected function menus(): ?array
     {
-        // NULL is a valid result, so FALSE marks the assignments which weren't fetched yet
-        if( $this->menus === false ) {
-            $this->menus = $this->reader->moduleMenus();
-        }
+        // NULL is a valid result, which is cached too
+        return $this->remember( $this->cache, 'menus', fn() => $this->reader->moduleMenus() );
+    }
 
-        return $this->menus;
+
+    /**
+     * Returns the published modules of the site guests can see by their position.
+     *
+     * Joomla compares the positions case-insensitively, so they are indexed in lower case once.
+     *
+     * @param string $position Module position like "banner"
+     * @return Collection<int, \stdClass> Modules of the position ordered like by modules()
+     */
+    protected function positioned( string $position ): Collection
+    {
+        $this->positions ??= $this->modules()->groupBy( fn( $module ) => strtolower( Value::string( $module->position ?? null ) ) )->all();
+        return $this->positions[strtolower( $position )] ?? new Collection();
     }
 
 
@@ -240,17 +272,17 @@ class Modules
     protected function select( string $name, array $args, string $language, int $itemId ): Collection
     {
         $title = $args['title'] ?? '';
-        $positioned = fn( $module ) => strtolower( Value::string( $module->position ?? null ) ) === strtolower( $args['position'] ?? '' );
         $titled = fn( $module ) => $title === '' || Row::title( $module ) === $title;
 
-        // the cheap tests of the shortcode run before the ones of the language and menu assignment, the remaining shortcode is LOAD_MODULE
-        $selected = match( $name ) {
-            Shortcodes::LOAD_POSITION => $positioned,
-            Shortcodes::LOAD_MODULE_ID => fn( $module ) => Value::string( $module->id ?? null ) === ( $args['id'] ?? '' ),
-            default => fn( $module ) => $this->typed( $module, $args['type'] ?? '' ) && $titled( $module ),
+        // the modules of a position are indexed, the others are tested by the cheap tests of the shortcode
+        // before the ones of the language and menu assignment, the remaining shortcode is LOAD_MODULE
+        [$candidates, $selected] = match( $name ) {
+            Shortcodes::LOAD_POSITION => [$this->positioned( $args['position'] ?? '' ), fn( $module ) => true],
+            Shortcodes::LOAD_MODULE_ID => [$this->modules(), fn( $module ) => Value::string( $module->id ?? null ) === ( $args['id'] ?? '' )],
+            default => [$this->modules(), fn( $module ) => $this->typed( $module, $args['type'] ?? '' ) && $titled( $module )],
         };
         $shown = fn( $module ) => $selected( $module ) && $this->site->shows( Row::language( $module ), $language ) && $this->assigned( $module, $itemId );
-        $modules = $this->modules()->filter( $shown );
+        $modules = $candidates->filter( $shown );
 
         return $name === Shortcodes::LOAD_MODULE ? $modules->take( 1 ) : $modules;
     }

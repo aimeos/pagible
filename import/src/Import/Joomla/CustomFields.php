@@ -17,6 +17,10 @@ namespace Aimeos\Cms\Import\Joomla;
  */
 class CustomFields
 {
+    /** @var array<int|string, array<int|string, list<string>>> Values of the fields of the last category description by category ID, see descriptionValues() */
+    protected array $described = [];
+
+
     /**
      * Initializes the object.
      *
@@ -44,21 +48,21 @@ class CustomFields
      */
     public function articleValues( \stdClass $article, string $language ): array
     {
-        $values = $this->extras->articleValues( $article->id );
-
-        return $this->values( Fields::ARTICLE_CONTEXT, $values, Article::catId( $article ), $language );
+        $values = $this->languageValues( Fields::ARTICLE_CONTEXT, $this->extras->articleValues( $article->id ), $language );
+        return $this->assignedValues( $values, Article::catId( $article ) );
     }
 
 
     /**
      * Returns the values of the custom fields Joomla shows for the category.
      *
+     * These are the values of the description whose fields are assigned to the category, see descriptionValues().
+     *
      * @return array<int|string, list<string>> Values of the shown fields by field ID, empty lists if there's no stored value
      */
     public function categoryValues( \stdClass $category ): array
     {
-        $values = $this->extras->categoryValues( $category->id );
-        return $this->values( Fields::CATEGORY_CONTEXT, $values, (int) $category->id, Row::language( $category ) );
+        return $this->assignedValues( $this->descriptionValues( $category ), (int) $category->id );
     }
 
 
@@ -66,14 +70,20 @@ class CustomFields
      * Returns the values of the custom fields for the shortcodes of the category description.
      *
      * Joomla replaces the field shortcodes of the description without checking the categories of the fields,
-     * so the fields assigned to other categories are used too.
+     * so the fields assigned to other categories are used too. The values of the last category are kept because
+     * the category page needs them for its fields too, see categoryValues().
      *
      * @return array<int|string, list<string>> Values of the fields by field ID, empty lists if there's no stored value
      */
     public function descriptionValues( \stdClass $category ): array
     {
-        $values = $this->extras->categoryValues( $category->id );
-        return $this->values( Fields::CATEGORY_CONTEXT, $values, (int) $category->id, Row::language( $category ), false );
+        if( !isset( $this->described[$category->id] ) )
+        {
+            $values = $this->languageValues( Fields::CATEGORY_CONTEXT, $this->extras->categoryValues( $category->id ), Row::language( $category ) );
+            $this->described = [$category->id => $values];
+        }
+
+        return $this->described[$category->id];
     }
 
 
@@ -130,38 +140,53 @@ class CustomFields
 
 
     /**
-     * Returns the values of the custom fields Joomla shows for the article or category.
+     * Returns the values of the custom fields of the language of the article or category.
      *
      * @param string $context Context of the custom fields, Fields::ARTICLE_CONTEXT or Fields::CATEGORY_CONTEXT
      * @param array<int|string, list<string>> $stored Stored values of the article or category by field ID
-     * @param int $catId ID of the category of the article or the ID of the category itself
      * @param string $language Joomla language tag of the article or category
-     * @param bool $assigned FALSE to use the fields assigned to other categories too, see descriptionValues()
-     * @return array<int|string, list<string>> Values of the shown fields by field ID, empty lists if there's no stored value
+     * @return array<int|string, list<string>> Values of the fields by field ID in the order of the fields, empty lists if there's no stored value
      */
-    protected function values( string $context, array $stored, int $catId, string $language, bool $assigned = true ): array
+    protected function languageValues( string $context, array $stored, string $language ): array
     {
-        $categories = $assigned ? $this->extras->fieldCategories() : [];
-        $path = null;
         $values = [];
 
         foreach( $this->renderer( $context )->all() as $id => $field )
         {
             // like Joomla, articles and categories for all languages get the fields of all languages, unlike the shown ones in position()
-            if( $language !== Languages::ALL && !$this->site->shows( Row::language( $field ), $language ) ) {
-                continue;
+            if( $language === Languages::ALL || $this->site->shows( Row::language( $field ), $language ) ) {
+                $values[$id] = $stored[$id] ?? [];
             }
+        }
 
+        return $values;
+    }
+
+
+    /**
+     * Returns the values of the custom fields assigned to the category or one of its parent categories.
+     *
+     * Fields without categories are assigned to all categories.
+     *
+     * @param array<int|string, list<string>> $values Values of the fields by field ID, see languageValues()
+     * @param int $catId ID of the category of the article or the ID of the category itself
+     * @return array<int|string, list<string>> Values of the assigned fields by field ID
+     */
+    protected function assignedValues( array $values, int $catId ): array
+    {
+        $categories = $this->extras->fieldCategories();
+        $path = null;
+
+        foreach( array_keys( $values ) as $id )
+        {
             if( !empty( $categories[$id] ) )
             {
                 $path ??= $this->site->categoryIds( $catId );
 
                 if( !array_intersect( $categories[$id], $path ) ) {
-                    continue;
+                    unset( $values[$id] );
                 }
             }
-
-            $values[$id] = $stored[$id] ?? [];
         }
 
         return $values;

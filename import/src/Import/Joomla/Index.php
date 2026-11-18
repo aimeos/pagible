@@ -25,11 +25,11 @@ class Index
     protected const FOREIGN = 'Skipping %d Joomla articles in other languages without associated article in the import language '
         . 'because Joomla only shows them on the sites of their languages.';
     /** Kind of the translated rows in the warnings for articles */
-    protected const ARTICLES = 'article';
+    protected const KIND_ARTICLE = 'article';
     /** Kind of the translated rows in the warnings for categories */
-    protected const CATEGORIES = 'category';
+    protected const KIND_CATEGORY = 'category';
     /** Kind of the translated rows in the warnings for menu items */
-    protected const MENU_ITEMS = 'menu item';
+    protected const KIND_MENU_ITEM = 'menu item';
 
     /** Warning about the translations in unknown languages, gets the kind of the rows and the list of language tags */
     protected const UNKNOWN_LANGUAGES = 'Skipping %s translations of unknown or unpublished Joomla languages [%s]'
@@ -77,8 +77,8 @@ class Index
         $associations = $this->associations( Reader::ARTICLE_ASSOCIATIONS );
         $shown = $this->collect( $withTimes, $this->idSet( $associations ) );
 
-        $tags = $shown->tags();
-        $translations = $this->translations( self::ARTICLES, $tags, $associations );
+        $tags = $shown->languageTags();
+        $translations = $this->translations( self::KIND_ARTICLE, $tags, $associations );
         $translated = $this->idSet( $translations );
         $articles = $shown->imported( $translated );
 
@@ -120,7 +120,7 @@ class Index
     public function folders( Collection $menuItems ): Folders
     {
         $visible = $this->site->categories->reject( fn( $category ) => $this->site->access->categoryHidden( (int) $category->id ) )->sortKeys()->all();
-        $categoryTranslations = $this->associated( self::CATEGORIES, $this->associations( Reader::CATEGORY_ASSOCIATIONS ), $visible );
+        $categoryTranslations = $this->associated( self::KIND_CATEGORY, $this->associations( Reader::CATEGORY_ASSOCIATIONS ), $visible );
 
         // the associated menu items in other languages are mostly in other menus
         $items = $menuItems->keyBy( 'id' )->sortKeys()->all();
@@ -132,7 +132,7 @@ class Index
         return new Folders(
             categories: array_diff_key( $visible, $translated ),
             categoryTranslations: $categoryTranslations,
-            menuTranslations: $this->associated( self::MENU_ITEMS, $associations, $items + $otherItems, $items )
+            menuTranslations: $this->associated( self::KIND_MENU_ITEM, $associations, $items + $otherItems, $items )
         );
     }
 
@@ -262,7 +262,7 @@ class Index
     protected function articleItem( int|string $id, array $items, string $tag ): ?\stdClass
     {
         $found = null;
-        // the rules only remember the menu items selected for the target of this article
+        // new rules per article, so they only remember the menu items selected for the target of this article
         $rules = $this->site->menuRules();
         $target = MenuRules::target( MenuItem::VIEW_ARTICLE, $id );
 
@@ -288,7 +288,7 @@ class Index
      * Each unknown language is only reported once per kind of rows, even if it's read several times. Translations skipped
      * because another translation of their association uses the same language code are reported by kind and ID.
      *
-     * @param string $kind Kind of the rows in the warnings, one of the ARTICLES, CATEGORIES and MENU_ITEMS constants
+     * @param string $kind Kind of the rows in the warnings, one of the KIND_* constants
      * @param array<int|string, string> $tags Joomla language tags of the associated articles, categories or menu items by ID
      * @param array<int|string, list<int|string>> $associations IDs of the associated rows grouped by association key
      * @param array<int|string, mixed> $pages Rows imported as pages themselves, which aren't translations of other rows
@@ -341,7 +341,7 @@ class Index
     /**
      * Groups the associated categories or menu items in other languages as translations of the ones in the import language.
      *
-     * @param string $kind Kind of the rows in the warnings, CATEGORIES or MENU_ITEMS
+     * @param string $kind Kind of the rows in the warnings, KIND_CATEGORY or KIND_MENU_ITEM
      * @param array<int|string, list<int|string>> $associations IDs of the associated rows grouped by association key
      * @param array<int|string, \stdClass> $rows Categories or menu items by ID
      * @param array<int|string, mixed> $pages Rows imported as pages themselves, which aren't translations of other rows

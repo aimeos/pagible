@@ -16,13 +16,16 @@ use Illuminate\Database\QueryException;
  */
 class SqlOptions
 {
-    /** Functions and keywords followed by parentheses the queries of custom SQL fields can use, all others are rejected */
-    protected const SQL_FUNCTIONS = ['abs', 'and', 'as', 'avg', 'between', 'cast', 'ceil', 'ceiling', 'char_length', 'character_length',
-        'coalesce', 'concat', 'concat_ws', 'convert', 'count', 'date', 'date_format', 'day', 'distinct', 'else', 'field', 'floor', 'from',
-        'from_unixtime', 'greatest', 'group_concat', 'having', 'hour', 'if', 'ifnull', 'in', 'instr', 'is', 'join', 'json_extract',
-        'json_unquote', 'lcase', 'least', 'left', 'length', 'like', 'locate', 'lower', 'lpad', 'ltrim', 'max', 'min', 'minute', 'mod',
-        'month', 'not', 'nullif', 'on', 'or', 'position', 'replace', 'reverse', 'right', 'round', 'rpad', 'rtrim', 'select', 'substr',
-        'substring', 'substring_index', 'sum', 'then', 'trim', 'ucase', 'upper', 'using', 'when', 'where', 'xor', 'year'];
+    /** Functions known to be harmless the queries of custom SQL fields can call, all others are rejected */
+    protected const ALLOWED_FUNCTIONS = ['abs', 'avg', 'cast', 'ceil', 'ceiling', 'char_length', 'character_length', 'coalesce', 'concat',
+        'concat_ws', 'convert', 'count', 'date', 'date_format', 'day', 'field', 'floor', 'from_unixtime', 'greatest', 'group_concat', 'hour',
+        'if', 'ifnull', 'instr', 'json_extract', 'json_unquote', 'lcase', 'least', 'left', 'length', 'locate', 'lower', 'lpad', 'ltrim', 'max',
+        'min', 'minute', 'mod', 'month', 'nullif', 'position', 'replace', 'reverse', 'right', 'round', 'rpad', 'rtrim', 'substr', 'substring',
+        'substring_index', 'sum', 'trim', 'ucase', 'upper', 'year'];
+
+    /** Keywords which can be followed by parentheses in the queries of custom SQL fields like "IN (1, 2)" */
+    protected const PARENTHESIZED_KEYWORDS = ['and', 'as', 'between', 'distinct', 'else', 'from', 'having', 'in', 'is', 'join', 'like',
+        'not', 'on', 'or', 'select', 'then', 'using', 'when', 'where', 'xor'];
 
     /** Keywords of statements with side effects or locks the queries of custom SQL fields must not contain */
     protected const SQL_KEYWORDS = ['into', 'outfile', 'dumpfile', 'for', 'lock', 'procedure', 'handler'];
@@ -52,15 +55,17 @@ class SqlOptions
      * like SLEEP(). Rejected and failing queries return no options and are shown as warning.
      *
      * @param string $sql Query of the field returning the "value" and "text" columns, "#__" is replaced by the table prefix
+     * @param string $field ID and title of the field shown in the warnings like "[3] Color", none if empty
      * @return array<string, string> Option texts by value in the order returned by the query
      */
-    public function fetch( string $sql ): array
+    public function fetch( string $sql, string $field = '' ): array
     {
         $sql = $this->schema->sql( rtrim( trim( $sql ), "; \t\n\r" ) );
+        $name = $field !== '' ? 'custom SQL field ' . $field : 'a custom SQL field';
 
         if( !self::readOnly( $sql ) )
         {
-            ( $this->warn )( '  Ignored the options of a custom SQL field because only single SELECT queries without side effects are run: ' . $sql );
+            ( $this->warn )( '  Ignored the options of ' . $name . ' because only single SELECT queries without side effects are run: ' . $sql );
             return [];
         }
 
@@ -68,7 +73,7 @@ class SqlOptions
             $rows = $this->db->select( $sql );
         } catch( QueryException $e ) {
             // Joomla shows the field without options too
-            ( $this->warn )( '  Ignored the options of a custom SQL field because its query failed: ' . $e->getMessage() );
+            ( $this->warn )( '  Ignored the options of ' . $name . ' because its query failed: ' . $e->getMessage() );
             return [];
         }
 
@@ -88,9 +93,8 @@ class SqlOptions
     /**
      * Tests if the query of a custom SQL field is a SELECT query without side effects.
      *
-     * The quoted strings and identifiers are removed first, so their contents can't hide or fake keywords. Quoted
-     * identifiers followed by parentheses are rejected because they can be the names of any function.
-     * Backslashes are rejected because they escape quotes depending on the SQL mode of the database.
+     * The quoted strings and identifiers are removed first, so their contents can't hide or fake keywords, see
+     * stripQuoted(). Backslashes are rejected because they escape quotes depending on the SQL mode of the database.
      *
      * @param string $sql Query with the table prefix
      */
@@ -100,26 +104,59 @@ class SqlOptions
             return false;
         }
 
-        // quoted strings including doubled quotes are replaced by empty strings and quoted identifiers by a name which isn't
-        // an allowed function, so calls of quoted function names like `sleep`(10) are rejected, unbalanced quotes remain
-        $code = strtolower( (string) preg_replace_callback( '/\'(?:[^\']|\'\')*\'|"(?:[^"]|"")*"|`(?:[^`]|``)*`/s',
-            fn( array $m ) => $m[0][0] === "'" ? "''" : self::QUOTED_IDENTIFIER, $sql ) );
+        $code = self::stripQuoted( $sql );
+        return !self::hasForbiddenTokens( $code ) && self::callsOnlyAllowedFunctions( $code );
+    }
 
+
+    /**
+     * Returns the lower case query without the contents of its quoted strings and identifiers.
+     *
+     * Quoted strings including doubled quotes are replaced by empty strings and quoted identifiers by a name which
+     * isn't an allowed function, so calls of quoted function names like `sleep`(10) are rejected. Unbalanced quotes remain.
+     *
+     * @param string $sql Query with the table prefix
+     * @return string Lower case query like "select name as value from jos_users where name = ''"
+     */
+    protected static function stripQuoted( string $sql ): string
+    {
+        return strtolower( (string) preg_replace_callback( '/\'(?:[^\']|\'\')*\'|"(?:[^"]|"")*"|`(?:[^`]|``)*`/s',
+            fn( array $m ) => $m[0][0] === "'" ? "''" : self::QUOTED_IDENTIFIER, $sql ) );
+    }
+
+
+    /**
+     * Tests if the query isn't a single SELECT statement or contains tokens with side effects.
+     *
+     * Rejected are other statements, several statements, comments, variables, unbalanced quotes, subqueries,
+     * SELECTs which aren't combined by UNION and the keywords of SQL_KEYWORDS like INTO or FOR UPDATE.
+     *
+     * @param string $code Lower case query without quoted contents, see stripQuoted()
+     */
+    protected static function hasForbiddenTokens( string $code ): bool
+    {
         // statements, comments, variables and unbalanced quotes
         if( !preg_match( '/^select\s/', $code ) || preg_match( '/;|--|#|\/\*|@|["`\']/', str_replace( "''", '', $code ) ) ) {
-            return false;
+            return true;
         }
 
         // subqueries, additional SELECTs are only allowed after UNION
         if( preg_match( '/\(\s*select\b/', $code ) || preg_match_all( '/\bselect\b/', $code ) !== 1 + preg_match_all( '/\bunion\b/', $code ) ) {
-            return false;
+            return true;
         }
 
-        if( preg_match( '/\b(' . implode( '|', self::SQL_KEYWORDS ) . ')\b/', $code ) ) {
-            return false;
-        }
+        return (bool) preg_match( '/\b(' . implode( '|', self::SQL_KEYWORDS ) . ')\b/', $code );
+    }
 
+
+    /**
+     * Tests if all names followed by parentheses are allowed functions or keywords.
+     *
+     * @param string $code Lower case query without quoted contents, see stripQuoted()
+     */
+    protected static function callsOnlyAllowedFunctions( string $code ): bool
+    {
         preg_match_all( '/\b([a-z_][a-z0-9_$]*)\s*\(/', $code, $matches );
-        return array_diff( $matches[1], self::SQL_FUNCTIONS ) === [];
+        return array_diff( $matches[1], self::ALLOWED_FUNCTIONS, self::PARENTHESIZED_KEYWORDS ) === [];
     }
 }

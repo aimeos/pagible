@@ -31,10 +31,6 @@ class Content
     /** CSS classes of the lists of the links and the tags */
     protected const LINKS_CLASS = 'links';
     protected const TAGS_CLASS = 'tags';
-    /** Link targets opening a new window, "1" with and "2" without browser navigation, "3" as modal dialog */
-    protected const NEW_WINDOW = ['1', '2', '3'];
-    /** Keys of the URL, the text and the target of the three links of the articles */
-    protected const LINKS = [['urla', 'urlatext', 'targeta'], ['urlb', 'urlbtext', 'targetb'], ['urlc', 'urlctext', 'targetc']];
 
 
     /**
@@ -158,9 +154,8 @@ class Content
     /**
      * Returns the list of the links of the article, which are entered in the "Images and Links" tab.
      *
-     * Links to Joomla pages are replaced by the URL paths of the imported pages, links without text show their URL.
-     * Like Joomla, the content plugins don't change the links.
-     * Links opened in a popup or modal window by Joomla are opened in a new window instead. The "rel" attributes
+     * Links to Joomla pages are replaced by the URL paths of the imported pages, see LinkPositions::links() for
+     * the links themselves. Like Joomla, the content plugins don't change the links. The "rel" attributes
      * are the ones the sanitized HTML keeps for links opening a new window, Joomla also adds "nofollow".
      *
      * @param array<string, mixed> $urls Decoded links of the article with the keys "urla", "urlatext", "targeta", "urlb", etc.
@@ -170,17 +165,7 @@ class Content
      */
     public function linkContent( array $urls, array $options, string $language ): ?array
     {
-        $items = [];
-
-        foreach( self::LINKS as [$urlKey, $textKey, $targetKey] )
-        {
-            if( ( $url = Value::string( $urls[$urlKey] ?? null ) ) !== '' )
-            {
-                $label = Value::string( $urls[$textKey] ?? null ) ?: $url;
-                $target = Value::string( $urls[$targetKey] ?? null ) ?: Value::string( $options[$targetKey] ?? null );
-                $items[] = Markup::link( $url, $label, in_array( $target, self::NEW_WINDOW, true ) );
-            }
-        }
+        $items = array_map( fn( $link ) => Markup::link( $link['url'], $link['label'], $link['newWindow'] ), LinkPositions::links( $urls, $options ) );
 
         return $items ? $this->elements( Markup::list( $items, self::LINKS_CLASS ), $language ) : null;
     }
@@ -203,30 +188,16 @@ class Content
 
 
     /**
-     * Prepares the HTML once by the content plugins.
-     *
-     * The "Content - Fields" plugin replaces the field shortcodes before the "Content - Load Modules" plugin
-     * replaces the module shortcodes, so module shortcodes in editor and text area fields are replaced too.
+     * Prepares the HTML once by the content plugins, see ModulePreparer::prepare().
      *
      * @param Rendering $rendering Article text or category description, its field values, language and menu item
      * @return string Prepared HTML
      */
     protected function prepareOnce( string $html, Rendering $rendering ): string
     {
-        return $this->modules->cloak( $html, function( $html ) use ( $rendering ) {
-            if( $this->site->plugins->contentFields() ) {
-                $html = Shortcodes::fields( $html, fn( Shortcode $shortcode ) => $this->fields->shortcode( $shortcode, $rendering ) );
-            }
-
-            $html = $this->modules->replaceModules( $html, $rendering );
-
-            // only the page breaks of articles are shown as pages
-            if( $rendering->pageBreaks() && $this->site->plugins->pageBreak() ) {
-                $html = PageBreaks::headings( $html, $this->site->languages->locale( $rendering->language ) );
-            }
-
-            return $html;
-        } );
+        // only the page breaks of articles are shown as pages
+        $fields = fn( Shortcode $shortcode ) => $this->fields->shortcode( $shortcode, $rendering );
+        return $this->modules->prepare( $html, $rendering, $fields, $rendering->pageBreaks() );
     }
 
 

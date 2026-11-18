@@ -26,7 +26,7 @@ class ContentTest extends TestAbstract
         $this->assertSame( '<a href="https://x.test/" rel="noopener noreferrer" target="_blank">X</a>', Joomla\Markup::link( 'https://x.test/', 'X', true ) );
         $this->assertSame( '<img src="a&quot;.png" alt="&lt;A&gt;">', Joomla\Markup::image( 'a".png', '<A>' ) );
         $this->assertSame( '<img src="a.png" alt="">', Joomla\Markup::image( 'a.png' ) );
-        $this->assertSame( '<img src="a.png">', Joomla\Markup::image( 'a.png', null ) );
+        $this->assertSame( '<img src="a.png">', Joomla\Markup::imageWithoutAlt( 'a.png' ) );
     }
 
 
@@ -91,8 +91,8 @@ class ContentTest extends TestAbstract
 
         $calls = [];
         $replace = function( Joomla\Shortcode $shortcode ) use ( &$calls ) {
-            $calls[] = [$shortcode->name, $shortcode->args, $shortcode->arg];
-            return $shortcode->arg === 'keep' ? null : "[{$shortcode->name}]";
+            $calls[] = [$shortcode->name, $shortcode->args, $shortcode->raw];
+            return $shortcode->raw === 'keep' ? null : "[{$shortcode->name}]";
         };
         $shortcodes = fn( string $html, \Closure $replace, string $style = 'none' ) => Joomla\Shortcodes::modules( Joomla\Shortcodes::fields( $html, $replace ), $replace, $style );
 
@@ -582,6 +582,10 @@ class ContentTest extends TestAbstract
         // failing queries are shown as warning too
         $this->assertSame( [], $reader->sqlOptions()->fetch( 'SELECT value FROM #__missing' ) );
         $this->assertStringContainsString( 'its query failed', end( $warnings ) );
+
+        // the warnings name the field if it's known
+        $reader->sqlOptions()->fetch( 'DELETE FROM #__users', '[3] Color' );
+        $this->assertStringStartsWith( '  Ignored the options of custom SQL field [3] Color because', end( $warnings ) );
     }
 
 
@@ -1011,7 +1015,7 @@ class ContentTest extends TestAbstract
 
         // iframes without web URLs are removed with a warning
         $this->assertSame( [['html', '<p>Map</p>']], $texts( '<figure><iframe src="javascript:alert(1)"></iframe><figcaption>Map</figcaption></figure>' ) );
-        $this->assertSame( ['Iframe without web URL removed: "javascript:alert(1)"'], $warnings );
+        $this->assertSame( ['  Iframe without web URL removed: "javascript:alert(1)"'], $warnings );
         // without warning closure, they are removed silently
         $this->assertSame( [], ( new Joomla\Html( fn( $tag ) => null ) )->elements( '<iframe src="ftp://example.com/x"></iframe>' )['elements'] );
 
@@ -1072,10 +1076,28 @@ class ContentTest extends TestAbstract
 
         // PCRE functions return NULL on errors like the backtracking limit, the input is kept instead of losing the content
         $this->assertSame( '<p>A</p>', $result->invoke( $html, null, '<p>A</p>' ) );
-        $this->assertSame( ['Processing HTML failed, content kept unchanged: ' . preg_last_error_msg()], $warnings );
+        $this->assertSame( ['  Processing HTML failed, content kept unchanged: ' . preg_last_error_msg()], $warnings );
         $this->assertSame( '<p>B</p>', $result->invoke( $html, '<p>B</p>', '<p>A</p>' ) );
         // without warning closure, the input is kept silently
         $this->assertSame( '<p>A</p>', $result->invoke( new Html( fn( $tag ) => null ), null, '<p>A</p>' ) );
+    }
+
+
+    public function testFailedRegularExpressionsAreReportedEachTime(): void
+    {
+        $warnings = $once = [];
+        $html = new Joomla\Html( fn( $tag ) => 'F1', function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; },
+            function( string $msg ) use ( &$once ) { $once[] = $msg; } );
+        $result = new \ReflectionMethod( Html::class, 'result' );
+
+        // each failure is reported because the content of another text is kept unchanged, the removed iframes only once
+        $result->invoke( $html, null, '<p>A</p>' );
+        $result->invoke( $html, null, '<p>A</p>' );
+        $html->elements( '<iframe src="javascript:alert(1)"></iframe>' );
+
+        $this->assertSame( 2, count( $warnings ) );
+        $this->assertStringStartsWith( '  Processing HTML failed', $warnings[1] );
+        $this->assertSame( ['  Iframe without web URL removed: "javascript:alert(1)"'], $once );
     }
 
 

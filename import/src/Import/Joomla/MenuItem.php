@@ -164,9 +164,11 @@ class MenuItem
 
 
     /**
-     * Returns the URL path of the menu item, the home menu item has none.
+     * Returns the URL path Joomla routes the menu item to, the home menu item has none.
      *
-     * Menu items without path use their alias or the slug of their title.
+     * Menu items without path use their alias or the slug of their title. The routes of the articles and categories
+     * start with this path, so they have no prefix for the home menu item. The URL paths of the pages of the menu items
+     * are returned by Paths::itemPath(), which uses the alias for home menu items instead.
      */
     public static function path( \stdClass $menuItem ): string
     {
@@ -203,14 +205,13 @@ class MenuItem
 
 
     /**
-     * Tests if a menu item of the given type is imported as folder page.
+     * Tests if the menu item is imported as folder page.
      *
      * Besides headings and separators, URL menu items without URL or with "#" are used as parents of their children.
-     *
-     * @param string $type Type of the menu item like "heading" or "url"
      */
-    public static function folderType( string $type, \stdClass $menuItem ): bool
+    public static function folderType( \stdClass $menuItem ): bool
     {
+        $type = self::type( $menuItem );
         $link = trim( (string) ( $menuItem->link ?? '' ) );
         return in_array( $type, self::FOLDER_TYPES, true ) || ( $type === self::TYPE_URL && in_array( $link, self::EMPTY_LINKS, true ) );
     }

@@ -16,6 +16,10 @@ namespace Aimeos\Cms\Import\Joomla;
  */
 class LanguageDomains
 {
+    /** Normalized host of the domain of the imported pages, see Origin::host() */
+    protected string $host;
+
+
     /**
      * Initializes the object.
      *
@@ -24,6 +28,7 @@ class LanguageDomains
      */
     public function __construct( protected Languages $languages, protected Origin $origin )
     {
+        $this->host = Origin::host( $origin->domain );
     }
 
 
@@ -90,15 +95,16 @@ class LanguageDomains
     /**
      * Returns the domain of the language if it isn't the domain of the imported pages.
      *
-     * Host names are case insensitive, so the domains are compared and returned in lower case. Like Origin,
-     * both are compared without whitespace, scheme, path and default port, e.g. " https://Example.com:443/ " is "example.com".
+     * Host names are case insensitive, so the domains are compared and returned normalized like Origin does: in lower
+     * case and without whitespace, scheme, path and default port, e.g. " https://Example.com:443/ " is "example.com".
+     * The domains of the languages are host names already, see Variants::language(), so they only become lower case.
      *
      * @param array{lang: string, domain: string} $language Language code and domain of the language
-     * @return string Domain in lower case or empty string if it's the domain of the imported pages
+     * @return string Normalized domain or empty string if it's the domain of the imported pages
      */
     protected function ownDomain( array $language ): string
     {
-        $domain = strtolower( $language['domain'] );
-        return Origin::host( $domain ) === Origin::host( $this->origin->domain ) ? '' : $domain;
+        $host = Origin::host( $language['domain'] );
+        return $host === $this->host ? '' : $host;
     }
 }

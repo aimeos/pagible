@@ -34,6 +34,8 @@ abstract class Commands extends Command
     protected const DOWNLOAD_SIZE = 50;
     /** Page attributes kept by slim() */
     protected const SLIM_KEYS = ['id', 'variant_id', 'parent_id', 'tenant_id', 'lang', 'domain', 'path'];
+    /** Modification time of source records without known time, they count as changed since every --since date */
+    protected const UNKNOWN_TIME = PHP_INT_MAX;
 
     protected string $connection;
     protected string $domain;
@@ -141,9 +143,10 @@ abstract class Commands extends Command
     /**
      * Sets the time of the --since option.
      *
+     * @param \DateTimeZone|null $timezone Time zone of dates without time zone or NULL for the one of the application
      * @return bool TRUE if the option is valid or not given, FALSE if not
      */
-    protected function sinceOption(): bool
+    protected function sinceOption( ?\DateTimeZone $timezone = null ): bool
     {
         $this->since = null;
         $this->changed = [];
@@ -152,12 +155,14 @@ abstract class Commands extends Command
             return true;
         }
 
-        if( ( $time = strtotime( $since ) ) === false ) {
+        try {
+            // the same parser as strtotime(), which only uses the time zone of the application
+            $this->since = ( new \DateTimeImmutable( $since, $timezone ) )->getTimestamp();
+        } catch( \Exception ) {
             $this->error( "Invalid date for --since: {$since}" );
             return false;
         }
 
-        $this->since = $time;
         return true;
     }
 
@@ -172,7 +177,7 @@ abstract class Commands extends Command
      */
     protected function unchangedSince( int|string $id ): bool
     {
-        return $this->since !== null && ( $this->changed[$id] ?? PHP_INT_MAX ) < $this->since;
+        return $this->since !== null && ( $this->changed[$id] ?? static::UNKNOWN_TIME ) < $this->since;
     }
 
 
@@ -953,6 +958,27 @@ abstract class Commands extends Command
     protected function date( ?string ...$dates ): ?string
     {
         return Database::firstDate( $dates );
+    }
+
+
+    /**
+     * Lists the failed imports kept for the summary at the end and the number of the ones which aren't kept.
+     */
+    protected function printFailures(): void
+    {
+        if( !$this->failures ) {
+            return;
+        }
+
+        $this->error( $this->failed . ' imports failed:' );
+
+        foreach( $this->failures as $failure ) {
+            $this->error( '  ' . $failure );
+        }
+
+        if( $this->failed > count( $this->failures ) ) {
+            $this->error( '  ... and ' . ( $this->failed - count( $this->failures ) ) . ' more' );
+        }
     }
 
 

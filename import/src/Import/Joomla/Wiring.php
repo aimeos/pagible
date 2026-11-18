@@ -31,11 +31,11 @@ final class Wiring
     /** Domains, routes and menu items the URLs of the imported pages are built from, its paths are the ones Joomla uses */
     public readonly UrlContext $urlContext;
     /** Decides which articles, categories and menu items are imported as pages or translations */
-    protected readonly Index $index;
+    private readonly Index $index;
     /** @var Collection<int, \stdClass> Menu items of the imported menu ordered by their position */
-    protected readonly Collection $menuItems;
+    private readonly Collection $menuItems;
     /** @var Collection<array-key, \stdClass> Menu items of all menus by ID ordered by their position used for the routes, home pages and links */
-    protected readonly Collection $allItems;
+    private readonly Collection $allItems;
 
 
     /**
@@ -51,9 +51,9 @@ final class Wiring
      * @param Collection<array-key, \stdClass> $allItems Menu items of all menus by ID ordered by their position used for the routes, home pages and links
      */
     public function __construct(
-        protected readonly Reader $reader,
-        protected readonly Host $host,
-        protected readonly Origin $origin,
+        private readonly Reader $reader,
+        private readonly Host $host,
+        private readonly Origin $origin,
         public readonly Site $site,
         Collection $menuItems,
         Collection $allItems
@@ -178,11 +178,12 @@ final class Wiring
      * Creates the renderer of the custom fields, Joomla 3 renders them in the legacy way.
      *
      * @param iterable<\stdClass> $fields Fields ordered by their position
+     * @param FieldLookups $lookups Looks up the SQL options, users and user groups, shared by the article and category fields
      */
-    protected function fields( iterable $fields ): Fields
+    private function fields( iterable $fields, FieldLookups $lookups ): Fields
     {
         $types = new FieldTypes( $this->origin, $this->host->timezone, $this->site->version );
-        return new Fields( $fields, $this->site->plugins, new FieldLookups( $this->reader ), $types );
+        return new Fields( $fields, $this->site->plugins, $lookups, $types );
     }
 
 
@@ -192,11 +193,12 @@ final class Wiring
      * @param Links $links Resolves the Joomla links to the URL paths of the pages
      * @param Extras $extras Tags and custom field values of the articles and categories
      */
-    protected function content( Links $links, Extras $extras ): Content
+    private function content( Links $links, Extras $extras ): Content
     {
         $modules = new ModulePreparer( $this->site, new Modules( $this->site, $this->reader, $this->host->warnOnce ) );
-        $articleFields = $this->fields( $extras->shownFields( Fields::ARTICLE_CONTEXT ) );
-        $categoryFields = $this->fields( $extras->shownFields( Fields::CATEGORY_CONTEXT ) );
+        $lookups = new FieldLookups( $this->reader );
+        $articleFields = $this->fields( $extras->shownFields( Fields::ARTICLE_CONTEXT ), $lookups );
+        $categoryFields = $this->fields( $extras->shownFields( Fields::CATEGORY_CONTEXT ), $lookups );
         $fields = new CustomFields( $this->site, $extras, $modules, $articleFields, $categoryFields );
         $image = $this->host->image;
         $origin = $this->origin;
@@ -207,7 +209,7 @@ final class Wiring
         $html = new Html( function( string $tag ) use ( $image, $origin ) {
             $source = Html::imageSource( $tag );
             return $source ? $image( $origin->fileSource( $source['src'] ), $source['alt'] ) : null;
-        }, $this->host->warnOnce );
+        }, $this->host->warn, $this->host->warnOnce );
 
         return new Content(
             site: $this->site,

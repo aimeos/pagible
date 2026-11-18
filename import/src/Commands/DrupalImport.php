@@ -225,12 +225,13 @@ class DrupalImport extends Commands
     /**
      * Sets the time of the --since option.
      *
+     * @param \DateTimeZone|null $timezone Time zone of dates without time zone or NULL for the one of the application
      * @return bool TRUE if the option is valid or not given, FALSE if not
      */
     #[\Override]
-    protected function sinceOption(): bool
+    protected function sinceOption( ?\DateTimeZone $timezone = null ): bool
     {
-        if( !parent::sinceOption() ) {
+        if( !parent::sinceOption( $timezone ) ) {
             return false;
         }
 

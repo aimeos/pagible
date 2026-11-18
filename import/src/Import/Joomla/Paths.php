@@ -28,9 +28,14 @@ class Paths
 
 
     /**
-     * Returns the URL path of the menu item including the aliases of its parent items.
+     * Returns the URL path of the page of the menu item including the aliases of its parent items.
      *
-     * Home menu items have no URL path, so their alias is used for the pages of their translations.
+     * Unlike MenuItem::path(), which is the empty path Joomla routes the home menu items to and the base of the
+     * routes built from them, home menu items return their alias here. Their pages, e.g. the ones of their translations
+     * or of home menu items imported like other menu items, need a non-empty URL path. Other menu items return
+     * the same path as MenuItem::path().
+     *
+     * @return string URL path like "company/team" or the alias of home menu items like "home"
      */
     public function itemPath( \stdClass $item ): string
     {
@@ -47,7 +52,7 @@ class Paths
      * have without the home menu item.
      *
      * @param \stdClass|null $item Menu item Joomla uses for the article or NULL if there's none
-     * @return RoutePath URL path or NULL if Joomla has no menu item for the article and its categories and the alias
+     * @return RoutePath URL path and alias, the URL path is NULL if Joomla has no menu item for the article and its categories
      */
     public function articleRoute( \stdClass $article, ?\stdClass $item = null ): RoutePath
     {
@@ -62,7 +67,7 @@ class Paths
      * The menu items of the imported menu aren't used because the category page has their URL path, the path of a menu
      * item of the category in another menu is returned then.
      *
-     * @return RoutePath URL path or NULL if Joomla has no menu item for the category and its parents and the alias
+     * @return RoutePath URL path and alias, the URL path is NULL if Joomla has no menu item for the category and its parents
      */
     public function categoryRoute( \stdClass $category ): RoutePath
     {

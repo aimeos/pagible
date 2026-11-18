@@ -54,14 +54,26 @@ class Markup
 
 
     /**
-     * Returns the HTML image tag.
+     * Returns the HTML image tag with alternative text, an empty one marks decorative images.
      *
      * @param string $src URL or path of the image
-     * @param string|null $alt Alternative text or NULL to leave it out
-     * @return string HTML image tag
+     * @param string $alt Alternative text, empty for decorative images
+     * @return string HTML image tag like '<img src="a.png" alt="">'
      */
-    public static function image( string $src, ?string $alt = '' ): string
+    public static function image( string $src, string $alt = '' ): string
     {
-        return '<img src="' . e( $src ) . '"' . ( $alt !== null ? ' alt="' . e( $alt ) . '"' : '' ) . '>';
+        return '<img src="' . e( $src ) . '" alt="' . e( $alt ) . '">';
+    }
+
+
+    /**
+     * Returns the HTML image tag without alternative text, e.g. if none is known.
+     *
+     * @param string $src URL or path of the image
+     * @return string HTML image tag like '<img src="a.png">'
+     */
+    public static function imageWithoutAlt( string $src ): string
+    {
+        return '<img src="' . e( $src ) . '">';
     }
 }

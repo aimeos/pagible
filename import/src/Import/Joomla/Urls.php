@@ -198,12 +198,13 @@ class Urls
     /**
      * Returns the URL path of the page of the menu item.
      *
-     * Unlike articlePath() and categoryPath(), no route is built because menu items always have their path from the menu
-     * and it's only replaced if the item claimed another one.
+     * Like articlePath() and categoryPath(), menu items which didn't claim a path use the one Joomla uses, which is
+     * always their path from the menu, so they need no alias to fall back to.
      */
     public function menuPath( \stdClass $item ): string
     {
-        return $this->assigned->path( Kind::key( Kind::MENU, $item->id ), $this->context->paths->itemPath( $item ) );
+        $key = Kind::key( Kind::MENU, $item->id );
+        return $this->assigned->routePath( $key, fn() => new RoutePath( $this->context->paths->itemPath( $item ), '' ) );
     }
 
 
@@ -211,6 +212,10 @@ class Urls
      * Returns the URL path of the translated article in the domain of its language.
      *
      * The routes of the translated articles depend on their menu items, so they are claimed like the ones of the articles.
+     * Unlike categoryTranslationPath() and menuTranslationPath(), there's no fallback: the routes of the translated
+     * articles are only known from the stored routes of the articles, see Index::routes(), and every imported translated
+     * article claims a URL path except the ones of the article imported into the root page, which use the root page
+     * variants instead. So a missing path is an error instead of a route which can't be built here.
      *
      * @throws \LogicException If the translated article didn't claim a URL path
      */

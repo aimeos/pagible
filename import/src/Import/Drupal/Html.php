@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Import\Drupal;
 
 use Aimeos\Cms\Import\Elements;
-use Aimeos\Cms\Import\Embeds as BaseEmbeds;
 use Aimeos\Cms\Import\Html as BaseHtml;
 use Aimeos\Cms\Import\Markdown;
 
@@ -142,23 +141,27 @@ class Html extends BaseHtml
 
 
     /**
-     * Returns an HTML element with the iframe, e.g. of embedded videos or maps.
+     * Returns the URL of the embedded page for the decoded URL of the iframe tag.
      *
-     * The iframe is created again from its URL, size and title because the HTML element isn't
-     * sanitized. Iframes with other URLs than web URLs are removed.
+     * Protocol relative URLs get the HTTPS scheme and Drupal stream wrapper URIs are resolved, see streamUrl().
+     *
+     * @param string $src Decoded URL like "//www.youtube.com/embed/abc" or "public://maps/a.html"
+     * @return string URL with scheme like "https://www.youtube.com/embed/abc"
+     */
+    protected function iframeSource( string $src ): string
+    {
+        return str_starts_with( $src, '//' ) ? 'https:' . $src : ( self::streamUrl( $src ) ?: $src );
+    }
+
+
+    /**
+     * Remembers the removed iframe for the report of the removed HTML tags, see removed().
      *
      * @param string $tag Opening iframe tag
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null
      */
-    protected function iframe( string $tag ): ?array
+    protected function iframeRemoved( string $tag ): void
     {
-        $src = fn( string $src ) => str_starts_with( $src, '//' ) ? 'https:' . $src : ( self::streamUrl( $src ) ?: $src );
-
-        if( !( $content = BaseEmbeds::iframeTag( $tag, $src ) ) ) {
-            $this->removed['iframe'] = true;
-        }
-
-        return $content;
+        $this->removed['iframe'] = true;
     }
 
 
@@ -177,10 +180,6 @@ class Html extends BaseHtml
             && ( $content = ( $this->link )( self::decodedAttribute( $link[1], 'href' ), trim( self::decode( strip_tags( $link[2] ) ) ) ) )
         ) {
             return $content;
-        }
-
-        if( preg_match( '/^<iframe\b[^>]*>/i', $block, $tag ) ) {
-            return $this->iframe( $tag[0] );
         }
 
         if( preg_match( '/^<(video|audio)\b[^>]*>/i', $block, $tag ) ) {

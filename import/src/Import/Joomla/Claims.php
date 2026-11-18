@@ -36,14 +36,15 @@ class Claims
      */
     public function claim( UrlClaim $claim ): void
     {
-        $this->paths[$claim->key] = $slug = $claim->path;
+        $key = $claim->urlKey;
+        $this->paths[$key->key] = $slug = $claim->path;
 
-        for( $i = 1; !$this->claimPath( $slug, $claim->domain ); $i++ ) {
+        for( $i = 1; !$this->claimPath( $slug, $key->domain ); $i++ ) {
             $slug = $claim->path . '-' . $claim->id . ( $i > 1 ? '-' . $i : '' );
         }
 
         if( $slug !== $claim->path ) {
-            $this->slugs[$claim->domain][$claim->key] = $slug;
+            $this->slugs[$key->domain][$key->key] = $slug;
         }
     }
 

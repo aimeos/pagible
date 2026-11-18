@@ -87,16 +87,15 @@ class Access
      */
     public function dateRestriction( \stdClass $row ): ?string
     {
-        $now = $this->now;
         $down = Date::time( $row->publish_down ?? null );
 
-        if( $down !== null && $down < $now ) {
+        if( $down !== null && $down < $this->now ) {
             return sprintf( self::EXPIRED, Date::format( $down ) );
         }
 
         $up = Date::time( $row->publish_up ?? null );
 
-        if( $up !== null && $up > $now ) {
+        if( $up !== null && $up > $this->now ) {
             return sprintf( self::SCHEDULED, Date::format( $up ) );
         }
 
@@ -204,8 +203,7 @@ class Access
      */
     public function categoryRestriction( \stdClass $category ): ?string
     {
-        return $this->restriction( $category ) ?? $this->archivedRestriction( (int) $category->id )
-            ?? $this->ancestorLevelRestriction( (int) $category->parent_id );
+        return $this->restriction( $category ) ?? $this->treeRestriction( (int) $category->id, $category );
     }
 
 
@@ -240,8 +238,22 @@ class Access
     public function itemCategoryRestriction( int $catId ): ?string
     {
         $category = $this->categories->get( $catId );
+        return $this->categoryLevelRestriction( $category ) ?? $this->treeRestriction( $catId, $category );
+    }
 
-        return $this->categoryLevelRestriction( $category ) ?? $this->archivedRestriction( $catId )
+
+    /**
+     * Returns why guests can't see the category because it or one of its parents is archived or a parent is restricted.
+     *
+     * The checks shared by categoryRestriction() and itemCategoryRestriction() after the own restriction of the category.
+     *
+     * @param int $catId ID of the category
+     * @param \stdClass|null $category Category or NULL if it's unknown, then its parents aren't checked
+     * @return string|null Reason or NULL if guests can see the category
+     */
+    protected function treeRestriction( int $catId, ?\stdClass $category ): ?string
+    {
+        return $this->archivedRestriction( $catId )
             ?? ( $category ? $this->ancestorLevelRestriction( (int) $category->parent_id ) : null );
     }
 

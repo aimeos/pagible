@@ -63,8 +63,6 @@ class Extensions
 
     /** @var array<string, mixed> Fetched values by cache key, NULL for the ones which don't exist */
     protected array $cache = [];
-    /** Major version of Joomla fetched once by version() */
-    protected ?Version $version = null;
 
 
     /**
@@ -101,28 +99,21 @@ class Extensions
 
 
     /**
-     * Restricts the query to the modules whose module type is enabled for the same client, all modules match if the installed extensions are unknown.
+     * Returns the names of the module types enabled for the client, NULL if the installed extensions are unknown.
      *
-     * Only module extensions are compared because other extension types like components or plugins can have the same name.
+     * Only module extensions are returned because other extension types like components or plugins can have the same name.
      * The client of the extensions is only compared if the extensions table contains it.
      *
-     * @param Builder $query Query of the modules
-     * @param string $table Modules table with prefix
+     * @param int $client Joomla client ID, e.g. SITE_CLIENT
+     * @return array<int, string>|null Module type names like "mod_custom" or NULL if all modules can be used
      */
-    public function whereModuleEnabled( Builder $query, string $table ): void
+    public function enabledModules( int $client ): ?array
     {
-        if( !$this->known() ) {
-            return;
-        }
-
-        $ext = $this->schema->table( self::TABLE );
-        $client = $this->schema->hasColumn( self::TABLE, self::CLIENT_COLUMN );
-
-        $query->whereExists( fn( $sub ) => $sub->from( $ext )
-            ->where( $ext . '.type', self::TYPE_MODULE )
-            ->whereColumn( $ext . '.element', $table . '.module' )
-            ->when( $client, fn( $sub ) => $sub->whereColumn( $ext . '.' . self::CLIENT_COLUMN, $table . '.' . self::CLIENT_COLUMN ) )
-            ->where( $ext . '.enabled', self::ENABLED ) );
+        return $this->cached( 'modules:' . $client, fn() => $this->query()
+            ->where( 'type', self::TYPE_MODULE )
+            ->where( 'enabled', self::ENABLED )
+            ->when( $this->schema->hasColumn( self::TABLE, self::CLIENT_COLUMN ), fn( $q ) => $q->where( self::CLIENT_COLUMN, $client ) )
+            ->distinct()->pluck( 'element' )->map( fn( $name ) => (string) $name )->values()->all() );
     }
 
 
@@ -170,7 +161,7 @@ class Extensions
      */
     public function version(): Version
     {
-        return $this->version ??= new Version( $this->known() ? $this->fetchVersion() : null );
+        return $this->remember( $this->cache, 'version', fn() => new Version( $this->known() ? $this->fetchVersion() : null ) );
     }
 
 

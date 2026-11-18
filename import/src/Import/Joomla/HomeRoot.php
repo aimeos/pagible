@@ -124,8 +124,12 @@ final readonly class HomeRoot
      *
      * IDs from array keys and database rows can be integers or strings, so they are compared as strings.
      * Missing IDs are never the same, also not if both are missing, so NULL can't match an empty string.
+     * Used for all comparisons with the IDs of the home menu item and the article of the root page.
+     *
+     * @param mixed $a ID from an array key or a database row
+     * @param mixed $b Other ID from an array key or a database row
      */
-    private static function same( mixed $a, mixed $b ): bool
+    public static function same( mixed $a, mixed $b ): bool
     {
         return ( is_int( $a ) || is_string( $a ) ) && ( is_int( $b ) || is_string( $b ) ) && $a !== '' && (string) $a === (string) $b;
     }

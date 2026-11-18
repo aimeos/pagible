@@ -20,6 +20,17 @@ class FieldTypes
     protected const TYPE_MEDIA = 'media';
     protected const TYPE_IMAGE_LIST = 'imagelist';
 
+    /** Field types whose values are looked up, see Fields::texts() */
+    public const TYPE_SQL = 'sql';
+    public const TYPE_USER = 'user';
+    public const TYPE_USER_GROUPS = 'usergrouplist';
+
+    /** Field types whose values are the values of options */
+    protected const OPTION_TYPES = ['list', 'radio', 'checkboxes'];
+
+    /** Field types whose values aren't supported */
+    protected const SKIPPED_TYPES = ['subform', 'repeatable'];
+
     /** Field types whose values are HTML */
     protected const HTML_TYPES = ['editor', 'textarea'];
 
@@ -63,13 +74,36 @@ class FieldTypes
 
 
     /**
-     * Tests if the values of the field type are images, which are shown without separator.
+     * Tests if the values of the field type are the values of options, whose texts are shown.
+     *
+     * @param string $type Field type like "list" or "text"
+     */
+    public static function options( string $type ): bool
+    {
+        return in_array( $type, self::OPTION_TYPES, true );
+    }
+
+
+    /**
+     * Returns the separator between the values of the field type, images are shown without separator.
      *
      * @param string $type Field type like "media" or "text"
+     * @return string Separator like ", " or an empty string for images
      */
-    public function images( string $type ): bool
+    public static function separator( string $type ): string
     {
-        return in_array( $type, self::IMAGE_TYPES, true );
+        return in_array( $type, self::IMAGE_TYPES, true ) ? '' : ', ';
+    }
+
+
+    /**
+     * Tests if the values of the field type aren't supported, so the fields aren't shown.
+     *
+     * @param string $type Field type like "subform" or "text"
+     */
+    public static function skipped( string $type ): bool
+    {
+        return in_array( $type, self::SKIPPED_TYPES, true );
     }
 
 
@@ -207,7 +241,7 @@ class FieldTypes
         $alt = is_string( $data['alt_text'] ?? null ) ? $data['alt_text'] : '';
 
         // like Joomla, the alternative text is only added if there's one or it's marked as empty
-        return Markup::image( $path, $alt !== '' || !empty( $data['alt_empty'] ) ? $alt : null );
+        return $alt !== '' || !empty( $data['alt_empty'] ) ? Markup::image( $path, $alt ) : Markup::imageWithoutAlt( $path );
     }
 
 

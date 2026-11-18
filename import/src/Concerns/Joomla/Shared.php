@@ -10,7 +10,6 @@ namespace Aimeos\Cms\Concerns\Joomla;
 use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
-use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\PageView;
 
 
@@ -52,7 +51,7 @@ trait Shared
 
 
     /**
-     * Shows why the saved folder or link page of a category or menu item is disabled and saves its variants.
+     * Shows why the saved folder or link page of a category or menu item is disabled and saves its translations as variants.
      *
      * @param array{page: PageView, status: Status} $saved Saved page and its status
      * @param \stdClass $row Category or menu item of the page
@@ -61,7 +60,7 @@ trait Shared
      * @param string|null $reason Why the page is disabled or NULL if it's published
      * @return PageView Saved page
      */
-    protected function savedPage( array $saved, \stdClass $row, string $kind, string $slug, ?string $reason ): PageView
+    protected function savePageTranslations( array $saved, \stdClass $row, string $kind, string $slug, ?string $reason ): PageView
     {
         $page = $saved['page'];
         $translations = $kind === Joomla\Kind::CATEGORY ? $this->run->categoryTranslations( $row ) : $this->run->menuTranslations( $row );
@@ -135,6 +134,7 @@ trait Shared
             Joomla\Kind::ARTICLE => $urls->articleTranslationPath( $row ),
             Joomla\Kind::CATEGORY => $urls->categoryTranslationPath( $row ),
             Joomla\Kind::MENU => $urls->menuTranslationPath( $row ),
+            default => throw $this->unknownKind( $translation->kind ),
         };
         // translations without own menu item are shown in the menu item of their category in their language
         $routes = $this->wiring->router->languageRoutes( $translation->tag );
@@ -148,6 +148,7 @@ trait Shared
             // the translation uses the menu item linking to the category, the home menu item of its language is used for the root page instead
             Joomla\Kind::CATEGORY => $pages->categoryPage( $row, $slug, $routes, $routes->ownCategoryItem( (int) $row->id ), $status ),
             Joomla\Kind::MENU => $pages->menuTranslation( $row, $slug, $status ),
+            default => throw $this->unknownKind( $translation->kind ),
         };
 
         if( $variant )
@@ -155,6 +156,17 @@ trait Shared
             $this->notice( $variant->translationNotice(), Joomla\Row::title( $row ) . " (/{$slug}) [{$language['lang']}]", $variant->reason );
             $this->saveVariant( $page, $language, $slug, $variant->data, $variant->content, $existing );
         }
+    }
+
+
+    /**
+     * Returns the exception for a translation whose type isn't one of the Joomla\Kind constants.
+     *
+     * @param string $kind Unknown type of the translation
+     */
+    protected function unknownKind( string $kind ): \LogicException
+    {
+        return new \LogicException( "Unknown type \"{$kind}\" of the Joomla translation" );
     }
 
 

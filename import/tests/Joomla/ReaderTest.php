@@ -308,6 +308,32 @@ class ReaderTest extends TestAbstract
     }
 
 
+    public function testNoChunkRowsHaveNoPendingArticles(): void
+    {
+        $chunk = Joomla\ChunkRows::none();
+
+        $this->assertNull( $chunk->row( 1 ) );
+        $this->assertSame( [], $chunk->pick( [1, 2] ) );
+
+        $this->expectException( \LogicException::class );
+        $chunk->article( 1 );
+    }
+
+
+    public function testDisplayUsesTheActiveMenuItemOnlyWithoutOwnOne(): void
+    {
+        $item = (object) ['id' => 7, 'params' => '{"menu_show":"0"}'];
+        $routes = $this->routes( Collection::make(), [] );
+
+        $own = Joomla\Display::shown( $item, 'restricted', $routes, 5 );
+        $this->assertSame( [$item, 'restricted', null, 7], [$own->item, $own->reason, $own->active, $own->itemId()] );
+        $this->assertSame( ['menu_show' => '0'], $own->menuParams );
+
+        $none = Joomla\Display::shown( null, null, $routes, 5 );
+        $this->assertSame( [null, null, 0, []], [$none->item, $none->active, $none->itemId(), $none->menuParams] );
+    }
+
+
     public function testReaderRedirectsOfTheEnabledPluginWithRedirectStatus(): void
     {
         $this->extraTables();

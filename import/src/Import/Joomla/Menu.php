@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
  */
 class Menu
 {
-    /** @var array<int|string, \stdClass> Menu items by ID */
+    /** @var array<int|string, \stdClass> Menu items by ID, only looked up by ID */
     protected array $items = [];
 
     /** @var array<int|string, true> IDs of the articles imported by the public menu items as keys */
@@ -38,7 +38,7 @@ class Menu
      */
     public function __construct( Collection $items, Access $access )
     {
-        $this->items = $items->keyBy( 'id' )->sortKeys()->all();
+        $this->items = $items->keyBy( 'id' )->all();
 
         // the menu order is only needed while building the hierarchy
         $this->hierarchy( $items->values()->all() );

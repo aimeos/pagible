@@ -36,7 +36,7 @@ class Languages
     /** @var array<string, string> Meta descriptions of the usable content languages by Joomla language tag */
     protected array $descriptions = [];
     /** If languages missing from the languages table and the options are guessed, not with language filter and a languages table */
-    protected bool $guesses;
+    protected bool $guessing;
 
 
     /**
@@ -59,7 +59,7 @@ class Languages
     {
         // with language filter, Joomla only shows the content of the content languages and for all languages,
         // but sites without languages table can't be checked
-        $this->guesses = !$filter || $rows->isEmpty();
+        $this->guessing = !$filter || $rows->isEmpty();
         $available = $rows->filter( fn( $row ) => $this->available( $row, $usable ) );
         // unavailable languages are unknown even if their language part is valid
         $unknown = $rows->diffKeys( $available )->mapWithKeys( fn( $row ) => [(string) $row->lang_code => null] )->all();
@@ -67,12 +67,10 @@ class Languages
         $this->tags = array_values( array_unique( $available->map( fn( $row ) => (string) $row->lang_code )->all() ) );
         $this->descriptions = $available->mapWithKeys( fn( $row ) => [(string) $row->lang_code => Value::string( $row->metadesc ?? null )] )->all();
         $mapped = Variants::options( $options, 'Joomla' );
-        $this->languages = $mapped + $unknown + $this->variants( $this->codes( $available ) );
-        $this->unique( array_map( 'strval', array_keys( $mapped ) ) );
+        $this->languages = $mapped + $unknown + self::variants( self::codes( $available ) );
+        $this->optionCodes = self::optionCodes( $mapped );
 
-        foreach( $mapped as $tag => $language ) {
-            $this->optionCodes[strtolower( $language['lang'] )] = (string) $tag;
-        }
+        self::unique( $this->languages, array_map( 'strval', array_keys( $mapped ) ) );
     }
 
 
@@ -134,34 +132,53 @@ class Languages
                 continue;
             }
 
-            // each language has one variant, so only the first translation in the language is used
-            $langs = [];
+            // rows imported as pages anyway are never translations, so the next row in their language is used instead
+            $ids = array_values( array_filter( array_diff( $ids, $sources ), fn( $id ) => !isset( $pages[$id] ) ) );
 
-            foreach( array_diff( $ids, $sources ) as $id )
-            {
-                if( isset( $pages[$id] ) ) {
-                    continue;
-                }
-
-                $tag = $tags[$id];
-
-                if( !( $language = $this->language( $tag ) ) ) {
-                    $unknown[$tag] = $tag;
-                    continue;
-                }
-
-                if( isset( $langs[$language['lang']] ) )
-                {
-                    $duplicates[$id] = ['lang' => $language['lang'], 'tag' => $tag, 'used' => $langs[$language['lang']]];
-                    continue;
-                }
-
-                $langs[$language['lang']] = $id;
-                $translations[$sources[0]][] = $id;
+            if( $ids = $this->translationIds( $ids, $tags, $unknown, $duplicates ) ) {
+                $translations[$sources[0]] = [...$translations[$sources[0]] ?? [], ...$ids];
             }
         }
 
         return new TranslationGroups( $translations, $unknown, $duplicates );
+    }
+
+
+    /**
+     * Returns the IDs of the translations of one association, the first one per language.
+     *
+     * Each language has one variant, so only the first translation in the language is used, the others are added
+     * to the duplicates. Rows of unknown languages are skipped and their tags added to the unknown ones.
+     *
+     * @param list<int|string> $ids Sorted IDs of the associated rows which are neither sources nor imported as pages
+     * @param array<int|string, string> $tags Language tags of the associated rows by ID
+     * @param array<string, string> $unknown Unknown language tags as keys and values, extended by this method
+     * @param array<int|string, array{lang: string, tag: string, used: int|string}> $duplicates Skipped translations by ID, extended by this method
+     * @return list<int|string> IDs of the translations
+     */
+    protected function translationIds( array $ids, array $tags, array &$unknown, array &$duplicates ): array
+    {
+        $langs = [];
+
+        foreach( $ids as $id )
+        {
+            $tag = $tags[$id];
+
+            if( !( $language = $this->language( $tag ) ) ) {
+                $unknown[$tag] = $tag;
+                continue;
+            }
+
+            if( isset( $langs[$language['lang']] ) )
+            {
+                $duplicates[$id] = ['lang' => $language['lang'], 'tag' => $tag, 'used' => $langs[$language['lang']]];
+                continue;
+            }
+
+            $langs[$language['lang']] = $id;
+        }
+
+        return array_values( $langs );
     }
 
 
@@ -184,12 +201,12 @@ class Languages
             return $this->languages[$tag];
         }
 
-        if( !$this->guesses ) {
+        if( !$this->guessing ) {
             return null;
         }
 
         return $this->remember( $this->guessed, $tag, function() use ( $tag ) {
-            $code = $this->primary( $tag );
+            $code = self::primary( $tag );
             return Utils::isValidLang( $code ) && !isset( $this->optionCodes[$code] ) ? Variants::language( $code ) : null;
         } );
     }
@@ -231,7 +248,7 @@ class Languages
      * @param Collection<int, \stdClass> $rows Records of the usable languages
      * @return array<string, list<array{tag: string, trimmed: string}>> Stored and trimmed Joomla language tags grouped by language code
      */
-    protected function codes( Collection $rows ): array
+    protected static function codes( Collection $rows ): array
     {
         $codes = [];
 
@@ -243,7 +260,7 @@ class Languages
             $sef = strtolower( trim( (string) ( $row->sef ?? '' ) ) );
             // the stored tag is the key because the articles use it, the trimmed one the language code
             $trimmed = trim( $tag );
-            $primary = $this->primary( $trimmed );
+            $primary = self::primary( $trimmed );
 
             if( $sef === $primary ) {
                 $codes[$primary] = [['tag' => $tag, 'trimmed' => $trimmed], ...$codes[$primary] ?? []];
@@ -279,7 +296,7 @@ class Languages
      * @param array<string, list<array{tag: string, trimmed: string}>> $codes Stored and trimmed Joomla language tags grouped by language code
      * @return array<string, array{lang: string, domain: string}|null> Languages or NULL for invalid ones by stored Joomla language tag
      */
-    protected function variants( array $codes ): array
+    protected static function variants( array $codes ): array
     {
         $languages = [];
 
@@ -304,14 +321,15 @@ class Languages
      * each other. The languages derived from the languages table get unique codes, see codes(), but the ones
      * given by the options can be the same as another option or a derived language, e.g. "de-AT:de" and "de-DE".
      *
+     * @param array<string, array{lang: string, domain: string}|null> $languages Languages of the languages table and the options by Joomla language tag
      * @param list<string> $tags Joomla language tags of the --language options
      * @throws \InvalidArgumentException If a language code of an option is used by another language tag too
      */
-    protected function unique( array $tags ): void
+    protected static function unique( array $languages, array $tags ): void
     {
         $used = [];
 
-        foreach( $this->languages as $tag => $language )
+        foreach( $languages as $tag => $language )
         {
             if( $language !== null ) {
                 $used[$language['lang']][] = (string) $tag;
@@ -329,12 +347,30 @@ class Languages
 
 
     /**
+     * Returns the Joomla language tags of the --language options by their lower case language code.
+     *
+     * @param array<array-key, array{lang: string, domain: string}> $mapped Languages of the --language options by Joomla language tag
+     * @return array<string, string> Joomla language tags by lower case language code
+     */
+    protected static function optionCodes( array $mapped ): array
+    {
+        $codes = [];
+
+        foreach( $mapped as $tag => $language ) {
+            $codes[strtolower( $language['lang'] )] = (string) $tag;
+        }
+
+        return $codes;
+    }
+
+
+    /**
      * Returns the primary language code of the Joomla language tag.
      *
      * @param string $tag Joomla language tag like "en-GB"
      * @return string Lower case language code like "en"
      */
-    protected function primary( string $tag ): string
+    protected static function primary( string $tag ): string
     {
         return strtolower( explode( '-', trim( $tag ) )[0] );
     }

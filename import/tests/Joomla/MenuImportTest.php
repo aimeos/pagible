@@ -2114,6 +2114,38 @@ class MenuImportTest extends TestAbstract
     }
 
 
+    public function testMenuLinkIsParsedOncePerMenuItem(): void
+    {
+        $item = (object) ['id' => 101, 'type' => 'component', 'link' => 'index.php?option=com_content&view=category&layout=blog&id=5'];
+        $link = Joomla\MenuLink::of( $item );
+
+        $this->assertSame( $link, Joomla\MenuLink::of( $item ) );
+        $this->assertSame( 'blog', Joomla\MenuItem::layout( $item ) );
+        $this->assertSame( 5, Joomla\MenuItem::category( $item ) );
+
+        // equal rows of other menu items are parsed separately
+        $this->assertNotSame( $link, Joomla\MenuLink::of( clone $item ) );
+        $this->assertEquals( $link, Joomla\MenuLink::of( clone $item ) );
+    }
+
+
+    public function testRoutesSelectTheirMenuItemsWithFreshMenuRules(): void
+    {
+        $blog = (object) ['id' => 101, 'alias' => 'blog', 'language' => '*', 'link' => 'index.php?option=com_content&view=category&layout=blog&id=5'];
+        $rules = new Joomla\MenuRules( true );
+
+        // menu rules used before don't hide the menu items from new routes
+        $this->assertTrue( $rules->take( Joomla\MenuRules::target( Joomla\MenuItem::VIEW_CATEGORY, 5 ), $blog ) );
+        $this->assertSame( 101, $this->routes( collect(), [$blog], rules: $rules )->categoryItem( 5 )?->id );
+        $this->assertSame( 101, $this->routes( collect(), [$blog], rules: $rules )->categoryItem( 5 )?->id );
+
+        // the copy remembers no menu items but uses the same settings
+        $de = (object) ['language' => 'de-DE'];
+        $this->assertFalse( ( new Joomla\MenuRules( false ) )->fresh()->take( 'article/1', $de ) );
+        $this->assertTrue( $rules->fresh()->take( 'article/1', $de ) );
+    }
+
+
     /**
      * Returns the columns of a Joomla component menu item of the main menu at the top level.
      *

@@ -26,6 +26,9 @@ class HtmlUrls
     /** Regular expression matching a relative URL of an image set */
     protected const RELATIVE_SOURCE_PATTERN = '/^' . self::RELATIVE_URL . '(.+)/';
 
+    /** @var array<string, string> Regex prefixes of sitePrefix() by the sites they match, the sites are the same for all texts of an import */
+    protected static array $prefixes = [];
+
 
     /**
      * Replaces the links to Joomla pages like "index.php?option=com_content&view=article&id=5" by the URL paths of their pages.
@@ -40,8 +43,9 @@ class HtmlUrls
      */
     public static function links( string $html, \Closure $resolve, array $sites = [] ): string
     {
-        // PCRE caches the compiled pattern, so building it for each text is cheap
-        $pattern = '/((?<![\w-])href=)(["\'])' . self::sitePrefix( $sites ) . Origin::indexUrlFragment( '\#"\\\'' ) . '([^"\'#]*)(#[^"\']*)?\2/i';
+        // PCRE caches the compiled pattern and the prefix of the sites is only built once
+        $prefix = self::$prefixes[implode( "\n", $sites )] ??= self::sitePrefix( $sites );
+        $pattern = '/((?<![\w-])href=)(["\'])' . $prefix . Origin::indexUrlFragment( '\#"\\\'' ) . '([^"\'#]*)(#[^"\']*)?\2/i';
 
         return (string) preg_replace_callback( $pattern, function( $match ) use ( $resolve ) {
             $path = $resolve( Uri::query( BaseHtml::decode( $match[3] ) ) );

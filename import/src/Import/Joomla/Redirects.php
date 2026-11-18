@@ -37,7 +37,7 @@ class Redirects
      * @param \Closure(string): void|null $warn Shows a warning for the skipped exclude terms or NULL to ignore them
      * @param Origin|null $origin Adds the directory of Joomla sites in subdirectories to the old URLs or NULL if it's unknown
      */
-    final protected function __construct( array $params, protected bool $advanced, ?\Closure $warn, protected ?Origin $origin = null )
+    protected function __construct( array $params, protected bool $advanced, ?\Closure $warn, protected ?Origin $origin = null )
     {
         $excludes = $params['exclude_urls'] ?? null;
 
@@ -75,10 +75,10 @@ class Redirects
      * @param Extensions $extensions Extensions with the options of the "Redirect" component
      * @param \Closure(string): void|null $warn Shows a warning for the skipped exclude terms or NULL to ignore them
      * @param Origin|null $origin Adds the directory of Joomla sites in subdirectories to the old URLs or NULL if it's unknown
-     * @return static|null Filter or NULL if the plugin is disabled, so Joomla doesn't redirect at all
+     * @return self|null Filter or NULL if the plugin is disabled, so Joomla doesn't redirect at all
      */
     protected static function fromSettings( Plugins $plugins, Extensions $extensions, ?\Closure $warn = null,
-        ?Origin $origin = null ): ?static
+        ?Origin $origin = null ): ?self
     {
         if( ( $params = $plugins->redirectParams() ) === null ) {
             return null;
@@ -87,7 +87,7 @@ class Redirects
         $component = $extensions->componentParams( Extensions::COMPONENT_REDIRECT );
 
         // the basic mode performs redirects with all status codes, the advanced mode only the ones with 3xx status codes
-        return new static( $params, Value::enabled( $component, self::MODE_OPTION, false ), $warn, $origin );
+        return new self( $params, Value::enabled( $component, self::MODE_OPTION, false ), $warn, $origin );
     }
 
 
@@ -104,7 +104,7 @@ class Redirects
      */
     public static function all( Reader $reader, Plugins $plugins, ?\Closure $warn = null, ?Origin $origin = null ): Collection
     {
-        $redirects = static::fromSettings( $plugins, $reader->extensions(), $warn, $origin );
+        $redirects = self::fromSettings( $plugins, $reader->extensions(), $warn, $origin );
 
         return $redirects ? $redirects->filter( $reader->redirects() ) : Collection::make();
     }

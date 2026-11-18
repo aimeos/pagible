@@ -14,11 +14,20 @@ namespace Aimeos\Cms\Import\Joomla;
  * Menu items in a specific language replace the ones selected before for the same target while the ones for
  * all languages are only used if they are the first ones or the first ones of their layout, e.g. a category
  * blog after a category list. Without language filter, Joomla only uses the menu items for all languages.
+ *
+ * Like the lookup of Joomla, which stores each menu item for the view with its layout and for the view without
+ * layout, a menu item with the default layout is the first one of its layout only if no menu item of any layout
+ * was selected for the target before. A menu item with another layout is only compared with the ones of its layout.
+ *
+ * The rules remember the menu items selected before, so each set of menu items needs its own rules, see fresh().
  */
 class MenuRules
 {
-    /** @var array<string, array<string, bool>> Layouts of the selected menu items by target, the empty string for any layout */
+    /** @var array<string, array<string, true>> Layouts of the selected menu items by target, the empty string for the default layout */
     protected array $used = [];
+
+    /** @var array<string, true> Targets a menu item of any layout was selected for as keys */
+    protected array $taken = [];
 
 
     /**
@@ -28,6 +37,15 @@ class MenuRules
      */
     public function __construct( protected bool $languageFilter )
     {
+    }
+
+
+    /**
+     * Returns new menu rules with the same settings which remember no selected menu items.
+     */
+    public function fresh(): self
+    {
+        return new self( $this->languageFilter );
     }
 
 
@@ -65,7 +83,8 @@ class MenuRules
      * Tests if the menu item replaces the one selected before for the target.
      *
      * A menu item for all languages is only used if no menu item of its layout was selected before for the
-     * target, e.g. a category blog after a category list. The targets from layoutTarget() contain the layout,
+     * target, e.g. a category blog after a category list. A menu item with the default layout is only used if
+     * no menu item of any layout was selected before. The targets from layoutTarget() contain the layout,
      * so their menu items never replace the ones of other layouts.
      *
      * @param string $target Target of the menu item from target() or layoutTarget()
@@ -79,8 +98,8 @@ class MenuRules
             return $this->languageFilter;
         }
 
-        // menu items for all languages don't replace the ones selected before for the same layout
-        return !isset( $this->used[$target][$layout] );
+        // menu items for all languages don't replace the ones selected before for the same layout, the default layout is taken by any layout
+        return $layout === '' ? !isset( $this->taken[$target] ) : !isset( $this->used[$target][$layout] );
     }
 
 
@@ -92,7 +111,7 @@ class MenuRules
      */
     protected function record( string $target, string $layout ): void
     {
-        $this->used[$target][$layout] = $this->used[$target][''] = true;
+        $this->used[$target][$layout] = $this->taken[$target] = true;
     }
 
 

@@ -56,7 +56,7 @@ final class Run
         public readonly Content $content,
         public readonly Pages $pages
     ) {
-        $this->chunk = new ChunkRows();
+        $this->chunk = ChunkRows::none();
     }
 
 
@@ -143,13 +143,18 @@ final class Run
      */
     public function prefetch( array $ids ): void
     {
-        // the article of the root page and its translations were already fetched to check if it's imported into the root page
         $others = array_values( array_filter( $ids, fn( $id ) => !$this->home->isArticle( $id ) ) );
-        $rows = count( $others ) < count( $ids ) ? $this->home->rows() ?? [] : [];
-        $others = $rows !== [] ? $others : $ids;
+        $home = count( $others ) < count( $ids ) ? $this->home->rows() ?? [] : [];
 
-        if( $others !== [] ) {
-            $rows += $this->reader->articles( $this->withTranslations( $others ) );
+        if( $home !== [] )
+        {
+            // the article of the root page and its translations were already fetched to check if it's imported into the root page
+            $rows = $home + ( $others !== [] ? $this->reader->articles( $this->withTranslations( $others ) ) : [] );
+        }
+        else
+        {
+            // without the article of the root page or if it wasn't fetched before, all articles of the chunk are fetched
+            $rows = $ids !== [] ? $this->reader->articles( $this->withTranslations( $ids ) ) : [];
         }
 
         $this->chunk = new ChunkRows( $ids, $rows );

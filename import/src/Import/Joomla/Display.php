@@ -52,6 +52,20 @@ final readonly class Display
 
 
     /**
+     * Returns how Joomla shows the article or category, by the menu item showing it or else in the active menu item of its category.
+     *
+     * @param \stdClass|null $item Menu item showing the article or category or NULL if there's none
+     * @param string|null $reason Why guests can't see the article or category or NULL if they can
+     * @param Routes $routes Routes of the language of the article or category
+     * @param int $catId ID of the category of the article or of the category itself
+     */
+    public static function shown( ?\stdClass $item, ?string $reason, Routes $routes, int $catId ): self
+    {
+        return new self( $item, $reason, $item ? null : $routes->active( $catId ) );
+    }
+
+
+    /**
      * Returns the menu item Joomla shows the page in, the own menu item or the active one of the category.
      *
      * @return \stdClass|null Menu item or NULL if there's none

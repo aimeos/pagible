@@ -25,62 +25,93 @@ trait Home
      * Root pages which weren't created by the import or were changed since aren't overwritten,
      * the article is imported as normal page then.
      *
+     * @param bool $newRoot TRUE if the root page was created by this import, so the article is reported as imported
      * @return bool TRUE if the home menu item uses the root page, FALSE if it's imported like the other menu items
      */
-    protected function importHome( \stdClass $menuItem, PageView $root ): bool
+    protected function importHome( \stdClass $menuItem, PageView $root, bool $newRoot ): bool
     {
         $link = Joomla\MenuLink::of( $menuItem );
+        $type = $this->homeType( $link );
 
-        // home menu items listing the subcategories show no category themselves
-        if( $link->kind === Joomla\MenuLink::KIND_CATEGORY && $link->id ) {
-            return $this->importCategoryHome( $menuItem, $link->id, $root );
+        if( $type === 'category' )
+        {
+            $this->importCategoryHome( $menuItem, (int) $link->id, $root );
+            return true;
         }
 
         // other home pages like the featured articles keep the root page, the child items are imported below
-        if( !( $id = $link->article() ) )
+        if( $type === 'root' )
         {
             $this->updateHomeRoot( $menuItem, $root );
             return true;
         }
 
-        return $this->importArticleHome( $menuItem, $id, $root );
+        if( $type === 'article' ) {
+            return $this->importArticleHome( $menuItem, (int) $link->article(), $root, $newRoot );
+        }
+
+        // the reason is NULL if the article doesn't exist, the message isn't shown then
+        if( ( $id = $link->article() ) && ( $article = $this->pendingArticle( $id ) ) ) {
+            $this->notice( 'Imported home page as normal page', Joomla\Row::label( $article ), $this->run->home->reason );
+        }
+
+        return false;
     }
 
 
     /**
-     * Uses the root page for the articles of the category of the Joomla home menu item.
+     * Returns how the Joomla home menu item uses the root page, used by the import and the dry run, so both make the same decision.
      *
-     * Home items of restricted or archived categories are imported like the other ones, so their pages are disabled.
+     * Home items of restricted or archived categories aren't shown on the home page by Joomla, so they are imported like
+     * the other menu items and their pages are disabled.
      *
-     * @param int $catId ID of the category
-     * @return bool TRUE if the root page is used for the category, FALSE if the menu item is imported like the other ones
+     * @param Joomla\MenuLink $link Link of the home menu item
+     * @return 'category'|'root'|'article'|null "category" if the root page shows the category whose articles are imported below it,
+     *  "root" if the root page is kept for other home pages like the featured articles, "article" if the article is imported into
+     *  the root page or NULL if the home menu item is imported like the other menu items
      */
-    protected function importCategoryHome( \stdClass $menuItem, int $catId, PageView $root ): bool
+    protected function homeType( Joomla\MenuLink $link ): ?string
     {
-        // the home category is only known if Joomla shows it to guests, so the category exists then
-        if( $this->wiring->categoryItems->homeCatId() !== $catId ) {
-            return false;
+        // home menu items listing the subcategories show no category themselves, the home category is only known if Joomla shows it to guests
+        if( $link->kind === Joomla\MenuLink::KIND_CATEGORY && $link->id ) {
+            return $this->wiring->categoryItems->homeCatId() === $link->id ? 'category' : null;
         }
 
+        if( !( $id = $link->article() ) ) {
+            return 'root';
+        }
+
+        // the run decided once if the imported article is shown by the root page, e.g. not if the root page was changed in Pagible
+        return isset( $this->run->articles->categoryIds[$id] ) && $this->run->home->isArticle( $id ) ? 'article' : null;
+    }
+
+
+    /**
+     * Uses the root page for the articles of the category of the Joomla home menu item, see homeType().
+     *
+     * @param int $catId ID of the category shown on the home page
+     */
+    protected function importCategoryHome( \stdClass $menuItem, int $catId, PageView $root ): void
+    {
+        // the category is shown by Joomla, see homeType()
         $category = $this->wiring->site->category( $catId );
 
         // the articles of the category are imported below the root page
         $this->run->addCategoryPage( $catId, $this->slim( $root ) );
         $this->updateHomeRoot( $menuItem, $root, $category );
-
-        return true;
     }
 
 
     /**
-     * Imports the article of the Joomla home menu item into the root page.
+     * Imports the article of the Joomla home menu item into the root page, see homeType().
      *
      * The root page is used for the home menu item also if the article fails to import, so its child items stay below the root page.
      *
      * @param int $id ID of the article
-     * @return bool TRUE if the root page is used for the article, FALSE if the article is imported as normal page
+     * @param bool $newRoot TRUE if the root page was created by this import, so the article is reported as imported
+     * @return bool TRUE if the root page is used for the article, FALSE if the article doesn't exist any more
      */
-    protected function importArticleHome( \stdClass $menuItem, int $id, PageView $root ): bool
+    protected function importArticleHome( \stdClass $menuItem, int $id, PageView $root, bool $newRoot ): bool
     {
         $run = $this->run;
 
@@ -88,24 +119,17 @@ trait Home
             return false;
         }
 
-        if( !$run->home->isArticle( $id ) )
-        {
-            // the reason is NULL if the article doesn't exist, the message isn't shown then
-            $this->notice( 'Imported home page as normal page', Joomla\Row::label( $article ), $run->home->reason );
-            return false;
-        }
-
         // the result is ignored because the URLs were assigned for the article in the root page, so it isn't imported
         // as normal page if its content fails, the failure is reported by transaction() and the root page is used anyway
         $run->markHandled( $id );
-        $this->rootTransaction( Joomla\Row::label( $article ), $root, function() use ( $article, $menuItem, $root, $run ) {
+        $this->rootTransaction( Joomla\Row::label( $article ), $root, function() use ( $article, $menuItem, $root, $newRoot, $run ) {
             // the root page is rendered with --since too because the pages don't store which article or menu item it showed
             // before, e.g. the home menu item can be moved to another unchanged article. Like its variants, which are saved
             // anyway because the home menu items of other languages can change too, an unchanged root page keeps its version
             $rendered = $run->pages->homeArticlePage( $article, $menuItem );
             $status = $this->updateRoot( $root, $rendered, $run->translations( $article ), Joomla\Kind::ARTICLE );
 
-            return $this->imported( $article->id, $root, Joomla\Row::title( $article ), '', $this->newRoot ? Status::Imported : $status );
+            return $this->imported( $article->id, $root, Joomla\Row::title( $article ), '', $newRoot ? Status::Imported : $status );
         } );
 
         return true;
@@ -127,11 +151,15 @@ trait Home
         }
 
         $run = $this->run;
-        $data = $this->pageData( $root->name, $root->path, $root->status, $root->tag );
-        $rendered = $run->pages->homePage( $menuItem, $data, $category );
 
-        $this->rootTransaction( Joomla\Row::label( $menuItem ), $root,
-            fn() => $this->updateRoot( $root, $rendered, $run->menuTranslations( $menuItem ), Joomla\Kind::MENU ) );
+        // rendered within the transaction like the article of the root page, so a failure is reported as failed import
+        // of the home menu item instead of aborting the command, the root page is used for its child items anyway
+        $this->rootTransaction( Joomla\Row::label( $menuItem ), $root, function() use ( $menuItem, $root, $category, $run ) {
+            $data = $this->pageData( $root->name, $root->path, $root->status, $root->tag );
+            $rendered = $run->pages->homePage( $menuItem, $data, $category );
+
+            return $this->updateRoot( $root, $rendered, $run->menuTranslations( $menuItem ), Joomla\Kind::MENU );
+        } );
     }
 
 

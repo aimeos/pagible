@@ -10,11 +10,15 @@ namespace Aimeos\Cms\Import\Joomla;
 
 /**
  * Articles and translations fetched for the chunk imported next, a new object is created by every prefetch.
+ *
+ * Miss policy: unlike ChunkCache, which fetches the values of articles that weren't prefetched on their own, nothing
+ * is fetched here. Reading a pending article which wasn't prefetched throws by article() because it would be imported
+ * without its translations, texts and pages, while row() and pick() return NULL or skip rows which weren't fetched.
  */
 final readonly class ChunkRows
 {
     /** @var array<int|string, bool> IDs of the pending articles of the chunk as keys, also if they don't exist any more */
-    protected array $prefetched;
+    private array $prefetched;
 
 
     /**
@@ -23,9 +27,18 @@ final readonly class ChunkRows
      * @param array<int|string> $ids IDs of the pending articles of the chunk
      * @param array<int|string, \stdClass> $rows Articles of the chunk and their translations by ID
      */
-    public function __construct( array $ids = [], protected array $rows = [] )
+    public function __construct( array $ids = [], private array $rows = [] )
     {
         $this->prefetched = array_fill_keys( $ids, true );
+    }
+
+
+    /**
+     * Returns the empty rows used before the first chunk is prefetched, they contain no pending articles.
+     */
+    public static function none(): self
+    {
+        return new self();
     }
 
 

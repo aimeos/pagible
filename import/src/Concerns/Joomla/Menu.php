@@ -20,6 +20,10 @@ use Aimeos\Cms\Models\PageView;
  */
 trait Menu
 {
+    /** What the warnings about menu items which aren't imported as pages start with */
+    protected const SKIPPED_ITEM = 'Skipped menu item';
+
+
     /**
      * Imports the menu items in tree order, so new pages are added at the end of the page tree.
      *
@@ -74,21 +78,39 @@ trait Menu
     {
         // the ID is the one of the article or the category, also of the category whose subcategories are listed
         $link = Joomla\MenuLink::of( $menuItem );
-        $articleId = $link->article();
-        $catId = $link->category();
-
         $reason = $this->wiring->site->access->restriction( $menuItem );
 
+        return match( $this->menuItemType( $link, $reason ) ) {
+            'heading' => $this->importHeadingItem( $menuItem, $parent, $reason ),
+            'link' => $this->importLinkItem( $menuItem, $parent, $reason ),
+            'restricted' => $this->restrictedItem( $menuItem, $parent, (string) $reason ),
+            'article' => $this->importArticleItem( (int) $link->article(), $parent, $root ),
+            'category' => $this->importCategoryItem( $menuItem, (int) $link->category(), $parent ),
+            'unsupported' => $this->unsupportedView( $menuItem, $parent ),
+        };
+    }
+
+
+    /**
+     * Returns how the menu item is imported, used by the import and the dry run, so both make the same decision.
+     *
+     * @param Joomla\MenuLink $link Link of the menu item
+     * @param string|null $reason Why the menu item isn't visible for guests or NULL if it's public
+     * @return 'heading'|'link'|'restricted'|'article'|'category'|'unsupported' Folder page of a menu heading or list of
+     *  all categories, link page of a URL or alias menu item, skipped restricted menu item, page of the linked article,
+     *  page of the shown category or skipped menu item of an unsupported view
+     */
+    protected function menuItemType( Joomla\MenuLink $link, ?string $reason ): string
+    {
         return match( true ) {
             // the list of all categories has no category itself
-            $link->kind === Joomla\MenuLink::KIND_FOLDER || ( $link->kind === Joomla\MenuLink::KIND_CATEGORIES && $link->id === null )
-                => $this->importHeadingItem( $menuItem, $parent, $reason ),
+            $link->kind === Joomla\MenuLink::KIND_FOLDER || ( $link->kind === Joomla\MenuLink::KIND_CATEGORIES && $link->id === null ) => 'heading',
             // URL menu items can link to articles and categories too
-            $link->kind === Joomla\MenuLink::KIND_LINK => $this->importLinkItem( $menuItem, $parent, $reason ),
-            $reason !== null => $this->restrictedItem( $menuItem, $parent, $reason ),
-            $articleId !== null => $this->importArticleItem( $articleId, $parent, $root ),
-            $catId !== null => $this->importCategoryItem( $menuItem, $catId, $parent ),
-            default => $this->unsupportedView( $menuItem, $parent ),
+            $link->kind === Joomla\MenuLink::KIND_LINK => 'link',
+            $reason !== null => 'restricted',
+            $link->article() !== null => 'article',
+            $link->category() !== null => 'category',
+            default => 'unsupported',
         };
     }
 
@@ -104,7 +126,7 @@ trait Menu
      */
     protected function restrictedItem( \stdClass $menuItem, PageView $parent, string $reason ): PageView
     {
-        $this->notice( 'Skipped menu item', Joomla\Row::label( $menuItem ), $reason );
+        $this->notice( self::SKIPPED_ITEM, Joomla\Row::label( $menuItem ), $reason );
 
         // like public category menu items without own page, the child items are imported below the existing category page
         $catId = Joomla\MenuLink::of( $menuItem )->category();
@@ -139,7 +161,8 @@ trait Menu
     /**
      * Creates the folder page of a menu item with its translations or updates the one of a previous import.
      *
-     * Category pages contain the description and the image of the category like Joomla shows them above the articles.
+     * Menu headings and lists of all categories get a folder page without category, the pages of category menu items
+     * contain the description and the image of their category like Joomla shows them above the articles.
      *
      * @param string|null $reason Why the menu item isn't visible for guests or NULL if it's public
      * @param \stdClass|null $category Category shown by the page or NULL for menu headings
@@ -152,7 +175,7 @@ trait Menu
         $rendered = $run->pages->menuPage( $menuItem, $slug, $reason, $category );
         $saved = $this->savePage( $slug, $rendered->data, $rendered->content, $parent );
 
-        return $this->savedPage( $saved, $menuItem, Joomla\Kind::MENU, $slug, $reason );
+        return $this->savePageTranslations( $saved, $menuItem, Joomla\Kind::MENU, $slug, $reason );
     }
 
 
@@ -200,7 +223,7 @@ trait Menu
 
         if( !( $category = $site->category( $catId ) ) )
         {
-            $this->notice( 'Skipped menu item', Joomla\Row::label( $menuItem ), "its category isn't shown by Joomla" );
+            $this->notice( self::SKIPPED_ITEM, Joomla\Row::label( $menuItem ), "its category isn't shown by Joomla" );
             return $parent;
         }
 
@@ -210,14 +233,15 @@ trait Menu
                 return $this->slimPage( $pageId );
             }
 
-            $this->notice( 'Skipped menu item', Joomla\Row::label( $menuItem ),
+            $this->notice( self::SKIPPED_ITEM, Joomla\Row::label( $menuItem ),
                 'its category is shown by another menu item, its child items are imported below the parent page' );
             return $parent;
         }
 
         // the menu item itself is public, only its category can restrict it
         $reason = $site->access->itemCategoryRestriction( $catId );
-        // the articles of the category are imported below the root page if the page can't be saved
+        // if the page can't be saved, the child items are imported below the parent page and the articles of the category
+        // below the category folder created by parentForCategory() because no page is remembered for the category
         $page = $this->transaction( $this->itemLabel( $menuItem ), fn() => $this->createMenuFolder( $menuItem, $parent, $reason, $category ) );
 
         if( $page ) {
@@ -235,7 +259,7 @@ trait Menu
      */
     protected function unsupported( \stdClass $menuItem, PageView $parent, string $what ): PageView
     {
-        $this->notice( 'Skipped menu item', Joomla\Row::label( $menuItem ),
+        $this->notice( self::SKIPPED_ITEM, Joomla\Row::label( $menuItem ),
             "its {$what} isn't supported, its child items are imported below the parent page" );
         return $parent;
     }
@@ -259,8 +283,8 @@ trait Menu
         return $this->transaction( $this->itemLabel( $menuItem ), function() use ( $menuItem, $parent, $reason, $to, $run ) {
             $slug = $run->urls->menuPath( $menuItem );
             $data = $run->pages->linkPage( $menuItem, $slug, $to, $reason )->data;
-            $saved = $this->linkPage( 'Skipped menu item', Joomla\Row::label( $menuItem ) . " (/{$slug})", $slug, $data, $parent );
-            return $saved ? $this->savedPage( $saved, $menuItem, Joomla\Kind::MENU, $slug, $reason ) : null;
+            $saved = $this->linkPage( self::SKIPPED_ITEM, Joomla\Row::label( $menuItem ) . " (/{$slug})", $slug, $data, $parent );
+            return $saved ? $this->savePageTranslations( $saved, $menuItem, Joomla\Kind::MENU, $slug, $reason ) : null;
         } ) ?? $parent;
     }
 

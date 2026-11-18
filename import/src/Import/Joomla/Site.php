@@ -124,7 +124,8 @@ class Site
     /**
      * Returns new menu rules selecting the menu items like Joomla does on this site.
      *
-     * Each set of menu rules remembers the menu items selected before, so a new one is needed for each set of menu items.
+     * The menu rules remember the menu items selected before, so each call returns new ones and Routes selects
+     * its menu items by a fresh copy, see MenuRules::fresh().
      */
     public function menuRules(): MenuRules
     {
@@ -229,7 +230,7 @@ class Site
      * Tests if Joomla uses a menu item of the language for an article in the language of the tag.
      *
      * Like shows(), but Joomla 3 uses only the menu items for all languages for articles for all languages
-     * with language filter, see allLanguageItemsOnly(). Without language filter, MenuRules::select()
+     * with language filter, see allLanguageItemsOnly(). Without language filter, MenuRules::take()
      * only uses the menu items for all languages.
      *
      * @param string $language Joomla language tag of the menu item

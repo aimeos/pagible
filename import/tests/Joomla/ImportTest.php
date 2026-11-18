@@ -1578,6 +1578,24 @@ class ImportTest extends TestAbstract
     }
 
 
+    public function testVanishedPagesWithoutPublishedVersionArentCounted(): void
+    {
+        $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
+        $page = PageView::where( 'name', 'Nur Deutsch' )->firstOrFail();
+
+        // the page has no published version, so it can't be disabled and isn't counted as disabled
+        \Aimeos\Cms\Models\Version::whereIn( 'versionable_id', PageVariant::where( 'page_id', $page->id )->pluck( 'id' ) )->update( ['published' => false] );
+        DB::connection( 'joomla' )->table( 'content' )->where( 'id', 4 )->delete();
+
+        $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
+        $output = Artisan::output();
+
+        $this->assertStringNotContainsString( 'pages of previous imports', $output );
+        $this->assertStringContainsString( 'Finished with 0 failures.', $output );
+        $this->assertSame( 1, PageView::findOrFail( $page->id )->status );
+    }
+
+
     public function testVanishedPagesChangedInPagibleOrOfOtherImportsArentDisabled(): void
     {
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );

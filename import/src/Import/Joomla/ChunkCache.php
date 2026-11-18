@@ -16,6 +16,10 @@ namespace Aimeos\Cms\Import\Joomla;
  * prefetched. This needs extra queries per article, so it's shown in the debug output. The size of the chunks is
  * limited by the caller, so the kept values stay small.
  *
+ * Miss policy: unlike ChunkRows, which rejects pending articles that weren't prefetched as programming error, a miss
+ * here is fetched on its own because the values may be needed for articles outside of the chunk too. kept() never fetches and doesn't distinguish both cases of NULL
+ * because its callers only use the kept values.
+ *
  * @template TValue
  */
 final class ChunkCache
@@ -78,6 +82,8 @@ final class ChunkCache
 
     /**
      * Returns the values of the article if they are kept without fetching them.
+     *
+     * NULL means either that the article has no values or that they aren't kept, use get() if the difference matters.
      *
      * @param int|string $id ID of the article
      * @return TValue|null Values of the article or NULL if there are none or they aren't kept

@@ -7,10 +7,12 @@
 
 namespace Aimeos\Cms\Concerns\Joomla;
 
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Import\Pages;
-use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Models\Version;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Collection;
 
 
@@ -33,21 +35,41 @@ trait Vanished
      *
      * Pages saved by this import are never disabled. Pages using the URL path of an imported article, a visible category
      * or a menu item of the imported menu aren't disabled either, e.g. if their import failed or was skipped this time.
+     * The variants, their pages and published versions are fetched for a chunk of pages at once.
      */
     protected function disableVanished(): void
     {
         $count = 0;
 
-        foreach( $this->vanishedPages() as $page )
+        foreach( $this->vanishedPages()->chunk( DB::IN_SIZE ) as $chunk )
         {
-            $path = '/' . ltrim( (string) $page->path, '/' );
-            // the variants are disabled together, so a failure leaves the page and its variants enabled
-            $count += (int) $this->transaction( "page {$path}", function() use ( $page ) {
-                foreach( $this->vanishedVariants( $page ) as $variant ) {
-                    $this->disableVariant( $variant );
-                }
-                return true;
-            } );
+            $variants = $this->vanishedVariants( $chunk->pluck( 'page_id' )->map( strval( ... ) )->all() );
+            $all = $variants->flatten( 1 );
+            $views = $this->variantViews( $all );
+            $published = $this->publishedVersions( $all );
+
+            foreach( $chunk as $page )
+            {
+                $path = '/' . ltrim( (string) $page->path, '/' );
+                $ids = $variants->get( (string) $page->page_id, Collection::make() )->pluck( 'id' )->map( strval( ... ) );
+
+                // the variants are disabled together, so a failure leaves the page and its variants enabled
+                $count += (int) $this->transaction( "page {$path}", function() use ( $ids, $views, $published ) {
+                    $disabled = false;
+
+                    // variants without published version or page can't be disabled, so their pages aren't counted
+                    foreach( $ids as $id )
+                    {
+                        if( isset( $views[$id], $published[$id] ) )
+                        {
+                            $this->disableVariant( $views[$id], $published[$id] );
+                            $disabled = true;
+                        }
+                    }
+
+                    return $disabled;
+                } );
+            }
         }
 
         if( $count ) {
@@ -63,10 +85,15 @@ trait Vanished
      */
     protected function printVanished(): void
     {
-        foreach( $this->vanishedPages() as $page )
+        foreach( $this->vanishedPages()->chunk( DB::IN_SIZE ) as $chunk )
         {
-            foreach( $this->vanishedVariants( $page ) as $variant ) {
-                $this->line( '  Disable /' . ltrim( (string) $variant->path, '/' ) . " [{$variant->lang}] ({$this->vanishedReason()})" );
+            $variants = $this->vanishedVariants( $chunk->pluck( 'page_id' )->map( strval( ... ) )->all() );
+
+            foreach( $chunk as $page )
+            {
+                foreach( $variants->get( (string) $page->page_id, Collection::make() ) as $variant ) {
+                    $this->line( '  Disable /' . ltrim( (string) $variant->path, '/' ) . " [{$variant->lang}] ({$this->vanishedReason()})" );
+                }
             }
         }
     }
@@ -76,7 +103,8 @@ trait Vanished
      * Returns the enabled content pages of previous imports which aren't used by the current import.
      *
      * Trashed pages and variants aren't returned, pages with a variant in the import language changed in Pagible since
-     * have another editor. The pages saved by this import are skipped while reading because the lists can be too long for the query.
+     * have another editor. The pages saved by this import are skipped while reading because the lists can be too long for
+     * the query, so only the few vanished ones of the many pages of the import are hydrated and kept.
      *
      * @return Collection<int, PageVariant> Variants of the pages in the import language with page ID, path and language
      */
@@ -94,18 +122,25 @@ trait Vanished
 
 
     /**
-     * Returns the enabled variants of the page saved by the import, the one in the import language first.
+     * Returns the enabled variants of the pages saved by the import, the one in the import language first.
      *
      * Variants changed in Pagible since have another editor and aren't returned, like they aren't overwritten by saveTranslation().
      *
-     * @param PageVariant $page Variant of the page in the import language
-     * @return Collection<int, PageVariant> Variants with ID, language and path
+     * @param array<int, string> $pageIds IDs of the vanished pages
+     * @return Collection<string, Collection<int, PageVariant>> Variants with ID, page ID, language and path by page ID
      */
-    protected function vanishedVariants( PageVariant $page ): Collection
+    protected function vanishedVariants( array $pageIds ): Collection
     {
-        return PageVariant::where( 'page_id', $page->page_id )->where( 'editor', $this->editor )->where( 'status', '!=', Pages::STATUS_DISABLED )
+        if( $pageIds === [] ) {
+            return Collection::make();
+        }
+
+        return PageVariant::whereIn( 'page_id', $pageIds )->where( 'editor', $this->editor )->where( 'status', '!=', Pages::STATUS_DISABLED )
             ->select( ['id', 'page_id', 'path', 'lang'] )->get()
-            ->sortBy( fn( $variant ) => $variant->lang === $this->lang ? '' : (string) $variant->lang )->values();
+            ->sortBy( fn( $variant ) => $variant->lang === $this->lang ? '' : (string) $variant->lang )
+            ->groupBy( fn( $variant ) => (string) $variant->page_id )
+            ->map( fn( $variants ) => $variants->values() )
+            ->toBase();
     }
 
 
@@ -156,23 +191,100 @@ trait Vanished
 
 
     /**
-     * Publishes a version of the variant which disables it, a later import of its Joomla record enables it again.
+     * Returns the pages of the variants in their languages at once, one query per language.
      *
-     * @param PageVariant $variant Variant with page ID and language
+     * @param Collection<int, PageVariant> $variants Variants with ID, page ID and language
+     * @return array<string, PageView> Pages in the languages of the variants by variant ID
      */
-    protected function disableVariant( PageVariant $variant ): void
+    protected function variantViews( Collection $variants ): array
     {
-        if( !( $page = PageView::language( (string) $variant->lang )->find( $variant->page_id ) )
-            || !( $version = $page->versions()->where( 'published', true )->first() )
-        ) {
-            return;
+        $views = [];
+
+        foreach( $variants->groupBy( fn( $variant ) => (string) $variant->lang ) as $lang => $list )
+        {
+            $pageIds = $list->pluck( 'page_id' )->map( strval( ... ) )->unique()->values()->all();
+
+            foreach( PageView::language( (string) $lang )->whereKey( $pageIds )->get() as $view ) {
+                $views[(string) $view->variant_id] = $view;
+            }
         }
 
+        return $views;
+    }
+
+
+    /**
+     * Returns the latest published versions of the variants with the IDs of their files and shared elements at once.
+     *
+     * The versions are looked up by their IDs first, so only the latest one of each variant is fetched with its data.
+     *
+     * @param Collection<int, PageVariant> $variants Variants with ID
+     * @return array<string, array{version: Version, files: array<int, string>, elements: array<int, string>}> Versions and references by variant ID
+     */
+    protected function publishedVersions( Collection $variants ): array
+    {
+        if( ( $variantIds = $variants->pluck( 'id' )->map( strval( ... ) )->unique()->values()->all() ) === [] ) {
+            return [];
+        }
+
+        // the same order as PageView::versions(), the first version of each variant is its latest published one
+        $ids = Version::where( 'versionable_type', ( new PageView() )->getMorphClass() )->whereIn( 'versionable_id', $variantIds )
+            ->where( 'published', true )->orderByDesc( 'created_at' )->orderByDesc( 'id' )->toBase()
+            ->get( ['id', 'versionable_id'] )->unique( 'versionable_id' )->pluck( 'id' )->map( strval( ... ) )->values()->all();
+
+        if( $ids === [] ) {
+            return [];
+        }
+
+        $files = $this->versionRefs( ( new Version() )->files(), $ids );
+        $elements = $this->versionRefs( ( new Version() )->elements(), $ids );
+        $list = [];
+
+        foreach( Version::whereIn( 'id', $ids )->get() as $version )
+        {
+            $id = (string) $version->id;
+            $list[(string) $version->versionable_id] = ['version' => $version, 'files' => $files[$id] ?? [], 'elements' => $elements[$id] ?? []];
+        }
+
+        return $list;
+    }
+
+
+    /**
+     * Returns the IDs of the files or shared elements referenced by the versions, also of trashed ones like allRelatedIds().
+     *
+     * @param BelongsToMany<covariant \Illuminate\Database\Eloquent\Model, Version> $relation Files or elements relation of a version
+     * @param array<int, string> $ids Version IDs
+     * @return array<string, array<int, string>> Referenced IDs by version ID
+     */
+    protected function versionRefs( BelongsToMany $relation, array $ids ): array
+    {
+        $foreign = $relation->getForeignPivotKeyName();
+        $related = $relation->getRelatedPivotKeyName();
+        $refs = [];
+
+        foreach( $relation->newPivotStatement()->whereIn( $foreign, $ids )->get( [$foreign, $related] ) as $row ) {
+            $refs[(string) $row->{$foreign}][] = (string) $row->{$related};
+        }
+
+        return $refs;
+    }
+
+
+    /**
+     * Publishes a version of the page in the language of the variant which disables it, a later import of its Joomla record enables it again.
+     *
+     * @param PageView $page Page in the language of the variant
+     * @param array{version: Version, files: array<int, string>, elements: array<int, string>} $published Latest published version
+     *  of the variant and the IDs of its files and shared elements, see publishedVersions()
+     */
+    protected function disableVariant( PageView $page, array $published ): void
+    {
+        $version = $published['version'];
         $data = array_replace( array_diff_key( (array) $version->data, ['scheduled' => null] ), ['status' => Pages::STATUS_DISABLED] );
         $aux = (array) json_decode( (string) json_encode( $version->aux ), true );
 
-        Pages::publish( $page, $data, $aux, $version->files()->allRelatedIds()->map( strval( ... ) )->all(),
-            $version->elements()->allRelatedIds()->map( strval( ... ) )->all(), (string) $page->lang, $this->editor );
+        Pages::publish( $page, $data, $aux, $published['files'], $published['elements'], (string) $page->lang, $this->editor );
 
         $this->notice( 'Disabled', '/' . ltrim( (string) $page->path, '/' ) . " [{$page->lang}]", $this->vanishedReason() );
     }

@@ -55,11 +55,11 @@ class Homes
     {
         $item = $this->home();
 
-        if( !$item || !( $id = MenuItem::article( $item ) ) || !isset( $articles->categoryIds[$id] ) ) {
+        if( !$item || !( $id = MenuItem::article( $item ) ) || !$articles->imports( $id ) ) {
             return HomeRoot::withoutArticle( $item );
         }
 
-        $ids = $articles->translations[$id] ?? [];
+        $ids = $articles->translationIds( $id );
         $rows = $this->reader->articles( [$id, ...$ids] );
 
         if( !( $article = $rows[$id] ?? null ) ) {
@@ -67,7 +67,7 @@ class Homes
         }
 
         // the home menu item shows the article instead of its own menu item
-        if( ( $reason = $this->site->access->articleRestriction( $article, isset( $articles->items[$id] ), $item ) ) !== null ) {
+        if( ( $reason = $this->site->access->articleRestriction( $article, $articles->hasMenuItem( $id ), $item ) ) !== null ) {
             return HomeRoot::withoutArticle( $item, $reason );
         }
 

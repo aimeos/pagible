@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Import\Joomla;
 
 use Aimeos\Cms\Import\Elements;
-use Aimeos\Cms\Import\Markdown;
 use Aimeos\Cms\Import\Pages as BasePages;
 
 
@@ -50,6 +49,10 @@ class Pages
     protected const SHOW_NOAUTH = 'show_noauth';
     protected const SHOW_TAGS = 'show_tags';
 
+    /** Suffixes of the keys of the alternative text and the caption of an article image, e.g. "image_intro_alt" */
+    protected const IMAGE_ALT_SUFFIX = '_alt';
+    protected const IMAGE_CAPTION_SUFFIX = '_caption';
+
     /** Combines the options of the articles, categories, menu items and the articles component */
     protected Options $options;
     /** Builds the headings above the articles and categories */
@@ -85,14 +88,18 @@ class Pages
     /**
      * Returns the page data and the content of the article or translation and why guests can't see the article.
      *
+     * Teasers of restricted articles are only built without given status because their pages are published, a given
+     * status like BasePages::STATUS_DISABLED of the page in the import language would hide them anyway.
+     *
      * @param Routes $routes Routes of the language of the article
      * @param int|null $status Status of the page regardless of the article, e.g. BasePages::STATUS_DISABLED if the page
-     *  in the import language is disabled, or NULL to use the status of the article
+     *  in the import language is disabled, or NULL to use the status of the article and allow teasers
      * @return Page Page data, content, if it's a teaser and why guests can't see the article
      */
     public function articlePage( \stdClass $article, string $slug, Routes $routes, ?int $status = null ): Page
     {
-        return $this->article( $article, $slug, $status, BasePages::TAG_PAGE, $this->articleDisplay( $article, $routes ), Row::language( $article ) );
+        $display = $this->articleDisplay( $article, $routes );
+        return $this->article( $article, $slug, $status, $status === null, BasePages::TAG_PAGE, $display, Row::language( $article ) );
     }
 
 
@@ -124,7 +131,7 @@ class Pages
      */
     public function homeTranslation( \stdClass $article, string $slug, Routes $routes, \stdClass $item, string $language ): Page
     {
-        return $this->article( $article, $slug, null, BasePages::TAG_PAGE, $this->articleDisplay( $article, $routes, $item ), $language );
+        return $this->article( $article, $slug, null, true, BasePages::TAG_PAGE, $this->articleDisplay( $article, $routes, $item ), $language );
     }
 
 
@@ -137,7 +144,7 @@ class Pages
      */
     public function homeArticlePage( \stdClass $article, \stdClass $menuItem ): Page
     {
-        return $this->article( $article, '', BasePages::STATUS_PUBLISHED, BasePages::TAG_ROOT, Display::menu( $menuItem ), Row::language( $article ) );
+        return $this->article( $article, '', BasePages::STATUS_PUBLISHED, false, BasePages::TAG_ROOT, Display::menu( $menuItem ), Row::language( $article ) );
     }
 
 
@@ -170,7 +177,7 @@ class Pages
     public function categoryPage( \stdClass $category, string $slug, Routes $routes, ?\stdClass $item, ?int $status = null ): Page
     {
         $reason = $this->site->access->categoryRestriction( $category );
-        $display = new Display( $item, $reason, $item ? null : $routes->active( (int) $category->id ) );
+        $display = Display::shown( $item, $reason, $routes, (int) $category->id );
 
         $data = $this->folderData( Row::title( $category ), $slug, $display, $status );
         return new Page( $data, $this->categoryContent( $category, $display ), reason: $reason );
@@ -254,10 +261,7 @@ class Pages
 
         // the browser title is set by home() like for the root page
         $display = Display::menu( $menuItem, $reason );
-        $title = trim( Row::menuTitle( $menuItem ) );
-        $data = ( $this->host->pageData )( $title, $slug, $status ?? $this->status( $display->reason, $display->params ), BasePages::TAG_PAGE );
-
-        return $this->home( $display, $data, $category );
+        return $this->home( $display, $this->folderData( Row::menuTitle( $menuItem ), $slug, $display, $status ), $category );
     }
 
 
@@ -282,22 +286,23 @@ class Pages
      * article doesn't set them. The meta data of the article is used before the one of the menu item.
      *
      * Guests see the intro text of articles they can't access if the "show_noauth" option is enabled and the article has a full text.
-     * The page of the teaser is published then, which is only possible if the status isn't given.
+     * The page of the teaser is published then, so teasers are only built if they are allowed and the status isn't given.
      *
      * @param int|null $status Status of the page or NULL to use the status of the article and its menu item
+     * @param bool $teasers TRUE to build the teaser of an article guests can't access, FALSE to always build the whole article
      * @param string $pageTag Tag of the page, i.e. BasePages::TAG_PAGE or BasePages::TAG_ROOT
      * @param Display $display Menu item showing the article, why guests can't see it and the menu item of its category
      * @param string $language Joomla language tag the article is shown in
      * @return Page Page data, content, if it's a teaser and why guests can't see the article
      */
-    protected function article( \stdClass $article, string $slug, ?int $status, string $pageTag, Display $display,
+    protected function article( \stdClass $article, string $slug, ?int $status, bool $teasers, string $pageTag, Display $display,
         string $language ): Page
     {
         $text = $this->texts->text( $article->id );
         // the options of the menu item linking to the article are used for the title, the ones of the category menu item too otherwise
         $options = $display->item ? $this->options->view( $text->attribs, $display->menuParams ) : $this->options->inherited( $text->attribs, $display->menuParams );
 
-        if( $status === null && $display->reason !== null && $this->teaser( $article, $text, $options ) ) {
+        if( $teasers && $display->reason !== null && $this->teaser( $article, $text, $options ) ) {
             $text = $text->asTeaser();
         }
 
@@ -319,6 +324,7 @@ class Pages
     /**
      * Returns the page data of a menu heading or category page.
      *
+     * @param string $title Title of the category or menu item, it's trimmed because category titles aren't, see Row::title()
      * @param Display $display Menu item of the page and why guests can't see it
      * @param int|null $status Status of the page regardless of the reason, e.g. BasePages::STATUS_DISABLED if the page
      *  in the import language is disabled, or NULL to use the reason and the menu item
@@ -488,7 +494,7 @@ class Pages
         $item = $showing ?? $own;
         $reason = $this->site->access->articleRestriction( $article, $own !== null, $showing );
 
-        return new Display( $item, $reason, $item ? null : $routes->active( Article::catId( $article ) ) );
+        return Display::shown( $item, $reason, $routes, Article::catId( $article ) );
     }
 
 
@@ -566,8 +572,8 @@ class Pages
     protected function articleImage( array $images, string $image ): ?array
     {
         $source = $this->texts->imageSource( Value::string( $images[$image] ?? null ) );
-        $fileId = ( $this->host->image )( $source, Value::string( $images[$image . '_alt'] ?? null ) );
-        return Elements::imageContent( $fileId, self::markdown( Value::string( $images[$image . '_caption'] ?? null ) ) );
+        $fileId = ( $this->host->image )( $source, Value::string( $images[$image . self::IMAGE_ALT_SUFFIX] ?? null ) );
+        return Elements::imageContent( $fileId, self::markdown( Value::string( $images[$image . self::IMAGE_CAPTION_SUFFIX] ?? null ) ) );
     }
 
 

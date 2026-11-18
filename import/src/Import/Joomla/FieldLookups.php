@@ -87,10 +87,11 @@ class FieldLookups
      *
      * @param int|string $id ID of the SQL field
      * @param string $query SQL query of the field selecting the "value" and "text" columns
+     * @param string $field ID and title of the field shown in the warnings like "[3] Color", none if empty
      * @return array<int|string, string> Option texts by value
      */
-    public function sqlOptions( int|string $id, string $query ): array
+    public function sqlOptions( int|string $id, string $query, string $field = '' ): array
     {
-        return $this->sqlOptions[$id] ??= $this->reader->sqlOptions()->fetch( $query );
+        return $this->sqlOptions[$id] ??= $this->reader->sqlOptions()->fetch( $query, $field );
     }
 }

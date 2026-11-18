@@ -17,6 +17,8 @@ class Html
 {
     /** Regular expression fragment matching an image tag, usable with "/" and "#" as delimiters */
     protected const IMAGE_TAG = '<img\b[^>]*>';
+    /** Regular expression matching an iframe tag at the start of a block, see iframe() */
+    protected const IFRAME_PATTERN = '/^<iframe\b[^>]*>/i';
     /** Regular expression matching image tags */
     protected const IMAGE_PATTERN = '/' . self::IMAGE_TAG . '/i';
     /** Regular expression matching an image tag with the link around it if there's one, the opening link tag is the first group */
@@ -130,13 +132,24 @@ class Html
         {
             $src = self::attribute( $tag, $name );
 
-            if( ( $value = ltrim( $src ) ) !== '' && strncasecmp( $value, 'data:', 5 ) !== 0 ) {
+            if( ltrim( $src ) !== '' && !self::inline( $src ) ) {
                 return ['src' => $src, 'alt' => self::attribute( $tag, 'alt' )];
             }
         }
 
         // "src" is the last attribute, so its "data:" URI is left as fallback for reporting the inline image
         return trim( $src ) !== '' ? ['src' => $src, 'alt' => self::attribute( $tag, 'alt' )] : null;
+    }
+
+
+    /**
+     * Tests if the image source is a data URI containing the image instead of an URL.
+     *
+     * @param string $src Source of the image, leading whitespace is ignored
+     */
+    public static function inline( string $src ): bool
+    {
+        return strncasecmp( ltrim( $src ), 'data:', 5 ) === 0;
     }
 
 
@@ -241,6 +254,10 @@ class Html
      */
     protected function parseBlock( string $block ): ?array
     {
+        if( in_array( 'iframe', $this->mediaTags(), true ) && preg_match( self::IFRAME_PATTERN, $block, $tag ) ) {
+            return $this->iframe( $tag[0] );
+        }
+
         if( $result = $this->parseHeadingBlock( $block ) ) {
             return $result;
         }
@@ -263,6 +280,48 @@ class Html
         }
 
         return $this->text( $block );
+    }
+
+
+    /**
+     * Returns an HTML element with the iframe, e.g. of embedded videos or maps, if "iframe" is one of the media tags.
+     *
+     * The iframe is created again from its URL, size and title because the HTML element isn't
+     * sanitized. Iframes with other URLs than web URLs are removed, see iframeRemoved(). Iframes in
+     * figures are split from their images and captions before, see splitFigure().
+     *
+     * @param string $tag Opening iframe tag
+     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null
+     */
+    protected function iframe( string $tag ): ?array
+    {
+        if( !( $content = Embeds::iframeTag( $tag, fn( string $src ) => $this->iframeSource( $src ) ) ) ) {
+            $this->iframeRemoved( $tag );
+        }
+
+        return $content;
+    }
+
+
+    /**
+     * Returns the URL of the embedded page for the decoded URL of the iframe tag.
+     *
+     * @param string $src Decoded URL like "//www.youtube.com/embed/abc"
+     * @return string URL with scheme like "https://www.youtube.com/embed/abc"
+     */
+    protected function iframeSource( string $src ): string
+    {
+        return str_starts_with( $src, '//' ) ? 'https:' . $src : $src;
+    }
+
+
+    /**
+     * Called for iframes removed because their URL isn't a web URL, nothing is done by default.
+     *
+     * @param string $tag Opening iframe tag
+     */
+    protected function iframeRemoved( string $tag ): void
+    {
     }
 
 
@@ -857,7 +916,7 @@ class Html
     protected function failed(): void
     {
         if( $this->warn ) {
-            ( $this->warn )( 'Processing HTML failed, content kept unchanged: ' . preg_last_error_msg() );
+            ( $this->warn )( '  Processing HTML failed, content kept unchanged: ' . preg_last_error_msg() );
         }
     }
 }

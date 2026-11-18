@@ -10,9 +10,15 @@ namespace Aimeos\Cms\Import\Joomla;
 
 /**
  * Where Joomla shows the links of an article which are entered in the "Images and Links" tab: above or below the text.
+ *
+ * Also knows the keys of the links in the "urls" JSON of the articles, see links().
  */
 final readonly class LinkPositions
 {
+    /** Link targets opening a new window, "1" with and "2" without browser navigation, "3" as modal dialog */
+    protected const NEW_WINDOW = ['1', '2', '3'];
+    /** Keys of the URL, the link text and the target of the links in the "urls" JSON and the defaults of the targets in the options */
+    protected const LINKS = [['urla', 'urlatext', 'targeta'], ['urlb', 'urlbtext', 'targetb'], ['urlc', 'urlctext', 'targetc']];
     /** Option of the articles and the article pages with the position of the links */
     protected const URLS_POSITION = 'urls_position';
     /** Position of the links above the text */
@@ -50,6 +56,33 @@ final readonly class LinkPositions
         $positions = [Value::string( $urls[self::URLS_POSITION] ?? null ), Value::string( $options[self::URLS_POSITION] ?? null )];
 
         return new self( !array_diff( $positions, ['', self::URLS_ABOVE] ), in_array( self::URLS_BELOW, $positions, true ) );
+    }
+
+
+    /**
+     * Returns the links of the article in their order.
+     *
+     * Links without text show their URL. Links opened in a popup or modal window by Joomla are opened in a new window instead.
+     *
+     * @param array<string, mixed> $urls Decoded links of the article with the keys "urla", "urlatext", "targeta", "urlb", etc.
+     * @param array<string, mixed> $options Options of the article page with the default targets "targeta", "targetb" and "targetc"
+     * @return list<array{url: string, label: string, newWindow: bool}> Links with URL, link text and if they open a new window
+     */
+    public static function links( array $urls, array $options ): array
+    {
+        $links = [];
+
+        foreach( self::LINKS as [$urlKey, $textKey, $targetKey] )
+        {
+            if( ( $url = Value::string( $urls[$urlKey] ?? null ) ) !== '' )
+            {
+                $label = Value::string( $urls[$textKey] ?? null ) ?: $url;
+                $target = Value::string( $urls[$targetKey] ?? null ) ?: Value::string( $options[$targetKey] ?? null );
+                $links[] = ['url' => $url, 'label' => $label, 'newWindow' => in_array( $target, self::NEW_WINDOW, true )];
+            }
+        }
+
+        return $links;
     }
 
 

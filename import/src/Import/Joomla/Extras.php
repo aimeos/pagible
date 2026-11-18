@@ -58,7 +58,7 @@ class Extras
     /**
      * Returns the custom fields Joomla shows.
      *
-     * Fields which aren't rendered, whose field plugin is disabled, which are not public or only used in subforms aren't shown.
+     * Fields which Joomla doesn't render (see Fields::rendered()), which are not public or only used in subforms aren't shown.
      *
      * @param string $context Context of the fields, Fields::ARTICLE_CONTEXT or Fields::CATEGORY_CONTEXT
      * @return Collection<int, \stdClass> Custom fields with the access level of their field group
@@ -67,8 +67,7 @@ class Extras
     {
         return $this->fields[$context] ??= $this->reader->fields( $context )->filter( function( $field ) {
             $restricted = $this->access->restricted( $field->access ?? null ) || $this->access->restricted( $field->group_access ?? null );
-            return empty( $field->only_use_in_subform ) && !$restricted && Fields::renderable( $field )
-                && $this->plugins->fieldParams( Fields::type( $field ) ) !== null;
+            return empty( $field->only_use_in_subform ) && !$restricted && Fields::rendered( $field, $this->plugins );
         } );
     }
 

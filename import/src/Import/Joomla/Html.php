@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Import\Embeds;
 use Aimeos\Cms\Import\Html as BaseHtml;
 
 
@@ -18,21 +17,26 @@ use Aimeos\Cms\Import\Html as BaseHtml;
  */
 class Html extends BaseHtml
 {
-    /** Regular expression matching an iframe tag at the start of a block */
-    protected const IFRAME_PATTERN = '/^<iframe\b[^>]*>/i';
     /** Warning about a removed iframe, shown once per URL */
-    protected const IFRAME_REMOVED = 'Iframe without web URL removed: ":src"';
+    protected const IFRAME_REMOVED = '  Iframe without web URL removed: ":src"';
+
+    /** @var (\Closure(string): void)|null Shows a warning only once, e.g. about removed iframes, ignored if NULL */
+    protected ?\Closure $warnOnce = null;
 
 
     /**
      * Initializes the converter.
      *
      * @param \Closure(string): ?string $image Imports the image of the HTML tag and returns the file ID
-     * @param (\Closure(string): void)|null $warn Shows a warning only once, e.g. about removed iframes, ignored if NULL
+     * @param (\Closure(string): void)|null $warn Shows a warning each time, e.g. if processing the HTML failed, ignored if NULL
+     * @param (\Closure(string): void)|null $warnOnce Shows a warning only once, e.g. about removed iframes, uses $warn if NULL
      */
-    public function __construct( \Closure $image, protected ?\Closure $warn = null )
+    public function __construct( \Closure $image, ?\Closure $warn = null, ?\Closure $warnOnce = null )
     {
         parent::__construct( $image );
+
+        $this->warn = $warn;
+        $this->warnOnce = $warnOnce ?? $warn;
     }
 
 
@@ -55,8 +59,8 @@ class Html extends BaseHtml
     /**
      * Returns the source and alternative text of the HTML image tag which is imported.
      *
-     * The decoded source of BaseHtml::decodedSource() is trimmed and the suffix of the Joomla 4+ media field is
-     * removed like for the images of the articles and categories, see Texts::imageSource().
+     * The decoded source of BaseHtml::decodedSource() is normalized like the images of the articles and
+     * categories, see Image::source().
      *
      * @param string $tag HTML image tag with a source like " images/a.jpg"
      * @return array{src: string, alt: string}|null Trimmed source like "images/a.jpg" and alternative text, NULL without source or for inline images
@@ -67,24 +71,15 @@ class Html extends BaseHtml
             return null;
         }
 
-        $src = trim( Image::path( $source['src'] ) );
-        return $src !== '' && !self::inline( $src ) ? ['src' => $src, 'alt' => $source['alt']] : null;
-    }
-
-
-    /**
-     * Tests if the image source is a data URI containing the image instead of an URL.
-     *
-     * @param string $src Decoded source of the image
-     */
-    public static function inline( string $src ): bool
-    {
-        return strncasecmp( ltrim( $src ), 'data:', 5 ) === 0;
+        $src = Image::source( $source['src'] );
+        return $src !== '' ? ['src' => $src, 'alt' => $source['alt']] : null;
     }
 
 
     /**
      * Returns the regex patterns of the embedded media which are kept as separate blocks.
+     *
+     * Iframes become HTML elements, see BaseHtml::iframe().
      *
      * @return string[]
      */
@@ -95,24 +90,26 @@ class Html extends BaseHtml
 
 
     /**
-     * Parses a single HTML block, iframes become HTML elements.
+     * Returns the URL of the embedded page for the decoded URL of the iframe tag.
      *
-     * The iframe is created again from its URL, size and title because the HTML element isn't
-     * sanitized. Iframes with other URLs than web URLs are removed with a warning. Iframes in figures
-     * are split from their images and captions before, see BaseHtml::splitFigure().
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds?: array<int, string>}|null
+     * @param string $src Decoded URL like "//www.youtube.com/embed/abc"
+     * @return string URL with scheme like "https://www.youtube.com/embed/abc"
      */
-    protected function parseBlock( string $block ): ?array
+    protected function iframeSource( string $src ): string
     {
-        if( !preg_match( self::IFRAME_PATTERN, $block, $tag ) ) {
-            return parent::parseBlock( $block );
-        }
+        return Uri::schemed( $src );
+    }
 
-        if( !( $content = Embeds::iframeTag( $tag[0], Uri::schemed( ... ) ) ) && $this->warn ) {
-            ( $this->warn )( strtr( self::IFRAME_REMOVED, [':src' => self::decodedAttribute( $tag[0], 'src' )] ) );
-        }
 
-        return $content;
+    /**
+     * Shows a warning about the removed iframe once per URL.
+     *
+     * @param string $tag Opening iframe tag
+     */
+    protected function iframeRemoved( string $tag ): void
+    {
+        if( $this->warnOnce ) {
+            ( $this->warnOnce )( strtr( self::IFRAME_REMOVED, [':src' => self::decodedAttribute( $tag, 'src' )] ) );
+        }
     }
 }

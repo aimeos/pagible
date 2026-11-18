@@ -11,9 +11,11 @@ namespace Aimeos\Cms\Import\Joomla;
 /**
  * Joomla articles imported as pages or translations, selected by Index::articles().
  *
- * Only the IDs, category IDs, times and URL paths of the articles are kept because there can be many articles.
+ * Only the IDs, category IDs, times, menu items, visibility and URL paths of the articles are kept because there can
+ * be many articles.
  *
- * ArticleRoutes: routes of the articles (Kind::ARTICLE) and the translated articles (Kind::ARTICLE_TRANSLATION) by ID
+ * ArticleRoutes: routes of the articles (Kind::ARTICLE) and the translated articles (Kind::ARTICLE_TRANSLATION) by ID,
+ * unlike ShownArticles::$routes, which only contains the RoutePath objects of the not associated articles by ID
  *
  * @phpstan-type ArticleRoutes array{a: array<int|string, RoutePath>, ta: array<int|string, TranslationRoute>}
  */
@@ -38,5 +40,41 @@ final readonly class Articles
         public array $visible,
         public array $routes
     ) {
+    }
+
+
+    /**
+     * Returns if the article is imported as page.
+     *
+     * @param int|string $id Joomla article ID
+     * @return bool TRUE if the article is imported as page, FALSE if not
+     */
+    public function imports( int|string $id ): bool
+    {
+        return isset( $this->categoryIds[$id] );
+    }
+
+
+    /**
+     * Returns if Joomla uses a menu item for the article or translation.
+     *
+     * @param int|string $id Joomla article ID
+     * @return bool TRUE if a menu item exists for the article, FALSE if not
+     */
+    public function hasMenuItem( int|string $id ): bool
+    {
+        return isset( $this->items[$id] );
+    }
+
+
+    /**
+     * Returns the IDs of the translations of the article.
+     *
+     * @param int|string $id Joomla article ID
+     * @return list<int|string> IDs of the translations, empty if there are none
+     */
+    public function translationIds( int|string $id ): array
+    {
+        return $this->translations[$id] ?? [];
     }
 }

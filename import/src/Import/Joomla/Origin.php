@@ -71,6 +71,7 @@ class Origin
         string $fileBase = '',
         private readonly bool $suffix = false
     ) {
+        // base URLs normalized by the caller already have a scheme, so they are returned before the file system is checked
         $parts = parse_url( self::baseUrl( $fileBase ) ) ?: [];
         $this->host = isset( $parts['host'] ) ? self::host( $parts['host'] . ( isset( $parts['port'] ) ? ':' . $parts['port'] : '' ) ) : '';
         $this->path = rtrim( $parts['path'] ?? '', '/' );
@@ -85,7 +86,8 @@ class Origin
      * Returns the base URL of the files with HTTPS as scheme if it has none but starts with a host name.
      *
      * Values which are existing local paths or whose first segment ends in an extension of backup directories
-     * like "joomla.bak/images" are local paths.
+     * like "joomla.bak/images" are local paths. Only values without scheme which start with a host name are checked
+     * in the file system, so base URLs which got their scheme from a previous call aren't checked again.
      *
      * @param string $fileBase Base URL like "https://example.com/joomla", "example.com/joomla" or a local path
      * @return string Base URL like "https://example.com/joomla" or the unchanged value if it has a scheme or no host
@@ -161,18 +163,18 @@ class Origin
      */
     public function fileSource( string $src ): string
     {
-        if( preg_match( self::ABSOLUTE_PATTERN, $src, $match ) )
-        {
-            // only the files below the base URL are fetched relative to it
-            if( $this->host === '' || self::host( $match[1] ) !== $this->host ) {
-                return Uri::schemed( $src );
-            }
-
-            $path = '/' . ltrim( $match[2], '/' );
-            return $this->path === '' ? $path : $this->unbased( $path ) ?? Uri::schemed( $src );
+        if( ( $absolute = self::absolute( $src ) ) === null ) {
+            return $this->relative( $src );
         }
 
-        return str_starts_with( $src, '/' ) ? $this->unbased( $src ) ?? $src : $src;
+        [$host, $path] = $absolute;
+
+        // unlike local(), only the host of the base URL counts because only the files below the base URL are fetched relative to it
+        if( $this->host === '' || $host !== $this->host ) {
+            return Uri::schemed( $src );
+        }
+
+        return $this->path === '' ? $path : $this->unbased( $path ) ?? Uri::schemed( $src );
     }
 
 
@@ -271,19 +273,18 @@ class Origin
      */
     public function local( string $url ): ?string
     {
-        if( !preg_match( self::ABSOLUTE_PATTERN, $url, $match ) ) {
-            // URL paths of Joomla sites in subdirectories start with the directory
-            return str_starts_with( $url, '/' ) ? $this->unbased( $url ) ?? $url : $url;
+        if( ( $absolute = self::absolute( $url ) ) === null ) {
+            return $this->relative( $url );
         }
 
         if( $this->hosts === [] ) {
             return $url;
         }
 
-        $host = self::host( $match[1] );
-        $path = '/' . ltrim( $match[2], '/' );
+        [$host, $path] = $absolute;
 
-        // URLs of the host outside of the directory of the Joomla site are only local if the host is the domain too
+        // unlike fileSource(), the domain counts too and URLs of the host of the base URL outside of the directory
+        // of the Joomla site are only local if the host is the domain too
         if( $host === $this->host && $this->path !== '' ) {
             return $this->unbased( $path ) ?? ( $host === $this->domainHost ? $path : null );
         }
@@ -311,6 +312,37 @@ class Origin
 
         $port = $match[2] ?? '';
         return in_array( $port, self::DEFAULT_PORTS, true ) ? $match[1] : $match[1] . ':' . $port;
+    }
+
+
+    /**
+     * Splits an absolute URL into its normalized host and its URL path.
+     *
+     * @param string $url URL like "https://Example.com/page?x=1", "//example.com" or "page"
+     * @return array{0: string, 1: string}|null Host like "example.com" and URL path with leading slash, query string
+     *  and fragment like "/page?x=1" or NULL if it's no absolute URL
+     */
+    protected static function absolute( string $url ): ?array
+    {
+        if( !preg_match( self::ABSOLUTE_PATTERN, $url, $match ) ) {
+            return null;
+        }
+
+        return [self::host( $match[1] ), '/' . ltrim( $match[2], '/' )];
+    }
+
+
+    /**
+     * Returns the URL without host relative to the Joomla site.
+     *
+     * Root-relative URL paths of Joomla sites in subdirectories start with the directory, which is removed.
+     *
+     * @param string $url URL without host like "/joomla/page" or "page"
+     * @return string URL path like "/page" or the URL itself if it's outside the directory or not root-relative
+     */
+    protected function relative( string $url ): string
+    {
+        return str_starts_with( $url, '/' ) ? $this->unbased( $url ) ?? $url : $url;
     }
 
 

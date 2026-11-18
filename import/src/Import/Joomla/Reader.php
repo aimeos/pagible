@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Import\Joomla;
 
 use Aimeos\Cms\Import\Database;
 use Illuminate\Database\Connection;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\LazyCollection;
 
@@ -19,8 +20,12 @@ use Illuminate\Support\LazyCollection;
  * These are the articles and their texts, categories, menu items, languages, associations, custom fields
  * and their values, tags, modules, redirects, users, view levels and the extensions with their options.
  *
- * Records of whole tables the callers filter, like the categories, menu items or modules, are returned as collections.
- * Records fetched for given IDs and values grouped or mapped by ID, like the articles or the associations, are returned as arrays.
+ * Records the callers filter or iterate, like the categories, menu items, modules or the article index, are returned as
+ * (lazy) collections. Records fetched for given IDs, like the articles or texts, and values grouped or mapped by ID, like
+ * the associations, field categories, module menus or user group titles, are returned as arrays.
+ *
+ * Only the menu items and the view levels are fetched once and kept because several callers use them. The other
+ * methods query the database on every call, their callers fetch them once and keep what they need.
  */
 class Reader
 {
@@ -148,9 +153,7 @@ class Reader
         $columns = $withTimes ? [...self::INDEX_COLUMNS, ...self::TIME_COLUMNS] : self::INDEX_COLUMNS;
 
         // the published and archived articles Joomla shows on the site, ordered by their position in their category
-        return $this->db
-            ->table( $this->schema->table( self::TABLE_CONTENT ) )
-            ->whereIn( 'state', Row::VISIBLE_STATES )
+        return $this->visibleArticles()
             ->orderBy( 'ordering', 'asc' )
             ->orderBy( 'created', 'asc' )
             ->select( $this->schema->existingColumns( self::TABLE_CONTENT, $columns ) )
@@ -179,8 +182,7 @@ class Reader
 
         // the dates are stored in UTC in the format "YYYY-MM-DD HH:MM:SS", so they are compared as strings
         $range = [gmdate( 'Y-m-d H:i:s', $from ), gmdate( 'Y-m-d H:i:s', $to )];
-        $rows = $this->db->table( $this->schema->table( self::TABLE_CONTENT ) )
-            ->whereIn( 'state', Row::VISIBLE_STATES )
+        $rows = $this->visibleArticles()
             ->where( function( $query ) use ( $columns, $range ) {
                 foreach( $columns as $column ) {
                     $query->orWhereBetween( $column, $range );
@@ -213,9 +215,7 @@ class Reader
      */
     public function categoryArticles( array $catIds ): array
     {
-        $table = $this->schema->table( self::TABLE_CONTENT );
-        $fetch = fn( $chunk ) => $this->db->table( $table )->whereIn( 'catid', $chunk )
-            ->whereIn( 'state', Row::VISIBLE_STATES )->get( ['id', 'catid'] );
+        $fetch = fn( $chunk ) => $this->visibleArticles()->whereIn( 'catid', $chunk )->get( ['id', 'catid'] );
 
         return Database::chunked( $catIds, $fetch )->mapWithKeys( fn( $row ) => [$row->id => Article::catId( $row )] )->all();
     }
@@ -449,8 +449,10 @@ class Reader
             ->where( $table . '.published', Row::PUBLISHED )
             ->orderBy( $table . '.position' )
             ->orderBy( $table . '.ordering' );
-        // the module types are extensions too
-        $this->extensions->whereModuleEnabled( $query, $table );
+        // the module types are extensions too, only the enabled ones are shown
+        if( ( $types = $this->extensions->enabledModules( Extensions::SITE_CLIENT ) ) !== null ) {
+            $query->whereIn( $table . '.module', $types );
+        }
 
         $columns = $this->schema->existingColumns( self::TABLE_MODULES, self::MODULE_COLUMNS );
         return $query->get( self::qualified( $table, $columns ) );
@@ -567,6 +569,15 @@ class Reader
         $parents = $groups ? $this->db->table( $groups )->pluck( 'parent_id', 'id' )->map( fn( $id ) => (int) $id )->all() : null;
 
         return Levels::read( $this->db->table( $table )->get( ['id', 'title', 'rules'] ), $parents, $this->extensions->guestGroup() );
+    }
+
+
+    /**
+     * Returns a new query of the published and archived Joomla articles shown on the site.
+     */
+    protected function visibleArticles(): Builder
+    {
+        return $this->db->table( $this->schema->table( self::TABLE_CONTENT ) )->whereIn( 'state', Row::VISIBLE_STATES );
     }
 
 

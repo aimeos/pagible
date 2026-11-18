@@ -26,11 +26,25 @@ class Links
 
     /** Query parameter of the Joomla links containing the language, ignored when comparing the links with the menu items */
     protected const LANG_PARAM = 'lang';
+    /** Query parameter of the Joomla links containing the view, e.g. "article" */
+    protected const VIEW_PARAM = 'view';
+    /** Query parameter of the Joomla links containing the ID of the article or category */
+    protected const ID_PARAM = 'id';
+    /** Query parameter of the Joomla links containing the layout of the view, e.g. "blog" */
+    protected const LAYOUT_PARAM = 'layout';
+    /** Option of the alias menu items containing the ID of the menu item they point to */
+    protected const ALIAS_OPTION = 'aliasoptions';
     /** Query parameters Joomla casts to integers, so "05" and "5abc" are the same as "5" */
-    protected const ID_PARAMS = ['id' => true, 'catid' => true, MenuItem::ITEM_ID => true];
+    protected const ID_PARAMS = [self::ID_PARAM => true, 'catid' => true, MenuItem::ITEM_ID => true];
+    /** Pseudo view of the links without query parameters, which show the home page */
+    protected const VIEW_HOME = '';
 
     /** @var array<int, true> IDs of the menu items whose targets are resolved, URL menu items can link to each other */
     protected array $resolving = [];
+    /** @var \WeakMap<\stdClass, bool> Results of menuLinkable() by URL or alias menu item */
+    protected \WeakMap $menuLinkable;
+    /** @var \WeakMap<\stdClass, bool> Results of targetLinkable() by target menu item */
+    protected \WeakMap $targetLinkable;
 
 
     /**
@@ -51,6 +65,8 @@ class Links
         protected Menu $menu,
         protected Origin $origin
     ) {
+        $this->menuLinkable = new \WeakMap();
+        $this->targetLinkable = new \WeakMap();
     }
 
 
@@ -70,8 +86,7 @@ class Links
      */
     public function resolve( array $params, string $tag ): ?string
     {
-        $id = Uri::id( $params['id'] ?? null );
-        $view = MenuItem::queryView( $params );
+        $id = Uri::id( $params[self::ID_PARAM] ?? null );
 
         // like the language filter, the language of the link replaces the one of the content, unknown languages don't
         if( isset( $params[self::LANG_PARAM] ) && array_diff_key( $params, [self::LANG_PARAM => true] ) === [] )
@@ -80,16 +95,77 @@ class Links
             $params = [];
         }
 
-        return match( true ) {
+        // the same decisions as queryLinkable(), so the link pages and the resolved links can't diverge
+        return match( self::directView( $params ) ) {
             // like Joomla, the script without query parameters shows the home page, the one of the language with language filter
-            $params === [] => ( $this->site->onSite( $tag ) ? null : $this->urls->homeUrl( $tag ) ) ?? '/',
-            $view === MenuItem::VIEW_CATEGORIES => $this->urls->listUrl( $id ),
-            $id > 0 && $view === MenuItem::VIEW_ARTICLE => $this->urls->articleUrl( $id ),
-            $id > 0 && $view === MenuItem::VIEW_CATEGORY => $this->urls->categoryUrl( $id ),
-            // like Joomla, links to the views without ID use the menu item showing the view
-            !isset( $params[MenuItem::ITEM_ID] ) && in_array( $view, MenuItem::VIEWS_WITHOUT_ID, true ) => $this->byView( (string) $view, $params, $tag ),
-            default => $this->byItemLink( $params ),
+            self::VIEW_HOME => ( $this->site->onSite( $tag ) ? null : $this->urls->homeUrl( $tag ) ) ?? '/',
+            MenuItem::VIEW_CATEGORIES => $this->urls->listUrl( $id ),
+            MenuItem::VIEW_ARTICLE => $this->urls->articleUrl( $id ),
+            MenuItem::VIEW_CATEGORY => $this->urls->categoryUrl( $id ),
+            default => ( $itemId = self::queryItemId( $params, $tag, $this->menu, $this->menuItems, $this->router ) ) > 0 ? $this->byItemId( $itemId ) : null,
         };
+    }
+
+
+    /**
+     * Returns the view of the links which point to a page directly instead of a menu item.
+     *
+     * Links without query parameters show the home page, links to articles and categories with ID and the
+     * lists of categories use the pages of the articles and categories, see resolve().
+     *
+     * @param array<array-key, mixed> $params Query parameters of the link
+     * @return string|null VIEW_HOME, the categories, article or category view or NULL if the link needs a menu item
+     */
+    protected static function directView( array $params ): ?string
+    {
+        $id = Uri::id( $params[self::ID_PARAM] ?? null );
+        $view = MenuItem::queryView( $params );
+
+        return match( true ) {
+            $params === [] => self::VIEW_HOME,
+            $view === MenuItem::VIEW_CATEGORIES => $view,
+            $id > 0 && in_array( $view, [MenuItem::VIEW_ARTICLE, MenuItem::VIEW_CATEGORY], true ) => $view,
+            default => null,
+        };
+    }
+
+
+    /**
+     * Returns the ID of the menu item whose page the link without direct target uses, see directView().
+     *
+     * Like Joomla, links to the views without ID like the featured articles use the menu item showing the view in the
+     * language of the content containing them, see Router::linkRoutes(). Other links need the ID of a menu item, and
+     * links with view or ID only use it if the menu item shows the same like Joomla uses its URL path then.
+     *
+     * @param array<array-key, mixed> $params Query parameters of the link
+     * @param string $tag Joomla language tag of the content containing the link
+     * @param Menu $menu Menu items of the imported menu
+     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
+     * @param Router $router Joomla routes returning the menu items of the links to views without ID
+     * @return int ID of the menu item or 0 if there's none, it shows another page or the ID is invalid
+     */
+    protected static function queryItemId( array $params, string $tag, Menu $menu, Collection $menuItems, Router $router ): int
+    {
+        $view = MenuItem::queryView( $params );
+
+        if( !isset( $params[MenuItem::ITEM_ID] ) && in_array( $view, MenuItem::VIEWS_WITHOUT_ID, true ) )
+        {
+            $item = $router->linkRoutes( $tag )->viewItem( (string) $view, Value::string( $params[self::LAYOUT_PARAM] ?? null ) );
+            return $item ? (int) $item->id : 0;
+        }
+
+        // like Joomla, the menu item ID is the integer at the start
+        if( ( $itemId = Uri::id( $params[MenuItem::ITEM_ID] ?? null ) ) <= 0 ) {
+            return 0;
+        }
+
+        if( ( isset( $params[self::VIEW_PARAM] ) || isset( $params[self::ID_PARAM] ) )
+            && !self::sameQuery( $params, self::findItem( $itemId, $menu, $menuItems ) )
+        ) {
+            return 0;
+        }
+
+        return $itemId;
     }
 
 
@@ -172,8 +248,7 @@ class Links
 
         if( MenuItem::type( $menuItem ) === MenuItem::TYPE_ALIAS )
         {
-            $id = Uri::id( Row::params( $menuItem )['aliasoptions'] ?? null );
-            return self::itemLinkable( $id, $menu, $menuItems, $router, $variant, $seen );
+            return self::itemLinkable( self::aliasId( $menuItem ), $menu, $menuItems, $router, $variant, $seen );
         }
 
         $link = trim( (string) ( $menuItem->link ?? '' ) );
@@ -237,7 +312,11 @@ class Links
      */
     public function menuItemLink( \stdClass $menuItem ): ?string
     {
-        if( !self::menuLinkable( $menuItem, $this->menu, $this->menuItems, $this->router, $this->urls->menuVariant( ... ) ) ) {
+        // the whole chain of the menu item is validated only once, also if it's part of the chains of other menu items
+        $linkable = $this->menuLinkable[$menuItem] ??= self::menuLinkable( $menuItem, $this->menu, $this->menuItems,
+            $this->router, $this->urls->menuVariant( ... ) );
+
+        if( !$linkable ) {
             return null;
         }
 
@@ -306,7 +385,7 @@ class Links
 
         // like browsers, relative URL paths and dot segments are resolved first, e.g. "../index.php?Itemid=3"
         if( self::pathLike( $local ) ) {
-            $local = $this->rootPath( $local, $dir );
+            $local = $this->resolvePath( $local, $dir );
         }
 
         // Joomla URLs with query string like "index.php?option=com_content&view=article&id=5" or "?Itemid=3"
@@ -360,7 +439,18 @@ class Links
      */
     protected function byAlias( \stdClass $menuItem ): ?string
     {
-        return $this->byItemId( Uri::id( Row::params( $menuItem )['aliasoptions'] ?? null ) );
+        return $this->byItemId( self::aliasId( $menuItem ) );
+    }
+
+
+    /**
+     * Returns the ID of the menu item the alias menu item points to.
+     *
+     * @return int ID of the menu item or 0 if the option isn't an ID
+     */
+    protected static function aliasId( \stdClass $menuItem ): int
+    {
+        return Uri::id( Row::params( $menuItem )[self::ALIAS_OPTION] ?? null );
     }
 
 
@@ -400,8 +490,14 @@ class Links
      */
     protected function byMenuItem( \stdClass $target ): ?string
     {
-        // the same check selects the link pages and the translations claiming URL paths, so both can't diverge
-        if( !self::targetLinkable( $target, $this->menu, $this->menuItems, $this->router, $this->urls->menuVariant( ... ), $this->resolving ) ) {
+        // the same check selects the link pages and the translations claiming URL paths, so both can't diverge;
+        // it validates the chain of the target on its own with a fresh set of seen menu items, independent of the
+        // menu items currently resolved, which byItemId() stops if they link back. Pages of other menu items can always
+        // be page variants here, URL targets are restricted again by menuItemLink() if they are part of the imported menu
+        $linkable = $this->targetLinkable[$target] ??= self::targetLinkable( $target, $this->menu, $this->menuItems,
+            $this->router, $this->urls->menuVariant( ... ), [] );
+
+        if( !$linkable ) {
             return null;
         }
 
@@ -439,47 +535,6 @@ class Links
 
 
     /**
-     * Returns the URL path of the menu item Joomla uses for a link to a view without ID like the featured articles or the archive.
-     *
-     * Joomla uses the menu items of the language of the content, see Router::linkRoutes().
-     *
-     * @param string $view View of the link, "featured" or "archive"
-     * @param array<array-key, mixed> $params Query parameters of the link
-     * @param string $tag Joomla language tag of the content containing the link
-     * @return string|null URL path or NULL if no menu item shows the view or its page isn't imported
-     */
-    protected function byView( string $view, array $params, string $tag ): ?string
-    {
-        $item = $this->router->linkRoutes( $tag )->viewItem( $view, Value::string( $params['layout'] ?? null ) );
-
-        return $item ? $this->byItemId( (int) $item->id ) : null;
-    }
-
-
-    /**
-     * Returns the URL path of the page of the menu item in the link.
-     *
-     * Links with view or ID only use the page of the menu item if it shows the same like Joomla uses its URL path then.
-     *
-     * @param array<array-key, mixed> $params Query parameters of the link
-     * @return string|null URL path or NULL if there's no menu item, it shows another page or its page isn't imported
-     */
-    protected function byItemLink( array $params ): ?string
-    {
-        // like Joomla, the menu item ID is the integer at the start
-        if( ( $itemId = Uri::id( $params[MenuItem::ITEM_ID] ?? null ) ) <= 0 ) {
-            return null;
-        }
-
-        if( ( isset( $params['view'] ) || isset( $params['id'] ) ) && !self::sameQuery( $params, $this->menuItem( $itemId ) ) ) {
-            return null;
-        }
-
-        return $this->byItemId( $itemId );
-    }
-
-
-    /**
      * Tests if the URL is a URL path with or without leading slash, not a query string or fragment only or a URL with scheme or host.
      *
      * @param string $url Trimmed URL, e.g. "page", "../index.php?Itemid=3", "/page", "?Itemid=3" or "https://example.com/"
@@ -502,16 +557,15 @@ class Links
      * @param string $dir Directory relative URL paths are relative to without leading and trailing slash
      * @return string URL path with leading slash, e.g. "/a/page.html?x=1#top"
      */
-    protected function rootPath( string $local, string $dir ): string
+    protected function resolvePath( string $local, string $dir ): string
     {
-        $length = strcspn( $local, '?#' );
-        $raw = substr( $local, 0, $length );
+        [$raw, $rest] = Uri::split( $local );
 
         // Joomla routes URLs starting with the script name, so they aren't relative to the directory
         $relative = !str_starts_with( $raw, '/' ) && $this->origin->unscripted( $raw ) === $raw;
         $prefix = $dir !== '' && $relative ? $dir . '/' : '';
 
-        return '/' . self::dotless( $prefix . ltrim( $raw, '/' ) ) . substr( $local, $length );
+        return '/' . self::dotless( $prefix . ltrim( $raw, '/' ) ) . $rest;
     }
 
 
@@ -520,13 +574,13 @@ class Links
      *
      * The script name and the suffix are removed by Origin::targetPath(), the query string and the fragment are kept.
      *
-     * @param string $local URL path relative to the root without dot segments, see rootPath(), e.g. "/index.php/page.html?x=1#top"
+     * @param string $local URL path relative to the root without dot segments, see resolvePath(), e.g. "/index.php/page.html?x=1#top"
      * @return string URL path with leading slash, e.g. "/page?x=1#top"
      */
     protected function pathTarget( string $local ): string
     {
-        $length = strcspn( $local, '?#' );
-        return '/' . $this->origin->targetPath( ltrim( substr( $local, 0, $length ), '/' ) ) . substr( $local, $length );
+        [$path, $rest] = Uri::split( $local );
+        return '/' . $this->origin->targetPath( ltrim( $path, '/' ) ) . $rest;
     }
 
 
@@ -597,7 +651,7 @@ class Links
     protected static function queryValue( int|string $name, mixed $value ): mixed
     {
         if( isset( self::ID_PARAMS[$name] ) && ( is_string( $value ) || is_int( $value ) ) ) {
-            return (int) $value;
+            return Uri::id( $value );
         }
 
         return is_string( $value ) && preg_match( '/^(\d+):/', $value, $match ) ? $match[1] : $value;
@@ -608,8 +662,10 @@ class Links
      * Tests if resolve() can resolve the query parameters of an internal link, before the URLs of the pages are known.
      *
      * Like resolve(), links without query parameters to the home page and links to articles, categories and category
-     * lists are supported, whether their pages are imported isn't known yet. Links to views without ID like the featured articles need the menu item Joomla uses for the view,
-     * other links like the ones of other components need a known menu item showing the same, see byItemLink().
+     * lists are supported, whether their pages are imported isn't known yet, see directView(). Links to views without ID
+     * like the featured articles need the menu item Joomla uses for the view, other links like the ones of other components
+     * need a known menu item showing the same, see queryItemId(). Unlike resolve(), links with the language only like
+     * "index.php?lang=de" aren't supported because the languages of the language filter aren't passed.
      *
      * @param array<array-key, mixed> $params Query parameters of the link
      * @param string $tag Joomla language tag of the menu item containing the link
@@ -622,28 +678,12 @@ class Links
     protected static function queryLinkable( array $params, string $tag, Menu $menu, Collection $menuItems, Router $router,
         ?\Closure $variant, array $seen ): bool
     {
-        $id = Uri::id( $params['id'] ?? null );
-        $view = MenuItem::queryView( $params );
-
-        if( $params === [] || $view === MenuItem::VIEW_CATEGORIES || $id > 0 && in_array( $view, [MenuItem::VIEW_ARTICLE, MenuItem::VIEW_CATEGORY], true ) ) {
+        if( self::directView( $params ) !== null ) {
             return true;
         }
 
-        if( !isset( $params[MenuItem::ITEM_ID] ) && in_array( $view, MenuItem::VIEWS_WITHOUT_ID, true ) )
-        {
-            $item = $router->linkRoutes( $tag )->viewItem( (string) $view, Value::string( $params['layout'] ?? null ) );
-            return $item !== null && self::itemLinkable( (int) $item->id, $menu, $menuItems, $router, $variant, $seen );
-        }
-
-        if( ( $itemId = Uri::id( $params[MenuItem::ITEM_ID] ?? null ) ) <= 0 ) {
-            return false;
-        }
-
-        if( ( isset( $params['view'] ) || isset( $params['id'] ) ) && !self::sameQuery( $params, $menu->item( $itemId ) ?? $menuItems->get( $itemId ) ) ) {
-            return false;
-        }
-
-        return self::itemLinkable( $itemId, $menu, $menuItems, $router, $variant, $seen );
+        $itemId = self::queryItemId( $params, $tag, $menu, $menuItems, $router );
+        return $itemId > 0 && self::itemLinkable( $itemId, $menu, $menuItems, $router, $variant, $seen );
     }
 
 
@@ -660,7 +700,7 @@ class Links
     protected static function itemLinkable( int $id, Menu $menu, Collection $menuItems, Router $router,
         ?\Closure $variant, array $seen ): bool
     {
-        if( isset( $seen[$id] ) || !( $target = $menu->item( $id ) ?? $menuItems->get( $id ) ) ) {
+        if( isset( $seen[$id] ) || !( $target = self::findItem( $id, $menu, $menuItems ) ) ) {
             return false;
         }
 
@@ -707,6 +747,20 @@ class Links
      */
     protected function menuItem( int $id ): ?\stdClass
     {
-        return $this->menu->item( $id ) ?? $this->menuItems->get( $id );
+        return self::findItem( $id, $this->menu, $this->menuItems );
+    }
+
+
+    /**
+     * Returns the published menu item of the imported menu or another menu, the one of the imported menu first.
+     *
+     * @param int $id ID of the menu item
+     * @param Menu $menu Menu items of the imported menu
+     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
+     * @return \stdClass|null Menu item or NULL if there's no published one
+     */
+    protected static function findItem( int $id, Menu $menu, Collection $menuItems ): ?\stdClass
+    {
+        return $menu->item( $id ) ?? $menuItems->get( $id );
     }
 }

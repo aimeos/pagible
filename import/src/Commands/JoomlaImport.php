@@ -56,9 +56,6 @@ class JoomlaImport extends Commands
     /** Maximum number of article and translation texts fetched at once, the texts can contain large HTML and embedded images */
     protected const TEXT_SIZE = 100;
 
-    /** Modification time of articles and translations without known time, they count as changed */
-    protected const UNKNOWN_TIME = PHP_INT_MAX;
-
     /** Only the IDs of the imported articles are kept, the menu parents are kept separately */
     protected bool $slimPages = false;
 
@@ -114,45 +111,10 @@ class JoomlaImport extends Commands
         }
 
         $root = $this->getOrCreateRoot( $this->domain );
-        $this->run = $this->wiring->run( $articles, $this->isImported( $root ) );
-        // the modification times are needed by prefetch() and unchangedSince() before anything is imported
-        $this->changed = $this->since !== null
-            ? $this->changedTimes( $articles, $this->scheduledTimes( $reader, $this->since, $articles ) )
-            : [];
-
-        $this->importContent( $root );
+        $this->startRun( $reader, $articles, $root );
+        $this->importContent( $root, $this->newRoot );
 
         return $this->summary();
-    }
-
-
-    /**
-     * Sets the time of the --since option, dates without time zone are in the time zone of the Joomla site.
-     *
-     * The dates in the Joomla database are in UTC, so the time is compared with them as timestamp.
-     *
-     * @param \DateTimeZone|null $timezone Time zone of the Joomla site or NULL for the one of the application
-     * @return bool TRUE if the option is valid or not given, FALSE if not
-     */
-    protected function sinceOption( ?\DateTimeZone $timezone = null ): bool
-    {
-        if( !parent::sinceOption() ) {
-            return false;
-        }
-
-        if( $this->since === null || $timezone === null ) {
-            return true;
-        }
-
-        try {
-            // dates validated by the parent are valid for DateTimeImmutable too because both use the same parser
-            $this->since = ( new \DateTimeImmutable( $this->stringOption( 'since' ), $timezone ) )->getTimestamp();
-        } catch( \Exception ) {
-            $this->error( 'Invalid date for --since: ' . $this->stringOption( 'since' ) );
-            return false;
-        }
-
-        return true;
     }
 
 
@@ -163,22 +125,38 @@ class JoomlaImport extends Commands
      */
     protected function summary(): int
     {
-        if( $this->failures )
-        {
-            $this->error( $this->failed . ' imports failed:' );
-
-            foreach( $this->failures as $failure ) {
-                $this->error( '  ' . $failure );
-            }
-
-            if( $this->failed > count( $this->failures ) ) {
-                $this->error( '  ... and ' . ( $this->failed - count( $this->failures ) ) . ' more' );
-            }
-        }
-
+        $this->printFailures();
         $this->info( "Finished with {$this->failed} failures." );
 
         return $this->failed > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+
+    /**
+     * Creates the objects of the run and the modification times of the articles, the same for the import and the dry run.
+     *
+     * @param Joomla\Reader $reader Reader for the Joomla database
+     * @param Joomla\Articles $articles Imported articles and translations
+     * @param PageView|null $root Root page or NULL if the dry run finds none, an import would create it
+     */
+    protected function startRun( Joomla\Reader $reader, Joomla\Articles $articles, ?PageView $root ): void
+    {
+        $this->run = $this->wiring->run( $articles, $this->updatesRoot( $root ) );
+        // the modification times are needed by prefetch() and unchangedSince() before anything is imported
+        $this->changed = $this->since !== null
+            ? $this->changedTimes( $articles, $this->scheduledTimes( $reader, $this->since, $articles ) )
+            : [];
+    }
+
+
+    /**
+     * Tests if the import may update the root page, i.e. if it's created by the import or was imported before and wasn't changed since.
+     *
+     * @param PageView|null $root Root page or NULL if the dry run finds none, an import would create it
+     */
+    protected function updatesRoot( ?PageView $root ): bool
+    {
+        return !$root || $this->isImported( $root );
     }
 
 
@@ -220,8 +198,10 @@ class JoomlaImport extends Commands
 
     /**
      * Imports the home pages, the menu items with their categories and articles and the remaining articles below their categories.
+     *
+     * @param bool $newRoot TRUE if the root page was created by this import
      */
-    protected function importContent( PageView $root ): void
+    protected function importContent( PageView $root, bool $newRoot ): void
     {
         $articles = $this->run->articles;
 
@@ -232,7 +212,7 @@ class JoomlaImport extends Commands
         {
             // the articles of the home menu items of the other languages are shown by the variants of the root page
             $this->prefetch( array_filter( [$this->run->home->linkedArticleId()] ), $root );
-            $homeImported = $this->importHome( $home, $root );
+            $homeImported = $this->importHome( $home, $root, $newRoot );
         }
 
         // the articles and menu items are split into chunks whose texts are fetched at once
@@ -349,22 +329,22 @@ class JoomlaImport extends Commands
         }
 
         // the latest date of each category and its parents, computed once per category
-        $latest = [];
+        $lineageTimes = [];
 
         foreach( $this->wiring->site->categories->keys() as $catId )
         {
             $lineage = Joomla\CategoryTree::lineage( $this->wiring->site->categories, (int) $catId )->categories;
 
             if( ( $time = max( [0, ...array_intersect_key( $categoryTimes, $lineage )] ) ) > 0 ) {
-                $latest[$catId] = $time;
+                $lineageTimes[$catId] = $time;
             }
         }
 
         // the translations are in categories of their own languages, so the articles are fetched by category
-        foreach( $latest ? $reader->categoryArticles( array_keys( $latest ) ) : [] as $id => $catId )
+        foreach( $lineageTimes ? $reader->categoryArticles( array_keys( $lineageTimes ) ) : [] as $id => $catId )
         {
             if( isset( $articles->visible[$id] ) ) {
-                $times[$id] = max( $times[$id] ?? $latest[$catId], $latest[$catId] );
+                $times[$id] = max( $times[$id] ?? $lineageTimes[$catId], $lineageTimes[$catId] );
             }
         }
 
@@ -441,6 +421,9 @@ class JoomlaImport extends Commands
      * Fetches the pending articles and their translations and pages and decides which of them are kept, see prefetchKept().
      *
      * Used by the import and the dry run, so both make the same decisions. Only the import fetches the texts afterwards.
+     * The steps depend on each other and are only done here in this order: run->prefetch() replaces the rows of the
+     * previous chunk and forgets its kept articles, prefetchKept() needs the fetched rows for the URL paths and translations
+     * of the articles and run->keep() stores its decision for importArticle() and the dry run until the next chunk.
      *
      * @param array<int|string> $ids IDs of the articles imported next
      * @return list<int|string> IDs of the pending articles which are rendered, i.e. not kept
@@ -450,15 +433,16 @@ class JoomlaImport extends Commands
         // the translations are needed by saveTranslations() if the article is rendered
         $ids = array_values( array_filter( $ids, $this->pending( ... ) ) );
         $this->run->prefetch( $ids );
+        $this->run->keep( $kept = $this->prefetchKept( $ids ) );
 
-        return array_values( array_diff( $ids, $this->prefetchKept( $ids ) ) );
+        return array_values( array_diff( $ids, $kept ) );
     }
 
 
     /**
      * Fetches the pages and variants of the fetched articles and keeps the pages of the unchanged ones, see keepsArticle().
      *
-     * Decides once per chunk which articles aren't rendered again, run->kept() is TRUE for them afterwards. The pages
+     * Decides once per chunk which articles aren't rendered again, see prefetchArticles(). The pages
      * of the articles, the variants of the pages with translations and the URLs of the missing or moved variants used
      * by other pages are fetched at once before, the variants are needed to compare the names and URL paths of the
      * translations and by saveTranslations() for the rendered articles. The article of the root page is always rendered
@@ -485,9 +469,7 @@ class JoomlaImport extends Commands
         }
 
         // without --since, all articles are rendered again, so the keep checks and their queries aren't needed
-        if( $this->since === null )
-        {
-            $this->run->keep( [] );
+        if( $this->since === null ) {
             return [];
         }
 
@@ -501,7 +483,6 @@ class JoomlaImport extends Commands
             }
         }
 
-        $this->run->keep( $kept );
         return $kept;
     }
 
@@ -624,8 +605,8 @@ class JoomlaImport extends Commands
      *
      * Lists the articles which would be rendered, i.e. without the ones whose pages are kept with the --since option,
      * and the menu items and redirects which would be imported, also without the menu items of the kept articles.
-     * The root page is read but not created and the same decisions are made as by an import using the same chunks
-     * and prefetchArticles(), only the texts of the articles aren't fetched.
+     * The root page is read but not created and the same decisions are made as by an import using prefetchArticles(),
+     * homeType() and menuItemType(), only the texts of the articles aren't fetched.
      *
      * @param Joomla\Reader $reader Reader for the Joomla database
      * @param Joomla\Articles $articles Imported articles in the order Joomla uses
@@ -634,12 +615,10 @@ class JoomlaImport extends Commands
     {
         // an import creates the root page if there's none, so the article of the home menu item is imported into it
         $root = Pages::root( $this->domain );
-        $this->run = $this->wiring->run( $articles, !$root || $this->isImported( $root ) );
-        $this->changed = $this->since !== null
-            ? $this->changedTimes( $articles, $this->scheduledTimes( $reader, $this->since, $articles ) )
-            : [];
+        $this->startRun( $reader, $articles, $root );
 
-        // the articles are listed in the order the import uses and fetched in the same chunks by the same prefetch as by importContent()
+        // the articles are listed in the order and chunks of the article loop of importContent(), the import fetches the articles
+        // of the menu items in the chunks of the menu before, but prefetchArticles() decides about each article on its own
         $chunks = new Joomla\Chunks( $articles->translations, static::TEXT_SIZE );
         $kept = [];
 
@@ -667,7 +646,7 @@ class JoomlaImport extends Commands
 
         // like importContent(), the home menu item, also one of another menu, is imported first and only once
         $home = $this->run->home->item;
-        $homeRoot = $home ? $this->updatesHomeRoot( $home, !$root || $this->isImported( $root ) ) : null;
+        $homeRoot = $home ? $this->updatesHomeRoot( $home, $this->updatesRoot( $root ) ) : null;
 
         if( $home && $homeRoot ) {
             $this->line( '  Menu item ' . Joomla\Row::label( $home ) . ' (root page)' );
@@ -707,20 +686,13 @@ class JoomlaImport extends Commands
      */
     protected function updatesHomeRoot( \stdClass $menuItem, bool $rootImported ): ?bool
     {
-        $link = Joomla\MenuLink::of( $menuItem );
-
-        // only the category Joomla shows on the home page uses the root page, see importCategoryHome()
-        if( $link->kind === Joomla\MenuLink::KIND_CATEGORY && $link->id ) {
-            return $this->wiring->categoryItems->homeCatId() === $link->id ? $rootImported : null;
-        }
-
-        // other home pages like the featured articles only update root pages which were imported before
-        if( !( $id = $link->article() ) ) {
-            return $rootImported;
-        }
-
-        // the article is only imported into the root page if it was decided by the run, see importArticleHome()
-        return isset( $this->run->articles->categoryIds[$id] ) && $this->run->home->isArticle( $id ) ? true : null;
+        return match( $this->homeType( Joomla\MenuLink::of( $menuItem ) ) ) {
+            // only root pages which were imported before are updated, see updateHomeRoot()
+            'category', 'root' => $rootImported,
+            // the article is only imported into the root page if the run decided so, see importArticleHome()
+            'article' => true,
+            null => null,
+        };
     }
 
 
@@ -736,19 +708,26 @@ class JoomlaImport extends Commands
     protected function importsMenuItem( \stdClass $menuItem, array &$articleIds = [] ): bool
     {
         $link = Joomla\MenuLink::of( $menuItem );
-        $articleId = $link->article();
-        $catId = $link->category();
-        $site = $this->wiring->site;
 
-        return match( true ) {
-            $link->kind === Joomla\MenuLink::KIND_FOLDER || ( $link->kind === Joomla\MenuLink::KIND_CATEGORIES && $link->id === null ) => true,
-            $link->kind === Joomla\MenuLink::KIND_LINK => $this->run->links->menuItemLink( $menuItem ) !== null,
-            $site->access->restriction( $menuItem ) !== null => false,
-            // the article is remembered, so the later menu items linking to it aren't listed
-            $articleId !== null => isset( $this->run->articles->categoryIds[$articleId] ) && !isset( $articleIds[$articleId] )
-                && ( $articleIds[$articleId] = true ),
-            $catId !== null => $site->category( $catId ) !== null && $this->wiring->categoryItems->hasMenuPage( $menuItem->id ),
-            default => false,
-        };
+        switch( $this->menuItemType( $link, $this->wiring->site->access->restriction( $menuItem ) ) )
+        {
+            case 'heading':
+                return true;
+            case 'link':
+                return $this->run->links->menuItemLink( $menuItem ) !== null;
+            case 'article':
+                $id = (int) $link->article();
+
+                // the article is remembered, so the later menu items linking to it aren't listed
+                if( !isset( $this->run->articles->categoryIds[$id] ) || isset( $articleIds[$id] ) ) {
+                    return false;
+                }
+
+                return $articleIds[$id] = true;
+            case 'category':
+                return $this->wiring->site->category( (int) $link->category() ) !== null && $this->wiring->categoryItems->hasMenuPage( $menuItem->id );
+            default:
+                return false;
+        }
     }
 }

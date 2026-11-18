@@ -78,7 +78,7 @@ trait Articles
     {
         // disabled pages are rendered again, e.g. pages disabled by disableVanished() whose article was published again from the article list
         return $page !== null && (int) $page->status !== Pages::STATUS_DISABLED && $this->unchangedSince( $article->id )
-            && $page->name === $this->articleName( $article ) && $this->keepsTranslations( $article, $page );
+            && $page->name === $this->run->pages->articleName( $article ) && $this->keepsTranslations( $article, $page );
     }
 
 
@@ -102,26 +102,16 @@ trait Articles
 
         // prefetched for the whole chunk by prefetchArticleVariants() and only used up by variants() if the article is rendered
         $variants = $this->prefetchedVariants( $page ) ?? $this->variants( $page );
-        $languages = $this->wiring->site->languages;
 
-        foreach( $rows as $row )
+        foreach( $this->translationTargets( $rows, $page, $variants ) as ['row' => $row, 'variant' => $variant, 'domain' => $domain, 'path' => $path, 'moved' => $moved] )
         {
-            // translations in languages which aren't imported have no variant
-            if( !( $language = $languages->language( Joomla\Row::language( $row ) ) ) ) {
-                continue;
-            }
-
-            $variant = $variants[$language['lang']] ?? null;
-
             // translations changed in Pagible are skipped by saveTranslation() anyway
             if( $variant && $variant->editor !== $this->editor ) {
                 continue;
             }
 
-            ['domain' => $domain, 'path' => $path] = $this->translationUrl( $row, $language, $page );
-
             // like Variants::save(), only missing and moved variants can't be saved if their URL is used by another page
-            if( !$variant || (string) $variant->domain !== $domain || (string) $variant->path !== $path )
+            if( $moved || !$variant )
             {
                 if( !$this->usedTranslationUrl( $domain, $path, $variant ) ) {
                     return false;
@@ -131,7 +121,7 @@ trait Articles
             }
 
             // trashed variants are restored by Variants::save() and renamed variants get the new name
-            if( $variant->getAttribute( 'variant_deleted_at' ) !== null || $variant->name !== $this->articleName( $row ) ) {
+            if( $variant->getAttribute( 'variant_deleted_at' ) !== null || $variant->name !== $this->run->pages->articleName( $row ) ) {
                 return false;
             }
         }
@@ -152,7 +142,6 @@ trait Articles
     protected function prefetchTranslationUrls( array $pages ): void
     {
         $this->usedTranslationUrls = [];
-        $languages = $this->wiring->site->languages;
         $domains = [];
         $urls = [];
         $keys = [];
@@ -165,20 +154,13 @@ trait Articles
 
             $variants = $this->prefetchedVariants( $page ) ?? [];
 
-            foreach( $this->run->translations( $article ) as $row )
+            foreach( $this->translationTargets( $this->run->translations( $article ), $page, $variants ) as $target )
             {
-                if( !( $language = $languages->language( Joomla\Row::language( $row ) ) ) ) {
-                    continue;
-                }
-
-                $variant = $variants[$language['lang']] ?? null;
-                $url = $this->translationUrl( $row, $language, $page );
-
-                if( !$variant || (string) $variant->domain !== $url['domain'] || (string) $variant->path !== $url['path'] )
+                if( $target['moved'] )
                 {
-                    $urls[$url['path']] = true;
-                    $domains[$url['domain']] = true;
-                    $keys[$this->urlKey( $url['domain'], $url['path'] )] = true;
+                    $urls[$target['path']] = true;
+                    $domains[$target['domain']] = true;
+                    $keys[$this->urlKey( $target['domain'], $target['path'] )] = true;
                 }
             }
         }
@@ -199,6 +181,40 @@ trait Articles
                 }
             }
         }
+    }
+
+
+    /**
+     * Returns the translations of the article in imported languages together with their variants and URLs.
+     *
+     * Used by keepsTranslations() and prefetchTranslationUrls(), so both compare the variants with the same URLs.
+     * Translations in languages which aren't imported have no variant and are left out.
+     *
+     * @param list<\stdClass> $rows Translations of the article
+     * @param PageView $page Page of the article in the import language
+     * @param array<string, PageView> $variants Variants of the page by language code
+     * @return list<array{row: \stdClass, variant: PageView|null, domain: string, path: string, moved: bool}> Translations with
+     *  their existing variant, the domain and URL path the variant is saved with and if the variant is missing or has another URL
+     */
+    protected function translationTargets( array $rows, PageView $page, array $variants ): array
+    {
+        $languages = $this->wiring->site->languages;
+        $list = [];
+
+        foreach( $rows as $row )
+        {
+            if( !( $language = $languages->language( Joomla\Row::language( $row ) ) ) ) {
+                continue;
+            }
+
+            $variant = $variants[$language['lang']] ?? null;
+            ['domain' => $domain, 'path' => $path] = $this->translationUrl( $row, $language, $page );
+            $moved = !$variant || (string) $variant->domain !== $domain || (string) $variant->path !== $path;
+
+            $list[] = ['row' => $row, 'variant' => $variant, 'domain' => $domain, 'path' => $path, 'moved' => $moved];
+        }
+
+        return $list;
     }
 
 
@@ -266,17 +282,6 @@ trait Articles
 
 
     /**
-     * Returns the name of the page of the article or translation, the same one articlePage() builds the page with.
-     *
-     * @param \stdClass $article Joomla article or translation
-     */
-    protected function articleName( \stdClass $article ): string
-    {
-        return $this->run->pages->articleName( $article );
-    }
-
-
-    /**
      * Returns the page of the category and creates it including its parent categories if necessary.
      *
      * Top-level categories have no page unless a menu item links to them.
@@ -324,6 +329,6 @@ trait Articles
         $rendered = $this->run->pages->categoryPage( $category, $slug, $routes, $item );
         $saved = $this->savePage( $slug, $rendered->data, $rendered->content, $parent );
 
-        return $this->savedPage( $saved, $category, Joomla\Kind::CATEGORY, $slug, $rendered->reason );
+        return $this->savePageTranslations( $saved, $category, Joomla\Kind::CATEGORY, $slug, $rendered->reason );
     }
 }

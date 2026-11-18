@@ -20,7 +20,7 @@ final readonly class Options
      */
     public const PAGE_HEADING_SHOWN = 'show_page_heading';
     /** Value of the options of category blogs which use the option of the article */
-    protected const USE_ARTICLE = 'use_article';
+    private const USE_ARTICLE = 'use_article';
 
 
     /**
@@ -28,7 +28,7 @@ final readonly class Options
      *
      * @param array<string, mixed> $defaults Options of the articles component used if the articles, categories and menu items don't override them
      */
-    public function __construct( protected array $defaults = [] )
+    public function __construct( private array $defaults = [] )
     {
     }
 
@@ -74,7 +74,7 @@ final readonly class Options
      * @param array<string, mixed> $params Options of the menu item
      * @return array<string, mixed> Filled options by name
      */
-    protected function menu( array $params ): array
+    private function menu( array $params ): array
     {
         return array_filter( Value::filled( $params ), fn( $value ) => $value !== self::USE_ARTICLE );
     }

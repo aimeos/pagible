@@ -1009,6 +1009,33 @@ class HomeImportTest extends TestAbstract
     }
 
 
+    public function testFailedHomeRootIsReportedAsFailedImport(): void
+    {
+        Schema::connection( 'joomla' )->table( 'menu', fn( Blueprint $table ) => $table->boolean( 'home' )->default( false ) );
+        DB::connection( 'joomla' )->table( 'menu' )->insert( [
+            ['home' => 1, 'link' => 'index.php?option=com_content&view=featured', 'type' => 'component'] + $this->menuItem( 101, 'Home', 1, 1 ),
+        ] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $menuItem = DB::connection( 'joomla' )->table( 'menu' )->where( 'id', 101 )->firstOrFail();
+
+        // rendering the root page fails within the transaction, so the failure is reported instead of aborting the import
+        $command = Artisan::all()['cms:joomla-import'] ?? throw new \RuntimeException( 'Command not registered' );
+        ( function() use ( $menuItem, $root ) {
+            $this->failures = [];
+            $this->updateHomeRoot( $menuItem, $root, new \stdClass() );
+        } )->call( $command );
+
+        $failures = ( fn() => $this->failures )->call( $command );
+
+        $this->assertCount( 1, $failures );
+        $this->assertStringStartsWith( '[101] Home: ', $failures[0] );
+        $this->assertSame( $root->latest_id, PageView::where( 'tag', 'root' )->firstOrFail()->latest_id );
+        $this->assertFalse( $root->isDirty() );
+    }
+
+
     public function testDryRunListsTheMenuItemsLikeTheImport(): void
     {
         Schema::connection( 'joomla' )->table( 'menu', fn( Blueprint $table ) => $table->boolean( 'home' )->default( false ) );

@@ -91,8 +91,7 @@ class Texts
      */
     public function imageSource( string $value ): string
     {
-        $path = trim( Image::path( $value ) );
-        return $path !== '' && !Html::inline( $path ) ? $this->origin->fileSource( $path ) : '';
+        return ( $path = Image::source( $value ) ) !== '' ? $this->origin->fileSource( $path ) : '';
     }
 
 

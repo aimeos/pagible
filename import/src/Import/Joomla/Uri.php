@@ -40,6 +40,22 @@ class Uri
 
 
     /**
+     * Splits the URL into the part before the query string or fragment and the rest.
+     *
+     * Unlike parse_url(), the parts are kept as they are, so they can be joined again after changing the path.
+     *
+     * @param string $url URL or URL path, e.g. "../page.html?x=1#top"
+     * @return array{0: string, 1: string} Part before the first "?" or "#" and the query string and fragment with
+     *  "?" or "#" or an empty string if there's none, e.g. ["../page.html", "?x=1#top"]
+     */
+    public static function split( string $url ): array
+    {
+        $length = strcspn( $url, '?#' );
+        return [substr( $url, 0, $length ), substr( $url, $length )];
+    }
+
+
+    /**
      * Returns the decoded URL path with leading slash.
      *
      * @param string|null $path Encoded URL path like "old%20page" or NULL if the URL has none

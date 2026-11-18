@@ -20,7 +20,7 @@ namespace Aimeos\Cms\Import\Joomla;
 class Shortcodes
 {
     /** Shortcode of a custom field */
-    protected const FIELD = 'field';
+    public const FIELD = 'field';
     /** Shortcode of a custom field group */
     public const FIELD_GROUP = 'fieldgroup';
     /** Shortcode of the modules of a position */

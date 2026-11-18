@@ -22,7 +22,8 @@ final readonly class ShownArticles
      *
      * @param array<int|string, int> $categories Category IDs by article ID
      * @param array<int|string, \stdClass> $items Menu items Joomla uses by article ID
-     * @param array<int|string, RoutePath> $routes URL paths Joomla uses or NULL and aliases of the articles which are neither associated nor foreign by article ID
+     * @param array<int|string, RoutePath> $routes URL paths Joomla uses or NULL and aliases of the articles which are neither associated nor foreign by article ID,
+     *  not keyed by Kind like the ArticleRoutes of Articles::$routes
      * @param array<int|string, ShownArticle> $associated Associated articles with their menu items and languages by article ID
      * @param array<int|string, bool> $foreign Articles which aren't shown on the site of the imported language as keys
      * @param array<int|string, int> $times Modification times by article ID
@@ -39,11 +40,11 @@ final readonly class ShownArticles
 
 
     /**
-     * Returns the Joomla language tags of the associated articles.
+     * Returns the Joomla language tags (not content tags) of the associated articles.
      *
      * @return array<int|string, string> Joomla language tags by article ID
      */
-    public function tags(): array
+    public function languageTags(): array
     {
         return array_map( fn( ShownArticle $shown ) => $shown->tag, $this->associated );
     }

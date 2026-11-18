@@ -48,7 +48,7 @@ class Routes
      * @param RouteCategories $categories Categories Joomla routes, shared by the routes of all languages
      * @param iterable<\stdClass> $items Public menu items ordered by their position in the menu
      * @param RouteOptions $options Site-wide options of the Joomla router
-     * @param MenuRules $rules New menu rules of the site from Site::menuRules() which select the menu items
+     * @param MenuRules $rules Menu rules of the site from Site::menuRules(), the menu items are selected by a fresh copy of them
      */
     public function __construct( protected RouteCategories $categories, iterable $items, protected RouteOptions $options,
         MenuRules $rules )
@@ -56,6 +56,9 @@ class Routes
         if( $options->legacy ) {
             $this->legacy = new LegacyRoutes( $categories, $options->noIds );
         }
+
+        // the rules remember the selected menu items, so menu items selected for other routes must not be known
+        $rules = $rules->fresh();
 
         foreach( $items as $item )
         {
@@ -138,13 +141,23 @@ class Routes
         $segment = $this->segment( $catId, $alias );
 
         // Joomla uses the menu item listing the subcategories of the category if there's no nearer category menu item
-        $item = $this->routedItem( $catId );
-
-        if( $item && $item === ( $this->listItems[$catId] ?? null ) ) {
+        if( ( $item = $this->routedItem( $catId ) ) && $this->listsSubcategories( $item, $catId ) ) {
             return MenuItem::path( $item );
         }
 
         return $this->route( (int) $category->parent_id, $segment );
+    }
+
+
+    /**
+     * Tests if the menu item is the one listing the subcategories of the category.
+     *
+     * @param \stdClass $item Menu item Joomla uses for the category
+     * @param int $catId ID of the category
+     */
+    protected function listsSubcategories( \stdClass $item, int $catId ): bool
+    {
+        return isset( $this->listItems[$catId] ) && $this->listItems[$catId]->id === $item->id;
     }
 
 

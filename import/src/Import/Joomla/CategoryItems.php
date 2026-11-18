@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
  * Categories shown by a menu item of the imported menu use its page, the category of the home menu item uses the
  * root page. Other categories get own pages below the top level or if a menu item of another menu shows them, but
  * only if articles are imported below them, see pages(). The menu items with own pages are selected like
- * Menu::importMenuItem() imports them, so the URL paths are only claimed for pages which are created.
+ * \Aimeos\Cms\Concerns\Joomla\Menu::importMenuItem() imports them, so the URL paths are only claimed for pages which are created.
  * The category of the home menu item of the site is computed once, see homeCatId().
  */
 class CategoryItems
@@ -163,7 +163,7 @@ class CategoryItems
 
         foreach( $categoryIds as $id => $catId )
         {
-            if( (string) $id === (string) $homeArticleId || $this->menu->importsArticle( $id ) ) {
+            if( HomeRoot::same( $id, $homeArticleId ) || $this->menu->importsArticle( $id ) ) {
                 continue;
             }
 
@@ -238,7 +238,7 @@ class CategoryItems
     /**
      * Selects the menu items of the imported menu which get own pages and the ones whose pages show the categories.
      *
-     * Like Menu::importMenuItem(), folders, links with supported targets and lists of all categories get own pages,
+     * Like \Aimeos\Cms\Concerns\Joomla\Menu::importMenuItem(), folders, links with supported targets and lists of all categories get own pages,
      * also restricted ones, because their pages are disabled. Links whose targets aren't supported get no page, see Links::linkable(). Menu items of categories only get pages if guests can see them, Joomla shows their
      * categories and no other menu item shows the category already. The home menu item uses the root page unless guests
      * can't see its category, see homeCategory(). Other home menu items, e.g. the ones of other languages without
@@ -250,12 +250,10 @@ class CategoryItems
     protected function selectPages( ?\stdClass $home ): void
     {
         $candidates = [];
-        $access = $this->site->access;
-        $homeCatId = $this->homeCatId;
 
         // the home menu item, also one of another menu, is imported before the other ones, so its category uses the root page
-        if( $home && $homeCatId !== null ) {
-            $this->categoryPageItems[$homeCatId] = $home;
+        if( $home && $this->homeCatId !== null ) {
+            $this->categoryPageItems[$this->homeCatId] = $home;
         }
 
         foreach( $this->menu->tree() as $node )
@@ -263,23 +261,88 @@ class CategoryItems
             $item = $node->item;
             $link = MenuLink::of( $item );
 
-            // only home menu items of categories guests can't see are imported like the other menu items
-            if( $home && (int) $item->id === (int) $home->id
-                && ( $homeCatId !== null || $link->kind !== MenuLink::KIND_CATEGORY || !$link->id )
-            ) {
+            if( $home && $this->skipsHome( $item, $link, $home ) ) {
                 continue;
             }
 
-            if( $link->kind === MenuLink::KIND_FOLDER
-                || ( $link->kind === MenuLink::KIND_LINK && Links::linkable( $item, $this->menu, $this->items, $this->router ) )
-                || ( $link->kind === MenuLink::KIND_CATEGORIES && $link->id === null )
-            ) {
+            if( $this->ownPage( $item, $link ) ) {
                 $this->menuPages[$item->id] = $item;
-            } elseif( ( $catId = $link->category() ) !== null && $access->restriction( $item ) === null && $this->site->category( $catId ) ) {
+            } elseif( ( $catId = $this->shownCategory( $item, $link ) ) !== null ) {
                 $candidates[$link->kind][] = [$catId, $item];
             }
         }
 
+        $this->selectCategoryItems( $candidates );
+        ksort( $this->menuPages );
+    }
+
+
+    /**
+     * Tests if the menu item is the home menu item of the site which gets no own page.
+     *
+     * Only home menu items of categories which can't use the root page because guests can't see them or Joomla
+     * doesn't show them are imported like the other menu items, see homeCategory().
+     *
+     * @param \stdClass $item Menu item of the imported menu
+     * @param MenuLink $link What the menu item shows
+     * @param \stdClass $home Home menu item of the site used for the root page
+     */
+    protected function skipsHome( \stdClass $item, MenuLink $link, \stdClass $home ): bool
+    {
+        if( !HomeRoot::same( $item->id ?? null, $home->id ?? null ) ) {
+            return false;
+        }
+
+        return $this->homeCatId !== null || $link->kind !== MenuLink::KIND_CATEGORY || !$link->id;
+    }
+
+
+    /**
+     * Tests if the menu item gets an own page regardless of the categories.
+     *
+     * These are folders, links with targets Links::linkable() supports and lists of all categories without ID.
+     *
+     * @param \stdClass $item Menu item of the imported menu
+     * @param MenuLink $link What the menu item shows
+     */
+    protected function ownPage( \stdClass $item, MenuLink $link ): bool
+    {
+        return match( $link->kind ) {
+            MenuLink::KIND_FOLDER => true,
+            MenuLink::KIND_LINK => Links::linkable( $item, $this->menu, $this->items, $this->router ),
+            MenuLink::KIND_CATEGORIES => $link->id === null,
+            default => false,
+        };
+    }
+
+
+    /**
+     * Returns the category the menu item can show on its page.
+     *
+     * @param \stdClass $item Menu item of the imported menu
+     * @param MenuLink $link What the menu item shows
+     * @return int|null ID of the category if guests can see the menu item and Joomla shows the category, NULL otherwise
+     */
+    protected function shownCategory( \stdClass $item, MenuLink $link ): ?int
+    {
+        if( ( $catId = $link->category() ) === null || $this->site->access->restriction( $item ) !== null ) {
+            return null;
+        }
+
+        return $this->site->category( $catId ) ? $catId : null;
+    }
+
+
+    /**
+     * Selects the menu items whose pages show the categories.
+     *
+     * The menu items of category blogs and lists are used before the ones listing the subcategories, each in
+     * the menu order, and a category already shown by another menu item keeps it.
+     *
+     * @param array<string, list<array{0: int, 1: \stdClass}>> $candidates Category IDs and menu items by kind of the menu items
+     */
+    protected function selectCategoryItems( array $candidates ): void
+    {
         foreach( MenuLink::CATEGORY_KINDS as $kind )
         {
             foreach( $candidates[$kind] ?? [] as [$catId, $item] )
@@ -289,8 +352,5 @@ class CategoryItems
                 }
             }
         }
-
-        ksort( $this->menuPages );
     }
-
 }
