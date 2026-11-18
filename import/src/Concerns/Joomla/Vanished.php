@@ -135,12 +135,18 @@ trait Vanished
             return Collection::make();
         }
 
-        return PageVariant::whereIn( 'page_id', $pageIds )->where( 'editor', $this->editor )->where( 'status', '!=', Pages::STATUS_DISABLED )
+        $variants = PageVariant::whereIn( 'page_id', $pageIds )->where( 'editor', $this->editor )->where( 'status', '!=', Pages::STATUS_DISABLED )
             ->select( ['id', 'page_id', 'path', 'lang'] )->get()
-            ->sortBy( fn( $variant ) => $variant->lang === $this->lang ? '' : (string) $variant->lang )
-            ->groupBy( fn( $variant ) => (string) $variant->page_id )
-            ->map( fn( $variants ) => $variants->values() )
-            ->toBase();
+            ->sortBy( fn( $variant ) => $variant->lang === $this->lang ? '' : (string) $variant->lang );
+
+        $grouped = [];
+
+        foreach( $variants as $variant ) {
+            $grouped[(string) $variant->page_id][] = $variant;
+        }
+
+        /** @var Collection<string, Collection<int, PageVariant>> */
+        return Collection::make( $grouped )->map( fn( array $list ) => Collection::make( $list ) );
     }
 
 
@@ -204,8 +210,9 @@ trait Vanished
         {
             $pageIds = $list->pluck( 'page_id' )->map( strval( ... ) )->unique()->values()->all();
 
+            /** @var PageView $view */
             foreach( PageView::language( (string) $lang )->whereKey( $pageIds )->get() as $view ) {
-                $views[(string) $view->variant_id] = $view;
+                $views[$view->variant_id] = $view;
             }
         }
 
