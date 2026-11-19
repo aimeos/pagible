@@ -80,7 +80,7 @@ final class UrlAssignment
         $pages = $categoryItems->pages( $articles->categoryIds, $home->articleId );
         // the article imported into the root page and its translations use the home pages instead of own ones
         $rootIds = $home->articleId !== null ? [$home->articleId => true, ...array_fill_keys( $articles->translations[$home->articleId] ?? [], true )] : [];
-        $articleRoutes = array_diff_key( $articles->routes[Kind::ARTICLE], $rootIds );
+        $articleRoutes = array_diff_key( $articles->routes[Kind::Article->value], $rootIds );
         $menuPages = $categoryItems->menuPages();
 
         // the claimed URL paths are only needed while assigning them
@@ -88,19 +88,19 @@ final class UrlAssignment
         $this->reserveHomes( $claims, $folders, $home, $homeCatId, $otherHomes, $articles->visible );
 
         foreach( $menuPages as $id => $item ) {
-            $claims->claim( UrlClaim::row( Kind::MENU, $id, $this->context->paths->itemPath( $item ) ) );
+            $claims->claim( UrlClaim::row( Kind::Menu, $id, $this->context->paths->itemPath( $item ) ) );
         }
 
         // like the Joomla router, the articles whose URL paths are the ones of their menu items come before the categories
         $menuArticles = array_intersect_key( $articleRoutes, $this->menuRouted( $articles, $articleRoutes ) );
-        $deferred = $this->claimRoutes( $claims, Kind::ARTICLE, $menuArticles );
+        $deferred = $this->claimRoutes( $claims, Kind::Article, $menuArticles );
 
         $categoryRoutes = array_map( $this->context->paths->categoryRoute( ... ), array_intersect_key( $folders->categories, $pages ) );
-        $categories = $this->claimRoutes( $claims, Kind::CATEGORY, $categoryRoutes );
-        $deferred = [...$deferred, ...$this->claimRoutes( $claims, Kind::ARTICLE, array_diff_key( $articleRoutes, $menuArticles ) )];
+        $categories = $this->claimRoutes( $claims, Kind::Category, $categoryRoutes );
+        $deferred = [...$deferred, ...$this->claimRoutes( $claims, Kind::Article, array_diff_key( $articleRoutes, $menuArticles ) )];
 
         $menuRows = $this->pagedTranslations( Arr::flatten( array_intersect_key( $folders->menuTranslations, $menuPages ), 1 ) );
-        $menuKeys = $this->claimTranslations( $claims, Kind::MENU, $menuRows, $this->context->paths->menuTranslationRoute( ... ) );
+        $menuKeys = $this->claimTranslations( $claims, Kind::Menu, $menuRows, $this->context->paths->menuTranslationRoute( ... ) );
 
         // like the articles, the translated articles with the URL paths of their menu items come before the translated categories
         $translations = $this->articleTranslations( array_diff_key( $articles->routes[Kind::ARTICLE_TRANSLATION], $rootIds ) );
@@ -111,7 +111,7 @@ final class UrlAssignment
         }
 
         $categoryRows = Arr::flatten( array_intersect_key( $folders->categoryTranslations, $pages ), 1 );
-        $categoryKeys = $this->claimTranslations( $claims, Kind::CATEGORY, $categoryRows, $this->context->paths->categoryTranslationRoute( ... ) );
+        $categoryKeys = $this->claimTranslations( $claims, Kind::Category, $categoryRows, $this->context->paths->categoryTranslationRoute( ... ) );
 
         // the URL paths are assigned without redirects first to resolve their targets, see importedRedirects()
         $keys = new AssignedUrls(
@@ -166,7 +166,7 @@ final class UrlAssignment
         $keys = array_map( fn( UrlClaim $claim ) => $claim->urlKey, $translations );
 
         foreach( array_keys( $articleRoutes ) as $id ) {
-            $keys[$id] = new UrlKey( Kind::key( Kind::ARTICLE, $id ) );
+            $keys[$id] = new UrlKey( Kind::Article->key( $id ) );
         }
 
         return $keys;
@@ -244,11 +244,11 @@ final class UrlAssignment
      * Categories with own menu item use the page of the menu item, the ones without own page aren't passed.
      *
      * @param Claims $claims URL paths claimed during the assignment
-     * @param Kind::ARTICLE|Kind::CATEGORY $kind Type of the rows
+     * @param Kind::Article|Kind::Category $kind Type of the rows
      * @param array<int|string, RoutePath> $routes URL paths Joomla uses or NULL and aliases of the rows by ID
      * @return list<UrlClaim> Aliases of the rows without URL path in Joomla, which are claimed later
      */
-    private function claimRoutes( Claims $claims, string $kind, array $routes ): array
+    private function claimRoutes( Claims $claims, Kind $kind, array $routes ): array
     {
         $deferred = [];
 
@@ -264,12 +264,12 @@ final class UrlAssignment
      * Claims the URL path Joomla uses or returns the claim of the alias.
      *
      * @param Claims $claims URL paths claimed during the assignment
-     * @param Kind::ARTICLE|Kind::CATEGORY $kind Type of the row
+     * @param Kind::Article|Kind::Category $kind Type of the row
      * @param int|string $id ID of the row
      * @param RoutePath $route URL path Joomla uses or NULL if there's none and the alias of the row
      * @return UrlClaim|null Claim of the alias which is claimed later or NULL if the URL path Joomla uses is claimed
      */
-    private function claimOrDefer( Claims $claims, string $kind, int|string $id, RoutePath $route ): ?UrlClaim
+    private function claimOrDefer( Claims $claims, Kind $kind, int|string $id, RoutePath $route ): ?UrlClaim
     {
         $claim = UrlClaim::row( $kind, $id, $route->path() );
 
@@ -332,12 +332,12 @@ final class UrlAssignment
      * Only the translations of the categories and menu items with own pages are imported as page variants.
      *
      * @param Claims $claims URL paths claimed during the assignment
-     * @param Kind::CATEGORY|Kind::MENU $kind Type of the translated rows
+     * @param Kind::Category|Kind::Menu $kind Type of the translated rows
      * @param array<int, \stdClass> $rows Translated categories or menu items
      * @param \Closure(\stdClass): RoutePath $route Returns the URL path Joomla uses for the translation
      * @return array<int|string, UrlKey> Record keys and language domains of the translations by ID
      */
-    private function claimTranslations( Claims $claims, string $kind, array $rows, \Closure $route ): array
+    private function claimTranslations( Claims $claims, Kind $kind, array $rows, \Closure $route ): array
     {
         $keys = [];
 
@@ -403,7 +403,7 @@ final class UrlAssignment
 
 
     /**
-     * Returns the Joomla redirects of page URLs whose targets are supported, see Menu::importRedirects().
+     * Returns the Joomla redirects of page URLs whose targets are supported, see \Aimeos\Cms\Concerns\Joomla\Redirects::importRedirects().
      *
      * Redirects whose targets aren't supported, e.g. Joomla URLs of articles which aren't imported or "javascript:" URLs,
      * would keep their old URL paths from the aliases claimed later although they aren't imported themselves. Their
@@ -497,7 +497,7 @@ final class UrlAssignment
         $claims = [];
 
         foreach( $translations as $id => $route ) {
-            $claims[$id] = UrlClaim::translation( Kind::ARTICLE, $id, $route->path, $this->context->domains->domain( $route->tag ) );
+            $claims[$id] = UrlClaim::translation( Kind::Article, $id, $route->path, $this->context->domains->domain( $route->tag ) );
         }
 
         return $claims;

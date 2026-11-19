@@ -35,32 +35,32 @@ class ContentTest extends TestAbstract
         $resolve = fn( array $params ) => ( $params['id'] ?? null ) === '5:about' ? '/about&more' : null;
 
         $this->assertSame( '<a href="/about&amp;more#top">A</a> <a href=\'/about&amp;more\'>B</a>',
-            Joomla\HtmlUrls::links( '<a href="https://example.com/index.php?option=com_content&amp;id=5:about#top">A</a> <a href=\'index.php?id=5:about\'>B</a>', $resolve, ['example.com'] ) );
+            ( new Joomla\HtmlUrls( ['example.com'] ) )->links( '<a href="https://example.com/index.php?option=com_content&amp;id=5:about#top">A</a> <a href=\'index.php?id=5:about\'>B</a>', $resolve ) );
         $this->assertSame( '<a href="https://other.com/index.php?id=5:about">A</a> <a href="index.php?id=6">B</a> <a href="/x/index.php?id=5:about">C</a>',
-            Joomla\HtmlUrls::links( '<a href="https://other.com/index.php?id=5:about">A</a> <a href="index.php?id=6">B</a> <a href="/x/index.php?id=5:about">C</a>', $resolve, ['example.com'] ) );
+            ( new Joomla\HtmlUrls( ['example.com'] ) )->links( '<a href="https://other.com/index.php?id=5:about">A</a> <a href="index.php?id=6">B</a> <a href="/x/index.php?id=5:about">C</a>', $resolve ) );
         $this->assertSame( '<a href="/about&amp;more">A</a> <a href="/about&amp;more">B</a> <a href="/about&amp;more">C</a> <a href="https://example.com/x/index.php?id=5:about">D</a>',
-            Joomla\HtmlUrls::links( '<a href="http://example.com/index.php?id=5:about">A</a> <a href="//EXAMPLE.com:443/index.php?id=5:about">B</a> <a href="https://www.test.com/joomla/index.php?id=5:about">C</a> <a href="https://example.com/x/index.php?id=5:about">D</a>', $resolve, ['example.com', 'www.test.com/joomla/', ''] ) );
+            ( new Joomla\HtmlUrls( ['example.com', 'www.test.com/joomla/', ''] ) )->links( '<a href="http://example.com/index.php?id=5:about">A</a> <a href="//EXAMPLE.com:443/index.php?id=5:about">B</a> <a href="https://www.test.com/joomla/index.php?id=5:about">C</a> <a href="https://example.com/x/index.php?id=5:about">D</a>', $resolve ) );
 
         // hosts without port only match the default ports, the directory of the site is case-sensitive and data-href isn't a link
         $this->assertSame( '<a href="https://example.com:8080/index.php?id=5:about">A</a> <a href="/about&amp;more">B</a> <a href="https://www.test.com/Joomla/index.php?id=5:about">C</a>',
-            Joomla\HtmlUrls::links( '<a href="https://example.com:8080/index.php?id=5:about">A</a> <a href="https://example.com:443/index.php?id=5:about">B</a> <a href="https://www.test.com/Joomla/index.php?id=5:about">C</a>', $resolve, ['example.com', 'www.test.com/joomla'] ) );
-        $this->assertSame( '<a href="/about&amp;more">A</a>', Joomla\HtmlUrls::links( '<a href="https://example.com:8080/index.php?id=5:about">A</a>', $resolve, ['example.com:8080'] ) );
+            ( new Joomla\HtmlUrls( ['example.com', 'www.test.com/joomla'] ) )->links( '<a href="https://example.com:8080/index.php?id=5:about">A</a> <a href="https://example.com:443/index.php?id=5:about">B</a> <a href="https://www.test.com/Joomla/index.php?id=5:about">C</a>', $resolve ) );
+        $this->assertSame( '<a href="/about&amp;more">A</a>', ( new Joomla\HtmlUrls( ['example.com:8080'] ) )->links( '<a href="https://example.com:8080/index.php?id=5:about">A</a>', $resolve ) );
         $this->assertSame( '<div data-href="index.php?id=5:about" x-href="index.php?id=5:about"></div>',
-            Joomla\HtmlUrls::links( '<div data-href="index.php?id=5:about" x-href="index.php?id=5:about"></div>', $resolve ) );
+            ( new Joomla\HtmlUrls() )->links( '<div data-href="index.php?id=5:about" x-href="index.php?id=5:about"></div>', $resolve ) );
 
         // the HTML entities of the fragments aren't encoded twice
-        $this->assertSame( '<a href="/about&amp;more#a&amp;b">A</a>', Joomla\HtmlUrls::links( '<a href="index.php?id=5:about#a&amp;b">A</a>', $resolve ) );
+        $this->assertSame( '<a href="/about&amp;more#a&amp;b">A</a>', ( new Joomla\HtmlUrls() )->links( '<a href="index.php?id=5:about#a&amp;b">A</a>', $resolve ) );
 
         // the host and the directory of the site must be followed by a slash
         $this->assertSame( '<a href="/joomlaindex.php?id=5:about">A</a> <a href="https://example.comindex.php?id=5:about">B</a> <a href="/about&amp;more">C</a>',
-            Joomla\HtmlUrls::links( '<a href="/joomlaindex.php?id=5:about">A</a> <a href="https://example.comindex.php?id=5:about">B</a> <a href="/joomla/index.php?id=5:about">C</a>', $resolve, ['example.com/joomla', 'example.com'] ) );
+            ( new Joomla\HtmlUrls( ['example.com/joomla', 'example.com'] ) )->links( '<a href="/joomlaindex.php?id=5:about">A</a> <a href="https://example.comindex.php?id=5:about">B</a> <a href="/joomla/index.php?id=5:about">C</a>', $resolve ) );
 
         // the directory of the site must be a whole path segment
         $this->assertSame( '<a href="/joomla2/index.php?id=5:about">A</a> <a href="https://example.com/joomlax/index.php?id=5:about">B</a>',
-            Joomla\HtmlUrls::links( '<a href="/joomla2/index.php?id=5:about">A</a> <a href="https://example.com/joomlax/index.php?id=5:about">B</a>', $resolve, ['example.com/joomla'] ) );
+            ( new Joomla\HtmlUrls( ['example.com/joomla'] ) )->links( '<a href="/joomla2/index.php?id=5:about">A</a> <a href="https://example.com/joomlax/index.php?id=5:about">B</a>', $resolve ) );
 
         // empty sites don't match links to other sites without scheme
-        $this->assertSame( '<a href="//index.php?id=5:about">A</a>', Joomla\HtmlUrls::links( '<a href="//index.php?id=5:about">A</a>', $resolve, ['/', ''] ) );
+        $this->assertSame( '<a href="//index.php?id=5:about">A</a>', ( new Joomla\HtmlUrls( ['/', ''] ) )->links( '<a href="//index.php?id=5:about">A</a>', $resolve ) );
         $this->assertSame( ['a.jpg', 'b.png'], Joomla\Html::sources( '<img src="a.jpg"><img src=""><IMG alt="x"><img src="b.png"><img src="DATA:image/png;base64,AAAA">' ) );
         // the sources are trimmed like the images of articles and categories, whitespace only sources are skipped
         $this->assertSame( ['https://cdn.test/a.jpg', 'images/b.jpg'], Joomla\Html::sources( '<img src=" https://cdn.test/a.jpg "><img src=" "><img src="images/b.jpg#joomlaImage://local-images/b.jpg">' ) );
@@ -235,7 +235,7 @@ class ContentTest extends TestAbstract
     public function testImageSourcesAreDecodedOnce(): void
     {
         $images = [];
-        $host = Joomla\Host::forTests( image: function( string $path, string $alt ) use ( &$images ) {
+        $host = static::host( image: function( string $path, string $alt ) use ( &$images ) {
             $images[] = [$path, $alt];
             return null;
         } );
@@ -251,7 +251,7 @@ class ContentTest extends TestAbstract
     public function testRootRelativeImageSourcesOfSitesInSubdirectoriesAreUnbased(): void
     {
         $images = [];
-        $host = Joomla\Host::forTests( image: function( string $path, string $alt ) use ( &$images ) {
+        $host = static::host( image: function( string $path, string $alt ) use ( &$images ) {
             $images[] = $path;
             return null;
         } );

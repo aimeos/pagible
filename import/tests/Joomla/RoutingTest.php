@@ -468,11 +468,11 @@ class RoutingTest extends TestAbstract
     public function testClaimsAppendIdsToUsedPaths(): void
     {
         $claims = new Joomla\Claims();
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 1, 'about' ) );
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 5, 'about' ) );
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::CATEGORY, 5, 'about' ) );
-        $claims->claim( Joomla\UrlClaim::translation( Joomla\Kind::ARTICLE, 7, 'about', 'de' ) );
-        $claims->claim( Joomla\UrlClaim::translation( Joomla\Kind::ARTICLE, 8, 'about', 'de' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Article, 1, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Article, 5, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Category, 5, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::translation( Joomla\Kind::Article, 7, 'about', 'de' ) );
+        $claims->claim( Joomla\UrlClaim::translation( Joomla\Kind::Article, 8, 'about', 'de' ) );
 
         // the paths are claimed per language domain, later rows get their ID and a counter appended, only the changed paths are kept
         $this->assertSame( ['' => ['a5' => 'about-5', 'c5' => 'about-5-2'], 'de' => ['ta8' => 'about-8']], $claims->slugs() );
@@ -486,8 +486,8 @@ class RoutingTest extends TestAbstract
     public function testClaimsComparePathsCaseInsensitive(): void
     {
         $claims = new Joomla\Claims();
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 1, 'About' ) );
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 5, 'about' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Article, 1, 'About' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Article, 5, 'about' ) );
 
         // the unique index of the page paths is case insensitive in MySQL, so paths differing only in case are the same, the claimed ones keep their case
         $this->assertSame( ['' => ['a5' => 'about-5']], $claims->slugs() );
@@ -499,8 +499,8 @@ class RoutingTest extends TestAbstract
     public function testClaimsComparePathsAccentInsensitive(): void
     {
         $claims = new Joomla\Claims();
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 1, 'café' ) );
-        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::ARTICLE, 5, 'cafe' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Article, 1, 'café' ) );
+        $claims->claim( Joomla\UrlClaim::row( Joomla\Kind::Article, 5, 'cafe' ) );
 
         // the unique index of the page paths in MySQL also ignores accents, the claimed paths keep them
         $this->assertSame( ['' => ['a5' => 'cafe-5']], $claims->slugs() );
@@ -511,9 +511,9 @@ class RoutingTest extends TestAbstract
 
     public function testKindKeys(): void
     {
-        $this->assertSame( 'a5', Joomla\Kind::key( Joomla\Kind::ARTICLE, 5 ) );
-        $this->assertSame( 'tc7', Joomla\Kind::translationKey( Joomla\Kind::CATEGORY, '7' ) );
-        $this->assertSame( Joomla\Kind::ARTICLE_TRANSLATION . '3', Joomla\Kind::translationKey( Joomla\Kind::ARTICLE, 3 ) );
+        $this->assertSame( 'a5', Joomla\Kind::Article->key( 5 ) );
+        $this->assertSame( 'tc7', Joomla\Kind::Category->translationKey( '7' ) );
+        $this->assertSame( Joomla\Kind::ARTICLE_TRANSLATION . '3', Joomla\Kind::Article->translationKey( 3 ) );
     }
 
 
@@ -1248,7 +1248,7 @@ class RoutingTest extends TestAbstract
 
         // the URL menu items are supported by the same rules
         $item = fn( string $link ) => (object) ['id' => 20, 'type' => 'url', 'link' => $link, 'language' => '*'];
-        $linkable = fn( string $link ) => Joomla\Links::linkable( $item( $link ), $wiring->menu, $this->items( [] ), $wiring->router );
+        $linkable = fn( string $link ) => Joomla\Links::linkable( $item( $link ), new Joomla\LinkCheck( $wiring->menu, $this->items( [] ), $wiring->router ) );
         $this->assertTrue( $linkable( 'index.php?' ) );
         $this->assertTrue( $linkable( '?Itemid=10' ) );
         $this->assertTrue( $linkable( '/?Itemid=10' ) );
@@ -1484,9 +1484,9 @@ class RoutingTest extends TestAbstract
         $resolve = fn( array $query ) => '/page-' . ( $query['id'] ?? '' );
         $html = '<a href="https://a.com/index.php?id=1">A</a><a href="https://b.com/index.php?id=2">B</a>';
 
-        $this->assertSame( '<a href="/page-1">A</a><a href="https://b.com/index.php?id=2">B</a>', Joomla\HtmlUrls::links( $html, $resolve, ['a.com'] ) );
-        $this->assertSame( '<a href="https://a.com/index.php?id=1">A</a><a href="/page-2">B</a>', Joomla\HtmlUrls::links( $html, $resolve, ['b.com'] ) );
-        $this->assertSame( '<a href="/page-1">A</a><a href="/page-2">B</a>', Joomla\HtmlUrls::links( $html, $resolve, ['a.com', 'b.com'] ) );
+        $this->assertSame( '<a href="/page-1">A</a><a href="https://b.com/index.php?id=2">B</a>', ( new Joomla\HtmlUrls( ['a.com'] ) )->links( $html, $resolve ) );
+        $this->assertSame( '<a href="https://a.com/index.php?id=1">A</a><a href="/page-2">B</a>', ( new Joomla\HtmlUrls( ['b.com'] ) )->links( $html, $resolve ) );
+        $this->assertSame( '<a href="/page-1">A</a><a href="/page-2">B</a>', ( new Joomla\HtmlUrls( ['a.com', 'b.com'] ) )->links( $html, $resolve ) );
     }
 
 
@@ -1496,12 +1496,12 @@ class RoutingTest extends TestAbstract
 
         // query strings relative to the script or the root and the script without query string are routed like by urlTarget()
         $this->assertSame( '<a href="/page-10">A</a><a href="/page-10#x">B</a><a href="/page-home">C</a><a href=\'/page-home#top\'>D</a>',
-            Joomla\HtmlUrls::links( '<a href="?Itemid=10">A</a><a href="/?Itemid=10#x">B</a><a href="index.php">C</a><a href=\'index.php#top\'>D</a>', $resolve ) );
+            ( new Joomla\HtmlUrls() )->links( '<a href="?Itemid=10">A</a><a href="/?Itemid=10#x">B</a><a href="index.php">C</a><a href=\'index.php#top\'>D</a>', $resolve ) );
         $this->assertSame( '<a href="/page-10">A</a><a href="/page-10">B</a><a href="/page-10">C</a>',
-            Joomla\HtmlUrls::links( '<a href="https://a.com/?Itemid=10">A</a><a href="https://a.com?Itemid=10">B</a><a href="/joomla?Itemid=10">C</a>', $resolve, ['a.com', 'a.com/joomla'] ) );
+            ( new Joomla\HtmlUrls( ['a.com', 'a.com/joomla'] ) )->links( '<a href="https://a.com/?Itemid=10">A</a><a href="https://a.com?Itemid=10">B</a><a href="/joomla?Itemid=10">C</a>', $resolve ) );
         // other URL paths starting like the script, other sites and URLs without query string are kept
         $kept = '<a href="index.php/about">A</a><a href="index.phpx">B</a><a href="/">C</a><a href="https://b.com/?Itemid=10">D</a><a href="https://a.comx?Itemid=10">E</a><a href="#top">F</a>';
-        $this->assertSame( $kept, Joomla\HtmlUrls::links( $kept, $resolve, ['a.com'] ) );
+        $this->assertSame( $kept, ( new Joomla\HtmlUrls( ['a.com'] ) )->links( $kept, $resolve ) );
 
         $site = $this->site( $this->categories( [] ) );
         $heading = (object) ['id' => 10, 'type' => 'heading', 'title' => 'Team', 'alias' => 'team', 'link' => '', 'parent_id' => 1];

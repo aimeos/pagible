@@ -195,9 +195,7 @@ class Reader
         {
             foreach( $columns as $column )
             {
-                $time = Date::time( $row->{$column} ?? null );
-
-                if( $time !== null && $time >= $from && $time <= $to ) {
+                if( ( $time = Date::between( $row->{$column} ?? null, $from, $to ) ) !== null ) {
                     $times[$row->id] = max( $times[$row->id] ?? $time, $time );
                 }
             }

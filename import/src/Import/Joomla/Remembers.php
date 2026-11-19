@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Concerns\Joomla;
+namespace Aimeos\Cms\Import\Joomla;
 
 
 /**

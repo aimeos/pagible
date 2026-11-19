@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Import\Joomla;
 
 
 /**
- * Associated Joomla articles, categories or menu items grouped as translations by Languages::group().
+ * Associated Joomla articles, categories or menu items grouped as translations by TranslationGrouper::group().
  */
 final readonly class TranslationGroups
 {

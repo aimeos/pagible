@@ -26,8 +26,19 @@ class HtmlUrls
     /** Regular expression matching a relative URL of an image set */
     protected const RELATIVE_SOURCE_PATTERN = '/^' . self::RELATIVE_URL . '(.+)/';
 
-    /** @var array<string, string> Regex prefixes of sitePrefix() by the sites they match, the sites are the same for all texts of an import */
-    protected static array $prefixes = [];
+    /** Regular expression matching the links to Joomla pages of the sites, built once because the sites are the same for all texts of an import */
+    protected string $pattern;
+
+
+    /**
+     * Initializes the object.
+     *
+     * @param array<int, string> $sites Hosts and paths of the Joomla site whose absolute HTTP(S) and scheme-relative links are replaced too, e.g. "example.com/joomla"
+     */
+    public function __construct( array $sites = [] )
+    {
+        $this->pattern = '/((?<![\w-])href=)(["\'])' . self::sitePrefix( $sites ) . Origin::indexUrlFragment( '\#"\\\'' ) . '([^"\'#]*)(#[^"\']*)?\2/i';
+    }
 
 
     /**
@@ -38,16 +49,11 @@ class HtmlUrls
      *
      * @param string $html HTML with links
      * @param \Closure(array<array-key, mixed>): ?string $resolve Returns the URL path of the page for the query parameters or NULL if it's unknown
-     * @param array<int, string> $sites Hosts and paths of the Joomla site whose absolute HTTP(S) and scheme-relative links are replaced too, e.g. "example.com/joomla"
      * @return string HTML with replaced links, unknown links are kept
      */
-    public static function links( string $html, \Closure $resolve, array $sites = [] ): string
+    public function links( string $html, \Closure $resolve ): string
     {
-        // PCRE caches the compiled pattern and the prefix of the sites is only built once
-        $prefix = self::$prefixes[implode( "\n", $sites )] ??= self::sitePrefix( $sites );
-        $pattern = '/((?<![\w-])href=)(["\'])' . $prefix . Origin::indexUrlFragment( '\#"\\\'' ) . '([^"\'#]*)(#[^"\']*)?\2/i';
-
-        return (string) preg_replace_callback( $pattern, function( $match ) use ( $resolve ) {
+        return (string) preg_replace_callback( $this->pattern, function( $match ) use ( $resolve ) {
             $path = $resolve( Uri::query( BaseHtml::decode( $match[3] ) ) );
 
             // the fragment is decoded like the query, so its HTML entities aren't encoded twice

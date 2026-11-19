@@ -8,7 +8,7 @@
 namespace Tests\Joomla;
 
 use Aimeos\Cms\Import\Html;
-use Aimeos\Cms\Concerns\Joomla\Remembers;
+use Aimeos\Cms\Import\Joomla\Remembers;
 use Aimeos\Cms\Import\Joomla;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Collection;
@@ -412,7 +412,7 @@ class ReaderTest extends TestAbstract
         $article = (object) ['id' => 1, 'title' => 'About', 'alias' => 'about', 'language' => 'en-GB', 'catid' => 0];
         $translation = (object) ['id' => 2, 'title' => 'Über uns', 'alias' => 'ueber-uns', 'language' => 'de-DE', 'catid' => 0];
         $articles = new Joomla\Articles( categoryIds: [1 => 0, 4 => 0], translations: [1 => [2]], times: [], items: [], visible: [],
-            routes: [Joomla\Kind::ARTICLE => [], Joomla\Kind::ARTICLE_TRANSLATION => []] );
+            routes: [Joomla\Kind::Article->value => [], Joomla\Kind::ARTICLE_TRANSLATION => []] );
         $run = $this->importRun( $this->site( $this->categories( [] ) ), articles: $articles,
             home: Joomla\HomeRoot::withArticle( $home, 1, [$translation], $article ) );
 
@@ -997,7 +997,7 @@ class ReaderTest extends TestAbstract
             (object) ['lang_code' => 'en-GB', 'sef' => 'en'],
             (object) ['lang_code' => 'de-DE', 'sef' => 'de'],
         ] ), [], 'en' );
-        $groups = $languages->group( [1 => 'en-GB', 2 => 'de-DE', 3 => 'de-DE', 4 => 'de-DE'], [[4, 1, 3, 2]] );
+        $groups = ( new Joomla\TranslationGrouper( $languages ) )->group( [1 => 'en-GB', 2 => 'de-DE', 3 => 'de-DE', 4 => 'de-DE'], [[4, 1, 3, 2]] );
 
         // pages have one variant per language, so the other translations in the same language are skipped and reported
         $this->assertSame( [1 => [2]], $groups->translations );
@@ -1010,7 +1010,7 @@ class ReaderTest extends TestAbstract
         // the import keeps the pages of unchanged articles by comparing their names with the ones the pages are built with
         $items = [1 => (object) ['id' => 101, 'title' => 'About us', 'params' => '{}'], 2 => (object) ['id' => 201, 'title' => '', 'params' => '{}']];
         $articles = new Joomla\Articles( categoryIds: [1 => 0], translations: [1 => [2]], times: [], items: $items, visible: [1 => true, 2 => true],
-            routes: [Joomla\Kind::ARTICLE => [], Joomla\Kind::ARTICLE_TRANSLATION => []] );
+            routes: [Joomla\Kind::Article->value => [], Joomla\Kind::ARTICLE_TRANSLATION => []] );
         $run = $this->importRun( $this->site( Collection::make() ), $articles );
         $run->prefetchTexts( [1, 2, 3] );
         $routes = $this->routes( Collection::make(), [] );
@@ -1034,14 +1034,14 @@ class ReaderTest extends TestAbstract
         $this->assertNull( $languages->language( 'de-DE' ) );
         $this->assertSame( 'fr', $languages->language( 'fr-FR' )['lang'] ?? null );
 
-        $groups = $languages->group( [1 => 'en-GB', 2 => 'de-AT', 3 => 'de-DE'], [[1, 2, 3]] );
+        $groups = ( new Joomla\TranslationGrouper( $languages ) )->group( [1 => 'en-GB', 2 => 'de-AT', 3 => 'de-DE'], [[1, 2, 3]] );
 
         $this->assertSame( [1 => [2]], $groups->translations );
         $this->assertSame( ['de-DE' => 'de-DE'], $groups->unknown );
         $this->assertSame( [], $groups->duplicates );
 
         // guessed tags with the same code as each other are reported as duplicates
-        $groups = ( new Joomla\Languages( $rows, [], 'en' ) )->group( [1 => 'en-GB', 2 => 'de-AT', 3 => 'de-DE'], [[1, 2, 3]] );
+        $groups = ( new Joomla\TranslationGrouper( new Joomla\Languages( $rows, [], 'en' ) ) )->group( [1 => 'en-GB', 2 => 'de-AT', 3 => 'de-DE'], [[1, 2, 3]] );
 
         $this->assertSame( [1 => [2]], $groups->translations );
         $this->assertSame( [3 => ['lang' => 'de', 'tag' => 'de-DE', 'used' => 2]], $groups->duplicates );
@@ -1297,7 +1297,7 @@ class ReaderTest extends TestAbstract
         $this->setJoomlaVersion( 4 );
         $site = $this->site( $categories );
         $warnings = [];
-        $host = Joomla\Host::forTests( warn: function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } );
+        $host = static::host( warn: function( string $msg ) use ( &$warnings ) { $warnings[] = $msg; } );
         $index = $this->wiring( $site, host: $host );
 
         $result = $index->articles( true );
@@ -1324,7 +1324,7 @@ class ReaderTest extends TestAbstract
         $this->assertSame( [2], array_keys( $folders->categories ) );
 
         // the URL paths of the articles and translations are returned, translated categories don't claim paths of their own
-        $this->assertEquals( [Joomla\Kind::ARTICLE => [1 => new Joomla\RoutePath( null, 'about' )], Joomla\Kind::ARTICLE_TRANSLATION => [2 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' )]], $result->routes );
+        $this->assertEquals( [Joomla\Kind::Article->value => [1 => new Joomla\RoutePath( null, 'about' )], Joomla\Kind::ARTICLE_TRANSLATION => [2 => new Joomla\TranslationRoute( 'ueber-uns', 'de-DE' )]], $result->routes );
         $this->assertSame( [], $result->items );
         $links = $this->importRun( $this->wiring( $site, menu: $menuItems, origin: new Joomla\Origin( 'example.com' ) ), articles: $result, folders: $folders )->links;
         $article = fn( int $id ) => $links->resolve( ['option' => 'com_content', 'view' => 'article', 'id' => $id . ':alias'], Joomla\Languages::ALL );

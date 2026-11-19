@@ -45,6 +45,10 @@ class Links
     protected \WeakMap $menuLinkable;
     /** @var \WeakMap<\stdClass, bool> Results of targetLinkable() by target menu item */
     protected \WeakMap $targetLinkable;
+    /** Rewrites the links of the texts to the sites of the Joomla site, created by replace() */
+    protected ?HtmlUrls $htmlUrls = null;
+    /** Menu items and routes the targets are tested with, see check() */
+    protected ?LinkCheck $linkCheck = null;
 
 
     /**
@@ -217,7 +221,8 @@ class Links
      */
     public function replace( string $html, string $tag ): string
     {
-        $html = HtmlUrls::links( $html, fn( array $params ) => $this->resolve( $params, $tag ), $this->origin->sites() );
+        $this->htmlUrls ??= new HtmlUrls( $this->origin->sites() );
+        $html = $this->htmlUrls->links( $html, fn( array $params ) => $this->resolve( $params, $tag ) );
         return $this->site->plugins->sef() ? HtmlUrls::absolute( $html ) : $html;
     }
 
@@ -234,21 +239,16 @@ class Links
      * isn't known yet, so these targets can still be unresolved by menuItemLink().
      *
      * @param \stdClass $menuItem URL or alias menu item
-     * @param Menu $menu Menu items of the imported menu
-     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
-     * @param Router $router Joomla routes returning the menu items of the links to views without ID
-     * @param (\Closure(int|string): bool)|null $variant Tests if the translated menu item of another menu has a page variant
-     *  because it translates a menu item of the imported menu with own page, see Urls::menuVariant(), or NULL if unknown
+     * @param LinkCheck $check Menu items and routes the target is tested with
      * @param array<int|string, true> $seen IDs of the URL and alias menu items of the chain already tested as keys
      */
-    public static function linkable( \stdClass $menuItem, Menu $menu, Collection $menuItems, Router $router,
-        ?\Closure $variant = null, array $seen = [] ): bool
+    public static function linkable( \stdClass $menuItem, LinkCheck $check, array $seen = [] ): bool
     {
         $seen[$menuItem->id ?? 0] = true;
 
         if( MenuItem::type( $menuItem ) === MenuItem::TYPE_ALIAS )
         {
-            return self::itemLinkable( self::aliasId( $menuItem ), $menu, $menuItems, $router, $variant, $seen );
+            return self::itemLinkable( self::aliasId( $menuItem ), $check, $seen );
         }
 
         $link = trim( (string) ( $menuItem->link ?? '' ) );
@@ -257,7 +257,7 @@ class Links
         if( ( $query = self::indexQuery( $link ) ) !== null )
         {
             $params = Uri::query( $query[0] );
-            return self::queryLinkable( $params, Row::language( $menuItem ), $menu, $menuItems, $router, $variant, $seen );
+            return self::queryLinkable( $params, Row::language( $menuItem ), $check, $seen );
         }
 
         return self::supportedUrl( $link );
@@ -313,8 +313,7 @@ class Links
     public function menuItemLink( \stdClass $menuItem ): ?string
     {
         // the whole chain of the menu item is validated only once, also if it's part of the chains of other menu items
-        $linkable = $this->menuLinkable[$menuItem] ??= self::menuLinkable( $menuItem, $this->menu, $this->menuItems,
-            $this->router, $this->urls->menuVariant( ... ) );
+        $linkable = $this->menuLinkable[$menuItem] ??= self::menuLinkable( $menuItem, $this->check() );
 
         if( !$linkable ) {
             return null;
@@ -337,16 +336,11 @@ class Links
      * resolves the targets, see menuItemLink(), so both can't diverge.
      *
      * @param \stdClass $menuItem URL or alias menu item
-     * @param Menu $menu Menu items of the imported menu
-     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
-     * @param Router $router Joomla routes returning the menu items of the links to views without ID
-     * @param \Closure(int|string): bool $variant Tests if the translated menu item of another menu has a page variant
+     * @param LinkCheck $check Menu items and routes the target is tested with, including the test for page variants
      */
-    public static function menuLinkable( \stdClass $menuItem, Menu $menu, Collection $menuItems, Router $router,
-        \Closure $variant ): bool
+    public static function menuLinkable( \stdClass $menuItem, LinkCheck $check ): bool
     {
-        $variant = $menu->item( $menuItem->id ?? 0 ) === null ? $variant : null;
-        return self::linkable( $menuItem, $menu, $menuItems, $router, $variant );
+        return self::linkable( $menuItem, $check->for( $menuItem ) );
     }
 
 
@@ -494,8 +488,7 @@ class Links
         // it validates the chain of the target on its own with a fresh set of seen menu items, independent of the
         // menu items currently resolved, which byItemId() stops if they link back. Pages of other menu items can always
         // be page variants here, URL targets are restricted again by menuItemLink() if they are part of the imported menu
-        $linkable = $this->targetLinkable[$target] ??= self::targetLinkable( $target, $this->menu, $this->menuItems,
-            $this->router, $this->urls->menuVariant( ... ), [] );
+        $linkable = $this->targetLinkable[$target] ??= self::targetLinkable( $target, $this->check(), [] );
 
         if( !$linkable ) {
             return null;
@@ -669,21 +662,17 @@ class Links
      *
      * @param array<array-key, mixed> $params Query parameters of the link
      * @param string $tag Joomla language tag of the menu item containing the link
-     * @param Menu $menu Menu items of the imported menu
-     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
-     * @param Router $router Joomla routes returning the menu items of the links to views without ID
-     * @param (\Closure(int|string): bool)|null $variant Tests if the translated menu item has a page variant or NULL if unknown
+     * @param LinkCheck $check Menu items and routes the target is tested with
      * @param array<int|string, true> $seen IDs of the URL and alias menu items of the chain already tested as keys
      */
-    protected static function queryLinkable( array $params, string $tag, Menu $menu, Collection $menuItems, Router $router,
-        ?\Closure $variant, array $seen ): bool
+    protected static function queryLinkable( array $params, string $tag, LinkCheck $check, array $seen ): bool
     {
         if( self::directView( $params ) !== null ) {
             return true;
         }
 
-        $itemId = self::queryItemId( $params, $tag, $menu, $menuItems, $router );
-        return $itemId > 0 && self::itemLinkable( $itemId, $menu, $menuItems, $router, $variant, $seen );
+        $itemId = self::queryItemId( $params, $tag, $check->menu, $check->menuItems, $check->router );
+        return $itemId > 0 && self::itemLinkable( $itemId, $check, $seen );
     }
 
 
@@ -691,20 +680,16 @@ class Links
      * Tests if byItemId() can resolve the menu item with the ID, before the URLs of the pages are known.
      *
      * @param int $id ID of the menu item of the imported menu or another menu
-     * @param Menu $menu Menu items of the imported menu
-     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
-     * @param Router $router Joomla routes returning the menu items of the links to views without ID
-     * @param (\Closure(int|string): bool)|null $variant Tests if the translated menu item has a page variant or NULL if unknown
+     * @param LinkCheck $check Menu items and routes the target is tested with
      * @param array<int|string, true> $seen IDs of the URL and alias menu items of the chain already tested as keys
      */
-    protected static function itemLinkable( int $id, Menu $menu, Collection $menuItems, Router $router,
-        ?\Closure $variant, array $seen ): bool
+    protected static function itemLinkable( int $id, LinkCheck $check, array $seen ): bool
     {
-        if( isset( $seen[$id] ) || !( $target = self::findItem( $id, $menu, $menuItems ) ) ) {
+        if( isset( $seen[$id] ) || !( $target = $check->item( $id ) ) ) {
             return false;
         }
 
-        return self::targetLinkable( $target, $menu, $menuItems, $router, $variant, $seen );
+        return self::targetLinkable( $target, $check, $seen );
     }
 
 
@@ -717,26 +702,33 @@ class Links
      * use their page variants if they have ones. URL menu items without link or with "#" are folders.
      *
      * @param \stdClass $target Menu item of the imported menu or another menu
-     * @param Menu $menu Menu items of the imported menu
-     * @param Collection<array-key, \stdClass> $menuItems Published menu items of all menus by ID
-     * @param Router $router Joomla routes returning the menu items of the links to views without ID
-     * @param (\Closure(int|string): bool)|null $variant Tests if the translated menu item has a page variant or NULL if unknown
+     * @param LinkCheck $check Menu items and routes the target is tested with
      * @param array<int|string, true> $seen IDs of the URL and alias menu items of the chain already tested as keys
      */
-    protected static function targetLinkable( \stdClass $target, Menu $menu, Collection $menuItems, Router $router,
-        ?\Closure $variant, array $seen ): bool
+    protected static function targetLinkable( \stdClass $target, LinkCheck $check, array $seen ): bool
     {
         $link = MenuLink::of( $target );
-        $paged = $menu->item( $target->id ) !== null || ( $variant !== null && $variant( $target->id ) );
+        $paged = $check->paged( $target );
 
         return match( true ) {
             MenuItem::home( $target ), $link->article() !== null => true,
             $link->kind === MenuLink::KIND_FOLDER => $paged,
-            MenuItem::type( $target ) === MenuItem::TYPE_URL => self::linkable( $target, $menu, $menuItems, $router, $variant, $seen ),
-            $link->kind === MenuLink::KIND_LINK => $paged && self::linkable( $target, $menu, $menuItems, $router, $variant, $seen ),
+            MenuItem::type( $target ) === MenuItem::TYPE_URL => self::linkable( $target, $check, $seen ),
+            $link->kind === MenuLink::KIND_LINK => $paged && self::linkable( $target, $check, $seen ),
             $link->kind === MenuLink::KIND_CATEGORIES && $link->id === null => $paged,
             default => $link->category() !== null,
         };
+    }
+
+
+    /**
+     * Returns the menu items and routes the targets of the URL and alias menu items are tested with.
+     *
+     * Translated menu items of other menus can point to the page variants of other translated menu items.
+     */
+    protected function check(): LinkCheck
+    {
+        return $this->linkCheck ??= new LinkCheck( $this->menu, $this->menuItems, $this->router, $this->urls->menuVariant( ... ) );
     }
 
 

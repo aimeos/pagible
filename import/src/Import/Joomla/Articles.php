@@ -14,7 +14,7 @@ namespace Aimeos\Cms\Import\Joomla;
  * Only the IDs, category IDs, times, menu items, visibility and URL paths of the articles are kept because there can
  * be many articles.
  *
- * ArticleRoutes: routes of the articles (Kind::ARTICLE) and the translated articles (Kind::ARTICLE_TRANSLATION) by ID,
+ * ArticleRoutes: routes of the articles (Kind::Article->value) and the translated articles (Kind::ARTICLE_TRANSLATION) by ID,
  * unlike ShownArticles::$routes, which only contains the RoutePath objects of the not associated articles by ID
  *
  * @phpstan-type ArticleRoutes array{a: array<int|string, RoutePath>, ta: array<int|string, TranslationRoute>}
@@ -29,7 +29,7 @@ final readonly class Articles
      * @param array<int|string, int> $times Modification times of the articles and translations by ID, only if requested
      * @param array<int|string, \stdClass> $items Menu items Joomla uses for the articles and translations by ID
      * @param array<int|string, bool> $visible IDs of all articles Joomla shows as keys, also the skipped ones and the translations
-     * @param ArticleRoutes $routes URL paths Joomla uses or NULL and aliases of the articles (Kind::ARTICLE) and URL paths and language tags
+     * @param ArticleRoutes $routes URL paths Joomla uses or NULL and aliases of the articles (Kind::Article) and URL paths and language tags
      *  of the translations (Kind::ARTICLE_TRANSLATION) by ID, both ordered by ID, so the paths stay the same in the next imports
      */
     public function __construct(

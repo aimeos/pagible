@@ -44,7 +44,7 @@ class ContentImportTest extends TestAbstract
         $db->table( 'content' )->where( 'id', 4 )->update( ['images' => '{"image_intro":"images/intro.jpg","image_fulltext":"images/full.jpg"}'] );
 
         $run = function(): array {
-            $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+            $cms = \Aimeos\Cms\DB::connection();
             $cms->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
             $queries = $this->queries( $cms )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_files" where "path"' ) );

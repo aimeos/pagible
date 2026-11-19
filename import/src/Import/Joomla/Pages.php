@@ -99,7 +99,7 @@ class Pages
     public function articlePage( \stdClass $article, string $slug, Routes $routes, ?int $status = null ): Page
     {
         $display = $this->articleDisplay( $article, $routes );
-        return $this->article( $article, $slug, $status, $status === null, BasePages::TAG_PAGE, $display, Row::language( $article ) );
+        return $this->article( $article, $slug, $status, BasePages::TAG_PAGE, $display, Row::language( $article ) );
     }
 
 
@@ -131,7 +131,7 @@ class Pages
      */
     public function homeTranslation( \stdClass $article, string $slug, Routes $routes, \stdClass $item, string $language ): Page
     {
-        return $this->article( $article, $slug, null, true, BasePages::TAG_PAGE, $this->articleDisplay( $article, $routes, $item ), $language );
+        return $this->article( $article, $slug, null, BasePages::TAG_PAGE, $this->articleDisplay( $article, $routes, $item ), $language );
     }
 
 
@@ -144,7 +144,7 @@ class Pages
      */
     public function homeArticlePage( \stdClass $article, \stdClass $menuItem ): Page
     {
-        return $this->article( $article, '', BasePages::STATUS_PUBLISHED, false, BasePages::TAG_ROOT, Display::menu( $menuItem ), Row::language( $article ) );
+        return $this->article( $article, '', BasePages::STATUS_PUBLISHED, BasePages::TAG_ROOT, Display::menu( $menuItem ), Row::language( $article ) );
     }
 
 
@@ -266,6 +266,34 @@ class Pages
 
 
     /**
+     * Returns the page data and content of the variant of an associated article, category or menu item.
+     *
+     * The translations are restricted like the pages of the articles, categories and menu items in the import language.
+     * Translations of articles shown by the home menu item of their language show the menu item instead of their own one.
+     *
+     * @param Translation $translation Associated row, its type and the language it's shown in
+     * @param string $slug URL path of the translation
+     * @param Routes $routes Routes of the language the translation is shown in
+     * @param int|null $status Status of the page regardless of the row, e.g. BasePages::STATUS_DISABLED if the page
+     *  in the import language is disabled, or NULL to use the status of the row
+     * @return Page|null Page data, content and why guests can't see the row or NULL if the translation isn't imported
+     */
+    public function translation( Translation $translation, string $slug, Routes $routes, ?int $status = null ): ?Page
+    {
+        $row = $translation->row;
+
+        return match( $translation->kind ) {
+            Kind::Article => $translation->showing
+                ? $this->homeTranslation( $row, $slug, $routes, $translation->showing, $translation->tag )
+                : $this->articlePage( $row, $slug, $routes, $status ),
+            // the translation uses the menu item linking to the category, the home menu item of its language is used for the root page instead
+            Kind::Category => $this->categoryPage( $row, $slug, $routes, $routes->ownCategoryItem( (int) $row->id ), $status ),
+            Kind::Menu => $this->menuTranslation( $row, $slug, $status ),
+        };
+    }
+
+
+    /**
      * Returns the page data of a redirect imported as hidden link page.
      *
      * @param string $path URL path of the redirect, also used as title
@@ -288,21 +316,21 @@ class Pages
      * Guests see the intro text of articles they can't access if the "show_noauth" option is enabled and the article has a full text.
      * The page of the teaser is published then, so teasers are only built if they are allowed and the status isn't given.
      *
-     * @param int|null $status Status of the page or NULL to use the status of the article and its menu item
-     * @param bool $teasers TRUE to build the teaser of an article guests can't access, FALSE to always build the whole article
+     * @param int|null $status Status of the page or NULL to use the status of the article and its menu item, the teaser
+     *  of an article guests can't access is only built without a given status, the whole article otherwise
      * @param string $pageTag Tag of the page, i.e. BasePages::TAG_PAGE or BasePages::TAG_ROOT
      * @param Display $display Menu item showing the article, why guests can't see it and the menu item of its category
      * @param string $language Joomla language tag the article is shown in
      * @return Page Page data, content, if it's a teaser and why guests can't see the article
      */
-    protected function article( \stdClass $article, string $slug, ?int $status, bool $teasers, string $pageTag, Display $display,
+    protected function article( \stdClass $article, string $slug, ?int $status, string $pageTag, Display $display,
         string $language ): Page
     {
         $text = $this->texts->text( $article->id );
         // the options of the menu item linking to the article are used for the title, the ones of the category menu item too otherwise
         $options = $display->item ? $this->options->view( $text->attribs, $display->menuParams ) : $this->options->inherited( $text->attribs, $display->menuParams );
 
-        if( $teasers && $display->reason !== null && $this->teaser( $article, $text, $options ) ) {
+        if( $status === null && $display->reason !== null && $this->teaser( $article, $text, $options ) ) {
             $text = $text->asTeaser();
         }
 

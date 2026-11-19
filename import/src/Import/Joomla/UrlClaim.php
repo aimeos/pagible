@@ -33,26 +33,26 @@ final readonly class UrlClaim
     /**
      * Returns the claim of an article, category or menu item in the domain of the imported pages.
      *
-     * @param Kind::ARTICLE|Kind::CATEGORY|Kind::MENU $kind Type of the row
+     * @param Kind $kind Type of the row
      * @param int|string $id ID of the row
      * @param string $path Alias or URL path of the row
      */
-    public static function row( string $kind, int|string $id, string $path ): self
+    public static function row( Kind $kind, int|string $id, string $path ): self
     {
-        return new self( new UrlKey( Kind::key( $kind, $id ) ), $id, $path );
+        return new self( new UrlKey( $kind->key( $id ) ), $id, $path );
     }
 
 
     /**
      * Returns the claim of a translated article, category or menu item in the domain of its language.
      *
-     * @param Kind::ARTICLE|Kind::CATEGORY|Kind::MENU $kind Type of the translated row
+     * @param Kind $kind Type of the translated row
      * @param int|string $id ID of the translated row
      * @param string $path URL path of the translation
      * @param string $domain Domain of the language or empty string for the domain of the imported pages
      */
-    public static function translation( string $kind, int|string $id, string $path, string $domain ): self
+    public static function translation( Kind $kind, int|string $id, string $path, string $domain ): self
     {
-        return new self( new UrlKey( Kind::translationKey( $kind, $id ), $domain ), $id, $path );
+        return new self( new UrlKey( $kind->translationKey( $id ), $domain ), $id, $path );
     }
 }

@@ -11,43 +11,55 @@ namespace Aimeos\Cms\Import\Joomla;
 /**
  * Types of the Joomla rows imported as pages or translations.
  *
- * They are prefixed to the row IDs for the record keys of the URL paths, e.g. "a5" for article 5
+ * Their values are prefixed to the row IDs for the record keys of the URL paths, e.g. "a5" for article 5
  * or "ta7" for the translated article 7, and used as keys of the rows grouped by type.
  */
-final class Kind
+enum Kind: string
 {
     /** Articles */
-    public const ARTICLE = 'a';
+    case Article = 'a';
     /** Categories */
-    public const CATEGORY = 'c';
+    case Category = 'c';
     /** Menu items */
-    public const MENU = 'm';
+    case Menu = 'm';
+
     /** Prefix of the translations, e.g. "ta" for translated articles */
     private const TRANSLATION = 't';
     /** Translated articles */
-    public const ARTICLE_TRANSLATION = self::TRANSLATION . self::ARTICLE;
+    public const ARTICLE_TRANSLATION = self::TRANSLATION . 'a';
 
 
     /**
      * Returns the record key of the row, e.g. "a5" for article 5.
      *
-     * @param self::ARTICLE|self::CATEGORY|self::MENU $kind Type of the row
      * @param int|string $id ID of the row
      */
-    public static function key( string $kind, int|string $id ): string
+    public function key( int|string $id ): string
     {
-        return $kind . $id;
+        return $this->value . $id;
+    }
+
+
+    /**
+     * Returns the name of the rows used in messages, e.g. "article".
+     */
+    public function label(): string
+    {
+        return match( $this ) {
+            self::Article => 'article',
+            self::Category => 'category',
+            self::Menu => 'menu item',
+        };
     }
 
 
     /**
      * Returns the record key of the translated row, e.g. "ta7" for the translated article 7.
      *
-     * @param self::ARTICLE|self::CATEGORY|self::MENU $kind Type of the translated row
      * @param int|string $id ID of the translated row
      */
-    public static function translationKey( string $kind, int|string $id ): string
+    public function translationKey( int|string $id ): string
     {
-        return self::TRANSLATION . self::key( $kind, $id );
+        return self::TRANSLATION . $this->key( $id );
     }
 }

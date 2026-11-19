@@ -81,6 +81,29 @@ class Texts
 
 
     /**
+     * Returns the paths of the image and the images in the description of the categories.
+     *
+     * @param iterable<\stdClass> $categories Joomla categories
+     * @return array<int, string> Unique paths of the images like the ones returned by imagePaths()
+     */
+    public function categoryImagePaths( iterable $categories ): array
+    {
+        $paths = [];
+
+        foreach( $categories as $category )
+        {
+            // raw value because imageSource() removes the suffix of the Joomla 4+ media field like Pages::categoryElements()
+            $image = Row::params( $category )['image'] ?? null;
+            $paths[] = is_string( $image ) ? $this->imageSource( $image ) : '';
+
+            array_push( $paths, ...array_map( $this->origin->fileSource( ... ), Html::sources( Value::text( $category->description ?? null ) ) ) );
+        }
+
+        return array_values( array_unique( array_filter( $paths, fn( $path ) => $path !== '' ) ) );
+    }
+
+
+    /**
      * Returns the source of the image of an article or category like the ones of the images in the texts.
      *
      * The suffix of the Joomla 4+ media field is removed and the source is relative to the base URL of the files

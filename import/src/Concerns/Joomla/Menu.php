@@ -9,12 +9,11 @@ namespace Aimeos\Cms\Concerns\Joomla;
 
 use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Status;
-use Aimeos\Cms\Import\Tally;
 use Aimeos\Cms\Models\PageView;
 
 
 /**
- * Imports the Joomla menu items of the imported menu and the Joomla redirects as pages.
+ * Imports the Joomla menu items of the imported menu as pages.
  *
  * Requires the Shared trait used by the same class for the objects of the run and the shared methods.
  */
@@ -44,6 +43,7 @@ trait Menu
         foreach( $chunks->items( $menu->tree(), $articleId ) as $chunk )
         {
             $this->prefetch( $chunk->map( $articleId )->filter()->values()->all() );
+            $this->prefetchMenuFolders( $chunk->all() );
 
             foreach( $chunk as $pos => $node )
             {
@@ -70,6 +70,55 @@ trait Menu
 
 
     /**
+     * Fetches the pages, variants and images of the folder and link pages of the menu items imported next at once.
+     *
+     * Only the menu items importMenuItem() saves a folder or link page for are used, the pages of the articles
+     * are fetched by prefetch().
+     *
+     * @param iterable<Joomla\MenuNode> $nodes Menu items imported next
+     */
+    protected function prefetchMenuFolders( iterable $nodes ): void
+    {
+        $run = $this->run;
+        $site = $this->wiring->site;
+        $categoryItems = $this->wiring->categoryItems;
+        $categories = [];
+        $slugs = [];
+
+        foreach( $nodes as $node )
+        {
+            $menuItem = $node->item;
+
+            // the home menu item uses the root page if it was imported before the menu
+            if( $run->home->is( $menuItem ) ) {
+                continue;
+            }
+
+            $link = Joomla\MenuLink::of( $menuItem );
+            $mode = $this->menuItemMode( $link, $site->access->restriction( $menuItem ) );
+
+            if( $mode === Joomla\MenuItemMode::Category )
+            {
+                // like importCategoryItem(), only the selected menu item of a shown category gets a page
+                if( !( $category = $site->category( (int) $link->category() ) ) || !$categoryItems->hasMenuPage( $menuItem->id ) ) {
+                    continue;
+                }
+
+                $categories[] = $category;
+            }
+            elseif( $mode !== Joomla\MenuItemMode::Heading && $mode !== Joomla\MenuItemMode::Link )
+            {
+                continue;
+            }
+
+            $slugs[$run->urls->menuPath( $menuItem )] = $run->menuTranslations( $menuItem ) !== [];
+        }
+
+        $this->prefetchFolders( $slugs, $run->categoryImagePaths( $categories ) );
+    }
+
+
+    /**
      * Imports a menu item and returns the page used as parent of its children.
      *
      * The children of menu items which aren't imported are imported below the parent page.
@@ -80,13 +129,13 @@ trait Menu
         $link = Joomla\MenuLink::of( $menuItem );
         $reason = $this->wiring->site->access->restriction( $menuItem );
 
-        return match( $this->menuItemType( $link, $reason ) ) {
-            'heading' => $this->importHeadingItem( $menuItem, $parent, $reason ),
-            'link' => $this->importLinkItem( $menuItem, $parent, $reason ),
-            'restricted' => $this->restrictedItem( $menuItem, $parent, (string) $reason ),
-            'article' => $this->importArticleItem( (int) $link->article(), $parent, $root ),
-            'category' => $this->importCategoryItem( $menuItem, (int) $link->category(), $parent ),
-            'unsupported' => $this->unsupportedView( $menuItem, $parent ),
+        return match( $this->menuItemMode( $link, $reason ) ) {
+            Joomla\MenuItemMode::Heading => $this->importHeadingItem( $menuItem, $parent, $reason ),
+            Joomla\MenuItemMode::Link => $this->importLinkItem( $menuItem, $parent, $reason ),
+            Joomla\MenuItemMode::Restricted => $this->restrictedItem( $menuItem, $parent, (string) $reason ),
+            Joomla\MenuItemMode::Article => $this->importArticleItem( (int) $link->article(), $parent, $root ),
+            Joomla\MenuItemMode::Category => $this->importCategoryItem( $menuItem, (int) $link->category(), $parent ),
+            Joomla\MenuItemMode::Unsupported => $this->unsupportedView( $menuItem, $parent ),
         };
     }
 
@@ -96,21 +145,19 @@ trait Menu
      *
      * @param Joomla\MenuLink $link Link of the menu item
      * @param string|null $reason Why the menu item isn't visible for guests or NULL if it's public
-     * @return 'heading'|'link'|'restricted'|'article'|'category'|'unsupported' Folder page of a menu heading or list of
-     *  all categories, link page of a URL or alias menu item, skipped restricted menu item, page of the linked article,
-     *  page of the shown category or skipped menu item of an unsupported view
+     * @return Joomla\MenuItemMode How the menu item is imported
      */
-    protected function menuItemType( Joomla\MenuLink $link, ?string $reason ): string
+    protected function menuItemMode( Joomla\MenuLink $link, ?string $reason ): Joomla\MenuItemMode
     {
         return match( true ) {
             // the list of all categories has no category itself
-            $link->kind === Joomla\MenuLink::KIND_FOLDER || ( $link->kind === Joomla\MenuLink::KIND_CATEGORIES && $link->id === null ) => 'heading',
+            $link->kind === Joomla\MenuLink::KIND_FOLDER || ( $link->kind === Joomla\MenuLink::KIND_CATEGORIES && $link->id === null ) => Joomla\MenuItemMode::Heading,
             // URL menu items can link to articles and categories too
-            $link->kind === Joomla\MenuLink::KIND_LINK => 'link',
-            $reason !== null => 'restricted',
-            $link->article() !== null => 'article',
-            $link->category() !== null => 'category',
-            default => 'unsupported',
+            $link->kind === Joomla\MenuLink::KIND_LINK => Joomla\MenuItemMode::Link,
+            $reason !== null => Joomla\MenuItemMode::Restricted,
+            $link->article() !== null => Joomla\MenuItemMode::Article,
+            $link->category() !== null => Joomla\MenuItemMode::Category,
+            default => Joomla\MenuItemMode::Unsupported,
         };
     }
 
@@ -175,7 +222,7 @@ trait Menu
         $rendered = $run->pages->menuPage( $menuItem, $slug, $reason, $category );
         $saved = $this->savePage( $slug, $rendered->data, $rendered->content, $parent );
 
-        return $this->savePageTranslations( $saved, $menuItem, Joomla\Kind::MENU, $slug, $reason );
+        return $this->savePageTranslations( $saved, $menuItem, Joomla\Kind::Menu, $slug, $reason );
     }
 
 
@@ -284,13 +331,15 @@ trait Menu
             $slug = $run->urls->menuPath( $menuItem );
             $data = $run->pages->linkPage( $menuItem, $slug, $to, $reason )->data;
             $saved = $this->linkPage( self::SKIPPED_ITEM, Joomla\Row::label( $menuItem ) . " (/{$slug})", $slug, $data, $parent );
-            return $saved ? $this->savePageTranslations( $saved, $menuItem, Joomla\Kind::MENU, $slug, $reason ) : null;
+            return $saved ? $this->savePageTranslations( $saved, $menuItem, Joomla\Kind::Menu, $slug, $reason ) : null;
         } ) ?? $parent;
     }
 
 
     /**
      * Creates a link page or updates the one of a previous import and warns if its URL is used by another page.
+     *
+     * Also used for the redirects, see Redirects::importRedirects().
      *
      * @param string $what What is skipped if the URL is used, e.g. "Skipped menu item" or "Skipped redirect"
      * @param string $subject Label of the menu item or redirect used in the warning
@@ -305,64 +354,6 @@ trait Menu
 
         $this->notice( $what, $subject, 'URL is used by another page' );
         return null;
-    }
-
-
-    /**
-     * Imports the redirects of the Joomla "Redirect" component as hidden link pages below the root page.
-     *
-     * Redirects whose URL paths are used by imported pages or whose targets aren't supported were skipped by
-     * Joomla\UrlAssignment already, which checks the targets the same way, see Joomla\Links::redirectTarget().
-     */
-    protected function importRedirects( PageView $root ): void
-    {
-        $tally = new Tally();
-        $run = $this->run;
-
-        $this->skippedRedirects();
-
-        foreach( array_chunk( $run->urls->redirects(), static::PREFETCH_SIZE ) as $chunk )
-        {
-            // the pages using the URL paths are fetched at once instead of one query per redirect
-            $this->prefetchPages( array_map( fn( Joomla\KeptRedirect $redirect ) => $redirect->path, $chunk ) );
-
-            foreach( $chunk as $redirect )
-            {
-                $path = $redirect->path;
-                $data = $run->pages->redirectData( $path, $this->redirectTarget( $redirect ) );
-                $saved = $this->transaction( "redirect /{$path}", fn() => $this->linkPage( 'Skipped redirect', "/{$path}", $path, $data, $root ) );
-
-                $tally->add( $saved['status'] ?? null );
-            }
-        }
-
-        $this->subtotals( $tally, 'redirects' );
-    }
-
-
-    /**
-     * Warns about the Joomla redirects skipped because their targets aren't supported, see Joomla\Urls::unsupportedRedirects().
-     */
-    protected function skippedRedirects(): void
-    {
-        foreach( $this->run->urls->unsupportedRedirects() as $redirect ) {
-            $this->notice( 'Skipped redirect', "/{$redirect->path}", "its target {$redirect->url} isn't supported" );
-        }
-    }
-
-
-    /**
-     * Returns the URL the kept Joomla redirect is imported with, see Joomla\Links::redirectTarget().
-     *
-     * Joomla\UrlAssignment keeps only the redirects whose targets resolve by the same check, see Joomla\Urls::redirects().
-     *
-     * @return string Target URL
-     * @throws \LogicException If the target of the kept redirect doesn't resolve
-     */
-    protected function redirectTarget( Joomla\KeptRedirect $redirect ): string
-    {
-        return $this->run->links->redirectTarget( $redirect )
-            ?? throw new \LogicException( "Target {$redirect->url} of the kept redirect /{$redirect->path} doesn't resolve" );
     }
 
 

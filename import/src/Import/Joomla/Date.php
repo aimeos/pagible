@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Date as BaseDate;
 
 
 /**
@@ -26,7 +26,7 @@ class Date
      * @var list<string> Empty dates of Joomla, the ones of MySQL with and without time, e.g. of calendar fields, and
      *   in Joomla 3 the start of the Unix epoch on PostgreSQL and 1900-01-01 on SQL Server
      */
-    protected const EMPTY_DATES = [...Database::EMPTY_DATES, '1970-01-01 00:00:00', '1900-01-01 00:00:00'];
+    protected const EMPTY_DATES = [...BaseDate::EMPTY_DATES, '1970-01-01 00:00:00', '1900-01-01 00:00:00'];
 
 
     /**
@@ -37,7 +37,7 @@ class Date
      */
     public static function first( mixed ...$dates ): ?string
     {
-        return Database::firstDate( $dates, self::EMPTY_DATES );
+        return BaseDate::first( $dates, self::EMPTY_DATES );
     }
 
 
@@ -51,6 +51,21 @@ class Date
     {
         $date = self::first( ...$dates );
         return $date !== null ? self::parse( $date )?->getTimestamp() : null;
+    }
+
+
+    /**
+     * Returns the timestamp of the date if it's within the time span.
+     *
+     * @param mixed $date Date in UTC in the format "YYYY-MM-DD HH:MM:SS", values which aren't strings are empty
+     * @param int $from Start of the time span as timestamp, included
+     * @param int $to End of the time span as timestamp, included
+     * @return int|null Timestamp or NULL if the date is empty, invalid or outside of the time span
+     */
+    public static function between( mixed $date, int $from, int $to ): ?int
+    {
+        $time = self::time( $date );
+        return $time !== null && $time >= $from && $time <= $to ? $time : null;
     }
 
 

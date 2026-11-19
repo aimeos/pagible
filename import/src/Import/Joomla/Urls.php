@@ -98,7 +98,7 @@ class Urls
         }
 
         // only categories with imported articles below them get own pages and claim URL paths
-        if( !$this->assigned->claimed( Kind::key( Kind::CATEGORY, $catId ) ) ) {
+        if( !$this->assigned->claimed( Kind::Category->key( $catId ) ) ) {
             return null;
         }
 
@@ -115,7 +115,7 @@ class Urls
      */
     public function articlePath( \stdClass $article ): string
     {
-        return $this->assigned->routePath( Kind::key( Kind::ARTICLE, $article->id ), fn() => RoutePath::of( null, $article ) );
+        return $this->assigned->routePath( Kind::Article->key( $article->id ), fn() => RoutePath::of( null, $article ) );
     }
 
 
@@ -126,7 +126,7 @@ class Urls
      */
     public function categoryPath( \stdClass $category ): string
     {
-        $key = Kind::key( Kind::CATEGORY, $category->id );
+        $key = Kind::Category->key( $category->id );
         return $this->assigned->routePath( $key, fn() => $this->context->paths->categoryRoute( $category ) );
     }
 
@@ -203,7 +203,7 @@ class Urls
      */
     public function menuPath( \stdClass $item ): string
     {
-        $key = Kind::key( Kind::MENU, $item->id );
+        $key = Kind::Menu->key( $item->id );
         return $this->assigned->routePath( $key, fn() => new RoutePath( $this->context->paths->itemPath( $item ), '' ) );
     }
 
@@ -221,7 +221,7 @@ class Urls
      */
     public function articleTranslationPath( \stdClass $row ): string
     {
-        $key = Kind::translationKey( Kind::ARTICLE, $row->id );
+        $key = Kind::Article->translationKey( $row->id );
         return $this->assigned->claimedPath( new UrlKey( $key, $this->context->domains->domain( Row::language( $row ) ) ) );
     }
 
@@ -231,7 +231,7 @@ class Urls
      */
     public function categoryTranslationPath( \stdClass $row ): string
     {
-        $key = Kind::translationKey( Kind::CATEGORY, $row->id );
+        $key = Kind::Category->translationKey( $row->id );
         return $this->translationPath( $key, fn() => $this->context->paths->categoryTranslationRoute( $row ), $row );
     }
 
@@ -241,8 +241,24 @@ class Urls
      */
     public function menuTranslationPath( \stdClass $row ): string
     {
-        $key = Kind::translationKey( Kind::MENU, $row->id );
+        $key = Kind::Menu->translationKey( $row->id );
         return $this->translationPath( $key, fn() => $this->context->paths->menuTranslationRoute( $row ), $row );
+    }
+
+
+    /**
+     * Returns the URL path of the translated article, category or menu item in the domain of its language.
+     *
+     * @param Translation $translation Associated row and its type
+     * @throws \LogicException If the translated article didn't claim a URL path
+     */
+    public function translatedPath( Translation $translation ): string
+    {
+        return match( $translation->kind ) {
+            Kind::Article => $this->articleTranslationPath( $translation->row ),
+            Kind::Category => $this->categoryTranslationPath( $translation->row ),
+            Kind::Menu => $this->menuTranslationPath( $translation->row ),
+        };
     }
 
 

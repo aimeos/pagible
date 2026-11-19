@@ -17,13 +17,13 @@ final readonly class Translation
      * Initializes the object.
      *
      * @param \stdClass $row Associated article, category or menu item in another language
-     * @param Kind::ARTICLE|Kind::CATEGORY|Kind::MENU $kind Type of the row
+     * @param Kind $kind Type of the row
      * @param string $tag Joomla language tag the row is shown in
      * @param \stdClass|null $showing Menu item showing the article instead of its own one, e.g. the home menu item of its language
      */
     public function __construct(
         public \stdClass $row,
-        public string $kind,
+        public Kind $kind,
         public string $tag,
         public ?\stdClass $showing = null
     ) {
@@ -34,9 +34,9 @@ final readonly class Translation
      * Returns the translation shown in the language of the row.
      *
      * @param \stdClass $row Associated article, category or menu item in another language
-     * @param Kind::ARTICLE|Kind::CATEGORY|Kind::MENU $kind Type of the row
+     * @param Kind $kind Type of the row
      */
-    public static function of( \stdClass $row, string $kind ): self
+    public static function of( \stdClass $row, Kind $kind ): self
     {
         return new self( $row, $kind, Row::language( $row ) );
     }
@@ -53,6 +53,6 @@ final readonly class Translation
      */
     public static function home( \stdClass $article, \stdClass $item, string $tag ): self
     {
-        return new self( $article, Kind::ARTICLE, $tag, $item );
+        return new self( $article, Kind::Article, $tag, $item );
     }
 }

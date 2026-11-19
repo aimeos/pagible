@@ -7,8 +7,6 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Import\Pages as BasePages;
-
 
 /**
  * Data and objects of a single Joomla import run, a new object is created for each run so nothing is reused if the command runs again.
@@ -198,6 +196,18 @@ final class Run
         $this->extras->prefetch( $ids );
 
         return $this->texts->imagePaths( $ids );
+    }
+
+
+    /**
+     * Returns the paths and URLs of the images of the categories whose files are imported, see Texts::categoryImagePaths().
+     *
+     * @param iterable<\stdClass> $categories Joomla categories
+     * @return array<int, string> Paths and URLs of the images
+     */
+    public function categoryImagePaths( iterable $categories ): array
+    {
+        return $this->texts->categoryImagePaths( $categories );
     }
 
 

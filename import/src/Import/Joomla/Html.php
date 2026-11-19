@@ -33,9 +33,8 @@ class Html extends BaseHtml
      */
     public function __construct( \Closure $image, ?\Closure $warn = null, ?\Closure $warnOnce = null )
     {
-        parent::__construct( $image );
+        parent::__construct( $image, $warn );
 
-        $this->warn = $warn;
         $this->warnOnce = $warnOnce ?? $warn;
     }
 

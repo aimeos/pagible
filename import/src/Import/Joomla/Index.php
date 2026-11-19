@@ -24,13 +24,6 @@ class Index
     /** Warning about the skipped articles in other languages, gets the number of articles */
     protected const FOREIGN = 'Skipping %d Joomla articles in other languages without associated article in the import language '
         . 'because Joomla only shows them on the sites of their languages.';
-    /** Kind of the translated rows in the warnings for articles */
-    protected const KIND_ARTICLE = 'article';
-    /** Kind of the translated rows in the warnings for categories */
-    protected const KIND_CATEGORY = 'category';
-    /** Kind of the translated rows in the warnings for menu items */
-    protected const KIND_MENU_ITEM = 'menu item';
-
     /** Warning about the translations in unknown languages, gets the kind of the rows and the list of language tags */
     protected const UNKNOWN_LANGUAGES = 'Skipping %s translations of unknown or unpublished Joomla languages [%s]'
         . ', add --language=<tag>:<code> to import them.';
@@ -78,7 +71,7 @@ class Index
         $shown = $this->collect( $withTimes, $this->idSet( $associations ) );
 
         $tags = $shown->languageTags();
-        $translations = $this->translations( self::KIND_ARTICLE, $tags, $associations );
+        $translations = $this->translations( Kind::Article, $tags, $associations );
         $translated = $this->idSet( $translations );
         $articles = $shown->imported( $translated );
 
@@ -120,7 +113,7 @@ class Index
     public function folders( Collection $menuItems ): Folders
     {
         $visible = $this->site->categories->reject( fn( $category ) => $this->site->access->categoryHidden( (int) $category->id ) )->sortKeys()->all();
-        $categoryTranslations = $this->associated( self::KIND_CATEGORY, $this->associations( Reader::CATEGORY_ASSOCIATIONS ), $visible );
+        $categoryTranslations = $this->associated( Kind::Category, $this->associations( Reader::CATEGORY_ASSOCIATIONS ), $visible );
 
         // the associated menu items in other languages are mostly in other menus
         $items = $menuItems->keyBy( 'id' )->sortKeys()->all();
@@ -132,7 +125,7 @@ class Index
         return new Folders(
             categories: array_diff_key( $visible, $translated ),
             categoryTranslations: $categoryTranslations,
-            menuTranslations: $this->associated( self::KIND_MENU_ITEM, $associations, $items + $otherItems, $items )
+            menuTranslations: $this->associated( Kind::Menu, $associations, $items + $otherItems, $items )
         );
     }
 
@@ -288,27 +281,27 @@ class Index
      * Each unknown language is only reported once per kind of rows, even if it's read several times. Translations skipped
      * because another translation of their association uses the same language code are reported by kind and ID.
      *
-     * @param string $kind Kind of the rows in the warnings, one of the KIND_* constants
+     * @param Kind $kind Type of the rows, its label is used in the warnings
      * @param array<int|string, string> $tags Joomla language tags of the associated articles, categories or menu items by ID
      * @param array<int|string, list<int|string>> $associations IDs of the associated rows grouped by association key
      * @param array<int|string, mixed> $pages Rows imported as pages themselves, which aren't translations of other rows
      * @return array<int|string, list<int|string>> IDs of the translations by ID of the source
      */
-    protected function translations( string $kind, array $tags, array $associations, array $pages = [] ): array
+    protected function translations( Kind $kind, array $tags, array $associations, array $pages = [] ): array
     {
-        $groups = $this->site->languages->group( $tags, $associations, $pages );
+        $groups = ( new TranslationGrouper( $this->site->languages ) )->group( $tags, $associations, $pages );
 
-        if( ( $unknown = array_diff_key( $groups->unknown, $this->reported[$kind] ?? [] ) ) !== [] )
+        if( ( $unknown = array_diff_key( $groups->unknown, $this->reported[$kind->value] ?? [] ) ) !== [] )
         {
-            $this->reported[$kind] = ( $this->reported[$kind] ?? [] ) + $unknown;
-            ( $this->warn )( sprintf( self::UNKNOWN_LANGUAGES, $kind, implode( ', ', $unknown ) ) );
+            $this->reported[$kind->value] = ( $this->reported[$kind->value] ?? [] ) + $unknown;
+            ( $this->warn )( sprintf( self::UNKNOWN_LANGUAGES, $kind->label(), implode( ', ', $unknown ) ) );
         }
 
         if( $groups->duplicates !== [] )
         {
             $list = array_map( fn( $id, $dup ) => "{$id} ({$dup['tag']}, \"{$dup['lang']}\" used by {$dup['used']})",
                 array_keys( $groups->duplicates ), $groups->duplicates );
-            ( $this->warn )( sprintf( self::DUPLICATES, $kind, implode( ', ', $list ) ) );
+            ( $this->warn )( sprintf( self::DUPLICATES, $kind->label(), implode( ', ', $list ) ) );
         }
 
         return $groups->translations;
@@ -325,13 +318,13 @@ class Index
      */
     protected function routes( array $articles, array $translations, array $tags ): array
     {
-        $paths = [Kind::ARTICLE => $articles, Kind::ARTICLE_TRANSLATION => []];
+        $paths = [Kind::Article->value => $articles, Kind::ARTICLE_TRANSLATION => []];
 
         foreach( $translations as $id => $path ) {
             $paths[Kind::ARTICLE_TRANSLATION][$id] = new TranslationRoute( $path, $tags[$id] );
         }
 
-        ksort( $paths[Kind::ARTICLE] );
+        ksort( $paths[Kind::Article->value] );
         ksort( $paths[Kind::ARTICLE_TRANSLATION] );
 
         return $paths;
@@ -341,13 +334,13 @@ class Index
     /**
      * Groups the associated categories or menu items in other languages as translations of the ones in the import language.
      *
-     * @param string $kind Kind of the rows in the warnings, KIND_CATEGORY or KIND_MENU_ITEM
+     * @param Kind::Category|Kind::Menu $kind Type of the rows, its label is used in the warnings
      * @param array<int|string, list<int|string>> $associations IDs of the associated rows grouped by association key
      * @param array<int|string, \stdClass> $rows Categories or menu items by ID
      * @param array<int|string, mixed> $pages Rows imported as pages themselves, which aren't translations of other rows
      * @return array<int|string, list<\stdClass>> Translations by ID of the category or menu item
      */
-    protected function associated( string $kind, array $associations, array $rows, array $pages = [] ): array
+    protected function associated( Kind $kind, array $associations, array $rows, array $pages = [] ): array
     {
         $tags = array_map( Row::language( ... ), $rows );
         $result = [];

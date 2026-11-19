@@ -207,7 +207,7 @@ class CategoryItems
         $kind = $link->kind;
 
         if( $kind === MenuLink::KIND_LINK ) {
-            return Links::menuLinkable( $menuItem, $this->menu, $this->items, $this->router, $variant );
+            return Links::menuLinkable( $menuItem, new LinkCheck( $this->menu, $this->items, $this->router, $variant ) );
         }
 
         if( !MenuItem::home( $menuItem ) && in_array( $kind, [MenuLink::KIND_ARTICLE, MenuLink::KIND_OTHER], true ) ) {
@@ -309,7 +309,7 @@ class CategoryItems
     {
         return match( $link->kind ) {
             MenuLink::KIND_FOLDER => true,
-            MenuLink::KIND_LINK => Links::linkable( $item, $this->menu, $this->items, $this->router ),
+            MenuLink::KIND_LINK => Links::linkable( $item, new LinkCheck( $this->menu, $this->items, $this->router ) ),
             MenuLink::KIND_CATEGORIES => $link->id === null,
             default => false,
         };

@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Import\Joomla;
 
-use Aimeos\Cms\Concerns\Joomla\Remembers;
 use Illuminate\Support\Collection;
 
 

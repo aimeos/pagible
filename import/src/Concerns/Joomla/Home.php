@@ -31,22 +31,22 @@ trait Home
     protected function importHome( \stdClass $menuItem, PageView $root, bool $newRoot ): bool
     {
         $link = Joomla\MenuLink::of( $menuItem );
-        $type = $this->homeType( $link );
+        $mode = $this->homeMode( $link );
 
-        if( $type === 'category' )
+        if( $mode === Joomla\HomeMode::Category )
         {
             $this->importCategoryHome( $menuItem, (int) $link->id, $root );
             return true;
         }
 
         // other home pages like the featured articles keep the root page, the child items are imported below
-        if( $type === 'root' )
+        if( $mode === Joomla\HomeMode::Root )
         {
             $this->updateHomeRoot( $menuItem, $root );
             return true;
         }
 
-        if( $type === 'article' ) {
+        if( $mode === Joomla\HomeMode::Article ) {
             return $this->importArticleHome( $menuItem, (int) $link->article(), $root, $newRoot );
         }
 
@@ -66,34 +66,32 @@ trait Home
      * the other menu items and their pages are disabled.
      *
      * @param Joomla\MenuLink $link Link of the home menu item
-     * @return 'category'|'root'|'article'|null "category" if the root page shows the category whose articles are imported below it,
-     *  "root" if the root page is kept for other home pages like the featured articles, "article" if the article is imported into
-     *  the root page or NULL if the home menu item is imported like the other menu items
+     * @return Joomla\HomeMode|null How the root page is used or NULL if the home menu item is imported like the other menu items
      */
-    protected function homeType( Joomla\MenuLink $link ): ?string
+    protected function homeMode( Joomla\MenuLink $link ): ?Joomla\HomeMode
     {
         // home menu items listing the subcategories show no category themselves, the home category is only known if Joomla shows it to guests
         if( $link->kind === Joomla\MenuLink::KIND_CATEGORY && $link->id ) {
-            return $this->wiring->categoryItems->homeCatId() === $link->id ? 'category' : null;
+            return $this->wiring->categoryItems->homeCatId() === $link->id ? Joomla\HomeMode::Category : null;
         }
 
         if( !( $id = $link->article() ) ) {
-            return 'root';
+            return Joomla\HomeMode::Root;
         }
 
         // the run decided once if the imported article is shown by the root page, e.g. not if the root page was changed in Pagible
-        return isset( $this->run->articles->categoryIds[$id] ) && $this->run->home->isArticle( $id ) ? 'article' : null;
+        return isset( $this->run->articles->categoryIds[$id] ) && $this->run->home->isArticle( $id ) ? Joomla\HomeMode::Article : null;
     }
 
 
     /**
-     * Uses the root page for the articles of the category of the Joomla home menu item, see homeType().
+     * Uses the root page for the articles of the category of the Joomla home menu item, see homeMode().
      *
      * @param int $catId ID of the category shown on the home page
      */
     protected function importCategoryHome( \stdClass $menuItem, int $catId, PageView $root ): void
     {
-        // the category is shown by Joomla, see homeType()
+        // the category is shown by Joomla, see homeMode()
         $category = $this->wiring->site->category( $catId );
 
         // the articles of the category are imported below the root page
@@ -103,7 +101,7 @@ trait Home
 
 
     /**
-     * Imports the article of the Joomla home menu item into the root page, see homeType().
+     * Imports the article of the Joomla home menu item into the root page, see homeMode().
      *
      * The root page is used for the home menu item also if the article fails to import, so its child items stay below the root page.
      *
@@ -127,7 +125,7 @@ trait Home
             // before, e.g. the home menu item can be moved to another unchanged article. Like its variants, which are saved
             // anyway because the home menu items of other languages can change too, an unchanged root page keeps its version
             $rendered = $run->pages->homeArticlePage( $article, $menuItem );
-            $status = $this->updateRoot( $root, $rendered, $run->translations( $article ), Joomla\Kind::ARTICLE );
+            $status = $this->updateRoot( $root, $rendered, $run->translations( $article ), Joomla\Kind::Article );
 
             return $this->imported( $article->id, $root, Joomla\Row::title( $article ), '', $newRoot ? Status::Imported : $status );
         } );
@@ -158,7 +156,7 @@ trait Home
             $data = $this->pageData( $root->name, $root->path, $root->status, $root->tag );
             $rendered = $run->pages->homePage( $menuItem, $data, $category );
 
-            return $this->updateRoot( $root, $rendered, $run->menuTranslations( $menuItem ), Joomla\Kind::MENU );
+            return $this->updateRoot( $root, $rendered, $run->menuTranslations( $menuItem ), Joomla\Kind::Menu );
         } );
     }
 
@@ -191,10 +189,10 @@ trait Home
      *
      * @param Joomla\Page $rendered Page data and content of the root page
      * @param list<\stdClass> $rows Associated articles or menu items in other languages
-     * @param Joomla\Kind::ARTICLE|Joomla\Kind::MENU $kind Type of the rows
+     * @param Joomla\Kind::Article|Joomla\Kind::Menu $kind Type of the rows
      * @return Status Status of the root page
      */
-    protected function updateRoot( PageView $root, Joomla\Page $rendered, array $rows, string $kind ): Status
+    protected function updateRoot( PageView $root, Joomla\Page $rendered, array $rows, Joomla\Kind $kind ): Status
     {
         $status = $this->updateVersion( $root, $rendered->data, $rendered->content );
         $this->saveHomeTranslations( $root, $rows, $kind );
@@ -211,9 +209,9 @@ trait Home
      * menu item are reported like the former translations of the other pages, see formerTranslations().
      *
      * @param list<\stdClass> $rows Associated articles or menu items in other languages
-     * @param Joomla\Kind::ARTICLE|Joomla\Kind::MENU $kind Type of the rows
+     * @param Joomla\Kind::Article|Joomla\Kind::Menu $kind Type of the rows
      */
-    protected function saveHomeTranslations( PageView $root, array $rows, string $kind ): void
+    protected function saveHomeTranslations( PageView $root, array $rows, Joomla\Kind $kind ): void
     {
         $homes = $this->wiring->homes->otherHomes();
         $rows = array_values( array_filter( $rows, fn( $row ) => !isset( $homes[Joomla\Row::language( $row )] ) ) );
@@ -227,7 +225,7 @@ trait Home
         foreach( $homes as $tag => $item )
         {
             if( !( $id = Joomla\MenuItem::article( $item ) ) ) {
-                $this->saveTranslation( $root, Joomla\Translation::of( $item, Joomla\Kind::MENU ), $variants );
+                $this->saveTranslation( $root, Joomla\Translation::of( $item, Joomla\Kind::Menu ), $variants );
                 $saved[] = $item;
             } elseif( isset( $articles[$id] ) ) {
                 // articles for all languages are shown in the language of the home menu item, the same article can be shown by several ones

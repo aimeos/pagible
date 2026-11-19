@@ -204,27 +204,17 @@ class ImportTest extends TestAbstract
 
     public function testChangedTimesKeepUnknownTimesChanged(): void
     {
-        $command = new class extends JoomlaImport {
-            /**
-             * @param array<int|string, int> $scheduled
-             * @return array<int|string, int>
-             */
-            public function changed( \Aimeos\Cms\Import\Joomla\Articles $articles, array $scheduled ): array
-            {
-                return $this->changedTimes( $articles, $scheduled );
-            }
-        };
         $articles = new \Aimeos\Cms\Import\Joomla\Articles( categoryIds: [1 => 0, 2 => 0, 3 => 0], translations: [3 => [9]],
             times: [1 => 100, 3 => 100, 9 => 100], items: [], visible: [], routes: ['a' => [], 'ta' => []] );
 
         // passed publishing dates are later changes, but articles without known modification time stay changed
-        $this->assertSame( [1 => 200, 2 => PHP_INT_MAX, 3 => 300], $command->changed( $articles, [1 => 200, 2 => 50, 9 => 300] ) );
+        $this->assertSame( [1 => 200, 2 => PHP_INT_MAX, 3 => 300], \Aimeos\Cms\Import\Joomla\Tracker::times( $articles, [1 => 200, 2 => 50, 9 => 300] ) );
     }
 
 
     public function testFetchesPagesAtOnce(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
         $queries = $this->queries( $db )->pluck( 'query' );
@@ -1106,7 +1096,6 @@ class ImportTest extends TestAbstract
         $db->table( 'menu' )->insert( ['link' => 'index.php?option=com_content&view=category&layout=blog&id=2', 'type' => 'component',
             'publish_up' => now()->utc()->addDay()->format( 'Y-m-d H:i:s' )] + $this->menuItem( 101, 'News', 1, 1 ) );
 
-        $command = $this->app?->make( JoomlaImport::class ) ?? throw new \RuntimeException( 'Application not initialized' );
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
 
         $since = now()->getTimestamp();
@@ -1114,9 +1103,8 @@ class ImportTest extends TestAbstract
 
         // the publishing date of the category menu item counts for the articles of the category and its subcategories
         $reader = $this->reader();
-        $wiring = \Aimeos\Cms\Import\Joomla\Wiring::read( $reader, \Aimeos\Cms\Import\Joomla\Host::forTests(), new \Aimeos\Cms\Import\Joomla\Origin( 'example.com' ), '', [], 'en' );
-        ( new \ReflectionProperty( $command, 'wiring' ) )->setValue( $command, $wiring );
-        $times = ( new \ReflectionMethod( $command, 'scheduledTimes' ) )->invoke( $command, $reader, $since, $wiring->articles( true ) );
+        $wiring = \Aimeos\Cms\Import\Joomla\Wiring::read( $reader, static::host(), new \Aimeos\Cms\Import\Joomla\Origin( 'example.com' ), '', [], 'en' );
+        $times = ( new \Aimeos\Cms\Import\Joomla\Tracker( $reader, $wiring->site ) )->scheduled( $wiring->articles( true ), $since );
 
         $this->assertArrayHasKey( 4, $times );
         $this->assertArrayNotHasKey( 1, $times );

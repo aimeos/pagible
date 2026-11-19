@@ -57,7 +57,7 @@ class Claims
      */
     public function claimPath( string $path, string $domain = '' ): bool
     {
-        $key = $this->key( $path );
+        $key = self::key( $path );
 
         if( isset( $this->claimed[$domain][$key] ) ) {
             return false;
@@ -95,9 +95,9 @@ class Claims
      * Returns the key the URL path is compared by.
      *
      * Paths differing only in case or accents are the same path in databases with case- and accent-insensitive collation.
-     * Without the "intl" extension, only the case is ignored.
+     * Without the "intl" extension, only the case is ignored. Also used for the domains and paths of the variants.
      */
-    protected function key( string $path ): string
+    public static function key( string $path ): string
     {
         $key = mb_strtolower( $path );
 

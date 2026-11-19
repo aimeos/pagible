@@ -418,6 +418,34 @@ abstract class TestAbstract extends ImportTestAbstract
 
 
     /**
+     * Returns the functions and settings for objects created without import command.
+     *
+     * Functions which aren't given do nothing: no messages are shown, no images are imported and the page data is empty.
+     *
+     * @param (\Closure(string): void)|null $warn Shows a warning, ignored if NULL
+     * @param (\Closure(string): void)|null $warnOnce Shows a warning only once, ignored if NULL
+     * @param (\Closure(string): void)|null $debug Shows a message in the debug output, ignored if NULL
+     * @param (\Closure(string, string): ?string)|null $image Imports an image and returns the file ID, no images are imported if NULL
+     * @param (\Closure(string, string, int, string): array<string, mixed>)|null $pageData Returns the page data, no data if NULL
+     * @param \DateTimeZone|null $timezone Time zone of the Joomla site, UTC if NULL
+     */
+    protected static function host( ?\Closure $warn = null, ?\Closure $warnOnce = null, ?\Closure $debug = null,
+        ?\Closure $image = null, ?\Closure $pageData = null, ?\DateTimeZone $timezone = null ): Joomla\Host
+    {
+        $none = function( string $msg ): void {};
+
+        return new Joomla\Host(
+            warn: $warn ?? $none,
+            warnOnce: $warnOnce ?? $none,
+            debug: $debug ?? $none,
+            image: $image ?? fn( string $path, string $alt ): ?string => null,
+            pageData: $pageData ?? fn( string $title, string $slug, int $status, string $tag ): array => [],
+            timezone: $timezone ?? new \DateTimeZone( Joomla\Date::TIMEZONE )
+        );
+    }
+
+
+    /**
      * Returns the objects importing the Joomla site like the import creates them.
      *
      * @param Joomla\Site $site Settings of the Joomla site
@@ -430,7 +458,7 @@ abstract class TestAbstract extends ImportTestAbstract
     protected function wiring( Joomla\Site $site, ?Collection $items = null, ?Collection $menu = null, ?Joomla\Origin $origin = null,
         ?Joomla\Host $host = null, ?Joomla\Reader $reader = null ): Joomla\Wiring
     {
-        return new Joomla\Wiring( $reader ?? $this->reader(), $host ?? Joomla\Host::forTests(), $origin ?? new Joomla\Origin(), $site,
+        return new Joomla\Wiring( $reader ?? $this->reader(), $host ?? static::host(), $origin ?? new Joomla\Origin(), $site,
             $menu ?? Collection::make(), $items ?? Collection::make() );
     }
 
@@ -466,7 +494,7 @@ abstract class TestAbstract extends ImportTestAbstract
     protected function articles( array $routes = [], array $translations = [], array $categoryIds = [], array $translated = [] ): Joomla\Articles
     {
         return new Joomla\Articles( categoryIds: $categoryIds, translations: $translated, times: [], items: [], visible: [],
-            routes: [Joomla\Kind::ARTICLE => $routes, Joomla\Kind::ARTICLE_TRANSLATION => $translations] );
+            routes: [Joomla\Kind::Article->value => $routes, Joomla\Kind::ARTICLE_TRANSLATION => $translations] );
     }
 
 
@@ -529,7 +557,7 @@ abstract class TestAbstract extends ImportTestAbstract
         $list = collect( $list )->filter( Joomla\Fields::renderable( ... ) );
         $site = $this->site( $this->categories( [] ), reader: $reader );
 
-        $types = new Joomla\FieldTypes( $origin, ( Joomla\Host::forTests( timezone: $timezone ) )->timezone, $site->version );
+        $types = new Joomla\FieldTypes( $origin, ( static::host( timezone: $timezone ) )->timezone, $site->version );
 
         return new Joomla\Fields( $list, $site->plugins, new Joomla\FieldLookups( $reader ), $types );
     }

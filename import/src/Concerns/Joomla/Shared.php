@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Concerns\Joomla;
 
+use Aimeos\Cms\DB as CmsDB;
 use Aimeos\Cms\Import\Joomla;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
@@ -17,18 +18,55 @@ use Aimeos\Cms\Models\PageView;
  * Objects of the current run and methods of the Joomla import shared by the traits importing the articles, the home pages and the menu.
  *
  * Used once by JoomlaImport, so the objects of the run are declared in one place only. The traits Articles,
- * Home and Menu rely on the class using this trait too.
+ * Categories, Changes, Home, Menu, Redirects, Reports and Vanished rely on the class using this trait too,
+ * the methods of JoomlaImport they call are declared here.
  */
 trait Shared
 {
-    /** Objects importing the Joomla site, set by handle() together with the run before anything is imported */
+    /** Objects importing the Joomla site, set by handle() before anything is imported */
     private Joomla\Wiring $wiring;
-    /** Imported articles and folders and the objects building the pages, set by handle() before anything is imported */
+    /** Imported articles and folders and the objects building the pages, set by startRun() before anything is imported */
     private Joomla\Run $run;
 
 
     /**
-     * Fetches the articles imported next and their texts and pages at once, see JoomlaImport::prefetch().
+     * Creates the objects of the run and the modification times of the articles, see JoomlaImport::startRun().
+     *
+     * @param Joomla\Reader $reader Reader for the Joomla database
+     * @param Joomla\Articles $articles Imported articles and translations
+     * @param PageView|null $root Root page or NULL if the dry run finds none, an import would create it
+     */
+    abstract protected function startRun( Joomla\Reader $reader, Joomla\Articles $articles, ?PageView $root ): void;
+
+
+    /**
+     * Tests if the import may update the root page, see JoomlaImport::updatesRoot().
+     *
+     * @param PageView|null $root Root page or NULL if the dry run finds none, an import would create it
+     */
+    abstract protected function updatesRoot( ?PageView $root ): bool;
+
+
+    /**
+     * Returns the object splitting the articles and menu items into chunks, see JoomlaImport::chunks().
+     *
+     * @param Joomla\Articles $articles Imported articles and translations
+     */
+    abstract protected function chunks( Joomla\Articles $articles ): Joomla\Chunks;
+
+
+    /**
+     * Returns the chunks of the articles in import order, see JoomlaImport::articleChunks().
+     *
+     * @param Joomla\Chunks $chunks Splits the articles into chunks, see chunks()
+     * @param Joomla\Articles $articles Imported articles and translations
+     * @return \Generator<int, \Illuminate\Support\Collection<int|string, int>> Positions of the categories by article ID per chunk
+     */
+    abstract protected function articleChunks( Joomla\Chunks $chunks, Joomla\Articles $articles ): \Generator;
+
+
+    /**
+     * Fetches the articles imported next and their texts and pages at once, see Changes::prefetch().
      *
      * @param array<int|string> $ids IDs of the articles imported next
      * @param PageView|null $root Root page if the article of the home menu item is imported next
@@ -37,7 +75,7 @@ trait Shared
 
 
     /**
-     * Returns the prefetched article if it's imported and has no page yet, see JoomlaImport::pendingArticle().
+     * Returns the prefetched article if it's imported and has no page yet, see Changes::pendingArticle().
      *
      * @throws \LogicException If the pending article wasn't prefetched for the current chunk
      */
@@ -45,9 +83,40 @@ trait Shared
 
 
     /**
-     * Imports the article within a transaction and returns its page or NULL on failure, see JoomlaImport::tryImportArticle().
+     * Imports the article within a transaction and returns its page or NULL on failure, see Articles::tryImportArticle().
      */
     abstract protected function tryImportArticle( \stdClass $article, PageView $parent ): ?PageView;
+
+
+    /**
+     * Fetches the pages of the folders and link pages saved next, the variants of the translated ones and the files of the images at once.
+     *
+     * Unlike the pages and variants of the articles, which are replaced per chunk, the ones of the folders are added,
+     * so pageByPath(), variants() and createFile() don't fetch them one by one. Known URL paths aren't fetched again.
+     *
+     * @param array<string, bool> $slugs TRUE if the folder has translations whose variants are needed by URL path
+     * @param array<int, string> $images Paths and URLs of the images of the folders
+     */
+    protected function prefetchFolders( array $slugs, array $images = [] ): void
+    {
+        $missing = array_filter( array_keys( $slugs ), fn( $slug ) => !array_key_exists( trim( (string) $slug, '/' ), $this->prefetchedPages ) );
+        $this->prefetchPages( array_map( 'strval', $missing ) );
+
+        $pageIds = [];
+
+        foreach( array_keys( array_filter( $slugs ) ) as $slug )
+        {
+            if( $page = $this->prefetchedPages[trim( (string) $slug, '/' )] ?? null ) {
+                $pageIds[] = (string) $page->id;
+            }
+        }
+
+        // the variants of the articles of the current chunk are kept and must not be evicted, remaining folders fetch their own
+        $pageIds = array_diff( array_unique( $pageIds ), array_map( 'strval', array_keys( $this->prefetchedVariants ) ) );
+        $this->prefetchVariants( array_slice( $pageIds, 0, max( 0, CmsDB::IN_SIZE - count( $this->prefetchedVariants ) ) ), true );
+        // the files of the articles of the current chunk are still used
+        $this->prefetchFiles( array_map( $this->resolveFile( ... ), $images ), false );
+    }
 
 
     /**
@@ -55,20 +124,21 @@ trait Shared
      *
      * @param array{page: PageView, status: Status} $saved Saved page and its status
      * @param \stdClass $row Category or menu item of the page
-     * @param Joomla\Kind::CATEGORY|Joomla\Kind::MENU $kind Type of the row
+     * @param Joomla\Kind::Category|Joomla\Kind::Menu $kind Type of the row
      * @param string $slug URL path of the page
      * @param string|null $reason Why the page is disabled or NULL if it's published
      * @return PageView Saved page
      */
-    protected function savePageTranslations( array $saved, \stdClass $row, string $kind, string $slug, ?string $reason ): PageView
+    protected function savePageTranslations( array $saved, \stdClass $row, Joomla\Kind $kind, string $slug, ?string $reason ): PageView
     {
         $page = $saved['page'];
-        $translations = $kind === Joomla\Kind::CATEGORY ? $this->run->categoryTranslations( $row ) : $this->run->menuTranslations( $row );
+        $translations = $kind === Joomla\Kind::Category ? $this->run->categoryTranslations( $row ) : $this->run->menuTranslations( $row );
+        $label = Joomla\Row::title( $row ) . " (/{$slug})";
 
-        $this->notice( 'Disabled', Joomla\Row::title( $row ) . " (/{$slug})", $reason );
+        $this->notice( 'Disabled', $label, $reason );
         $variants = $this->savedVariants( $page, $saved['status'], $translations );
         $this->saveTranslations( $page, $translations, $kind, $variants, $reason !== null );
-        $this->formerTranslations( $page, $translations, $variants, Joomla\Row::title( $row ) . " (/{$slug})" );
+        $this->formerTranslations( $page, $translations, $variants, $label );
 
         return $page;
     }
@@ -92,11 +162,11 @@ trait Shared
      * Creates or updates the variants of the page from the associated articles, categories or menu items.
      *
      * @param list<\stdClass> $rows Associated articles, categories or menu items in other languages
-     * @param Joomla\Kind::ARTICLE|Joomla\Kind::CATEGORY|Joomla\Kind::MENU $kind Type of the rows
+     * @param Joomla\Kind $kind Type of the rows
      * @param array<string, PageView> $variants Variants of the page fetched before by language code
      * @param bool $disabled TRUE if the page is disabled, so its translations are disabled too, FALSE to use their own status
      */
-    protected function saveTranslations( PageView $page, array $rows, string $kind, array $variants, bool $disabled = false ): void
+    protected function saveTranslations( PageView $page, array $rows, Joomla\Kind $kind, array $variants, bool $disabled = false ): void
     {
         foreach( $rows as $row ) {
             $this->saveTranslation( $page, Joomla\Translation::of( $row, $kind ), $variants, $disabled );
@@ -129,44 +199,15 @@ trait Shared
             return;
         }
 
-        $urls = $this->run->urls;
-        $slug = $page->tag === Pages::TAG_ROOT ? $urls->rootPath( $language ) : match( $translation->kind ) {
-            Joomla\Kind::ARTICLE => $urls->articleTranslationPath( $row ),
-            Joomla\Kind::CATEGORY => $urls->categoryTranslationPath( $row ),
-            Joomla\Kind::MENU => $urls->menuTranslationPath( $row ),
-            default => throw $this->unknownKind( $translation->kind ),
-        };
+        $slug = $page->tag === Pages::TAG_ROOT ? $this->run->urls->rootPath( $language ) : $this->run->urls->translatedPath( $translation );
         // translations without own menu item are shown in the menu item of their category in their language
-        $routes = $this->wiring->router->languageRoutes( $translation->tag );
-        $pages = $this->run->pages;
-
-        // translations are restricted like the pages of the articles, categories and menu items in the import language
-        $variant = match( $translation->kind ) {
-            Joomla\Kind::ARTICLE => $translation->showing
-                ? $pages->homeTranslation( $row, $slug, $routes, $translation->showing, $translation->tag )
-                : $pages->articlePage( $row, $slug, $routes, $status ),
-            // the translation uses the menu item linking to the category, the home menu item of its language is used for the root page instead
-            Joomla\Kind::CATEGORY => $pages->categoryPage( $row, $slug, $routes, $routes->ownCategoryItem( (int) $row->id ), $status ),
-            Joomla\Kind::MENU => $pages->menuTranslation( $row, $slug, $status ),
-            default => throw $this->unknownKind( $translation->kind ),
-        };
+        $variant = $this->run->pages->translation( $translation, $slug, $this->wiring->router->languageRoutes( $translation->tag ), $status );
 
         if( $variant )
         {
             $this->notice( $variant->translationNotice(), Joomla\Row::title( $row ) . " (/{$slug}) [{$language['lang']}]", $variant->reason );
             $this->saveVariant( $page, $language, $slug, $variant->data, $variant->content, $existing );
         }
-    }
-
-
-    /**
-     * Returns the exception for a translation whose type isn't one of the Joomla\Kind constants.
-     *
-     * @param string $kind Unknown type of the translation
-     */
-    protected function unknownKind( string $kind ): \LogicException
-    {
-        return new \LogicException( "Unknown type \"{$kind}\" of the Joomla translation" );
     }
 
 

@@ -33,7 +33,7 @@ class MenuImportTest extends TestAbstract
         ] );
         $db->table( 'content' )->insert( ['id' => 5, 'title' => 'Other', 'alias' => 'other', 'language' => 'en-GB', 'introtext' => '<p>Other</p>', 'fulltext' => ''] );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $cms->enableQueryLog();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
@@ -44,8 +44,8 @@ class MenuImportTest extends TestAbstract
 
         // the texts of the menu items with their translations and of the remaining articles are fetched at once
         $this->assertSame( [[1, 2, 3, 4], [5]], $queries->map( fn( $query ) => array_map( 'intval', $query['bindings'] ) )->values()->all() );
-        // only the page of the menu heading is looked up on its own, the ones of the articles are fetched at once
-        $this->assertSame( [['company', '/company']], $lookups->map( fn( $query ) => array_slice( $query['bindings'], -3, 2 ) )->values()->all() );
+        // the pages of the menu heading and the articles are fetched at once, none is looked up on its own
+        $this->assertSame( [], $lookups->map( fn( $query ) => array_slice( $query['bindings'], -3, 2 ) )->values()->all() );
         // the pages of the menu items use their titles as names
         $this->assertSame( ['About', 'Nur'], PageView::where( 'name', 'Company' )->firstOrFail()->children->pluck( 'name' )->all() );
         $this->assertSame( 'Willkommen', PageView::language( 'de' )->findOrFail( PageView::where( 'name', 'About' )->firstOrFail()->id )->content[1]->data->title ?? null );
@@ -76,7 +76,7 @@ class MenuImportTest extends TestAbstract
             protected const TEXT_SIZE = 4;
         } );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $cms->enableQueryLog();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
@@ -153,7 +153,7 @@ class MenuImportTest extends TestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
         $db->table( 'content' )->update( ['introtext' => '<p>Changed</p>'] );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $cms->enableQueryLog();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
@@ -382,6 +382,75 @@ class MenuImportTest extends TestAbstract
     }
 
 
+    public function testFetchesFolderPagesVariantsAndImagesAtOnce(): void
+    {
+        $schema = Schema::connection( 'joomla' );
+        $schema->table( 'categories', function( Blueprint $table ) {
+            $table->string( 'language' )->default( '*' );
+            $table->text( 'description' )->nullable();
+            $table->text( 'params' )->nullable();
+        } );
+        $schema->table( 'menu', fn( Blueprint $table ) => $table->string( 'language' )->default( '*' ) );
+        $db = DB::connection( 'joomla' );
+        $categories = $articles = $menu = $associations = [];
+
+        // several translated categories with images and subcategories, each with an article, and translated menu headings and links
+        foreach( range( 1, 4 ) as $num )
+        {
+            $id = 10 * $num;
+            $categories[] = ['id' => $id, 'extension' => 'com_content', 'title' => "News {$num}", 'alias' => "news-{$num}", 'language' => 'en-GB',
+                'parent_id' => 1, 'level' => 2, 'lft' => $id, 'params' => "{\"image\":\"images/news-{$num}.jpg\"}"];
+            $categories[] = ['id' => $id + 1, 'extension' => 'com_content', 'title' => "Nachrichten {$num}", 'alias' => "nachrichten-{$num}", 'language' => 'de-DE',
+                'parent_id' => 1, 'level' => 2, 'lft' => $id + 1, 'params' => "{\"image\":\"images/nachrichten-{$num}.jpg\"}"];
+            $categories[] = ['id' => $id + 2, 'extension' => 'com_content', 'title' => "Local {$num}", 'alias' => "local-{$num}", 'language' => 'en-GB',
+                'parent_id' => $id, 'level' => 3, 'lft' => $id + 2, 'params' => "{\"image\":\"images/local-{$num}.jpg\"}"];
+            $articles[] = ['id' => 100 + $num, 'title' => "Article {$num}", 'alias' => "article-{$num}", 'language' => 'en-GB',
+                'introtext' => '<p>Text</p>', 'fulltext' => '', 'catid' => $id + 2];
+            $menu[] = ['language' => 'en-GB'] + $this->menuItem( 200 + $num, "Company {$num}", 1, 1 );
+            $menu[] = ['language' => 'de-DE', 'menutype' => 'mainmenu-de'] + $this->menuItem( 300 + $num, "Firma {$num}", 1, 1 );
+            $menu[] = ['id' => 400 + $num, 'menutype' => 'mainmenu', 'title' => "Shop {$num}", 'alias' => "shop-{$num}", 'language' => 'en-GB',
+                'link' => "https://shop{$num}.example.com/", 'type' => 'url', 'parent_id' => 1, 'level' => 1, 'lft' => 400 + $num];
+            array_push( $associations, ['id' => $id, 'context' => 'com_categories.item', 'key' => "cat{$num}"],
+                ['id' => $id + 1, 'context' => 'com_categories.item', 'key' => "cat{$num}"],
+                ['id' => 200 + $num, 'context' => 'com_menus.item', 'key' => "menu{$num}"],
+                ['id' => 300 + $num, 'context' => 'com_menus.item', 'key' => "menu{$num}"] );
+        }
+
+        $db->table( 'categories' )->insert( $categories );
+        $db->table( 'content' )->insert( $articles );
+        $db->table( 'menu' )->insert( $menu );
+        $db->table( 'associations' )->insert( $associations );
+
+        $run = function(): array {
+            $cms = \Aimeos\Cms\DB::connection();
+            $cms->enableQueryLog();
+            $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com', '--language' => ['de-DE:de']] ) );
+            $queries = $this->queries( $cms )->pluck( 'query' );
+            $cms->flushQueryLog();
+            $cms->disableQueryLog();
+
+            return [
+                // pageByPath() of a single URL path
+                $queries->filter( fn( $query ) => preg_match( '/"path" in \(\?, \?\).* limit 1/', $query ) === 1 )->count(),
+                // variants() of a single page
+                $queries->filter( fn( $query ) => str_ends_with( $query, 'where "cms_page_view"."id" = ? and "cms_page_view"."tenant_id" = ?' ) )->count(),
+                // createFile() of a single image
+                $queries->filter( fn( $query ) => str_starts_with( $query, 'select * from "cms_files" where "path" = ?' ) )->count(),
+            ];
+        };
+
+        // the pages, variants and image files of the category folders and the menu folders and links aren't fetched one by one
+        $this->assertSame( [[0, 0, 0], [0, 0, 0]], [$run(), $run()] );
+
+        $local = PageView::where( 'name', 'Local 2' )->firstOrFail();
+        $this->assertSame( 'nachrichten-2', PageView::language( 'de' )->findOrFail( $local->parent_id )->path );
+        $this->assertSame( 'Firma 3', PageView::language( 'de' )->findOrFail( PageView::where( 'name', 'Company 3' )->firstOrFail()->id )->name );
+        $this->assertSame( 4, PageView::where( 'to', 'like', 'https://shop%' )->count() );
+        $this->assertSame( 4, File::where( 'path', 'like', 'images/local-%' )->count() );
+        $this->assertSame( 4, File::where( 'path', 'like', 'images/nachrichten-%' )->count() );
+    }
+
+
     public function testCategoryOptionsAndActiveMenuItem(): void
     {
         $this->extraTables();
@@ -502,7 +571,7 @@ class MenuImportTest extends TestAbstract
 
         // the redirects of previous imports are updated, the pages using their URL paths are fetched at once
         $db->table( 'redirect_links' )->where( 'id', 2 )->update( ['new_url' => 'https://shop.example.org/'] );
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $cms->enableQueryLog();
 
         $this->assertSame( 0, Artisan::call( 'cms:joomla-import', ['--domain' => 'example.com'] ) );
