@@ -104,28 +104,6 @@ final class Refiner
 
 
     /**
-     * Merges the refined data into a content element and updates its file IDs.
-     *
-     * @param array<string, mixed> $entry Existing content element
-     * @param array<mixed> $item Refined content element
-     * @return array<string, mixed> Updated content element
-     */
-    private static function element( array $entry, array $item ) : array
-    {
-        $refined = array_filter( (array) ( $item['data'] ?? [] ), fn( $v ) => $v !== null );
-        $entry['data'] = (array) Validation::defaults( $entry['type'], array_merge( (array) ( $entry['data'] ?? [] ), $refined ) );
-
-        if( $ids = Validation::files( $entry['data'] ) ) {
-            $entry['files'] = $ids;
-        } else {
-            unset( $entry['files'] );
-        }
-
-        return $entry;
-    }
-
-
-    /**
      * Merges an AI refine response into the structured entries of a schema section like "meta".
      *
      * @param array<mixed> $entries Existing entries by name
@@ -149,7 +127,8 @@ final class Refiner
     /**
      * Merges an AI refine response into the existing content elements.
      *
-     * Keeps IDs and groups of existing elements and derives the file IDs from the element data.
+     * Keeps IDs and groups of existing elements, Validation::content() adds missing IDs,
+     * default groups, schema defaults and the file IDs from the element data.
      *
      * @param array<mixed> $content Existing content elements
      * @param array<mixed> $response AI response with updated content elements
@@ -160,7 +139,6 @@ final class Refiner
     {
         $result = [];
         $map = collect( $content )->keyBy( 'id' );
-        $default = Schema::section( $pagetype );
 
         foreach( $response as $item )
         {
@@ -173,33 +151,16 @@ final class Refiner
             $entry = is_string( $id ) && $id !== '' ? (array) $map->pull( $id, [] ) : [];
             // data can't be merged into another type
             $entry['type'] = $entry['type'] ?? $item['type'] ?? 'text';
-            $entry['id'] = ( $entry['id'] ?? '' ) ?: Utils::uid();
-            $entry['group'] = $entry['group'] ?? $item['group'] ?? $default;
+            $entry['group'] = $entry['group'] ?? $item['group'] ?? null;
+            $entry['refid'] = $item['refid'] ?? $entry['refid'] ?? null;
 
-            $result[] = $entry['type'] === 'reference' ? self::reference( $entry, $item ) : self::element( $entry, $item );
+            $refined = array_filter( (array) ( $item['data'] ?? [] ), fn( $v ) => $v !== null );
+            $entry['data'] = array_merge( (array) ( $entry['data'] ?? [] ), $refined );
+
+            $result[] = $entry;
         }
 
-        return $result;
-    }
-
-
-    /**
-     * Updates the referenced element ID of a reference element.
-     *
-     * @param array<string, mixed> $entry Existing reference element
-     * @param array<mixed> $item Refined reference element
-     * @return array<string, mixed> Updated reference element
-     */
-    private static function reference( array $entry, array $item ) : array
-    {
-        $refid = $item['refid'] ?? $entry['refid'] ?? null;
-
-        if( $refid !== null ) {
-            $entry['refid'] = $refid;
-        }
-
-        unset( $entry['data'] );
-        return $entry;
+        return Validation::content( $result, $pagetype );
     }
 
 

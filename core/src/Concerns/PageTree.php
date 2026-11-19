@@ -53,22 +53,13 @@ trait PageTree
     public static function tree( ?string $id = null ) : QueryBuilder
     {
         $root = $id ? static::withTrashed()->findOrFail( $id ) : null;
-        $maxDepth = ( $root?->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 );
+        $depth = (int) ( $root?->getDepth() ?? 0 );
 
-        $lft = NestedSet::LFT;
-        $rgt = NestedSet::RGT;
-        $depth = NestedSet::DEPTH;
-
-        $builder = Nav::withTrashed()
-            ->select( 'id', 'tenant_id', 'parent_id', 'name', 'title', 'tag', 'type', 'path', 'domain', 'lang', 'source', 'to', 'status', 'latest_id', $lft, $rgt, $depth )
-            ->orderBy( $lft );
+        $builder = Nav::withTrashed()->orderBy( NestedSet::LFT )
+            ->whereIn( NestedSet::DEPTH, range( $depth, $depth + config( 'cms.navdepth', 2 ) ) );
 
         if( $root ) {
-            $builder->where( $lft, '>=', $root->getLft() )
-                ->where( $rgt, '<=', $root->getRgt() )
-                ->whereIn( $depth, range( (int) $root->getDepth(), $maxDepth ) );
-        } else {
-            $builder->whereIn( $depth, range( 0, $maxDepth ) );
+            $builder->where( NestedSet::LFT, '>=', $root->getLft() )->where( NestedSet::RGT, '<=', $root->getRgt() );
         }
 
         return $builder;
@@ -79,9 +70,9 @@ trait PageTree
      * Returns the query for the complete subtrees of the given non-empty list of pages, including trashed ones.
      *
      * @param iterable<Model> $roots Pages with their nested set bounds
-     * @return QueryBuilder<PageView>
+     * @return PageQuery<PageView>
      */
-    public static function subtrees( iterable $roots ) : QueryBuilder
+    public static function subtrees( iterable $roots ) : PageQuery
     {
         $list = self::topmost( $roots );
 

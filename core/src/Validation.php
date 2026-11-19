@@ -115,34 +115,8 @@ class Validation
             $input['domain'] = mb_strtolower( $input['domain'] );
         }
 
-        if( isset( $input['content'] ) )
-        {
-            foreach( $input['content'] as &$item )
-            {
-                $item = (object) $item;
-
-                if( is_string( $item->type ?? null )
-                    && ( is_object( $item->data ?? null ) || is_array( $item->data ?? null ) )
-                ) {
-                    $item->data = self::defaults( $item->type, $item->data );
-                }
-
-                // Keep the per-element "files" list in sync with the file references in the
-                // element data, so readers resolving files from it (JSON:API, blog list) work
-                // regardless of how the content was saved.
-                if( ( $item->type ?? null ) !== 'reference' )
-                {
-                    if( $files = self::files( $item->data ?? null ) ) {
-                        $item->files = $files;
-                    } else {
-                        unset( $item->files );
-                    }
-                }
-            }
-
-            unset( $item );
-
-            self::validateContent( $input['content'] );
+        if( isset( $input['content'] ) ) {
+            $input['content'] = self::content( $input['content'], $input['type'] ?? null );
         }
 
         if( array_key_exists( 'meta', $input ) ) {
@@ -172,15 +146,21 @@ class Validation
     public static function content( array $items, ?string $type = null ) : array
     {
         $schemas = Schema::schemas( section: 'content' );
-
-        self::validateContent( $items, $schemas );
-
         $sections = Schema::sections( $type );
         $default = $sections[0] ?? 'main';
 
         return array_values( array_map( function( array|object $item ) use ( $schemas, $sections, $default ) {
             $item = (array) $item;
-            $type = $item['type'];
+            $type = $item['type'] ?? null;
+
+            if( $type === 'reference' ) {
+                if( !is_string( $item['refid'] ?? null ) || $item['refid'] === '' ) {
+                    throw new InvalidInputException( 'Invalid content reference ID' );
+                }
+            } elseif( !$type || !isset( $schemas[$type] ) ) {
+                throw new InvalidInputException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
+            }
+
             $group = $item['group'] ?? $default;
 
             if( $sections && !in_array( $group, $sections, true ) ) {
@@ -191,19 +171,24 @@ class Validation
                 'id' => $item['id'] ?? Utils::uid(),
                 'type' => $type,
                 'group' => $group,
-                'data' => self::defaults( $type, $item['data'] ?? [], 'content', $schemas ),
             ];
 
             if( !empty( $item['refid'] ) ) {
                 $entry['refid'] = $item['refid'];
             }
 
+            // the per-element "files" list is kept in sync with the file references in the
+            // element data, so readers resolving files from it (JSON:API, blog list) work
             if( $type === 'reference' ) {
                 if( !empty( $item['files'] ) ) {
                     $entry['files'] = array_values( (array) $item['files'] );
                 }
-            } elseif( $files = self::files( $entry['data'] ) ) {
-                $entry['files'] = $files;
+            } else {
+                $entry['data'] = self::defaults( $type, $item['data'] ?? [], 'content', $schemas );
+
+                if( $files = self::files( $entry['data'] ) ) {
+                    $entry['files'] = $files;
+                }
             }
 
             return (object) $entry;
@@ -241,11 +226,12 @@ class Validation
      * @param string $type Entry type
      * @param object|array<string, mixed> $data Entry field data
      * @param string $section Schema section ('meta' or 'config')
-     * @return object Canonical {type, data, files} entry
+     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
+     * @return object{type: string, data: object, files: array<int, string>} Canonical meta/config entry
      */
-    public static function entry( string $type, object|array $data, string $section ) : object
+    public static function entry( string $type, object|array $data, string $section, ?array $schemas = null ) : object
     {
-        $data = self::defaults( $type, $data, $section );
+        $data = self::defaults( $type, $data, $section, $schemas );
 
         return (object) [
             'type' => $type,
@@ -272,11 +258,11 @@ class Validation
      */
     public static function structured( array|object|null $items, string $section, bool $strict = false ) : object
     {
-        $schemas = Schema::schemas( section: $section );
-
         if( is_null( $items ) ) {
             throw new InvalidInputException( sprintf( 'Invalid %s structure: expected an object keyed by type', $section ) );
         }
+
+        $schemas = Schema::schemas( section: $section );
 
         $result = new \stdClass();
         $items = (array) $items;
@@ -301,7 +287,7 @@ class Validation
 
             $entryType = $value['type'];
 
-            if( !is_string( $key ) || $key === '' || !is_string( $entryType ) || $entryType !== $key ) {
+            if( !is_string( $key ) || $key === '' || $entryType !== $key ) {
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": key and type must match', $section, $key ) );
             }
 
@@ -324,18 +310,13 @@ class Validation
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": files must be a list of strings', $section, $key ) );
             }
 
-            $data = self::defaults( $entryType, $value['data'], $section, $schemas );
-            $files = self::files( $data );
+            $entry = self::entry( $entryType, $value['data'], $section, $schemas );
 
-            if( $files !== $value['files'] ) {
+            if( $entry->files !== $value['files'] ) {
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": files must match data references', $section, $key ) );
             }
 
-            $result->{$entryType} = (object) [
-                'type' => $entryType,
-                'data' => $data,
-                'files' => $files,
-            ];
+            $result->{$entryType} = $entry;
         }
 
         return $result;
@@ -423,37 +404,6 @@ class Validation
         }
 
         return $data;
-    }
-
-
-    /**
-     * Validates page/element content arrays against configured schemas
-     *
-     * @param iterable<array<string, mixed>|object> $items Content items to validate
-     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
-     * @throws Exception If content type is unknown
-     */
-    private static function validateContent( iterable $items, ?array $schemas = null ): void
-    {
-        $schemas ??= Schema::schemas( section: 'content' );
-
-        foreach( $items as $item )
-        {
-            $item = (object) $item;
-            $type = $item->type ?? null;
-
-            if( $type === 'reference' ) {
-                if( !is_string( $item->refid ?? null ) || $item->refid === '' ) {
-                    throw new InvalidInputException( 'Invalid content reference ID' );
-                }
-
-                continue;
-            }
-
-            if( !$type || !isset( $schemas[$type] ) ) {
-                throw new InvalidInputException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
-            }
-        }
     }
 
 

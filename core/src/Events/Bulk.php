@@ -7,7 +7,6 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\ContentType;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 
@@ -47,15 +46,6 @@ class Bulk implements Loggable, ShouldBroadcastNow
         public readonly array $projected = [],
         public readonly array $langs = [],
     ) {}
-
-
-    /**
-     * Returns the type of the changed content.
-     */
-    public function type() : ContentType
-    {
-        return ContentType::from( $this->contentType );
-    }
 
 
     public function broadcastAs() : string

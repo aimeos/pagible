@@ -45,10 +45,8 @@ class SearchQuery
      */
     public static function collection( EloquentBuilder $query, Builder $builder, array $fields ) : Builder
     {
-        $isDraft = in_array( 'draft', $fields );
-
         static::variants( $query, $builder );
-        static::apply( $query, $builder, $isDraft );
+        static::apply( $query, $builder, in_array( 'draft', $fields ) );
 
         if( $builder->query === '' && $builder->queryCallback ) {
             call_user_func( $builder->queryCallback, $query );
@@ -108,18 +106,14 @@ class SearchQuery
     {
         foreach( $builder->wheres as $key => $where )
         {
-            $field = is_array( $where ) ? ( $where['field'] ?? $key ) : $key;
+            $field = self::field( $where, $key );
 
-            if( in_array( $field, self::SKIP_FIELDS ) ) {
-                continue;
-            }
-
-            if( !( $col = $qualify( $field ) ) ) {
+            if( in_array( $field, self::SKIP_FIELDS ) || !( $col = $qualify( $field ) ) ) {
                 continue;
             }
 
             $value = self::value( $where );
-            $operator = is_array( $where ) ? ( $where['operator'] ?? '=' ) : '=';
+            $operator = $where['operator'] ?? '=';
 
             if( is_null( $value ) ) {
                 $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
@@ -175,7 +169,7 @@ class SearchQuery
         [$lang, $trashed, $only] = $entry;
 
         // external engines only contain trashed variants if soft deleted models are indexed
-        $query->fallback( $lang, $trashed && ( !Scout::usesExternalSearch() || config( 'scout.soft_delete', false ) ) );
+        $query->fallback( $lang, $trashed && ( !Scout::usesExternalSearch() || Scout::keepsTrashed() ) );
 
         if( $trashed ) {
             $query->withoutGlobalScope( SoftDeletingScope::class );
@@ -204,7 +198,7 @@ class SearchQuery
     {
         // withTrashed() removes the soft delete filter, so trashed variants are included if soft deletes are indexed
         $where = collect( $builder->wheres )->firstWhere( 'field', '__soft_deleted' );
-        $trashed = $where ? $where['value'] === 1 : (bool) config( 'scout.soft_delete', false );
+        $trashed = $where ? $where['value'] === 1 : Scout::keepsTrashed();
 
         if( $query instanceof PageQuery && ( $lang = static::language( $builder ) ) !== null ) {
             $query->language( $lang, $trashed );
@@ -240,7 +234,7 @@ class SearchQuery
 
         // the index contains the languages each variant is listed for, so the engine returns one variant per page
         if( Scout::usesExternalSearch() ) {
-            $builder->where( $with && config( 'scout.soft_delete', false ) ? 'langs_trashed' : 'langs', $lang );
+            $builder->where( $with && Scout::keepsTrashed() ? 'langs_trashed' : 'langs', $lang );
         }
 
         return $builder;
@@ -290,7 +284,7 @@ class SearchQuery
     {
         foreach( $builder->wheres as $key => $where )
         {
-            if( ( $where['field'] ?? $key ) !== 'lang' ) {
+            if( self::field( $where, $key ) !== 'lang' ) {
                 continue;
             }
 
@@ -306,11 +300,23 @@ class SearchQuery
 
 
     /**
+     * Returns the field name of a Scout where clause.
+     *
+     * @param mixed $where Plain value or array with "field" key
+     * @param int|string $key Key of the where clause used if no field is given
+     */
+    public static function field( mixed $where, int|string $key ) : mixed
+    {
+        return is_array( $where ) ? ( $where['field'] ?? $key ) : $key;
+    }
+
+
+    /**
      * Returns the value of a Scout where clause.
      *
      * @param mixed $where Plain value or array with "value" key
      */
-    private static function value( mixed $where ) : mixed
+    public static function value( mixed $where ) : mixed
     {
         return is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
     }

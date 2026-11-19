@@ -9,7 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Models\Page;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\DB;
 
 use Aimeos\Cms\Concerns\Benchmarks;
 use Aimeos\Cms\Events\PageInvalidated;
@@ -53,7 +53,7 @@ class BenchmarkCore extends Command
 
         if( $options['unseed'] )
         {
-            $this->unseed( config( 'cms.db', 'sqlite' ), $tenant, $domain );
+            $this->unseed( $tenant, $domain );
             return self::SUCCESS;
         }
 
@@ -419,32 +419,32 @@ class BenchmarkCore extends Command
     /**
      * Remove all benchmark data for the tenant, respecting FK constraints.
      */
-    protected function unseed( string $conn, string $tenant, string $domain ): void
+    protected function unseed( string $tenant, string $domain ): void
     {
         self::invalidate( $domain );
 
         // Break circular page↔version FK by clearing latest_id first
-        DB::connection( $conn )->table( 'cms_page_variants' )
+        DB::connection()->table( 'cms_page_variants' )
             ->where( 'tenant_id', $tenant )
             ->where( 'editor', 'benchmark' )
             ->update( ['latest_id' => null] );
 
-        $variants = DB::connection( $conn )->table( 'cms_page_variants' )
+        $variants = DB::connection()->table( 'cms_page_variants' )
             ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->get( ['id', 'page_id'] );
-        $versionIds = DB::connection( $conn )->table( 'cms_versions' )
+        $versionIds = DB::connection()->table( 'cms_versions' )
             ->where( 'tenant_id', $tenant )->where( 'editor', 'benchmark' )->pluck( 'id' );
 
         // Delete pivot tables (no tenant_id column)
         foreach( $variants->pluck( 'id' )->chunk( 500 ) as $chunk )
         {
-            DB::connection( $conn )->table( 'cms_page_file' )->whereIn( 'variant_id', $chunk )->delete();
-            DB::connection( $conn )->table( 'cms_page_element' )->whereIn( 'variant_id', $chunk )->delete();
+            DB::connection()->table( 'cms_page_file' )->whereIn( 'variant_id', $chunk )->delete();
+            DB::connection()->table( 'cms_page_element' )->whereIn( 'variant_id', $chunk )->delete();
         }
 
         foreach( $versionIds->chunk( 500 ) as $chunk )
         {
-            DB::connection( $conn )->table( 'cms_version_file' )->whereIn( 'version_id', $chunk )->delete();
-            DB::connection( $conn )->table( 'cms_version_element' )->whereIn( 'version_id', $chunk )->delete();
+            DB::connection()->table( 'cms_version_file' )->whereIn( 'version_id', $chunk )->delete();
+            DB::connection()->table( 'cms_version_element' )->whereIn( 'version_id', $chunk )->delete();
         }
 
         // Delete main tables
@@ -452,7 +452,7 @@ class BenchmarkCore extends Command
 
         foreach( $tables as $table )
         {
-            DB::connection( $conn )->table( $table )
+            DB::connection()->table( $table )
                 ->where( 'tenant_id', $tenant )
                 ->where( 'editor', 'benchmark' )
                 ->delete();
@@ -460,7 +460,7 @@ class BenchmarkCore extends Command
 
         // Pages have no editor column, they are identified by their variants
         foreach( $variants->pluck( 'page_id' )->unique()->chunk( 500 ) as $chunk ) {
-            DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $tenant )->whereIn( 'id', $chunk )->delete();
+            DB::connection()->table( 'cms_pages' )->where( 'tenant_id', $tenant )->whereIn( 'id', $chunk )->delete();
         }
     }
 }

@@ -126,7 +126,7 @@ class PageView extends Base
 
     /** @var list<string> Columns required for Page lifecycle operations */
     public const REQUIRED_COLUMNS = [
-        'id', 'variant_id', 'tenant_id', 'parent_id', 'source', 'lang', 'path', 'domain', 'editor', 'latest_id', 'deleted_at',
+        'id', 'variant_id', 'tenant_id', 'parent_id', 'source', 'lang', 'path', 'domain', 'editor', 'latest_id', 'deleted_at', 'variant_deleted_at',
         NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH,
     ];
 
@@ -215,17 +215,6 @@ class PageView extends Base
      */
     public function getMorphClass()
     {
-        return static::versionType();
-    }
-
-
-    /**
-     * Returns the type stored in the versions referencing the page variants.
-     *
-     * @return string Versionable type
-     */
-    protected static function versionType() : string
-    {
         return PageVariant::class;
     }
 
@@ -277,6 +266,18 @@ class PageView extends Base
 
 
     /**
+     * Returns the columns required for lifecycle operations plus the requested response fields.
+     *
+     * @param array<string> $fields Requested response fields
+     * @return list<string> Column names
+     */
+    public static function columns( array $fields ) : array
+    {
+        return array_values( array_unique( [...self::REQUIRED_COLUMNS, ...array_intersect( self::RESPONSE_COLUMNS, $fields )] ) );
+    }
+
+
+    /**
      * Returns the relations of the files and elements used by the page content.
      *
      * @param string $prefix Prefix of the relation names, e.g. "latest."
@@ -313,18 +314,6 @@ class PageView extends Base
 
 
     /**
-     * Returns the language variants of the page and their state.
-     *
-     * @return list<VariantState> Variant list
-     */
-    public function variantList() : array
-    {
-        $id = (string) $this->id;
-        return self::variantLists( [$id => (string) $this->source] )[$id];
-    }
-
-
-    /**
      * Returns the language variants of the pages and their state.
      *
      * The state is "current", "stale" (source changed since the last update), "trashed" or
@@ -337,7 +326,8 @@ class PageView extends Base
      */
     public static function variantLists( array $pages, ?string $lang = null ) : array
     {
-        $variants = [];
+        $locales = array_fill_keys( $lang !== null ? [$lang] : Utils::locales(), null );
+        $result = array_fill_keys( array_keys( $pages ), $locales );
 
         // the publish state of the latest version is joined to avoid a second ID list
         foreach( array_chunk( array_map( 'strval', array_keys( $pages ) ), DB::IN_SIZE ) as $chunk )
@@ -352,27 +342,20 @@ class PageView extends Base
                     'cms_page_variants.deleted_at', 'cms_versions.published',
                 ] );
 
-            foreach( $list as $variant ) {
-                $variants[] = $variant;
+            foreach( $list as $variant )
+            {
+                $result[$variant->page_id][$variant->lang] = [
+                    'id' => $variant->id,
+                    'lang' => $variant->lang,
+                    'source' => $variant->lang === $pages[$variant->page_id],
+                    'state' => match( true ) {
+                        $variant->trashed() => 'trashed',
+                        $variant->stale => 'stale',
+                        default => 'current',
+                    },
+                    'published' => (bool) $variant->getAttribute( 'published' ),
+                ];
             }
-        }
-
-        $locales = array_fill_keys( $lang !== null ? [$lang] : Utils::locales(), null );
-        $result = array_fill_keys( array_keys( $pages ), $locales );
-
-        foreach( $variants as $variant )
-        {
-            $result[$variant->page_id][$variant->lang] = [
-                'id' => $variant->id,
-                'lang' => $variant->lang,
-                'source' => $variant->lang === $pages[$variant->page_id],
-                'state' => match( true ) {
-                    $variant->trashed() => 'trashed',
-                    $variant->stale => 'stale',
-                    default => 'current',
-                },
-                'published' => (bool) $variant->getAttribute( 'published' ),
-            ];
         }
 
         foreach( $result as $id => $list )

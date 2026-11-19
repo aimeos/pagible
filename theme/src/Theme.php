@@ -308,7 +308,14 @@ class Theme
 
         if( $theme && isset( $theme['path'] ) )
         {
-            View::addNamespace( $name, $theme['path'] . '/views' );
+            // registering the path again on each call would grow the hints unbounded
+            $finder = View::getFinder();
+            $hints = method_exists( $finder, 'getHints' ) ? $finder->getHints() : [];
+
+            if( !in_array( $path = $theme['path'] . '/views', $hints[$name] ?? [], true ) ) {
+                View::addNamespace( $name, $path );
+            }
+
             return $name;
         }
 
@@ -323,7 +330,7 @@ class Theme
         $tenant = Tenancy::value();
 
         if( !$tenant || !config( 'cms.theme.disk' ) ) {
-            return $name;
+            return self::hint( $name, [] );
         }
 
         $ttl = config( 'cms.theme.ttl', 0 );
@@ -338,15 +345,14 @@ class Theme
         } );
 
         if( !$version ) {
-            return $name;
+            return self::hint( $name, [] );
         }
 
         $dir = storage_path( 'app/cms-themes/' . $tenant . '/' . $name );
 
         self::sync( $disk, $name, $dir, $version );
-        View::getFinder()->replaceNamespace( $name, $dir . '/views' );
 
-        return $name;
+        return self::hint( $name, [$dir . '/views'] );
     }
 
 
@@ -363,6 +369,31 @@ class Theme
         $key = $theme === 'cms' ? $name : $theme . '::' . $name;
 
         return [$key, (array) ( Schema::get( $theme )['config'][$key]['fields'] ?? [] )];
+    }
+
+
+    /**
+     * Sets the view paths of a tenant theme namespace.
+     *
+     * Long-running workers serve several tenants, so the paths of the previous tenant are
+     * replaced and the resolved views are flushed to not render the views of another tenant.
+     *
+     * @param string $name Theme name
+     * @param list<string> $paths View paths of the current tenant, empty if it has no such theme
+     * @return string View namespace
+     */
+    private static function hint( string $name, array $paths ) : string
+    {
+        $finder = View::getFinder();
+        $hints = method_exists( $finder, 'getHints' ) ? $finder->getHints() : [];
+
+        if( ( $hints[$name] ?? [] ) !== $paths )
+        {
+            $finder->replaceNamespace( $name, $paths );
+            $finder->flush();
+        }
+
+        return $name;
     }
 
 

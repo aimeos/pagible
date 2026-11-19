@@ -116,7 +116,7 @@ trait PrunesVersions
 
         foreach( Version::withoutTenancy()->select( 'id', 'versionable_id' )
             ->where( 'tenant_id', $tenant )
-            ->where( 'versionable_type', static::versionType() )
+            ->where( 'versionable_type', static::query()->getModel()->getMorphClass() )
             ->whereIn( 'versionable_id', $ids )
             ->orderBy( 'versionable_id' )->orderByDesc( 'created_at' )->orderByDesc( 'id' )
             ->cursor() as $version

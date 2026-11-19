@@ -283,8 +283,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         // Pre-pass: detect draft mode and apply trashed scope side effects
         foreach( $builder->wheres as $key => $where )
         {
-            $field = $where['field'] ?? $key;
-            $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+            $field = SearchQuery::field( $where, $key );
+            $value = SearchQuery::value( $where );
 
             if( $field === 'latest' && $value == true ) {
                 $isDraft = true;
@@ -309,6 +309,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         // Pages are indexed per variant, a language filter selects the variants of that language
         SearchQuery::variants( $query, $builder );
+        SearchQuery::columns( $query, $builder );
 
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {
@@ -397,7 +398,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         foreach( $builder->wheres as $key => $where )
         {
-            if( ( $where['field'] ?? $key ) == 'latest' ) {
+            if( SearchQuery::field( $where, $key ) == 'latest' ) {
                 $query->where( 'cms_index.latest', $where['operator'] ?? '=', $where['value'] ?? $where );
             }
         }

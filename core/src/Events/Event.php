@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Events;
 
 use Aimeos\Cms\ContentType;
+use Aimeos\Cms\LifecycleAction;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 
@@ -62,21 +63,12 @@ abstract class Event implements Loggable, ShouldBroadcastNow
 
 
     /**
-     * Returns the type of the changed content.
-     */
-    public function type() : ContentType
-    {
-        return ContentType::from( $this->contentType );
-    }
-
-
-    /**
      * Websocket event name the browser subscribes to: the content type plus the lower-cased
      * class name, e.g. 'page.saved' or 'element.moved'.
      */
     public function broadcastAs() : string
     {
-        return $this->contentType . '.' . strtolower( class_basename( $this ) );
+        return $this->contentType . '.' . $this->action();
     }
 
 
@@ -106,13 +98,13 @@ abstract class Event implements Loggable, ShouldBroadcastNow
      */
     public function log() : array
     {
-        $projected = $this instanceof Published && $this->projection !== [];
+        $projected = $this->projection !== [];
         $data = $projected ? $this->projection : $this->data;
 
         return ['message' => 'cms.' . $this->contentType, 'fields' => [
             'type' => $this->contentType,
             'source' => $this->source,
-            'action' => strtolower( class_basename( $this ) ),
+            'action' => $this->action(),
             'ids' => [$this->id],
             'editor' => $this->editor,
             'published' => $projected || $this->published,
@@ -131,8 +123,8 @@ abstract class Event implements Loggable, ShouldBroadcastNow
      */
     public function changes() : array
     {
-        $action = strtolower( class_basename( $this ) );
-        $projection = $this instanceof Published ? $this->projection : [];
+        $action = $this->action();
+        $projection = $this->projection;
         $data = $projection ?: $this->data;
         $page = $this->type() === ContentType::Page;
 
@@ -143,12 +135,21 @@ abstract class Event implements Loggable, ShouldBroadcastNow
             versionId: $projection['version_id'] ?? $this->latestId,
             published: $action === 'published' && ( $this->published || $projection !== [] ),
             // lifecycle events of whole pages have no language, only those of single page variants
-            lang: $page && !( $this instanceof Dropped || $this instanceof Restored || $this instanceof Purged ) && is_string( $data['lang'] ?? null ) ? $data['lang'] : null,
+            lang: $page && LifecycleAction::tryFrom( $action ) === null && is_string( $data['lang'] ?? null ) ? $data['lang'] : null,
             path: $page && is_string( $data['path'] ?? null ) ? $data['path'] : null,
             domain: $page && is_string( $data['domain'] ?? null ) ? $data['domain'] : null,
             editor: $this->editor,
             tenant: $this->tenant,
             source: $this->source,
         )];
+    }
+
+
+    /**
+     * Returns the lower-cased class name as action, e.g. "saved" or "moved".
+     */
+    protected function action() : string
+    {
+        return strtolower( class_basename( $this ) );
     }
 }

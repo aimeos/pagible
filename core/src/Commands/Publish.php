@@ -121,7 +121,6 @@ class Publish extends Command
         {
             // no retries: apply() marks the version as published in memory
             DB::connection()->transaction( function() use ( $at, $id, $model, $publication, $type, $version ) {
-                $publication->prepare( collect( [$version] ) );
                 $publication->apply( $model, $version );
 
                 Version::due( $at )->older( $version )

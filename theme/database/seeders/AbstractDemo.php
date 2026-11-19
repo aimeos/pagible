@@ -16,7 +16,7 @@ use Aimeos\Cms\Scout;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
-use Illuminate\Support\Facades\Storage;
+use Aimeos\Cms\FileStorage;
 
 
 /**
@@ -67,13 +67,7 @@ abstract class AbstractDemo
         Element::where( 'tenant_id', $this->tenant )->forceDelete();
         Page::withTrashed()->where( 'tenant_id', $this->tenant )->whereIsRoot()->get()->each->forceDelete();
 
-        PageView::withoutSyncingToSearch( function() {
-            Element::withoutSyncingToSearch( function() {
-                File::withoutSyncingToSearch( function() {
-                    $this->pages();
-                } );
-            } );
-        } );
+        Scout::mute( [PageView::class, Element::class, File::class], fn() => $this->pages() );
 
         Scout::rebuild();
     }
@@ -444,7 +438,7 @@ abstract class AbstractDemo
         $file->setUniqueIds();
         $path = $file->dir() . '/' . $filename;
 
-        if( !Storage::disk( config( 'cms.disks.public.name', 'public' ) )->put( $path, $svg ) ) {
+        if( !FileStorage::disk( 'public' )->put( $path, $svg ) ) {
             throw new \Aimeos\Cms\Exception( sprintf( 'Unable to store logo "%s"', $path ) );
         }
 

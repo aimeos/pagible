@@ -4,7 +4,7 @@
 @else
 <video preload="none" controls playsinline
 @endif
-	title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
+	title="{{ cmstext($page, $file, 'description') ?? '' }}"
 	src="{{ cmsasset($page, $file) }}"
 	@if($preview = current(array_reverse((array) cms($file, 'previews', []))))
 		poster="{{ cmsasset($page, $file, $preview) }}"

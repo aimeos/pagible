@@ -68,7 +68,7 @@ class Pages
      * @param PageInput $input Page fields (content/meta/config go into version aux), "lang" defaults to the app locale
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $ref Sibling page ID to insert before
-     * @param string|null $parent Parent page ID to append to
+     * @param string|null $parent Parent page ID to append to, whose domain, theme and type are used if not passed
      * @return PageView
      * @throws InvalidInputException If the input is invalid
      */
@@ -77,7 +77,7 @@ class Pages
         Permission::check( 'page:add', $user );
 
         $input['lang'] = ( $input['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
-        $input = Validation::page( $input, $user );
+        $input = Validation::page( $this->inherit( $input, $parent ), $user );
         $editor = Utils::editor( $user );
 
         Permission::checkLang( (string) $input['lang'], $user );
@@ -102,7 +102,7 @@ class Pages
             // Inserts the page with its draft version so the draft (latest=true) row is indexed
             $page->newDraft( [
                 'data' => array_diff_key( $input, $aux ),
-                'lang' => $input['lang'] ?? null,
+                'lang' => $input['lang'],
                 'editor' => $editor,
                 'aux' => $aux,
             ], $refs );
@@ -140,7 +140,9 @@ class Pages
             $page = PageView::withTrashed()->findOrFail( $id );
 
             PageView::withoutSyncingToSearch( function() use ( $page, $ref, $parent, $editor ) {
-                $this->saveNode( $page, fn( Page $node ) => $this->position( $node, $ref, $parent ) );
+                $node = $page->toPage();
+                $this->position( $node, $ref, $parent );
+                $page->synced( $node );
                 PageRows::save( $page, ['editor' => $editor] );
             } );
 
@@ -412,7 +414,7 @@ class Pages
                 return [$items, []];
             }
 
-            $pages = $this->restoredPages( $items );
+            $pages = Scout::usesExternalSearch() ? $this->subtreeVariants( $items )[0] : array_map( strval( ... ), $items->modelKeys() );
             $at = ( new Page() )->freshTimestamp();
 
             Page::restoreSubtrees( $items, $at );
@@ -560,7 +562,6 @@ class Pages
      */
     protected function copyRows( string $pageId, PageVariant $variant, array $data, array $aux, array $refs, string $editor ) : array
     {
-        $tenant = Tenancy::value();
         $copy = PageRows::row( $pageId, ['status' => 0] + PageRows::data( $data ) + [
             'hashes' => (array) $variant->hashes,
             'stale' => (bool) $variant->stale,
@@ -569,7 +570,7 @@ class Pages
 
         // same as the "saving" event of the versions which isn't fired for bulk inserts
         $version = ( new Version() )->forceFill( [
-            'tenant_id' => $tenant,
+            'tenant_id' => Tenancy::value(),
             'versionable_type' => PageVariant::class,
             'versionable_id' => $copy['id'],
             'lang' => $data['lang'] ?? $variant->lang,
@@ -629,7 +630,8 @@ class Pages
     protected function copyData( PageVariant $variant, ?Version $version, array &$known, array $loaded, ?Authenticatable $user ) : array
     {
         $data = (array) ( $version->data ?? $variant->only( PageVariant::DATA_FIELDS ) );
-        $aux = (array) ( $version->aux ?? $this->variantAux( (string) $variant->id ) );
+        $aux = (array) ( $version->aux ?? PageVariant::select( 'id', 'content', 'meta', 'config' )
+            ->findOrFail( $variant->id )->only( ['content', 'meta', 'config'] ) );
         $domain = (string) ( $data['domain'] ?? $variant->domain );
 
         $data['lang'] = $variant->lang;
@@ -801,29 +803,9 @@ class Pages
      */
     protected function copyVersions( Collection $variants ) : Collection
     {
-        $versions = [];
-
-        foreach( $variants->pluck( 'latest_id' )->filter()->chunk( DB::IN_SIZE ) as $chunk )
-        {
-            foreach( Version::with( ['files:id', 'elements:id'] )->whereIn( 'id', $chunk->all() )->get() as $version ) {
-                $versions[(string) $version->id] = $version;
-            }
-        }
-
-        return collect( $versions );
-    }
-
-
-    /**
-     * Returns the content, meta and config of a page variant without versions.
-     *
-     * @param string $id Page variant ID
-     * @return array<string, mixed> Content, meta and config data
-     */
-    protected function variantAux( string $id ) : array
-    {
-        $variant = PageVariant::select( 'id', 'content', 'meta', 'config' )->findOrFail( $id );
-        return ['content' => $variant->content, 'meta' => $variant->meta, 'config' => $variant->config];
+        return $variants->pluck( 'latest_id' )->filter()->chunk( DB::IN_SIZE )
+            ->flatMap( fn( $chunk ) => Version::with( ['files:id', 'elements:id'] )->whereIn( 'id', $chunk->all() )->get() )
+            ->keyBy( 'id' );
     }
 
 
@@ -858,26 +840,6 @@ class Pages
 
 
     /**
-     * Changes the page of the page view and takes over the stored tree columns.
-     *
-     * The page is created from the page view without querying the database.
-     *
-     * @param PageView $page Existing page view
-     * @param \Closure(Page): mixed $change Writes the page, e.g. by moving, trashing or restoring it
-     * @return Page Saved page
-     */
-    protected function saveNode( PageView $page, \Closure $change ) : Page
-    {
-        $node = $page->toPage();
-
-        $change( $node );
-        $page->synced( $node );
-
-        return $node;
-    }
-
-
-    /**
      * Saves the page at its new position in the page tree.
      *
      * The reference and parent pages are loaded within the locked transaction and the page tree
@@ -886,15 +848,13 @@ class Pages
      * @param Page $node New or existing page
      * @param string|null $ref Sibling page ID to insert before
      * @param string|null $parent Parent page ID to append to, as root page if both are NULL
-     * @return bool TRUE if the page was saved
      */
-    protected function position( Page $node, ?string $ref, ?string $parent ) : bool
+    protected function position( Page $node, ?string $ref, ?string $parent ) : void
     {
-        if( $ref !== null ) {
-            return $node->saveAt( ref: Page::withTrashed()->findOrFail( $ref ) );
-        }
-
-        return $node->saveAt( parent: $parent !== null ? Page::withTrashed()->findOrFail( $parent ) : null );
+        $node->saveAt(
+            ref: $ref !== null ? Page::withTrashed()->findOrFail( $ref ) : null,
+            parent: $ref === null && $parent !== null ? Page::withTrashed()->findOrFail( $parent ) : null,
+        );
     }
 
 
@@ -908,12 +868,35 @@ class Pages
     protected function findPages( array $ids, array $fields ) : EloquentCollection
     {
         /** @var EloquentCollection<int, PageView> $items */
-        $items = PageView::withTrashed()->whereIn( 'id', $ids )->select( $fields ? [
-            ...PageView::REQUIRED_COLUMNS,
-            ...array_intersect( PageView::RESPONSE_COLUMNS, $fields ),
-        ] : PageView::SELECT_COLUMNS )->get();
+        $items = PageView::withTrashed()->whereIn( 'id', $ids )
+            ->select( $fields ? PageView::columns( $fields ) : PageView::SELECT_COLUMNS )->get();
 
         return $items;
+    }
+
+
+    /**
+     * Returns the input with the domain, theme and type of the latest parent version if they are not passed.
+     *
+     * @param array<string, mixed> $input Page input
+     * @param string|null $parent Parent page ID
+     * @return array<string, mixed> Page input with the inherited values
+     */
+    protected function inherit( array $input, ?string $parent ) : array
+    {
+        $keys = ['domain', 'theme', 'type'];
+
+        if( !$parent || !array_diff( $keys, array_keys( array_filter( $input, fn( $value ) => $value !== null ) ) ) ) {
+            return $input;
+        }
+
+        $data = Version::whereIn( 'id', PageView::withTrashed()->whereKey( $parent )->select( 'latest_id' ) )->first( ['data'] )?->data;
+
+        foreach( $keys as $key ) {
+            $input[$key] ??= $data->{$key} ?? '';
+        }
+
+        return $input;
     }
 
 
@@ -931,24 +914,6 @@ class Pages
 
 
     /**
-     * Returns the IDs of the restored pages to index.
-     *
-     * @param EloquentCollection<int, PageView> $items Restored pages
-     * @return array<string> IDs of the restored pages, including their subtrees for external search engines
-     */
-    protected function restoredPages( EloquentCollection $items ) : array
-    {
-        if( !Scout::usesExternalSearch() ) {
-            return array_map( strval( ... ), $items->modelKeys() );
-        }
-
-        // subtrees can be large, so only plain values are kept
-        return Page::withTrashed()->where( fn( $query ) => $this->whereSubtrees( $query, $items, NestedSet::LFT ) )
-            ->orderBy( NestedSet::LFT )->lockForUpdate()->toBase()->pluck( 'id' )->map( strval( ... ) )->all();
-    }
-
-
-    /**
      * Locks and returns the variants within the subtrees of the given pages.
      *
      * The variants are locked together with their tree rows in one query without the page IDs.
@@ -962,9 +927,14 @@ class Pages
         $variant = new PageVariant();
         $query = Page::withTrashed();
 
+        $lft = $query->qualifyColumn( NestedSet::LFT );
         $rows = $query->join( $variant->getTable(), $variant->qualifyColumn( 'page_id' ), '=', $query->qualifyColumn( 'id' ) )
-            ->where( fn( $query ) => $this->whereSubtrees( $query, $items, $query->qualifyColumn( NestedSet::LFT ) ) )
-            ->orderBy( $query->qualifyColumn( NestedSet::LFT ) )
+            ->where( function( $query ) use ( $items, $lft ) {
+                foreach( PageView::topmost( $items ) as $root ) {
+                    $query->orWhereBetween( $lft, [$root->getAttribute( NestedSet::LFT ), $root->getAttribute( NestedSet::RGT )] );
+                }
+            } )
+            ->orderBy( $lft )
             ->lockForUpdate()->toBase()
             ->get( $variant->qualifyColumns( ['id', 'page_id', 'domain', 'path'] ) );
 
@@ -979,20 +949,5 @@ class Pages
         $pages = $rows->pluck( 'page_id' )->map( strval( ... ) )->unique()->values()->all();
 
         return [$pages, $variants, $routes];
-    }
-
-
-    /**
-     * Adds the conditions matching the subtrees of the given pages to the query.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder<Page> $query Query to add the conditions to
-     * @param EloquentCollection<int, PageView> $items Pages with their nested set bounds
-     * @param string $column Name of the left nested set column
-     */
-    protected function whereSubtrees( $query, EloquentCollection $items, string $column ) : void
-    {
-        foreach( PageView::topmost( $items ) as $root ) {
-            $query->orWhereBetween( $column, [$root->getAttribute( NestedSet::LFT ), $root->getAttribute( NestedSet::RGT )] );
-        }
     }
 }

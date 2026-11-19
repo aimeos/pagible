@@ -110,18 +110,6 @@ class Schema
 
 
     /**
-     * Returns the default (first) section defined for a page type, or "main".
-     *
-     * @param string|null $type Page type
-     * @return string Default section name
-     */
-    public static function section( ?string $type = null ) : string
-    {
-        return self::sections( $type )[0] ?? 'main';
-    }
-
-
-    /**
      * Returns the content section names defined for a page type in schema.json.
      *
      * Sections are the layout regions a page type exposes (e.g. "main", "footer")
@@ -232,15 +220,8 @@ class Schema
     {
         foreach( ['content', 'meta', 'config'] as $section )
         {
-            if( !empty( $data[$section] ) )
-            {
-                $namespaced = [];
-
-                foreach( $data[$section] as $key => $value ) {
-                    $namespaced[$name . '::' . $key] = $value;
-                }
-
-                $data[$section] = $namespaced;
+            if( !empty( $data[$section] ) ) {
+                $data[$section] = array_combine( array_map( fn( $key ) => $name . '::' . $key, array_keys( $data[$section] ) ), $data[$section] );
             }
         }
 

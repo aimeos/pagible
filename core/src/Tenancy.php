@@ -19,21 +19,6 @@ use Illuminate\Support\Str;
 class Tenancy
 {
     /**
-     * Anonymous callback which provides the value of the current tenant.
-     *
-     * @deprecated Use Tenancy::valueUsing() instead, the property will be removed in a future release
-     */
-    public static ?\Closure $callback = null;
-
-    /**
-     * Optional override for the user-to-tenant access check.
-     *
-     * @var (\Closure(?Authenticatable, string): bool)|null
-     * @deprecated Use Tenancy::allowsUsing() instead, the property will be removed in a future release
-     */
-    public static ?\Closure $access = null;
-
-    /**
      * Current tenant value.
      */
     private string $id;
@@ -99,7 +84,7 @@ class Tenancy
             return false;
         }
 
-        if( ( $access = Hooks::get()->tenantAccess ?? self::$access ) !== null ) {
+        if( ( $access = Hooks::get()->tenantAccess ) !== null ) {
             return $access( $user, $tenant );
         }
 
@@ -134,19 +119,7 @@ class Tenancy
      */
     public static function configured() : bool
     {
-        return self::callback() !== null;
-    }
-
-
-    /**
-     * Returns the tenant ID provided by the configured callback.
-     *
-     * @return string Tenant ID or an empty string if no tenancy is configured
-     * @internal Use value() to get the ID of the current tenant
-     */
-    public static function resolve() : string
-    {
-        return ( $callback = self::callback() ) ? $callback() : '';
+        return Hooks::get()->tenant !== null;
     }
 
 
@@ -303,16 +276,5 @@ class Tenancy
     {
         Hooks::get()->tenant = $callback;
         app()->forgetInstance( self::class );
-    }
-
-
-    /**
-     * Returns the configured callback which provides the ID of the current tenant.
-     *
-     * @return (\Closure(): string)|null Tenant callback or NULL if tenancy isn't configured
-     */
-    private static function callback() : ?\Closure
-    {
-        return Hooks::get()->tenant ?? self::$callback;
     }
 }

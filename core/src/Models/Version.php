@@ -57,6 +57,9 @@ class Version extends Model
         'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published',
     ];
 
+    /** @var list<string> Version projection for loading the draft files and elements of the latest versions */
+    public const AUX_COLUMNS = ['id', 'tenant_id', 'versionable_id', 'aux'];
+
     /**
      * Boot the model.
      */
@@ -154,12 +157,10 @@ class Version extends Model
             $aux->meta->{'meta-tags'}->data->description ?? '',
         ];
 
-        foreach( (array) ( $aux->description ?? [] ) as $lang => $value ) {
-            $parts[] = $lang . ":\n" . $value;
-        }
-
-        foreach( (array) ( $aux->transcription ?? [] ) as $lang => $value ) {
-            $parts[] = $lang . ":\n" . $value;
+        foreach( [$aux->description ?? [], $aux->transcription ?? []] as $texts ) {
+            foreach( (array) $texts as $lang => $value ) {
+                $parts[] = $lang . ":\n" . $value;
+            }
         }
 
         $items = (array) ( $aux->content ?? [] );
@@ -268,16 +269,11 @@ class Version extends Model
      */
     public function owner() : ?Base
     {
-        if( $this->relationLoaded( 'owner' ) ) {
-            $model = $this->getRelation( 'owner' );
-            return $model instanceof Base ? $model : null;
-        }
-
-        if( $this->versionable_type === PageVariant::class ) {
+        if( !$this->relationLoaded( 'owner' ) && $this->versionable_type === PageVariant::class ) {
             return PageView::query()->variant( $this->versionable_id )->first();
         }
 
-        $model = $this->versionable;
+        $model = $this->relationLoaded( 'owner' ) ? $this->getRelation( 'owner' ) : $this->versionable;
         return $model instanceof Base ? $model : null;
     }
 
@@ -331,12 +327,12 @@ class Version extends Model
                 }
 
                 $aux = (array) ( $value ?? [] );
-                if( array_key_exists( 'meta', $aux ) ) {
-                    $aux['meta'] = Validation::structured( $aux['meta'], 'meta' );
-                }
 
-                if( array_key_exists( 'config', $aux ) ) {
-                    $aux['config'] = Validation::structured( $aux['config'], 'config' );
+                foreach( ['meta', 'config'] as $key )
+                {
+                    if( array_key_exists( $key, $aux ) ) {
+                        $aux[$key] = Validation::structured( $aux[$key], $key );
+                    }
                 }
 
                 return json_encode( $aux );

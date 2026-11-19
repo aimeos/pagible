@@ -18,10 +18,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Scout
 {
-    /** @var array<string, array<class-string<Models\Base>, array<int, array<string, true>>>>|null IDs to index by tenant, model and key type while deferred */
-    private static ?array $deferred = null;
-
-
     /**
      * Reindexes models by ID in bounded batches, queued if Scout uses a queue.
      *
@@ -38,10 +34,12 @@ class Scout
             return;
         }
 
-        if( self::$deferred !== null )
+        $hooks = Hooks::get();
+
+        if( $hooks->deferred !== null )
         {
             foreach( $ids as $id ) {
-                self::$deferred[Tenancy::value()][$model][(int) $keys][(string) $id] = true;
+                $hooks->deferred[Tenancy::value()][$model][(int) $keys][(string) $id] = true;
             }
 
             return;
@@ -54,7 +52,7 @@ class Scout
 
         $instance = new $model();
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
+        foreach( array_chunk( array_unique( $ids ), Models\Base::CHUNK ) as $chunk )
         {
             dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $keys ) )
                 ->onQueue( $instance->syncWithSearchUsingQueue() )
@@ -75,17 +73,19 @@ class Scout
      */
     public static function defer( \Closure $callback ) : mixed
     {
-        if( self::$deferred !== null ) {
+        $hooks = Hooks::get();
+
+        if( $hooks->deferred !== null ) {
             return $callback();
         }
 
-        self::$deferred = [];
+        $hooks->deferred = [];
 
         try {
             return $callback();
         } finally {
             self::flush();
-            self::$deferred = null;
+            $hooks->deferred = null;
         }
     }
 
@@ -95,13 +95,15 @@ class Scout
      */
     public static function flush() : void
     {
-        if( self::$deferred === null ) {
+        $hooks = Hooks::get();
+
+        if( $hooks->deferred === null ) {
             return;
         }
 
-        $pending = self::$deferred;
+        $pending = $hooks->deferred;
         // the collected models are indexed instead of being collected again
-        self::$deferred = null;
+        $hooks->deferred = null;
 
         try {
             foreach( $pending as $tenant => $models )
@@ -116,7 +118,7 @@ class Scout
                 } );
             }
         } finally {
-            self::$deferred = [];
+            $hooks->deferred = [];
         }
     }
 
@@ -214,7 +216,9 @@ class Scout
             return;
         }
 
-        self::afterCommit( fn() => self::index( $model, $ids, keys: $keys ) );
+        // without a transaction, the models are indexed immediately
+        $tenant = Tenancy::value();
+        DB::connection()->afterCommit( fn() => Tenancy::run( $tenant, fn() => self::index( $model, $ids, keys: $keys ) ) );
     }
 
 
@@ -231,21 +235,6 @@ class Scout
         foreach( [Models\Element::class, Models\File::class] as $model ) {
             $model::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class )->searchable( 50 ); // @phpstan-ignore method.notFound
         }
-    }
-
-
-    /**
-     * Executes the callback for the current tenant after the surrounding transaction commits.
-     *
-     * Without a transaction, the callback is executed immediately and it's discarded if the
-     * transaction is rolled back, so the search index doesn't contain uncommitted changes.
-     *
-     * @param \Closure(): mixed $callback Callback to execute
-     */
-    private static function afterCommit( \Closure $callback ) : void
-    {
-        $tenant = Tenancy::value();
-        DB::connection()->afterCommit( fn() => Tenancy::run( $tenant, $callback ) );
     }
 
 
@@ -268,11 +257,24 @@ class Scout
 
         // batches by search key to limit the number of page variants for many languages,
         // larger than the ID batches to load pages with only one language in one query
-        foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
+        foreach( array_chunk( array_unique( $ids ), Models\Base::CHUNK ) as $chunk )
         {
             $query = $instance::makeAllSearchableQuery()->withoutGlobalScope( SoftDeletingScope::class );
             ( $keys ? $query->whereIn( $column, $chunk ) : $query->whereKey( $chunk ) )->chunkById( 100, fn( $items ) => $instance->syncMakeSearchable( $items ), $column, $key );
         }
+    }
+
+
+    /**
+     * Updates the search index for trashed items, which other search engines keep if soft deletes are enabled.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs or search keys (variant IDs for pages)
+     * @param bool $keys TRUE if the IDs are search keys
+     */
+    public static function trash( string $model, array $ids, bool $keys = false ) : void
+    {
+        self::keepsTrashed() ? self::index( $model, $ids, $keys ) : self::unindex( $model, $ids );
     }
 
 
@@ -291,7 +293,7 @@ class Scout
         $instance = new $model();
         $key = $instance->getScoutKeyName();
 
-        foreach( array_chunk( array_values( array_unique( $ids ) ), Models\Base::CHUNK ) as $chunk )
+        foreach( array_chunk( array_unique( $ids ), Models\Base::CHUNK ) as $chunk )
         {
             $items = $instance->newCollection( array_map(
                 fn( $id ) => $instance->newInstance()->forceFill( [$key => $id] ),
@@ -333,15 +335,6 @@ class Scout
 
 
     /**
-     * Whether the configured Scout driver maintains a search index.
-     */
-    public static function usesSearchIndex() : bool
-    {
-        return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
-    }
-
-
-    /**
      * Returns the IDs of the variants whose listed languages can change by the changed languages.
      *
      * Only languages whose fallback chain contains a changed language get another variant. The
@@ -379,5 +372,14 @@ class Scout
         }
 
         return $list;
+    }
+
+
+    /**
+     * Whether the configured Scout driver maintains a search index.
+     */
+    private static function usesSearchIndex() : bool
+    {
+        return !in_array( config( 'scout.driver' ), [null, 'null', 'collection', 'database'], true );
     }
 }

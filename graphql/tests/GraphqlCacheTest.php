@@ -8,7 +8,10 @@
 namespace Tests;
 
 use Aimeos\Cms\Events\PageInvalidated;
+use Aimeos\Cms\Facades\Variants;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Permission;
 use Aimeos\Nestedset\NestedSet;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -56,7 +59,7 @@ class GraphqlCacheTest extends GraphqlTestAbstract
 
         $pages = collect();
         foreach( $roots as $node ) {
-            $pages = $pages->merge( PageView::query()
+            $pages = $pages->merge( PageView::query()->allVariants( true )
                 ->withTrashed()
                 ->whereBetween( NestedSet::LFT, [(int) $node->getAttribute( NestedSet::LFT ), (int) $node->getAttribute( NestedSet::RGT )] )
                 ->get( ['domain', 'path'] )
@@ -84,6 +87,27 @@ class GraphqlCacheTest extends GraphqlTestAbstract
         }
 
         Event::assertDispatchedTimes( PageInvalidated::class, $all->pluck( 'domain' )->unique()->count() );
+    }
+
+
+    public function testClearsLanguageVariants(): void
+    {
+        $page = PageView::where( 'tag', 'hidden' )->firstOrFail();
+
+        Permission::system( fn() => Variants::add( $page->id, 'de' ) );
+        PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->update( ['path' => 'versteckt'] );
+
+        Event::fake( [PageInvalidated::class] );
+
+        $this->actingAs( $this->user )->graphQL( '
+            mutation($ids: [ID!]!) {
+                clearCache(ids: $ids)
+            }
+        ', ['ids' => [$page->id]] );
+
+        Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
+            in_array( 'versteckt', $event->paths, true ) && in_array( $page->path, $event->paths, true )
+        );
     }
 
 

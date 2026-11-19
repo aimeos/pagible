@@ -10,7 +10,6 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Facades\Variants;
-use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -80,9 +79,9 @@ class SavePage extends Tool
         // Uses the raw request input, not the validated copy: validate() rebuilds wildcard arrays
         // via rule expansion, which materializes elements matched by content.*.id first and appends
         // id-less elements at the end, scrambling the author's order. The raw input preserves it;
-        // Validation::content() still whitelists each element's keys.
+        // Validation::page() still whitelists each element's keys.
         if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] ?? null );
+            $v['content'] = $request->get( 'content' );
         }
 
         if( isset( $v['title'] ) && !isset( $v['path'] ) ) {

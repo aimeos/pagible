@@ -27,9 +27,7 @@ class Tenancy implements Scope
      */
     public function apply( Builder $builder, Model $model ): void
     {
-        // models without the Tenancy trait use the default tenant column
-        $column = method_exists( $model, 'getTenantColumn' ) ? $model->getTenantColumn() : 'tenant_id';
-        $builder->where( $model->qualifyColumn( $column ), \Aimeos\Cms\Tenancy::value() );
+        $builder->where( $model->qualifyColumn( 'tenant_id' ), \Aimeos\Cms\Tenancy::value() );
     }
 
 

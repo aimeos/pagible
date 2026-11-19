@@ -27,19 +27,13 @@ class PageViewSchema
     public static function create() : void
     {
         $db = DB::connection();
-        $cols = [];
-
-        foreach( Page::FIELDS as $col ) {
-            $cols[] = 'p.' . $col;
-        }
+        $cols = array_map( fn( $col ) => 'p.' . $col, Page::FIELDS );
 
         foreach( PageBuilder::variantFields() as $alias => $col ) {
             $cols[] = $alias === $col ? 'v.' . $col : 'v.' . $col . ' as ' . $alias;
         }
 
-        foreach( PageBuilder::SHARED_FIELDS as $col ) {
-            $cols[] = 'v.' . $col;
-        }
+        array_push( $cols, ...array_map( fn( $col ) => 'v.' . $col, PageBuilder::SHARED_FIELDS ) );
 
         // tenant condition lets the tenant scope use the variant indexes
         $sql = $db->table( 'cms_pages as p' )->select( $cols )

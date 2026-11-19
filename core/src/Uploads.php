@@ -51,12 +51,12 @@ class Uploads
                 throw new Exception( 'File not accessible' );
             }
 
-            if( ( $buffer = fread( $stream, 300 ) ) === false ) {
-                fclose( $stream );
+            $buffer = fread( $stream, 300 );
+            fclose( $stream );
+
+            if( $buffer === false ) {
                 throw new Exception( 'File not readable' );
             }
-
-            fclose( $stream );
         }
 
         $finfo = new \finfo( FILEINFO_MIME_TYPE );
@@ -95,19 +95,6 @@ class Uploads
 
 
     /**
-     * Validates a MIME type against configured allowed prefixes.
-     *
-     * @param string $mime The MIME type to validate
-     * @return bool True if the MIME type is allowed, false otherwise
-     */
-    public static function isValidMimetype( string $mime ) : bool
-    {
-        $allowed = config( 'cms.upload.mimetypes', [] );
-        return empty( $allowed ) || Str::startsWith( $mime, $allowed );
-    }
-
-
-    /**
      * Rejects MIME types which aren't allowed for uploads.
      *
      * @param string $mime MIME type to check
@@ -117,22 +104,12 @@ class Uploads
      */
     public static function checkMimetype( string $mime, string $label = 'File', string $prefix = '' ) : void
     {
-        if( !str_starts_with( $mime, $prefix ) || !self::isValidMimetype( $mime ) ) {
+        $allowed = config( 'cms.upload.mimetypes', [] );
+
+        if( !str_starts_with( $mime, $prefix ) || $allowed && !Str::startsWith( $mime, $allowed ) ) {
             throw new InvalidInputException( sprintf( '%s type "%s" not allowed, permitted types: %s',
-                $label, $mime, implode( ', ', config( 'cms.upload.mimetypes', [] ) ) ) );
+                $label, $mime, implode( ', ', $allowed ) ) );
         }
-    }
-
-
-    /**
-     * Validates file upload size against configured limit.
-     *
-     * @param UploadedFile $upload The uploaded file to validate
-     * @return bool True if the file size is within the limit, false otherwise
-     */
-    public static function isValidUpload( UploadedFile $upload ) : bool
-    {
-        return $upload->getSize() <= self::maxSize();
     }
 
 
@@ -144,6 +121,17 @@ class Uploads
     public static function maxMegabytes() : float
     {
         return max( 0, (float) config( 'cms.upload.filesize', 50 ) );
+    }
+
+
+    /**
+     * Returns the configured maximum number of image pixels.
+     *
+     * @return int Maximum pixels, one or more
+     */
+    public static function maxPixels() : int
+    {
+        return max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
     }
 
 
@@ -247,7 +235,7 @@ class Uploads
             throw new InvalidInputException( sprintf( 'Invalid %s upload', strtolower( $label ) ) );
         }
 
-        if( !self::isValidUpload( $upload ) ) {
+        if( $upload->getSize() > self::maxSize() ) {
             throw new InvalidInputException( sprintf( '%s size of %s MB exceeds the maximum of %s MB',
                 $label, round( $upload->getSize() / 1024 / 1024, 3 ), self::maxMegabytes() ) );
         }
@@ -275,7 +263,7 @@ class Uploads
             throw new InvalidInputException( 'Invalid image' );
         }
 
-        $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
+        $max = self::maxPixels();
         $width = (int) $info[0];
         $height = (int) $info[1];
 

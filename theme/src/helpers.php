@@ -254,6 +254,23 @@ if( !function_exists( 'cmsroute' ) )
 }
 
 
+if( !function_exists( 'cmstext' ) )
+{
+    /**
+     * Get a translated file text in the page language or its fallback languages.
+     *
+     * @param \Aimeos\Cms\Models\PageView $page The CMS page to get the language from
+     * @param object|null $file The file object
+     * @param string $prop Name of the texts property, e.g. "description" or "transcription"
+     * @return mixed Text or NULL if none is available
+     */
+    function cmstext( \Aimeos\Cms\Models\PageView $page, ?object $file, string $prop ) : mixed
+    {
+        return \Aimeos\Cms\Utils::text( cms( $file, $prop ), (string) cms( $page, 'lang' ) );
+    }
+}
+
+
 if( !function_exists( 'cmstheme' ) )
 {
     /**

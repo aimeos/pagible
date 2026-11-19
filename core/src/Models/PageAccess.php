@@ -16,6 +16,7 @@ use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -94,6 +95,20 @@ class PageAccess extends Model
 
 
     /**
+     * Rejects the request if the page loaded with flags() is restricted for the frontend user.
+     *
+     * @throws AuthenticationException If no user is authenticated
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException If the user isn't allowed
+     */
+    public static function check( PageView $page, ?Authenticatable $user ) : void
+    {
+        if( $page->access_exists && !$page->access_allowed ) {
+            $user ? abort( 403 ) : throw new AuthenticationException();
+        }
+    }
+
+
+    /**
      * Returns the page owning this explicit frontend access rule.
      *
      * @return BelongsTo<PageView, $this>
@@ -118,7 +133,8 @@ class PageAccess extends Model
     {
         Permission::check( 'page:access', $user );
 
-        $ids = self::ids( $ids );
+        $ids = PageView::bulkIds( $ids );
+        sort( $ids, SORT_STRING );
 
         if( $descendants && count( $ids ) !== 1 ) {
             throw new Exception( 'Descendant access changes require exactly one root page.' );
@@ -131,15 +147,16 @@ class PageAccess extends Model
             PageView::checkBulk( count( $pages ) );
 
             [$changed, $reindex] = self::changes( $pages, $values );
-            $changedIds = array_map( fn( Nav $page ) => (string) $page->id, $changed );
 
-            self::checkAssignments( $changedIds, $values );
-
-            if( $changedIds && $values === null ) {
-                self::deleteAccess( $changedIds );
+            if( $values !== null && count( $changed ) * max( 1, count( $values ) ) > PageView::MAX_BULK ) {
+                throw new Exception( sprintf( 'No more than %d page access assignments may be changed at once.', PageView::MAX_BULK ) );
             }
-            elseif( $changedIds ) {
-                self::replaceAccess( $changedIds, $values, Utils::editor( $user ) );
+
+            if( $changed && $values === null ) {
+                self::deleteAccess( $changed );
+            }
+            elseif( $changed ) {
+                self::replaceAccess( $changed, $values, Utils::editor( $user ) );
             }
 
             return [$pages, $changed, $reindex];
@@ -191,29 +208,23 @@ class PageAccess extends Model
     /**
      * Returns the pages whose access state differs from the new one.
      *
-     * @param list<Nav> $pages Pages to update
+     * @param list<string> $pages IDs of the pages to update
      * @param array<int, string>|null $values New access state
-     * @return array{0: list<Nav>, 1: list<string>} Changed pages and IDs of the pages switching between public and restricted
+     * @return array{0: list<string>, 1: list<string>} IDs of the changed pages and of the pages switching between public and restricted
      */
     private static function changes( array $pages, ?array $values ) : array
     {
-        if( !$pages ) {
-            return [[], []];
-        }
-
-        $current = self::currentValues( array_map( fn( Nav $page ) => (string) $page->id, $pages ) );
+        $current = self::currentValues( $pages );
         $restricted = $values !== null;
         $changed = $reindex = [];
 
-        foreach( $pages as $page )
+        foreach( $pages as $id )
         {
-            $id = (string) $page->id;
-
             if( ( $current[$id] ?? null ) === $values ) {
                 continue;
             }
 
-            $changed[] = $page;
+            $changed[] = $id;
 
             if( array_key_exists( $id, $current ) !== $restricted ) {
                 $reindex[] = $id;
@@ -221,25 +232,6 @@ class PageAccess extends Model
         }
 
         return [$changed, $reindex];
-    }
-
-
-    /**
-     * Rejects access mutations that exceed the bounded assignment count.
-     *
-     * @param list<string> $ids
-     * @param array<int, string>|null $values
-     */
-    private static function checkAssignments( array $ids, ?array $values ) : void
-    {
-        $count = count( $ids ) * max( 1, count( $values ?? [] ) );
-
-        if( $values !== null && $count > PageView::MAX_BULK ) {
-            throw new Exception( sprintf(
-                'No more than %d page access assignments may be changed at once.',
-                PageView::MAX_BULK,
-            ) );
-        }
     }
 
 
@@ -257,15 +249,8 @@ class PageAccess extends Model
 
         foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk )
         {
-            /** @var array<string, list<PageAccess>> $groups */
-            $groups = [];
-
-            foreach( self::whereIn( 'page_id', $chunk )->get( ['page_id', 'value'] ) as $rule ) {
-                $groups[(string) $rule->page_id][] = $rule;
-            }
-
-            foreach( $groups as $id => $rules ) {
-                $result[$id] = (array) self::values( $rules );
+            foreach( self::whereIn( 'page_id', $chunk )->get( ['page_id', 'value'] )->groupBy( 'page_id' ) as $id => $rules ) {
+                $result[(string) $id] = (array) self::values( $rules );
             }
         }
 
@@ -283,21 +268,6 @@ class PageAccess extends Model
         foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk ) {
             self::whereIn( 'page_id', $chunk )->delete();
         }
-    }
-
-
-    /**
-     * Returns unique, sorted page IDs within the bulk-operation limit.
-     *
-     * @param iterable<string> $ids
-     * @return list<string>
-     */
-    private static function ids( iterable $ids ) : array
-    {
-        $ids = PageView::bulkIds( $ids );
-        sort( $ids, SORT_STRING );
-
-        return $ids;
     }
 
 
@@ -328,25 +298,17 @@ class PageAccess extends Model
 
 
     /**
-     * Loads the affected lightweight page projections in bounded chunks.
+     * Returns the IDs of the existing pages in bounded chunks.
      *
      * @param list<string> $ids
-     * @return list<Nav>
+     * @return list<string>
      */
     private static function pages( array $ids ) : array
     {
         $pages = [];
 
-        foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk )
-        {
-            $query = Nav::select( 'id', 'domain', 'path' )
-                ->withoutGlobalScope( 'jsonapi' )
-                ->whereIn( 'id', $chunk )
-                ->orderBy( 'id' );
-
-            /** @var list<Nav> $results */
-            $results = $query->get()->all();
-            array_push( $pages, ...$results );
+        foreach( array_chunk( $ids, self::CHUNK_SIZE ) as $chunk ) {
+            array_push( $pages, ...Nav::whereIn( 'id', $chunk )->orderBy( 'id' )->pluck( 'id' )->map( strval( ... ) )->all() );
         }
 
         return $pages;
@@ -413,42 +375,34 @@ class PageAccess extends Model
 
 
     /**
-     * Loads a bounded subtree for a recursive access mutation.
+     * Returns the page IDs of a bounded subtree for a recursive access mutation.
      *
-     * @return list<Nav>
+     * @return list<string>
      */
     private static function subtree( string $id ) : array
     {
         $root = PageView::query()
-            ->withoutGlobalScope( 'jsonapi' )
             ->select( 'id', 'tenant_id', NestedSet::LFT, NestedSet::RGT )
             ->whereKey( $id )
             ->firstOrFail();
 
-        $query = Nav::query()
-            ->select( 'id', 'tenant_id', 'domain', 'path', NestedSet::LFT )
-            ->withoutGlobalScope( 'jsonapi' )
+        return array_values( Nav::query()
             ->whereDescendantOrSelf( $root )
             ->orderBy( NestedSet::LFT )
-            ->limit( PageView::MAX_BULK + 1 );
-
-        /** @var list<Nav> $pages */
-        $pages = $query->get()->all();
-
-        return $pages;
+            ->limit( PageView::MAX_BULK + 1 )
+            ->pluck( 'id' )->map( strval( ... ) )->all() );
     }
 
 
     /**
      * Loads the routes of all language variants of the pages, whose cached responses must be invalidated.
      *
-     * @param list<Nav> $pages Pages loaded with their source variant
+     * @param list<string> $ids Page IDs
      * @return list<PageVariant> Variants with their domain and path
      */
-    private static function variants( array $pages ) : array
+    private static function variants( array $ids ) : array
     {
         $variants = [];
-        $ids = array_map( fn( Nav $page ) => (string) $page->id, $pages );
 
         foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
             array_push( $variants, ...PageVariant::whereIn( 'page_id', $chunk )->get( ['domain', 'path'] )->all() );

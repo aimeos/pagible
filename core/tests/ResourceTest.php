@@ -193,6 +193,50 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSavePageKeepsUnsentFieldsFromStaleVersion()
+    {
+        $page = $this->page( [] );
+        $base = $page->latest_id;
+        $data = (array) $page->latest->data;
+
+        // the other save leaves the data unchanged
+        Pages::save( $page->id, ['content' => []], $this->user );
+        $page = Pages::save( $page->id, ['title' => 'My change'], $this->user, $base );
+
+        $this->assertSame( 'My change', $page->latest->data->title );
+        $this->assertSame( $data['name'], $page->latest->data->name );
+        $this->assertSame( $data['path'], $page->latest->data->path );
+    }
+
+
+    public function testSaveElementKeepsUnsentFieldsFromStaleVersion()
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Stale', 'data' => ['text' => 'Kept']], $this->user );
+        $base = $element->latest_id;
+
+        // the other save leaves the data unchanged
+        Elements::save( $element->id, ['name' => 'Stale'], $this->user );
+        $element = Elements::save( $element->id, ['name' => 'My change'], $this->user, $base );
+
+        $this->assertSame( 'My change', $element->latest->data->name );
+        $this->assertSame( 'text', $element->latest->data->type );
+        $this->assertEquals( 'Kept', $element->latest->data->data->text ?? null );
+    }
+
+
+    public function testSaveElementClearsLanguage()
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Neutral', 'data' => ['text' => 'Text']], $this->user );
+        $element = Elements::save( $element->id, ['lang' => null], $this->user );
+
+        $this->assertNull( $element->latest->lang );
+
+        $element->publish( $element->latest );
+
+        $this->assertNull( Element::findOrFail( $element->id )->lang );
+    }
+
+
     public function testSavePageDetachesRemovedReference()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -229,6 +273,20 @@ class ResourceTest extends CoreTestAbstract
         $this->assertEquals( [$tiff->id], $page->latest->aux->meta->{'social-media'}->files );
         $this->assertObjectNotHasProperty( 'id', $page->latest->aux->meta->{'social-media'} );
         $this->assertObjectNotHasProperty( 'group', $page->latest->aux->meta->{'social-media'} );
+    }
+
+
+    public function testAddPageInheritsParentValues()
+    {
+        $root = $this->root();
+        Pages::save( $root->id, ['theme' => 'paper', 'type' => 'blog'], $this->user );
+
+        $page = Pages::add( ['name' => 'Child', 'title' => 'Child', 'path' => 'child-' . Utils::uid(), 'type' => 'docs'], $this->user, parent: $root->id );
+        $data = $page->latest->data;
+
+        $this->assertSame( 'mydomain.tld', $data->domain );
+        $this->assertSame( 'paper', $data->theme );
+        $this->assertSame( 'docs', $data->type );
     }
 
 
@@ -1972,12 +2030,12 @@ class ResourceTest extends CoreTestAbstract
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
                 $event->domain === (string) $page->domain
-                && $event->paths === [(string) $page->path]
+                && in_array( (string) $page->path, $event->paths, true )
             );
         }
 
-        // The published file is also used by another page of the fixtures
-        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) + 1 );
+        // The routes are invalidated once per domain and the published file is also used by another page of the fixtures
+        Event::assertDispatchedTimes( PageInvalidated::class, collect( $pages )->pluck( 'domain' )->unique()->count() + 1 );
     }
 
 
@@ -2131,6 +2189,7 @@ class ResourceTest extends CoreTestAbstract
     public function testPublicationKeepsIdsAsIs()
     {
         $publication = new Publication();
+        $track = new \ReflectionMethod( Publication::class, 'track' );
         $ids = [' Mixed,ID ', ' mixed,id '];
 
         foreach( $ids as $id )
@@ -2140,21 +2199,11 @@ class ResourceTest extends CoreTestAbstract
                 {
                     return $value;
                 }
-
-                public function save( array $options = [] )
-                {
-                    return true;
-                }
             };
-            $version = new class extends Version {
-                public function save( array $options = [] )
-                {
-                    return true;
-                }
-            };
+            $version = new Version();
             $version->id = Utils::uid();
             $model->id = $id;
-            $publication->apply( $model, $version );
+            $track->invoke( $publication, $model, $version );
         }
 
         $property = new \ReflectionProperty( Publication::class, 'models' );
@@ -2631,7 +2680,7 @@ class ResourceTest extends CoreTestAbstract
     protected function page( array $content ) : PageView
     {
         return Pages::add( [
-            'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
+            'lang' => 'en', 'domain' => '', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
             'content' => $content,
         ], $this->user, parent: $this->root()->id );
     }
@@ -2665,12 +2714,6 @@ class ResourceTest extends CoreTestAbstract
                 ],
             ] );
         }
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 

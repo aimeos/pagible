@@ -35,7 +35,7 @@ final class ClearCache
         }
 
         /** @var \Illuminate\Database\Eloquent\Collection<int, PageView> $pages */
-        $pages = PageView::subtrees( $roots )->get( ['domain', 'path'] );
+        $pages = PageView::subtrees( $roots )->allVariants( true )->get( ['domain', 'path'] );
 
         Invalidation::pages( $pages );
 

@@ -62,7 +62,18 @@ final class Bulk
 
                 foreach( $chunk as $id )
                 {
-                    if( !( $item = self::item( $model, $id, $prefetched, $editor, $save ) ) ) {
+                    // failures are reported and counted instead of aborting the whole batch,
+                    // denied items are expected in mixed-language batches and aren't reported
+                    try {
+                        $item = $model::locked( fn() => DB::transaction( fn() => $save( $id, $prefetched, $editor ) ) );
+                    } catch( PermissionException ) {
+                        continue;
+                    } catch( \Exception $e ) {
+                        report( $e );
+                        continue;
+                    }
+
+                    if( !$item ) {
                         continue;
                     }
 
@@ -100,32 +111,4 @@ final class Bulk
         $model::locked( fn() => PruneVersions::dispatchChunked( $model, $keys ) );
 
         return $result;
-    }
-
-
-    /**
-     * Saves one item of a bulk operation in its own transaction.
-     *
-     * Failures are reported and counted by the caller instead of aborting the whole batch.
-     * Denied items are expected in mixed-language batches and aren't reported.
-     *
-     * @param class-string<Element>|class-string<File>|class-string<PageView> $model Model class being saved
-     * @param string $id Item ID
-     * @param array<string, array<string, array<string>>> $prefetched References of the latest versions
-     * @param string $editor Name of the editor
-     * @param \Closure(string, array<string, array<string, array<string>>>, string): (PageView|File|Element|null) $save Saves the item
-     * @return PageView|File|Element|null Saved item or NULL if it was skipped or failed
-     */
-    private static function item( string $model, string $id, array $prefetched, string $editor, \Closure $save ) : PageView|File|Element|null
-    {
-        try {
-            return $model::locked( fn() => DB::transaction( fn() => $save( $id, $prefetched, $editor ) ) );
-        } catch( PermissionException ) {
-            return null;
-        } catch( \Exception $e ) {
-            report( $e );
-        }
-
-        return null;
-    }
-}
+    }}

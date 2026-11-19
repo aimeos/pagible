@@ -32,6 +32,19 @@ class JsonSchema
     ];
 
     /**
+     * Schema of a single file reference object.
+     */
+    private const FILE = [
+        'type' => 'object',
+        'properties' => [
+            'id' => ['type' => 'string', 'pattern' => self::UUID],
+            'type' => ['type' => 'string', 'enum' => ['file']],
+        ],
+        'required' => ['id', 'type'],
+        'additionalProperties' => false,
+    ];
+
+    /**
      * Regular expression matching generated nested item identities.
      */
     private const UID = '^[A-Za-z][A-Za-z0-9_-]{5}$';
@@ -66,7 +79,7 @@ class JsonSchema
         foreach( $schemas as $key => $schema )
         {
             $variants[] = self::variant(
-                ['type' => 'string', 'enum' => [$key]],
+                (string) $key,
                 ['data' => self::data( $schema['fields'] ?? [], $strict )],
                 $groups,
                 $strict,
@@ -74,7 +87,7 @@ class JsonSchema
         }
 
         $variants[] = self::variant(
-            ['type' => 'string', 'enum' => ['reference']],
+            'reference',
             ['refid' => ['type' => 'string', 'pattern' => self::UUID]],
             $groups,
             $strict,
@@ -162,24 +175,6 @@ class JsonSchema
 
         if( !empty( $field['uppercase'] ) && $schema['type'] === 'string' && !isset( $schema['pattern'] ) ) {
             $schema['pattern'] = '^[^a-z]*$';
-        }
-
-        return $schema;
-    }
-
-
-    /**
-     * Returns the JSON Schema of an autocomplete field.
-     *
-     * @param array<string, mixed> $field Raw field definition
-     * @return array<string, mixed> JSON Schema type definition
-     */
-    private static function autocomplete( array $field ) : array
-    {
-        $schema = ['type' => 'string'];
-
-        if( ( $field['item-value'] ?? 'id' ) === 'id' ) {
-            $schema['pattern'] = self::UUID;
         }
 
         return $schema;
@@ -295,13 +290,11 @@ class JsonSchema
             }
         }
 
-        $schema = ['type' => 'object', 'properties' => $props];
+        $schema = ['type' => 'object', 'properties' => $props, 'additionalProperties' => false];
 
         if( $required ) {
             $schema['required'] = $required;
         }
-
-        $schema['additionalProperties'] = false;
 
         return $schema;
     }
@@ -321,8 +314,8 @@ class JsonSchema
         $schema = match( $type ) {
             'hidden' => ['type' => 'string', 'enum' => [(string) ( $field['value'] ?? '' )]],
             'boolean', 'switch' => ['type' => 'boolean'],
-            'image', 'file', 'audio', 'video', 'media' => self::file(),
-            'images' => ['type' => 'array', 'items' => self::file()],
+            'image', 'file', 'audio', 'video', 'media' => self::FILE,
+            'images' => ['type' => 'array', 'items' => self::FILE],
             'number' => self::number( $field, $strict ),
             'items' => self::items( $field, $strict ),
             'table' => ['type' => 'array', 'items' => ['type' => 'array', 'items' => ['type' => 'string']]],
@@ -330,7 +323,7 @@ class JsonSchema
             'url' => self::url( $field, $strict ),
             'color' => ['type' => 'string', 'pattern' => '^#[0-9A-Fa-f]{3,8}$'],
             'date' => $strict ? ['type' => 'string', 'format' => 'date'] : ['type' => 'string'],
-            'autocomplete' => self::autocomplete( $field ),
+            'autocomplete' => ( $field['item-value'] ?? 'id' ) === 'id' ? ['type' => 'string', 'pattern' => self::UUID] : ['type' => 'string'],
             'combobox' => self::combobox( $field, $strict ),
             'html', 'markdown', 'plaintext', 'select', 'string', 'text' => self::text( $type, $field ),
             default => $strict
@@ -341,25 +334,6 @@ class JsonSchema
         $schema = self::annotate( $schema, $field, $strict );
 
         return $type === 'date' ? $schema : self::bounds( $schema, $field );
-    }
-
-
-    /**
-     * Returns the JSON Schema for a single file reference object.
-     *
-     * @return array<string, mixed> JSON Schema object definition
-     */
-    private static function file() : array
-    {
-        return [
-            'type' => 'object',
-            'properties' => [
-                'id' => ['type' => 'string', 'pattern' => self::UUID],
-                'type' => ['type' => 'string', 'enum' => ['file']],
-            ],
-            'required' => ['id', 'type'],
-            'additionalProperties' => false,
-        ];
     }
 
 
@@ -521,31 +495,26 @@ class JsonSchema
     /**
      * Builds a content element variant for the response anyOf.
      *
-     * @param array<string, mixed> $type JSON Schema for the "type" property
+     * @param string $type Content element type
      * @param array<string, mixed> $extra Additional required properties (data or refid)
      * @param array<int, string> $groups Allowed group values
      * @param bool $strict TRUE for strict mode, FALSE for AI mode
      * @return array<string, mixed> JSON Schema object definition
      */
-    private static function variant( array $type, array $extra, array $groups, bool $strict ) : array
+    private static function variant( string $type, array $extra, array $groups, bool $strict ) : array
     {
         $props = [
             'id' => ['type' => $strict ? 'string' : ['string', 'null']],
-            'type' => $type,
+            'type' => ['type' => 'string', 'enum' => [$type]],
             'group' => ['type' => 'string', 'enum' => $groups],
         ];
-        $required = ['id', 'type', 'group'];
 
         if( $strict ) {
             $props['files'] = self::FILES;
         }
 
-        foreach( $extra as $name => $schema )
-        {
-            $props[$name] = $schema;
-            $required[] = $name;
-        }
+        $required = ['id', 'type', 'group', ...array_keys( $extra )];
 
-        return ['type' => 'object', 'properties' => $props, 'required' => $required, 'additionalProperties' => false];
+        return ['type' => 'object', 'properties' => $props + $extra, 'required' => $required, 'additionalProperties' => false];
     }
 }

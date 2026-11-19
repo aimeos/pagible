@@ -132,11 +132,7 @@ class Utils
         }
 
         // In strict mode, require the host to resolve to an allowed IP address
-        if( $strict ) {
-            return SafeHttp::resolve( $parsed['host'] ) !== null;
-        }
-
-        return true;
+        return !$strict || SafeHttp::resolve( $parsed['host'] ) !== null;
     }
 
 
@@ -267,9 +263,28 @@ class Utils
     {
         $title = (string) preg_replace( '/[?&=%#@!$^*()+=\[\]{}|\\"\'<>;:.,_\s]/u', '-', $title );
         $title = (string) preg_replace( '/-+/', '-', $title );
-        $title = (string) preg_replace( '/^-|-$/', '', $title );
 
         return mb_strtolower( trim( $title, '-' ) );
+    }
+
+
+    /**
+     * Returns the first text available in the language or its fallback languages.
+     *
+     * @param object|null $texts Texts by language code
+     * @param string $lang Language code
+     * @return mixed Text or NULL if none is available
+     */
+    public static function text( ?object $texts, string $lang ) : mixed
+    {
+        foreach( self::chain( $lang ) as $code )
+        {
+            if( isset( $texts->{$code} ) ) {
+                return $texts->{$code};
+            }
+        }
+
+        return null;
     }
 
 

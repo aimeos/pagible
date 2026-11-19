@@ -47,42 +47,46 @@ class UploadsTest extends CoreTestAbstract
     }
 
 
-    public function testIsValidUploadAllowed()
+    public function testCheckUploadAllowed()
     {
         $upload = UploadedFile::fake()->image( 'test.jpg', 100, 100 );
 
-        $this->assertTrue( Uploads::isValidUpload( $upload ) );
+        $this->expectNotToPerformAssertions();
+        Uploads::checkUpload( $upload );
     }
 
 
-    public function testIsValidUploadSizeExceeded()
+    public function testCheckUploadSizeExceeded()
     {
         config()->set( 'cms.upload.filesize', 0.001 ); // ~1 KB
 
         $upload = UploadedFile::fake()->create( 'test.pdf', 100, 'application/pdf' );
 
-        $this->assertFalse( Uploads::isValidUpload( $upload ) );
+        $this->expectException( \Aimeos\Cms\Exceptions\InvalidInputException::class );
+        Uploads::checkUpload( $upload );
     }
 
 
-    public function testIsValidMimetypeAllowed()
+    public function testCheckMimetypeAllowed()
     {
-        $this->assertTrue( Uploads::isValidMimetype( 'image/png' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'audio/mpeg' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'video/mp4' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'text/plain' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'application/pdf' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'application/zip' ) );
-        $this->assertTrue( Uploads::isValidMimetype( 'application/gzip' ) );
+        $this->expectNotToPerformAssertions();
+
+        Uploads::checkMimetype( 'image/png' );
+        Uploads::checkMimetype( 'audio/mpeg' );
+        Uploads::checkMimetype( 'video/mp4' );
+        Uploads::checkMimetype( 'text/plain' );
+        Uploads::checkMimetype( 'application/pdf' );
+        Uploads::checkMimetype( 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' );
+        Uploads::checkMimetype( 'application/zip' );
+        Uploads::checkMimetype( 'application/gzip' );
     }
 
 
-    public function testIsValidMimetypeRejected()
+    public function testCheckMimetypeRejected()
     {
-        $this->assertFalse( Uploads::isValidMimetype( 'application/x-httpd-php' ) );
-        $this->assertFalse( Uploads::isValidMimetype( 'application/x-executable' ) );
-        $this->assertFalse( Uploads::isValidMimetype( 'application/x-sharedlib' ) );
+        $this->assertThrows( fn() => Uploads::checkMimetype( 'application/x-httpd-php' ), \Aimeos\Cms\Exceptions\InvalidInputException::class );
+        $this->assertThrows( fn() => Uploads::checkMimetype( 'application/x-executable' ), \Aimeos\Cms\Exceptions\InvalidInputException::class );
+        $this->assertThrows( fn() => Uploads::checkMimetype( 'application/x-sharedlib' ), \Aimeos\Cms\Exceptions\InvalidInputException::class );
     }
 
 

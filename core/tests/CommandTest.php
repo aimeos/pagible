@@ -137,8 +137,11 @@ class CoreCommandTest extends CoreTestAbstract
             ] )->id;
         } );
 
-        Element::saving( fn( $element ) => $element->name === 'Failure'
-            ? throw new \RuntimeException( 'Expected publication failure' ) : null );
+        // publication writes the element rows set-based without model events
+        \Illuminate\Support\Facades\DB::connection( config( 'cms.db' ) )->listen( fn( $query ) =>
+            str_contains( $query->sql, 'cms_elements' ) && in_array( 'Failure', $query->bindings, true )
+                ? throw new \RuntimeException( 'Expected publication failure' ) : null
+        );
 
         $this->artisan( 'cms:publish' )->assertExitCode( 0 );
 
@@ -236,8 +239,11 @@ class CoreCommandTest extends CoreTestAbstract
             $element->forceFill( ['latest_id' => $newer->id] )->saveQuietly();
         } );
 
-        Element::saving( function( $element ) use ( $newer ) {
-            if( $element->name === 'Selected' ) {
+        // publication writes the element rows set-based without model events
+        $rescheduled = false;
+        \Illuminate\Support\Facades\DB::connection( config( 'cms.db' ) )->listen( function( $query ) use ( $newer, &$rescheduled ) {
+            if( !$rescheduled && str_contains( $query->sql, 'cms_elements' ) && in_array( 'Selected', $query->bindings, true ) ) {
+                $rescheduled = true;
                 $newer->forceFill( ['publish_at' => now()->subMinute()] )->saveQuietly();
             }
         } );

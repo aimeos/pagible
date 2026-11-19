@@ -137,11 +137,8 @@ class Element extends Base
      */
     public function getFilesAttribute() : Collection
     {
-        $files = $this->relationLoaded( 'files' )
-            ? $this->getRelation( 'files' )
-            : $this->load( 'files' )->getRelation( 'files' );
-
-        return $files->pluck( null, 'id' );
+        $this->relationLoaded( 'files' ) ?: $this->load( 'files' );
+        return $this->getRelation( 'files' )->pluck( null, 'id' );
     }
 
 

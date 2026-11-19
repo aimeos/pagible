@@ -53,27 +53,6 @@ class Invalidation
 
 
     /**
-     * Invalidates the previous and current route of one changed page.
-     *
-     * @param PageView $page Page with its current domain and path
-     * @param string $domain Previous domain of the page
-     * @param string $path Previous URL path of the page
-     */
-    public static function moved( PageView $page, string $domain, string $path ) : void
-    {
-        $currentDomain = (string) $page->domain;
-        $currentPath = (string) $page->path;
-
-        if( $domain === $currentDomain ) {
-            PageInvalidated::dispatch( $domain, $path === $currentPath ? [$path] : [$path, $currentPath] );
-        } else {
-            PageInvalidated::dispatch( $domain, [$path] );
-            PageInvalidated::dispatch( $currentDomain, [$currentPath] );
-        }
-    }
-
-
-    /**
      * Invalidates the published pages using the Elements, the Files directly or the Files through an Element.
      *
      * The pages are invalidated by queued jobs, so publishing content shared by many pages doesn't slow down

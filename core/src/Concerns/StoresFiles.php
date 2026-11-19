@@ -19,7 +19,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Intervention\Image\Interfaces\DriverInterface;
 use Psr\Http\Message\StreamInterface;
-use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Exceptions\InvalidInputException;
 use Illuminate\Contracts\Filesystem\Filesystem;
@@ -76,11 +75,42 @@ trait StoresFiles
 
 
     /**
+     * Removes the stored files of a failed ingest or save, reporting errors instead of throwing them.
+     *
+     * Errors are reported so they don't hide the error of the failed operation.
+     *
+     * @param bool $file TRUE to remove the stored file too, FALSE for the previews only
+     */
+    public function discard( bool $file ) : void
+    {
+        $paths = array_values( (array) $this->previews );
+
+        if( $file && $this->path && !str_starts_with( $this->path, 'http' ) ) {
+            $paths[] = $this->path;
+        }
+
+        try {
+            if( $paths ) {
+                ( new DeleteFilePaths( $this->exists ? (string) $this->tenant_id : Tenancy::value(), $paths ) )->handle();
+            }
+        } catch( \Throwable $t ) {
+            report( $t );
+        }
+
+        $this->previews = [];
+
+        if( $file ) {
+            $this->path = null;
+        }
+    }
+
+
+    /**
      * Fetches a URL as a bounded temporary stream.
      *
      * @param string $url URL to fetch
      * @param DriverInterface|null $driver Image driver for an optional format support check
-     * @return resource|null Seekable tmpfile resource or null if not an image
+     * @return ($driver is null ? resource : resource|null) Seekable tmpfile resource or null if not an image
      */
     public function fetchUrl( string $url, ?DriverInterface $driver = null )
     {
@@ -100,7 +130,7 @@ trait StoresFiles
 
         try
         {
-            if( $length !== '' && ctype_digit( $length ) && (int) $length > $max ) {
+            if( ctype_digit( $length ) && (int) $length > $max ) {
                 throw new InvalidInputException( $message );
             }
 
@@ -166,35 +196,16 @@ trait StoresFiles
 
 
     /**
-     * Removes the stored files of a failed ingest, reporting errors instead of throwing them.
-     *
-     * @param bool $file TRUE to remove the stored file too, FALSE for the previews only
-     */
-    protected function discard( bool $file ) : void
-    {
-        try {
-            $this->removePreviews();
-
-            if( $file ) {
-                $this->removeFile();
-            }
-        } catch( \Throwable $t ) {
-            report( $t );
-        }
-    }
-
-
-    /**
      * Returns the downloaded file as uploaded file.
      *
-     * @param resource|false|null $resource Temporary file containing the download
+     * @param resource $resource Temporary file containing the download
      * @param string $url URL of the downloaded file
      * @return UploadedFile Uploaded file using the temporary file
      * @throws Exception If the temporary file isn't available
      */
     protected static function downloaded( mixed $resource, string $url ) : UploadedFile
     {
-        $path = is_resource( $resource ) ? stream_get_meta_data( $resource )['uri'] ?? null : null;
+        $path = stream_get_meta_data( $resource )['uri'] ?? null;
 
         if( !is_string( $path ) ) {
             throw new Exception( 'Unable to create temporary file' );
@@ -361,22 +372,12 @@ trait StoresFiles
             }
         }
 
-        if( !$paths->isEmpty() ) {
-            $source->delete( $paths->all() );
+        if( !$paths->isEmpty() && !$source->delete( $paths->all() ) ) {
+            throw new Exception( sprintf( 'Unable to remove files "%s" from their previous disk', $paths->implode( '", "' ) ) );
         }
 
-        foreach( $paths as $path ) {
-            if( $source->exists( $path ) ) {
-                throw new Exception( sprintf( 'Unable to remove file "%s" from its previous disk', $path ) );
-            }
-        }
-
-        DB::transaction( function() use ( $disk, $editor ) {
-            $locked = $this->newQuery()->lockForUpdate()->findOrFail( $this->id );
-            $locked->disk = $disk;
-            $locked->editor = $editor;
-            self::withoutSyncingToSearch( fn() => $locked->save() );
-        } );
+        // builder updates don't sync the search index
+        $this->newQuery()->whereKey( $this->id )->update( ['disk' => $disk, 'editor' => $editor] );
 
         $this->disk = $disk;
         $this->editor = $editor;
@@ -442,22 +443,6 @@ trait StoresFiles
         $this->checkPaths( $paths->all() );
 
         return $paths;
-    }
-
-
-    /**
-     * Removes the file from the storage
-     *
-     * @return self The current instance for method chaining
-     */
-    public function removeFile() : self
-    {
-        if( $this->path && !str_starts_with( $this->path, 'http' ) ) {
-            $this->erase( [$this->path] );
-        }
-
-        $this->path = null;
-        return $this;
     }
 
 
@@ -534,16 +519,5 @@ trait StoresFiles
     protected function storage() : Filesystem
     {
         return FileStorage::disk( (string) $this->disk );
-    }
-
-
-    /**
-     * Deletes the given storage paths of this file immediately.
-     *
-     * @param array<int, string> $paths Storage paths
-     */
-    private function erase( array $paths ) : void
-    {
-        ( new DeleteFilePaths( $this->exists ? (string) $this->tenant_id : Tenancy::value(), $paths ) )->handle();
     }
 }

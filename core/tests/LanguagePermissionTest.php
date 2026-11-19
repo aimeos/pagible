@@ -466,10 +466,4 @@ class LanguagePermissionTest extends CoreTestAbstract
             'content' => [['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']]],
         ], $this->user, parent: $this->root()->id );
     }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
-    }
 }

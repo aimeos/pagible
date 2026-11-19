@@ -13,7 +13,6 @@ use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Jobs\PruneVersions;
 use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Invalidation;
-use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\Element;
@@ -114,10 +113,8 @@ class Elements
         $type = $input['type'] ?? $element->type;
         Validation::limits( Element::class, $input );
 
-        if( isset( $input['data'] ) ) {
-            $input['data'] = Validation::element( $type, $input['data'], isset( $input['type'] ) );
-        } elseif( isset( $input['type'] ) ) {
-            Validation::element( $type );
+        if( ( $data = Validation::element( $type, $input['data'] ?? null, isset( $input['type'] ) ) ) !== null ) {
+            $input['data'] = $data;
         }
 
         $editor = Utils::editor( $user );
@@ -254,18 +251,14 @@ class Elements
 
         $items = Scout::mute( [Element::class], fn() => $this->change( Element::class, $ids, $fields, [], function( $items ) use ( $editor ) {
             // dispatched after commit
-            Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
+            Invalidation::refs( $this->ids( $items ) );
             Element::trashMany( $items, $editor );
         }, $user ) );
 
         Element::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
         // the CMS search ignores trashed items, other search engines keep them if soft deletes are enabled
-        if( Scout::keepsTrashed() ) {
-            Scout::index( Element::class, $this->ids( $items ) );
-        } else {
-            Scout::unindex( Element::class, $this->ids( $items ) );
-        }
+        Scout::trash( Element::class, $this->ids( $items ) );
 
         return $items;
     }
@@ -288,7 +281,7 @@ class Elements
 
         $items = Scout::mute( [Element::class], fn() => $this->change( Element::class, $ids, $fields, [], function( $items ) {
             // the references are removed with the elements, pages using trashed elements were invalidated when they were trashed
-            Invalidation::refs( array_map( strval( ... ), $items->reject( fn( Element $item ) => $item->trashed() )->modelKeys() ) );
+            Invalidation::refs( $this->ids( $items->reject( fn( Element $item ) => $item->trashed() ) ) );
             Element::forceDeleteMany( $items );
         }, $user ) );
 
@@ -317,7 +310,7 @@ class Elements
         // all columns are required to update the search index
         $items = Scout::mute( [Element::class], fn() => $this->change( Element::class, $ids, $fields, Element::SELECT_COLUMNS, function( $items ) use ( $editor ) {
             // dispatched after commit
-            Invalidation::refs( array_map( strval( ... ), $items->modelKeys() ) );
+            Invalidation::refs( $this->ids( $items ) );
             Element::restoreMany( $items, $editor );
         }, $user ) );
 
@@ -331,7 +324,7 @@ class Elements
     /**
      * Creates a new version for an already loaded element from the given input.
      *
-     * Shared by saveElement() (single) and bulkElement() (bulk). Must run inside a transaction.
+     * Shared by save() (single) and bulk() (bulk). Must run inside a transaction.
      *
      * @param Element $element Element model with the "latest" relation loaded
      * @param array<string, mixed> $input Validated element input (merged with latest version)
@@ -344,27 +337,15 @@ class Elements
     protected function apply( Element $element, array $input, string $editor,
         ?string $latestId, ?Authenticatable $user, ?array $refs = null ) : Element
     {
-        [$data, $dd] = Merge::model( $element, $input, $latestId );
+        [$data, , $diffs] = Merge::model( $element, $input, [], $latestId );
 
         // without new data, the file references of the previous version are copied
         $element->draft( [
             'data' => $data,
             'editor' => $editor,
-            'lang' => $input['lang'] ?? $element->latest?->lang,
-        ], array_key_exists( 'data', $input ) ? ['files' => Refs::element( $data, $user )] : $refs, $dd ? ['data' => $dd] : null );
+            'lang' => array_key_exists( 'lang', $input ) ? $input['lang'] : $element->latest?->lang,
+        ], array_key_exists( 'data', $input ) ? ['files' => Refs::element( $data, $user )] : $refs, $diffs );
 
         return $element;
-    }
-
-
-    /**
-     * Returns the IDs of the changed items.
-     *
-     * @param Collection<int, covariant Base> $items Changed items
-     * @return array<string> Item IDs
-     */
-    protected function ids( Collection $items ) : array
-    {
-        return $items->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

@@ -279,7 +279,7 @@ class VariantTest extends CoreTestAbstract
         $de = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
         $en = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'en' )->firstOrFail();
         $published = PageView::language( 'de' )->findOrFail( $page->id );
-        $expected = Hashes::page( $published->only( PageVariant::SYNC_FIELDS ), $published->content, $published->meta, $published->config );
+        $expected = Hashes::published( $published );
 
         $this->assertEquals( [], $de->hashes );
         $this->assertFalse( $de->stale );
@@ -484,7 +484,7 @@ class VariantTest extends CoreTestAbstract
         Variants::add( $page->id, 'fr', $this->user );
 
         $source = PageView::findOrFail( $page->id );
-        $hashes = Hashes::page( $source->only( PageVariant::SYNC_FIELDS ), $source->content, $source->meta, $source->config );
+        $hashes = Hashes::published( $source );
 
         // de is up to date, fr ignores the title change
         PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )
@@ -1395,11 +1395,5 @@ class VariantTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'var-' . \Illuminate\Support\Str::random( 12 ),
             'content' => $content ?? [['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']]],
         ], $this->user, parent: $this->root()->id );
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 }

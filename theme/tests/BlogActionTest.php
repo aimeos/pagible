@@ -7,11 +7,15 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
 use Aimeos\Cms\Actions\Blog;
 use Aimeos\Cms\Actions\News;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Permission;
+use Aimeos\Cms\Tenancy;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
@@ -71,6 +75,30 @@ class BlogActionTest extends ThemeTestAbstract
         $this->assertNotNull( $page->latest );
         $this->assertTrue( $page->files->isNotEmpty() );
         $this->assertSame( 'private', $page->files->first()->disk );
+    }
+
+
+    public function testHidesRestrictedPagesFromVisitors()
+    {
+        $blog = PageView::where( 'tag', 'blog' )->firstOrFail();
+        $article = PageView::where( 'tag', 'article' )->firstOrFail();
+        $article->variant->update( ['type' => 'blog'] );
+
+        Access::using( fn() => ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [$article->id], [] ) );
+
+        $request = Request::create( '/blog' );
+        $request->setUserResolver( fn() => null );
+
+        $result = ( new Blog() )( $request, $blog, $this->item( $blog ) );
+        $this->assertNull( $result->getCollection()->firstWhere( 'id', $article->id ) );
+
+        $visitor = new \App\Models\User();
+        $visitor->tenant_id = Tenancy::value();
+        $request->setUserResolver( fn() => $visitor );
+
+        $result = ( new Blog() )( $request, $blog, $this->item( $blog ) );
+        $this->assertNotNull( $result->getCollection()->firstWhere( 'id', $article->id ) );
     }
 
 

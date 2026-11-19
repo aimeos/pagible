@@ -7,8 +7,11 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Access;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Permission;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -122,6 +125,20 @@ class RobotsControllerTest extends ThemeTestAbstract
             ->assertStatus( 304 )
             ->assertHeader( 'ETag', $etag )
             ->assertContent( '' );
+    }
+
+
+    public function testIndexSkipsRestrictedRootPages() : void
+    {
+        $this->robots( "User-agent: *\nDisallow: /private" );
+
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        Access::using( fn() => ['frontend.member'] );
+        Permission::system( fn() => PageAccess::set( [$root->id], [] ) );
+
+        $this->get( '/robots.txt' )
+            ->assertOk()
+            ->assertContent( $this->expected() );
     }
 
 

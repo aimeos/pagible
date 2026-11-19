@@ -563,12 +563,6 @@ class BroadcastsTest extends CoreTestAbstract
             'content' => $content,
         ], $this->user, parent: $this->root()->id );
     }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
-    }
 }
 
 

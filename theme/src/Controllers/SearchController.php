@@ -33,7 +33,7 @@ class SearchController extends Controller
         $vals = $request->validate( [
             'q' => 'required|string|min:' . (int) config( 'cms.theme.min-search' ) . '|max:200',
             'size' => 'integer|between:5,100',
-            'locale' => ['nullable', 'string', 'max:16', 'regex:/^[a-z]{2,3}([_-][A-Za-z0-9]{2,8})*$/'],
+            'locale' => 'nullable|string|cms_locale',
         ] );
 
         $lang = (string) ( $vals['locale'] ?? app()->getLocale() );

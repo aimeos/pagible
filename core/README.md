@@ -59,7 +59,7 @@ clients download large protected media directly; local private files are streame
 
 ### Stancl tenancy mode
 
-Pagible remains usable without tenancy and with custom integrations that pass a callback returning the current tenant ID to `\Aimeos\Cms\Tenancy::valueUsing()` (the `Tenancy::$callback` property is deprecated). Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
+Pagible remains usable without tenancy and with custom integrations that pass a callback returning the current tenant ID to `\Aimeos\Cms\Tenancy::valueUsing()`. Applications using `stancl/tenancy` in single-database mode can additionally connect Stancl's tenant lifecycle to Pagible from an application service provider:
 
 ```php
 \Aimeos\Cms\Tenancy::stancl();

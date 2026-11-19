@@ -92,16 +92,17 @@ final class PublishReferences
      */
     public function load( Collection $versions ) : array
     {
-        $elementOwners = [];
-        $fileOwners = [];
+        $elementIds = [];
+        $fileIds = [];
         $owners = [];
+        $pivots = [];
 
         foreach( $versions as $version )
         {
             /** @var class-string<Base> $type */
             $type = $version->versionable_type;
 
-            if( !( $pivots = self::pivots( $type ) ) ) {
+            if( !( $pivots[$type] ??= self::pivots( $type ) ) ) {
                 continue;
             }
 
@@ -118,41 +119,19 @@ final class PublishReferences
                 'active_elements' => self::flag( $version, 'active_elements' ),
             ];
 
-            if( isset( $pivots['files'] ) && self::flag( $version, 'target_files' ) !== false ) {
-                $fileOwners[$versionId] = $owners[$versionId];
+            if( isset( $pivots[$type]['files'] ) && self::flag( $version, 'target_files' ) !== false ) {
+                $fileIds[] = $versionId;
             }
 
-            if( isset( $pivots['elements'] ) && self::flag( $version, 'target_elements' ) !== false ) {
-                $elementOwners[$versionId] = $owners[$versionId];
+            if( isset( $pivots[$type]['elements'] ) && self::flag( $version, 'target_elements' ) !== false ) {
+                $elementIds[] = $versionId;
             }
         }
 
-        $this->loadPivot( 'cms_version_file', 'file_id', $fileOwners, 'files' );
-        $this->loadPivot( 'cms_version_element', 'element_id', $elementOwners, 'elements' );
+        $this->loadPivot( 'cms_version_file', 'file_id', $fileIds, 'files' );
+        $this->loadPivot( 'cms_version_element', 'element_id', $elementIds, 'elements' );
 
         return $owners;
-    }
-
-
-    /**
-     * Returns the file and element relations of the model whose pivots are synchronized on publishing.
-     *
-     * @param Model|class-string<Model> $model Model or model class name
-     * @return array<'files'|'elements', BelongsToMany<Model, Model>>
-     */
-    public static function pivots( Model|string $model ) : array
-    {
-        $model = is_string( $model ) ? new $model() : $model;
-        $result = [];
-
-        foreach( ['files', 'elements'] as $name )
-        {
-            if( method_exists( $model, $name ) && ( $relation = $model->{$name}() ) instanceof BelongsToMany ) {
-                $result[$name] = $relation;
-            }
-        }
-
-        return $result;
     }
 
 
@@ -197,16 +176,7 @@ final class PublishReferences
      */
     public function related( array $owners, string $type ) : array
     {
-        $result = [];
-
-        foreach( $owners as $versionId => $_ )
-        {
-            foreach( $this->refs[$versionId][$type] as $id ) {
-                $result[] = $id;
-            }
-        }
-
-        return $result;
+        return array_merge( ...array_map( fn( $versionId ) => $this->refs[$versionId][$type], array_keys( $owners ) ) );
     }
 
 
@@ -257,14 +227,14 @@ final class PublishReferences
     /**
      * Loads version pivot IDs into the active reference maps.
      *
-     * @param array<string, array{type: class-string<Base>, id: string}> $owners
+     * @param array<string> $versionIds
      * @param 'files'|'elements' $target
      */
-    private function loadPivot( string $table, string $related, array $owners, string $target ) : void
+    private function loadPivot( string $table, string $related, array $versionIds, string $target ) : void
     {
         $db = DB::connection();
 
-        foreach( array_chunk( array_keys( $owners ), Base::CHUNK ) as $ids )
+        foreach( array_chunk( $versionIds, Base::CHUNK ) as $ids )
         {
             foreach( $db->table( $table )->select( 'version_id', $related )->whereIn( 'version_id', $ids )->cursor() as $row )
             {
@@ -277,6 +247,28 @@ final class PublishReferences
                 $this->refs[$versionId][$target][] = $relatedId;
             }
         }
+    }
+
+
+    /**
+     * Returns the file and element relations of the model whose pivots are synchronized on publishing.
+     *
+     * @param Model|class-string<Model> $model Model or model class name
+     * @return array<'files'|'elements', BelongsToMany<Model, Model>>
+     */
+    private static function pivots( Model|string $model ) : array
+    {
+        $model = is_string( $model ) ? new $model() : $model;
+        $result = [];
+
+        foreach( ['files', 'elements'] as $name )
+        {
+            if( method_exists( $model, $name ) && ( $relation = $model->{$name}() ) instanceof BelongsToMany ) {
+                $result[$name] = $relation;
+            }
+        }
+
+        return $result;
     }
 
 
@@ -314,15 +306,19 @@ final class PublishReferences
                 $current[$ownerId][$relatedId] = true;
             }
 
-            $replace = [];
+            $replace = $rows = [];
 
             foreach( $chunk as $id => $sets )
             {
                 $target = array_fill_keys( $sets[$key], true );
-                $existing = $current[$id];
 
-                if( count( $target ) !== count( $existing ) || array_diff_key( $target, $existing ) ) {
-                    $replace[$id] = $target;
+                if( count( $target ) !== count( $current[$id] ) || array_diff_key( $target, $current[$id] ) )
+                {
+                    $replace[] = $id;
+
+                    foreach( array_keys( $target ) as $ref ) {
+                        $rows[] = [$owner => $id, $related => $ref];
+                    }
                 }
             }
 
@@ -330,16 +326,7 @@ final class PublishReferences
                 continue;
             }
 
-            $db->table( $table )->whereIn( $owner, array_keys( $replace ) )->delete();
-            $rows = [];
-
-            foreach( $replace as $id => $refs )
-            {
-                foreach( array_keys( $refs ) as $ref ) {
-                    $rows[] = [$owner => $id, $related => $ref];
-                }
-            }
-
+            $db->table( $table )->whereIn( $owner, $replace )->delete();
             DB::insertRows( $db->table( $table ), $rows );
         }
     }

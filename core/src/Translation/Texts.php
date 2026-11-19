@@ -232,8 +232,14 @@ class Texts
         }
         elseif( $type === 'table' && is_array( $value ) )
         {
-            foreach( array_keys( $value ) as $row ) {
-                $this->cells( $key, $value[$row] );
+            foreach( array_keys( $value ) as $row )
+            {
+                foreach( is_array( $value[$row] ) ? array_keys( $value[$row] ) : [] as $col )
+                {
+                    if( is_string( $value[$row][$col] ) && trim( $value[$row][$col] ) !== '' ) {
+                        $this->push( $key, $value[$row][$col] );
+                    }
+                }
             }
         }
         elseif( $type === 'items' && is_array( $value ) )
@@ -246,28 +252,6 @@ class Texts
             }
         }
     }
-
-
-    /**
-     * Collects the non-empty texts of one table row.
-     *
-     * @param string $key Key of the item the table belongs to
-     * @param mixed $cells Table row, texts are collected by reference
-     */
-    private function cells( string $key, mixed &$cells ) : void
-    {
-        if( !is_array( $cells ) ) {
-            return;
-        }
-
-        foreach( $cells as $col => $cell )
-        {
-            if( is_string( $cell ) && trim( $cell ) !== '' ) {
-                $this->push( $key, $cells[$col] );
-            }
-        }
-    }
-
 
     /**
      * Adds a reference to a text.

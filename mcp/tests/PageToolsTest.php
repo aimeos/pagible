@@ -762,13 +762,15 @@ class PageToolsTest extends McpTestAbstract
     public function testCopyPageThrottled()
     {
         $page = PageView::where( 'name', 'Dev' )->first();
-        \Illuminate\Support\Facades\RateLimiter::increment( 'cms-copy:' . $this->user->id, 60, 10 );
+        // same key as @throttle(name: "cms-copy") in the GraphQL API
+        $key = sha1( 'cms-copy' . \Illuminate\Support\Facades\RateLimiter::limiter( 'cms-copy' )( request() )->key );
+        \Illuminate\Support\Facades\RateLimiter::increment( $key, 60, 10 );
 
         try {
             CmsServer::actingAs( $this->user )->tool( \Aimeos\Cms\Tools\CopyPage::class, ['id' => $page->id] )
-                ->assertHasErrors();
+                ->assertOk()->assertSee( 'Too many copies, try again in' );
         } finally {
-            \Illuminate\Support\Facades\RateLimiter::clear( 'cms-copy:' . $this->user->id );
+            \Illuminate\Support\Facades\RateLimiter::clear( $key );
         }
 
         $this->assertSame( 1, PageView::where( 'name', 'Dev' )->count() );

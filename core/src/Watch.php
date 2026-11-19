@@ -180,7 +180,7 @@ class Watch
     {
         $request = request();
 
-        if( !$request->attributes->has( 'cms-request-id' ) )
+        if( !is_string( $id = $request->attributes->get( 'cms-request-id' ) ) )
         {
             $header = $request->header( 'X-Request-Id' );
             $id = is_string( $header ) && preg_match( '/\A[A-Za-z0-9._-]{1,128}\z/D', $header ) ? $header : (string) Str::uuid();
@@ -188,8 +188,7 @@ class Watch
             $request->attributes->set( 'cms-request-id', $id );
         }
 
-        $id = $request->attributes->get( 'cms-request-id' );
-        return is_string( $id ) ? $id : '';
+        return $id;
     }
 
 

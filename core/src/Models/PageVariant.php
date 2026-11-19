@@ -194,7 +194,12 @@ class PageVariant extends Model
             }
         } );
 
-        static::saved( fn( PageVariant $variant ) => $variant->index() );
+        // updates the search index entry of the variant after the transaction commits
+        static::saved( function( PageVariant $variant ) {
+            if( Scout::syncs( PageView::class ) ) {
+                Scout::reindex( PageView::class, [(string) $variant->id], keys: true );
+            }
+        } );
     }
 
 
@@ -319,10 +324,9 @@ class PageVariant extends Model
     public static function purge( array $ids ) : int
     {
         $count = 0;
+        static::purgeVersions( $ids );
 
-        foreach( array_chunk( array_values( $ids ), DB::IN_SIZE ) as $chunk )
-        {
-            static::purgeVersions( $chunk );
+        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
             $count += static::withoutGlobalScopes()->whereKey( $chunk )->toBase()->delete();
         }
 
@@ -340,19 +344,8 @@ class PageVariant extends Model
      */
     public static function purgeVersions( array $ids ) : void
     {
-        foreach( array_chunk( array_values( $ids ), DB::IN_SIZE ) as $chunk ) {
+        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
             Version::withoutGlobalScopes()->where( 'versionable_type', static::class )->whereIn( 'versionable_id', $chunk )->toBase()->delete();
-        }
-    }
-
-
-    /**
-     * Updates the search index entry of the variant after the transaction commits.
-     */
-    protected function index() : void
-    {
-        if( Scout::syncs( PageView::class ) ) {
-            Scout::reindex( PageView::class, [(string) $this->id], keys: true );
         }
     }
 

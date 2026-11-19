@@ -14,17 +14,6 @@ namespace Aimeos\Cms\Concerns;
 trait Tenancy
 {
     /**
-     * Returns the name of the tenant column.
-     *
-     * @return string Tenant column name
-     */
-    public function getTenantColumn() : string
-    {
-        return 'tenant_id';
-    }
-
-
-    /**
      * Boots tenant scoping for the model.
      */
     protected static function bootTenancy() : void
@@ -32,7 +21,7 @@ trait Tenancy
         static::addGlobalScope( new \Aimeos\Cms\Scopes\Tenancy() );
 
         static::creating( function( self $model ) {
-            $model->setAttribute( $model->getTenantColumn(), \Aimeos\Cms\Tenancy::value() );
+            $model->setAttribute( 'tenant_id', \Aimeos\Cms\Tenancy::value() );
         } );
     }
 }

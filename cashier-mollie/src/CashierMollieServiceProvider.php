@@ -158,13 +158,20 @@ class CashierMollieServiceProvider extends Provider
     /**
      * Configures application-bound Mollie webhook paths.
      *
-     * @throws \RuntimeException If no application key is configured
+     * Console commands like "key:generate" must work before an application key exists.
+     *
+     * @throws \RuntimeException If no application key is configured outside the console
      */
     private function webhooks() : void
     {
         $key = (string) config( 'app.key' );
 
-        if( $key === '' ) {
+        if( $key === '' )
+        {
+            if( $this->app->runningInConsole() ) {
+                return;
+            }
+
             throw new \RuntimeException( 'APP_KEY is required for Mollie webhook paths.' );
         }
 

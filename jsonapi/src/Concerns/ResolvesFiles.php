@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\FileResponse;
 use Aimeos\Cms\Schema;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 
@@ -25,7 +26,8 @@ trait ResolvesFiles
      */
     protected function aux( PageView $model, string $name, mixed $items ) : mixed
     {
-        return ( $version = $this->version( $model ) ) ? $version->aux->{$name} : $items;
+        // like the theme preview, values missing in the version use the page value
+        return $this->version( $model )?->aux->{$name} ?? $items;
     }
 
 
@@ -41,8 +43,7 @@ trait ResolvesFiles
     {
         $version = $this->version( $model );
         $filesById = null;
-        $lang = $model->lang;
-        $lang2 = substr( $lang, 0, 2 );
+        $lang = (string) $model->lang;
 
         foreach( (array) $items as $item )
         {
@@ -56,8 +57,8 @@ trait ResolvesFiles
                     if( $file = $filesById[$id] ?? null )
                     {
                         $file = clone $file;
-                        $file->description = $file->description->{$lang} ?? $file->description->{$lang2} ?? null;
-                        $file->transcription = $file->transcription->{$lang} ?? $file->transcription->{$lang2} ?? null;
+                        $file->description = Utils::text( $file->description, $lang );
+                        $file->transcription = Utils::text( $file->transcription, $lang );
 
                         if( $file->disk === 'private' )
                         {
@@ -93,13 +94,14 @@ trait ResolvesFiles
 
 
     /**
-     * Returns the latest version of the page if it has been loaded.
+     * Returns the latest version of the page if it has been loaded including its aux data.
      *
      * @param PageView $model The page model
      * @return Version|null Latest version or NULL if not loaded
      */
     protected function version( PageView $model ) : ?Version
     {
-        return $model->relationLoaded( 'latest' ) ? $model->latest : null;
+        $version = $model->relationLoaded( 'latest' ) ? $model->latest : null;
+        return $version && array_key_exists( 'aux', $version->getAttributes() ) ? $version : null;
     }
 }

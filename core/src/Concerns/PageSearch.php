@@ -100,29 +100,16 @@ trait PageSearch
             return [];
         }
 
-        $draft = '';
         $version = $this->latest;
         $data = $version?->data;
 
-        if( $version )
-        {
-            $draft = mb_strtolower( trim(
-                ( $data->path ?? '' ) . "\n"
-                . ( $data->to ?? '' ) . "\n"
-                . (string) $version
-            ) );
-        }
+        $draft = $version
+            ? mb_strtolower( trim( ( $data->path ?? '' ) . "\n" . ( $data->to ?? '' ) . "\n" . (string) $version ) )
+            : '';
 
-        $content = '';
-
-        if( !$this->trashed() && $this->getAttribute( 'variant_deleted_at' ) === null )
-        {
-            $content = mb_strtolower( trim(
-                $this->path . "\n"
-                . $this->to . "\n"
-                . (string) $this
-            ) );
-        }
+        $content = !$this->trashed() && $this->getAttribute( 'variant_deleted_at' ) === null
+            ? mb_strtolower( trim( $this->path . "\n" . $this->to . "\n" . (string) $this ) )
+            : '';
 
         return [
             'draft' => $draft,

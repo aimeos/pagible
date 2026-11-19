@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
 
@@ -18,11 +19,16 @@ class Hcaptcha implements Rule
 {
     public function passes($attribute, $value): bool
     {
-        $response = Http::asForm()->post('https://hcaptcha.com/siteverify', [
-            'secret'   => config('services.hcaptcha.secret'),
-            'response' => $value,
-            'remoteip' => request()->ip(),
-        ]);
+        try {
+            $response = Http::asForm()->connectTimeout(3)->timeout(5)->post('https://hcaptcha.com/siteverify', [
+                'secret'   => config('services.hcaptcha.secret'),
+                'response' => $value,
+                'remoteip' => request()->ip(),
+            ]);
+        } catch( ConnectionException $e ) {
+            report( $e );
+            return false;
+        }
 
         return $response->ok() && $response->json('success') === true;
     }

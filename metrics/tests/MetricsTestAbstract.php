@@ -7,6 +7,8 @@
 
 namespace Tests;
 
+use Database\Seeders\TestSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
@@ -15,11 +17,21 @@ abstract class MetricsTestAbstract extends \Orchestra\Testbench\TestCase
 {
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
+    use RefreshDatabase;
 
 
+    protected $seeder = TestSeeder::class;
     protected ?\App\Models\User $user = null;
     // the isolated package install (CI) doesn't discover the dependency providers, so all are listed below
     protected $enablesPackageDiscoveries = false;
+
+
+    protected function defineDatabaseMigrations()
+    {
+        \Orchestra\Testbench\after_resolving( $this->app, 'migrator', static function( $migrator ) {
+            $migrator->path( \Orchestra\Testbench\default_migration_path() );
+        } );
+    }
 
 
     protected function defineEnvironment( $app )
@@ -33,6 +45,7 @@ abstract class MetricsTestAbstract extends \Orchestra\Testbench\TestCase
         $app['config']->set( 'cache.default', 'array' );
         $app['config']->set( 'cms.db', 'testing' );
         $app['config']->set( 'pulse.enabled', false );
+        $app['config']->set( 'scout.driver', null );
 
         $provider = new \ReflectionClass( \Aimeos\Cms\GraphqlServiceProvider::class );
         $schema = sys_get_temp_dir() . '/cms-metrics-' . getmypid() . '.graphql';

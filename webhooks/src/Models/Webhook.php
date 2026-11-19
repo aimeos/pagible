@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\Connection;
 use Aimeos\Cms\Concerns\HasUuids;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\WebhookCircuit;
@@ -34,6 +35,7 @@ use Illuminate\Support\Carbon;
  */
 class Webhook extends Model
 {
+    use Connection;
     use HasUuids;
     use Tenancy;
 
@@ -99,12 +101,6 @@ class Webhook extends Model
         $error['at'] = is_string( $error['at'] ?? null ) ? Carbon::parse( $error['at'] ) : null;
 
         return $error;
-    }
-
-
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
     }
 
 

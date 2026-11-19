@@ -33,21 +33,17 @@ final class Paths
      */
     public static function known( Collection $variants ) : array
     {
-        $known = $loaded = $list = [];
-
-        // domain and path are unique for all page variants
-        foreach( $variants as $variant ) {
-            $list[] = [(string) $variant->domain, (string) $variant->path, (string) $variant->lang];
-            $loaded[(string) $variant->domain][(string) $variant->path] = (string) $variant->lang;
-        }
+        $known = $loaded = [];
 
         // up to three parameters per path stay below the limit of 2100 parameters of SQL Server
-        foreach( array_chunk( $list, 600 ) as $chunk )
+        foreach( $variants->chunk( 600 ) as $chunk )
         {
             $groups = [];
 
-            foreach( $chunk as [$domain, $path, $lang] ) {
-                $groups[$domain][$path] = $lang;
+            // domain and path are unique for all page variants
+            foreach( $chunk as $variant ) {
+                $groups[(string) $variant->domain][(string) $variant->path] = (string) $variant->lang;
+                $loaded[(string) $variant->domain][(string) $variant->path] = (string) $variant->lang;
             }
 
             $query = PageVariant::withTrashed()->select( 'domain', 'path' )

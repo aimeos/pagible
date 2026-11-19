@@ -520,18 +520,12 @@ class SyncTest extends CoreTestAbstract
     protected function page( ?array $content = null, array $input = [] ) : PageView
     {
         return Pages::add( $input + [
-            'lang' => 'en', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
+            'lang' => 'en', 'domain' => '', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
             'content' => $content ?? [
                 ['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']],
                 ['id' => 'el2', 'type' => 'heading', 'data' => ['title' => 'Heading', 'level' => 2]],
             ],
         ], $this->user, parent: $this->root()->id );
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 

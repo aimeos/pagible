@@ -242,12 +242,6 @@ class WatchTest extends CoreTestAbstract
     }
 
 
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
-    }
-
-
     private function id( PageView $page ) : string
     {
         if( !is_string( $page->id ) ) {

@@ -137,15 +137,7 @@ final class PageRows
      */
     public static function views( iterable $items ) : Collection
     {
-        $list = [];
-
-        foreach( $items as $item ) {
-            if( $item instanceof PageView ) {
-                $list[] = $item;
-            }
-        }
-
-        return collect( $list );
+        return collect( $items )->whereInstanceOf( PageView::class )->values();
     }
 
 

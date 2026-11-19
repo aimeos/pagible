@@ -162,20 +162,6 @@ class FacadeTest extends CoreTestAbstract
     }
 
 
-    public function testDeprecatedClassAliases() : void
-    {
-        $this->assertSame( \Aimeos\Cms\Events\Channel::class, ( new \ReflectionClass( 'Aimeos\Cms\Channel' ) )->getName() );
-        $this->assertSame( \Aimeos\Cms\Query\Filter::class, ( new \ReflectionClass( 'Aimeos\Cms\Filter' ) )->getName() );
-        $this->assertSame( \Aimeos\Cms\Query\SearchBuilder::class, ( new \ReflectionClass( 'Aimeos\Cms\SearchBuilder' ) )->getName() );
-
-        try {
-            throw new \Aimeos\Cms\Exceptions\InvalidInputException( 'test' );
-        } catch( \Aimeos\Cms\InvalidException $e ) {
-            $this->assertSame( 'test', $e->getMessage() );
-        }
-    }
-
-
     /**
      * The @method tags of the facades are written by hand and must match the resource classes.
      */

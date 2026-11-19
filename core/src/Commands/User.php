@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Commands;
 use Aimeos\Cms\Permission;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,14 +21,14 @@ class User extends Command
      * Command name
      */
     protected $signature = 'cms:user
-        {--a|add= : Add permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
+        {--a|add=* : Add permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
         {--d|disable : Disables the user}
         {--e|enable : Enables the user}
         {--l|list : Lists all permissions of the CMS user}
         {--langs=* : Restrict writes to these language codes, e.g. "de" (can be used multiple times, replaces the current languages), "*" for all languages or empty for none}
         {--p|password= : Secret password of the account (will ask if user will be created)}
         {--q|--quiet : Do not output any message}
-        {--r|remove= : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
+        {--r|remove=* : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
         {--role= : Add a named role to the user (e.g. "editor", "publisher", "admin")}
         {--roles : Lists all available roles and their permissions}
         {email? : E-Mail of the user}';
@@ -110,12 +111,12 @@ class User extends Command
         $changed = false;
 
         if( $this->option( 'enable' ) ) {
-            $assigned = $this->permissions( '*' );
+            $assigned = $this->permissions( ['*'] );
             $changed = true;
         }
 
         if( $perms = $this->option( 'add' ) ) {
-            $assigned = array_merge( $assigned, $this->permissions( $perms ) );
+            $assigned = array_merge( $assigned, $this->permissions( (array) $perms ) );
             $changed = true;
         }
 
@@ -125,7 +126,7 @@ class User extends Command
         }
 
         if( $perms = $this->option( 'remove' ) ) {
-            $assigned = array_diff( $assigned, $this->permissions( $perms ) );
+            $assigned = array_diff( $assigned, $this->permissions( (array) $perms ) );
             $changed = true;
         }
 
@@ -201,10 +202,7 @@ class User extends Command
             return;
         }
 
-        // same as the roles of the GraphQL user resolver, denied roles ("!role") are no roles of the user
-        $roles = array_filter( Permission::assigned( $user ), fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ) );
-
-        if( $roles ) {
+        if( $roles = Permission::assigned( $user, true ) ) {
             $this->info( 'roles:' );
             foreach( $roles as $role ) {
                 $this->line( sprintf( '  %1$s', $role ) );
@@ -254,29 +252,19 @@ class User extends Command
     /**
      * Returns the actions for the given names or patterns.
      *
-     * @param array<string>|string $action Name(s) or pattern(s) of the requested action(s), e.g. "page:view", "page:*" or "*:view"
+     * @param array<string|null> $actions Names or patterns of the requested actions, e.g. "page:view", "page:*" or "*:view"
      * @return array<string> List of action names
      */
-    protected function permissions( array|string $action ) : array
+    protected function permissions( array $actions ) : array
     {
         $list = [];
         $perms = Permission::all();
 
-        foreach( (array) $action as $name )
+        foreach( array_filter( $actions ) as $name )
         {
-            if( str_contains( $name, '*' ) )
-            {
-                $pattern = str_replace( '*', '.*', $name );
-
-                foreach( $perms as $perm )
-                {
-                    if( preg_match( sprintf( '#^%1$s$#', $pattern ), $perm ) ) {
-                        $list[] = $perm;
-                    }
-                }
-            }
-            else
-            {
+            if( str_contains( $name, '*' ) ) {
+                array_push( $list, ...array_filter( $perms, fn( $perm ) => Str::is( $name, $perm ) ) );
+            } else {
                 $list[] = $name;
             }
         }

@@ -102,15 +102,22 @@ final class Query
     public function page( $rootValue, array $args ) : ?PageView
     {
         $trashed = $args['trashed'] ?? null;
+        $lang = $args['lang'] ?? null;
 
         $query = match( $trashed ) {
             'with' => PageView::withTrashed(),
-            'only' => PageView::onlyTrashed(),
+            'only' => $lang !== null ? PageView::withTrashed() : PageView::onlyTrashed(),
             default => PageView::query(),
         };
 
-        if( isset( $args['lang'] ) ) {
-            $query->language( (string) $args['lang'], in_array( $trashed, ['with', 'only'], true ) );
+        if( $lang !== null )
+        {
+            $query->language( (string) $lang, in_array( $trashed, ['with', 'only'], true ) );
+
+            // like the page list, trashed pages and trashed variants of the language
+            if( $trashed === 'only' ) {
+                $query->where( fn( $q ) => $q->whereNotNull( 'deleted_at' )->orWhereNotNull( 'variant_deleted_at' ) );
+            }
         }
 
         return $query->whereKey( $args['id'] )->first();
@@ -237,9 +244,7 @@ final class Query
         if( $resolveInfo )
         {
             $fields = array_keys( (array) ( $resolveInfo->getFieldSelection( 1 )['data'] ?? [] ) );
-            $columns = [...PageView::REQUIRED_COLUMNS, 'variant_deleted_at', ...array_intersect( PageView::RESPONSE_COLUMNS, $fields )];
-
-            SearchQuery::select( $search, array_values( array_unique( $columns ) ) );
+            SearchQuery::select( $search, PageView::columns( $fields ) );
         }
 
         $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];

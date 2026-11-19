@@ -100,15 +100,19 @@ class Permission
     /**
      * Returns the raw CMS roles and permissions assigned to the user.
      *
+     * @param bool $roles TRUE for the named roles only, denied roles ("!role") are no roles of the user
      * @return array<int, string>
      */
-    public static function assigned( Authenticatable $user ) : array
+    public static function assigned( Authenticatable $user, bool $roles = false ) : array
     {
         $entries = data_get( $user, 'cmsperms', [] );
+        $entries = is_array( $entries ) ? array_filter( $entries, 'is_string' ) : [];
 
-        return is_array( $entries )
-            ? array_values( array_filter( $entries, 'is_string' ) )
-            : [];
+        if( $roles ) {
+            $entries = array_filter( $entries, fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ) );
+        }
+
+        return array_values( $entries );
     }
 
 
@@ -289,7 +293,7 @@ class Permission
      */
     public static function check( string $action, ?Authenticatable $user, bool $needed = true ) : void
     {
-        if( $user ? $needed && !self::can( $action, $user ) : !Hooks::get()->system ) {
+        if( ( $needed || !$user ) && !self::allowed( $action, $user ) ) {
             throw new PermissionException( 'Insufficient permissions' );
         }
     }
@@ -394,7 +398,13 @@ class Permission
 
             $existing = self::assigned( $locked );
 
-            self::validate( $entries, $existing );
+            // unsupported new values are rejected while existing legacy assignments can be retained
+            foreach( $entries as $entry )
+            {
+                if( !self::valid( $entry ) && !in_array( $entry, $existing, true ) ) {
+                    throw new InvalidInputException( sprintf( 'Unknown CMS role or permission "%s".', $entry ) );
+                }
+            }
 
             // no cast for "cmslangs" because it would decode database NULL and JSON null to the same value
             $raw = $langs === false ? $locked->getAttributes()['cmslangs'] ?? null : ( $langs === null ? null : json_encode( $langs ) );
@@ -457,18 +467,6 @@ class Permission
                 langs: $langs,
             );
         } );
-    }
-
-
-    /**
-     * Clears resolved-permission caches.
-     *
-     * Entries are fingerprinted and released with their user objects, so this is only
-     * needed to free memory before long-running loops that touch many users.
-     */
-    public static function flush() : void
-    {
-        Hooks::get()->resolved = new \WeakMap();
     }
 
 
@@ -628,22 +626,5 @@ class Permission
         return $prefix && $suffix
             && ( $prefix === '*' || $suffix === '*' )
             && self::resolve( [$entry] ) !== [];
-    }
-
-
-    /**
-     * Rejects unsupported new values while allowing existing legacy assignments to be retained.
-     *
-     * @param array<int, string> $entries
-     * @param array<int, string> $existing
-     */
-    private static function validate( array $entries, array $existing ) : void
-    {
-        foreach( $entries as $entry )
-        {
-            if( !self::valid( $entry ) && !in_array( $entry, $existing, true ) ) {
-                throw new InvalidInputException( sprintf( 'Unknown CMS role or permission "%s".', $entry ) );
-            }
-        }
     }
 }

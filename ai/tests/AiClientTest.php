@@ -133,7 +133,7 @@ class AiClientTest extends AiTestAbstract
             ] )] );
 
             $content = [['id' => 'content-1', 'type' => 'text', 'group' => 'main', 'data' => ['text' => $text]]];
-            $this->assertSame( 'Refined', \Aimeos\Cms\Refiner::content( 'Shorten the text', $content )[0]['data']['text'] ?? null );
+            $this->assertSame( 'Refined', \Aimeos\Cms\Refiner::content( 'Shorten the text', $content )[0]->data->text ?? null );
 
             return ( new \ReflectionMethod( $fake, 'tools' ) )->invoke( $fake );
         };

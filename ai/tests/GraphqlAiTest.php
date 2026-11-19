@@ -181,11 +181,11 @@ class GraphqlAiTest extends AiTestAbstract
                 'refine' => json_encode( [ [
                     'id' => 'content-1',
                     'type' => 'heading',
+                    'group' => 'main',
                     'data' => [
                         'title' => 'Generated title',
                         'level' => '1'
                     ],
-                    'group' => 'main'
                 ] ] )
             ]
         ] );

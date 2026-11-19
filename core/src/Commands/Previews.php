@@ -45,7 +45,7 @@ class Previews extends Command
     /**
      * Files processed and notified at once
      */
-    public const CHUNK = 10;
+    private const CHUNK = 10;
 
     /**
      * Files whose pages are invalidated at once
@@ -385,43 +385,38 @@ class Previews extends Command
      * was. Files without versions are updated directly. Must be called while the storage
      * lock is held.
      *
-     * @param string $id File ID
      * @param PreviewSource $source
      * @param array<int, string> $map New previews as width/path pairs
      * @return bool TRUE if the previews have been stored, FALSE if the file has been changed
      */
-    protected function store( string $id, array $source, array $map ) : bool
+    protected function store( array $source, array $map ) : bool
     {
         $file = $source['file'];
         $version = $source['version'];
 
-        if( !$file || self::changed( $source, $this->source( $id ) ) ) {
+        if( !$file || self::changed( $source, $this->source( (string) $file->id ) ) ) {
             return false;
         }
 
         DB::transaction( function() use ( $file, $map, $version ) {
-            if( !$version ) {
-                File::withTrashed()->whereKey( $file->id )->toBase()->update( ['previews' => json_encode( (object) $map )] );
-                return;
-            }
+            $values = ['previews' => json_encode( (object) $map )];
 
-            $data = clone $version->data;
-            $data->previews = (object) $map;
+            if( $version )
+            {
+                $data = clone $version->data;
+                $data->previews = (object) $map;
 
-            $new = $file->versions()->forceCreate( [
-                'lang' => $version->lang,
-                'editor' => self::EDITOR,
-                'data' => $data,
-                'aux' => $version->aux,
-                'publish_at' => $version->publish_at,
-                'published' => $version->published,
-            ] );
+                $new = $file->versions()->forceCreate( [
+                    'lang' => $version->lang,
+                    'editor' => self::EDITOR,
+                    'data' => $data,
+                    'aux' => $version->aux,
+                    'publish_at' => $version->publish_at,
+                    'published' => $version->published,
+                ] );
 
-            $values = ['latest_id' => $new->id];
-
-            // the file contains the values of the published version
-            if( $version->published ) {
-                $values['previews'] = json_encode( (object) $map );
+                // the file contains the values of the published version
+                $values = ['latest_id' => $new->id] + ( $version->published ? $values : [] );
             }
 
             File::withTrashed()->whereKey( $file->id )->toBase()->update( $values );
@@ -445,33 +440,27 @@ class Previews extends Command
     {
         $source = $this->source( $id );
 
-        if( !( $item = $source['item'] ) ) {
-            return ['updated' => false, 'skipped' => false];
-        }
-
         // the file may have been changed since it has been planned by walk()
-        if( !( $plan = $this->plan( $item ) ) ) {
+        if( !( $item = $source['item'] ) || !( $plan = $this->plan( $item ) ) ) {
             return ['updated' => false, 'skipped' => false];
         }
 
         $disk = FileStorage::disk( (string) $item['file']->getAttribute( 'disk' ) );
         $created = [];
+        $updated = false;
 
         try
         {
             $map = $item['file']->syncPreviews( $item['previews'], $plan );
             $created = array_values( array_diff( (array) $map, $item['previews'] ) );
             // FALSE if the file has been changed meanwhile
-            $updated = $map !== null && File::locked( fn() => $this->store( $id, $source, $map ) );
+            $updated = $map !== null && File::locked( fn() => $this->store( $source, $map ) );
         }
-        catch( \Throwable $t )
+        finally
         {
-            $disk->delete( $created );
-            throw $t;
-        }
-
-        if( !$updated ) {
-            $disk->delete( $created );
+            if( !$updated ) {
+                $disk->delete( $created );
+            }
         }
 
         return ['updated' => $updated, 'skipped' => $map !== null && !$updated];

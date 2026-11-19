@@ -31,6 +31,9 @@ final class Hooks
     /** Custom permission check callback */
     public ?\Closure $can = null;
 
+    /** @var array<string, array<class-string<Models\Base>, array<int, array<string, true>>>>|null IDs to index by tenant, model and key type while Scout::defer() runs */
+    public ?array $deferred = null;
+
     /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null Callback adding grants from optional packages */
     public ?\Closure $extend = null;
 

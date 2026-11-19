@@ -20,6 +20,18 @@ use Aimeos\Cms\Models\PageView;
 class Hashes
 {
     /**
+     * Returns the hash of a content element without its ID and group.
+     *
+     * @param array<string, mixed> $item Content element
+     */
+    public static function element( array $item ) : string
+    {
+        unset( $item['id'], $item['group'] );
+        return self::hash( $item );
+    }
+
+
+    /**
      * Returns the hashes of a page variant.
      *
      * @param array<string, mixed>|object $data Page fields like title, name, type, theme, tag and cache
@@ -46,8 +58,7 @@ class Hashes
             $id = (string) $item['id'];
             $order[] = [$id, $item['group'] ?? null];
 
-            unset( $item['id'], $item['group'] );
-            $hashes['el:' . $id] = self::hash( $item );
+            $hashes['el:' . $id] = self::element( $item );
         }
 
         $hashes['page:order'] = self::hash( $order );
@@ -123,16 +134,15 @@ class Hashes
             $value = $value->jsonSerialize();
         }
 
-        if( is_object( $value ) ) {
-            $value = (array) $value;
-
-            if( empty( $value ) ) {
-                return new \stdClass();
-            }
-        } elseif( !is_array( $value ) || array_is_list( $value ) ) {
-            return is_array( $value ) ? array_map( [self::class, 'canonical'], $value ) : $value;
+        if( is_array( $value ) && array_is_list( $value ) ) {
+            return array_map( [self::class, 'canonical'], $value );
         }
 
+        if( !is_array( $value ) && !is_object( $value ) ) {
+            return $value;
+        }
+
+        $value = (array) $value;
         ksort( $value, SORT_STRING );
         return (object) array_map( [self::class, 'canonical'], $value );
     }
@@ -146,10 +156,6 @@ class Hashes
      */
     protected static function items( iterable|object|null $items ) : iterable
     {
-        if( $items === null ) {
-            return [];
-        }
-
         return is_iterable( $items ) ? $items : (array) $items;
     }
 }

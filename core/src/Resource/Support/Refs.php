@@ -26,32 +26,6 @@ use Illuminate\Support\Str;
 final class Refs
 {
     /**
-     * Returns the given IDs confirmed to exist, throwing if any is no longer available.
-     *
-     * @param class-string<File>|class-string<Element> $model Model class to check the IDs against
-     * @param array<string> $ids Referenced IDs to verify
-     * @return array<string> Deduped IDs, all confirmed to exist
-     * @throws ConflictException If any referenced ID is no longer available
-     */
-    private static function available( string $model, array $ids ) : array
-    {
-        $ids = array_values( array_unique( $ids ) );
-        $existing = [];
-
-        // SQL Server rejects values which aren't UUIDs, they are reported as not available
-        foreach( array_chunk( array_filter( $ids, fn( $id ) => Str::isUuid( $id ) ), DB::IN_SIZE ) as $chunk ) {
-            $existing += $model::whereIn( 'id', $chunk )->pluck( 'id', 'id' )->all();
-        }
-
-        if( $missing = array_filter( $ids, fn( $id ) => !isset( $existing[$id] ) ) ) {
-            throw new ConflictException( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
-        }
-
-        return $ids;
-    }
-
-
-    /**
      * Returns the available file IDs referenced by an element's field data.
      *
      * @param array<string, mixed> $data Element version data (fields stored under "data")
@@ -112,5 +86,30 @@ final class Refs
             'files' => self::available( File::class, $files ),
             'elements' => self::available( Element::class, $elements ),
         ];
+    }
+
+
+    /**
+     * Returns the given IDs confirmed to exist, throwing if any is no longer available.
+     *
+     * @param class-string<File>|class-string<Element> $model Model class to check the IDs against
+     * @param array<string> $ids Unique referenced IDs to verify
+     * @return array<string> IDs, all confirmed to exist
+     * @throws ConflictException If any referenced ID is no longer available
+     */
+    private static function available( string $model, array $ids ) : array
+    {
+        $existing = [];
+
+        // SQL Server rejects values which aren't UUIDs, they are reported as not available
+        foreach( array_chunk( array_filter( $ids, fn( $id ) => Str::isUuid( $id ) ), DB::IN_SIZE ) as $chunk ) {
+            $existing += $model::whereIn( 'id', $chunk )->pluck( 'id', 'id' )->all();
+        }
+
+        if( $missing = array_filter( $ids, fn( $id ) => !isset( $existing[$id] ) ) ) {
+            throw new ConflictException( sprintf( '%s not available: %s', class_basename( $model ), implode( ', ', $missing ) ) );
+        }
+
+        return $ids;
     }
 }

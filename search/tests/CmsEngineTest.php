@@ -381,6 +381,20 @@ class CmsEngineTest extends SearchTestAbstract
     }
 
 
+    public function testPaginateSelectsColumns(): void
+    {
+        foreach( ['', 'laravel'] as $term )
+        {
+            $search = SearchQuery::select( SearchQuery::prefer( PageView::search( $term ), 'en' ), ['id', 'title'] );
+            $page = $search->paginate( 2 )->first();
+
+            $this->assertNotNull( $page );
+            $this->assertArrayHasKey( 'title', $page->getAttributes() );
+            $this->assertArrayNotHasKey( 'content', $page->getAttributes() );
+        }
+    }
+
+
     public function testPublishIndexesLoadedModels(): void
     {
         $element = Permission::system( fn() => Elements::add( [

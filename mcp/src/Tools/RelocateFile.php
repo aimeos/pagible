@@ -36,7 +36,7 @@ class RelocateFile extends Tool
             'disk.required' => 'You must specify "public" or "private" storage.',
         ] );
 
-        $file = Files::relocateMany( [$v['id']], $v['disk'], $request->user() )->firstOrFail();
+        $file = Files::relocate( $v['id'], $v['disk'], $request->user() );
 
         return Response::structured( [
             'id' => $file->id,

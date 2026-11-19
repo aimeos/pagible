@@ -60,8 +60,10 @@ final class PageEdits
             if( Permission::langs( $user ) !== null )
             {
                 PageVariant::withTrashed()->where( 'page_id', $id )
-                    ->when( $lang !== null, fn( $q ) => $q->where( 'lang', $lang ) )
-                    ->when( $lang === null, fn( $q ) => $q->whereIn( 'lang', Page::withTrashed()->where( 'id', $id )->select( 'source' ) ) )
+                    ->when( $lang !== null,
+                        fn( $q ) => $q->where( 'lang', $lang ),
+                        fn( $q ) => $q->whereIn( 'lang', Page::withTrashed()->where( 'id', $id )->select( 'source' ) )
+                    )
                     ->lockForUpdate()->get( ['id'] );
             }
 
@@ -121,8 +123,7 @@ final class PageEdits
         // nested-set pre-order traversal) so each parent is saved before its children
         if( $descendants && $ids )
         {
-            PageView::checkBulk( count( array_unique( $ids ) ) );
-            $roots = PageView::topmost( PageView::withTrashed()->whereIn( 'id', $ids )->get( ['id', NestedSet::LFT, NestedSet::RGT] ) );
+            $roots = PageView::topmost( PageView::withTrashed()->whereIn( 'id', PageView::bulkIds( $ids ) )->get( ['id', NestedSet::LFT, NestedSet::RGT] ) );
             $ids = [];
 
             // disjoint chunks in tree order keep the pre-order traversal across chunks

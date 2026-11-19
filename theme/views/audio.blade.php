@@ -4,20 +4,20 @@
 
 @if($file = cms($files, $data->file?->id ?? null))
 	<audio preload="none" controls
-		title="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? '' }}"
+		title="{{ cmstext($page, $file, 'description') ?? '' }}"
 		src="{{ cmsasset($page, $file) }}">
-		<div class="transcription" lang="{{ cms($page, 'lang') }}">{{ cms($file, 'transcription')?->{cms($page, 'lang')} ?? '' }}</div>
+		<div class="transcription" lang="{{ cms($page, 'lang') }}">{{ cmstext($page, $file, 'transcription') ?? '' }}</div>
 	</audio>
 	<div class="caption"></div>
 
 	<script type="application/ld+json">{
 		"@@context": "https://schema.org",
 		"@@type": "AudioObject",
-		"name": {!! cmsjson(cms($file, 'description')?->{cms($page, 'lang')} ?? cms($page, 'title')) !!},
+		"name": {!! cmsjson(cmstext($page, $file, 'description') ?? cms($page, 'title')) !!},
 		"contentUrl": {!! cmsjson(cmsasset($page, $file)) !!},
 		"uploadDate": "{{ $page->created_at->toIso8601String() }}"
-		@if(cms($file, 'transcription')?->{cms($page, 'lang')} ?? null)
-			, "transcript": {!! cmsjson(cms($file, 'transcription')->{cms($page, 'lang')}) !!}
+		@if(cmstext($page, $file, 'transcription'))
+			, "transcript": {!! cmsjson(cmstext($page, $file, 'transcription')) !!}
 		@endif
 	}</script>
 @else
