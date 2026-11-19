@@ -28,7 +28,7 @@ if( !function_exists( 'cms' ) )
         {
             $val = $item->get( $first );
         }
-        else if( \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() ) )
+        else if( \Aimeos\Cms\Permission::previews() )
         {
             $val = $item->latest?->data->{$first}
                 ?? $item->latest?->aux->{$first}
@@ -233,7 +233,7 @@ if( !function_exists( 'cmsroute' ) )
     {
         if( is_string( $route ) )
         {
-            if( config( 'cms.multidomain' ) ) {
+            if( \Aimeos\Cms\Utils::multidomain() ) {
                 $params['domain'] = $domain ?: ( $params['domain'] ?? null ) ?: request()->getHost();
             }
 
@@ -241,7 +241,7 @@ if( !function_exists( 'cmsroute' ) )
         }
 
         $page = $route;
-        $preview = \Aimeos\Cms\Permission::can( 'page:view', \Illuminate\Support\Facades\Auth::user() );
+        $preview = \Aimeos\Cms\Permission::previews();
         $version = $preview ? $page->latest?->data : null;
         $to = $preview ? ( $version->to ?? null ) : $page->to;
 

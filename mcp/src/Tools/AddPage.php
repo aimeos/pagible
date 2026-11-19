@@ -58,11 +58,13 @@ class AddPage extends Tool
 
         $input = array_diff_key( $v, array_flip( ['parent_id', 'ref'] ) );
 
+        // the content groups are validated against the sections of the inherited page type
         $page = Pages::add(
             $input,
             $request->user(),
             $v['ref'] ?? null,
             $v['parent_id'] ?? null,
+            sections: true,
         );
 
         return Response::structured( Presenter::item( $page ) );

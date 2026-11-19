@@ -31,11 +31,11 @@ final class Hooks
     /** Custom permission check callback */
     public ?\Closure $can = null;
 
-    /** @var array<string, array<class-string<Models\Base>, array<int, array<string, true>>>>|null IDs to index by tenant, model and key type while Scout::defer() runs */
-    public ?array $deferred = null;
+    /** Whether search index updates are collected until Scout::defer() returns */
+    public bool $deferring = false;
 
-    /** @var (\Closure(Authenticatable): (iterable<mixed>|null))|null Callback adding grants from optional packages */
-    public ?\Closure $extend = null;
+    /** @var array<int, \Closure(Authenticatable): (iterable<mixed>|null)> Callbacks adding grants from optional packages */
+    public array $extend = [];
 
     /** Whether the tenant lifecycle is managed by stancl/tenancy */
     public bool $managed = false;
@@ -61,8 +61,11 @@ final class Hooks
     /** Whether calls without user skip the permission checks, see Permission::system() */
     public bool $system = false;
 
-    /** @var array<string, array{ids?: array<string, bool>, langs?: array<string, bool>}> Page IDs and changed languages per tenant whose variants must be reindexed after the commit */
-    public array $variants = [];
+    /** @var array<int, array{tenant: string, model: class-string<Models\Base>, type: int, ids: array<string>, langs: array<string>}> Pending search index operations by sequence number, see Scout::index() */
+    public array $index = [];
+
+    /** Sequence number of the last search index operation, so the later operation wins for the same model */
+    public int $sequence = 0;
 
 
     /**

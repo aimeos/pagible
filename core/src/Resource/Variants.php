@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Resource;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\ContentType;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exceptions\ConflictException;
@@ -15,7 +15,6 @@ use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Translation\Hashes;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
-use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Merge;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
@@ -32,7 +31,6 @@ use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
-use Aimeos\Cms\VariantAction;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -244,7 +242,7 @@ class Variants
             // the former and the new source variants are listed for the languages without variant
             Scout::variants( [(string) $page->id], [$old, $lang] );
 
-            $this->watch( VariantAction::Source, collect( [$page] ), $lang, $editor );
+            $this->watch( Action::Source, collect( [$page] ), $lang, $editor );
         }
 
         return $page;
@@ -299,7 +297,7 @@ class Variants
 
         $pages = $this->variantPages( $ids, $lang, $fields );
 
-        $this->watch( VariantAction::Ignored, $pages, $lang, $editor );
+        $this->watch( Action::Ignored, $pages, $lang, $editor );
 
         return $pages;
     }
@@ -399,6 +397,11 @@ class Variants
                 $result['data']['path'] = $this->variantPath( $page, $lang, $result['slug'], (string) ( $result['data']['path'] ?? '' ) )[1];
             }
 
+            // users without config permission keep the config of the variant
+            if( !Permission::allowed( 'page:config', $user ) ) {
+                unset( $result['aux']['config'] );
+            }
+
             // merges with drafts saved by editors in the meantime
             [$data, $aux, $diffs] = Merge::page( $page, $result['data'], $result['aux'], $variant->latest_id, $user );
 
@@ -406,7 +409,7 @@ class Variants
 
             // the saved variant is reindexed after the commit, which includes the new stale flag
             Sync::state( $page, $hashes, $stale, index: false );
-            $page->announce( ContentAction::Saved, $editor );
+            $page->announce( Action::Saved, $editor );
 
             return $page;
         } );
@@ -416,7 +419,7 @@ class Variants
             ? PruneVersions::dispatchChunked( PageView::class, [$page->getVersionKey()] )
             : Scout::variants( [(string) $page->id], [$lang] );
 
-        $this->watch( $variant ? VariantAction::Translated : ContentAction::Added, collect( [$page] ), $lang, Utils::editor( $user ) );
+        $this->watch( $variant ? Action::Translated : Action::Added, collect( [$page] ), $lang, Utils::editor( $user ) );
 
         return $page;
     }
@@ -513,7 +516,7 @@ class Variants
         // the languages listed for the other variants change too
         Scout::variants( $this->keys( $pages ), [$lang] );
         Invalidation::pages( $pages );
-        $this->watch( LifecycleAction::Dropped, $pages, $lang, $editor );
+        $this->watch( Action::Dropped, $pages, $lang, $editor );
 
         return $pages;
     }
@@ -559,7 +562,7 @@ class Variants
 
         // trashed variants were invalidated when they were dropped
         Invalidation::pages( $pages->filter( fn( PageView $page ) => $page->getAttribute( 'variant_deleted_at' ) === null ) );
-        $this->watch( LifecycleAction::Purged, $pages, $lang, $editor );
+        $this->watch( Action::Purged, $pages, $lang, $editor );
 
         return $pages;
     }
@@ -621,7 +624,7 @@ class Variants
         Scout::index( PageView::class, $this->keys( $pages, 'variant_id' ), keys: true );
         Scout::variants( $this->keys( $pages ), [$lang] );
         Invalidation::pages( $pages );
-        $this->watch( LifecycleAction::Restored, $pages, $lang, $editor );
+        $this->watch( Action::Restored, $pages, $lang, $editor );
 
         return $pages;
     }
@@ -779,12 +782,12 @@ class Variants
     /**
      * Announces unversioned changes of page variants as bulk event for the audit log, broadcasts and webhooks.
      *
-     * @param ContentAction|LifecycleAction|VariantAction $action Action of the variant change
+     * @param Action $action Action of the variant change
      * @param Collection<int, PageView> $pages Affected pages with the variant of the language
      * @param string $lang Language code of the affected variants
      * @param string $editor Name of the editing user
      */
-    protected function watch( ContentAction|LifecycleAction|VariantAction $action, Collection $pages, string $lang, string $editor ) : void
+    protected function watch( Action $action, Collection $pages, string $lang, string $editor ) : void
     {
         $ids = array_values( $this->keys( $pages ) );
         $latest = $pages->mapWithKeys( fn( PageView $page ) => [(string) $page->id => (string) $page->latest_id] )->all();

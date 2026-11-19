@@ -40,7 +40,7 @@ class GetElement extends Tool
 
         /** @var Element $element */
         $element = Element::withTrashed()->with( [
-            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'publish_at', 'created_at'] )
+            'latest' => fn( $q ) => $q->select( Version::columns( 'created_at' ) )
         ] )->findOrFail( $v['id'] );
 
         $data = Presenter::element( $element ) + [

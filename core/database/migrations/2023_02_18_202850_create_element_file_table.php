@@ -18,7 +18,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_element_file');
+        Schema::connection(\Aimeos\Cms\DB::name())->dropIfExists('cms_element_file');
     }
 
 
@@ -29,7 +29,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->create('cms_element_file', function (Blueprint $table) {
+        Schema::connection(\Aimeos\Cms\DB::name())->create('cms_element_file', function (Blueprint $table) {
             $table->foreignUuid('element_id')->constrained('cms_elements')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignUuid('file_id')->constrained('cms_files')->cascadeOnUpdate()->cascadeOnDelete();
 

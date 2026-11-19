@@ -21,7 +21,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         if( !$schema->hasColumn( 'cms_pages', 'related_id' ) ) {
             return;

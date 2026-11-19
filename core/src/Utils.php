@@ -143,7 +143,30 @@ class Utils
      */
     public static function domain() : string
     {
-        return config( 'cms.multidomain' ) ? request()->getHost() : '';
+        return self::multidomain() ? request()->getHost() : '';
+    }
+
+
+    /**
+     * Tests if pages are served for multiple domains.
+     *
+     * @return bool TRUE if "cms.multidomain" is enabled
+     */
+    public static function multidomain() : bool
+    {
+        return (bool) config( 'cms.multidomain' );
+    }
+
+
+    /**
+     * Returns the options of a route group whose routes are available for the page domains.
+     *
+     * @param array<string, mixed> $options Additional route group options
+     * @return array<string, mixed> Route group options including the domain if multiple domains are enabled
+     */
+    public static function routeGroup( array $options = [] ) : array
+    {
+        return ( self::multidomain() ? ['domain' => '{domain}', 'where' => ['domain' => '.+']] : [] ) + $options;
     }
 
 
@@ -160,7 +183,7 @@ class Utils
             return null;
         }
 
-        $params = config( 'cms.multidomain' ) ? ['domain' => $domain ?: request()->getHost()] : [];
+        $params = self::multidomain() ? ['domain' => $domain ?: request()->getHost()] : [];
         return route( 'cms.page', $params + ['path' => $path] );
     }
 

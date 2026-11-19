@@ -16,7 +16,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         if( $schema->hasIndex( 'cms_files', self::INDEX ) ) {
             $schema->table( 'cms_files', fn( Blueprint $table ) => $table->dropIndex( self::INDEX ) );
@@ -26,7 +26,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         // files are looked up by their source URL, e.g. to reuse them in repeated imports
         if( !$schema->hasIndex( 'cms_files', self::INDEX ) ) {

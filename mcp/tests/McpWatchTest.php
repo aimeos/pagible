@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Event;
 
 class McpWatchTest extends McpTestAbstract
 {
+    use FakesWatched;
     use CmsWithMigrations;
     use RefreshDatabase;
 
@@ -41,7 +42,7 @@ class McpWatchTest extends McpTestAbstract
 
     public function testReadToolDispatchesObserved() : void
     {
-        Event::fake( [Observed::class] );
+        $this->fakeWatched( Observed::class );
         $page = $this->home();
 
         CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\GetPage::class, [
@@ -59,7 +60,7 @@ class McpWatchTest extends McpTestAbstract
 
     public function testWriteToolDispatchesObserved() : void
     {
-        Event::fake( [Observed::class] );
+        $this->fakeWatched( Observed::class );
         $page = $this->home();
 
         CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\SavePage::class, [
@@ -78,7 +79,7 @@ class McpWatchTest extends McpTestAbstract
 
     public function testFailedToolDispatchesUnsuccessfulObserved() : void
     {
-        Event::fake( [Observed::class] );
+        $this->fakeWatched( Observed::class );
 
         CmsServer::actingAs( $this->editor() )->tool( \Aimeos\Cms\Tools\GetPage::class, [] );
 

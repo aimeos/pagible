@@ -13,7 +13,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::connection( config( 'cms.db', 'sqlite' ) )->create( 'cms_page_access', function( Blueprint $table ) {
+        Schema::connection( \Aimeos\Cms\DB::name() )->create( 'cms_page_access', function( Blueprint $table ) {
             $table->uuid( 'page_id' );
             $table->string( 'tenant_id', 250 );
             $table->string( 'value', 100 )->default( '' );
@@ -29,6 +29,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::connection( config( 'cms.db', 'sqlite' ) )->dropIfExists( 'cms_page_access' );
+        Schema::connection( \Aimeos\Cms\DB::name() )->dropIfExists( 'cms_page_access' );
     }
 };

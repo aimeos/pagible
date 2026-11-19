@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Events;
 
 use Aimeos\Cms\ContentType;
-use Aimeos\Cms\LifecycleAction;
+use Aimeos\Cms\Action;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
 
@@ -135,7 +135,7 @@ abstract class Event implements Loggable, ShouldBroadcastNow
             versionId: $projection['version_id'] ?? $this->latestId,
             published: $action === 'published' && ( $this->published || $projection !== [] ),
             // lifecycle events of whole pages have no language, only those of single page variants
-            lang: $page && LifecycleAction::tryFrom( $action ) === null && is_string( $data['lang'] ?? null ) ? $data['lang'] : null,
+            lang: $page && !in_array( Action::tryFrom( $action ), [Action::Dropped, Action::Purged, Action::Restored], true ) && is_string( $data['lang'] ?? null ) ? $data['lang'] : null,
             path: $page && is_string( $data['path'] ?? null ) ? $data['path'] : null,
             domain: $page && is_string( $data['domain'] ?? null ) ? $data['domain'] : null,
             editor: $this->editor,

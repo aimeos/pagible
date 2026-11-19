@@ -10,7 +10,6 @@ namespace Aimeos\Cms\Controllers;
 use Aimeos\Cms\Events\CmsSearch;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Scout;
-use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Watch;
 use Illuminate\Http\Request;
@@ -42,7 +41,7 @@ class SearchController extends Controller
         $builder = PageView::search( $vals['q'] )
             ->query( function( $q ) use ( $domain, $lang ) {
                 $q->select( 'cms_page_view.id', 'cms_page_view.variant_id', 'cms_page_view.tenant_id', 'domain', 'path', 'lang', 'title', 'meta' )
-                    ->withGlobalScope( 'status', new Status )
+                    ->active()
                     ->where( 'domain', $domain )
                     ->where( 'lang', $lang )
                     ->wherePublic();
@@ -82,7 +81,7 @@ class SearchController extends Controller
             domain: $domain,
             lang: $lang,
             tenant: $tenant,
-        ), 'cms.theme.watch' );
+        ) );
 
         Watch::observe(
             source: 'search',

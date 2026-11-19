@@ -17,7 +17,6 @@ use Aimeos\Nestedset\DescendantsRelation;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 use Aimeos\Cms\Permission;
 use Aimeos\Nestedset\QueryBuilder;
@@ -245,7 +244,7 @@ trait PageTree
         // without a variant in that language are pruned by the relation
         $this->localize( $builder );
 
-        if( Permission::can( 'page:view', Auth::user() ) ) {
+        if( Permission::previews() ) {
             $builder->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
         }
 
@@ -283,11 +282,11 @@ trait PageTree
             return;
         }
 
-        $editor = Permission::can( 'page:view', Auth::user() );
+        $editor = Permission::previews();
 
         // disabled variants are left out for visitors like in the "source" mode
         $hide && !self::fallbackToSource()
-            ? $builder->language( $lang )->when( !$editor, fn( $q ) => $q->where( $q->qualifyColumn( 'status' ), '<>', 0 ) )
+            ? $builder->language( $lang )->when( !$editor, fn( $q ) => $q->active() )
             : $builder->localized( $lang, $editor );
     }
 

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\PageStatus;
 use Aimeos\Cms\Database\Factories\PageFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Aimeos\Cms\Utils;
@@ -438,7 +439,7 @@ class PageView extends Base
     {
         return $this->hasMany( PageVariant::class, 'page_id' )
             ->select( 'id', 'tenant_id', 'page_id', 'lang', 'domain', 'path', 'to', 'status' )
-            ->whereIn( 'status', [1, 2] )
+            ->whereIn( 'status', PageStatus::reachable() )
             ->orderBy( 'lang' );
     }
 

@@ -156,7 +156,7 @@ final class FileResponse
             $params['variant'] = (int) $variant;
         }
 
-        if( config( 'cms.multidomain' ) ) {
+        if( Utils::multidomain() ) {
             $params['domain'] = (string) $page->domain;
         }
 

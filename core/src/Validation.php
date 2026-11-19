@@ -32,6 +32,44 @@ class Validation
 
 
     /**
+     * Returns the trimmed, deduplicated and sorted list of non-empty strings.
+     *
+     * @param iterable<mixed> $values Values to normalize
+     * @param string $label Name of the values used in error messages, e.g. "Access values"
+     * @param int $length Maximum number of characters of each value
+     * @param int|null $max Maximum number of unique values or NULL for no limit
+     * @return array<int, string> Normalized values
+     * @throws InvalidInputException If a value is invalid or the values exceed the limits
+     */
+    public static function stringList( iterable $values, string $label, int $length, ?int $max = null ) : array
+    {
+        $result = [];
+
+        foreach( $values as $value )
+        {
+            if( !is_string( $value ) || ( $value = trim( $value ) ) === '' ) {
+                throw new InvalidInputException( sprintf( '%1$s must be non-empty strings.', $label ) );
+            }
+
+            if( mb_strlen( $value ) > $length ) {
+                throw new InvalidInputException( sprintf( '%1$s may not be longer than %2$d characters.', $label, $length ) );
+            }
+
+            $result[$value] = true;
+
+            if( $max !== null && count( $result ) > $max ) {
+                throw new InvalidInputException( sprintf( '%1$s may not exceed %2$d entries.', $label, $max ) );
+            }
+        }
+
+        $result = array_map( 'strval', array_keys( $result ) );
+        sort( $result, SORT_STRING );
+
+        return $result;
+    }
+
+
+    /**
      * Validates the scalar fields of the input against the storage limits of the model.
      *
      * @param class-string<Element|File|PageView> $model Model class the input is stored in

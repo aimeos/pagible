@@ -335,7 +335,7 @@ class NotifySearchIndex implements ShouldQueue
 Change::listen( ['published', 'dropped'], NotifySearchIndex::class );
 ```
 
-It accepts one or more action names (`added`, `saved`, `moved`, `published`, `dropped`, `restored`, `purged` and `translated`, `source`, `ignored` for page variants), the cases of the `ContentAction`, `LifecycleAction` and `VariantAction` enums, or `*` for all actions. Unknown action names throw an `InvalidArgumentException`. A `Change` contains the `contentType` (also available as `ContentType` enum case by `type()`), `action`, `id`, `versionId` (the published version for publish actions), `published` (TRUE if the version became public, FALSE if it's only scheduled), `lang`, `path` and `domain` of pages if known, `editor`, `tenant` and `source`. The `changes()` method of the `Event` and `Bulk` classes returns the same objects.
+It accepts one or more action names (`added`, `saved`, `moved`, `published`, `dropped`, `restored`, `purged` and `translated`, `source`, `ignored` for page variants), the cases of the `Action` enum, or `*` for all actions. Unknown action names throw an `InvalidArgumentException`. A `Change` contains the `contentType` (also available as `ContentType` enum case by `type()`), `action`, `id`, `versionId` (the published version for publish actions), `published` (TRUE if the version became public, FALSE if it's only scheduled), `lang`, `path` and `domain` of pages if known, `editor`, `tenant` and `source`. The `changes()` method of the `Event` and `Bulk` classes returns the same objects.
 
 | Event | Dispatched when |
 |-------|-----------------|
@@ -515,14 +515,13 @@ php artisan cms:user [email] [options]
 | Option | Description |
 |--------|-------------|
 | `email` | Email address of the user (creates if new) |
-| `-a`, `--add=PERM` | Add permissions (repeatable, supports wildcards) |
+| `-a`, `--add=ENTRY` | Add roles, permissions or wildcards like `page:*` (repeatable) |
 | `-d`, `--disable` | Disable all permissions |
 | `-e`, `--enable` | Enable all permissions (`*`) |
 | `-l`, `--list` | List all permissions of the user |
 | `--langs=LANG` | Restrict writes to these language codes (repeatable, replaces the current ones), `--langs=*` for all languages (default) or `--langs=` for none |
 | `-p`, `--password=PWD` | Set password (prompts if omitted during creation) |
-| `-r`, `--remove=PERM` | Remove permissions (repeatable, supports wildcards) |
-| `--role=ROLE` | Add a named role (e.g., `editor`, `publisher`, `admin`) |
+| `-r`, `--remove=ENTRY` | Remove assigned roles, permissions or wildcards, others are denied by a `!ENTRY` entry (repeatable) |
 | `--roles` | List all available roles and their permissions |
 
 ### cms:publish
@@ -530,8 +529,14 @@ php artisan cms:user [email] [options]
 Publishes scheduled versions where `publish_at` has passed. Registered to run automatically every 30 minutes.
 
 ```bash
-php artisan cms:publish
+php artisan cms:publish [--tenant=ID]
 ```
+
+| Option | Description |
+|--------|-------------|
+| `--tenant=ID` | Only publish versions of this tenant (`--tenant=` for the default, empty tenant); all tenants if omitted |
+
+If tenants are managed by stancl/tenancy, use `php artisan tenants:run cms:publish` to process all tenants.
 
 ### cms:previews
 

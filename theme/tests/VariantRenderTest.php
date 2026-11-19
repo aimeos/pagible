@@ -245,6 +245,23 @@ class VariantRenderTest extends ThemeTestAbstract
     }
 
 
+    public function testPreviewInheritsConfigOfAncestorVariants()
+    {
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $config = fn( $title ) => ['website' => \Aimeos\Cms\Validation::entry( 'website', ['title' => $title], 'config' )];
+
+        Pages::save( $root->id, ['config' => $config( 'English website' )], $this->user );
+        $this->variant( $root, 'de', 'start' );
+        Variants::save( $root->id, 'de', ['config' => $config( 'Deutsche Website' )], $this->user );
+        $this->variant( $this->blog(), 'de', 'blog-de' );
+
+        $response = $this->actingAs( $this->user )->get( '/blog-de' );
+        $response->assertOk();
+        $response->assertSee( 'title="Deutsche Website"', false );
+        $response->assertDontSee( 'English website' );
+    }
+
+
     public function testSitemapListsVariants()
     {
         $this->variant( $this->blog(), 'de', 'blog-de' );

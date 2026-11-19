@@ -18,6 +18,7 @@ use Aimeos\Cms\Commands\InstallCore;
 use Aimeos\Cms\Commands\Previews;
 use Aimeos\Cms\Commands\Publish;
 use Aimeos\Cms\Commands\User;
+use Aimeos\Cms\Contracts\SearchesFields;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -108,8 +109,8 @@ class CoreServiceProvider extends Provider
      */
     protected function watch() : void
     {
-        $actions = [...ContentAction::cases(), ...LifecycleAction::cases()];
-        Watch::listen( [...array_map( fn( $action ) => $action->event(), $actions ), Bulk::class] );
+        $actions = array_filter( Action::cases(), fn( Action $action ) => $action->single() );
+        Watch::listen( [...array_map( fn( Action $action ) => $action->event(), $actions ), Bulk::class] );
 
         // Permission grants are security-relevant and must always be audited, so this
         // listener is registered unconditionally — NOT through the watch-channel-gated
@@ -151,8 +152,7 @@ class CoreServiceProvider extends Provider
                     'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),
                     'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
                     'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
-                    'cms' => $this->where( 'latest', in_array( 'draft', $fields ) ),
-                    default => null,
+                    default => ( $engine = $this->engine() ) instanceof SearchesFields ? $engine->searchFields( $this, $fields ) : null,
                 };
                 return $this;
             } );

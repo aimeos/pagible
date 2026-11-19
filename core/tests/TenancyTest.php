@@ -38,8 +38,6 @@ class TenancyTest extends CoreTestAbstract
         Tenancy::allowsUsing( null );
         app()->forgetScopedInstances();
 
-        Permission::canUsing( null );
-
         parent::tearDown();
     }
 

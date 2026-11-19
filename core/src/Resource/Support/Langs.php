@@ -79,21 +79,17 @@ final class Langs
      *
      * @param array<string, mixed> $input Validated page input including "lang"
      * @param Authenticatable|null $user Current user
-     * @param string|null $ref Sibling page ID to insert before
-     * @param string|null $parent Parent page ID to append to
+     * @param string|null $domain Domain of the parent variant, empty for root pages
      * @return array<string, mixed> Page input with the domain of the parent for restricted users
      * @throws PermissionException If a restricted user passes another domain
      */
-    public static function domain( array $input, ?Authenticatable $user, ?string $ref, ?string $parent ) : array
+    public static function domain( array $input, ?Authenticatable $user, ?string $domain ) : array
     {
         if( Permission::langs( $user ) === null ) {
             return $input;
         }
 
-        $parent ??= $ref ? PageView::withTrashed()->whereKey( $ref )->value( 'parent_id' ) : null;
-        $page = $parent ? PageView::withTrashed()->language( (string) $input['lang'] )->whereKey( $parent )->first( ['id', 'domain'] )
-            ?? PageView::withTrashed()->whereKey( $parent )->first( ['id', 'domain'] ) : null;
-        $domain = (string) $page?->domain;
+        $domain = (string) $domain;
 
         // the input is lower case while older stored domains may not be
         Permission::checkUnrestricted( $user, mb_strtolower( (string) ( $input['domain'] ?? $domain ) ) !== mb_strtolower( $domain ) );

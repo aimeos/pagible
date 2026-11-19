@@ -16,7 +16,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection( \Aimeos\Cms\DB::name() );
 
         $db->table( 'cms_versions' )
             ->select( 'id', 'data', 'aux' )

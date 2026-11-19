@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Resource;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exceptions\ConflictException;
 use Aimeos\Cms\Exceptions\InvalidInputException;
@@ -36,7 +36,6 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Invalidation;
-use Aimeos\Cms\LifecycleAction;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 
 
@@ -64,27 +63,36 @@ class Pages
      * Creates a new page with version and attached relations.
      *
      * Files and elements attached to the page are derived from the content, meta and config data.
+     * A missing path is generated from the title and a missing domain, theme or type is inherited
+     * from the latest version of the parent page.
      *
      * @param PageInput $input Page fields (content/meta/config go into version aux), "lang" defaults to the app locale
      * @param Authenticatable|null $user Authenticated user for permission-based validation and editor tracking
      * @param string|null $ref Sibling page ID to insert before
-     * @param string|null $parent Parent page ID to append to, whose domain, theme and type are used if not passed
+     * @param string|null $parent Parent page ID to append to
+     * @param bool $sections TRUE to build the content elements and move the ones without valid group into
+     *  the first section of the (inherited) page type, see Validation::content()
      * @return PageView
      * @throws InvalidInputException If the input is invalid
      */
-    public function add( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null ) : PageView
+    public function add( array $input, ?Authenticatable $user = null, ?string $ref = null, ?string $parent = null, bool $sections = false ) : PageView
     {
         Permission::check( 'page:add', $user );
 
         $input['lang'] = ( $input['lang'] ?? null ) ?: (string) config( 'app.locale', 'en' );
-        $input = Validation::page( $this->inherit( $input, $parent ), $user );
+        [$input, $domain] = $this->defaults( $input, $ref, $parent, $user );
+
+        if( $sections ) {
+            $input['content'] = Validation::content( $input['content'] ?? [], $input['type'] ?? null );
+        }
+
+        $input = Validation::page( $input, $user );
         $editor = Utils::editor( $user );
 
         Permission::checkLang( (string) $input['lang'], $user );
+        $input = Langs::domain( $input, $user, $domain );
 
         return DB::lockedTransaction( function() use ( $input, $editor, $ref, $parent, $user ) {
-
-            $input = Langs::domain( $input, $user, $ref, $parent );
 
             $aux = [
                 'content' => $input['content'] ?? [],
@@ -112,7 +120,7 @@ class Pages
             $page->files()->attach( $refs['files'] );
             $page->elements()->attach( $refs['elements'] );
 
-            $page->announce( ContentAction::Added, $editor );
+            $page->announce( Action::Added, $editor );
 
             return $page;
         } );
@@ -149,7 +157,7 @@ class Pages
             return $page;
         } );
 
-        $page->announce( ContentAction::Moved, $editor );
+        $page->announce( Action::Moved, $editor );
         return $page;
     }
 
@@ -330,7 +338,7 @@ class Pages
         } ) );
 
         Invalidation::routes( $routes );
-        PageView::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
+        PageView::announceMany( $items, Action::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
         // the CMS search ignores trashed pages, external search engines keep them if soft deletes are enabled
         if( Scout::usesExternalSearch() )
@@ -385,7 +393,7 @@ class Pages
         } ) );
 
         Invalidation::routes( $routes );
-        PageView::announceMany( $items, LifecycleAction::Purged, $editor );
+        PageView::announceMany( $items, Action::Purged, $editor );
 
         // pages are indexed per variant
         Scout::unindex( PageView::class, $variants );
@@ -428,7 +436,7 @@ class Pages
             return [$items, $pages];
         } ) );
 
-        PageView::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
+        PageView::announceMany( $items, Action::Restored, $editor, ['deleted_at' => null] );
 
         // all variants of the restored pages change
         Scout::index( PageView::class, $pages );
@@ -500,7 +508,7 @@ class Pages
                     }
                 }
 
-                $page?->announce( ContentAction::Added, $editor );
+                $page?->announce( Action::Added, $editor );
             }
 
             $this->flushCopies( $inserts, $rows );
@@ -876,27 +884,88 @@ class Pages
 
 
     /**
-     * Returns the input with the domain, theme and type of the latest parent version if they are not passed.
+     * Adds the default values of a new page which are missing in the input.
      *
-     * @param array<string, mixed> $input Page input
-     * @param string|null $parent Parent page ID
-     * @return array<string, mixed> Page input with the inherited values
+     * Domain, theme and type are inherited from the latest version of the parent variant in the
+     * language of the new page or the source variant, e.g. to validate the content groups against
+     * the sections of the inherited page type. The domain of users with restricted languages is
+     * the one of the parent variant instead, see Langs::domain().
+     *
+     * @param PageInput $input Page input
+     * @param string|null $ref Sibling page ID to insert before
+     * @param string|null $parent Parent page ID to append to
+     * @param Authenticatable|null $user Authenticated user
+     * @return array{0: PageInput, 1: string|null} Page input including the default values and
+     *  the domain of the parent variant for users with restricted languages
      */
-    protected function inherit( array $input, ?string $parent ) : array
+    protected function defaults( array $input, ?string $ref, ?string $parent, ?Authenticatable $user ) : array
     {
-        $keys = ['domain', 'theme', 'type'];
-
-        if( !$parent || !array_diff( $keys, array_keys( array_filter( $input, fn( $value ) => $value !== null ) ) ) ) {
-            return $input;
+        if( !isset( $input['path'] ) && is_string( $input['title'] ?? null ) ) {
+            $input['path'] = Utils::slugify( $input['title'] );
         }
 
-        $data = Version::whereIn( 'id', PageView::withTrashed()->whereKey( $parent )->select( 'latest_id' ) )->first( ['data'] )?->data;
+        $restricted = Permission::langs( $user ) !== null;
+        $keys = $restricted ? ['theme', 'type'] : ['domain', 'theme', 'type'];
+        $keys = array_filter( $keys, fn( $key ) => !isset( $input[$key] ) );
+        $domain = $restricted ? '' : null;
 
-        foreach( $keys as $key ) {
-            $input[$key] ??= $data->{$key} ?? '';
+        if( !$keys && !$restricted ) {
+            return [$input, $domain];
         }
 
-        return $input;
+        $lang = is_string( $input['lang'] ?? null ) ? $input['lang'] : null;
+        $data = null;
+
+        foreach( $this->parents( $ref, $parent, $lang ) as $query )
+        {
+            // restricted users need the domain of the parent variant too
+            if( $restricted && ( $page = $query->first( ['id', 'domain', 'latest_id'] ) ) )
+            {
+                $domain = (string) $page->domain;
+                $data = $keys && $page->latest_id ? Version::whereKey( $page->latest_id )->value( 'data' ) : null;
+                break;
+            }
+
+            if( !$restricted && ( $data = Version::whereIn( 'id', $query->select( 'latest_id' ) )->value( 'data' ) ) ) {
+                break;
+            }
+        }
+
+        foreach( $keys as $key )
+        {
+            if( isset( $data->{$key} ) ) {
+                $input[$key] = $data->{$key};
+            }
+        }
+
+        return [$input, $domain];
+    }
+
+
+    /**
+     * Returns the queries of the parent variant of a new page, first in the given language, then the source variant.
+     *
+     * @param string|null $ref Sibling page ID to insert before
+     * @param string|null $parent Parent page ID to append to
+     * @param string|null $lang Language of the new page
+     * @return list<\Aimeos\Cms\Query\PageQuery<PageView>> Queries to try in order, none for root pages
+     */
+    protected function parents( ?string $ref, ?string $parent, ?string $lang ) : array
+    {
+        if( $parent === null && $ref === null ) {
+            return [];
+        }
+
+        // the parent of the sibling page is resolved in the same query
+        $parents = $parent !== null ? [$parent] : PageView::withTrashed()->select( 'parent_id' )->whereKey( $ref );
+        $queries = [];
+
+        if( $lang !== null && $lang !== '' ) {
+            $queries[] = PageView::withTrashed()->language( $lang )->whereIn( 'id', $parents );
+        }
+
+        $queries[] = PageView::withTrashed()->whereIn( 'id', $parents );
+        return $queries;
     }
 
 

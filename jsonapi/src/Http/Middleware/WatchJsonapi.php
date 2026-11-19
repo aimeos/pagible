@@ -46,7 +46,7 @@ class WatchJsonapi
             domain: $domain,
             includes: $this->includes( $request ),
             tenant: $tenant,
-        ), 'cms.jsonapi.watch' );
+        ) );
 
         Watch::observe(
             source: 'jsonapi',

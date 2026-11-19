@@ -197,7 +197,7 @@ class PageVariant extends Model
         // updates the search index entry of the variant after the transaction commits
         static::saved( function( PageVariant $variant ) {
             if( Scout::syncs( PageView::class ) ) {
-                Scout::reindex( PageView::class, [(string) $variant->id], keys: true );
+                Scout::index( PageView::class, [(string) $variant->id], keys: true );
             }
         } );
     }

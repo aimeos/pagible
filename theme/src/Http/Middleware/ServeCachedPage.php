@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Event;
 use Aimeos\Cms\Events\Observed;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\PageCache;
+use Aimeos\Cms\Utils;
 use Aimeos\Cms\Watch;
 
 
@@ -55,7 +56,7 @@ class ServeCachedPage
         $start = Event::hasListeners( Observed::class )
             ? hrtime( true ) : null;
 
-        $domain = config( 'cms.multidomain' ) ? $request->getHost() : '';
+        $domain = Utils::multidomain() ? $request->getHost() : '';
         $canonical = Origin::matches( $request );
         $path = null;
 

@@ -19,10 +19,34 @@ use Illuminate\Database\Eloquent\Model;
 class Scout
 {
     /**
-     * Reindexes models by ID in bounded batches, queued if Scout uses a queue.
+     * Pending models identified by their model IDs (page IDs for pages)
+     */
+    private const IDS = 0;
+
+    /**
+     * Pending models identified by their search keys (variant IDs for pages)
+     */
+    private const KEYS = 1;
+
+    /**
+     * Pending removals by search key
+     */
+    private const REMOVE = 2;
+
+    /**
+     * Pending pages whose variants are reindexed if their listed languages change
+     */
+    private const VARIANTS = 3;
+
+
+    /**
+     * Reindexes models by ID after the surrounding transaction commits, queued if Scout uses a queue.
      *
      * All variants of the pages are reindexed unless the search keys of the changed variants
-     * are passed instead of the page IDs.
+     * are passed instead of the page IDs. The models are collected and indexed at once after
+     * the outermost transaction commits, immediately without transaction or when the defer()
+     * scope ends. Models of rolled back transactions aren't indexed and if the same model is
+     * indexed and removed by unindex(), the later operation wins.
      *
      * @param class-string<Models\Base> $model Model class
      * @param array<string> $ids Model IDs (page IDs for pages) or search keys (variant IDs for pages)
@@ -34,30 +58,8 @@ class Scout
             return;
         }
 
-        $hooks = Hooks::get();
-
-        if( $hooks->deferred !== null )
-        {
-            foreach( $ids as $id ) {
-                $hooks->deferred[Tenancy::value()][$model][(int) $keys][(string) $id] = true;
-            }
-
-            return;
-        }
-
-        if( !config( 'scout.queue' ) ) {
-            self::sync( $model, $ids, $keys );
-            return;
-        }
-
-        $instance = new $model();
-
-        foreach( array_chunk( array_unique( $ids ), Models\Base::CHUNK ) as $chunk )
-        {
-            dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $keys ) )
-                ->onQueue( $instance->syncWithSearchUsingQueue() )
-                ->onConnection( $instance->syncWithSearchUsing() ) );
-        }
+        // the search keys of other models are their IDs
+        self::add( $model, $keys || $model !== Models\PageView::class ? self::KEYS : self::IDS, $ids );
     }
 
 
@@ -65,7 +67,8 @@ class Scout
      * Executes the callback and indexes the models passed to index() at once afterwards.
      *
      * Use flush() to index the models collected so far, e.g. after committing a batch of
-     * records. Nested calls index the models when the outermost call returns.
+     * records. Nested calls index the models when the outermost call returns or, within a
+     * transaction, after the outermost transaction commits.
      *
      * @template T
      * @param \Closure(): T $callback Callback to execute
@@ -75,50 +78,39 @@ class Scout
     {
         $hooks = Hooks::get();
 
-        if( $hooks->deferred !== null ) {
+        if( $hooks->deferring ) {
             return $callback();
         }
 
-        $hooks->deferred = [];
+        $hooks->deferring = true;
 
         try {
             return $callback();
         } finally {
-            self::flush();
-            $hooks->deferred = null;
+            $hooks->deferring = false;
+            // within an outer transaction, the models are indexed after it commits
+            DB::connection()->afterCommit( fn() => self::flush() );
         }
     }
 
 
     /**
-     * Indexes the models collected by defer() so far.
+     * Indexes and removes the models collected so far.
      */
     public static function flush() : void
     {
         $hooks = Hooks::get();
+        $tenants = [];
 
-        if( $hooks->deferred === null ) {
-            return;
+        foreach( $hooks->index as $seq => $op ) {
+            $tenants[$op['tenant']][$seq] = $op;
         }
 
-        $pending = $hooks->deferred;
-        // the collected models are indexed instead of being collected again
-        $hooks->deferred = null;
+        // models passed to index() while indexing are collected again instead of being lost
+        $hooks->index = [];
 
-        try {
-            foreach( $pending as $tenant => $models )
-            {
-                Tenancy::run( (string) $tenant, function() use ( $models ) {
-                    foreach( $models as $model => $types )
-                    {
-                        foreach( $types as $keys => $ids ) {
-                            self::index( $model, array_map( strval( ... ), array_keys( $ids ) ), (bool) $keys );
-                        }
-                    }
-                } );
-            }
-        } finally {
-            $hooks->deferred = [];
+        foreach( $tenants as $tenant => $ops ) {
+            Tenancy::run( (string) $tenant, fn() => self::apply( $ops ) );
         }
     }
 
@@ -161,7 +153,7 @@ class Scout
      *
      * Variants are listed for the languages without variant whose fallback chain (see Utils::chain())
      * leads to them. Only required for external search engines. The pages are collected and reindexed
-     * once after the surrounding transaction commits, e.g. if an import adds several variants of a page.
+     * once like the models passed to index(), e.g. if an import adds several variants of a page.
      *
      * @param array<string> $ids Page IDs
      * @param array<string> $langs Languages of the added or removed variants or the former and new source languages
@@ -172,53 +164,7 @@ class Scout
             return;
         }
 
-        $hooks = Hooks::get();
-        $tenant = Tenancy::value();
-
-        foreach( $ids as $id ) {
-            $hooks->variants[$tenant]['ids'][(string) $id] = true;
-        }
-
-        foreach( $langs as $lang ) {
-            $hooks->variants[$tenant]['langs'][(string) $lang] = true;
-        }
-
-        // Registered per call because callbacks of rolled back transactions are discarded while
-        // their pages stay pending; the first callback flushes all pages, so later ones are no-ops
-        // and pages of rolled back transactions are reindexed with the next commit, which is harmless
-        DB::connection()->afterCommit( function() {
-            $hooks = Hooks::get();
-            $pending = $hooks->variants;
-            $hooks->variants = [];
-
-            foreach( $pending as $tenant => $entry ) {
-                Tenancy::run( (string) $tenant, fn() => self::index( Models\PageView::class, self::affected( $entry ), keys: true ) );
-            }
-        } );
-    }
-
-
-    /**
-     * Reindexes models after the surrounding transaction commits.
-     *
-     * Use it instead of index() inside transactions, so the search index doesn't contain
-     * uncommitted changes and rolled back changes are never indexed.
-     *
-     * @param class-string<Models\Base> $model Model class
-     * @param array<string> $ids Model IDs or search keys
-     * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
-     */
-    public static function reindex( string $model, array $ids, bool $keys = false ) : void
-    {
-        $ids = array_values( array_unique( $ids ) );
-
-        if( !$ids || !self::usesSearchIndex() ) {
-            return;
-        }
-
-        // without a transaction, the models are indexed immediately
-        $tenant = Tenancy::value();
-        DB::connection()->afterCommit( fn() => Tenancy::run( $tenant, fn() => self::index( $model, $ids, keys: $keys ) ) );
+        self::add( Models\PageView::class, self::VARIANTS, $ids, $langs );
     }
 
 
@@ -279,7 +225,10 @@ class Scout
 
 
     /**
-     * Removes models from Scout by ID in bounded native batches.
+     * Removes models from Scout by search key after the surrounding transaction commits.
+     *
+     * The removals are collected like the models passed to index(), so the later operation
+     * wins if the same model is indexed and removed in the same transaction.
      *
      * @param class-string<Models\Base> $model Model class
      * @param array<string> $ids Search keys (variant IDs for pages)
@@ -290,17 +239,7 @@ class Scout
             return;
         }
 
-        $instance = new $model();
-        $key = $instance->getScoutKeyName();
-
-        foreach( array_chunk( array_unique( $ids ), Models\Base::CHUNK ) as $chunk )
-        {
-            $items = $instance->newCollection( array_map(
-                fn( $id ) => $instance->newInstance()->forceFill( [$key => $id] ),
-                $chunk,
-            ) );
-            $instance->queueRemoveFromSearch( $items );
-        }
+        self::add( $model, self::REMOVE, $ids );
     }
 
 
@@ -331,6 +270,200 @@ class Scout
     public static function usesExternalSearch() : bool
     {
         return self::usesSearchIndex() && config( 'scout.driver' ) !== 'cms';
+    }
+
+
+    /**
+     * Adds a pending search index operation, which is flushed after the outermost transaction commits.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param int $type Operation type (IDS, KEYS, REMOVE or VARIANTS)
+     * @param array<string> $ids Model IDs or search keys
+     * @param array<string> $langs Changed languages for the VARIANTS operation
+     */
+    private static function add( string $model, int $type, array $ids, array $langs = [] ) : void
+    {
+        $hooks = Hooks::get();
+        $seq = ++$hooks->sequence;
+
+        $hooks->index[$seq] = [
+            'tenant' => Tenancy::value(),
+            'model' => $model,
+            'type' => $type,
+            'ids' => array_map( strval( ... ), $ids ),
+            'langs' => array_map( strval( ... ), $langs ),
+        ];
+
+        // operations of rolled back transactions and savepoints are discarded
+        DB::connection()->afterRollBack( function() use ( $hooks, $seq ) {
+            unset( $hooks->index[$seq] );
+        } );
+
+        // Registered per call because callbacks of rolled back transactions are discarded;
+        // the first callback flushes all operations, so later ones are no-ops.
+        // Within defer(), the operations are flushed when the scope ends or flush() is called
+        if( !$hooks->deferring ) {
+            DB::connection()->afterCommit( fn() => self::flush() );
+        }
+    }
+
+
+    /**
+     * Indexes and removes the models of the pending operations for the current tenant.
+     *
+     * The operations are applied in their order, so the later one wins for the same model.
+     *
+     * @param array<int, array{tenant: string, model: class-string<Models\Base>, type: int, ids: array<string>, langs: array<string>}> $ops Pending operations by sequence number
+     */
+    private static function apply( array $ops ) : void
+    {
+        $variants = ['ids' => [], 'langs' => []];
+        $list = [];
+
+        foreach( $ops as $seq => $op )
+        {
+            $model = $op['model'];
+
+            foreach( $op['ids'] as $id )
+            {
+                match( $op['type'] ) {
+                    self::VARIANTS => $variants['ids'][$id] = true,
+                    self::IDS => $list[$model][self::IDS][$id] = $seq,
+                    default => $list[$model][$op['type']][$id] = $seq,
+                };
+
+                // the later operation replaces an earlier one of the same search key
+                if( $op['type'] === self::KEYS ) {
+                    unset( $list[$model][self::REMOVE][$id] );
+                } elseif( $op['type'] === self::REMOVE ) {
+                    unset( $list[$model][self::KEYS][$id] );
+                }
+            }
+
+            foreach( $op['langs'] as $lang ) {
+                $variants['langs'][$lang] = true;
+            }
+        }
+
+        $pages = $list[Models\PageView::class] ?? [];
+
+        if( $variants['ids'] )
+        {
+            // pages reindexed by their page ID already include all of their variants
+            $variants['ids'] = array_diff_key( $variants['ids'], $pages[self::IDS] ?? [] );
+
+            foreach( self::affected( $variants ) as $key )
+            {
+                // removed variants stay removed
+                if( !isset( $pages[self::REMOVE][$key] ) ) {
+                    $list[Models\PageView::class][self::KEYS][$key] ??= PHP_INT_MAX;
+                }
+            }
+        }
+
+        if( isset( $pages[self::REMOVE], $pages[self::IDS] ) ) {
+            $list[Models\PageView::class][self::REMOVE] = self::removals( $pages[self::REMOVE], $pages[self::IDS] );
+        }
+
+        foreach( $list as $model => $types )
+        {
+            // only pages are indexed by search keys which differ from their IDs
+            foreach( [self::IDS, self::KEYS] as $type ) {
+                self::dispatch( $model, array_map( strval( ... ), array_keys( $types[$type] ?? [] ) ), $type === self::KEYS && $model === Models\PageView::class );
+            }
+        }
+
+        // removed last, so pages reindexed by their page ID don't add their removed variants again
+        foreach( $list as $model => $types ) {
+            self::remove( $model, array_map( strval( ... ), array_keys( $types[self::REMOVE] ?? [] ) ) );
+        }
+    }
+
+
+    /**
+     * Indexes the models immediately, queued if Scout uses a queue.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Model IDs or search keys
+     * @param bool $keys TRUE if the IDs are search keys (variant IDs for pages)
+     */
+    private static function dispatch( string $model, array $ids, bool $keys ) : void
+    {
+        if( !$ids ) {
+            return;
+        }
+
+        if( !config( 'scout.queue' ) ) {
+            self::sync( $model, $ids, $keys );
+            return;
+        }
+
+        $instance = new $model();
+
+        foreach( array_chunk( $ids, Models\Base::CHUNK ) as $chunk )
+        {
+            dispatch( ( new IndexModels( $model, $chunk, Tenancy::value(), $keys ) )
+                ->onQueue( $instance->syncWithSearchUsingQueue() )
+                ->onConnection( $instance->syncWithSearchUsing() ) );
+        }
+    }
+
+
+    /**
+     * Removes models from Scout immediately by search key, queued if Scout uses a queue.
+     *
+     * @param class-string<Models\Base> $model Model class
+     * @param array<string> $ids Search keys (variant IDs for pages)
+     */
+    private static function remove( string $model, array $ids ) : void
+    {
+        $instance = new $model();
+        $key = $instance->getScoutKeyName();
+
+        foreach( array_chunk( $ids, Models\Base::CHUNK ) as $chunk )
+        {
+            $items = $instance->newCollection( array_map(
+                fn( $id ) => $instance->newInstance()->forceFill( [$key => $id] ),
+                $chunk,
+            ) );
+            $instance->queueRemoveFromSearch( $items );
+        }
+    }
+
+
+    /**
+     * Returns the removed page variants which aren't indexed again by their page ID afterwards.
+     *
+     * Pages are trashed and restored by page ID while their variants are removed by search key,
+     * e.g. if an import drops and restores pages in the same transaction. The restored pages
+     * keep their variants unless they are removed after the pages have been indexed again.
+     *
+     * @param array<string, int> $removed Search keys of the removed variants and their sequence numbers
+     * @param array<string, int> $pages IDs of the indexed pages and their sequence numbers
+     * @return array<string, int> Search keys of the variants that stay removed and their sequence numbers
+     */
+    private static function removals( array $removed, array $pages ) : array
+    {
+        $variant = new Models\PageVariant();
+        $page = new Models\Page();
+
+        foreach( array_chunk( array_map( strval( ... ), array_keys( $removed ) ), DB::IN_SIZE ) as $chunk )
+        {
+            $rows = $variant->newQuery()
+                ->join( $page->getTable(), $page->getQualifiedKeyName(), '=', $variant->qualifyColumn( 'page_id' ) )
+                ->whereIn( $variant->getQualifiedKeyName(), $chunk )
+                ->whereNull( $page->getQualifiedDeletedAtColumn() )
+                ->toBase()->pluck( $variant->qualifyColumn( 'page_id' ), $variant->getQualifiedKeyName() );
+
+            foreach( $rows as $key => $pageId )
+            {
+                if( ( $pages[(string) $pageId] ?? 0 ) > $removed[(string) $key] ) {
+                    unset( $removed[(string) $key] );
+                }
+            }
+        }
+
+        return $removed;
     }
 
 

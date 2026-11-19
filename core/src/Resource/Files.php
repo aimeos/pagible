@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Resource;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Exceptions\ConflictException;
@@ -16,7 +16,6 @@ use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
-use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Scout;
@@ -122,7 +121,7 @@ class Files
             throw $t;
         }
 
-        $result->announce( ContentAction::Added, $editor );
+        $result->announce( Action::Added, $editor );
         return $result;
     }
 
@@ -198,7 +197,7 @@ class Files
                 $files = ( new File() )->newCollection( $changed );
 
                 Invalidation::refs( [], $files->modelKeys() );
-                File::announceMany( $files, ContentAction::Saved, $editor, ['disk' => $disk], bulk: true );
+                File::announceMany( $files, Action::Saved, $editor, ['disk' => $disk], bulk: true );
             }
         }
     }
@@ -265,7 +264,7 @@ class Files
             throw $t;
         }
 
-        $file->announce( ContentAction::Saved, $editor );
+        $file->announce( Action::Saved, $editor );
         return $file;
     }
 
@@ -395,7 +394,7 @@ class Files
             File::trashMany( $items, $editor );
         }, $user ) ) );
 
-        File::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
+        File::announceMany( $items, Action::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
         // the CMS search ignores trashed items, other search engines keep them if soft deletes are enabled
         Scout::trash( File::class, $this->ids( $items ) );
@@ -459,7 +458,7 @@ class Files
         } ) );
 
         // many files are announced as one bulk event because they may be purged in several transactions
-        File::announceMany( $items, LifecycleAction::Purged, $editor, bulk: count( $ids ) !== 1 );
+        File::announceMany( $items, Action::Purged, $editor, bulk: count( $ids ) !== 1 );
         Scout::unindex( File::class, $this->ids( $items ) );
 
         if( $denied ) {
@@ -492,7 +491,7 @@ class Files
             File::restoreMany( $items, $editor );
         }, $user ) ) );
 
-        File::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
+        File::announceMany( $items, Action::Restored, $editor, ['deleted_at' => null] );
         Scout::index( File::class, $this->ids( $items ) );
 
         return $items;

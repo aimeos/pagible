@@ -19,7 +19,7 @@ return new class extends Migration
      */
     public function up()
     {
-        $name = config('cms.db', 'sqlite');
+        $name = \Aimeos\Cms\DB::name();
         $schema = Schema::connection($name);
 
         if( in_array( $schema->getColumnType('cms_versions', 'versionable_id'), ['varchar', 'char', 'uniqueidentifier', 'uuid'] ) ) {

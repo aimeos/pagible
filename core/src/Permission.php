@@ -117,11 +117,39 @@ class Permission
 
 
     /**
+     * Returns the roles assigned to the user, denied roles ("!role") aren't included.
+     *
+     * @param Authenticatable $user Laravel user object
+     * @return array<int, string> Role names
+     */
+    public static function assignedRoles( Authenticatable $user ) : array
+    {
+        return array_values( array_filter(
+            self::assigned( $user ),
+            fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ) && $entry !== '*',
+        ) );
+    }
+
+
+    /**
      * Tests whether a permission is available.
      */
     public static function has( string $action ) : bool
     {
         return in_array( $action, Hooks::get()->actions, true );
+    }
+
+
+    /**
+     * Checks if the user can preview the latest, unpublished content of the pages.
+     *
+     * @param Authenticatable|null $user Laravel user object, the authenticated user if no argument is passed
+     * @return bool TRUE if the user can view the latest versions, FALSE if only published content is shown
+     */
+    public static function previews( ?Authenticatable $user = null ) : bool
+    {
+        // an explicit NULL is a guest even if another user is authenticated
+        return self::can( 'page:view', func_num_args() ? $user : Auth::user() );
     }
 
 
@@ -243,10 +271,6 @@ class Permission
             return false;
         }
 
-        if( $closure = Hooks::get()->can ) {
-            return $closure( $action, $user );
-        }
-
         if( $action === '*' ) {
             return self::assigned( $user ) !== [];
         }
@@ -267,17 +291,6 @@ class Permission
         }
 
         return in_array( $action, $entry['resolved'] );
-    }
-
-
-    /**
-     * Sets the callback for checking permissions.
-     *
-     * @param \Closure|null $callback Anonymous function or NULL to reset
-     */
-    public static function canUsing( ?\Closure $callback ) : void
-    {
-        Hooks::get()->can = $callback;
     }
 
 
@@ -478,30 +491,7 @@ class Permission
      */
     private static function normalize( iterable $entries ) : array
     {
-        $result = [];
-
-        foreach( $entries as $entry )
-        {
-            if( !is_string( $entry ) || ( $entry = trim( $entry ) ) === '' ) {
-                throw new InvalidInputException( 'CMS permissions must be non-empty strings.' );
-            }
-
-            if( mb_strlen( $entry ) > self::MAX_LENGTH ) {
-                throw new InvalidInputException( sprintf( 'CMS permissions may not be longer than %d characters.', self::MAX_LENGTH ) );
-            }
-
-            if( !in_array( $entry, $result, true ) ) {
-                $result[] = $entry;
-            }
-
-            if( count( $result ) > self::MAX_ASSIGNMENTS ) {
-                throw new InvalidInputException( sprintf( 'No more than %d CMS permissions may be assigned at once.', self::MAX_ASSIGNMENTS ) );
-            }
-        }
-
-        sort( $result, SORT_STRING );
-
-        return $result;
+        return Validation::stringList( $entries, 'CMS permissions', self::MAX_LENGTH, self::MAX_ASSIGNMENTS );
     }
 
 

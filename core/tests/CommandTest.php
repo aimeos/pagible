@@ -54,6 +54,32 @@ class CoreCommandTest extends CoreTestAbstract
     }
 
 
+    public function testPublishAllTenants(): void
+    {
+        $create = fn() => Element::withoutSyncingToSearch( function() {
+            $element = $this->element();
+
+            $version = $this->schedule( $element, 'After', '2025-01-01 00:00:00', 'After' );
+
+            $element->forceFill( ['latest_id' => $version->id] )->saveQuietly();
+            return $element;
+        } );
+
+        $other = Tenancy::run( 'other', $create );
+        $skipped = Tenancy::run( 'skipped', $create );
+
+        $this->artisan( 'cms:publish', ['--tenant' => 'other'] )->assertExitCode( 0 );
+
+        $this->assertSame( 'After', Tenancy::run( 'other', fn() => Element::findOrFail( $other->id )->name ) );
+        $this->assertSame( 'Before', Tenancy::run( 'skipped', fn() => Element::findOrFail( $skipped->id )->name ) );
+
+        $this->artisan( 'cms:publish' )->assertExitCode( 0 );
+
+        $this->assertSame( 'After', Tenancy::run( 'skipped', fn() => Element::findOrFail( $skipped->id )->name ) );
+        $this->assertSame( 'test', Tenancy::value() );
+    }
+
+
     public function testPublishCollapsesOverdueVersions(): void
     {
         $versions = [];
@@ -143,7 +169,7 @@ class CoreCommandTest extends CoreTestAbstract
                 ? throw new \RuntimeException( 'Expected publication failure' ) : null
         );
 
-        $this->artisan( 'cms:publish' )->assertExitCode( 0 );
+        $this->artisan( 'cms:publish' )->assertExitCode( 1 );
 
         $this->assertSame( 0, Version::whereIn( 'id', $ids )->where( 'published', true )->count() );
         $this->assertSame( 'Before', $element->fresh()->name );
@@ -488,5 +514,27 @@ class CoreCommandTest extends CoreTestAbstract
         ] )->assertExitCode( 0 );
 
         $this->assertTrue( Permission::can( 'page:view', User::where( 'email', 'single@example.com' )->first() ) );
+    }
+
+
+    protected function element( string $name = 'Before' ) : Element
+    {
+        return Element::forceCreate( [
+            'lang' => 'en', 'type' => 'text', 'name' => $name,
+            'data' => ['text' => 'Before'], 'editor' => 'test',
+        ] );
+    }
+
+
+    protected function schedule( Element $element, string $name, mixed $at, ?string $text = null, array $attributes = [] ) : Version
+    {
+        $data = ['lang' => 'en', 'type' => 'text', 'name' => $name] + ( $text !== null ? ['data' => ['text' => $text]] : [] );
+
+        return $element->versions()->forceCreate( $attributes + [
+            'lang' => 'en',
+            'data' => $data,
+            'publish_at' => $at,
+            'editor' => 'test',
+        ] );
     }
 }

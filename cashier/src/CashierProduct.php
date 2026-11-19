@@ -48,7 +48,7 @@ class CashierProduct
         $page = PageView::query()
             ->when( $lang, fn( $query ) => $query->language( (string) $lang ) )
             ->when( $domain !== null, fn( $query ) => $query->whereIn( $query->qualifyColumn( 'domain' ), ['', mb_strtolower( (string) $domain )] ) )
-            ->whereIn( 'status', [1, 2] )
+            ->active()
             ->access( $user )
             ->findOrFail( $pageId );
 

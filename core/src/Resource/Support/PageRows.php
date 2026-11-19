@@ -113,10 +113,11 @@ final class PageRows
      * @param array<string, array<string>>|null $refs File and element references or NULL to copy the ones of the previous version
      * @param array<string, mixed>|null $diffs Merge differences for the change info
      * @param string|null $lang Language of the version, the one of the data or the page by default
+     * @param array<string, mixed> $values Variant values saved together with the new version
      * @return PageView Page with the new version as "latest"
      */
     public static function addVersion( PageView $page, array $data, array $aux, string $editor,
-        ?array $refs, ?array $diffs = null, ?string $lang = null ) : PageView
+        ?array $refs, ?array $diffs = null, ?string $lang = null, array $values = [] ) : PageView
     {
         $page->newDraft( [
             'data' => $data,
@@ -125,7 +126,7 @@ final class PageRows
             'aux' => $aux,
         ], $refs, $diffs );
 
-        return self::save( $page );
+        return self::save( $page, $values );
     }
 
 

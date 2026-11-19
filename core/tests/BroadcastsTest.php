@@ -7,7 +7,7 @@
 
 namespace Tests;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\ContentType;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Change;
@@ -27,7 +27,6 @@ use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Utils;
-use Aimeos\Cms\VariantAction;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
@@ -199,7 +198,7 @@ class BroadcastsTest extends CoreTestAbstract
         config( ['cms.broadcast' => true] );
         Event::fake( [Published::class, Bulk::class] );
 
-        Base::announceMany( $pages, ContentAction::Published, 'editor@testbench', [
+        Base::announceMany( $pages, Action::Published, 'editor@testbench', [
             'published' => true,
             'publish_at' => null,
         ], projected: $published );
@@ -212,6 +211,27 @@ class BroadcastsTest extends CoreTestAbstract
             ] )->all()
             && !array_key_exists( 'projected', $event->broadcastWith() )
         );
+    }
+
+
+    public function testSingleItemOfBulkOnlyActionUsesBulkEvent() : void
+    {
+        config( ['cms.broadcast' => true] );
+        Event::fake( [Bulk::class] );
+
+        Base::announceMany( collect( [$this->page()] ), Action::Translated, 'editor@testbench' );
+
+        Event::assertDispatched( Bulk::class, fn( Bulk $e ) => $e->action === 'translated' && count( $e->ids ) === 1 );
+    }
+
+
+    public function testAnnounceBulkOnlyActionThrows() : void
+    {
+        $this->assertFalse( Action::Translated->single() );
+        $this->assertTrue( Action::Saved->single() );
+
+        $this->expectException( \LogicException::class );
+        $this->page()->announce( Action::Translated, 'editor@testbench' );
     }
 
 
@@ -370,7 +390,7 @@ class BroadcastsTest extends CoreTestAbstract
         $changes = [];
 
         config( ['cms.broadcast' => false] );
-        Change::listen( ContentAction::Published, function( Change $change ) use ( &$changes ) {
+        Change::listen( Action::Published, function( Change $change ) use ( &$changes ) {
             $changes[] = $change;
         } );
 
@@ -431,7 +451,7 @@ class BroadcastsTest extends CoreTestAbstract
         QueuedChangeRecorder::$changes = [];
 
         config( ['cms.broadcast' => false] );
-        Change::listen( ContentAction::Published, QueuedChangeRecorder::class );
+        Change::listen( Action::Published, QueuedChangeRecorder::class );
         Queue::fake( [HandleChanges::class] );
 
         Pages::publishMany( [$page1->id, $page2->id], $this->user );
@@ -473,13 +493,13 @@ class BroadcastsTest extends CoreTestAbstract
     }
 
 
-    public function testChangeListenerVariantAction() : void
+    public function testChangeListenerBulkOnlyAction() : void
     {
         $page = $this->page();
         $langs = [];
 
         config( ['cms.broadcast' => false] );
-        Change::listen( VariantAction::Ignored, function( Change $change ) use ( &$langs ) {
+        Change::listen( Action::Ignored, function( Change $change ) use ( &$langs ) {
             $langs[] = $change->lang;
         } );
 

@@ -108,7 +108,7 @@ final class Publication
 
             // only the published variants of pages change
             Scout::index( $model, array_map( fn( Base $item ) => (string) $item->getScoutKey(), $list ), keys: true );
-            Base::announceMany( collect( $list ), ContentAction::Published, $editor ?? '', [
+            Base::announceMany( collect( $list ), Action::Published, $editor ?? '', [
                 'published' => true,
                 'publish_at' => null,
             ], projected: $this->projected[$model] ?? [] );
@@ -230,7 +230,7 @@ final class Publication
         if( !$at ) {
             $publication->flush( $editor );
         } else {
-            Base::announceMany( $pending, ContentAction::Published, $editor, [
+            Base::announceMany( $pending, Action::Published, $editor, [
                 'published' => false,
                 'publish_at' => $at,
             ] );
@@ -425,7 +425,14 @@ final class Publication
             $query->language( $lang );
         }
 
-        $query->select( $compact ? ["{$table}.id", "{$table}.latest_id", "{$table}.lang"] : ["{$table}.*"] )
+        $columns = ["{$table}.id", "{$table}.latest_id", "{$table}.lang"];
+
+        // scheduled page variants are reindexed by their search key
+        if( $instance instanceof PageView ) {
+            $columns[] = "{$table}.variant_id";
+        }
+
+        $query->select( $compact ? $columns : ["{$table}.*"] )
             ->leftJoin( 'cms_versions AS cms_latest', function( $join ) use ( $table ) {
                 $join->on( "{$table}.latest_id", '=', 'cms_latest.id' )
                     ->where( 'cms_latest.tenant_id', Tenancy::value() );
@@ -650,6 +657,7 @@ final class Publication
     private function schedule( Collection $items, string $at, string $editor ) : void
     {
         $rows = [];
+        $keys = [];
         $versions = [];
 
         // only unpublished latest versions are passed by publishItems()
@@ -671,12 +679,18 @@ final class Publication
                 'publish_at' => $attributes['publish_at'],
             ];
             $versions[] = $version;
+            $keys[$item::class][] = (string) $item->getScoutKey();
         }
 
         DB::updateRows( ( new Version() )->getTable(), $rows, ['data', 'editor', 'publish_at'] );
 
         foreach( $versions as $version ) {
             $version->syncChanges()->syncOriginal();
+        }
+
+        // the search index contains the scheduled state of the drafts
+        foreach( $keys as $model => $list ) {
+            Scout::index( $model, $list, keys: true );
         }
     }
 

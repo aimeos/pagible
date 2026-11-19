@@ -167,7 +167,7 @@ class PageAccess extends Model
             Invalidation::pages( self::variants( $changed ) );
 
             if( Scout::usesExternalSearch() ) {
-                Scout::reindex( PageView::class, $reindex );
+                Scout::index( PageView::class, $reindex );
             }
         }
 

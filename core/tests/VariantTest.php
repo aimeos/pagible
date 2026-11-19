@@ -9,7 +9,7 @@ namespace Tests;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Access;
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Exception;
@@ -140,7 +140,7 @@ class VariantTest extends CoreTestAbstract
 
         // the used paths are loaded at once instead of checking each candidate
         $queries = 0;
-        \Illuminate\Support\Facades\DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
+        \Illuminate\Support\Facades\DB::connection( \Aimeos\Cms\DB::name() )->listen( function( $query ) use ( &$queries ) {
             $queries += (int) ( str_contains( $query->sql, 'exists' ) && str_contains( $query->sql, '"path" = ?' ) );
         } );
 
@@ -273,7 +273,7 @@ class VariantTest extends CoreTestAbstract
         $result = Variants::setSource( $page->id, 'de', $this->user );
 
         $this->assertEquals( 'de', $result->source );
-        $this->assertEquals( 'de', DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_pages' )->where( 'id', $page->id )->value( 'source' ) );
+        $this->assertEquals( 'de', \Aimeos\Cms\DB::connection()->table( 'cms_pages' )->where( 'id', $page->id )->value( 'source' ) );
         $this->assertEquals( 'de', PageView::findOrFail( $page->id )->lang );
 
         $de = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
@@ -469,7 +469,7 @@ class VariantTest extends CoreTestAbstract
 
         $en = PageView::findOrFail( $page->id );
         $de = PageView::language( 'de' )->findOrFail( $page->id );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
 
         $this->assertEquals( [$files[0]->id], $db->table( 'cms_page_file' )->where( 'variant_id', $en->variant_id )->pluck( 'file_id' )->all() );
         $this->assertEquals( [$files[1]->id], $db->table( 'cms_page_file' )->where( 'variant_id', $de->variant_id )->pluck( 'file_id' )->all() );
@@ -537,7 +537,7 @@ class VariantTest extends CoreTestAbstract
         Pages::dropMany( [$page->id], $this->user );
         Pages::purgeMany( [$page->id], $this->user );
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
 
         $this->assertEquals( 0, PageVariant::withTrashed()->where( 'page_id', $page->id )->count() );
         $this->assertEquals( 0, Version::whereIn( 'versionable_id', $variants )->count() );
@@ -911,7 +911,7 @@ class VariantTest extends CoreTestAbstract
         } );
 
         $items = collect( [PageView::findOrFail( $page->id ), PageView::language( 'de', true )->findOrFail( $page->id )] );
-        PageView::announceMany( $items, ContentAction::Published, 'editor', ['published' => true], true );
+        PageView::announceMany( $items, Action::Published, 'editor', ['published' => true], true );
 
         $this->assertCount( 2, $events );
         $this->assertEquals( [[$page->id => 'en'], [$page->id => 'de']], array_map( fn( Bulk $event ) => $event->langs, $events ) );
@@ -960,18 +960,14 @@ class VariantTest extends CoreTestAbstract
         $page = $this->page();
         Variants::add( $page->id, 'de', $this->user );
 
-        // translations are copied in bulk without firing the "saving" event of the versions
         $orig = PageVariant::where( 'page_id', $page->id )->where( 'lang', 'de' )->firstOrFail();
         $version = Version::findOrFail( $orig->latest_id );
         $version->forceFill( ['publish_at' => now()->addDay()] )->save();
-
-        $this->assertEquals( 1, $version->fresh()?->data->scheduled );
 
         $copy = Pages::copy( $page->id, $this->user, parent: $this->root()->id );
         $latest = PageView::language( 'de' )->findOrFail( $copy->id )->latest;
 
         $this->assertNull( $latest?->publish_at );
-        $this->assertEquals( 0, $latest?->data->scheduled );
     }
 
 
@@ -1074,7 +1070,7 @@ class VariantTest extends CoreTestAbstract
             $this->user, parent: $page->id );
         Variants::add( $page->id, 'de', $this->user );
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $paths = [];
 
         for( $i = 0; $i < 3; $i++ )

@@ -100,7 +100,7 @@ class FileToolsTest extends McpTestAbstract
 
     public function testSearchFiles()
     {
-        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+        if( \Aimeos\Cms\DB::connection()->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
         }
 

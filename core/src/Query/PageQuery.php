@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Query;
 
+use Aimeos\Cms\PageStatus;
 use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Nestedset\QueryBuilder;
@@ -86,6 +87,21 @@ class PageQuery extends QueryBuilder
 
 
     /**
+     * Limits the query to the enabled and hidden pages, which are reachable on the live site.
+     *
+     * Unlike the Status scope, inactive pages are also skipped for editors, so the results
+     * don't depend on the logged in user.
+     *
+     * @return static Same builder for fluent interface
+     */
+    public function active() : static
+    {
+        $this->whereIn( $this->qualifyColumn( 'status' ), PageStatus::reachable() );
+        return $this;
+    }
+
+
+    /**
      * Limits the query to the pages visitors see on the live site.
      *
      * Uses the published and enabled variants of the language like visible(), skips
@@ -99,7 +115,7 @@ class PageQuery extends QueryBuilder
     public function live( ?Authenticatable $user = null, ?string $lang = null ) : static
     {
         $this->visible( $lang ?? app()->getLocale() )
-            ->whereIn( $this->qualifyColumn( 'status' ), [1, 2] )
+            ->active()
             ->with( PageView::contentRelations() );
 
         PageAccess::apply( $this, $user );

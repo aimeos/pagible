@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Action;
 use Aimeos\Cms\Permission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -22,7 +23,6 @@ use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Jobs\InvalidatePages;
-use Aimeos\Cms\LifecycleAction;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
@@ -287,6 +287,67 @@ class ResourceTest extends CoreTestAbstract
         $this->assertSame( 'mydomain.tld', $data->domain );
         $this->assertSame( 'paper', $data->theme );
         $this->assertSame( 'docs', $data->type );
+    }
+
+
+    public function testAddPageDefaults()
+    {
+        $parent = Pages::add( [
+            'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'parent-defaults',
+            'domain' => 'example.com', 'theme' => 'cms', 'type' => 'blog',
+        ], $this->user, parent: $this->root()->id );
+
+        $page = Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child Page Title'], $this->user, parent: $parent->id );
+        $sibling = Pages::add( ['lang' => 'en', 'name' => 'Sibling', 'title' => 'Sibling', 'path' => 'own', 'theme' => 'other'], $this->user, ref: $page->id );
+
+        $this->assertEquals( 'child-page-title', $page->latest->data->path );
+        $this->assertEquals( 'example.com', $page->latest->data->domain );
+        $this->assertEquals( 'cms', $page->latest->data->theme );
+        $this->assertEquals( 'blog', $page->latest->data->type );
+
+        $this->assertEquals( 'own', $sibling->latest->data->path );
+        $this->assertEquals( 'other', $sibling->latest->data->theme );
+        $this->assertEquals( 'blog', $sibling->latest->data->type );
+    }
+
+
+    public function testAddPageLoadsParentOnce()
+    {
+        $parent = Pages::add( [
+            'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'parent-once',
+            'domain' => 'example.com', 'theme' => 'cms', 'type' => 'blog',
+        ], $this->user, parent: $this->root()->id );
+
+        $queries = [];
+        DB::listen( function( $query ) use ( &$queries ) {
+            $queries[] = $query->sql;
+        } );
+
+        Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child once'], $this->user, parent: $parent->id );
+        $versions = array_filter( $queries, fn( $sql ) => str_starts_with( $sql, 'select "data" from "cms_versions"' ) );
+
+        $this->assertCount( 1, $versions );
+
+        $queries = [];
+        $user = new \App\Models\User( ['name' => 'No add', 'email' => 'noadd@testbench', 'cmsperms' => ['page:view']] );
+
+        $this->assertThrows( fn() => Pages::add( ['name' => 'Denied'], $user, parent: $parent->id ), PermissionException::class );
+        $this->assertSame( [], $queries );
+    }
+
+
+    public function testAddPageSections()
+    {
+        $page = Pages::add( [
+            'lang' => 'en', 'name' => 'Sections', 'title' => 'Sections', 'path' => 'sections',
+            'content' => [['type' => 'text', 'data' => ['text' => 'Test']]],
+        ], $this->user, parent: $this->root()->id, sections: true );
+
+        $content = $page->latest->aux->content;
+
+        $this->assertCount( 1, $content );
+        $this->assertEquals( 'main', $content[0]->group );
+        $this->assertNotEmpty( $content[0]->id );
     }
 
 

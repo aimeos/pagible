@@ -72,7 +72,7 @@ class DeliverWebhook extends BaseDelivery
     {
         return $this->query()
             ->select( 'url', 'secrets' )
-            ->where( 'status', 1 )
+            ->active()
             ->first()
             ?->target();
     }

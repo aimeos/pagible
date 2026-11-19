@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * @phpstan-import-type PageInput from \Aimeos\Cms\Resource\Pages
  *
- * @method static PageView add( PageInput $input, Authenticatable|null $user = null, string|null $ref = null, string|null $parent = null )
+ * @method static PageView add( PageInput $input, Authenticatable|null $user = null, string|null $ref = null, string|null $parent = null, bool $sections = false )
  * @method static PageView move( string $id, Authenticatable|null $user = null, string|null $ref = null, string|null $parent = null )
  * @method static PageView save( string $id, PageInput $input, Authenticatable|null $user = null, string|null $latestId = null )
  * @method static BulkResult bulk( array<string> $ids, PageInput $input, Authenticatable|null $user = null, bool $descendants = false )

@@ -46,9 +46,7 @@ class GetPageHistory extends Tool
 
         $result = [];
         $limit = $v['limit'] ?? 10;
-        $versions = $page->versions()->select(
-            'id', 'tenant_id', 'versionable_id', 'editor', 'lang', 'published', 'publish_at', 'created_at', 'data', 'aux'
-        )->take( $limit )->get();
+        $versions = $page->versions()->select( Version::columns( 'aux', 'created_at' ) )->take( $limit )->get();
 
         foreach( $versions as $version )
         {

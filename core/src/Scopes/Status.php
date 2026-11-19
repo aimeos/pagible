@@ -7,10 +7,10 @@
 
 namespace Aimeos\Cms\Scopes;
 
+use Aimeos\Cms\PageStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Illuminate\Support\Facades\Auth;
 use Aimeos\Cms\Permission;
 
 
@@ -29,8 +29,8 @@ class Status implements Scope
      */
     public function apply( Builder $builder, Model $model ): void
     {
-        if( !Permission::can( 'page:view', Auth::user() ) ) {
-            $builder->whereIn( $model->qualifyColumn( 'status' ), [1, 2] );
+        if( !Permission::previews() ) {
+            $builder->whereIn( $model->qualifyColumn( 'status' ), PageStatus::reachable() );
         }
     }
 }

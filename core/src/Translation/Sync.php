@@ -577,7 +577,7 @@ class Sync
     protected static function reindex( array $ids ) : void
     {
         if( Scout::usesExternalSearch() ) {
-            Scout::reindex( PageView::class, array_map( strval( ... ), $ids ), keys: true );
+            Scout::index( PageView::class, array_map( strval( ... ), $ids ), keys: true );
         }
     }
 }

@@ -24,7 +24,7 @@ class FileVersionMigrationTest extends CoreTestAbstract
 
     public function testMovesFileTextFromDataToAux(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $file = File::firstOrFail();
         $page = PageView::firstOrFail();
         $fileVersion = $file->latest()->firstOrFail();

@@ -17,6 +17,7 @@ use LaravelJsonApi\Testing\MakesJsonApiRequests;
 
 class JsonapiWatchTest extends JsonapiTestAbstract
 {
+    use FakesWatched;
     use CmsWithMigrations;
     use RefreshDatabase;
     use MakesJsonApiRequests;
@@ -42,9 +43,8 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testReadDispatchesQueried() : void
     {
-        config( ['cms.jsonapi.watch' => true] );
         $page = \Aimeos\Cms\Models\PageView::where( 'tag', 'root' )->firstOrFail();
-        Event::fake( [CmsJsonapi::class] );
+        $this->fakeWatched( CmsJsonapi::class );
 
         $this->jsonApi()->expects( 'pages' )->get( "cms/pages/{$page->id}" );
 
@@ -56,8 +56,7 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testCollectionDispatchesSearch() : void
     {
-        config( ['cms.jsonapi.watch' => true] );
-        Event::fake( [CmsJsonapi::class] );
+        $this->fakeWatched( CmsJsonapi::class );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
@@ -69,9 +68,8 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testIncludesAreRecorded() : void
     {
-        config( ['cms.jsonapi.watch' => true] );
         $page = \Aimeos\Cms\Models\PageView::where( 'tag', 'article' )->firstOrFail();
-        Event::fake( [CmsJsonapi::class] );
+        $this->fakeWatched( CmsJsonapi::class );
 
         $this->jsonApi()->expects( 'pages' )->includePaths( 'ancestors' )->get( "cms/pages/{$page->id}" );
 
@@ -81,8 +79,8 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testDomainCapturedFromHostWhenMultidomain() : void
     {
-        config( ['cms.jsonapi.watch' => true, 'cms.multidomain' => true] );
-        Event::fake( [CmsJsonapi::class] );
+        config( ['cms.multidomain' => true] );
+        $this->fakeWatched( CmsJsonapi::class );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
@@ -93,8 +91,8 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testDomainEmptyWithoutMultidomain() : void
     {
-        config( ['cms.jsonapi.watch' => true, 'cms.multidomain' => false] );
-        Event::fake( [CmsJsonapi::class] );
+        config( ['cms.multidomain' => false] );
+        $this->fakeWatched( CmsJsonapi::class );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 
@@ -104,7 +102,6 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testNothingDispatchedWhenWatchOff() : void
     {
-        config( ['cms.jsonapi.watch' => false] );
         Event::fake( [CmsJsonapi::class] );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
@@ -115,9 +112,8 @@ class JsonapiWatchTest extends JsonapiTestAbstract
 
     public function testObserverReceivesQueriedWithDurationWhenWatchOff() : void
     {
-        config( ['cms.watch.channel' => null, 'cms.jsonapi.watch' => false] );
-        Event::listen( Observed::class, fn() => null );
-        Event::fake( [Observed::class] );
+        config( ['cms.watch.channel' => null] );
+        $this->fakeWatched( Observed::class );
 
         $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
 

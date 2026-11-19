@@ -271,6 +271,19 @@ class LanguagePermissionTest extends CoreTestAbstract
     }
 
 
+    public function testAddPageChangedParentDomain()
+    {
+        $root = $this->root();
+        $root->latest->forceFill( ['data' => ['domain' => 'draft.example.com'] + (array) $root->latest->data] )->saveQuietly();
+
+        $page = Pages::add( [
+            'lang' => 'de', 'name' => 'Seite', 'title' => 'Seite', 'path' => 'seite-test',
+        ], $this->actor( ['de'] ), parent: $root->id );
+
+        $this->assertEquals( (string) $root->domain, (string) $page->domain );
+    }
+
+
     public function testAddPageDomain()
     {
         $this->expectException( PermissionException::class );

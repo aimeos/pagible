@@ -115,20 +115,21 @@ class SearchQuery
             $value = self::value( $where );
             $operator = $where['operator'] ?? '=';
 
-            if( is_null( $value ) ) {
-                $operator === '=' ? $query->whereNull( $col ) : $query->whereNotNull( $col );
-            } else {
-                $query->where( $col, $operator, $value );
-            }
+            // other operators than (in)equality compare the column values directly
+            is_null( $value ) || in_array( $operator, ['=', '!=', '<>'], true )
+                ? DB::whereField( $query, $field, $col, [$value], $operator !== '=' )
+                : $query->where( $col, $operator, $value );
         }
 
         foreach( ['whereIn' => $builder->whereIns, 'whereNotIn' => $builder->whereNotIns] as $method => $list )
         {
             foreach( $list as $field => $values )
             {
-                if( $col = $qualify( $field ) ) {
-                    $query->{$method}( $col, $values );
+                if( !( $col = $qualify( $field ) ) ) {
+                    continue;
                 }
+
+                DB::whereField( $query, $field, $col, $values, $method === 'whereNotIn' );
             }
         }
     }

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Resource\Support;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exceptions\ConflictException;
 use Aimeos\Cms\Exceptions\InvalidInputException;
@@ -75,7 +75,7 @@ final class PageEdits
             if( !empty( $input ) || $source === null )
             {
                 self::apply( $page, $input, $editor, $latestId, $user );
-                $page->announce( ContentAction::Saved, $editor );
+                $page->announce( Action::Saved, $editor );
                 PruneVersions::dispatchChunked( PageView::class, [$page->getVersionKey()] );
             }
 

@@ -7,9 +7,9 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Action;
 use Aimeos\Cms\Concerns\FilePreviews;
 use Aimeos\Cms\Concerns\ForTenants;
-use Aimeos\Cms\ContentAction;
 use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Version;
@@ -227,7 +227,7 @@ class Previews extends Command
     protected function notify( array $ids ) : array
     {
         $files = File::withTrashed()->select( 'id', 'latest_id' )->with( 'latest:id,published' )->whereIn( 'id', $ids )->get();
-        File::announceMany( $files, ContentAction::Saved, self::EDITOR, [], bulk: true );
+        File::announceMany( $files, Action::Saved, self::EDITOR, [], bulk: true );
 
         // the live files and therefore the pages don't change if only a draft version has been added
         return $files->filter( fn( File $file ) => $file->latest->published ?? true )->modelKeys();

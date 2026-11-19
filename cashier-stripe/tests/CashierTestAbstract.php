@@ -41,7 +41,7 @@ abstract class CashierTestAbstract extends \Orchestra\Testbench\TestCase
 
     protected function tearDown(): void
     {
-        \Aimeos\Cms\Access::extend( null );
+        \Aimeos\Cms\Access::resetExtensions();
         \Aimeos\Cms\Access::using( null );
         \Aimeos\Cms\Hooks::get()->managed = false;
 

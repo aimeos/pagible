@@ -90,7 +90,7 @@ class WatchTest extends CoreTestAbstract
 
     public function testWatchObserveEmitsForRegisteredListenerWithoutWatchChannel() : void
     {
-        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+        config( ['cms.watch.channel' => null] );
 
         $captured = null;
         Event::listen( Observed::class, function( Observed $e ) use ( &$captured ) {
@@ -116,14 +116,14 @@ class WatchTest extends CoreTestAbstract
 
     public function testWatchDispatchSkippedWhenNothingListensAndWatchOff() : void
     {
-        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+        config( ['cms.watch.channel' => null] );
 
         $built = false;
 
         Watch::dispatch( Observed::class, function() use ( &$built ) {
             $built = true;
             return new Observed( source: 'graphql', action: 'pages', tenant: 'test' );
-        }, 'cms.theme.watch' );
+        } );
 
         $this->assertFalse( $built );
     }

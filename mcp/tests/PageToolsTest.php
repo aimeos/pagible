@@ -233,7 +233,7 @@ class PageToolsTest extends McpTestAbstract
 
     public function testSearchPages()
     {
-        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+        if( \Aimeos\Cms\DB::connection()->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
         }
 
@@ -325,6 +325,41 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( ['Child page'] );
+    }
+
+
+    public function testAddPageInheritsParentTypeSections()
+    {
+        $hooks = \Aimeos\Cms\Hooks::get();
+        $themes = $hooks->themes;
+        $hooks->themes['sections'] = ['types' => ['landing' => ['sections' => ['hero', 'main']], 'sidebar' => ['sections' => ['aside']]]];
+
+        try
+        {
+            $parent = PageView::where( 'name', 'Home' )->first();
+            $parent->latest->forceFill( ['data' => ['type' => 'landing'] + (array) $parent->latest->data] )->saveQuietly();
+
+            $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\AddPage::class, [
+                'lang' => 'en',
+                'name' => 'Child page',
+                'title' => 'A Child Page',
+                'content' => [
+                    ['type' => 'text', 'group' => 'aside', 'data' => ['text' => 'Child content.']],
+                ],
+                'meta' => $this->meta( 'A child page for testing' ),
+                'parent_id' => $parent->id,
+            ] );
+
+            $response->assertOk();
+
+            $page = PageView::where( 'name', 'Child page' )->firstOrFail();
+            $this->assertEquals( 'landing', $page->type );
+            $this->assertEquals( 'hero', $page->latest->aux->content[0]->group ?? null );
+        }
+        finally
+        {
+            $hooks->themes = $themes;
+        }
     }
 
 
@@ -716,6 +751,29 @@ class PageToolsTest extends McpTestAbstract
         ] );
 
         $response->assertOk()->assertSee( [$page->id] );
+    }
+
+
+    public function testSearchPagesLanguageFallback()
+    {
+        $page = PageView::where( 'name', 'Home' )->first();
+
+        // pages without variant in the language are listed in their source language
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
+            'lang' => 'fr',
+        ] );
+
+        $response->assertOk()->assertSee( [$page->id, 'Home'] );
+    }
+
+
+    public function testSearchPagesPathPrefix()
+    {
+        $response = CmsServer::actingAs($this->user)->tool( \Aimeos\Cms\Tools\SearchPages::class, [
+            'term' => '/blog',
+        ] );
+
+        $response->assertOk()->assertSee( ['Blog'] )->assertDontSee( ['"Home"'] );
     }
 
 

@@ -24,7 +24,7 @@ class HeroButtonsMigrationTest extends ThemeTestAbstract
 
     public function testConvertsHeroButtons(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $element = Element::firstOrFail();
 

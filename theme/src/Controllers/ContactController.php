@@ -50,7 +50,7 @@ class ContactController extends Controller
             ip: $ip,
             durationMs: $duration,
             tenant: $tenant,
-        ), 'cms.theme.watch' );
+        ) );
 
         Watch::observe(
             source: 'contact',

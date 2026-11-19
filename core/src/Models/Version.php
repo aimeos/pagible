@@ -54,7 +54,7 @@ class Version extends Model
 
     /** @var list<string> Most frequently used version projection */
     public const SELECT_COLUMNS = [
-        'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published',
+        'id', 'tenant_id', 'versionable_id', 'versionable_type', 'data', 'lang', 'editor', 'published', 'publish_at',
     ];
 
     /** @var list<string> Version projection for loading the draft files and elements of the latest versions */
@@ -139,6 +139,18 @@ class Version extends Model
      * @var string
      */
     protected $table = 'cms_versions';
+
+
+    /**
+     * Returns the most frequently used version columns with the additional ones.
+     *
+     * @param string ...$extra Additional column names
+     * @return list<string> Unique column names
+     */
+    public static function columns( string ...$extra ) : array
+    {
+        return array_values( array_unique( [...self::SELECT_COLUMNS, ...$extra] ) );
+    }
 
 
     /**

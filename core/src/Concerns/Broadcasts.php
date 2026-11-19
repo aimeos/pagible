@@ -9,10 +9,8 @@ namespace Aimeos\Cms\Concerns;
 
 use Aimeos\Cms\Events\Bulk;
 use Aimeos\Cms\Events\Event;
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\ContentType;
-use Aimeos\Cms\LifecycleAction;
-use Aimeos\Cms\VariantAction;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Tenancy;
@@ -37,17 +35,18 @@ trait Broadcasts
     /**
      * Broadcasts a content change for this model after the current transaction commits.
      *
-     * The action names the event class in Aimeos\Cms\Events (ContentAction::Saved -> Saved), broadcast on the
+     * The action names the event class in Aimeos\Cms\Events (Action::Saved -> Saved), broadcast on the
      * per-type list/tree channel and consumed by both the list/tree views and any open detail
      * view of the changed item. toOthers() excludes the originating browser tab via its
      * X-Socket-ID header, while changes from other clients (MCP, API, another tab, a scheduled
      * job) carry no socket id and still reach the open editor.
      *
-     * @param ContentAction|LifecycleAction $action Content change or lifecycle action
+     * @param Action $action Content change or lifecycle action
      * @param Authenticatable|string|null $editor Authenticated user or editor name
      * @param array{}|Projection $projection Published projection
+     * @throws \LogicException If the action is announced by bulk events only, see Action::single()
      */
-    public function announce( ContentAction|LifecycleAction $action, Authenticatable|string|null $editor = null,
+    public function announce( Action $action, Authenticatable|string|null $editor = null,
         array $projection = [] ) : void
     {
         $class = $action->event();
@@ -80,7 +79,7 @@ trait Broadcasts
 
         // Lifecycle changes only alter list metadata, page routes remain because the audit listener records them
         $data = match( true ) {
-            $action instanceof ContentAction => (array) $version->data,
+            $action->content() => (array) $version->data,
             $this instanceof PageView => $this->route( $version ),
             default => [],
         };
@@ -112,12 +111,12 @@ trait Broadcasts
      * @param array<string, string> $latest Saved item id => its new latest version id
      * @param array<string, mixed> $data Shared fields applied to every saved item
      * @param Authenticatable|string|null $editor Authenticated user or editor name
-     * @param ContentAction|LifecycleAction|VariantAction $action Action applied to the items
+     * @param Action $action Action applied to the items
      * @param array<string, string> $projected Item id => actually projected version id
      * @param array<string, string> $langs Item id => language of the page variant
      */
     public static function announceBulk( ContentType $type, array $ids, array $latest, array $data = [],
-        Authenticatable|string|null $editor = null, ContentAction|LifecycleAction|VariantAction $action = ContentAction::Saved,
+        Authenticatable|string|null $editor = null, Action $action = Action::Saved,
         array $projected = [], array $langs = [] ) : void
     {
         if( empty( $ids ) || !static::announces( Bulk::class ) ) {
@@ -144,20 +143,21 @@ trait Broadcasts
      *
      * @template T of Base
      * @param Collection<int, T> $items Changed items
-     * @param ContentAction|LifecycleAction $action Content change or lifecycle action
+     * @param Action $action Content change or lifecycle action
      * @param string $editor Editor name
      * @param array<string, mixed> $data Shared changed fields
      * @param bool $bulk TRUE to use the bulk event for a single item too
      * @param array<string, Projection> $projected Published projections by version key
      */
-    public static function announceMany( Collection $items, ContentAction|LifecycleAction $action, string $editor,
+    public static function announceMany( Collection $items, Action $action, string $editor,
         array $data = [], bool $bulk = false, array $projected = [] ) : void
     {
         if( !( $first = $items->first() ) ) {
             return;
         }
 
-        if( $items->count() === 1 && !$bulk ) {
+        // actions without single item event are only announced by bulk events
+        if( $items->count() === 1 && !$bulk && $action->single() ) {
             $id = $first->id;
             $first->announce( $action, $editor, is_string( $id ) ? ( $projected[$first->getVersionKey() ?? $id] ?? [] ) : [] );
             return;
@@ -183,7 +183,7 @@ trait Broadcasts
                     }
 
                     // lifecycle events of whole pages have no language, only those of single page variants
-                    if( $action instanceof ContentAction && ( $lang = $item->eventLang() ) !== null ) {
+                    if( $action->content() && ( $lang = $item->eventLang() ) !== null ) {
                         $langs[$id] = $lang;
                     }
                 }

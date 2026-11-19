@@ -62,11 +62,26 @@ class Access
     /**
      * Adds grants from an optional package without replacing the configured access resolver.
      *
-     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants
+     * Each call adds another callback, so several packages can add their grants.
+     *
+     * @param \Closure(Authenticatable): (iterable<mixed>|null) $grants Callback returning the additional grants of the user
      */
-    public static function extend( ?\Closure $grants ) : void
+    public static function extend( \Closure $grants ) : void
     {
-        Hooks::get()->extend = $grants;
+        $hooks = Hooks::get();
+        $hooks->extend = [...$hooks->extend, $grants];
+        app()->forgetInstance( self::class );
+    }
+
+
+    /**
+     * Removes the grant callbacks added by all packages using extend().
+     *
+     * @internal Only for resetting the state between tests
+     */
+    public static function resetExtensions() : void
+    {
+        Hooks::get()->extend = [];
         app()->forgetInstance( self::class );
     }
 
@@ -227,23 +242,9 @@ class Access
      * @param iterable<mixed> $values
      * @return array<int, string>
      */
-    public static function normalize( iterable $values ) : array
+    public static function normalize( iterable $values, ?int $max = null ) : array
     {
-        $result = [];
-
-        foreach( $values as $value )
-        {
-            if( !is_string( $value ) ) {
-                throw new Exception( 'Access values must be non-empty strings.' );
-            }
-
-            $result[self::value( $value )] = true;
-        }
-
-        $result = array_map( 'strval', array_keys( $result ) );
-        sort( $result, SORT_STRING );
-
-        return $result;
+        return Validation::stringList( $values, 'Access values', self::MAX_VALUE_LENGTH, $max );
     }
 
 
@@ -262,8 +263,13 @@ class Access
 
         $hooks = Hooks::get();
         $adapter = $hooks->access;
-        $extra = ( $extend = $hooks->extend ) ? $extend( $user ) : [];
-        $granted = array_fill_keys( self::normalize( $extra ?? [] ), true );
+        $extra = [];
+
+        foreach( $hooks->extend as $extend ) {
+            $extra = [...$extra, ...( $extend( $user ) ?? [] )];
+        }
+
+        $granted = array_intersect_key( array_fill_keys( self::normalize( $extra ), true ), $catalog );
 
         if( $adapter->prepare ) {
             ( $adapter->prepare )( $user );
@@ -431,14 +437,6 @@ class Access
      */
     private static function value( string $value ) : string
     {
-        if( ( $value = trim( $value ) ) === '' ) {
-            throw new Exception( 'Access values must be non-empty strings.' );
-        }
-
-        if( mb_strlen( $value ) > self::MAX_VALUE_LENGTH ) {
-            throw new Exception( sprintf( 'Access values may not be longer than %d characters.', self::MAX_VALUE_LENGTH ) );
-        }
-
-        return $value;
+        return self::normalize( [$value] )[0];
     }
 }

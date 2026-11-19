@@ -7,11 +7,10 @@
 
 namespace Aimeos\Cms\Resource;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exceptions\InvalidInputException;
 use Aimeos\Cms\Jobs\PruneVersions;
-use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Scout;
 use Aimeos\Cms\Merge;
@@ -85,7 +84,7 @@ class Elements
             ], ['files' => $fileIds] );
 
             $element->files()->attach( $fileIds );
-            $element->announce( ContentAction::Added, $editor );
+            $element->announce( Action::Added, $editor );
 
             return $element;
         } );
@@ -122,7 +121,7 @@ class Elements
         return DB::transaction( function() use ( $element, $input, $editor, $latestId, $user ) {
 
             $this->apply( $element, $input, $editor, $latestId, $user );
-            $element->announce( ContentAction::Saved, $editor );
+            $element->announce( Action::Saved, $editor );
             PruneVersions::dispatchChunked( Element::class, [$element->id] );
 
             return $element;
@@ -255,7 +254,7 @@ class Elements
             Element::trashMany( $items, $editor );
         }, $user ) );
 
-        Element::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
+        Element::announceMany( $items, Action::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
         // the CMS search ignores trashed items, other search engines keep them if soft deletes are enabled
         Scout::trash( Element::class, $this->ids( $items ) );
@@ -285,7 +284,7 @@ class Elements
             Element::forceDeleteMany( $items );
         }, $user ) );
 
-        Element::announceMany( $items, LifecycleAction::Purged, $editor );
+        Element::announceMany( $items, Action::Purged, $editor );
         Scout::unindex( Element::class, $this->ids( $items ) );
 
         return $items;
@@ -314,7 +313,7 @@ class Elements
             Element::restoreMany( $items, $editor );
         }, $user ) );
 
-        Element::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
+        Element::announceMany( $items, Action::Restored, $editor, ['deleted_at' => null] );
         Scout::index( Element::class, $this->ids( $items ) );
 
         return $items;
