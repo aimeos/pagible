@@ -178,6 +178,10 @@ class Files
                 $files = File::findOrFail( $ids );
                 Langs::authorize( $files, $user );
 
+                // relocate in the given order, databases like SQL Server sort UUIDs differently
+                $order = array_flip( array_map( strtolower(...), $ids ) );
+                $files = $files->sortBy( fn( File $file ) => $order[strtolower( (string) $file->id )] ?? PHP_INT_MAX )->values();
+
                 foreach( $files as $file )
                 {
                     if( $file->getAttribute( 'disk' ) !== $disk )
