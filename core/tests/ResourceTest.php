@@ -324,8 +324,8 @@ class ResourceTest extends CoreTestAbstract
         } );
 
         Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child once'], $this->user, parent: $parent->id );
-        // identifiers are quoted differently depending on the database
-        $versions = array_filter( $queries, fn( $sql ) => str_starts_with( preg_replace( '/[`"\[\]]/', '', $sql ), 'select data from cms_versions' ) );
+        // identifiers are quoted differently and SQL Server uses "top 1" instead of "limit 1"
+        $versions = array_filter( $queries, fn( $sql ) => (bool) preg_match( '/^select (top 1 )?data from cms_versions/', (string) preg_replace( '/[`"\[\]]/', '', $sql ) ) );
 
         $this->assertCount( 1, $versions );
 
