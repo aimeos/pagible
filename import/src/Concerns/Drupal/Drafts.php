@@ -11,7 +11,6 @@ use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
-use Illuminate\Support\Str;
 
 
 /**
@@ -78,10 +77,10 @@ trait Drafts
         $vid = (int) $revision->vid;
         $title = (string) $revision->title;
         // meta title like "[node:title] | [site:name]" of the draft revision
-        $metaTitle = $this->revision( $node->nid, $vid, $title, fn() => $this->meta->tags( $node, $langcode )['title'] ?? '' );
+        $metaTitle = $this->revision( $node->nid, $vid, $title, fn() => $this->metaTitle( $node, $langcode ) );
         $draft = array_replace( $data, array_filter( [
             'name' => $data['name'] === $node->title ? $title : null,
-            'title' => $metaTitle !== '' ? Str::limit( $metaTitle, 254, '…', true ) : $title,
+            'title' => $metaTitle !== '' ? $metaTitle : $title,
         ] ) );
         $content = $this->nodeContent( $node, $langcode, $fallback, $vid, $title );
 

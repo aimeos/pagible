@@ -47,6 +47,19 @@ class V7Placements
 
 
     /**
+     * Returns the visibility condition which matches the listed values.
+     *
+     * @param string $id Condition plugin ID, e.g. "node_type"
+     * @param string $key Name of the setting containing the values, e.g. "bundles"
+     * @param array<int, string> $list Values, e.g. content types
+     * @return array<string, mixed> Visibility condition in the format of Drupal 8
+     */
+    protected function condition( string $id, string $key, array $list ): array
+    {
+        return ['id' => $id, $key => array_combine( $list, $list )];
+    }
+
+    /**
      * Returns the values of the block visibility table by block key, e.g. "block:1".
      *
      * @return array<string, array<int, string>>
@@ -106,7 +119,7 @@ class V7Placements
                     'status' => true,
                     'region' => (string) ( $block['region'] ?? '' ),
                     'weight' => (int) ( $block['weight'] ?? 0 ),
-                    'plugin' => $this->plugin( $module, $delta ),
+                    'plugin' => V7Blocks::plugin( $module, $delta ),
                     'visibility' => $visibility,
                 ];
             }
@@ -150,18 +163,16 @@ class V7Placements
                         return null;
                     }
 
-                    $paths = array_map( fn( $path ) => ( $path = ltrim( trim( $path ), '~' ) ) === '<front>' ? $path : '/' . ltrim( $path, '/' ), $list );
-                    $visibility['request_path'] = ['id' => 'request_path', 'pages' => implode( "\n", $paths ), 'negate' => (bool) $negate];
+                    $visibility['request_path'] = $this->requestPath( array_map( fn( $path ) => ltrim( trim( $path ), '~' ), $list ), (bool) $negate );
                     break;
                 case 'node':
-                    $visibility['node_type'] = ['id' => 'node_type', 'bundles' => array_combine( $list, $list )];
+                    $visibility['node_type'] = $this->condition( 'node_type', 'bundles', $list );
                     break;
                 case 'user':
-                    $list = array_map( fn( $name ) => $this->d7->role( (int) ( $rids[$name] ?? 0 ), $name ), $list );
-                    $visibility['user_role'] = ['id' => 'user_role', 'roles' => array_combine( $list, $list )];
+                    $visibility['user_role'] = $this->condition( 'user_role', 'roles', array_map( fn( $name ) => $this->d7->role( (int) ( $rids[$name] ?? 0 ), $name ), $list ) );
                     break;
                 case 'language':
-                    $visibility['language'] = ['id' => 'language', 'langcodes' => array_combine( $list, $list )];
+                    $visibility['language'] = $this->condition( 'language', 'langcodes', $list );
                     break;
                 default:
                     return null;
@@ -204,22 +215,19 @@ class V7Placements
             if( (int) $row->visibility === 2 ) {
                 $visibility['php'] = ['id' => 'php'];
             } elseif( $pages !== '' ) {
-                $paths = array_map( fn( $path ) => ( $path = trim( $path ) ) === '<front>' ? $path : '/' . ltrim( $path, '/' ), preg_split( '/\R/', $pages ) ?: [] );
-                $visibility['request_path'] = ['id' => 'request_path', 'pages' => implode( "\n", $paths ), 'negate' => (int) $row->visibility === 0];
+                $visibility['request_path'] = $this->requestPath( array_map( trim( ... ), preg_split( '/\R/', $pages ) ?: [] ), (int) $row->visibility === 0 );
             }
 
             if( $list = $types[$key] ?? [] ) {
-                $visibility['node_type'] = ['id' => 'node_type', 'bundles' => array_combine( $list, $list )];
+                $visibility['node_type'] = $this->condition( 'node_type', 'bundles', $list );
             }
 
-            if( $list = $roles[$key] ?? [] )
-            {
-                $list = array_map( fn( $rid ) => $this->d7->role( (int) $rid, (string) ( $names[$rid] ?? $rid ) ), $list );
-                $visibility['user_role'] = ['id' => 'user_role', 'roles' => array_combine( $list, $list )];
+            if( $list = $roles[$key] ?? [] ) {
+                $visibility['user_role'] = $this->condition( 'user_role', 'roles', array_map( fn( $rid ) => $this->d7->role( (int) $rid, (string) ( $names[$rid] ?? $rid ) ), $list ) );
             }
 
             if( $list = $langs[$key] ?? [] ) {
-                $visibility['language'] = ['id' => 'language', 'langcodes' => array_combine( $list, $list )];
+                $visibility['language'] = $this->condition( 'language', 'langcodes', $list );
             }
 
             $this->configs['block.block.' . Str::slug( $row->module . '_' . $row->delta, '_' )] = [
@@ -227,31 +235,23 @@ class V7Placements
                 'status' => true,
                 'region' => (string) $row->region,
                 'weight' => (int) $row->weight,
-                'plugin' => $this->plugin( (string) $row->module, (string) $row->delta ),
+                'plugin' => V7Blocks::plugin( (string) $row->module, (string) $row->delta ),
                 'visibility' => $visibility,
             ];
         }
     }
 
     /**
-     * Returns the Drupal 8 block plugin ID of the Drupal 7 block.
+     * Returns the request path visibility condition of the Drupal 7 paths.
      *
-     * @param string $module Module providing the block, e.g. "block" for custom blocks
-     * @param string $delta Block ID within the module
+     * @param array<int, string> $paths Trimmed Drupal 7 paths without leading slash, e.g. "node/1" or "<front>"
+     * @param bool $negate TRUE if the blocks are shown on all pages except the listed ones
+     * @return array<string, mixed> Visibility condition in the format of Drupal 8
      */
-    protected function plugin( string $module, string $delta ): string
+    protected function requestPath( array $paths, bool $negate ): array
     {
-        $key = $module . ':' . $delta;
+        $paths = array_map( fn( $path ) => $path === '<front>' ? $path : '/' . ltrim( $path, '/' ), $paths );
 
-        return match( true ) {
-            $module === 'block' => 'block_content:d7-block-' . $delta,
-            $module === 'bean' => 'block_content:d7-bean-' . $delta,
-            $key === 'system:main' => 'system_main_block',
-            $key === 'system:help' => 'help_block',
-            $key === 'system:powered-by' => 'system_powered_by_block',
-            $key === 'locale:language' => 'language_block:language_interface',
-            $module === 'menu' || in_array( $key, ['system:main-menu', 'system:user-menu', 'system:navigation', 'system:management'], true ) => 'system_menu_block:' . $delta,
-            default => $key,
-        };
+        return ['id' => 'request_path', 'pages' => implode( "\n", $paths ), 'negate' => $negate];
     }
 }

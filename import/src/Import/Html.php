@@ -12,6 +12,8 @@ use Aimeos\Cms\Utils;
 
 /**
  * Converts HTML into Pagible content elements.
+ *
+ * @phpstan-import-type ContentElements from Elements
  */
 class Html
 {
@@ -53,16 +55,13 @@ class Html
     protected const SOURCE_ATTRIBUTES = ['data-src', 'data-lazy-src', 'data-original', 'src'];
 
 
-    /** @var (\Closure(string): void)|null Shows a warning, e.g. if processing the HTML failed, ignored if NULL */
-    protected ?\Closure $warn = null;
-
-
     /**
      * Initializes the converter.
      *
      * @param \Closure(string): ?string $image Imports the image of the HTML tag and returns the file ID
+     * @param (\Closure(string): void)|null $warn Shows a warning, e.g. if processing the HTML failed, ignored if NULL
      */
-    public function __construct( protected \Closure $image )
+    public function __construct( protected \Closure $image, protected ?\Closure $warn = null )
     {
     }
 
@@ -185,7 +184,7 @@ class Html
     /**
      * Converts a plain HTML block into an HTML element.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     public function text( string $block ): ?array
     {
@@ -208,7 +207,7 @@ class Html
             return null;
         }
 
-        return ['elements' => [Elements::create( 'html', ['text' => $html] )]];
+        return Elements::content( Elements::create( 'html', ['text' => $html] ) );
     }
 
 
@@ -328,7 +327,7 @@ class Html
     /**
      * Parses a preformatted block into a code element.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     protected function parseCodeBlock( string $block ): ?array
     {
@@ -341,21 +340,21 @@ class Html
             $language = strtolower( $langMatch[1] );
         }
 
-        $code = (string) preg_replace( '/<\/?code[^>]*>/i', '', $matches[1] );
+        $code = $this->result( preg_replace( '/<\/?code[^>]*>/i', '', $matches[1] ), $matches[1] );
         $code = strip_tags( $code );
         $code = self::decode( $code );
 
-        return ['elements' => [Elements::create( 'code', [
+        return Elements::content( Elements::create( 'code', [
             'language' => $language,
             'text' => trim( $code ),
-        ] )]];
+        ] ) );
     }
 
 
     /**
      * Parses an HTML heading into a heading element.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     protected function parseHeadingBlock( string $block ): ?array
     {
@@ -363,10 +362,10 @@ class Html
             return null;
         }
 
-        return ['elements' => [Elements::create( 'heading', [
+        return Elements::content( Elements::create( 'heading', [
             'level' => (int) $matches[1],
             'title' => self::decode( strip_tags( $matches[2] ) ),
-        ] )]];
+        ] ) );
     }
 
 
@@ -391,7 +390,7 @@ class Html
     protected function parseImageTextBlock( string $html ): array
     {
         if( !preg_match( self::LINKED_IMAGE_PATTERN, $html, $matches ) ) {
-            return Elements::content( ...$this->text( $html )['elements'] ?? [] );
+            return $this->text( $html ) ?? Elements::content();
         }
 
         if( !( $fileId = $this->image( $matches[0] ) ) ) {

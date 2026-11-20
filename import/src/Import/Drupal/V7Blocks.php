@@ -16,6 +16,11 @@ use Illuminate\Support\Collection;
  */
 class V7Blocks
 {
+    /** Prefix of the UUIDs of the custom blocks followed by the block ID */
+    public const BLOCK_UUID = 'd7-block-';
+    /** Prefix of the UUIDs of the blocks of the Bean module followed by the bean delta */
+    public const BEAN_UUID = 'd7-bean-';
+
     /** @var int|null Offset added to the IDs of the blocks of the Bean module to avoid collisions with custom blocks */
     protected ?int $offset = null;
 
@@ -95,6 +100,28 @@ class V7Blocks
     }
 
     /**
+     * Returns the Drupal 8 block plugin ID of the Drupal 7 block.
+     *
+     * @param string $module Module providing the block, e.g. "block" for custom blocks
+     * @param string $delta Block ID within the module
+     */
+    public static function plugin( string $module, string $delta ): string
+    {
+        $key = $module . ':' . $delta;
+
+        return match( true ) {
+            $module === 'block' => 'block_content:' . self::BLOCK_UUID . $delta,
+            $module === 'bean' => 'block_content:' . self::BEAN_UUID . $delta,
+            $key === 'system:main' => 'system_main_block',
+            $key === 'system:help' => 'help_block',
+            $key === 'system:powered-by' => 'system_powered_by_block',
+            $key === 'locale:language' => 'language_block:language_interface',
+            $module === 'menu' || in_array( $key, ['system:main-menu', 'system:user-menu', 'system:navigation', 'system:management'], true ) => 'system_menu_block:' . $delta,
+            default => $key,
+        };
+    }
+
+    /**
      * Returns the custom blocks and the blocks of the Bean module in the format of the block_content and block_content_field_data tables.
      *
      * The IDs of the beans are added to the highest custom block ID and their types are the block types.
@@ -109,14 +136,12 @@ class V7Blocks
 
         if( $this->d7->exists( 'block_custom' ) )
         {
-            $ids = $column === 'uuid'
-                ? array_map( fn( $uuid ) => (int) substr( (string) $uuid, 9 ), array_filter( $values, fn( $uuid ) => str_starts_with( (string) $uuid, 'd7-block-' ) ) )
-                : array_map( intval( ... ), $values );
+            $ids = array_map( intval( ... ), $column === 'uuid' ? $this->suffixes( $values, self::BLOCK_UUID ) : $values );
 
             $list = $this->db->table( 'block_custom' )->when( $values, fn( $query ) => $query->whereIn( 'bid', $ids ) )->orderBy( 'bid' )->get()
                 ->map( fn( $row ) => $this->d7->record( [
                     'id' => (int) $row->bid,
-                    'uuid' => 'd7-block-' . $row->bid,
+                    'uuid' => self::BLOCK_UUID . $row->bid,
                     'type' => 'block-custom',
                     'langcode' => $this->d7->langcode(),
                     'info' => (string) $row->info,
@@ -133,14 +158,14 @@ class V7Blocks
         $query = $this->db->table( 'bean' )->orderBy( 'bid' );
 
         if( $values && $column === 'uuid' ) {
-            $query->whereIn( 'delta', array_map( fn( $uuid ) => substr( (string) $uuid, 8 ), array_filter( $values, fn( $uuid ) => str_starts_with( (string) $uuid, 'd7-bean-' ) ) ) );
+            $query->whereIn( 'delta', $this->suffixes( $values, self::BEAN_UUID ) );
         } elseif( $values ) {
             $query->whereIn( 'bid', array_map( fn( $id ) => (int) $id - $offset, $values ) );
         }
 
         return $list->merge( $query->get()->map( fn( $row ) => $this->d7->record( [
             'id' => (int) $row->bid + $offset,
-            'uuid' => 'd7-bean-' . $row->delta,
+            'uuid' => self::BEAN_UUID . $row->delta,
             'type' => (string) $row->type,
             'langcode' => $this->d7->langcode(),
             'info' => (string) $row->label,
@@ -148,5 +173,26 @@ class V7Blocks
             'default_langcode' => 1,
             'changed' => (int) ( $row->changed ?? 0 ),
         ] ) ) )->values();
+    }
+
+    /**
+     * Returns the parts after the prefix of the UUIDs having the prefix.
+     *
+     * @param array<int, int|string> $uuids Block UUIDs
+     * @param string $prefix BLOCK_UUID or BEAN_UUID
+     * @return array<int, string> Block IDs or bean deltas
+     */
+    protected function suffixes( array $uuids, string $prefix ): array
+    {
+        $list = [];
+
+        foreach( $uuids as $uuid )
+        {
+            if( str_starts_with( (string) $uuid, $prefix ) ) {
+                $list[] = substr( (string) $uuid, strlen( $prefix ) );
+            }
+        }
+
+        return $list;
     }
 }

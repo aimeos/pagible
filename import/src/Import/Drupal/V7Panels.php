@@ -25,8 +25,6 @@ class V7Panels
     protected array $defaults = [];
     /** @var array<int, Collection<int, \stdClass>> Shown panes of the Panels displays of the current nodes by display ID */
     protected array $panes = [];
-    /** @var array<string, bool> Warnings which were shown */
-    protected array $warned = [];
     /** @var array<int, string> Panelizer view modes used for the node pages in the order of preference */
     protected array $viewModes = ['page_manager', 'full', 'default'];
 
@@ -35,9 +33,9 @@ class V7Panels
      * @param Connection $db Connection to the Drupal database
      * @param V7Db $d7 Tables, variables, locales and records of the Drupal 7 database
      * @param \Closure(string): string $text Converts the text of a Drupal 7 field to the format of Drupal 8
-     * @param \Closure $warn Called with the warning message
+     * @param \Closure(string, string): void $warnOnce Shows the warning of the key only once
      */
-    public function __construct( protected Connection $db, protected V7Db $d7, protected \Closure $text, protected \Closure $warn )
+    public function __construct( protected Connection $db, protected V7Db $d7, protected \Closure $text, protected \Closure $warnOnce )
     {
     }
 
@@ -143,7 +141,7 @@ class V7Panels
             $subtype = (string) $pane->subtype;
             $plugins = match( (string) $pane->type ) {
                 'custom' => ['inline_block:block-custom'],
-                'block' => preg_match( '/^block-(\d+)$/', $subtype, $m ) ? ['block_content:d7-block-' . $m[1]] : null,
+                'block' => $this->blockPlugin( $subtype ),
                 'entity_field' => preg_match( '/^node:(\w+)$/', $subtype, $m ) ? ["field_block:node:{$bundle}:{$m[1]}"] : null,
                 'node_body' => ["field_block:node:{$bundle}:body"],
                 'node_content', 'entity_view' => array_map( fn( $field ) => "field_block:node:{$bundle}:{$field}", array_keys( $content ) ),
@@ -153,12 +151,7 @@ class V7Panels
             if( $plugins === null )
             {
                 $type = $pane->type . ':' . $subtype;
-
-                if( !isset( $this->warned['pane:' . $type] ) ) {
-                    $this->warned['pane:' . $type] = true;
-                    ( $this->warn )( "Skipped panel panes of type \"{$type}\", not supported" );
-                }
-
+                ( $this->warnOnce )( 'pane:' . $type, "Skipped panel panes of type \"{$type}\", not supported" );
                 continue;
             }
 
@@ -180,6 +173,20 @@ class V7Panels
         }
 
         return $section;
+    }
+
+    /**
+     * Returns the block plugin of a block pane of a custom block or a block of the Bean module.
+     *
+     * @param string $subtype Pane subtype of the module and the block delta, e.g. "block-1" or "bean-intro"
+     * @return array<int, string>|null Block plugin IDs or NULL if the block is not supported
+     */
+    protected function blockPlugin( string $subtype ): ?array
+    {
+        [$module, $delta] = explode( '-', $subtype, 2 ) + ['', ''];
+        $plugin = V7Blocks::plugin( $module, $delta );
+
+        return str_starts_with( $plugin, 'block_content:' ) && $delta !== '' ? [$plugin] : null;
     }
 
     /**

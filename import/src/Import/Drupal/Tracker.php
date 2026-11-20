@@ -39,9 +39,8 @@ abstract class Tracker
      * Returns the IDs of the nodes whose menu links, terms, media or custom blocks changed since the time.
      *
      * @param int $since Unix timestamp of the --since option
-     * @param array<int, int> $nids IDs of all imported nodes
      * @param array<string, array{0: string, 1: string, 2: string}> $fields Entity type, field name and "block_content", "media" or "text" by field table
      * @return array<int, int> Node IDs
      */
-    abstract public function nodes( int $since, array $nids, array $fields ): array;
+    abstract public function nodes( int $since, array $fields ): array;
 }

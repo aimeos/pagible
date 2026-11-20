@@ -9,6 +9,7 @@ namespace Aimeos\Cms;
 
 use Aimeos\Cms\Concerns\CommitsInBatches;
 use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Date;
 use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
@@ -103,7 +104,7 @@ abstract class Commands extends Command
         $this->createdPages = Collection::make();
         $this->reusedFiles = $this->failedFiles = $this->prefetchedFiles = $this->namedFiles = [];
         $this->forgetDownloads();
-        $this->prefetchedVariants = [];
+        $this->prefetchedPages = $this->prefetchedVariants = [];
         $this->usedPages = [];
         $this->newRoot = false;
         $this->parentNode = null;
@@ -417,7 +418,7 @@ abstract class Commands extends Command
 
 
     /**
-     * Returns the file downloaded before by download() once.
+     * Returns the file prefetched by download() and forgets it, so each prefetched file is used only once.
      *
      * @param string $url URL of the file
      * @return array{resource: resource, mime: string}|null Temporary file and its MIME type or NULL if it wasn't downloaded before
@@ -501,13 +502,58 @@ abstract class Commands extends Command
         }
         else
         {
-            $id = Files::create( $mime, $name, $path, $this->editor, false )->id ?? '';
+            $id = Files::reference( $mime, $name, $path, $this->editor )->id ?? '';
         }
 
         $this->namedFiles[$id] = true;
         $this->createdFiles->put( $path, $id );
 
         return $id;
+    }
+
+
+    /**
+     * Creates a File record with a published version or returns the one created before by this import.
+     *
+     * Unlike createFile(), existing files aren't looked up by path because downloaded files get a new one.
+     *
+     * @param string $mime MIME type of the file, the one of downloaded files is detected from their content
+     * @param string $name Name of the file
+     * @param string $path Source URL or path of the file
+     * @param bool $download TRUE to download the file and store it locally, FALSE to reference the path
+     * @return string File ID
+     */
+    protected function importFile( string $mime, string $name, string $path, bool $download ): string
+    {
+        if( $existing = $this->knownFile( $path ) ) {
+            return $existing;
+        }
+
+        // files used several times are only downloaded once if the download fails
+        $file = $this->downloadOnce( $path, $download, fn() => DB::connection()->transaction(
+            fn() => $download
+                ? Files::download( $mime, $name, $path, $this->editor, $this->downloaded( $path ) )
+                : Files::reference( $mime, $name, $path, $this->editor )
+        ) );
+
+        $id = (string) $file->id;
+
+        // the IDs of rolled back files are overwritten when the file is created again
+        $this->createdFiles->put( $path, $id );
+        $this->importedFile( $path, $file );
+
+        return $id;
+    }
+
+
+    /**
+     * Called after importFile() has created the file, e.g. to remember its URL or MIME type.
+     *
+     * @param string $path Source URL or path of the file
+     * @param File $file Created file
+     */
+    protected function importedFile( string $path, File $file ): void
+    {
     }
 
 
@@ -584,39 +630,63 @@ abstract class Commands extends Command
     /**
      * Creates the link page below the parent or updates the one of a previous import with the same URL.
      *
-     * Only link pages saved by an import with the same editor and language are updated, they are restored
-     * if they are trashed and get no new version if nothing changed.
+     * Only link pages saved by an import with the same editor and language which weren't saved by this
+     * import before are updated, see storeLink().
      *
-     * @param string $slug URL path of the page
+     * @param string $slug URL path of the page, looked up in the domain of the imported pages
      * @param array<string, mixed> $pageData Page data from pageData() including the link target
      * @param PageView $parent Parent page
-     * @param PageView|false|null $page Page using the URL path, NULL if there's none or FALSE to look it up in the domain of the imported pages
-     * @param bool $replace TRUE to update a link page saved before by this import too
-     * @param \Closure(PageView): void|null $claimed Called with the page before it's moved and updated
      * @return array{page: PageView, status: Status}|null Saved page and its status or NULL if the URL is used by another page
      */
-    protected function saveLink( string $slug, array $pageData, PageView $parent, PageView|false|null $page = false, bool $replace = false, ?\Closure $claimed = null ): ?array
+    protected function saveLink( string $slug, array $pageData, PageView $parent ): ?array
+    {
+        $page = $this->pageByPath( $slug );
+
+        if( $page && ( !$this->linkOwned( $page, $pageData ) || isset( $this->usedPages[$page->id ?? ''] ) ) ) {
+            return null;
+        }
+
+        return $this->storeLink( $pageData, $parent, $page );
+    }
+
+
+    /**
+     * Tests if the page is a link page saved by an import with the same editor and language, so it can be updated.
+     *
+     * @param PageView $page Page using the URL path of the link page
+     * @param array<string, mixed> $pageData Page data from pageData() including the link target
+     */
+    protected function linkOwned( PageView $page, array $pageData ): bool
+    {
+        return $page->to !== '' && $page->editor === $this->editor && $page->lang === ( $pageData['lang'] ?? $this->lang );
+    }
+
+
+    /**
+     * Creates the link page below the parent or updates the link page of a previous import.
+     *
+     * Existing pages must be tested by linkOwned() before, they are restored if they are trashed and
+     * get no new version if nothing changed.
+     *
+     * @param array<string, mixed> $pageData Page data from pageData() including the link target
+     * @param PageView $parent Parent page
+     * @param PageView|null $page Link page using the URL path or NULL to create a new one
+     * @return array{page: PageView, status: Status} Saved page and its status
+     */
+    protected function storeLink( array $pageData, PageView $parent, ?PageView $page ): array
     {
         $content = Elements::merge();
 
-        if( !( $page = $page === false ? $this->pageByPath( $slug ) : $page ) )
+        if( !$page )
         {
             $page = $this->createPage( $pageData, $content, $parent );
             $this->usedPages[$page->id ?? ''] = true;
-            $claimed && $claimed( $page );
 
             return ['page' => $page, 'status' => Status::Imported];
         }
 
-        if( $page->to === '' || $page->editor !== $this->editor || $page->lang !== ( $pageData['lang'] ?? $this->lang )
-            || !$replace && isset( $this->usedPages[$page->id ?? ''] )
-        ) {
-            return null;
-        }
-
         $this->usedPages[$page->id ?? ''] = true;
         $page = $this->restore( $page );
-        $claimed && $claimed( $page );
         $this->moveBelow( $page, $parent );
 
         return ['page' => $page, 'status' => $this->updateVersion( $page, $pageData, $content )];
@@ -957,7 +1027,30 @@ abstract class Commands extends Command
      */
     protected function date( ?string ...$dates ): ?string
     {
-        return Database::firstDate( $dates );
+        return Date::first( $dates );
+    }
+
+
+    /**
+     * Shows the failed imports and their number at the end of the import.
+     *
+     * @return int Exit code of the command, Command::FAILURE if anything failed
+     */
+    protected function summary(): int
+    {
+        $this->printFailures();
+        $this->info( $this->finished() );
+
+        return $this->failed > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+
+    /**
+     * Returns the message shown at the end of the import with the number of failures, see summary().
+     */
+    protected function finished(): string
+    {
+        return "Finished with {$this->failed} failures.";
     }
 
 

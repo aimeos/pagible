@@ -11,7 +11,6 @@ use Aimeos\Cms\Import\Elements;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Tally;
-use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 
@@ -117,7 +116,7 @@ trait Menu
 
         $path = $this->linkPath( $link['title'] ?: $link['uuid'], $parent->tag !== Pages::TAG_ROOT ? trim( (string) $parent->path, '/' ) : '', $this->domain );
         $result = $this->transaction( "menu link {$link['title']}", function() use ( $link, $path, $to, $parent ) {
-            if( $result = $this->importRedirect( $path, $to, $parent, $link['title'], 1 ) ) {
+            if( $result = $this->importRedirect( $path, $to, $parent, $this->pageByPath( $path ), $link['title'], Pages::STATUS_PUBLISHED ) ) {
                 $this->saveLinkTranslations( $link, $to, $result['page'], $parent, $result['status'] === Status::Imported );
             }
 
@@ -153,7 +152,7 @@ trait Menu
 
         if( !( $page = $this->pages->path( $view['path'] ) ) )
         {
-            $page = $this->createPage( $this->pageData( $name, $view['path'], 0 ), Elements::merge(), $parent );
+            $page = $this->createPage( $this->pageData( $name, $view['path'], Pages::STATUS_DISABLED ), Elements::merge(), $parent );
             $this->markSaved( $page->variant_id );
             $this->warn( "  Created disabled placeholder page: {$name} (/{$view['path']}) for the Views page \"{$view['id']}\", add its content in Pagible and enable it" );
             $this->saveViewTranslations( $link, $view, $page );
@@ -206,15 +205,14 @@ trait Menu
 
             $lang = $language['lang'];
             $existing = $variants[$lang] ?? null;
+            $title = $this->tree->title( $link['uuid'], $langcode ) ?? '' ?: $link['title'] ?: $view['label'];
 
-            if( $existing && $existing->editor !== $this->editor ) {
+            if( $this->skipsTranslation( $existing, $title, $lang ) ) {
                 continue;
             }
-
-            $title = $this->tree->title( $link['uuid'], $langcode ) ?? '' ?: $link['title'] ?: $view['label'];
             $path = trim( $this->languages->prefix( $langcode ) . '/' . $view['path'], '/' );
 
-            if( $saved = $this->saveVariant( $page, $language, $path, $this->pageData( $title, $path, 0 ), Elements::merge(), $existing ) )
+            if( $saved = $this->saveVariant( $page, $language, $path, $this->pageData( $title, $path, Pages::STATUS_DISABLED ), Elements::merge(), $existing ) )
             {
                 $variants[$lang] = $saved;
                 $this->markSaved( $saved->variant_id );
@@ -309,9 +307,7 @@ trait Menu
             // translations changed in Pagible aren't overwritten
             $existing = $variants[$lang] ?? null;
 
-            if( $existing && $existing->editor !== $this->editor )
-            {
-                $this->warn( "  Skipped translation: {$title} [{$lang}] (changed in Pagible since the last import)" );
+            if( $this->skipsTranslation( $existing, $title, $lang ) ) {
                 continue;
             }
 
@@ -322,7 +318,7 @@ trait Menu
             $prefixed = $targets[$langcode];
             $target = str_starts_with( $to, '/' ) && $prefixed !== $to && isset( $found[trim( $prefixed, '/' )] ) ? $prefixed : $to;
 
-            if( $saved = $this->saveVariant( $page, $language, $path, ['to' => $target] + $this->pageData( $title, $path, 1 ), Elements::merge(), $existing ) )
+            if( $saved = $this->saveVariant( $page, $language, $path, ['to' => $target] + $this->pageData( $title, $path, Pages::STATUS_PUBLISHED ), Elements::merge(), $existing ) )
             {
                 $variants[$lang] = $saved;
                 $this->markSaved( $saved->variant_id );

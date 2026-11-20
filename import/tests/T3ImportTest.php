@@ -398,11 +398,11 @@ class T3ImportTest extends ImportTestAbstract
                 $this->createdFiles = Collection::make();
                 $this->createdFileUrls = Collection::make();
                 $failed = $this->attempt( 'file in test', function() {
-                    $this->importFile( 'image/png', 'Image', 'user_upload/image.png' );
+                    $this->importFile( 'image/png', 'Image', 'user_upload/image.png', false );
                     throw new \RuntimeException( 'failed' );
                 } );
 
-                return [$failed, $this->importFile( 'image/png', 'Image', 'user_upload/image.png' )];
+                return [$failed, $this->importFile( 'image/png', 'Image', 'user_upload/image.png', false )];
             }
         };
         $command->setOutput( new OutputStyle( new ArrayInput( [] ), $output = new BufferedOutput() ) );
@@ -857,7 +857,7 @@ class T3ImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $level = $cms->transactionLevel();
         $requests = [];
 
@@ -1258,7 +1258,7 @@ class T3ImportTest extends ImportTestAbstract
         };
         $command->setLaravel( app() );
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $level = $db->transactionLevel();
         $commits = 0;
         Event::listen( TransactionCommitted::class, function( $event ) use ( $level, &$commits ) {
@@ -1278,7 +1278,7 @@ class T3ImportTest extends ImportTestAbstract
     public function testSkipsUnchangedPages(): void
     {
         $queries = [];
-        DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
+        \Aimeos\Cms\DB::connection()->listen( function( $query ) use ( &$queries ) {
             $queries[] = [$this->sql( $query->sql ), $query->bindings];
         } );
 
@@ -1691,7 +1691,7 @@ class T3ImportTest extends ImportTestAbstract
         $rows[] = ['uid' => 600, 'pid' => 1, 'title' => 'Page again', 'slug' => '/page-100', 'sorting' => 600];
         DB::connection( 'typo3' )->table( 'pages' )->insert( $rows );
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
         $output = Artisan::output();
@@ -1796,7 +1796,7 @@ class T3ImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $level = $cms->transactionLevel();
         $requests = [];
 
@@ -1862,7 +1862,7 @@ class T3ImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $level = $cms->transactionLevel();
         $requests = [];
 

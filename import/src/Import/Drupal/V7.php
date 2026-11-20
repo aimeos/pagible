@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Import\Drupal;
 
 use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Embeds as BaseEmbeds;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
@@ -27,6 +28,10 @@ class V7 extends Reader
     protected const CACHE_SIZE = 10000;
     /** Columns of the node table used for the node records */
     protected const NODE_COLUMNS = ['nid', 'vid', 'type', 'title', 'uid', 'status', 'promote', 'sticky', 'created', 'changed'];
+    /** Drupal 8 entity types of the Drupal 7 entity types with fields */
+    protected const ENTITY_TYPES = ['node' => 'node', 'paragraphs_item' => 'paragraph', 'field_collection_item' => 'paragraph', 'bean' => 'block_content'];
+    /** Language codes of Drupal 7 values without language */
+    protected const NEUTRAL = ['', 'und'];
 
     /** Number added to the IDs of the field collection items so they don't collide with the IDs of the paragraphs */
     protected ?int $offset = null;
@@ -72,6 +77,8 @@ class V7 extends Reader
     protected ?V7Placements $placements = null;
     /** Tables, variables, locales and records of the Drupal 7 database */
     protected V7Db $d7;
+    /** @var array<string, true> Keys of the warnings which were shown */
+    protected array $warned = [];
 
 
     /**
@@ -528,7 +535,7 @@ class V7 extends Reader
 
         // links of the i18n_menu module can have a language
         $language = $this->d7->column( 'menu_links', 'language' );
-        $default = $rows->filter( fn( $row ) => !$language || in_array( (string) $row->language, ['', 'und', $this->d7->langcode()], true ) );
+        $default = $rows->filter( fn( $row ) => !$language || $this->neutral( (string) $row->language, $this->d7->langcode() ) );
         $sets = $this->d7->column( 'menu_links', 'i18n_tsid' ) ? $default->filter( fn( $row ) => (int) $row->i18n_tsid > 0 )->keyBy( 'i18n_tsid' ) : Collection::make();
         $other = $rows->diffKeys( $default );
         $translations = $other->filter( fn( $row ) => $sets->has( (int) ( $row->i18n_tsid ?? 0 ) ) );
@@ -729,12 +736,8 @@ class V7 extends Reader
                 $groups[$map[$tid] ?? $tid][] = $tid;
             }
 
-            foreach( $limit !== null ? $groups : array_chunk( $tids, \Aimeos\Cms\DB::IN_SIZE ) as $chunk )
-            {
-                foreach( $this->db->table( 'taxonomy_index' )->whereIn( 'tid', $chunk )->orderByDesc( 'sticky' )->orderByDesc( 'created' )
-                    ->orderBy( 'nid' )->when( $limit, fn( $query, $limit ) => $query->limit( $limit ) )->select( ['tid', 'nid'] )->cursor() as $row ) {
-                    yield $this->d7->record( ['tid' => $map[(int) $row->tid] ?? (int) $row->tid, 'nid' => $this->nid( (int) $row->nid )] );
-                }
+            foreach( $this->indexRows( $limit !== null ? $groups : array_chunk( $tids, \Aimeos\Cms\DB::IN_SIZE ), $limit ) as $row ) {
+                yield $this->d7->record( ['tid' => $map[(int) $row->tid] ?? (int) $row->tid, 'nid' => $this->nid( (int) $row->nid )] );
             }
         } );
     }
@@ -798,7 +801,7 @@ class V7 extends Reader
         // only nodes with translation nodes or translations of the Entity Translation module are translated
         $translated = $this->d7->exists( 'entity_translation' )
             ? Database::chunked( $nids, fn( $chunk ) => $this->db->table( 'entity_translation' )->where( 'entity_type', 'node' )->whereIn( 'entity_id', $chunk )
-                ->whereNotIn( 'language', ['', 'und'] )->distinct()->get( ['entity_id'] ) )->pluck( 'entity_id' )->map( fn( $id ) => (int) $id )->flip()->all()
+                ->whereNotIn( 'language', self::NEUTRAL )->distinct()->get( ['entity_id'] ) )->pluck( 'entity_id' )->map( fn( $id ) => (int) $id )->flip()->all()
             : [];
 
         return $this->nodeRows( array_values( array_filter( $nids, fn( $nid ) => isset( $this->sources[$nid] ) || isset( $translated[$nid] ) ) ) )
@@ -822,7 +825,7 @@ class V7 extends Reader
      */
     protected function panels(): V7Panels
     {
-        return $this->panels ??= new V7Panels( $this->db, $this->d7, fn( string $text ) => $this->text( $text ), $this->warn );
+        return $this->panels ??= new V7Panels( $this->db, $this->d7, fn( string $text ) => $this->text( $text ), fn( string $key, string $msg ) => $this->warnOnce( $key, $msg ) );
     }
 
 
@@ -950,9 +953,8 @@ class V7 extends Reader
      */
     protected function fieldConfigs(): void
     {
-        $entityTypes = ['node' => 'node', 'paragraphs_item' => 'paragraph', 'field_collection_item' => 'paragraph', 'bean' => 'block_content'];
         $instances = $this->db->table( 'field_config_instance' )->where( 'deleted', 0 )
-            ->whereIn( 'entity_type', array_keys( $entityTypes ) )->where( 'field_name', '!=', 'title_field' )->get();
+            ->whereIn( 'entity_type', array_keys( self::ENTITY_TYPES ) )->where( 'field_name', '!=', 'title_field' )->get();
         $fields = $this->fields();
         $layouts = $this->layouts();
         $displays = $all = [];
@@ -963,7 +965,7 @@ class V7 extends Reader
                 continue;
             }
 
-            $entity = $entityTypes[(string) $instance->entity_type];
+            $entity = self::ENTITY_TYPES[(string) $instance->entity_type];
             $field = (string) $instance->field_name;
             $data = Database::unserializeArray( $instance->data );
             $storage = $this->storage( $config['type'], $config['settings'] );
@@ -1048,7 +1050,6 @@ class V7 extends Reader
             return [];
         }
 
-        $entityTypes = ['node' => 'node', 'paragraphs_item' => 'paragraph', 'field_collection_item' => 'paragraph', 'bean' => 'block_content'];
         // the regions in reading order, others between the content and the footer
         $order = array_flip( ['header', 'top', 'ds_header', 'left', 'first', 'sidebar_first', 'ds_content', 'content', 'middle', 'main',
             'right', 'second', 'sidebar_second', 'third', 'fourth', 'footer', 'bottom', 'ds_footer'] );
@@ -1056,7 +1057,7 @@ class V7 extends Reader
         $layouts = [];
 
         // the full view mode is used for the pages if it has its own layout
-        $rows = $this->db->table( 'ds_layout_settings' )->whereIn( 'entity_type', array_keys( $entityTypes ) )
+        $rows = $this->db->table( 'ds_layout_settings' )->whereIn( 'entity_type', array_keys( self::ENTITY_TYPES ) )
             ->whereIn( 'view_mode', ['default', 'full'] )->orderBy( 'view_mode' )->get();
 
         foreach( $rows as $row )
@@ -1064,7 +1065,7 @@ class V7 extends Reader
             $regions = array_map( fn( $names ) => array_map( strval( ... ), array_values( (array) $names ) ), (array) ( Database::unserializeArray( $row->settings )['regions'] ?? [] ) );
             uksort( $regions, fn( $a, $b ) => $rank( (string) $a ) <=> $rank( (string) $b ) );
 
-            $layouts[$entityTypes[(string) $row->entity_type]][(string) $row->bundle] = ['mode' => (string) $row->view_mode, 'regions' => $regions];
+            $layouts[self::ENTITY_TYPES[(string) $row->entity_type]][(string) $row->bundle] = ['mode' => (string) $row->view_mode, 'regions' => $regions];
         }
 
         return $layouts;
@@ -1113,11 +1114,7 @@ class V7 extends Reader
         }
 
         $groups = [];
-        $types = match( $entity ) {
-            'node' => ['node'],
-            'block_content' => ['bean'],
-            default => ['paragraphs_item', 'field_collection_item'],
-        };
+        $types = array_keys( self::ENTITY_TYPES, $entity, true );
         $rows = $this->db->table( 'field_group' )->whereIn( 'entity_type', $types )
             ->where( 'bundle', $bundle )->where( 'mode', $mode )->get();
 
@@ -1352,7 +1349,7 @@ class V7 extends Reader
 
         $nodes = $translations = $langs = $sources = [];
         $default = $this->d7->langcode();
-        $tnid = $this->db->getSchemaBuilder()->hasColumn( 'node', 'tnid' );
+        $tnid = $this->d7->column( 'node', 'tnid' );
         $rows = $this->db->table( 'node' )->orderBy( 'nid' )->select( array_merge( ['nid', 'language'], $tnid ? ['tnid'] : [] ) )->cursor();
 
         // source nodes first, so translation nodes with the same language as their source node are skipped
@@ -1360,7 +1357,7 @@ class V7 extends Reader
         {
             $nid = (int) $row->nid;
             $source = (int) ( $row->tnid ?? 0 );
-            $langcode = in_array( (string) $row->language, ['', 'und'], true ) ? $default : (string) $row->language;
+            $langcode = $this->neutral( (string) $row->language ) ? $default : (string) $row->language;
 
             if( $source && $source !== $nid ) {
                 $translations[$nid] = [$source, $langcode];
@@ -1585,7 +1582,7 @@ class V7 extends Reader
             {
                 $langcode = (string) $translation->language;
 
-                if( in_array( $langcode, ['', 'und', $node['langcode']], true ) ) {
+                if( $this->neutral( $langcode, $node['langcode'] ) ) {
                     continue;
                 }
 
@@ -1652,6 +1649,9 @@ class V7 extends Reader
         if( !$this->d7->exists( 'panelizer_entity' ) || !$this->d7->exists( 'panels_pane' ) ) {
             return Collection::make();
         }
+
+        // the sections of the panes of the node fields require the view displays of the configuration
+        $this->configs();
 
         $map = $this->map();
         $rows = Database::chunked( $revision ? $ids : $this->ids( $ids ), fn( $chunk ) => $this->db->table( 'panelizer_entity as p' )
@@ -1815,6 +1815,18 @@ class V7 extends Reader
 
 
     /**
+     * Tests if the language code is the one of values without language or one of the given language codes.
+     *
+     * @param string $langcode Drupal 7 language code
+     * @param string ...$others Other language codes which match too
+     */
+    protected function neutral( string $langcode, string ...$others ): bool
+    {
+        return in_array( $langcode, [...self::NEUTRAL, ...$others], true );
+    }
+
+
+    /**
      * Returns the language code of a field value.
      *
      * Values of nodes in translation sets of the Content Translation module without language belong to the node language.
@@ -1823,7 +1835,7 @@ class V7 extends Reader
      */
     protected function rowLang( array $node, string $langcode ): string
     {
-        return $node['set'] && in_array( $langcode, ['', 'und'], true ) ? $node['langcode'] : ( $langcode ?: 'und' );
+        return $node['set'] && $this->neutral( $langcode ) ? $node['langcode'] : ( $langcode ?: 'und' );
     }
 
 
@@ -1835,7 +1847,7 @@ class V7 extends Reader
      */
     protected function titleLang( array $node, string $langcode ): string
     {
-        return in_array( $langcode, ['', 'und'], true ) ? $node['langcode'] : $langcode;
+        return $this->neutral( $langcode ) ? $node['langcode'] : $langcode;
     }
 
 
@@ -1976,7 +1988,7 @@ class V7 extends Reader
 
         foreach( $sets as $rows )
         {
-            if( !( $default = $rows->first( fn( $row ) => in_array( (string) $row->language, ['', 'und', $this->d7->langcode()], true ) ) ) ) {
+            if( !( $default = $rows->first( fn( $row ) => $this->neutral( (string) $row->language, $this->d7->langcode() ) ) ) ) {
                 continue;
             }
 
@@ -2079,14 +2091,15 @@ class V7 extends Reader
         return (string) preg_replace_callback( '/\[\[(\{.+?\})\]\]/s', function( $m ) {
             $data = json_decode( $m[1], true );
 
-            if( !is_array( $data ) || !( $file = $this->file( (int) ( $data['fid'] ?? 0 ) ) ) ) {
+            if( !is_array( $data ) || !( $file = $this->file( (int) ( $data['fid'] ?? 0 ) ) ) )
+            {
+                $this->warnOnce( 'media:tag', '  Removed file tags of the Media module with invalid data or missing files from the content' );
                 return '';
             }
 
             $uri = (string) $file->uri;
-            $url = str_starts_with( $uri, 'private://' )
-                ? '/system/files/' . substr( $uri, 10 )
-                : '/' . trim( (string) ( $this->d7->variable( 'file_public_path' ) ?? 'sites/default/files' ), '/' ) . '/' . preg_replace( '/^public:\/\//', '', $uri );
+            $url = Files::privatePath( $uri )
+                ?? '/' . trim( (string) ( $this->d7->variable( 'file_public_path' ) ?? 'sites/default/files' ), '/' ) . '/' . preg_replace( '/^public:\/\//', '', $uri );
             $attrs = (array) ( $data['attributes'] ?? [] );
             $fields = (array) ( $data['fields'] ?? [] );
             // texts of the tag, overridden in the editor or of the file entity
@@ -2142,14 +2155,14 @@ class V7 extends Reader
                 return $m[0];
             }
 
-            if( !preg_match( '#^https?://(?:[\w-]+\.)*(?:youtube\.com|youtu\.be|vimeo\.com)/#i', $url ) ) {
+            if( ( $player = BaseEmbeds::player( $url ) ) === '' ) {
                 return '<a href="' . e( $url ) . '">' . e( $url ) . '</a>';
             }
 
             preg_match_all( '/\b(width|height):\s*(\d+%?)/i', $m[2], $sizes, PREG_SET_ORDER );
             $attrs = implode( '', array_map( fn( $size ) => ' ' . strtolower( $size[1] ) . '="' . $size[2] . '"', $sizes ) );
 
-            return '<iframe src="' . e( $url ) . '"' . $attrs . '></iframe>';
+            return '<iframe src="' . e( $player ) . '"' . $attrs . '></iframe>';
         }, $text );
     }
 
@@ -2333,5 +2346,20 @@ class V7 extends Reader
         return $this->vocabularies ??= $this->d7->exists( 'taxonomy_vocabulary' )
             ? $this->db->table( 'taxonomy_vocabulary' )->pluck( 'machine_name', 'vid' )->map( strval( ... ) )->all()
             : [];
+    }
+
+
+    /**
+     * Shows the warning only once.
+     *
+     * @param string $key Key of the warning, warnings with the same key are only shown once
+     * @param string $message Warning message
+     */
+    protected function warnOnce( string $key, string $message ): void
+    {
+        if( !isset( $this->warned[$key] ) ) {
+            $this->warned[$key] = true;
+            ( $this->warn )( $message );
+        }
     }
 }

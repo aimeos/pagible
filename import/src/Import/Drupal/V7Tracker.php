@@ -45,11 +45,10 @@ class V7Tracker extends Tracker
      * Returns no node IDs because Drupal 7 doesn't store when menu links or terms were changed.
      *
      * @param int $since Unix timestamp of the --since option, unused
-     * @param array<int, int> $nids IDs of all imported nodes, unused
      * @param array<string, array{0: string, 1: string, 2: string}> $fields Unused because Drupal 7 stores media in the nodes
      * @return array<int, int> Empty list
      */
-    public function nodes( int $since, array $nids, array $fields ): array
+    public function nodes( int $since, array $fields ): array
     {
         return [];
     }

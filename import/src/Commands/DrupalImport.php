@@ -13,12 +13,14 @@ use Aimeos\Cms\Concerns\Drupal\Changes;
 use Aimeos\Cms\Concerns\Drupal\Drafts;
 use Aimeos\Cms\Concerns\Drupal\Front;
 use Aimeos\Cms\Concerns\Drupal\Menu;
+use Aimeos\Cms\Concerns\Drupal\Prune;
 use Aimeos\Cms\Concerns\Drupal\Redirects;
 use Aimeos\Cms\Concerns\Drupal\Terms;
 use Aimeos\Cms\Concerns\Drupal\Reports;
 use Aimeos\Cms\Access as CmsAccess;
 use Aimeos\Cms\Import\Drupal;
 use Aimeos\Cms\Import\Elements;
+use Aimeos\Cms\Import\SharedElements;
 use Aimeos\Cms\DB as CmsDB;
 use Illuminate\Database\Connection;
 use Aimeos\Cms\Import\Pages;
@@ -38,6 +40,7 @@ class DrupalImport extends Commands
     use Drafts;
     use Front;
     use Menu;
+    use Prune;
     use Redirects;
     use Terms;
     use Reports;
@@ -121,25 +124,29 @@ class DrupalImport extends Commands
     protected array $order = [];
     /** Machine name of the imported Domain Access domain or empty string for all nodes */
     protected string $drupalDomain = '';
+    /** @var array<int, string> Vocabularies from the --terms option whose terms are imported as pages */
+    protected array $vocabularies = [];
 
 
     /**
      * Execute command
+     *
+     * @return int Exit code of the command, Command::FAILURE if the options are invalid or anything failed
      */
-    public function handle(): void
+    public function handle(): int
     {
         if( !$this->init( 'Drupal' ) ) {
-            return;
+            return self::FAILURE;
         }
 
         $this->reset();
 
         if( !$this->sinceOption() || ( $roles = $this->roleOption() ) === null ) {
-            return;
+            return self::FAILURE;
         }
 
         $this->access = new Drupal\Access( $this->reader, $this->data, app( CmsAccess::class ), $roles,
-            fn( int $nid ) => $this->nextNodes( $nid, CmsDB::IN_SIZE * 4 ),
+            fn( int $nid ) => $this->nextNodes( $nid, static::PREFETCH_SIZE ),
             fn( object $node ) => $this->restricted[$node->nid] = $this->urls->slug( $node, true ),
             fn( string $msg ) => $this->warn( $msg ),
             fn( string $key, string $msg ) => $this->warnOnce( $key, $msg )
@@ -147,20 +154,18 @@ class DrupalImport extends Commands
 
         if( !$this->data->hasTable( 'node_field_data' ) ) {
             $this->error( 'Tables "node_field_data" or "node" and "field_config_instance" not found, only Drupal 7 and newer are supported.' );
-            return;
+            return self::FAILURE;
         }
 
-        $this->drupalDomain = $this->stringOption( 'drupal-domain' );
-
         if( !$this->domainAccess() ) {
-            return;
+            return self::FAILURE;
         }
 
         $nodes = $this->reader->nodes( array_map( 'trim', explode( ',', $this->stringOption( 'types' ) ) ), (bool) $this->option( 'unpublished' ), $this->drupalDomain );
 
         if( $nodes->isEmpty() ) {
             $this->warn( 'No Drupal nodes found.' );
-            return;
+            return self::SUCCESS;
         }
 
         $this->info( "Found {$nodes->count()} Drupal nodes." );
@@ -176,11 +181,13 @@ class DrupalImport extends Commands
 
         if( $this->option( 'dry-run' ) ) {
             $this->printDryRun( $nodes );
-            return;
+            return self::SUCCESS;
         }
 
         // the root page of the domain if the nodes of a Domain Access domain are imported
         $this->importNodes( $this->getOrCreateRoot( $this->drupalDomain !== '' ? $this->domain : null ) );
+
+        return $this->summary();
     }
 
 
@@ -189,12 +196,11 @@ class DrupalImport extends Commands
      */
     protected function reset(): void
     {
-        $this->warned = $this->saved = $this->dates = $this->linkPaths = $this->langcodes = $this->sequence = $this->order = [];
+        $this->saved = $this->dates = $this->linkPaths = $this->langcodes = $this->sequence = $this->order = [];
         $this->drafts = $this->pendingVariants = $this->since = $this->front = null;
         $this->restricted = $this->changed = $this->placeholders = $this->failedNodes = $this->parentVariants = $this->translationRows = [];
         $this->accessValues = null;
         $this->linkTally = new Tally();
-        $this->termTally = new Tally();
         $this->warnings = $this->processed = 0;
     }
 
@@ -414,8 +420,10 @@ class DrupalImport extends Commands
             return false;
         }
 
+        $this->drupalDomain = $this->stringOption( 'drupal-domain' );
+        $this->vocabularies = array_values( array_filter( array_map( 'trim', explode( ',', $this->stringOption( 'terms' ) ) ) ) );
         $this->reader = $this->createReader( DB::connection( $this->connection ) );
-        $this->data = new Drupal\Data( $this->reader, $this->stringOption( 'drupal-domain' ) );
+        $this->data = new Drupal\Data( $this->reader, $this->drupalDomain );
         $this->tracker = $this->reader->tracker( $this->menuName(), fn( \stdClass $link ) => $this->urls->linkNid( $link ) );
 
         return true;
@@ -442,19 +450,18 @@ class DrupalImport extends Commands
     {
         $warn = fn( string $msg ) => $this->warn( $msg );
         $warnOnce = fn( string $key, string $msg ) => $this->warnOnce( $key, $msg );
-        $vocabularies = array_values( array_filter( array_map( 'trim', explode( ',', $this->stringOption( 'terms' ) ) ) ) );
 
         $this->urls = new Drupal\Urls( $this->reader, $this->data, $this->languages, $this->lang, $this->nodes, $this->translated,
-            fn() => $this->front, $this->drupalDomain, $vocabularies );
+            fn() => $this->front, $this->drupalDomain, $this->vocabularies );
         $site = new Drupal\Site( $this->fileBase, $this->domain, $this->languages->domains() );
         $this->files = new Drupal\Files( $this->data, $site, fn( string $mime, string $name, string $path, bool $rename = true ) => $this->createFile( $mime, $name, $path, $rename ),
-            $warn, fn( array $paths ) => $this->prefetchFiles( $paths ) );
+            $warnOnce, fn( array $paths ) => $this->prefetchFiles( $paths ) );
         $this->meta = new Drupal\Meta( $this->data, $this->files );
         $this->content = Drupal\Content::create( $this->data, $this->languages, $this->urls, $site, $this->files, $this->meta,
             fn( int $id, string $langcode, bool $fallback, int $depth ) => $this->blocks->render( $id, $langcode, $fallback, $depth ), $warn, $warnOnce );
         $placements = new Drupal\Placements( $this->data, $this->urls, $this->menuName(), $this->drupalDomain, $warn, $warnOnce );
         $this->blocks = new Drupal\Blocks( $this->reader, $this->data, $this->content, $this->languages, $placements,
-            fn( string $name, string $lang, array $element, array $fileIds ) => Elements::shared( $name, $lang, $element, $fileIds, $this->editor ), $warnOnce );
+            fn( string $name, string $lang, array $element, array $fileIds ) => SharedElements::save( $name, $lang, $element, $fileIds, $this->editor ), $warnOnce );
         $this->redirects = new Drupal\Redirects( $this->reader, $this->data, $this->languages, $this->urls, $this->nodes );
         $this->tree = new Drupal\Tree( $this->reader, $this->data, $this->urls, $this->nodes, $this->reader->menu( $this->menuName() ) );
     }
@@ -586,8 +593,6 @@ class DrupalImport extends Commands
         $this->importRedirects( $root );
         $this->writeDates();
         $this->reportStale();
-
-        $this->summary();
     }
 
 
@@ -672,11 +677,26 @@ class DrupalImport extends Commands
             $data['name'] = $name;
         }
 
-        if( $title = $this->meta->tags( $node, $langcode )['title'] ?? '' ) {
-            $data['title'] = Str::limit( $title, 254, '…', true );
+        if( $title = $this->metaTitle( $node, $langcode ) ) {
+            $data['title'] = $title;
         }
 
         return $data;
+    }
+
+
+    /**
+     * Returns the Metatag title of the node shortened to the maximum length of page titles.
+     *
+     * @param object{nid: int, type: string, title: string} $node
+     * @param string $langcode Drupal language code
+     * @return string Meta title or empty string if there's none
+     */
+    protected function metaTitle( object $node, string $langcode ): string
+    {
+        $title = (string) ( $this->meta->tags( $node, $langcode )['title'] ?? '' );
+
+        return $title !== '' ? Str::limit( $title, Elements::TITLE_SIZE, '…', true ) : '';
     }
 
 
@@ -751,32 +771,21 @@ class DrupalImport extends Commands
 
 
     /**
-     * Writes the dates of the touched page variants with one query per column and chunk of variants.
+     * Writes the dates of the touched page variants with one query per chunk of variants with the same changed columns.
      */
     protected function writeDates(): void
     {
-        $db = CmsDB::connection();
-        $grammar = $db->getQueryGrammar();
-        $table = $grammar->wrapTable( ( new PageVariant )->getTable() );
+        $groups = [];
 
-        foreach( array_chunk( $this->dates, CmsDB::IN_SIZE / 2, true ) as $chunk )
+        // rows updated together must contain the same columns
+        foreach( $this->dates as $id => $dates )
         {
-            foreach( ['created_at', 'updated_at'] as $column )
-            {
-                $values = array_filter( array_map( fn( $dates ) => $dates[$column] ?? null, $chunk ) );
+            ksort( $dates );
+            $groups[implode( ',', array_keys( $dates ) )][] = ['id' => (string) $id] + $dates;
+        }
 
-                if( !$values ) {
-                    continue;
-                }
-
-                $ids = array_map( strval( ... ), array_keys( $values ) );
-                $col = $grammar->wrap( $column );
-                $sql = "UPDATE {$table} SET {$col} = CASE " . $grammar->wrap( 'id' ) . str_repeat( ' WHEN ? THEN ?', count( $values ) )
-                    . " ELSE {$col} END WHERE " . $grammar->wrap( 'id' ) . ' IN (' . implode( ',', array_fill( 0, count( $ids ), '?' ) ) . ')';
-                $bindings = array_merge( ...array_map( fn( $id, $date ) => [$id, $date], $ids, array_values( $values ) ) );
-
-                $db->update( $sql, [...$bindings, ...$ids] );
-            }
+        foreach( $groups as $columns => $rows ) {
+            CmsDB::updateRows( ( new PageVariant )->getTable(), $rows, explode( ',', $columns ) );
         }
 
         $this->dates = [];

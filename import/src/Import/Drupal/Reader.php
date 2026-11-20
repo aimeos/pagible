@@ -162,6 +162,25 @@ abstract class Reader
 
 
     /**
+     * Streams the rows of the taxonomy_index table of the groups of term IDs, sticky and newest first.
+     *
+     * @param iterable<int, array<int, int>> $groups Lists of term IDs fetched together
+     * @param int|null $limit Maximum number of rows fetched per group or NULL for all
+     * @return \Generator<int, \stdClass> Rows with "tid" and "nid"
+     */
+    protected function indexRows( iterable $groups, ?int $limit ): \Generator
+    {
+        foreach( $groups as $tids )
+        {
+            foreach( $this->db->table( 'taxonomy_index' )->whereIn( 'tid', $tids )->orderByDesc( 'sticky' )->orderByDesc( 'created' )
+                ->orderBy( 'nid' )->when( $limit, fn( $query, $limit ) => $query->limit( $limit ) )->select( ['tid', 'nid'] )->cursor() as $row ) {
+                yield $row;
+            }
+        }
+    }
+
+
+    /**
      * Tests if a node access module restricts which nodes visitors can view.
      *
      * Without the node_access table or with the default grant for all nodes, every node is public.

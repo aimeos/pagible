@@ -9,8 +9,7 @@ namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Commands;
 use Aimeos\Cms\Import\Database;
-use Aimeos\Cms\Import\Elements;
-use Aimeos\Cms\Import\Files;
+use Aimeos\Cms\Import\SharedElements;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Typo3;
@@ -201,7 +200,8 @@ class T3Import extends Commands
     {
         $this->shared = $this->failedFiles = [];
         $this->langUids = $this->languages->imported( $this->lang );
-        $this->files = new Typo3Files( $this->reader->filesByIdentifier( ... ), $this->fileBase, $this->importFile( ... ),
+        $this->files = new Typo3Files( $this->reader->filesByIdentifier( ... ), $this->fileBase,
+            fn( string $mime, string $name, string $path ) => $this->importFile( $mime, $name, $path, str_starts_with( $path, 'http' ) ),
             fn( string $path ) => $this->createdFileUrls->get( $path ), $this->knownFile( ... ) );
         $this->urls = new Typo3Urls( $pagesById, $this->translated );
         $this->typo3 = new Typo3(
@@ -400,7 +400,7 @@ class T3Import extends Commands
 
         // the shared elements of the record are stored together or not at all
         $elementIds = CmsDB::connection()->transaction( fn() => array_map(
-            fn( $position, $element ) => Elements::shared( $this->sharedElementName( $record, $position ), $lang, $element, $result['fileIds'] ?? [], $this->editor ),
+            fn( $position, $element ) => SharedElements::save( $this->sharedElementName( $record, $position ), $lang, $element, $result['fileIds'] ?? [], $this->editor ),
             array_keys( $result['elements'] ), $result['elements']
         ) );
         $references = array_map( fn( $id ) => ['type' => 'reference', 'refid' => $id, 'group' => 'main'], $elementIds );
@@ -467,31 +467,15 @@ class T3Import extends Commands
 
 
     /**
-     * Creates a File record with a published version or returns the one created before by this import.
+     * Remembers the URL of the file created by importFile(), URLs of rolled back files are overwritten when the file is created again.
      *
-     * Unlike createFile(), existing files aren't looked up by path because downloaded files get a new one.
-     *
-     * @param bool $unknown TRUE if knownFile() has just returned no file for the path, so it isn't looked up again
+     * @param string $path Source URL or path of the file
+     * @param File $file Created file
      */
-    protected function importFile( string $mime, string $name, string $path, bool $unknown = false ): string
+    #[\Override]
+    protected function importedFile( string $path, File $file ): void
     {
-        if( !$unknown && ( $existing = $this->knownFile( $path ) ) ) {
-            return $existing;
-        }
-
-        // files used several times are only downloaded once if the download fails
-        $download = str_starts_with( $path, 'http' );
-        $file = $this->downloadOnce( $path, $download, fn() => CmsDB::connection()->transaction(
-            fn() => Files::create( $mime, $name, $path, $this->editor, $download, $download ? $this->downloaded( $path ) : null )
-        ) );
-
-        $id = $file->id ?? '';
-
-        // URLs of rolled back files are overwritten when the file is created again
-        $this->createdFiles->put( $path, $id );
         $this->createdFileUrls->put( $path, Typo3Files::stored( $file ) );
-
-        return $id;
     }
 
 

@@ -55,7 +55,7 @@ trait Redirects
                     $label = 'redirect ' . ( $language ? $language['domain'] : '' ) . "/{$path}";
                     $page = $pages[(string) $path] ?? null;
 
-                    $result = $this->transaction( $label, fn() => $this->importRedirect( (string) $path, $to, $root, '', 2, $language, $page ) );
+                    $result = $this->transaction( $label, fn() => $this->importRedirect( (string) $path, $to, $root, $page, '', Pages::STATUS_HIDDEN, $language ) );
                     $tally->add( $result['status'] ?? null );
                 }
             }
@@ -68,23 +68,36 @@ trait Redirects
     /**
      * Creates the redirect page or updates the one imported by a previous run.
      *
+     * Redirect pages saved before by this import are updated too because later redirects for the same
+     * URL path overwrite earlier ones.
+     *
      * @param string $path URL path without leading slash
      * @param string $to Redirect target
      * @param PageView $parent Parent page
+     * @param PageView|null $page Page using the URL path or NULL if there's none
      * @param string $name Page name or empty string to use the path
-     * @param int $status 1 to show the page in the navigation, 2 to hide it
+     * @param int $status Page status, one of the Pages::STATUS_* constants
      * @param array{lang: string, domain: string}|null $language Language with its own domain or NULL for the imported pages
-     * @param PageView|false|null $page Page using the URL path, NULL if there's none or FALSE to look it up in the domain of the imported pages
      * @return array{page: PageView, status: Status}|null Page and its status, NULL if the URL is used by another page
      */
-    protected function importRedirect( string $path, string $to, PageView $parent, string $name = '', int $status = Pages::STATUS_HIDDEN, ?array $language = null, PageView|false|null $page = false ): ?array
+    protected function importRedirect( string $path, string $to, PageView $parent, ?PageView $page, string $name = '', int $status = Pages::STATUS_HIDDEN, ?array $language = null ): ?array
     {
         $data = array_replace( ['to' => $to] + $this->pageData( $name !== '' ? $name : $path, $path, $status ), $language ?? [] );
 
-        // later redirects for the same URL path overwrite earlier ones
-        if( !( $result = $this->saveLink( $path, $data, $parent, $page, true, fn( PageView $page ) => $this->markSaved( $page->variant_id ) ) ) ) {
-            $this->warn( '  Skipped redirect: ' . ( $language['domain'] ?? '' ) . "/{$path} (URL is used by another page)" );
+        if( $page )
+        {
+            if( !$this->linkOwned( $page, $data ) )
+            {
+                $this->warn( '  Skipped redirect: ' . ( $language['domain'] ?? '' ) . "/{$path} (URL is used by another page)" );
+                return null;
+            }
+
+            // the page isn't stale even if updating it fails
+            $this->markSaved( $page->variant_id );
         }
+
+        $result = $this->storeLink( $data, $parent, $page );
+        $this->markSaved( $result['page']->variant_id );
 
         return $result;
     }

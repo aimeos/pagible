@@ -21,6 +21,8 @@ class Data
 {
     /** Maximum number of cached entity and file records by table */
     protected const CACHE_SIZE = 10000;
+    /** Maximum number of nodes or drafts whose field values are fetched together */
+    protected const BATCH_SIZE = 500;
 
 
 
@@ -35,8 +37,6 @@ class Data
     protected ?array $config = null;
     /** @var array<string, array<int, string>> Field names by entity type and bundle */
     protected array $fields = [];
-    /** @var array<string, bool> Existence of the Drupal tables and columns */
-    protected array $tables = [];
     /** @var array<string, array<int|string, Collection<int, \stdClass>>> Field rows by table and entity or revision ID */
     protected array $fieldRows = [];
     /** @var array<int|string, \stdClass|null> file_managed records by fid */
@@ -69,6 +69,8 @@ class Data
     protected array $order = [];
     /** @var array<int, int> Node IDs in import order */
     protected array $sequence = [];
+    /** TRUE if the import order has been set by sequence() */
+    protected bool $sequenced = false;
     /** @var array<int|string, string> Content types of the imported nodes by node ID */
     protected array $bundles = [];
     /** @var (\Closure(int): bool)|null Returns TRUE for the node IDs which aren't fetched in batches */
@@ -159,6 +161,7 @@ class Data
     {
         $this->sequence = array_values( $sequence );
         $this->order = array_flip( $this->sequence );
+        $this->sequenced = true;
         $this->keptDrafts = [];
         $this->bundles = $bundles;
         $this->skip = $skip;
@@ -171,9 +174,14 @@ class Data
      * Must be called after sequence() because the drafts are fetched in the import order of their nodes.
      *
      * @param array<int, array<int, int>> $vids Revision IDs of the drafts by node ID
+     * @throws \LogicException If sequence() hasn't been called before
      */
     public function drafts( array $vids ): void
     {
+        if( !$this->sequenced ) {
+            throw new \LogicException( 'The import order of the nodes must be set by sequence() before the drafts' );
+        }
+
         $this->draftNodes = [];
 
         foreach( $this->sequence as $nid )
@@ -710,27 +718,11 @@ class Data
      */
     protected function nodeBatch( string $table, string $field, int $nid ): array
     {
-        $ids = [$nid];
-        $pos = $this->order[$nid] ?? null;
-
-        if( $pos === null || isset( $this->rendered[$nid] ) ) {
-            return $ids;
+        if( ( $pos = $this->order[$nid] ?? null ) === null || isset( $this->rendered[$nid] ) ) {
+            return [$nid];
         }
 
-        $lacks = $this->lacksField( $nid, $field );
-
-        for( $idx = $pos + 1, $len = count( $this->sequence ); $idx < $len && count( $ids ) < 500; $idx++ )
-        {
-            $id = $this->sequence[$idx];
-
-            if( !isset( $this->rendered[$id] ) && !isset( $this->fieldRows[$table][$id] ) && ( $this->skip === null || !( $this->skip )( $id ) )
-                && $this->lacksField( $id, $field ) === $lacks
-            ) {
-                $ids[] = $id;
-            }
-        }
-
-        return $ids;
+        return $this->lookAhead( $this->sequence, $pos, $table, $field, $nid, fn( int $id ) => $id );
     }
 
 
@@ -747,23 +739,42 @@ class Data
      */
     protected function draftBatch( string $table, string $field, int $vid ): array
     {
-        $ids = [$vid];
-
         if( ( $pos = $this->draftOrder[$vid] ?? null ) === null ) {
-            return $ids;
+            return [$vid];
         }
 
-        $lacks = $this->lacksField( $this->draftNodes[$vid], $field );
+        return $this->lookAhead( $this->draftSequence, $pos, $table, $field, $vid, fn( int $id ) => $this->draftNodes[$id] );
+    }
 
-        for( $idx = $pos + 1, $len = count( $this->draftSequence ); $idx < $len && count( $ids ) < 500; $idx++ )
+
+    /**
+     * Returns the ID and the IDs after it in the order whose field values are fetched together.
+     *
+     * The IDs of nodes which are rendered, fetched yet or skipped are left out like the ones whose
+     * content type has the field if the content type of the node of the given ID doesn't have it and vice versa.
+     *
+     * @param array<int, int> $sequence Node or revision IDs in import order
+     * @param int $pos Position of the ID in the import order
+     * @param string $table Field table, e.g. "node__body"
+     * @param string $field Field name, e.g. "body"
+     * @param int $id Node or revision ID whose field values are required
+     * @param \Closure(int): int $nid Returns the node ID of a node or revision ID
+     * @return array<int, int> Node or revision IDs
+     */
+    protected function lookAhead( array $sequence, int $pos, string $table, string $field, int $id, \Closure $nid ): array
+    {
+        $ids = [$id];
+        $lacks = $this->lacksField( $nid( $id ), $field );
+
+        for( $idx = $pos + 1, $len = count( $sequence ); $idx < $len && count( $ids ) < static::BATCH_SIZE; $idx++ )
         {
-            $id = $this->draftSequence[$idx];
-            $nid = $this->draftNodes[$id];
+            $next = $sequence[$idx];
+            $node = $nid( $next );
 
-            if( !isset( $this->rendered[$nid] ) && !isset( $this->fieldRows[$table][$id] ) && ( $this->skip === null || !( $this->skip )( $nid ) )
-                && $this->lacksField( $nid, $field ) === $lacks
+            if( !isset( $this->rendered[$node] ) && !isset( $this->fieldRows[$table][$next] ) && ( $this->skip === null || !( $this->skip )( $node ) )
+                && $this->lacksField( $node, $field ) === $lacks
             ) {
-                $ids[] = $id;
+                $ids[] = $next;
             }
         }
 
@@ -971,7 +982,7 @@ class Data
      */
     public function hasTable( string $table ): bool
     {
-        return $this->tables[$table] ??= $this->reader->has( $table );
+        return $this->reader->has( $table );
     }
 
 
@@ -980,6 +991,6 @@ class Data
      */
     public function hasColumn( string $table, string $column ): bool
     {
-        return $this->tables["{$table}.{$column}"] ??= $this->hasTable( $table ) && $this->reader->hasColumn( $table, $column );
+        return $this->hasTable( $table ) && $this->reader->hasColumn( $table, $column );
     }
 }

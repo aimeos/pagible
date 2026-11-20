@@ -12,7 +12,9 @@ use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
+use Aimeos\Cms\PageStatus;
 use Aimeos\Cms\Scout;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 
 /**
@@ -21,11 +23,11 @@ use Aimeos\Cms\Scout;
 class Pages
 {
     /** Status of disabled pages */
-    public const STATUS_DISABLED = 0;
+    public const STATUS_DISABLED = PageStatus::Disabled->value;
     /** Status of published pages */
-    public const STATUS_PUBLISHED = 1;
+    public const STATUS_PUBLISHED = PageStatus::Enabled->value;
     /** Status of published pages hidden in the navigation */
-    public const STATUS_HIDDEN = 2;
+    public const STATUS_HIDDEN = PageStatus::Hidden->value;
     /** Tag of the imported pages */
     public const TAG_PAGE = 'page';
     /** Tag of the root pages */
@@ -213,6 +215,84 @@ class Pages
         // publishing saves the latest version ID together with the published values
         $page->latest_id = $version->id;
         $page->publish( $version );
+    }
+
+
+    /**
+     * Publishes a copy of the published version of the page which disables it.
+     *
+     * The schedule of the version is removed, so the page isn't enabled again by the "cms:publish" command.
+     *
+     * @param PageView $page Page in the language of the version
+     * @param Version $version Published version of the page
+     * @param array<string> $fileIds IDs of the files referenced by the version
+     * @param array<string> $elementIds IDs of the shared elements referenced by the version
+     * @param string $editor Editor name for the new version
+     */
+    public static function disable( PageView $page, Version $version, array $fileIds, array $elementIds, string $editor ) : void
+    {
+        $data = array_replace( array_diff_key( (array) $version->data, ['scheduled' => null] ), ['status' => self::STATUS_DISABLED] );
+        $aux = (array) json_decode( (string) json_encode( $version->aux ), true );
+
+        self::publish( $page, $data, $aux, $fileIds, $elementIds, (string) $page->lang, $editor );
+    }
+
+
+    /**
+     * Returns the latest published versions of the page variants with the IDs of their files and shared elements at once.
+     *
+     * The versions are looked up by their IDs first, so only the latest one of each variant is fetched with its data.
+     *
+     * @param array<int, string> $variantIds IDs of the page variants
+     * @return array<string, array{version: Version, files: array<int, string>, elements: array<int, string>}> Versions and references by variant ID
+     */
+    public static function publishedVersions( array $variantIds ) : array
+    {
+        if( ( $variantIds = array_values( array_unique( $variantIds ) ) ) === [] ) {
+            return [];
+        }
+
+        // the same order as PageView::versions(), the first version of each variant is its latest published one
+        $ids = Version::where( 'versionable_type', ( new PageView() )->getMorphClass() )->whereIn( 'versionable_id', $variantIds )
+            ->where( 'published', true )->orderByDesc( 'created_at' )->orderByDesc( 'id' )->toBase()
+            ->get( ['id', 'versionable_id'] )->unique( 'versionable_id' )->pluck( 'id' )->map( strval( ... ) )->values()->all();
+
+        if( $ids === [] ) {
+            return [];
+        }
+
+        $files = self::versionRefs( ( new Version() )->files(), $ids );
+        $elements = self::versionRefs( ( new Version() )->elements(), $ids );
+        $list = [];
+
+        foreach( Version::whereIn( 'id', $ids )->get() as $version )
+        {
+            $id = (string) $version->id;
+            $list[(string) $version->versionable_id] = ['version' => $version, 'files' => $files[$id] ?? [], 'elements' => $elements[$id] ?? []];
+        }
+
+        return $list;
+    }
+
+
+    /**
+     * Returns the IDs of the files or shared elements referenced by the versions, also of trashed ones like allRelatedIds().
+     *
+     * @param BelongsToMany<covariant \Illuminate\Database\Eloquent\Model, Version> $relation Files or elements relation of a version
+     * @param array<int, string> $ids Version IDs
+     * @return array<string, array<int, string>> Referenced IDs by version ID
+     */
+    protected static function versionRefs( BelongsToMany $relation, array $ids ) : array
+    {
+        $foreign = $relation->getForeignPivotKeyName();
+        $related = $relation->getRelatedPivotKeyName();
+        $refs = [];
+
+        foreach( $relation->newPivotStatement()->whereIn( $foreign, $ids )->get( [$foreign, $related] ) as $row ) {
+            $refs[(string) $row->{$foreign}][] = (string) $row->{$related};
+        }
+
+        return $refs;
     }
 
 

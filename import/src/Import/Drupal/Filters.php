@@ -146,7 +146,7 @@ class Filters
                 $url = substr( $url, 0, -1 );
             }
 
-            // e() escapes "&" which must stay escaped in the href and link text
+            // the text is already escaped, so "&amp;" in the URL stays escaped in the href and link text
             $href = match( true ) {
                 !empty( $m[1] ) && strtolower( $m[1] ) === 'www.' => 'http://' . $url,
                 !empty( $m[1] ) => $url,

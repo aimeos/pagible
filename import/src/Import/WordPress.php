@@ -16,6 +16,8 @@ use Aimeos\Cms\Utils;
  * Gutenberg block comments are used as type hints, classic content is split at headings,
  * preformatted texts, notices, images and empty lines. Texts which can be converted to
  * Markdown become text elements, all others are kept as HTML.
+ *
+ * @phpstan-import-type ContentElements from Elements
  */
 class WordPress extends Html
 {
@@ -27,10 +29,11 @@ class WordPress extends Html
      *
      * @param \Closure(string): ?string $image Imports the image of the HTML tag and returns the file ID
      * @param \Closure(string): ?string $file Imports the audio or video file of the URL and returns the file ID
+     * @param (\Closure(string): void)|null $warn Shows a warning, e.g. if processing the HTML failed, ignored if NULL
      */
-    public function __construct( \Closure $image, protected \Closure $file )
+    public function __construct( \Closure $image, protected \Closure $file, ?\Closure $warn = null )
     {
-        parent::__construct( $image );
+        parent::__construct( $image, $warn );
     }
 
 
@@ -41,7 +44,7 @@ class WordPress extends Html
      */
     public function elements( string $html ): array
     {
-        $html = (string) preg_replace( '/<!--more-->/', '', $html );
+        $html = str_replace( '<!--more-->', '', $html );
         $html = str_replace( "\r\n", "\n", $html );
 
         $elements = [];
@@ -134,7 +137,7 @@ class WordPress extends Html
      * If the HTML can be fully converted to Markdown, the "text" element is used,
      * otherwise the "html" element.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     #[\Override]
     public function text( string $block ): ?array
@@ -148,10 +151,10 @@ class WordPress extends Html
         $markdown = Markdown::fromHtml( $block );
 
         if( !empty( $markdown ) && !$this->hasUnconvertibleHtml( $block ) ) {
-            return ['elements' => [Elements::create( 'text', ['text' => $markdown] )]];
+            return Elements::content( Elements::create( 'text', ['text' => $markdown] ) );
         }
 
-        return ['elements' => [Elements::create( 'html', ['text' => Utils::html( $block )] )]];
+        return Elements::content( Elements::create( 'html', ['text' => Utils::html( $block )] ) );
     }
 
 
@@ -160,22 +163,11 @@ class WordPress extends Html
      */
     protected function cleanCodeBlock( string $code ): string
     {
-        $code = (string) preg_replace( '/<\/?code>/i', '', $code );
+        $code = $this->result( preg_replace( '/<\/?code>/i', '', $code ), $code );
         $code = strip_tags( $code );
         $code = html_entity_decode( $code, ENT_QUOTES, 'UTF-8' );
 
         return trim( $code );
-    }
-
-
-    /**
-     * Returns a single-file element (audio, image or video) with its file ID.
-     *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
-     */
-    protected function fileElement( string $type, string $fileId ): array
-    {
-        return ['elements' => [Elements::create( $type, ['file' => Elements::file( $fileId )] )], 'fileIds' => [$fileId]];
     }
 
 
@@ -204,7 +196,7 @@ class WordPress extends Html
      */
     protected function imageText( ?string $fileId, string $html, ?string $position = null ): array
     {
-        $html = (string) preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $html );
+        $html = $this->result( preg_replace( '/<(figure|div|figcaption)[^>]*>|<\/(figure|div|figcaption)>/i', '', $html ), $html );
         $text = Markdown::fromHtml( $html );
 
         if( $fileId && !empty( $text ) )
@@ -218,10 +210,10 @@ class WordPress extends Html
         }
 
         if( $fileId ) {
-            return $this->fileElement( 'image', $fileId );
+            return Elements::fileContent( 'image', $fileId );
         }
 
-        return Elements::content( ...( !empty( $text ) ? $this->text( $text ) : null )['elements'] ?? [] );
+        return ( !empty( $text ) ? $this->text( $text ) : null ) ?? Elements::content();
     }
 
 
@@ -276,7 +268,7 @@ class WordPress extends Html
             return null;
         }
 
-        return $this->fileElement( 'audio', $fileId );
+        return Elements::fileContent( 'audio', $fileId );
     }
 
 
@@ -356,7 +348,7 @@ class WordPress extends Html
     /**
      * Parses a <pre> tag into a code element, the language is taken from the "lang" attribute.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     #[\Override]
     protected function parseCodeBlock( string $block ): ?array
@@ -370,10 +362,10 @@ class WordPress extends Html
             $language = strtolower( $langMatch[1] );
         }
 
-        return ['elements' => [Elements::create( 'code', [
+        return Elements::content( Elements::create( 'code', [
             'language' => $language,
             'text' => $this->cleanCodeBlock( $m[1] ),
-        ] )]];
+        ] ) );
     }
 
 
@@ -433,7 +425,7 @@ class WordPress extends Html
         foreach( $columns[1] as $colContent )
         {
             // Unwrap the column div but keep the block comments so the inner block types survive
-            $colContent = (string) preg_replace( '/^<div[^>]*>(.*)<\/div>$/is', '$1', trim( $colContent ) );
+            $colContent = $this->result( preg_replace( '/^<div[^>]*>(.*)<\/div>$/is', '$1', $trimmed = trim( $colContent ) ), $trimmed );
 
             foreach( $this->splitGutenbergBlocks( $colContent ) as $inner )
             {
@@ -513,7 +505,7 @@ class WordPress extends Html
     /**
      * Parses a tip/note/caution div into a styled text element.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     protected function parseNoticeBlock( string $block ): ?array
     {
@@ -523,7 +515,7 @@ class WordPress extends Html
 
         $label = $m[1] === 'caution' ? 'Warning' : ucfirst( $m[1] );
 
-        return ['elements' => [Elements::create( 'text', ['text' => "**{$label}:** " . strip_tags( $m[2] )] )]];
+        return Elements::content( Elements::create( 'text', ['text' => "**{$label}:** " . strip_tags( $m[2] )] ) );
     }
 
 
@@ -551,14 +543,14 @@ class WordPress extends Html
             return null;
         }
 
-        return $this->fileElement( 'image', $fileId );
+        return Elements::fileContent( 'image', $fileId );
     }
 
 
     /**
      * Parses an HTML table into a table element.
      *
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     protected function parseTableBlock( string $block ): ?array
     {
@@ -599,11 +591,11 @@ class WordPress extends Html
             $title = strip_tags( $cap[1] );
         }
 
-        return ['elements' => [Elements::create( 'table', [
+        return Elements::content( Elements::create( 'table', [
             'title' => $title,
             'header' => $header,
             'table' => $rows,
-        ] )]];
+        ] ) );
     }
 
 
@@ -629,7 +621,7 @@ class WordPress extends Html
         }
 
         if( $url && ( $fileId = ( $this->file )( $url ) ) ) {
-            return $this->fileElement( 'video', $fileId );
+            return Elements::fileContent( 'video', $fileId );
         }
 
         return null;
@@ -786,6 +778,6 @@ class WordPress extends Html
      */
     protected function stripWpComments( string $html ): string
     {
-        return trim( (string) preg_replace( '/<!--\s*\/?wp:[^>]*-->/i', '', $html ) );
+        return trim( $this->result( preg_replace( '/<!--\s*\/?wp:[^>]*-->/i', '', $html ), $html ) );
     }
 }

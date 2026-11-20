@@ -337,7 +337,7 @@ class V7ImportTest extends ImportTestAbstract
     {
         Schema::connection( 'drupal' )->drop( 'field_config_instance' );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( 'only Drupal 7 and newer are supported', Artisan::output() );
         $this->assertSame( 0, PageView::count() );
     }
@@ -615,6 +615,19 @@ class V7ImportTest extends ImportTestAbstract
         $this->assertStringContainsString( '<iframe src=\\"https://www.youtube-nocookie.com/embed/abcdefgh\\" title=\\"Clip\\"', $content );
         $this->assertStringContainsString( '<iframe src=\\"https://player.vimeo.com/video/123\\"', $content );
         $this->assertSame( 0, File::where( 'path', 'like', '%youtube%' )->orWhere( 'path', 'like', '%vimeo%' )->count() );
+    }
+
+
+    public function testImportInvalidMediaTagsWarnOnce(): void
+    {
+        $db = DB::connection( 'drupal' );
+        $db->table( 'field_data_body' )->update( ['body_value' => '<p>Intro [[{"fid":"9","type":"media"}]] [[{"type":"media"}]] [[{invalid}]]</p>'] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+
+        // file tags without file or with invalid data are removed with one warning
+        $this->assertSame( 1, substr_count( Artisan::output(), 'Removed file tags of the Media module with invalid data or missing files' ) );
+        $this->assertStringNotContainsString( '[[', $this->content( PageView::where( 'title', 'About' )->firstOrFail() ) );
     }
 
 
@@ -1798,33 +1811,7 @@ class V7ImportTest extends ImportTestAbstract
 
     public function testImportPanelizer(): void
     {
-        $schema = Schema::connection( 'drupal' );
-        $schema->create( 'panelizer_entity', function( Blueprint $table ) {
-            $table->string( 'entity_type' );
-            $table->unsignedInteger( 'entity_id' );
-            $table->unsignedInteger( 'revision_id' );
-            $table->string( 'view_mode' );
-            $table->unsignedInteger( 'did' );
-        } );
-        $schema->create( 'panelizer_defaults', function( Blueprint $table ) {
-            $table->increments( 'pnid' );
-            $table->string( 'name' );
-            $table->string( 'entity_type' );
-            $table->string( 'panelizer_type' );
-            $table->string( 'view_mode' );
-            $table->unsignedInteger( 'did' );
-        } );
-        $schema->create( 'panels_pane', function( Blueprint $table ) {
-            $table->increments( 'pid' );
-            $table->unsignedInteger( 'did' );
-            $table->string( 'panel' );
-            $table->string( 'type' );
-            $table->string( 'subtype' );
-            $table->integer( 'shown' )->default( 1 );
-            $table->integer( 'position' )->default( 0 );
-            $table->binary( 'configuration' );
-        } );
-
+        $this->tables( 'panelizer_entity', 'panelizer_defaults', 'panels_pane' );
         $this->field( 'field_intro', 'text', ['value', 'format'], [], ['display' => ['default' => ['weight' => 5]]] );
 
         $db = DB::connection( 'drupal' );
@@ -1896,6 +1883,60 @@ class V7ImportTest extends ImportTestAbstract
     }
 
 
+    public function testImportPanelizerBlockPanes(): void
+    {
+        $schema = Schema::connection( 'drupal' );
+        $schema->create( 'bean', function( Blueprint $table ) {
+            $table->increments( 'bid' );
+            $table->unsignedInteger( 'vid' );
+            $table->string( 'delta' );
+            $table->string( 'label' );
+            $table->string( 'title' );
+            $table->string( 'type' );
+            $table->string( 'view_mode' )->default( 'default' );
+            $table->unsignedInteger( 'changed' )->default( 1700000000 );
+        } );
+        $this->tables( 'block_custom', 'panelizer_entity', 'panels_pane' );
+
+        $db = DB::connection( 'drupal' );
+        $db->table( 'block_custom' )->insert( ['bid' => 1, 'body' => '<p>Custom box</p>', 'info' => 'Box', 'format' => 'filtered_html'] );
+        $db->table( 'bean' )->insert( ['bid' => 1, 'vid' => 1, 'delta' => 'hours', 'label' => 'Hours', 'title' => '', 'type' => 'basic'] );
+        $this->field( 'field_hours', 'text_long', ['value', 'format'], [], ['display' => ['default' => ['label' => 'hidden']]], 'basic', 'bean' );
+        $db->table( 'field_data_field_hours' )->insert( $this->row( 'field_hours', 1, ['value' => '<p>Mo-Fr 9-5</p>', 'format' => 'filtered_html'], 'und', 0, 'basic', 'bean' ) );
+        $db->table( 'panelizer_entity' )->insert( ['entity_type' => 'node', 'entity_id' => 1, 'revision_id' => 1, 'view_mode' => 'page_manager', 'did' => 1] );
+        $db->table( 'panels_pane' )->insert( [
+            ['did' => 1, 'panel' => 'middle', 'type' => 'block', 'subtype' => 'block-1', 'position' => 0, 'configuration' => serialize( [] )],
+            ['did' => 1, 'panel' => 'middle', 'type' => 'block', 'subtype' => 'bean-hours', 'position' => 1, 'configuration' => serialize( [] )],
+            ['did' => 1, 'panel' => 'middle', 'type' => 'block', 'subtype' => 'menu-menu-footer', 'position' => 2, 'configuration' => serialize( [] )],
+        ] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertStringContainsString( 'Skipped panel panes of type "block:menu-menu-footer", not supported', Artisan::output() );
+
+        // panes of custom blocks and of blocks of the Bean module show their content
+        $content = $this->content( PageView::where( 'title', 'About' )->firstOrFail() );
+
+        $this->assertStringContainsString( 'Custom box', $content );
+        $this->assertStringContainsString( 'Mo-Fr 9-5', $content );
+    }
+
+
+    public function testPanelizerSectionsWithoutConfigs(): void
+    {
+        $this->tables( 'panelizer_entity', 'panels_pane' );
+
+        $db = DB::connection( 'drupal' );
+        $db->table( 'panelizer_entity' )->insert( ['entity_type' => 'node', 'entity_id' => 1, 'revision_id' => 1, 'view_mode' => 'page_manager', 'did' => 1] );
+        $db->table( 'panels_pane' )->insert( ['did' => 1, 'panel' => 'middle', 'type' => 'node_content', 'subtype' => 'node_content', 'position' => 0, 'configuration' => serialize( [] )] );
+
+        // the fields of the node content pane are known without building the configuration before
+        $row = ( new Drupal\V7( $db, fn() => null ) )->fieldRows( 'node', 'layout_builder__layout', [1] )->sole();
+        $section = unserialize( $row->layout_builder__layout_section );
+
+        $this->assertSame( ['field_block:node:page:body'], array_column( array_column( $section['components'], 'configuration' ), 'id' ) );
+    }
+
+
     public function testImportDomainAccess(): void
     {
         $schema = Schema::connection( 'drupal' );
@@ -1941,7 +1982,7 @@ class V7ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--dry-run' => true] ) );
         $this->assertStringContainsString( 'Drupal uses the Domain Access module', Artisan::output() );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--drupal-domain' => 'site_c'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--drupal-domain' => 'site_c'] ) );
         $this->assertStringContainsString( 'Domain Access domain "site_c" not found.', Artisan::output() );
         $this->assertSame( 0, PageView::count() );
 
@@ -2275,6 +2316,31 @@ class V7ImportTest extends ImportTestAbstract
                 $table->string( 'region' );
                 $table->integer( 'visibility' )->default( 0 );
                 $table->text( 'pages' );
+            },
+            'panelizer_defaults' => function( Blueprint $table ) {
+                $table->increments( 'pnid' );
+                $table->string( 'name' );
+                $table->string( 'entity_type' );
+                $table->string( 'panelizer_type' );
+                $table->string( 'view_mode' );
+                $table->unsignedInteger( 'did' );
+            },
+            'panelizer_entity' => function( Blueprint $table ) {
+                $table->string( 'entity_type' );
+                $table->unsignedInteger( 'entity_id' );
+                $table->unsignedInteger( 'revision_id' );
+                $table->string( 'view_mode' );
+                $table->unsignedInteger( 'did' );
+            },
+            'panels_pane' => function( Blueprint $table ) {
+                $table->increments( 'pid' );
+                $table->unsignedInteger( 'did' );
+                $table->string( 'panel' );
+                $table->string( 'type' );
+                $table->string( 'subtype' );
+                $table->integer( 'shown' )->default( 1 );
+                $table->integer( 'position' )->default( 0 );
+                $table->binary( 'configuration' );
             },
             'block_custom' => function( Blueprint $table ) {
                 $table->increments( 'bid' );

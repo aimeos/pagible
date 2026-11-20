@@ -15,6 +15,8 @@ use Aimeos\Cms\Import\Elements;
  * Renders the fields of Drupal nodes, paragraphs, custom blocks and media as content elements.
  *
  * Shared custom blocks are created by the importer using the closure.
+ *
+ * @phpstan-import-type ContentElements from Elements
  */
 class Content
 {
@@ -34,8 +36,7 @@ class Content
      * @param Formatter $formatter Formats the values of simple fields as HTML
      * @param Converters $converters Converts the HTML to content elements and tracks the removed HTML
      * @param Media $media Renders the media entities, files and videos
-     * @param \Closure(int, string, bool, int): ?array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>} $block Returns the content of the custom block by ID, language code, fallback and depth
-     * @param \Closure(string): void $warn Shows a warning
+     * @param \Closure(int, string, bool, int): ?ContentElements $block Returns the content of the custom block by ID, language code, fallback and depth
      * @param \Closure(string, string): void $warnOnce Shows the warning of the key only once
      */
     public function __construct(
@@ -49,7 +50,6 @@ class Content
         protected Converters $converters,
         protected Media $media,
         protected \Closure $block,
-        protected \Closure $warn,
         protected \Closure $warnOnce
     ) {
     }
@@ -64,23 +64,23 @@ class Content
      * @param Site $site URLs of the Drupal site
      * @param Files $files Imports the files of the Drupal site
      * @param Meta $meta Returns the summaries of embedded nodes
-     * @param \Closure(int, string, bool, int): ?array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>} $block Returns the content of the custom block by ID, language code, fallback and depth
+     * @param \Closure(int, string, bool, int): ?ContentElements $block Returns the content of the custom block by ID, language code, fallback and depth
      * @param \Closure(string): void $warn Shows a warning
      * @param \Closure(string, string): void $warnOnce Shows the warning of the key only once
      */
     public static function create( Data $data, Languages $languages, Urls $urls, Site $site, Files $files,
         Meta $meta, \Closure $block, \Closure $warn, \Closure $warnOnce ): self
     {
-        $formatter = new Formatter( $data, $urls );
+        $formatter = new Formatter( $data, $urls, $warn );
         $embeds = null;
 
         // embedded entities can contain formatted texts with embedded entities again
-        $converters = new Converters( $files, self::embed( $embeds ) );
+        $converters = new Converters( $files, self::embed( $embeds ), $warn );
         $media = new Media( $data, $files, $converters, $warnOnce );
         $embeds = new Embeds( $data, $files, $meta, $formatter, $media, $converters, $warn, $warnOnce );
 
         return new self( $data, $urls, $site, $files, new Filters( $data, $languages, $urls, $site ), new Layout( $data ),
-            $formatter, $converters, $media, $block, $warn, $warnOnce );
+            $formatter, $converters, $media, $block, $warnOnce );
     }
 
 
@@ -105,7 +105,7 @@ class Content
      * @param string $langcode Drupal language code
      * @param bool $fallback TRUE to use the values of another language if none exist for the language
      * @param int|null $vid Revision ID of the draft which is rendered or NULL for the current revision
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     * @return ContentElements
      */
     public function render( object $node, string $langcode, bool $fallback, ?int $vid = null ): array
     {
@@ -124,7 +124,7 @@ class Content
      *
      * @param array<int, array<string, mixed>> $sections Layout Builder sections
      * @param object{nid: int, type: string} $node
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     * @return ContentElements
      */
     protected function renderSections( array $sections, object $node, string $langcode, bool $fallback, ?int $vid = null ): array
     {
@@ -169,7 +169,7 @@ class Content
      * @param bool $fallback TRUE to use the values of another language if none exist for the language
      * @param bool $revision TRUE if the ID is a revision ID
      * @param int $depth Nesting level of paragraphs and blocks
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     * @return ContentElements
      */
     public function renderFields( string $entityType, string $bundle, int|string $id, string $langcode, bool $fallback, bool $revision = false, int $depth = 0 ): array
     {
@@ -191,7 +191,7 @@ class Content
      * @param bool $revision TRUE if the ID is a revision ID
      * @param int $depth Nesting level of paragraphs and blocks
      * @param string $bundle Bundle name for the field label and settings, e.g. "article"
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null
+     * @return ContentElements|null
      */
     protected function renderField( string $entityType, string $field, int|string $id, string $langcode, bool $fallback, bool $revision = false, int $depth = 0, string $bundle = '' ): ?array
     {
@@ -309,7 +309,7 @@ class Content
      * Returns the content of the images of a field, several images are shown as slideshow.
      *
      * @param array<int, string|null> $images IDs of the imported image files
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null
+     * @return ContentElements|null
      */
     protected function renderImages( array $images ): ?array
     {
@@ -359,7 +359,7 @@ class Content
     /**
      * Returns the content of a published paragraph of the Paragraphs module.
      *
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null
+     * @return ContentElements|null
      */
     protected function renderParagraph( int $id, string $langcode, bool $fallback, int $depth ): ?array
     {
@@ -403,7 +403,7 @@ class Content
      * @param string $text Text of the field
      * @param string $format Text format ID, e.g. "basic_html"
      * @param string $langcode Drupal language code
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     * @return ContentElements
      */
     public function renderText( string $text, string $format, string $langcode ): array
     {
@@ -433,8 +433,9 @@ class Content
      */
     protected function linkHtml( string $uri, string $title, string $langcode, array $attributes = [] ): string
     {
+        $node = Urls::nodeUri( $uri );
         $url = match( true ) {
-            (bool) preg_match( '/^(?:entity:node\/|internal:\/node\/|route:entity\.node\.canonical;node=)(\d+)(?:[?#;]|$)/', $uri, $m ) => $this->urls->node( (int) $m[1], $langcode ),
+            $node !== null => ( $path = $this->urls->node( $node[0], $langcode ) ) !== null ? $path . $node[1] : null,
             (bool) preg_match( '/^(?:entity:taxonomy_term\/|internal:\/taxonomy\/term\/)(\d+)(?:[?#]|$)/', $uri, $m ) => $this->urls->term( (int) $m[1], $langcode ),
             $uri === 'internal:/<front>' || $uri === 'route:<front>' => '/',
             str_starts_with( $uri, 'internal:/' ) => '/' . ltrim( substr( $uri, 10 ), '/' ),
@@ -454,7 +455,7 @@ class Content
      *
      * @param array<int, string> $links HTML links, empty strings for unavailable targets are skipped
      * @param string $langcode Drupal language code
-     * @return array{elements: array<int, array<string, mixed>>}|null
+     * @return ContentElements|null
      */
     protected function linkList( array $links, string $langcode ): ?array
     {

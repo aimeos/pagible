@@ -25,8 +25,9 @@ class Converters
      *
      * @param Files $files Imports the files of the Drupal site
      * @param \Closure(string, string): ?array{elements: array<int, array<string, mixed>>, fileIds?: array<int, string>} $embed Returns the content of the embedded media or entity tag by language code
+     * @param (\Closure(string): void)|null $warn Shows a warning, e.g. if processing the HTML failed, ignored if NULL
      */
-    public function __construct( protected Files $files, protected \Closure $embed )
+    public function __construct( protected Files $files, protected \Closure $embed, protected ?\Closure $warn = null )
     {
     }
 
@@ -39,7 +40,7 @@ class Converters
     public function html( string $langcode ): Html
     {
         return $this->html[$langcode] ??= new Html( fn( string $tag ) => $this->files->image( $tag ), fn( string $tag ) => ( $this->embed )( $tag, $langcode ),
-            fn( string $url, string $text ) => $this->files->linked( $url, $text ), fn( string $type, string $src ) => $this->files->player( $type, $src ) );
+            fn( string $url, string $text ) => $this->files->linked( $url, $text ), fn( string $type, string $src ) => $this->files->player( $type, $src ), $this->warn );
     }
 
 

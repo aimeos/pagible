@@ -178,7 +178,6 @@ class Layout
             $result[$name] = is_object( $item ) ? $this->toArray( $item ) : $item;
         }
 
-        // Section objects use camelCase properties, the configuration snake case keys
         return $result;
     }
 }

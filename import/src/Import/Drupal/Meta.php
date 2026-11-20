@@ -17,6 +17,9 @@ use Illuminate\Support\Str;
  */
 class Meta
 {
+    /** Maximum length of the node summaries like the "[node:summary]" token of Drupal */
+    protected const SUMMARY_SIZE = 300;
+
     /** @var array<int, string> Titles of the drafts which are rendered by node ID */
     protected array $titles = [];
 
@@ -82,8 +85,8 @@ class Meta
         if( $title !== null || $fileId )
         {
             $meta['social-media'] = ['type' => 'social-media', 'data' => array_filter( [
-                'title' => Str::limit( $title ?? $tags['title'] ?? $this->titles[$node->nid] ?? $node->title, 59, '…', true ),
-                'description' => Str::limit( (string) preg_replace( '/\s+/', ' ', $tags['og_description'] ?? $tags['twitter_cards_description'] ?? $description ), 159, '…', true ),
+                'title' => Str::limit( $title ?? $tags['title'] ?? $this->titles[$node->nid] ?? $node->title, Elements::SOCIAL_TITLE_SIZE, '…', true ),
+                'description' => Str::limit( (string) preg_replace( '/\s+/', ' ', $tags['og_description'] ?? $tags['twitter_cards_description'] ?? $description ), Elements::DESCRIPTION_SIZE, '…', true ),
                 'file' => $fileId ? Elements::file( $fileId ) : null,
             ] ), 'files' => $fileId ? [$fileId] : []];
         }
@@ -208,7 +211,7 @@ class Meta
         $text = strip_tags( (string) preg_replace( '/<(?:p|br|div|h[1-6]|li|td|th)\b/i', ' $0', $text ) );
         $text = trim( (string) preg_replace( '/\s+/', ' ', html_entity_decode( $text, ENT_QUOTES, 'UTF-8' ) ) );
 
-        return Str::limit( $text, 300, '…', true );
+        return Str::limit( $text, self::SUMMARY_SIZE, '…', true );
     }
 
 

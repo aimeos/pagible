@@ -294,14 +294,33 @@ class Urls
     {
         $uri = $link->link__uri ?? '';
 
-        if( preg_match( '/^(?:entity:node\/|internal:\/node\/|route:entity\.node\.canonical;node=)(\d+)(?:[?#;]|$)/', $uri, $m ) ) {
-            return (int) $m[1];
+        if( $node = self::nodeUri( $uri ) ) {
+            return $node[0];
         }
 
         if( str_starts_with( $uri, 'internal:/' ) )
         {
             $alias = '/' . trim( (string) strtok( substr( $uri, 9 ), '?#' ), '/' );
             return $this->aliasNids[$alias] ?? null;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Returns the node ID and the query string and fragment of a Drupal URI linking to a node.
+     *
+     * Supports "entity:node/42", "internal:/node/42" and "route:entity.node.canonical;node=42",
+     * each optionally followed by "?query" and "#fragment".
+     *
+     * @param string $uri Drupal URI, e.g. "entity:node/42?page=1#top"
+     * @return array{0: int, 1: string}|null Node ID and query string with fragment or empty string, NULL if the URI doesn't link to a node
+     */
+    public static function nodeUri( string $uri ): ?array
+    {
+        if( preg_match( '/^(?:entity:node\/|internal:\/node\/|route:entity\.node\.canonical;node=)(\d+)([?#][^;]*)?(?:;|$)/', $uri, $m ) ) {
+            return [(int) $m[1], $m[2] ?? ''];
         }
 
         return null;

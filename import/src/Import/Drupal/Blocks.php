@@ -135,7 +135,7 @@ class Blocks
                 }
 
                 // blocks without shared elements in the language are rendered with the pages if needed
-                if( $refs = $transaction( "custom block {$block['key']} [{$langcode}]", fn() => $this->share( $block, $langcode, true ) ) ) {
+                if( $refs = $transaction( "custom block {$block['key']} [{$langcode}]", fn() => $this->update( $block, $langcode ) ) ) {
                     $refs['elementIds'] ? $this->shared[$key] = $refs : null;
                 }
 
@@ -199,42 +199,109 @@ class Blocks
     /**
      * Creates or updates the shared elements of the custom block in the language.
      *
-     * Each content element of the block becomes a shared element named after the block description,
-     * e.g. "Contact" or "Contact 2". Blocks whose description is used by other blocks too get their
-     * ID added, e.g. "Contact (5)". Shared elements changed in Pagible since aren't overwritten and
-     * unchanged ones don't get a new version.
+     * Shared elements changed in Pagible since aren't overwritten and unchanged ones don't get a new version.
      *
      * @param array{key: string, uuid: string, group: string} $block Block placement
      * @param string $langcode Drupal language code
-     * @param bool $existing TRUE to update the shared elements of previous imports only
      * @return array{elements: array<int, array<string, mixed>>, elementIds: array<int, string>} References to the shared elements and their IDs
      */
-    protected function share( array $block, string $langcode, bool $existing = false ): array
+    protected function share( array $block, string $langcode ): array
     {
-        $refs = ['elements' => [], 'elementIds' => []];
+        if( !( $item = $this->block( $block, $langcode ) ) ) {
+            return ['elements' => [], 'elementIds' => []];
+        }
+
+        return $this->store( $block, $item['name'], $item['lang'], $this->inlined( $item['entity'], $item['name'], $langcode ) );
+    }
+
+
+    /**
+     * Updates the shared elements of the custom block in the language which were created by previous imports.
+     *
+     * Blocks whose number of shared elements changed are remembered as resized because the pages
+     * showing them must reference other shared elements.
+     *
+     * @param array{key: string, uuid: string, group: string} $block Block placement
+     * @param string $langcode Drupal language code
+     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<int, string>} References to the shared elements and their IDs
+     */
+    protected function update( array $block, string $langcode ): array
+    {
+        if( !( $item = $this->block( $block, $langcode ) )
+            || !Element::where( 'lang', $item['lang'] )->whereIn( 'name', [$item['name'], $item['name'] . ' 1'] )->exists()
+        ) {
+            return ['elements' => [], 'elementIds' => []];
+        }
+
+        $content = $this->inlined( $item['entity'], $item['name'], $langcode );
+
+        if( $this->resized( $item['name'], $item['lang'], count( $content['elements'] ) ) ) {
+            $this->resized[$block['key'] . ':' . $langcode] = true;
+        }
+
+        return $this->store( $block, $item['name'], $item['lang'], $content );
+    }
+
+
+    /**
+     * Returns the published custom block of the placement in the language with the name of its shared elements.
+     *
+     * @param array{key: string, uuid: string, group: string} $block Block placement
+     * @param string $langcode Drupal language code
+     * @return array{entity: \stdClass, name: string, lang: string}|null Block entity, name and Pagible language or NULL if it's not found or unpublished
+     */
+    protected function block( array $block, string $langcode ): ?array
+    {
         $entity = $this->data->entity( 'block_content', 'uuid', $block['uuid'] );
         $language = $this->languages->language( $langcode );
 
         if( !$entity || !$language )
         {
             ( $this->warnOnce )( "block:{$block['uuid']}", "  Skipped custom block {$block['key']} (not found)" );
-            return $refs;
+            return null;
         }
 
         $data = $this->data->entity( 'block_content_field_data', 'id', (int) $entity->id, $langcode );
 
         if( isset( $data->status ) && !$data->status ) {
-            return $refs;
+            return null;
         }
 
-        $name = trim( (string) ( $data->info ?? '' ) ) ?: $block['key'];
+        return ['entity' => $entity, 'name' => $this->name( $entity, $data, $block['key'], $langcode ), 'lang' => $language['lang']];
+    }
+
+
+    /**
+     * Returns the name of the shared elements of the custom block.
+     *
+     * Each content element of the block becomes a shared element named after the block description,
+     * e.g. "Contact" or "Contact 2". Blocks whose description is used by other blocks too get their
+     * ID added, e.g. "Contact (5)".
+     *
+     * @param \stdClass $entity Custom block entity
+     * @param \stdClass|null $data Field data of the custom block in the language
+     * @param string $key Key of the block placement used if the block has no description
+     * @param string $langcode Drupal language code
+     */
+    protected function name( \stdClass $entity, ?\stdClass $data, string $key, string $langcode ): string
+    {
+        $name = trim( (string) ( $data->info ?? '' ) ) ?: $key;
+
         // descriptions of non-reusable blocks aren't counted, so they always get their ID added
-        $name = $this->count( $name, $langcode ) > 1 || ( isset( $data->reusable ) && !$data->reusable ) ? "{$name} ({$entity->id})" : $name;
+        return $this->count( $name, $langcode ) > 1 || ( isset( $data->reusable ) && !$data->reusable ) ? "{$name} ({$entity->id})" : $name;
+    }
 
-        if( $existing && !Element::where( 'lang', $language['lang'] )->whereIn( 'name', [$name, $name . ' 1'] )->exists() ) {
-            return $refs;
-        }
 
+    /**
+     * Renders the fields of the custom block, which can't reference other shared elements.
+     *
+     * @param \stdClass $entity Custom block entity
+     * @param string $name Name of the shared elements
+     * @param string $langcode Drupal language code
+     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     */
+    protected function inlined( \stdClass $entity, string $name, string $langcode ): array
+    {
         $inline = $this->inline;
         $this->inline = true;
 
@@ -246,23 +313,44 @@ class Blocks
 
         $this->content->removed( "custom block {$name} [{$langcode}]" );
 
-        // pages showing the block must reference other shared elements if their number changed
-        if( $existing )
-        {
-            $count = count( $content['elements'] );
-            $expected = $count > 1 ? array_map( fn( $idx ) => "{$name} {$idx}", range( 1, $count ) ) : ( $count ? [$name] : [] );
-            $found = Element::where( 'lang', $language['lang'] )
-                ->whereIn( 'name', [$name, ...array_map( fn( $idx ) => "{$name} {$idx}", range( 1, $count + 1 ) )] )->pluck( 'name' )->all();
+        return $content;
+    }
 
-            if( array_diff( $found, $expected ) || array_diff( $expected, $found ) ) {
-                $this->resized[$block['key'] . ':' . $langcode] = true;
-            }
-        }
+
+    /**
+     * Tests if the number of shared elements of previous imports differs from the number of content elements.
+     *
+     * @param string $name Name of the shared elements
+     * @param string $lang Pagible language code
+     * @param int $count Number of content elements of the custom block
+     */
+    protected function resized( string $name, string $lang, int $count ): bool
+    {
+        $expected = $count > 1 ? array_map( fn( $idx ) => "{$name} {$idx}", range( 1, $count ) ) : ( $count ? [$name] : [] );
+        $found = Element::where( 'lang', $lang )
+            ->whereIn( 'name', [$name, ...array_map( fn( $idx ) => "{$name} {$idx}", range( 1, $count + 1 ) )] )->pluck( 'name' )->all();
+
+        return array_diff( $found, $expected ) || array_diff( $expected, $found );
+    }
+
+
+    /**
+     * Saves each content element of the custom block as shared element and returns the references to them.
+     *
+     * @param array{key: string, uuid: string, group: string} $block Block placement
+     * @param string $name Name of the shared elements
+     * @param string $lang Pagible language code
+     * @param array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>} $content Content of the custom block
+     * @return array{elements: array<int, array<string, mixed>>, elementIds: array<int, string>} References to the shared elements and their IDs
+     */
+    protected function store( array $block, string $name, string $lang, array $content ): array
+    {
+        $refs = ['elements' => [], 'elementIds' => []];
         $count = count( $content['elements'] );
 
         foreach( $content['elements'] as $idx => $element )
         {
-            $id = ( $this->save )( $count > 1 ? $name . ' ' . ( $idx + 1 ) : $name, $language['lang'], $element, $content['fileIds'] );
+            $id = ( $this->save )( $count > 1 ? $name . ' ' . ( $idx + 1 ) : $name, $lang, $element, $content['fileIds'] );
             $this->saved[$id] = true;
 
             $refs['elements'][] = ['type' => 'reference', 'refid' => $id, 'group' => $block['group']];

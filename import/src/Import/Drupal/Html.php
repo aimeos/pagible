@@ -31,10 +31,11 @@ class Html extends BaseHtml
      * @param \Closure(string): ?array{elements: array<int, array<string, mixed>>, fileIds?: array<int, string>} $embed Returns the content of the <drupal-media> or <drupal-entity> tag
      * @param \Closure(string, string): ?array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>} $link Returns the content of the file linked by URL and text or NULL if it's no file of the site
      * @param \Closure(string, string): ?string $media Imports the file of the "video" or "audio" type by its src and returns the file ID
+     * @param (\Closure(string): void)|null $warn Shows a warning, e.g. if processing the HTML failed, ignored if NULL
      */
-    public function __construct( \Closure $image, protected \Closure $embed, protected \Closure $link, protected \Closure $media )
+    public function __construct( \Closure $image, protected \Closure $embed, protected \Closure $link, protected \Closure $media, ?\Closure $warn = null )
     {
-        parent::__construct( $image );
+        parent::__construct( $image, $warn );
     }
 
 
@@ -245,7 +246,7 @@ class Html extends BaseHtml
             return null;
         }
 
-        return ['elements' => [Elements::create( $type, ['file' => Elements::file( $fileId )] )], 'fileIds' => [$fileId]];
+        return Elements::fileContent( $type, $fileId );
     }
 
 

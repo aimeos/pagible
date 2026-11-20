@@ -50,12 +50,11 @@ class Pages
     public function paths( array $paths, ?string $domain = null ): array
     {
         $list = [];
-        $pages = PageView::withTrashed()->where( 'domain', $domain ?? $this->domain )
-            ->whereIn( 'path', [...$paths, ...array_map( fn( $path ) => '/' . $path, $paths )] )->get();
+        $values = [...$paths, ...array_map( fn( $path ) => '/' . $path, $paths )];
 
-        foreach( $pages as $page )
+        foreach( BasePages::findAll( ['domain' => $domain ?? $this->domain], 'path', $values ) as $page )
         {
-            if( $page instanceof PageView ) {
+            if( $page ) {
                 $list[trim( (string) $page->getAttribute( 'path' ), '/' )] ??= $page;
             }
         }

@@ -18,8 +18,9 @@ class Formatter
      *
      * @param Data $data Configuration and entities of the Drupal database
      * @param Urls $urls URLs of the imported pages
+     * @param (\Closure(string): void)|null $warn Shows a warning, e.g. for invalid dates, ignored if NULL
      */
-    public function __construct( protected Data $data, protected Urls $urls )
+    public function __construct( protected Data $data, protected Urls $urls, protected ?\Closure $warn = null )
     {
     }
 
@@ -162,6 +163,7 @@ class Formatter
      * Returns a Drupal date in the site time zone.
      *
      * Dates without time are returned as they are, dates with time are stored in UTC by Drupal.
+     * Invalid dates and time zones are reported and the value is returned as it is.
      *
      * @param string $value Date like "2024-05-01", "2024-05-01T10:00:00" or Unix timestamp prefixed by "@"
      * @return string Date like "2024-05-01" or "2024-05-01 12:00"
@@ -179,8 +181,12 @@ class Formatter
 
             return $date->setTimezone( new \DateTimeZone( $tz !== '' ? $tz : 'UTC' ) )->format( 'Y-m-d H:i' );
         }
-        catch( \Exception )
+        catch( \Exception $e )
         {
+            if( $this->warn ) {
+                ( $this->warn )( "  Kept invalid Drupal date \"{$value}\": " . $e->getMessage() );
+            }
+
             return ltrim( $value, '@' );
         }
     }

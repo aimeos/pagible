@@ -964,9 +964,9 @@ class HomeImportTest extends TestAbstract
         $db->table( 'menu' )->where( 'id', 101 )->update( ['title' => 'Begin'] );
         $db->table( 'content' )->whereIn( 'id', [1, 2] )->update( ['introtext' => '<p>Changed</p>'] );
         $fail = true;
-        \Illuminate\Support\Facades\Event::listen( 'eloquent.saving: ' . \Aimeos\Cms\Models\PageVariant::class,
-            function( \Aimeos\Cms\Models\PageVariant $variant ) use ( &$fail ) {
-                if( $fail && $variant->lang === 'de' ) {
+        \Illuminate\Support\Facades\Event::listen( 'eloquent.creating: ' . \Aimeos\Cms\Models\Version::class,
+            function( \Aimeos\Cms\Models\Version $version ) use ( &$fail ) {
+                if( $fail && $version->lang === 'de' ) {
                     throw new \RuntimeException( 'broken' );
                 }
             } );

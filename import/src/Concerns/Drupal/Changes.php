@@ -34,7 +34,7 @@ trait Changes
 
         $changed = $this->reader->changed( $nids );
 
-        foreach( $this->tracker->nodes( $since, $nids, $this->referenceFields() ) as $nid ) {
+        foreach( $this->tracker->nodes( $since, $this->referenceFields() ) as $nid ) {
             $changed[$nid] = max( $changed[$nid] ?? 0, $since );
         }
 
@@ -91,8 +91,8 @@ trait Changes
     /**
      * Keeps the page of a node which wasn't changed since the date of the --since option.
      *
-     * The page is only moved below the new parent page and its access is updated. Its translations
-     * imported before are kept too.
+     * The page is only moved below the new parent page and its dates and access are updated. The page
+     * variants of its translations imported before are kept too.
      *
      * @param object{nid: int, title: string, status: int, created?: int, changed?: int, langcode?: string} $node
      * @param array<int, string>|false|null $access Access values from nodeAccess() or FALSE to keep the access

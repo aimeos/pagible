@@ -93,15 +93,11 @@ trait Access
      */
     protected function disable( PageView $page ): void
     {
-        if( !( $version = $page->versions()->where( 'published', true )->first() ) ) {
+        if( !( $published = Pages::publishedVersions( [(string) $page->variant_id] )[(string) $page->variant_id] ?? null ) ) {
             return;
         }
 
-        $data = array_replace( array_diff_key( (array) $version->data, ['scheduled' => null] ), ['status' => Pages::STATUS_DISABLED] );
-        $aux = (array) json_decode( (string) json_encode( $version->aux ), true );
-
-        Pages::publish( $page, $data, $aux, $version->files()->allRelatedIds()->map( strval( ... ) )->all(),
-            $version->elements()->allRelatedIds()->map( strval( ... ) )->all(), (string) $page->lang, $this->editor );
+        Pages::disable( $page, $published['version'], $published['files'], $published['elements'], $this->editor );
 
         $this->warn( '  Disabled /' . ltrim( (string) $page->path, '/' ) . " [{$page->lang}] because its Drupal node is restricted but failed to import" );
     }

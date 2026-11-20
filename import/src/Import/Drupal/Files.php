@@ -17,22 +17,16 @@ use Aimeos\Cms\Import\Html as BaseHtml;
  */
 class Files
 {
-    /** TRUE if the warning about private files was shown */
-    protected bool $privateWarned = false;
-    /** TRUE if the warning about removed inline images was shown */
-    protected bool $inlineWarned = false;
-
-
     /**
      * Initializes the object.
      *
      * @param Data $data Files of the Drupal database
      * @param Site $site URLs of the Drupal site
      * @param \Closure(string, string, string, bool=): string $create Creates the file by MIME type, name, URL and TRUE to rename existing files, returns the file ID
-     * @param \Closure(string): void $warn Shows a warning
+     * @param \Closure(string, string): void $warnOnce Shows the warning of the key only once
      * @param (\Closure(array<int, string>): void)|null $prefetch Looks up the existing files by their URLs at once
      */
-    public function __construct( protected Data $data, protected Site $site, protected \Closure $create, protected \Closure $warn,
+    public function __construct( protected Data $data, protected Site $site, protected \Closure $create, protected \Closure $warnOnce,
         protected ?\Closure $prefetch = null )
     {
     }
@@ -66,17 +60,25 @@ class Files
      */
     public function url( string $uri ): string
     {
-        if( str_starts_with( $uri, 'private://' ) && ( $base = $this->site->base() ) )
+        if( ( $path = self::privatePath( $uri ) ) !== null && ( $base = $this->site->base() ) )
         {
-            if( !$this->privateWarned ) {
-                ( $this->warn )( '  Private Drupal files are downloaded from /system/files/ and fail if they require a login' );
-                $this->privateWarned = true;
-            }
-
-            return $base . '/system/files/' . substr( $uri, 10 );
+            ( $this->warnOnce )( 'file:private', '  Private Drupal files are downloaded from /system/files/ and fail if they require a login' );
+            return $base . $path;
         }
 
         return $this->site->file( (string) preg_replace( '/^(public|private):\/\//', '', $uri ) );
+    }
+
+
+    /**
+     * Returns the path of a private Drupal file served by Drupal from /system/files/.
+     *
+     * @param string $uri Drupal file URI, e.g. "private://doc.pdf"
+     * @return string|null Path like "/system/files/doc.pdf" or NULL if the file isn't private
+     */
+    public static function privatePath( string $uri ): ?string
+    {
+        return str_starts_with( $uri, 'private://' ) ? '/system/files/' . substr( $uri, 10 ) : null;
     }
 
 
@@ -95,13 +97,8 @@ class Files
             return null;
         }
 
-        if( strncasecmp( ltrim( $image['src'] ), 'data:', 5 ) === 0 )
-        {
-            if( !$this->inlineWarned ) {
-                ( $this->warn )( '  Removed inline images with data: URIs from the content, they are not imported as files' );
-                $this->inlineWarned = true;
-            }
-
+        if( BaseHtml::inline( $image['src'] ) ) {
+            ( $this->warnOnce )( 'file:inline', '  Removed inline images with data: URIs from the content, they are not imported as files' );
             return null;
         }
 
@@ -109,6 +106,34 @@ class Files
         $mime = $this->mime( pathinfo( $name, PATHINFO_EXTENSION ) );
 
         return ( $this->create )( $mime, $name, $this->site->image( $image['src'] ) );
+    }
+
+
+    /**
+     * Looks up the existing files of the HTML image tags at once, so image() doesn't look them up one by one.
+     *
+     * The URLs are the same as the ones image() creates the files for, inline images with data URIs are skipped.
+     *
+     * @param array<int, string> $tags HTML image tags
+     */
+    public function prefetchImages( array $tags ): void
+    {
+        if( !$this->prefetch ) {
+            return;
+        }
+
+        $urls = [];
+
+        foreach( $tags as $tag )
+        {
+            if( ( $image = BaseHtml::source( $tag ) ) && !BaseHtml::inline( $image['src'] ) ) {
+                $urls[] = $this->site->image( $image['src'] );
+            }
+        }
+
+        if( $urls ) {
+            ( $this->prefetch )( array_values( array_unique( $urls ) ) );
+        }
     }
 
 
@@ -206,6 +231,6 @@ class Files
             return Elements::imageContent( $fileId, $caption );
         }
 
-        return ['elements' => [Elements::create( 'file', ['file' => Elements::file( $fileId )] )], 'fileIds' => [$fileId]];
+        return Elements::fileContent( 'file', $fileId );
     }
 }

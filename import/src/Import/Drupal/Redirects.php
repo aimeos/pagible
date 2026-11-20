@@ -89,8 +89,8 @@ class Redirects
      */
     public function target( string $uri, \Closure $path ): string
     {
-        if( preg_match( '/^(?:entity:node\/|internal:\/node\/|route:entity\.node\.canonical;node=)(\d+)([?#].*)?(?:;|$)/', $uri, $m ) ) {
-            return ( $target = $path( (int) $m[1] ) ) !== null ? '/' . ltrim( $target, '/' ) . ( $m[2] ?? '' ) : '';
+        if( $node = Urls::nodeUri( $uri ) ) {
+            return ( $target = $path( $node[0] ) ) !== null ? '/' . ltrim( $target, '/' ) . $node[1] : '';
         }
 
         if( $uri === 'internal:/<front>' || $uri === 'route:<front>' ) {

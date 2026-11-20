@@ -187,7 +187,7 @@ class ImportTest extends ImportTestAbstract
         DB::connection( 'drupal' )->table( 'node_field_data' )->update( ['created' => 1600000000, 'changed' => 1700000000] );
 
         $run = function(): array {
-            $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+            $db = \Aimeos\Cms\DB::connection();
             $db->enableQueryLog();
             $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
             $queries = $this->queries( $db )->pluck( 'query' );
@@ -572,7 +572,7 @@ class ImportTest extends ImportTestAbstract
     {
         Schema::connection( 'drupal' )->drop( 'node_field_data' );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( 'only Drupal 7 and newer are supported', Artisan::output() );
         $this->assertSame( 0, PageView::count() );
     }
@@ -672,7 +672,7 @@ class ImportTest extends ImportTestAbstract
         // the page of the parent node changed in Pagible can't be imported
         PageVariant::whereKey( PageView::where( 'name', 'About' )->firstOrFail()->variant_id )->update( ['editor' => 'someone'] );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $output = Artisan::output();
 
         // the failed parent node isn't imported again for each of its children
@@ -708,7 +708,7 @@ class ImportTest extends ImportTestAbstract
         // the page of the node changed in Pagible can't be imported
         PageVariant::whereKey( PageView::where( 'name', 'About' )->firstOrFail()->variant_id )->update( ['editor' => 'someone'] );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--menu' => 'main'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--menu' => 'main'] ) );
 
         // the failed node isn't imported again for its second menu link
         $this->assertSame( 1, substr_count( Artisan::output(), 'Failed to import [1] About' ) );
@@ -799,7 +799,8 @@ class ImportTest extends ImportTestAbstract
         DB::enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--node-redirects' => true] ) );
         $selects = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, ' from "redirect"' ) );
-        $paths = Collection::make( DB::getQueryLog() )->filter( fn( $query ) => str_contains( $this->sql( $query['query'] ), 'from "cms_page_view" where "domain" = ? and "path" in' ) && !preg_match( '/^select top 1 |limit 1$/', $query['query'] ) );
+        $paths = Collection::make( DB::getQueryLog() )->filter( fn( $query ) => preg_match( '/from "cms_page_view" where \(?"domain" = \?\)? and "path" in/', $this->sql( $query['query'] ) )
+            && array_intersect( ['old-about', 'external', 'legacy'], $query['bindings'] ) && !preg_match( '/^select top 1 |limit 1$/', $query['query'] ) );
         DB::disableQueryLog();
         $db->disableQueryLog();
 
@@ -842,7 +843,7 @@ class ImportTest extends ImportTestAbstract
              */
             public function redirect( string $path, string $to, PageView $parent ): ?array
             {
-                return $this->importRedirect( $path, $to, $parent );
+                return $this->importRedirect( $path, $to, $parent, $this->pageByPath( $path ) );
             }
 
             public function saved( PageView $page ): bool
@@ -1207,7 +1208,7 @@ class ImportTest extends ImportTestAbstract
             ]] )],
         ] );
         $db->table( 'node__field_link' )->insert( [
-            ['entity_id' => 1, 'langcode' => 'en', 'delta' => 0, 'field_link_uri' => 'entity:node/1', 'field_link_title' => 'Self',
+            ['entity_id' => 1, 'langcode' => 'en', 'delta' => 0, 'field_link_uri' => 'entity:node/1?a=b#top', 'field_link_title' => 'Self',
                 'field_link_options' => serialize( ['attributes' => ['target' => '_top', 'title' => ' ']] )],
             ['entity_id' => 1, 'langcode' => 'en', 'delta' => 1, 'field_link_uri' => 'https://example.org', 'field_link_title' => '',
                 'field_link_options' => serialize( ['attributes' => ['target' => '_blank', 'title' => 'Example site']] )],
@@ -1226,7 +1227,7 @@ class ImportTest extends ImportTestAbstract
 
         // several links of a field are one list
         $this->assertCount( 2, $content );
-        $this->assertStringContainsString( '<ul><li><a href="/about">Self</a></li><li><a href="https://example.org" target="_blank" title="Example site" rel="noreferrer noopener">https://example.org</a></li></ul>', $content[1]->data->text ?? '' );
+        $this->assertStringContainsString( '<ul><li><a href="/about?a=b#top">Self</a></li><li><a href="https://example.org" target="_blank" title="Example site" rel="noreferrer noopener">https://example.org</a></li></ul>', $content[1]->data->text ?? '' );
     }
 
 
@@ -1536,7 +1537,7 @@ class ImportTest extends ImportTestAbstract
             ['nid' => 2, 'langcode' => 'en', 'gid' => 1, 'realm' => 'content_access_rid'],
         ] );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( 'Check the access of the root page', Artisan::output() );
         // links to the front page which couldn't be imported into the root page don't point to the root page
         $this->assertStringContainsString( 'href="/about"', PageView::where( 'name', 'Team' )->firstOrFail()->content[0]->data->text ?? '' );
@@ -1623,7 +1624,7 @@ class ImportTest extends ImportTestAbstract
         // pages changed in Pagible aren't overwritten
         PageVariant::whereKey( $page->variant_id )->update( ['editor' => 'someone'] );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( "URL /about is used by a page which wasn't imported or was changed since", Artisan::output() );
         $this->assertStringContainsString( 'Hello again', PageView::where( 'path', 'about' )->sole()->content[0]->data->text ?? '' );
     }
@@ -1665,6 +1666,28 @@ class ImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', $args ) );
         $this->assertSame( 'Mine', File::where( 'path', 'https://example.com/sites/default/files/photo.jpg' )->sole()->name );
+    }
+
+
+    public function testPrefetchesInlineImages(): void
+    {
+        $db = DB::connection( 'drupal' );
+        $db->table( 'node__body' )->where( 'langcode', 'en' )->update( ['body_value' => '<p>Text</p><img src="/sites/default/files/a.jpg" alt="A" />'
+            . '<img src="/sites/default/files/b.jpg" alt="B" /><img src="https://example.com/sites/default/files/c.jpg" alt="C" /><img src="data:image/gif;base64,AAAA" />'] );
+
+        $args = ['--domain' => 'example.com', '--file-base' => 'https://example.com/sites/default/files'];
+        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', $args ) );
+        $this->assertSame( 3, File::where( 'path', 'like', 'https://example.com/sites/default/files/%' )->count() );
+
+        DB::enableQueryLog();
+        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', $args ) );
+        $queries = $this->queries( DB::connection() )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'select * from "cms_files" where "path"' ) );
+        DB::disableQueryLog();
+
+        // the existing files of the inline images are looked up at once instead of one by one
+        $this->assertCount( 0, $queries->filter( fn( $query ) => str_contains( $query, '"path" = ' ) ) );
+        $this->assertCount( 1, $queries->filter( fn( $query ) => str_contains( $query, '"path" in ' ) ) );
+        $this->assertSame( 3, File::where( 'path', 'like', 'https://example.com/sites/default/files/%' )->count() );
     }
 
 
@@ -2248,17 +2271,17 @@ class ImportTest extends ImportTestAbstract
         ] );
 
         // restricted nodes aren't imported as public pages
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( "Failed to import [3] Premium: Access is restricted in Drupal but frontend access restrictions aren't set up", Artisan::output() );
         $this->assertFalse( PageView::where( 'name', 'Premium' )->exists() );
 
         Access::using( fn() => ['administrator', 'gold'] );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com'] ) );
         $this->assertStringContainsString( 'Failed to import [3] Premium: Unknown access values "premium"', Artisan::output() );
 
         // invalid roles stop the import before any node is imported
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--role' => ['premium']] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--role' => ['premium']] ) );
         $output = Artisan::output();
         $this->assertStringContainsString( 'Invalid Drupal role: premium', $output );
         $this->assertStringNotContainsString( 'Premium', $output );
@@ -2292,7 +2315,7 @@ class ImportTest extends ImportTestAbstract
         $db->table( 'node_access' )->where( 'nid', 3 )->delete();
         $db->table( 'node_access' )->insert( ['nid' => 3, 'langcode' => 'en', 'gid' => 3, 'realm' => 'content_access_rid'] );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--prune' => true] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--prune' => true] ) );
         $output = Artisan::output();
 
         $this->assertStringContainsString( 'Nothing moved to the trash because 1 imports failed.', $output );
@@ -2612,10 +2635,53 @@ class ImportTest extends ImportTestAbstract
         $this->assertStringNotContainsString( 'previous imports weren\'t updated', $output );
         $this->assertStringContainsString( 'Hello', (string) json_encode( PageView::where( 'name', 'About' )->firstOrFail()->content ) );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--since' => 'invalid date'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--since' => 'invalid date'] ) );
         $output = Artisan::output();
         $this->assertStringContainsString( 'Invalid date for --since: invalid date', $output );
         $this->assertStringNotContainsString( 'About', $output );
+    }
+
+
+    public function testImportSinceForwardRevisions(): void
+    {
+        $schema = Schema::connection( 'drupal' );
+        $schema->table( 'node_field_data', function( Blueprint $table ) {
+            $table->unsignedInteger( 'vid' )->nullable();
+            $table->unsignedInteger( 'changed' )->default( 0 );
+        } );
+        $schema->create( 'node_field_revision', function( Blueprint $table ) {
+            $table->unsignedInteger( 'nid' );
+            $table->unsignedInteger( 'vid' );
+            $table->string( 'langcode' );
+            $table->string( 'title' );
+            $table->unsignedInteger( 'changed' )->default( 0 );
+        } );
+
+        $db = DB::connection( 'drupal' );
+        $db->table( 'node_field_data' )->update( ['vid' => 2, 'changed' => strtotime( '2026-01-01' )] );
+        $db->table( 'node_field_data' )->insert( [
+            ['nid' => 2, 'vid' => 3, 'type' => 'page', 'langcode' => 'en', 'title' => 'Team', 'default_langcode' => 1, 'changed' => strtotime( '2026-01-01' )],
+        ] );
+        $db->table( 'node_field_revision' )->insert( [
+            // older revisions than the current one don't matter even with a later modification date
+            ['nid' => 1, 'vid' => 1, 'langcode' => 'en', 'title' => 'About old', 'changed' => strtotime( '2026-03-01' )],
+            // forward revisions (drafts) changed since are detected
+            ['nid' => 2, 'vid' => 4, 'langcode' => 'en', 'title' => 'Team draft', 'changed' => strtotime( '2026-03-01' )],
+        ] );
+
+        $db->enableQueryLog();
+        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--since' => '2026-02-01', '--dry-run' => true] ) );
+        $queries = $this->queries( $db )->pluck( 'query' )->filter( fn( $query ) => str_contains( $query, 'max(' ) || str_contains( $query, 'MAX(' ) );
+        $db->disableQueryLog();
+        $output = Artisan::output();
+
+        $this->assertStringContainsString( '  [2] Team (page)', $output );
+        $this->assertStringNotContainsString( '[1] About', $output );
+
+        // only the revisions newer than the current ones are aggregated
+        $revision = $queries->filter( fn( $query ) => str_contains( $query, '"node_field_revision"' ) );
+        $this->assertCount( 1, $revision );
+        $this->assertStringContainsString( '"r"."vid" > "d"."vid"', (string) $revision->first() );
     }
 
 
@@ -2913,7 +2979,7 @@ class ImportTest extends ImportTestAbstract
         ] );
 
         $db->enableQueryLog();
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
         $log = $this->queries( $db );
         $selects = $log->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'select' ) && str_contains( $query, ' from "taxonomy_index" ' ) );
         $db->disableQueryLog();
@@ -2962,7 +3028,7 @@ class ImportTest extends ImportTestAbstract
         $this->assertNull( PageView::language( 'fr' )->find( $page->id ) );
         $this->assertFalse( PageView::where( 'name', 'Category' )->exists() );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
         $this->assertStringContainsString( 'Term pages: 0 imported, 0 updated, 1 unchanged (1/1 term pages processed).', Artisan::output() );
     }
 
@@ -3149,7 +3215,7 @@ class ImportTest extends ImportTestAbstract
 
         DB::connection( 'drupal' )->table( 'menu_link_content_data' )->insert( $links );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $about = fn() => PageView::where( 'name', 'About' )->firstOrFail();
         $variants = fn( array $ids ) => $this->queries( $cms )->filter( fn( $query ) => str_contains( $query['query'], ' from "cms_page_view" where "cms_page_view"."id" = ?' ) )
             ->pluck( 'bindings' )->flatten()->filter( fn( $id ) => in_array( $id, $ids, true ) )->countBy()->all();
@@ -3239,7 +3305,7 @@ class ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/sites/default/files', '--prune' => true] ) );
         $this->assertTrue( PageView::where( 'name', 'Gone' )->exists() );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/sites/default/files', '--prune' => true, '--since' => '2026-01-01'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--file-base' => 'https://example.com/sites/default/files', '--prune' => true, '--since' => '2026-01-01'] ) );
         $output = Artisan::output();
         $this->assertStringContainsString( 'The --since option can not be used together with --prune', $output );
         $this->assertStringNotContainsString( 'Gone', $output );
@@ -3290,7 +3356,7 @@ class ImportTest extends ImportTestAbstract
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--dry-run' => true] ) );
         $this->assertStringContainsString( 'Drupal uses the Domain Access module, the nodes of all domains are imported into one site', Artisan::output() );
 
-        $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--drupal-domain' => 'site_c'] ) );
+        $this->assertSame( 1, Artisan::call( 'cms:drupal-import', ['--drupal-domain' => 'site_c'] ) );
         $this->assertStringContainsString( 'Domain Access domain "site_c" not found.', Artisan::output() );
         $this->assertSame( 0, PageView::count() );
 
@@ -3537,6 +3603,60 @@ class ImportTest extends ImportTestAbstract
     }
 
 
+    public function testUrlsNodeUri(): void
+    {
+        // the query string and fragment are kept for all supported node URIs
+        $this->assertSame( [42, '?a=1#top'], Drupal\Urls::nodeUri( 'entity:node/42?a=1#top' ) );
+        $this->assertSame( [42, '#top'], Drupal\Urls::nodeUri( 'internal:/node/42#top' ) );
+        $this->assertSame( [42, ''], Drupal\Urls::nodeUri( 'route:entity.node.canonical;node=42' ) );
+        $this->assertSame( [42, ''], Drupal\Urls::nodeUri( 'entity:node/42;x' ) );
+        $this->assertNull( Drupal\Urls::nodeUri( 'entity:node/42a' ) );
+        $this->assertNull( Drupal\Urls::nodeUri( 'internal:/about' ) );
+    }
+
+
+    public function testFormatterWarnsAboutInvalidDates(): void
+    {
+        $db = DB::connection( 'drupal' );
+        $data = new Drupal\Data( $reader = new Drupal\V8( $db, fn() => null ) );
+        $urls = new Drupal\Urls( $reader, $data, new Drupal\Languages( $data, [] ), 'en', $this->rows( [] ), [], fn() => null );
+        $warnings = [];
+
+        $formatter = new Drupal\Formatter( $data, $urls, function( string $msg ) use ( &$warnings ) {
+            $warnings[] = $msg;
+        } );
+
+        // invalid dates are kept as they are and reported instead of being dropped silently
+        $this->assertSame( 'not a date', $formatter->text( 'node', 'page', 'field_date', ['type' => 'datetime'], fn() => 'not a date', 'en' ) );
+        $this->assertCount( 1, $warnings );
+        $this->assertStringContainsString( 'Kept invalid Drupal date "not a date"', $warnings[0] );
+
+        $this->assertSame( '2024-01-01 10:00', $formatter->text( 'node', 'page', 'field_date', ['type' => 'datetime'], fn() => '2024-01-01T10:00:00', 'en' ) );
+        $this->assertCount( 1, $warnings );
+    }
+
+
+    public function testPagesPathsChunked(): void
+    {
+        $paths = array_map( fn( $num ) => 'chunk/' . $num, range( 1, 600 ) );
+
+        // paths are stored with and without leading slash
+        foreach( [1 => 'chunk/1', 300 => '/chunk/300', 600 => 'chunk/600'] as $num => $path ) {
+            Pages::create( ['name' => "Page {$num}", 'path' => $path, 'domain' => 'example.com', 'lang' => 'en'], [] );
+        }
+
+        // more paths than allowed in one IN clause are fetched in chunks
+        $pages = ( new Drupal\Pages( 'example.com' ) )->paths( $paths );
+
+        $keys = array_keys( $pages );
+        sort( $keys );
+
+        $this->assertSame( ['chunk/1', 'chunk/300', 'chunk/600'], $keys );
+        $this->assertSame( 'Page 600', $pages['chunk/600']->name );
+        $this->assertSame( [], ( new Drupal\Pages( 'other.com' ) )->paths( $paths ) );
+    }
+
+
     public function testUrlsKeepOnlyFirstAliasPerLanguage(): void
     {
         $db = DB::connection( 'drupal' );
@@ -3594,6 +3714,16 @@ class ImportTest extends ImportTestAbstract
         $this->assertSame( [2, 3, 4, 5], array_values( $visible ) );
         // the patterns are compiled once for all pages
         $this->assertSame( ["/TEAM\r\n\n/blog/*\n<front>\n/node/5"], array_keys( ( new \ReflectionProperty( \Aimeos\Cms\Import\Drupal\Placements::class, 'patterns' ) )->getValue( $placements ) ) );
+    }
+
+
+    public function testDataDraftsRequireSequence(): void
+    {
+        $data = new Drupal\Data( new Drupal\V8( DB::connection( 'drupal' ), fn() => null ) );
+
+        // the draft revisions are fetched in the import order of the nodes
+        $this->expectException( \LogicException::class );
+        $data->drafts( [1 => [2]] );
     }
 
 
@@ -4952,7 +5082,7 @@ class ImportTest extends ImportTestAbstract
         };
         $command->setLaravel( app() );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $level = $cms->transactionLevel();
         $commits = [];
         // the variants of the imported nodes and the ones with their dates when a batch is committed
@@ -4965,7 +5095,7 @@ class ImportTest extends ImportTestAbstract
 
         $cms->enableQueryLog();
         $this->assertSame( 0, $command->run( new ArrayInput( ['--domain' => 'example.com'] ), new BufferedOutput() ) );
-        $updates = $this->queries( $cms )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'UPDATE "cms_page_variants" SET ' ) );
+        $updates = $this->queries( $cms )->pluck( 'query' )->filter( fn( $query ) => str_starts_with( $query, 'UPDATE "cms_page_variants" SET "created_at"' ) );
         $cms->disableQueryLog();
 
         // the dates are written before each batch is committed
@@ -4975,9 +5105,9 @@ class ImportTest extends ImportTestAbstract
             $this->assertSame( $count, $dated );
         }
 
-        // one query per column for each batch
-        $this->assertSame( $updates->filter( fn( $query ) => str_contains( $query, 'SET "created_at"' ) )->count(), $updates->filter( fn( $query ) => str_contains( $query, 'SET "updated_at"' ) )->count() );
-        $this->assertSame( 3, $updates->filter( fn( $query ) => str_contains( $query, 'SET "created_at"' ) )->count() );
+        // one query with both columns for each batch
+        $this->assertSame( 3, $updates->count() );
+        $this->assertSame( 3, $updates->filter( fn( $query ) => str_contains( $query, 'SET "created_at" = CASE' ) && str_contains( $query, ', "updated_at" = CASE' ) )->count() );
 
         $dates = fn( string $name, string $lang ) => [
             PageView::language( $lang )->where( 'name', $name )->firstOrFail()->created_at?->format( 'Y-m-d H:i:s' ),
@@ -5010,7 +5140,7 @@ class ImportTest extends ImportTestAbstract
         $pending = $used->versions()->forceCreate( ['lang' => 'en', 'editor' => 'importer', 'data' => ['type' => 'text', 'text' => 'Text'], 'published' => false] );
         $published = $used->versions()->forceCreate( ['lang' => 'en', 'editor' => 'importer', 'data' => ['type' => 'text', 'text' => 'Text'], 'published' => true] );
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $db->table( 'cms_page_file' )->insert( [
             ['variant_id' => $kept->variant_id, 'file_id' => $files['kept']],
             ['variant_id' => $stale->variant_id, 'file_id' => $files['stale']],
@@ -5312,7 +5442,7 @@ class ImportTest extends ImportTestAbstract
             ] );
         }
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
 
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
         $this->assertStringContainsString( "Term pages: {$count} imported", Artisan::output() );
@@ -5351,7 +5481,7 @@ class ImportTest extends ImportTestAbstract
         $db->table( 'taxonomy_index' )->insert( ['nid' => 1, 'tid' => 1] );
         $db->table( 'path_alias' )->insert( ['path' => '/taxonomy/term/1', 'alias' => '/tags/tag-1', 'langcode' => 'en'] );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
 
         $this->assertSame( 0, Artisan::call( 'cms:drupal-import', ['--domain' => 'example.com', '--terms' => 'tags'] ) );
 

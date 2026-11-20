@@ -15,6 +15,8 @@ use Illuminate\Support\Collection;
 
 /**
  * Collects the taxonomy terms with URL alias and renders the content of their pages.
+ *
+ * @phpstan-import-type ContentElements from Elements
  */
 class Terms
 {
@@ -81,7 +83,7 @@ class Terms
      *
      * @param \stdClass $term Record of the taxonomy_term_field_data table
      * @param array<int, int> $nids IDs of the imported nodes tagged with the term
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>, elementIds?: array<int, string>, meta?: array<string, mixed>}
+     * @return ContentElements
      */
     public function content( \stdClass $term, array $nids ): array
     {
@@ -144,7 +146,7 @@ class Terms
      *
      * @param array<int, array{0: string, 1: string}> $links List of URL and title pairs
      * @param string $langcode Drupal language code of the term
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
+     * @return ContentElements
      */
     protected function links( array $links, string $langcode ): array
     {

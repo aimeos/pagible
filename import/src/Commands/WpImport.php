@@ -8,7 +8,6 @@
 namespace Aimeos\Cms\Commands;
 
 use Aimeos\Cms\Commands;
-use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\WordPress;
@@ -104,7 +103,7 @@ class WpImport extends Commands
     /**
      * Builds the page data array for an article.
      *
-     * @param int $status 1 for enabled pages, 0 for disabled ones
+     * @param int $status Page status, one of the Pages::STATUS_* constants
      * @return array<string, mixed>
      */
     protected function buildPageData( string $title, string $slug, string $tag = 'article', int $status = Pages::STATUS_PUBLISHED ): array
@@ -128,30 +127,27 @@ class WpImport extends Commands
     /**
      * Creates a File record with a published version or returns the one created before by this import.
      *
-     * Unlike createFile(), files are not looked up by their path because downloaded files get a new one.
      * The path must be rewritten by the WpMedia object before.
      *
      * @param bool $download TRUE to download the file and store it locally
+     * @return string|null File ID or NULL if the path isn't a valid URL
      */
     protected function createMediaFile( string $mime, string $name, string $path, bool $download = false ): ?string
     {
-        if( !Utils::isValidUrl( $path, strict: false ) ) {
-            return null;
-        }
+        return Utils::isValidUrl( $path, strict: false ) ? $this->importFile( $mime, $name, $path, $download ) : null;
+    }
 
-        if( $id = $this->knownFile( $path ) ) {
-            return $id;
-        }
 
-        // files used by several posts are only downloaded once if the download fails
-        // the MIME type of downloaded files is detected from their content
-        $file = $this->downloadOnce( $path, $download, fn() => Files::create( $mime, $name, $path, $this->editor, $download, $download ? $this->downloaded( $path ) : null ) );
-        $id = $file->id ?? '';
-
-        $this->createdFiles->put( $path, $id );
-        $this->media->remember( $id, $file->mime ?? '' );
-
-        return $id;
+    /**
+     * Remembers the MIME type of the file created by importFile(), so preview() doesn't need to fetch it.
+     *
+     * @param string $path Source URL or path of the file
+     * @param File $file Created file
+     */
+    #[\Override]
+    protected function importedFile( string $path, File $file ): void
+    {
+        $this->media->remember( (string) $file->id, (string) $file->mime );
     }
 
 
@@ -440,7 +436,8 @@ class WpImport extends Commands
     {
         return $this->wordpress ??= new WordPress(
             fn( string $tag ) => $this->media->image( $tag ),
-            fn( string $url ) => $this->media->url( $url )
+            fn( string $url ) => $this->media->url( $url ),
+            fn( string $msg ) => $this->warn( $msg )
         );
     }
 }

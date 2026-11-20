@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Concerns\Drupal;
 
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Import\Drupal;
+use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Tally;
 use Aimeos\Cms\Models\PageView;
@@ -20,10 +21,6 @@ use Illuminate\Support\LazyCollection;
  */
 trait Terms
 {
-    /** Counts of the imported term pages */
-    protected Tally $termTally;
-
-
     /**
      * Imports the taxonomy terms of the vocabularies from the --terms option as hidden pages.
      *
@@ -33,10 +30,10 @@ trait Terms
      */
     protected function importTerms( PageView $root ): void
     {
-        $vocabularies = array_values( array_filter( array_map( 'trim', explode( ',', $this->stringOption( 'terms' ) ) ) ) );
+        $tally = new Tally();
         $terms = new Drupal\Terms( $this->reader, $this->data, $this->languages, $this->urls, $this->content, $this->nodes, $this->translated, fn( string $msg ) => $this->warn( $msg ) );
 
-        foreach( LazyCollection::make( fn() => $terms->all( $vocabularies ) )->chunk( DB::IN_SIZE ) as $items )
+        foreach( LazyCollection::make( fn() => $terms->all( $this->vocabularies ) )->chunk( DB::IN_SIZE ) as $items )
         {
             // the pages of the terms and the variants of the pages of translated terms are fetched at once
             $this->prefetchPages( $items->pluck( 'slug' )->all() );
@@ -48,12 +45,12 @@ trait Terms
                 // term pages only link to the pages of the imported nodes
                 $nids = array_values( array_filter( $item['nids'], fn( $nid ) => $this->createdPages->has( $nid ) ) );
 
-                $this->termTally->add( $this->transaction( "term [{$item['term']->tid}] {$item['term']->name}",
+                $tally->add( $this->transaction( "term [{$item['term']->tid}] {$item['term']->name}",
                     fn() => $this->importTerm( $terms, $item['term'], $item['slug'], $nids, $root, $item['translations'] ) ) );
             }
         }
 
-        $this->subtotals( $this->termTally, 'term pages' );
+        $this->subtotals( $tally, 'term pages' );
     }
 
 
@@ -70,7 +67,7 @@ trait Terms
     protected function importTerm( Drupal\Terms $terms, \stdClass $term, string $slug, array $nids, PageView $root, array $translations = [] ): Status
     {
         $content = $terms->content( $term, $nids );
-        $data = $this->pageData( (string) $term->name, $slug, 2 );
+        $data = $this->pageData( (string) $term->name, $slug, Pages::STATUS_HIDDEN );
 
         ['page' => $page, 'status' => $status] = $this->savePage( $slug, $data, $content, $root );
 
@@ -91,13 +88,11 @@ trait Terms
             // translations changed in Pagible aren't overwritten
             $existing = $variants[$language['lang']] ?? null;
 
-            if( $existing && $existing->editor !== $this->editor )
-            {
-                $this->warn( "  Skipped translation: {$translation['term']->name} [{$language['lang']}] (changed in Pagible since the last import)" );
+            if( $this->skipsTranslation( $existing, (string) $translation['term']->name, $language['lang'] ) ) {
                 continue;
             }
 
-            $variant = $this->saveVariant( $page, $language, $translation['slug'], $this->pageData( (string) $translation['term']->name, $translation['slug'], 2 ),
+            $variant = $this->saveVariant( $page, $language, $translation['slug'], $this->pageData( (string) $translation['term']->name, $translation['slug'], Pages::STATUS_HIDDEN ),
                 $terms->content( $translation['term'], $nids ), $existing );
 
             if( $variant )

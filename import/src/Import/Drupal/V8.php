@@ -109,14 +109,24 @@ class V8 extends Reader
     {
         $changed = [];
 
-        foreach( ['node_field_data', 'node_field_revision'] as $table )
+        if( $this->hasColumn( 'node_field_data', 'changed' ) )
         {
-            if( !$this->hasColumn( $table, 'changed' ) ) {
-                continue;
-            }
-
-            $rows = Database::chunked( $nids, fn( $ids ) => $this->db->table( $table )->whereIn( 'nid', $ids )
+            $rows = Database::chunked( $nids, fn( $ids ) => $this->db->table( 'node_field_data' )->whereIn( 'nid', $ids )
                 ->groupBy( 'nid' )->select( 'nid', DB::raw( 'MAX(changed) AS changed' ) )->get() );
+
+            foreach( $rows as $row ) {
+                $changed[(int) $row->nid] = max( $changed[(int) $row->nid] ?? 0, (int) $row->changed );
+            }
+        }
+
+        // only revisions newer than the current ones (drafts) can be changed later, older ones are covered by node_field_data
+        if( $this->hasColumn( 'node_field_revision', 'changed' ) )
+        {
+            $rows = Database::chunked( $nids, fn( $ids ) => $this->db->table( 'node_field_revision as r' )
+                ->join( 'node_field_data as d', fn( $join ) => $join->on( 'd.nid', '=', 'r.nid' )->on( 'd.langcode', '=', 'r.langcode' ) )
+                ->whereIn( 'r.nid', $ids )
+                ->whereColumn( 'r.vid', '>', 'd.vid' )
+                ->groupBy( 'r.nid' )->select( 'r.nid', DB::raw( 'MAX(r.changed) AS changed' ) )->get() );
 
             foreach( $rows as $row ) {
                 $changed[(int) $row->nid] = max( $changed[(int) $row->nid] ?? 0, (int) $row->changed );
@@ -517,14 +527,7 @@ class V8 extends Reader
     {
         return LazyCollection::make( function() use ( $tids, $limit ) {
             $tids = array_values( array_unique( $tids ) );
-
-            foreach( $limit !== null ? array_chunk( $tids, 1 ) : array_chunk( $tids, \Aimeos\Cms\DB::IN_SIZE ) as $ids )
-            {
-                foreach( $this->db->table( 'taxonomy_index' )->whereIn( 'tid', $ids )->orderByDesc( 'sticky' )->orderByDesc( 'created' )
-                    ->orderBy( 'nid' )->when( $limit, fn( $query, $limit ) => $query->limit( $limit ) )->select( ['tid', 'nid'] )->cursor() as $row ) {
-                    yield $row;
-                }
-            }
+            yield from $this->indexRows( array_chunk( $tids, $limit !== null ? 1 : \Aimeos\Cms\DB::IN_SIZE ), $limit );
         } );
     }
 

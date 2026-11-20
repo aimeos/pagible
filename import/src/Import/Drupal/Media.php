@@ -53,7 +53,7 @@ class Media
     public function prefetch( array $rows, string $field ): void
     {
         $uuids = $ids = ['media' => [], 'node' => [], 'file' => []];
-        $uris = $tids = [];
+        $uris = $tids = $images = [];
 
         foreach( $rows as $list )
         {
@@ -67,6 +67,11 @@ class Media
                     foreach( $matches as $match ) {
                         $uris[] = ( str_starts_with( strtolower( $match[1] ), 'system' ) ? 'private://' : 'public://' ) . rawurldecode( $match[2] );
                     }
+                }
+
+                // the inline images are imported by their URLs and looked up as existing files
+                if( preg_match_all( '/<img\b[^>]*>/i', $text, $matches ) ) {
+                    array_push( $images, ...$matches[0] );
                 }
 
                 // the URLs of the linked terms require their records
@@ -101,6 +106,7 @@ class Media
 
         $this->data->prefetchEmbeds( $uuids['node'], $ids['node'], $uuids['file'], $ids['file'], $uris );
         $this->data->prefetch( 'taxonomy_term_field_data', 'tid', $tids );
+        $this->files->prefetchImages( $images );
     }
 
 
@@ -183,7 +189,7 @@ class Media
             return Elements::imageContent( $fileId, $caption );
         }
 
-        return ['elements' => [Elements::create( $element, ['file' => Elements::file( $fileId )] )], 'fileIds' => [$fileId]];
+        return Elements::fileContent( $element, $fileId );
     }
 
 
@@ -209,7 +215,7 @@ class Media
         $type = strstr( (string) ( $this->data->fileRow( $fid )->filemime ?? '' ), '/', true );
         $type = $players && in_array( $type, ['audio', 'video'], true ) ? $type : 'file';
 
-        return ['elements' => [Elements::create( $type, ['file' => Elements::file( $fileId )] )], 'fileIds' => [$fileId]];
+        return Elements::fileContent( $type, $fileId );
     }
 
 

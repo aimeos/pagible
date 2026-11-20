@@ -45,11 +45,10 @@ class V8Tracker extends Tracker
      * and by their UUIDs embedded in the text fields.
      *
      * @param int $since Unix timestamp of the --since option
-     * @param array<int, int> $nids IDs of all imported nodes
      * @param array<string, array{0: string, 1: string, 2: string}> $fields Entity type, field name and "block_content", "media" or "text" by field table
      * @return array<int, int> Node IDs
      */
-    public function nodes( int $since, array $nids, array $fields ): array
+    public function nodes( int $since, array $fields ): array
     {
         // the titles of the menu links are used as page names
         $linked = $this->reader->changedLinks( $this->menu, $since )->map( $this->nodeId )->all();
