@@ -337,11 +337,8 @@ abstract class Base extends Model
         foreach( $wheres as $field => $list )
         {
             $column = DB::qualify( $field, $table, isDraft: true, driver: $driver ) ?? "{$table}.{$field}";
-
-            $list === [null]
-                ? $sub->whereNull( $column )
-                : $sub->where( fn( $q ) => $q->whereIn( $column, array_filter( $list, fn( $v ) => $v !== null ) )
-                    ->when( in_array( null, $list, true ), fn( $q ) => $q->orWhereNull( $column ) ) );
+            // fields like "scheduled" are stored differently than their values
+            DB::whereField( $sub, $field, $column, $list );
         }
 
         if( !$lookup ) {

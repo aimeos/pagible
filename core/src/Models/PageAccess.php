@@ -146,7 +146,7 @@ class PageAccess extends Model
             $pages = $descendants ? self::subtree( $ids[0] ) : self::pages( $ids );
             PageView::checkBulk( count( $pages ) );
 
-            [$changed, $reindex] = self::changes( $pages, $values );
+            [$changed, $reindex, $existing] = self::changes( $pages, $values );
 
             if( $values !== null && count( $changed ) * max( 1, count( $values ) ) > PageView::MAX_BULK ) {
                 throw new Exception( sprintf( 'No more than %d page access assignments may be changed at once.', PageView::MAX_BULK ) );
@@ -156,7 +156,7 @@ class PageAccess extends Model
                 self::deleteAccess( $changed );
             }
             elseif( $changed ) {
-                self::replaceAccess( $changed, $values, Utils::editor( $user ) );
+                self::replaceAccess( $changed, $existing, $values, Utils::editor( $user ) );
             }
 
             return [$pages, $changed, $reindex];
@@ -210,13 +210,14 @@ class PageAccess extends Model
      *
      * @param list<string> $pages IDs of the pages to update
      * @param array<int, string>|null $values New access state
-     * @return array{0: list<string>, 1: list<string>} IDs of the changed pages and of the pages switching between public and restricted
+     * @return array{0: list<string>, 1: list<string>, 2: list<string>} IDs of the changed pages, of the pages switching
+     *  between public and restricted and of the changed pages which have access rows
      */
     private static function changes( array $pages, ?array $values ) : array
     {
         $current = self::currentValues( $pages );
         $restricted = $values !== null;
-        $changed = $reindex = [];
+        $changed = $reindex = $existing = [];
 
         foreach( $pages as $id )
         {
@@ -226,12 +227,16 @@ class PageAccess extends Model
 
             $changed[] = $id;
 
+            if( array_key_exists( $id, $current ) ) {
+                $existing[] = $id;
+            }
+
             if( array_key_exists( $id, $current ) !== $restricted ) {
                 $reindex[] = $id;
             }
         }
 
-        return [$changed, $reindex];
+        return [$changed, $reindex, $existing];
     }
 
 
@@ -319,16 +324,17 @@ class PageAccess extends Model
      * Replaces access rows for the supplied pages.
      *
      * @param list<string> $ids
+     * @param list<string> $existing IDs of the pages which have access rows
      * @param array<int, string> $values
      */
-    private static function replaceAccess( array $ids, array $values, string $editor ) : void
+    private static function replaceAccess( array $ids, array $existing, array $values, string $editor ) : void
     {
         $now = now()->startOfSecond();
         $model = new self();
         $table = $model->getConnection()->table( $model->getTable() );
         $tenant = Tenancy::value();
 
-        self::deleteAccess( $ids );
+        self::deleteAccess( $existing );
 
         $rows = [];
 

@@ -558,12 +558,27 @@ class Sync
                 }
             }
 
-            if( !empty( $ids ) )
-            {
-                PageVariant::whereIn( 'id', $ids )->toBase()->update( ['stale' => true] );
-                self::reindex( $ids );
-            }
+            self::flag( $ids );
         }
+    }
+
+
+    /**
+     * Sets the stale flag of the page variants and reindexes them.
+     *
+     * @param array<int, mixed> $ids Variant IDs
+     */
+    public static function flag( array $ids ) : void
+    {
+        if( !$ids ) {
+            return;
+        }
+
+        foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
+            PageVariant::withTrashed()->whereKey( $chunk )->toBase()->update( ['stale' => true] );
+        }
+
+        self::reindex( $ids );
     }
 
 

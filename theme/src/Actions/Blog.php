@@ -34,7 +34,7 @@ class Blog
         $order = $sort[0] === '-' ? substr( $sort, 1 ) : $sort;
         $dir = $sort[0] === '-' ? 'desc' : 'asc';
 
-        $editor = \Aimeos\Cms\Permission::can( 'page:view', $request->user() );
+        $editor = \Aimeos\Cms\Permission::previews( $request->user() );
 
         $with = $editor ? ['latest' => fn( $q ) => $q->select( Version::AUX_COLUMNS )] : [];
 
@@ -42,7 +42,7 @@ class Blog
 
         // list the articles in the language of the current page, see "cms.translate.fallback"
         $page->localize( $builder = PageView::query() );
-        $builder->whereIn( 'status', [1, 2] )->access( $request->user() );
+        $builder->active()->access( $request->user() );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );

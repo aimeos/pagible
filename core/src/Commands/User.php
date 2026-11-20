@@ -10,7 +10,6 @@ namespace Aimeos\Cms\Commands;
 use Aimeos\Cms\Permission;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,15 +20,14 @@ class User extends Command
      * Command name
      */
     protected $signature = 'cms:user
-        {--a|add=* : Add permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
+        {--a|add=* : Add roles or permissions for the user by name, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
         {--d|disable : Disables the user}
         {--e|enable : Enables the user}
         {--l|list : Lists all permissions of the CMS user}
         {--langs=* : Restrict writes to these language codes, e.g. "de" (can be used multiple times, replaces the current languages), "*" for all languages or empty for none}
         {--p|password= : Secret password of the account (will ask if user will be created)}
         {--q|--quiet : Do not output any message}
-        {--r|remove=* : Remove permissions for the user by permission names, patterns like "page:*", "*:view", or "*" for all permissions (can be used multiple times)}
-        {--role= : Add a named role to the user (e.g. "editor", "publisher", "admin")}
+        {--r|remove=* : Remove assigned roles, permissions or patterns, others are denied by a "!" entry (can be used multiple times)}
         {--roles : Lists all available roles and their permissions}
         {email? : E-Mail of the user}';
 
@@ -103,39 +101,45 @@ class User extends Command
     /**
      * Returns the permissions and roles resulting from the command options.
      *
+     * Roles, permissions and patterns are stored as passed and resolved when checking the permissions.
+     * Removing an entry which isn't assigned itself denies it using a "!" entry instead.
+     *
      * @param array<string> $assigned Currently assigned permissions and roles
      * @return array<string>|null New permissions and roles or NULL if no option changes them
      */
     protected function assigned( array $assigned ) : ?array
     {
-        $changed = false;
+        $add = array_filter( (array) $this->option( 'add' ), 'is_string' );
+        $remove = array_filter( (array) $this->option( 'remove' ), 'is_string' );
+
+        if( !$this->option( 'enable' ) && !$this->option( 'disable' ) && !$add && !$remove ) {
+            return null;
+        }
 
         if( $this->option( 'enable' ) ) {
-            $assigned = $this->permissions( ['*'] );
-            $changed = true;
+            $assigned = ['*'];
         }
 
-        if( $perms = $this->option( 'add' ) ) {
-            $assigned = array_merge( $assigned, $this->permissions( (array) $perms ) );
-            $changed = true;
+        foreach( $add as $entry ) {
+            $assigned = [...array_diff( $assigned, ['!' . $entry] ), $entry];
         }
 
-        if( is_string( $role = $this->option( 'role' ) ) ) {
-            $assigned = array_merge( $assigned, (array) $role );
-            $changed = true;
-        }
-
-        if( $perms = $this->option( 'remove' ) ) {
-            $assigned = array_diff( $assigned, $this->permissions( (array) $perms ) );
-            $changed = true;
+        foreach( $remove as $entry )
+        {
+            if( in_array( $entry, $assigned, true ) ) {
+                $assigned = array_diff( $assigned, [$entry] );
+            } elseif( $assigned ) {
+                $assigned[] = '!' . $entry;
+            } else {
+                $this->warn( sprintf( 'Nothing to remove for "%s", the user has no assignments', $entry ) );
+            }
         }
 
         if( $this->option( 'disable' ) ) {
             $assigned = [];
-            $changed = true;
         }
 
-        return $changed ? array_values( array_unique( $assigned ) ) : null;
+        return array_values( array_unique( $assigned ) );
     }
 
 
@@ -202,7 +206,7 @@ class User extends Command
             return;
         }
 
-        if( $roles = Permission::assigned( $user, true ) ) {
+        if( $roles = Permission::assignedRoles( $user ) ) {
             $this->info( 'roles:' );
             foreach( $roles as $role ) {
                 $this->line( sprintf( '  %1$s', $role ) );
@@ -246,30 +250,6 @@ class User extends Command
                 $this->line( sprintf( '  %1$s', $perm ) );
             }
         }
-    }
-
-
-    /**
-     * Returns the actions for the given names or patterns.
-     *
-     * @param array<string|null> $actions Names or patterns of the requested actions, e.g. "page:view", "page:*" or "*:view"
-     * @return array<string> List of action names
-     */
-    protected function permissions( array $actions ) : array
-    {
-        $list = [];
-        $perms = Permission::all();
-
-        foreach( array_filter( $actions ) as $name )
-        {
-            if( str_contains( $name, '*' ) ) {
-                array_push( $list, ...array_filter( $perms, fn( $perm ) => Str::is( $name, $perm ) ) );
-            } else {
-                $list[] = $name;
-            }
-        }
-
-        return $list;
     }
 
 

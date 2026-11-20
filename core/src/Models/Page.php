@@ -118,11 +118,16 @@ class Page extends Model
     {
         $table = $this->getTable();
 
+        // expired() selects nothing if pruning is disabled
+        if( !$date = static::cutoff() ) {
+            return static::expired();
+        }
+
         // descendants are pruned together with their topmost expired ancestor
         return static::expired()
             ->whereNotExists( fn( $query ) => $query->selectRaw( '1' )->from( $table . ' as parent' )
                 ->whereColumn( 'parent.id', $table . '.parent_id' )
-                ->where( 'parent.deleted_at', '<=', static::cutoff() ) )
+                ->where( 'parent.deleted_at', '<=', $date ) )
             ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH );
     }
 

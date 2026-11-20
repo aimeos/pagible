@@ -168,7 +168,7 @@ class UserResolver
      */
     public function roles( Authenticatable $user ) : array
     {
-        return Permission::assigned( $user, true );
+        return Permission::assignedRoles( $user );
     }
 
 

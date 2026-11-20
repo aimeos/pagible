@@ -67,7 +67,7 @@ class PageController extends Controller
 
         $user = $request->user();
 
-        if( Permission::can( 'page:view', $user ) ) {
+        if( Permission::previews( $user ) ) {
             return $this->latest( $path, $domain, $user );
         }
 
@@ -166,6 +166,10 @@ class PageController extends Controller
             ?? PageView::with( $with )->allVariants()->where( 'domain', $domain )->where( 'path', $path )->first()
             ?? throw ( new \Illuminate\Database\Eloquent\ModelNotFoundException() )->setModel( PageView::class, [$path] );
 
+        // the layouts inherit the configuration from the latest versions of the ancestors,
+        // eager loading would use the source variants instead of the ones in the page language
+        $this->ancestors( $page, fn( $query ) => $query->with( 'latest' ) );
+
         $version = $page->latest;
 
         if( $version ) {
@@ -208,7 +212,7 @@ class PageController extends Controller
     {
         // only reached for users without "page:view" permission
         $query = PageView::with( PageView::contentRelations() )
-            ->whereIn( 'cms_page_view.status', [1, 2] )
+            ->active()
             ->withAccess( $user );
 
         $page = $route && $route->variant_id
@@ -216,7 +220,20 @@ class PageController extends Controller
             : $query->allVariants()->where( 'domain', $domain )->where( 'path', $path )->firstOrFail();
 
         // the ancestors are loaded with their access decisions, so the navigation doesn't load them again
-        return $page->setRelation( 'ancestors', $page->ancestors()->getQuery()->scopes( ['withAccess' => [$user]] )->get() );
+        return $this->ancestors( $page, fn( $query ) => $query->scopes( ['withAccess' => [$user]] ) );
+    }
+
+
+    /**
+     * Loads the ancestors of the page with the query customized by the callback.
+     *
+     * @param PageView $page Page whose ancestors are loaded
+     * @param \Closure(\Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model>): \Illuminate\Database\Eloquent\Builder<\Illuminate\Database\Eloquent\Model> $callback Customizes the ancestor query
+     * @return PageView Page with the "ancestors" relation set
+     */
+    protected function ancestors( PageView $page, \Closure $callback ) : PageView
+    {
+        return $page->setRelation( 'ancestors', $callback( $page->ancestors()->getQuery() )->get() );
     }
 
 
