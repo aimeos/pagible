@@ -35,8 +35,8 @@ Global settings:
 |--------|-------------|---------|-------------|
 | `maxtoken` | `CMS_AI_MAXTOKEN` | provider default | Maximum tokens per AI response |
 | `maxsteps` | `CMS_AI_MAXSTEPS` | `25` | Maximum tool steps of the admin AI chat |
-| `timeout` | `CMS_AI_TIMEOUT` | `60` | Maximum seconds a single AI provider request may run |
-| `maxtime` | `CMS_AI_MAXTIME` | `300` | Maximum seconds of all provider requests of an AI request together, e.g. a chat answer (0 for no limit) |
+| `timeout` | `CMS_AI_TIMEOUT` | `300` | Maximum seconds a single AI provider request may run |
+| `maxtime` | `CMS_AI_MAXTIME` | `900` | Maximum seconds of all provider requests of an AI request together, e.g. a chat answer (0 for no limit) |
 | `maxinput` | `CMS_AI_MAXINPUT` | `1048576` | Maximum input size in bytes sent to a provider |
 | `maxdepth` | `CMS_AI_MAXDEPTH` | `20` | Maximum nesting depth of structured input |
 | `ratelimit` | `CMS_AI_RATELIMIT` | `60` | Maximum AI provider calls per minute and tenant made by page and file description translations |
