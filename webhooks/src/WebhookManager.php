@@ -42,8 +42,10 @@ class WebhookManager
     private const ROTATION_GRACE = 86400;
 
 
-    public function __construct( private readonly WebhookClient $client )
-    {
+    public function __construct(
+        private readonly WebhookClient $client,
+        private readonly WebhookPayload $payload,
+    ) {
     }
 
 
@@ -116,6 +118,9 @@ class WebhookManager
             return $webhooks;
         } );
 
+        // Deleted by query so the model hooks which discard the cached subscriptions don't run
+        app( WebhookSubscriptions::class )->forget();
+
         foreach( $webhooks as $webhook ) {
             $this->changed( 'purged', $actor, $webhook );
         }
@@ -142,12 +147,7 @@ class WebhookManager
 
         $webhook = $this->find( $id );
 
-        $body = json_encode( [
-            'event' => 'webhook.ping',
-            'tenant_id' => $tenant,
-            'timestamp' => now()->utc()->toRfc3339String( true ),
-            'data' => ['id' => $webhook->id],
-        ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES );
+        $body = $this->payload->forPing( $tenant, $webhook );
 
         try {
             $response = $this->client->send( $webhook->target(), (string) Str::uuid(), $body );

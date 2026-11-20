@@ -17,11 +17,25 @@ use Illuminate\Support\Carbon;
 trait PrunesTrashed
 {
     /**
-     * Returns the date the items must have been trashed before to be pruned.
+     * Default number of days trashed items are kept, see "cms.prune"
      */
-    protected static function cutoff() : Carbon
+    public const PRUNE_DAYS = 30;
+
+
+    /**
+     * Returns the date the items must have been trashed before to be pruned.
+     *
+     * @return Carbon|null Cutoff date or NULL if pruning is disabled by FALSE as "cms.prune" value
+     */
+    protected static function cutoff() : ?Carbon
     {
-        return now()->subDays( config( 'cms.prune', 30 ) );
+        $days = config( 'cms.prune', self::PRUNE_DAYS );
+
+        if( $days === false || $days === null || $days === '' ) {
+            return null;
+        }
+
+        return now()->subDays( (int) $days );
     }
 
 
@@ -32,6 +46,13 @@ trait PrunesTrashed
      */
     protected static function expired() : Builder
     {
-        return static::withoutTenancy()->where( 'deleted_at', '<=', static::cutoff() );
+        $query = static::withoutTenancy();
+
+        // nothing is pruned if pruning is disabled
+        if( !$date = static::cutoff() ) {
+            return $query->whereRaw( '1 = 0' );
+        }
+
+        return $query->where( 'deleted_at', '<=', $date );
     }
 }

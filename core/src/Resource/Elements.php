@@ -105,20 +105,21 @@ class Elements
     public function save( string $id, array $input, ?Authenticatable $user = null, ?string $latestId = null ) : Element
     {
         Permission::check( 'element:save', $user );
-
-        $element = Element::withTrashed()->with( 'latest' )->findOrFail( $id );
-        Langs::authorize( $element, $user, $input );
-
-        $type = $input['type'] ?? $element->type;
         Validation::limits( Element::class, $input );
-
-        if( ( $data = Validation::element( $type, $input['data'] ?? null, isset( $input['type'] ) ) ) !== null ) {
-            $input['data'] = $data;
-        }
 
         $editor = Utils::editor( $user );
 
-        return DB::transaction( function() use ( $element, $input, $editor, $latestId, $user ) {
+        return DB::transaction( function() use ( $id, $input, $editor, $latestId, $user ) {
+
+            // locked so concurrent saves merge with the latest version saved by the other one
+            $element = Element::withTrashed()->with( 'latest' )->lockForUpdate()->findOrFail( $id );
+            Langs::authorize( $element, $user, $input );
+
+            $type = $input['type'] ?? $element->type;
+
+            if( ( $data = Validation::element( $type, $input['data'] ?? null, isset( $input['type'] ) ) ) !== null ) {
+                $input['data'] = $data;
+            }
 
             $this->apply( $element, $input, $editor, $latestId, $user );
             $element->announce( Action::Saved, $editor );

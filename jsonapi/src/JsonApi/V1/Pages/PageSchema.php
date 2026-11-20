@@ -28,7 +28,6 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
-use Illuminate\Support\Facades\Auth;
 
 
 class PageSchema extends CmsSchema
@@ -117,7 +116,7 @@ class PageSchema extends CmsSchema
 
         if( $needsRelations ) {
             // the latest versions of editors are loaded by the JSON:API scope
-            $editor = Permission::can( 'page:view', Auth::user() );
+            $editor = Permission::previews();
             $query = $query->with( PageView::contentRelations( $editor ? 'latest.' : '' ) );
         }
 

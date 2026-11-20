@@ -201,7 +201,7 @@ return [
     | removed. Disable pruning with FALSE as value.
     |
     */
-    'prune' => env( 'CMS_PRUNE', 30 ),
+    'prune' => env( 'CMS_PRUNE', \Aimeos\Cms\Models\Base::PRUNE_DAYS ),
 
     /*
     |--------------------------------------------------------------------------

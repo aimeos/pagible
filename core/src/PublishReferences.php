@@ -294,9 +294,18 @@ final class PublishReferences
 
         foreach( array_chunk( $groups, Base::CHUNK, true ) as $chunk )
         {
-            $current = array_fill_keys( array_keys( $chunk ), [] );
+            // owners without references only need their pivots removed
+            if( !array_filter( $chunk, fn( $sets ) => $sets[$key] !== [] ) )
+            {
+                $db->table( $table )->whereIn( $owner, array_keys( $chunk ) )->delete();
+                continue;
+            }
 
-            foreach( $db->table( $table )->select( $owner, $related )->whereIn( $owner, array_keys( $chunk ) )->cursor() as $row )
+            $current = array_fill_keys( array_keys( $chunk ), [] );
+            // owners known to have no pivots yet, e.g. never published ones, are only inserted
+            $known = array_keys( array_filter( $chunk, fn( $sets ) => $sets[$active] !== false ) );
+
+            foreach( $known ? $db->table( $table )->select( $owner, $related )->whereIn( $owner, $known )->cursor() : [] as $row )
             {
                 /** @var string $ownerId */
                 $ownerId = $row->{$owner};
@@ -326,7 +335,11 @@ final class PublishReferences
                 continue;
             }
 
-            $db->table( $table )->whereIn( $owner, $replace )->delete();
+            // only owners with existing pivots need them removed
+            if( $stale = array_values( array_filter( $replace, fn( $id ) => $current[$id] !== [] ) ) ) {
+                $db->table( $table )->whereIn( $owner, $stale )->delete();
+            }
+
             DB::insertRows( $db->table( $table ), $rows );
         }
     }

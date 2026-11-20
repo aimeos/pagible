@@ -133,6 +133,24 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testPruneDisabled(): void
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Keep', 'data' => ['text' => 'Keep']], $this->user );
+        Elements::drop( $element->id, $this->user );
+
+        $this->travel( 1000 )->days();
+        config( ['cms.prune' => false] );
+
+        try {
+            $this->artisan( 'model:prune', ['--model' => [Element::class]] )->assertSuccessful();
+        } finally {
+            config( ['cms.prune' => 30] );
+        }
+
+        $this->assertTrue( Element::withTrashed()->whereKey( $element->id )->exists() );
+    }
+
+
     public function testSavePageKeepsFilesWhenSectionOmitted()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -1901,6 +1919,21 @@ class ResourceTest extends CoreTestAbstract
         $latest = $element->latest->fresh();
         $this->assertNull( $latest->publish_at );
         $this->assertSame( 0, $latest->data->scheduled );
+    }
+
+
+    public function testWhereLatestMatchesScheduledState()
+    {
+        $element = Elements::add( [
+            'lang' => 'en', 'type' => 'text', 'name' => 'Scheduled filter',
+            'data' => ['text' => 'Scheduled'],
+        ], $this->user );
+
+        Elements::publishMany( [$element->id], $this->user, '2030-01-01 00:00:00' );
+
+        $this->assertContains( $element->id, Element::whereLatest( ['scheduled' => 1] )->pluck( 'id' )->all() );
+        $this->assertNotContains( $element->id, Element::whereLatest( ['scheduled' => 0] )->pluck( 'id' )->all() );
+        $this->assertContains( $element->id, Element::whereLatest( ['scheduled' => [0, 1]] )->pluck( 'id' )->all() );
     }
 
 
