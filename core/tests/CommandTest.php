@@ -383,44 +383,44 @@ class CoreCommandTest extends CoreTestAbstract
 
     public function testUser(): void
     {
-        $allPerms = \Aimeos\Cms\Permission::all();
-        $imagePerms = array_values( array_filter( $allPerms, fn( $p ) => str_starts_with( $p, 'image:' ) ) );
-        $viewPerms = array_values( array_filter( $allPerms, fn( $p ) => str_ends_with( $p, ':view' ) ) );
-        $viewPublishPerms = array_values( array_filter( $allPerms, fn( $p ) => str_ends_with( $p, ':view' ) || str_ends_with( $p, ':publish' ) ) );
-
-        $perms = fn() => User::where('email', 'test@example.com')->first()?->cmsperms ?? [];
+        $user = fn() => User::where( 'email', 'test@example.com' )->first();
+        $perms = fn() => $user()?->cmsperms ?? [];
 
         $this->artisan('cms:user', ['-p' => 'test', 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-e' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEqualsCanonicalizing( $allPerms, $perms() );
+        $this->assertSame( ['*'], $perms() );
+        $this->assertTrue( Permission::can( 'page:drop', $user() ) );
+
+        $this->artisan('cms:user', ['-r' => 'page:drop', 'email' => 'test@example.com'])->assertExitCode( 0 );
+        $this->assertEqualsCanonicalizing( ['*', '!page:drop'], $perms() );
+        $this->assertFalse( Permission::can( 'page:drop', $user() ) );
+
+        $this->artisan('cms:user', ['-a' => 'page:drop', 'email' => 'test@example.com'])->assertExitCode( 0 );
+        $this->assertEqualsCanonicalizing( ['*', 'page:drop'], $perms() );
+        $this->assertTrue( Permission::can( 'page:drop', $user() ) );
 
         $this->artisan('cms:user', ['-d' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEmpty( $perms() );
 
-        $this->artisan('cms:user', ['-a' => '*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEqualsCanonicalizing( $allPerms, $perms() );
-
-        $this->artisan('cms:user', ['-r' => '*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEmpty( $perms() );
-
         $this->artisan('cms:user', ['-a' => 'image:*', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEqualsCanonicalizing( $imagePerms, $perms() );
+        $this->assertSame( ['image:*'], $perms() );
+        $this->assertTrue( Permission::can( 'image:imagine', $user() ) );
 
         $this->artisan('cms:user', ['-r' => 'image:*', 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEmpty( $perms() );
 
-        $this->artisan('cms:user', ['-a' => '*:view', 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEqualsCanonicalizing( $viewPerms, $perms() );
+        $this->artisan('cms:user', ['-a' => ['*:view', '*:publish', 'editor'], 'email' => 'test@example.com'])->assertExitCode( 0 );
+        $this->assertEqualsCanonicalizing( ['*:view', '*:publish', 'editor'], $perms() );
 
-        $this->artisan('cms:user', ['-a' => ['*:view', '*:publish'], 'email' => 'test@example.com'])->assertExitCode( 0 );
-        $this->assertEqualsCanonicalizing( $viewPublishPerms, $perms() );
-
-        $this->artisan('cms:user', ['-r' => ['*:view', '*:publish'], 'email' => 'test@example.com'])->assertExitCode( 0 );
+        $this->artisan('cms:user', ['-r' => ['*:view', '*:publish', 'editor'], 'email' => 'test@example.com'])->assertExitCode( 0 );
         $this->assertEmpty( $perms() );
 
-        $this->artisan('cms:user', ['-r' => '*:view', 'email' => 'test@example.com'])->assertExitCode( 0 );
+        // denying something which isn't granted changes nothing
+        $this->artisan('cms:user', ['-r' => '*:view', 'email' => 'test@example.com'])
+            ->expectsOutput( 'Nothing to remove for "*:view", the user has no assignments' )
+            ->assertExitCode( 0 );
         $this->assertEmpty( $perms() );
 
         $this->artisan('cms:user', ['-l' => true, 'email' => 'test@example.com'])->assertExitCode( 0 );

@@ -488,7 +488,7 @@ class PageAccessTest extends CoreTestAbstract
 
         Permission::system( fn() => PageAccess::set( [$root->id], [], descendants: true ) );
 
-        $this->assertCount( 6, DB::getQueryLog() );
+        $this->assertCount( 5, DB::getQueryLog() );
 
         $count = PageView::query()
             ->where( \Aimeos\Nestedset\NestedSet::LFT, '>=', $root->getLft() )

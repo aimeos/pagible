@@ -339,12 +339,12 @@ class BenchmarkCore extends Command
         }, readOnly: true, tries: $tries );
 
         $this->benchmark( 'Visible paginate', function() use ( $lang ) {
-            PageView::visible( $lang )->whereIn( 'status', [1, 2] )->orderBy( NestedSet::LFT )->paginate( 100, page: 10 );
+            PageView::visible( $lang )->active()->orderBy( NestedSet::LFT )->paginate( 100, page: 10 );
         }, readOnly: true, tries: $tries );
 
         // lists filtered by variant columns fetch one more page instead of counting all pages
         $this->benchmark( 'Visible simple', function() use ( $lang ) {
-            PageView::visible( $lang )->whereIn( 'status', [1, 2] )->orderBy( NestedSet::LFT )->simplePaginate( 100, page: 10 );
+            PageView::visible( $lang )->active()->orderBy( NestedSet::LFT )->simplePaginate( 100, page: 10 );
         }, readOnly: true, tries: $tries );
 
         // regional languages join the variants of their parent language too

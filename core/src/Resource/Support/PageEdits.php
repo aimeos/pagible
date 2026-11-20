@@ -20,6 +20,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Resource\BulkResult;
 use Aimeos\Cms\Facades\Variants;
+use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Validation;
 use Aimeos\Nestedset\NestedSet;
@@ -72,17 +73,19 @@ final class PageEdits
             Langs::authorize( $page, $user );
             Langs::identity( $input, $user, $page );
 
+            // a restored old translation may not match the current source anymore
+            $stale = $restore && !$page->isSourceVariant();
+
             if( !empty( $input ) || $source === null )
             {
-                self::apply( $page, $input, $editor, $latestId, $user );
+                // saved together with the new version
+                self::apply( $page, $input, $editor, $latestId, $user, values: $stale ? ['stale' => true] : [] );
                 $page->announce( Action::Saved, $editor );
                 PruneVersions::dispatchChunked( PageView::class, [$page->getVersionKey()] );
             }
-
-            // a restored old translation may not match the current source anymore
-            if( $restore && !$page->isSourceVariant() )
+            elseif( $stale )
             {
-                $page->variant()->toBase()->update( ['stale' => true] );
+                Sync::flag( [$page->variant_id] );
                 $page->forceFill( ['stale' => true] )->syncOriginal();
             }
 
@@ -168,9 +171,10 @@ final class PageEdits
      * @param string|null $latestId Version ID the editor was working on for conflict detection
      * @param Authenticatable|null $user Current user
      * @param array<string, array<string>>|null $refs Prefetched references of the latest version to copy
+     * @param array<string, mixed> $values Variant values saved together with the new version
      */
     private static function apply( PageView $page, array $input, string $editor,
-        ?string $latestId, ?Authenticatable $user, ?array $refs = null ) : void
+        ?string $latestId, ?Authenticatable $user, ?array $refs = null, array $values = [] ) : void
     {
         $aux = array_intersect_key( $input, array_flip( ['meta', 'config', 'content'] ) );
         $data = array_diff_key( $input, $aux );
@@ -193,6 +197,6 @@ final class PageEdits
         $data['domain'] ??= $page->domain;
 
         // without new content, meta or config, the references of the previous version are copied
-        PageRows::addVersion( $page, $data, $aux, $editor, $accepts ? Refs::page( $aux, $user ) : $refs, $diffs, $input['lang'] ?? $page->latest?->lang );
+        PageRows::addVersion( $page, $data, $aux, $editor, $accepts ? Refs::page( $aux, $user ) : $refs, $diffs, $input['lang'] ?? $page->latest?->lang, $values );
     }
 }
