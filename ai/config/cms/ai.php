@@ -101,8 +101,8 @@ return [
     | most, so they don't occupy a PHP worker for hours (0 for no limit).
     |
     */
-    'timeout' => (int) env( 'CMS_AI_TIMEOUT', 300 ),
-    'maxtime' => (int) env( 'CMS_AI_MAXTIME', 900 ),
+    'timeout' => (int) env( 'CMS_AI_TIMEOUT', 30 ),
+    'maxtime' => (int) env( 'CMS_AI_MAXTIME', 300 ),
 
 
     /*
