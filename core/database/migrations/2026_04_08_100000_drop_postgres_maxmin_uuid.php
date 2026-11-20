@@ -21,7 +21,7 @@ return new class extends Migration
             return;
         }
 
-        $name = config('cms.db', 'sqlite');
+        $name = \Aimeos\Cms\DB::name();
 
         DB::connection($name)->statement("DROP AGGREGATE IF EXISTS max(uuid);");
         DB::connection($name)->statement("DROP AGGREGATE IF EXISTS min(uuid);");

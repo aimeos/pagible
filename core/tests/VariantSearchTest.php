@@ -307,6 +307,23 @@ class VariantSearchTest extends CoreTestAbstract
     }
 
 
+    public function testPublishedLanguageReindexesTheOtherVariants(): void
+    {
+        $page = PageView::where( 'path', 'blog' )->firstOrFail();
+        $id = (string) $page->id;
+        $locales = [(string) $page->lang, 'de', 'de-CH', 'fr'];
+        config( ['cms.locales' => $locales] );
+
+        Permission::system( fn() => Variants::add( $id, 'de' ) );
+        Permission::system( fn() => Pages::save( $id, ['lang' => 'de-CH'] ) );
+        Permission::system( fn() => Pages::publishMany( [$id] ) );
+
+        // "de-CH" uses the source variant now instead of the "de" variant
+        $this->assertSame( 'de-CH', PageView::findOrFail( $id )->lang );
+        $this->assertListed( [$id], $locales, 'publish de-CH' );
+    }
+
+
     public function testTrashedVariantsAreNotReindexedWithoutSoftDeletes(): void
     {
         $page = PageView::where( 'path', 'blog' )->firstOrFail();

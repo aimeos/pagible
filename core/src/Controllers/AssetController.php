@@ -7,10 +7,10 @@
 namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\FileResponse;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Tenancy;
-use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Aimeos\Cms\DB;
@@ -46,9 +46,8 @@ class AssetController extends Controller
 
             $owner = $query->findOrFail( $page );
 
-            if( !$editor && $owner->access_exists && !$owner->access_allowed )
-            {
-                $user ? abort( 403 ) : throw new AuthenticationException();
+            if( !$editor ) {
+                PageAccess::check( $owner, $user );
             }
 
             if( !$this->attached( $owner, $file, $editor ) ) {
@@ -88,8 +87,7 @@ class AssetController extends Controller
 
         if( $editor )
         {
-            $latest = $db->table( 'cms_page_variants' )->select( 'latest_id' )
-                ->where( 'page_id', $page->id )->where( 'tenant_id', $page->tenant_id )->whereNotNull( 'latest_id' );
+            $latest = ( clone $variants )->select( 'latest_id' )->whereNotNull( 'latest_id' );
 
             $direct = $db->table( 'cms_version_file' )->selectRaw( '1 as attached' )
                 ->whereIn( 'version_id', $latest )->where( 'file_id', $file );

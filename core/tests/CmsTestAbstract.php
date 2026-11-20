@@ -57,7 +57,7 @@ abstract class CmsTestAbstract extends \Orchestra\Testbench\TestCase
 
     protected function tearDown(): void
     {
-        \Aimeos\Cms\Access::extend( null );
+        \Aimeos\Cms\Access::resetExtensions();
         \Aimeos\Cms\Access::using( null );
         $this->manageTenancy( false );
         $this->app?->forgetInstance( \Aimeos\Cms\Hooks::class );

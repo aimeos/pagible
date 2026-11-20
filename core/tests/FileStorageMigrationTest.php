@@ -28,7 +28,7 @@ class FileStorageMigrationTest extends CoreTestAbstract
 
     public function testFileCatalogHasTenantPaginationIndex(): void
     {
-        $indexes = Schema::connection( config( 'cms.db', 'sqlite' ) )->getIndexes( 'cms_files' );
+        $indexes = Schema::connection( \Aimeos\Cms\DB::name() )->getIndexes( 'cms_files' );
         $index = collect( $indexes )->firstWhere( 'name', 'cms_files_tenant_id_id_index' );
 
         $this->assertSame( ['tenant_id', 'id'], $index['columns'] ?? null );
@@ -59,7 +59,7 @@ class FileStorageMigrationTest extends CoreTestAbstract
         ] );
 
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
-        DB::connection( config( 'cms.db', 'sqlite' ) )->table( 'cms_page_file' )->updateOrInsert( [
+        \Aimeos\Cms\DB::connection()->table( 'cms_page_file' )->updateOrInsert( [
             'variant_id' => $page->variant_id, 'file_id' => $file->id,
         ] );
         Event::fake( [PageInvalidated::class] );

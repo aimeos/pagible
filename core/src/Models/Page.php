@@ -117,13 +117,12 @@ class Page extends Model
     public function prunable() : Builder
     {
         $table = $this->getTable();
-        $date = now()->subDays( config( 'cms.prune', 30 ) );
 
         // descendants are pruned together with their topmost expired ancestor
         return static::expired()
             ->whereNotExists( fn( $query ) => $query->selectRaw( '1' )->from( $table . ' as parent' )
                 ->whereColumn( 'parent.id', $table . '.parent_id' )
-                ->where( 'parent.deleted_at', '<=', $date ) )
+                ->where( 'parent.deleted_at', '<=', static::cutoff() ) )
             ->select( 'id', 'tenant_id', 'parent_id', 'deleted_at', NestedSet::LFT, NestedSet::RGT, NestedSet::DEPTH );
     }
 
@@ -148,9 +147,10 @@ class Page extends Model
                     return [];
                 }
 
+                $ids = $page->newNestedSetQuery()->whereDescendantOrSelf( $page )->pluck( 'id' )->map( strval( ... ) )->all();
                 $variantIds = [];
 
-                foreach( array_chunk( $page->subtreeIds(), DB::IN_SIZE ) as $chunk ) {
+                foreach( array_chunk( $ids, DB::IN_SIZE ) as $chunk ) {
                     array_push( $variantIds, ...PageVariant::withoutGlobalScopes()->whereIn( 'page_id', $chunk )->pluck( 'id' )->map( strval( ... ) )->all() );
                 }
 
@@ -347,16 +347,5 @@ class Page extends Model
     protected function shouldFireDescendantEvents() : bool
     {
         return false;
-    }
-
-
-    /**
-     * Returns the IDs of the page and its descendants.
-     *
-     * @return array<int, string> Page IDs
-     */
-    protected function subtreeIds() : array
-    {
-        return $this->newNestedSetQuery()->whereDescendantOrSelf( $this )->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

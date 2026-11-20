@@ -15,6 +15,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Facades\Elements;
 use Aimeos\Cms\Facades\Files;
 use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\Facades\Variants;
 use Database\Seeders\TestSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -124,6 +125,77 @@ class LifecycleSearchTest extends CoreTestAbstract
     }
 
 
+    public function testScheduleIndexesPageVariant(): void
+    {
+        $page = PageView::query()->where( 'path', 'hidden' )->firstOrFail();
+        Variants::add( (string) $page->id, 'de', $this->user );
+        Variants::save( (string) $page->id, 'de', ['path' => 'hidden-de'], $this->user );
+        $this->engine->documents = [];
+
+        Variants::publishMany( [(string) $page->id], 'de', $this->user, now()->addDay()->toDateTimeString() );
+
+        $document = $this->engine->document( PageView::class );
+
+        $this->assertSame( 'de', $document['lang'] ?? null );
+        $this->assertSame( 1, $document['scheduled'] ?? null );
+    }
+
+
+    public function testRemovalInTransactionWinsOverPendingIndex(): void
+    {
+        $element = Element::query()->firstOrFail();
+        $this->engine->documents = [];
+
+        \Aimeos\Cms\DB::transaction( function() use ( $element ) {
+            \Aimeos\Cms\Scout::index( Element::class, [(string) $element->id] );
+            \Aimeos\Cms\Scout::unindex( Element::class, [(string) $element->id] );
+        } );
+
+        $this->assertArrayNotHasKey( Element::class, $this->engine->documents );
+        $this->assertSame( [(string) $element->id], $this->engine->deleted[Element::class] ?? [] );
+
+        \Aimeos\Cms\DB::transaction( function() use ( $element ) {
+            \Aimeos\Cms\Scout::unindex( Element::class, [(string) $element->id] );
+            \Aimeos\Cms\Scout::index( Element::class, [(string) $element->id] );
+        } );
+
+        $this->assertArrayHasKey( Element::class, $this->engine->documents );
+        $this->assertSame( [(string) $element->id], $this->engine->deleted[Element::class] ?? [] );
+    }
+
+
+    public function testPageRestoredInTransactionKeepsItsVariants(): void
+    {
+        config( ['scout.soft_delete' => false] );
+
+        try
+        {
+            $page = PageView::query()->where( 'path', 'hidden' )->firstOrFail();
+            $this->engine->documents = [];
+
+            \Aimeos\Cms\DB::transaction( function() use ( $page ) {
+                Pages::dropMany( [(string) $page->id], $this->user );
+                Pages::restoreMany( [(string) $page->id], $this->user );
+            } );
+
+            $this->assertArrayNotHasKey( PageView::class, $this->engine->deleted );
+            $this->assertArrayHasKey( PageView::class, $this->engine->documents );
+
+            \Aimeos\Cms\DB::transaction( function() use ( $page ) {
+                Pages::dropMany( [(string) $page->id], $this->user );
+                Pages::restoreMany( [(string) $page->id], $this->user );
+                Pages::dropMany( [(string) $page->id], $this->user );
+            } );
+
+            $this->assertSame( [(string) $page->variant_id], $this->engine->deleted[PageView::class] ?? [] );
+        }
+        finally
+        {
+            config( ['scout.soft_delete' => true] );
+        }
+    }
+
+
     public function testRelocateFileDoesNotUpdateSearchIndex(): void
     {
         config( [
@@ -168,6 +240,19 @@ class LifecycleSearchEngineSpy extends NullEngine
     public function document( string $model ) : ?array
     {
         return $this->documents[$model] ?? null;
+    }
+
+
+    /** @var array<class-string<Element|File|PageView>, list<string>> */
+    public array $deleted = [];
+
+
+    /** @param \Illuminate\Database\Eloquent\Collection<int, Element|File|PageView> $models */
+    public function delete( $models ) : void
+    {
+        foreach( $models as $model ) {
+            $this->deleted[get_class( $model )][] = (string) $model->getScoutKey();
+        }
     }
 
 

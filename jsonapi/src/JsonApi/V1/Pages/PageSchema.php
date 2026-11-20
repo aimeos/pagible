@@ -51,14 +51,9 @@ class PageSchema extends CmsSchema
         return [
             ID::make()->uuid(),
             Str::make( 'parent_id' )->readOnly(),
-            Str::make( 'lang' )->readOnly(),
-            Str::make( 'path' )->readOnly(),
-            Str::make( 'name' )->readOnly(),
-            Str::make( 'title' )->readOnly(),
-            Str::make( 'theme' )->readOnly(),
-            Str::make( 'type' )->readOnly(),
-            Str::make( 'to' )->readOnly(),
-            Str::make( 'domain' )->readOnly(),
+            ...array_map( fn( $name ) => Str::make( $name )->readOnly()->extractUsing(
+                fn( $model, $column ) => $model->latestValue( $column, true )
+            ), ['lang', 'path', 'name', 'title', 'theme', 'type', 'to', 'domain'] ),
             Number::make( 'has' )->readOnly(),
             Number::make( 'cache' )->readOnly(),
             DateTime::make( 'createdAt' )->readOnly(),
@@ -121,14 +116,9 @@ class PageSchema extends CmsSchema
             || str_contains( $fields, 'config' );
 
         if( $needsRelations ) {
-            $with = PageView::contentRelations();
-
-            if( Permission::can( 'page:view', Auth::user() ) ) {
-                $with['latest'] = fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' );
-                $with += PageView::contentRelations( 'latest.' );
-            }
-
-            $query = $query->with( $with );
+            // the latest versions of editors are loaded by the JSON:API scope
+            $editor = Permission::can( 'page:view', Auth::user() );
+            $query = $query->with( PageView::contentRelations( $editor ? 'latest.' : '' ) );
         }
 
         if( !$fields || str_contains( $fields, 'variants' ) ) {

@@ -1,6 +1,6 @@
 extend type Mutation {
   "Get page metrics for the last X days"
-  metrics(url: String! @rules(apply: ["required", "max:500"]), days: Int @rules(apply: ["nullable", "integer", "min:1", "max:90"])): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-graphql")
+  metrics(url: String! @rules(apply: ["required", "max:500"]), days: Int @rules(apply: ["nullable", "integer", "min:1", "max:90"])): Stats @guard @cmsPermission(action: "page:metrics") @throttle(name: "cms-graphql") @cmsException
 }
 
 type Stats {

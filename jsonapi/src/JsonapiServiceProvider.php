@@ -5,6 +5,7 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Events\CmsJsonapi;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Scopes\Status;
 use Illuminate\Support\ServiceProvider as Provider;
 
@@ -23,6 +24,11 @@ class JsonapiServiceProvider extends Provider
 
                 ( new Status() )->apply( $query, $query->getModel() );
                 $query->access( $request->user() );
+
+                // editors get the drafts in single reads, includes and lists
+                if( Permission::can( 'page:view', $request->user() ) ) {
+                    $query->with( ['latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] )] );
+                }
             } );
         }
 

@@ -9,8 +9,6 @@ namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Facades\Pages;
-use Aimeos\Cms\Validation;
-use Aimeos\Cms\Models\PageView;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -53,35 +51,20 @@ class AddPage extends Tool
             'meta.meta-tags.data.description.required' => 'You must provide a meta description in meta.meta-tags.data.description for SEO. It should be 150-160 characters.',
         ] );
 
-        $pid = $v['parent_id'] ?? null;
-
-        /** @var PageView|null $parent */
-        $parent = $pid
-            ? PageView::withTrashed()
-                ->select( 'id', 'tenant_id', 'latest_id' )
-                ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'data' )] )
-                ->find( $pid )
-            : null;
-
         $v['path'] = $v['path'] ?? Utils::slugify( $v['title'] );
-        $v['domain'] = $v['domain'] ?? $parent?->latest?->data->domain ?? '';
-        $v['theme'] = $v['theme'] ?? $parent?->latest?->data->theme ?? '';
-        $v['type'] = $v['type'] ?? $parent?->latest?->data->type ?? '';
-
         // Raw input preserves the element order, see SavePage
-        $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] );
-        $v['cache'] = $v['cache'] ?? 5;
-        $v['tag'] = $v['tag'] ?? '';
-        $v['to'] = $v['to'] ?? '';
+        $v['content'] = $request->get( 'content' );
         $v['status'] = 0;
 
         $input = array_diff_key( $v, array_flip( ['parent_id', 'ref'] ) );
 
+        // the content groups are validated against the sections of the inherited page type
         $page = Pages::add(
             $input,
             $request->user(),
             $v['ref'] ?? null,
-            $pid,
+            $v['parent_id'] ?? null,
+            sections: true,
         );
 
         return Response::structured( Presenter::item( $page ) );

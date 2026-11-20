@@ -36,13 +36,13 @@ class Blog
 
         $editor = \Aimeos\Cms\Permission::can( 'page:view', $request->user() );
 
-        $with = $editor ? ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux' )] : [];
+        $with = $editor ? ['latest' => fn( $q ) => $q->select( Version::AUX_COLUMNS )] : [];
 
         $attr = ['id', 'lang', 'path', 'name', 'title', 'to', 'domain', 'content', 'created_at', 'latest_id'];
 
         // list the articles in the language of the current page, see "cms.translate.fallback"
         $page->localize( $builder = PageView::query() );
-        $builder->whereIn( 'status', [1, 2] );
+        $builder->whereIn( 'status', [1, 2] )->access( $request->user() );
 
         if( $pid = $item->data->{'parent-page'}->value ?? null ) {
             $builder->where( 'parent_id', $pid );

@@ -15,7 +15,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection( \Aimeos\Cms\DB::name() );
 
         $db->table( 'cms_versions' )->whereNotNull( 'publish_at' )
             ->chunkById( 500, function( $chunk ) use ( $db ) {

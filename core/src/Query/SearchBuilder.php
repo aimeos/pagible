@@ -23,18 +23,8 @@ class SearchBuilder extends Builder
      */
     protected function engine()
     {
-        $wheres = [];
-
-        foreach( $this->wheres as $key => $where )
-        {
-            $field = is_array( $where ) ? ( $where['field'] ?? $key ) : $key;
-
-            if( $field !== 'tenant_id' ) {
-                $wheres[$key] = $where;
-            }
-        }
-
-        $this->wheres = $wheres;
+        $this->wheres = array_filter( $this->wheres,
+            fn( $where, $key ) => SearchQuery::field( $where, $key ) !== 'tenant_id', ARRAY_FILTER_USE_BOTH );
         $this->where( 'tenant_id', Tenancy::value() );
 
         return parent::engine();

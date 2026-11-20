@@ -8,6 +8,6 @@
 			srcset="{{ collect((array) cms($file, 'previews', []))->map(fn($path, $width) => cmsasset($page, $file, (int) $width) . ' ' . $width . 'w')->implode(',') }}"
 			src="{{ cmsasset($page, $file, $preview) }}"
 			sizes="{{ $sizes }}"
-			alt="{{ cms($file, 'description')?->{cms($page, 'lang')} ?? cms($file, 'name') }}">
+			alt="{{ cmstext($page, $file, 'description') ?? cms($file, 'name') }}">
 	@endif
 </picture>

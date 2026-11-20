@@ -50,7 +50,7 @@ class CmsEngineTest extends SearchTestAbstract
 
     protected function waitIndex()
     {
-        $conn = DB::connection( config( 'cms.db' ) );
+        $conn = \Aimeos\Cms\DB::connection();
 
         if( $conn->getDriverName() === 'sqlsrv' )
         {
@@ -339,7 +339,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $file->setRelation( 'latest', $version )->searchable();
 
-        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+        if( \Aimeos\Cms\DB::connection()->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
         }
 
@@ -378,6 +378,20 @@ class CmsEngineTest extends SearchTestAbstract
 
         $this->assertSame( PageView::fallback( 'en' )->count(), $result->total() );
         $this->assertStringContainsString( 'count(', implode( "\n", array_column( $conn->getQueryLog(), 'query' ) ) );
+    }
+
+
+    public function testPaginateSelectsColumns(): void
+    {
+        foreach( ['', 'laravel'] as $term )
+        {
+            $search = SearchQuery::select( SearchQuery::prefer( PageView::search( $term ), 'en' ), ['id', 'title'] );
+            $page = $search->paginate( 2 )->first();
+
+            $this->assertNotNull( $page );
+            $this->assertArrayHasKey( 'title', $page->getAttributes() );
+            $this->assertArrayNotHasKey( 'content', $page->getAttributes() );
+        }
     }
 
 
@@ -438,7 +452,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $file->setRelation( 'latest', $version )->searchable();
 
-        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+        if( \Aimeos\Cms\DB::connection()->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
         }
 
@@ -522,30 +536,30 @@ class CmsEngineTest extends SearchTestAbstract
         $engine->delete( new \Illuminate\Database\Eloquent\Collection() );
 
         // update re-indexes
-        $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )->count();
+        $count = \Aimeos\Cms\DB::connection()->table( 'cms_index' )->count();
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
         $page->variant->update( ['name' => 'Updated home'] );
 
-        if( DB::connection( config( 'cms.db' ) )->getDriverName() === 'sqlsrv' ) {
+        if( \Aimeos\Cms\DB::connection()->getDriverName() === 'sqlsrv' ) {
             sleep( 5 );
         }
 
-        $this->assertEquals( $count, DB::connection( config( 'cms.db' ) )->table( 'cms_index' )->count() );
+        $this->assertEquals( $count, \Aimeos\Cms\DB::connection()->table( 'cms_index' )->count() );
 
         // delete removes from index
-        $indexBefore = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+        $indexBefore = \Aimeos\Cms\DB::connection()->table( 'cms_index' )
             ->where( 'indexable_id', $page->variant_id )->count();
         $this->assertGreaterThan( 0, $indexBefore );
 
         $page->unsearchable();
 
-        $indexAfter = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+        $indexAfter = \Aimeos\Cms\DB::connection()->table( 'cms_index' )
             ->where( 'indexable_id', $page->variant_id )->count();
         $this->assertEquals( 0, $indexAfter );
 
         // flush
         $engine->flush( new PageView() );
-        $count = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+        $count = \Aimeos\Cms\DB::connection()->table( 'cms_index' )
             ->where( 'indexable_type', PageView::class )->count();
         $this->assertEquals( 0, $count );
     }
@@ -564,7 +578,7 @@ class CmsEngineTest extends SearchTestAbstract
         Pages::bulk( [$page->id], ['name' => 'ztqbulkterm'], $user );
 
         // the draft (latest=true) index row was refreshed with the new content
-        $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+        $draft = \Aimeos\Cms\DB::connection()->table( 'cms_index' )
             ->where( 'indexable_id', $page->variant_id )->where( 'latest', true )->value( 'content' );
 
         $this->waitIndex();
@@ -597,7 +611,7 @@ class CmsEngineTest extends SearchTestAbstract
 
         $this->waitIndex();
 
-        $db = DB::connection( config( 'cms.db' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $page->variant_id )->exists() );
         $this->assertTrue( $db->table( 'cms_index' )->where( 'indexable_id', $variant->variant_id )->exists() );
 
@@ -652,7 +666,7 @@ class CmsEngineTest extends SearchTestAbstract
         try
         {
             $update = function( bool $fail ) use ( $page ) {
-                DB::connection( config( 'cms.db' ) )->transaction( function() use ( $page, $fail ) {
+                \Aimeos\Cms\DB::connection()->transaction( function() use ( $page, $fail ) {
                     $page->variant->update( ['name' => 'rolled back'] );
                     $page->page->delete();
                     $page->page->restore();
@@ -695,7 +709,7 @@ class CmsEngineTest extends SearchTestAbstract
         // the reindex must refresh a soft-deleted item's draft row despite the SoftDeletes scope
         Pages::bulk( [$page->id], ['name' => 'zttrashterm'], $user );
 
-        $draft = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+        $draft = \Aimeos\Cms\DB::connection()->table( 'cms_index' )
             ->where( 'indexable_id', $page->variant_id )->where( 'latest', true )->value( 'content' );
 
         $this->assertNotNull( $draft );
@@ -721,7 +735,7 @@ class CmsEngineTest extends SearchTestAbstract
         $ids = [(string) $parent->id, (string) $child->id];
         Pages::publishMany( $ids, $user );
         $keys = [(string) $parent->variant_id => (string) $parent->id, (string) $child->variant_id => (string) $child->id];
-        $query = DB::connection( config( 'cms.db' ) )->table( 'cms_index' )
+        $query = \Aimeos\Cms\DB::connection()->table( 'cms_index' )
             ->where( 'indexable_type', PageView::class )
             ->whereIn( 'indexable_id', array_keys( $keys ) );
         $indexed = fn( bool $latest ) => ( clone $query )
@@ -786,7 +800,7 @@ class CmsEngineTest extends SearchTestAbstract
 
     public function testLangMigrationKeepsSqliteIndexRows(): void
     {
-        $db = DB::connection( config( 'cms.db' ) );
+        $db = \Aimeos\Cms\DB::connection();
 
         if( $db->getDriverName() !== 'sqlite' ) {
             $this->markTestSkipped( 'FTS5 table upgrade' );

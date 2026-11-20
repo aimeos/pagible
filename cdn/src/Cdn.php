@@ -144,7 +144,7 @@ class Cdn
         $params = [];
 
         // Routes are relative to the configured URL, not to the host of the current request
-        if( config( 'cms.multidomain' ) )
+        if( Utils::multidomain() )
         {
             $domain = $domain ?: (string) parse_url( $base, PHP_URL_HOST );
             $base = ( parse_url( $base, PHP_URL_SCHEME ) ?: 'https' ) . '://' . $domain;

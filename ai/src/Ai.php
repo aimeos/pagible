@@ -280,7 +280,7 @@ final class Ai
             throw new Exception( __( 'Invalid image' ) );
         }
 
-        $max = max( 1, (int) config( 'cms.upload.maxpixels', 4096 * 4096 ) );
+        $max = Uploads::maxPixels();
 
         if( ( $info[0] + $width ) * ( $info[1] + $height ) * $factor * $factor > $max ) {
             throw new Exception( __( 'The edited image would exceed the maximum size of :max pixels', ['max' => $max] ) );

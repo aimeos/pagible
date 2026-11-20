@@ -314,6 +314,55 @@ class JsonapiTest extends JsonapiTestAbstract
     }
 
 
+    public function testPageIncludeSubtreeAsEditor()
+    {
+        $page = \Aimeos\Cms\Models\PageView::where('tag', 'root')->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->id = 42;
+        $user->tenant_id = \Aimeos\Cms\Tenancy::value();
+        $this->actingAs( $user );
+
+        $response = $this->jsonApi()->expects( 'pages' )->includePaths( 'subtree' )->get( "cms/pages/{$page->id}" );
+        $response->assertFetchedOne( $page );
+        $this->assertCount( 4, $response->json( 'included' ) );
+    }
+
+
+    public function testEditorsGetDrafts()
+    {
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+        $child = $root->children->firstOrFail();
+        $user = new \App\Models\User( ['cmsperms' => ['page:view']] );
+        $user->id = 42;
+        $user->tenant_id = \Aimeos\Cms\Tenancy::value();
+
+        Permission::system( fn() => \Aimeos\Cms\Facades\Pages::save( $root->id, [
+            'title' => 'Draft root',
+            'meta' => ['meta-tags' => ['type' => 'meta-tags', 'data' => ['description' => 'Draft meta'], 'files' => []]],
+        ] ) );
+        Permission::system( fn() => \Aimeos\Cms\Facades\Pages::save( $child->id, ['name' => 'Draft child'] ) );
+
+        $read = fn() => $this->jsonApi()->expects( 'pages' )->includePaths( 'children' )->get( "cms/pages/{$root->id}" );
+        $list = fn() => $this->jsonApi()->expects( 'pages' )->get( 'cms/pages' );
+
+        $response = $read();
+        $this->assertSame( $root->title, $response->json( 'data.attributes.title' ) );
+        $this->assertNotContains( 'Draft child', array_column( array_column( $response->json( 'included' ), 'attributes' ), 'name' ) );
+        $this->assertNotSame( 'Draft root', $list()->json( 'data.0.attributes.title' ) );
+
+        $this->actingAs( $user );
+
+        $response = $read();
+        $this->assertSame( 'Draft root', $response->json( 'data.attributes.title' ) );
+        $this->assertSame( 'Draft meta', $response->json( 'data.attributes.meta.meta-tags.data.description' ) );
+        $this->assertContains( 'Draft child', array_column( array_column( $response->json( 'included' ), 'attributes' ), 'name' ) );
+
+        $response = $list();
+        $this->assertSame( 'Draft root', $response->json( 'data.0.attributes.title' ) );
+        $this->assertSame( 'Draft meta', $response->json( 'data.0.attributes.meta.meta-tags.data.description' ) );
+    }
+
+
     public function testPageIncludeParent()
     {
 

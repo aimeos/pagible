@@ -34,19 +34,31 @@ class SearchPages extends SearchTool
         'lang' => 'string|max:10',
         'status' => 'integer|in:0,1,2',
         'parent_id' => 'string|max:36',
-        'type' => 'string|max:50',
+        'type' => SavePage::RULES['type'],
     ] + parent::FILTERS + [
-        'domain' => 'string|max:255',
-        'tag' => 'string|max:50',
-        'theme' => 'string|max:50',
-        'path' => 'string|max:255',
+        'domain' => SavePage::RULES['domain'],
+        'tag' => SavePage::RULES['tag'],
+        'theme' => SavePage::RULES['theme'],
+        'path' => SavePage::RULES['path'],
         'cache' => 'integer|min:0|max:525600',
-        'to' => 'string|max:2000',
+        'to' => SavePage::RULES['to'],
     ];
 
 
     /**
-     * Applies the page specific filters.
+     * Creates the page list search including all page filters.
+     *
+     * @param array<string, mixed> $filter Validated filter values incl. "term"
+     * @return Builder<Model> Filtered search builder
+     */
+    protected function search( array $filter ) : Builder
+    {
+        return Filter::pageList( $filter['term'] ?? '', $filter, $filter['lang'] ?? null );
+    }
+
+
+    /**
+     * Returns the search builder as is because search() already applies the page filters.
      *
      * @param Builder<Model> $search Scout search builder
      * @param array<string, mixed> $filter Validated filter values
@@ -54,7 +66,7 @@ class SearchPages extends SearchTool
      */
     protected function filter( Builder $search, array $filter ) : Builder
     {
-        return Filter::pages( $search, $filter );
+        return $search;
     }
 
 
@@ -80,7 +92,7 @@ class SearchPages extends SearchTool
     {
         return [
             'term' => $schema->string()
-                ->description('Search keyword, e.g., "blog", "product", or "FAQ". One word or page path only.'),
+                ->description('Search keyword, e.g., "blog", "product", or "FAQ". One word, or a path starting with "/" to list the pages whose path starts with it.'),
             'lang' => $schema->string()
                 ->description('ISO language code from the get-locales tool call, e.g., "en" or "en-US".'),
             'status' => $schema->integer()

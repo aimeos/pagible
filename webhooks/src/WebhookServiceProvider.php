@@ -17,6 +17,7 @@ use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\GraphQL\Directives\CmsPermissionDirective;
 use Aimeos\Cms\Listeners\WebhookListener;
+use Aimeos\Cms\Models\Webhook;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider as Provider;
 use Nuwave\Lighthouse\Events\BuildSchemaString;
@@ -44,7 +45,13 @@ class WebhookServiceProvider extends Provider
                 fn() => file_get_contents( $basedir . '/graphql/cms-webhook.graphql' ) ?: '',
             );
         }
-        if( (bool) config( 'cms.webhooks.enabled', false ) ) {
+        if( (bool) config( 'cms.webhooks.enabled', false ) )
+        {
+            // Changes in this process discard the cached subscriptions, deleting by query doesn't
+            // and deliveries to removed subscriptions are skipped by the delivery jobs instead
+            Webhook::saved( fn() => app( WebhookSubscriptions::class )->forget() );
+            Webhook::deleted( fn() => app( WebhookSubscriptions::class )->forget() );
+
             Event::listen(
                 [Published::class, Moved::class, Dropped::class, Restored::class, Purged::class, Bulk::class],
                 [WebhookListener::class, 'handle'],
@@ -73,5 +80,9 @@ class WebhookServiceProvider extends Provider
         $this->app->singleton( WebhookClient::class );
         $this->app->singleton( WebhookConfig::class );
         $this->app->singleton( WebhookManager::class );
+        $this->app->singleton( WebhookPayload::class );
+        // The cached subscriptions are discarded after each queue job and Octane request
+        $this->app->scoped( WebhookSubscriptions::class );
+        $this->app->scoped( WebhookListener::class );
     }
 }

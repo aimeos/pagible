@@ -16,7 +16,6 @@ use Aimeos\Prisma\Files\Video;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Mime\MimeTypes;
 
 
@@ -342,8 +341,8 @@ final class Media
             return 0;
         }
 
-        $disk = FileStorage::diskName( (string) $file->disk );
+        $disk = FileStorage::disk( (string) $file->disk );
         // missing files are reported by fromStoragePath()
-        return (int) rescue( fn() => Storage::disk( $disk )->size( $path ), 0, false );
+        return (int) rescue( fn() => $disk->size( $path ), 0, false );
     }
 }

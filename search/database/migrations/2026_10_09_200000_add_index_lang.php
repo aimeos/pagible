@@ -28,7 +28,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
         $db = $schema->getConnection();
 
         if( $schema->hasColumn( 'cms_index', 'indexable_lang' ) )
@@ -114,7 +114,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         $schema->getConnection()->table( 'cms_index' )->where( 'indexable_type', PageView::class )
             ->update( ['indexable_type' => self::PAGE] );

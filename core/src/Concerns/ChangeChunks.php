@@ -67,4 +67,16 @@ trait ChangeChunks
             return $result->concat( $items );
         }, collect() ) );
     }
+
+
+    /**
+     * Returns the IDs of the changed items.
+     *
+     * @param Collection<int, covariant Base> $items Changed items
+     * @return array<string> Item IDs
+     */
+    protected function ids( Collection $items ) : array
+    {
+        return $items->pluck( 'id' )->map( strval( ... ) )->all();
+    }
 }

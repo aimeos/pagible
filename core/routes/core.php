@@ -5,12 +5,11 @@
  */
 
 use Aimeos\Cms\Controllers\AssetController;
+use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Route;
 
 
-$options = config( 'cms.multidomain' ) ? ['domain' => '{domain}'] : [];
-
-Route::group( $options, function() {
+Route::group( Utils::routeGroup(), function() {
     Route::match( ['GET', 'HEAD'], 'cmsasset/{page}/{file}/{variant?}', [AssetController::class, 'show'] )
         ->where( 'variant', '[0-9]+' )
         ->middleware( ['web', 'throttle:cms-asset'] )

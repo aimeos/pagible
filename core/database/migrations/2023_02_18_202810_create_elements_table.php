@@ -18,7 +18,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->dropIfExists('cms_elements');
+        Schema::connection(\Aimeos\Cms\DB::name())->dropIfExists('cms_elements');
     }
 
     /**
@@ -28,7 +28,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::connection(config('cms.db', 'sqlite'))->create('cms_elements', function (Blueprint $table) {
+        Schema::connection(\Aimeos\Cms\DB::name())->create('cms_elements', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('tenant_id');
             $table->string('type', 50);

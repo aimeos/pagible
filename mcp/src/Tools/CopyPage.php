@@ -38,12 +38,16 @@ class CopyPage extends Tool
             'id.required' => 'You must specify the ID of the page to copy.',
         ] );
 
-        // copies of whole subtrees are expensive
-        if( RateLimiter::tooManyAttempts( $key = 'cms-copy:' . $request->user()?->getAuthIdentifier(), 10 ) ) {
-            throw new \Exception( sprintf( 'Too many copies, try again in %1$d seconds.', RateLimiter::availableIn( $key ) ) );
+        // uses the same limit and key as @throttle(name: "cms-copy") in the GraphQL API
+        $limiter = RateLimiter::limiter( 'cms-copy' ) ?? throw new \LogicException( 'Rate limiter "cms-copy" is missing' );
+        $limit = $limiter( request() );
+        $key = sha1( 'cms-copy' . $limit->key );
+
+        if( RateLimiter::tooManyAttempts( $key, $limit->maxAttempts ) ) {
+            throw new \Aimeos\Cms\Exception( sprintf( 'Too many copies, try again in %1$d seconds.', RateLimiter::availableIn( $key ) ) );
         }
 
-        RateLimiter::hit( $key );
+        RateLimiter::hit( $key, $limit->decaySeconds );
         $page = Pages::copy( $v['id'], $request->user(), ref: $v['before_id'] ?? null, parent: $v['parent_id'] ?? null );
 
         return Response::structured( Presenter::item( $page, true ) );

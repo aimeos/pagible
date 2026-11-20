@@ -23,7 +23,7 @@
 					@if($data->captions ?? false)
 						<figure>
 							<x-cms::image :page="$page" :file="$file" :main="($idx == 0 ? ($data->main ?? false) : false)" :sizes="$sizes ?? '(max-width: 640px) 90vw, (max-width: 1200px) calc(100vw - 4rem), 1136px'" />
-							@if($caption = cms($file, 'description')?->{cms($page, 'lang')})
+							@if($caption = cmstext($page, $file, 'description'))
 								<figcaption>{{ $caption }}</figcaption>
 							@endif
 						</figure>
@@ -51,7 +51,7 @@
 			'@type' => 'ImageObject',
 			'contentUrl' => cmsasset($page, $file),
 			'name' => cms($file, 'name') ?? '',
-			'description' => cms($file, 'description')?->{cms($page, 'lang')} ?? '',
+			'description' => cmstext($page, $file, 'description') ?? '',
 		] )
 		->values()
 		->all(),

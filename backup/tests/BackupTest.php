@@ -17,7 +17,6 @@ use Aimeos\Cms\Events\BackupCreated;
 use Aimeos\Cms\Events\RestoreCompleted;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\FileStorage;
 
 
 class BackupTest extends BackupTestAbstract
@@ -61,7 +60,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupAndRestore(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $t = $this->tenant;
 
         $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
@@ -118,7 +117,8 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupRejectsConcurrentMediaOperation(): void
     {
-        $status = FileStorage::storageLock( $this->tenant, fn() =>
+        // the storage lock is reentrant in the same process, so the lock of another process is simulated
+        $status = \Illuminate\Support\Facades\Cache::lock( 'cms_storage_' . hash( 'sha256', $this->tenant ), 60 )->get( fn() =>
             \Illuminate\Support\Facades\Artisan::call( 'cms:backup', [
                 '--tenant' => $this->tenant,
                 '--disk' => 'backup',
@@ -217,7 +217,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupScopesRelationshipTablesToTenant(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $page = (array) $db->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->first();
         $variant = (array) $db->table( 'cms_page_variants' )->where( 'page_id', $page['id'] )->first();
         $file = (array) $db->table( 'cms_files' )->where( 'tenant_id', $this->tenant )->first();
@@ -575,7 +575,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupMerge(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $t = $this->tenant;
 
         $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
@@ -653,7 +653,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupForceAcceptsForeignSignature(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $t = $this->tenant;
 
         $pageCount = DB::connection( $conn )->table( 'cms_pages' )->where( 'tenant_id', $t )->count();
@@ -725,7 +725,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupCrossTenant(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $t = $this->tenant;
         $context = null;
 
@@ -754,7 +754,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testBackupCrossTenantRejectsForeignIdCollision(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $source = DB::connection( $conn )->table( 'cms_pages' )
             ->where( 'tenant_id', $this->tenant )->count();
         $backupFile = $this->backup( $this->tenant );
@@ -782,7 +782,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testRestoreRejectsForeignReferences(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $variant = (string) $db->table( 'cms_page_variants' )->where( 'tenant_id', $this->tenant )->value( 'id' );
         $element = (string) $db->table( 'cms_elements' )->where( 'tenant_id', $this->tenant )->value( 'id' );
 
@@ -803,7 +803,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testRestoreRejectsForeignParentAndVersion(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $page = (string) $db->table( 'cms_pages' )->where( 'tenant_id', $this->tenant )->value( 'id' );
         $version = (string) $db->table( 'cms_versions' )->where( 'tenant_id', $this->tenant )->value( 'id' );
 
@@ -831,7 +831,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testRestoreSkipsSearchIndex(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $file = tempnam( sys_get_temp_dir(), 'cms' );
 
         $zip = new \ZipArchive();
@@ -860,7 +860,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testRestoreSameTenantRejectsForeignIdCollision(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $backupFile = $this->backup( $this->tenant );
 
         // IDs of the archive already used by another tenant
@@ -883,7 +883,7 @@ class BackupTest extends BackupTestAbstract
 
     public function testRestoreManagedTenantMismatchFailsBeforeWriting(): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        $conn = \Aimeos\Cms\DB::name();
         $backupFile = $this->backup( $this->tenant );
         \Aimeos\Cms\Hooks::get()->managed = true;
 

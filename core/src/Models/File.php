@@ -141,12 +141,10 @@ class File extends Base
     {
         $parts = [$this->name ?? ''];
 
-        foreach( (array) $this->description as $lang => $value ) {
-            $parts[] = $lang . ":\n" . $value;
-        }
-
-        foreach( (array) $this->transcription as $lang => $value ) {
-            $parts[] = $lang . ":\n" . $value;
+        foreach( [$this->description, $this->transcription] as $texts ) {
+            foreach( (array) $texts as $lang => $value ) {
+                $parts[] = $lang . ":\n" . $value;
+            }
         }
 
         return trim( implode( "\n", $parts ) );
@@ -301,19 +299,12 @@ class File extends Base
     /**
      * Deletes storage paths after the surrounding database transaction commits.
      *
-     * @param Collection<array-key, mixed> $paths
+     * @param Collection<array-key, non-empty-string> $paths Unique paths and URLs returned by paths()
      * @param string $tenant Tenant ID owning the storage namespace
      */
     protected static function deletePaths( Collection $paths, string $tenant ) : void
     {
-        $paths = $paths->filter( fn( $path ) => $path && !str_starts_with( (string) $path, 'http' ) )
-            ->map( strval(...) )->unique()->values();
-
-        if( $paths->isEmpty() ) {
-            return;
-        }
-
-        foreach( $paths->chunk( 100 ) as $chunk ) {
+        foreach( $paths->reject( fn( $path ) => str_starts_with( $path, 'http' ) )->chunk( 100 ) as $chunk ) {
             DB::connection()->afterCommit( fn() => FileStorage::deferStorage( $tenant,
                 fn() => DeleteFilePaths::dispatch( $tenant, $chunk->all() ),
             ) );
@@ -361,7 +352,7 @@ class File extends Base
             }
 
             Version::withoutTenancy()->where( 'tenant_id', $tenant )
-                ->whereIn( 'id', $drop->modelKeys() )->forceDelete();
+                ->whereIn( 'id', $drop->modelKeys() )->delete();
             self::deletePaths( self::paths( $drop->pluck( 'data' ) )->diff( $paths ), $tenant );
         };
     }

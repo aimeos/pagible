@@ -31,7 +31,7 @@ class Laratrust extends Provider
             add: fn( string $value ) => self::modelAdd( $model, $value ),
             delete: fn( array $values ) => self::modelDelete( $model, $values ),
             grants: $grants,
-            userAccess: fn( Authenticatable $user, ?array $values ) => self::userAccess( $user, $values ),
+            userAccess: self::userAccess( ... ),
         );
     }
 
@@ -49,11 +49,11 @@ class Laratrust extends Provider
             throw new Exception( 'Laratrust user permissions relation is not available.' );
         }
 
-        if( config( 'laratrust.teams.enabled', false ) )
+        if( ( $tenant = self::team() ) !== null )
         {
             $helper = 'Laratrust\\Helper';
             $key = (string) config( 'laratrust.foreign_keys.team', 'team_id' );
-            $team = $helper::getIdFor( Tenancy::value(), 'team' );
+            $team = $helper::getIdFor( $tenant, 'team' );
 
             self::call( $relation, 'wherePivot', $key, $team );
         }

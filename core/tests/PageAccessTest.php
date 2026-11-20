@@ -229,7 +229,7 @@ class PageAccessTest extends CoreTestAbstract
 
         $this->searchEngine();
         Queue::fake();
-        Scout::reindex( PageView::class, $ids );
+        Scout::index( PageView::class, $ids );
 
         $jobs = Queue::pushed( IndexModels::class );
         $this->assertCount( 3, $jobs );

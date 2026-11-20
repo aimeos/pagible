@@ -30,19 +30,18 @@ class Watch
 
 
     /**
-     * Builds and dispatches a watch event when watch logging is enabled or something listens for it.
+     * Builds and dispatches a watch event if something listens for it.
      *
-     * Any in-process listener (e.g. an optional observability integration subscribing to the event)
-     * makes the event fire even when watch logging is off, so the factory is only invoked when
-     * something will consume the event.
+     * The log listener is only registered by listen() when watch logging (and its feature flag)
+     * is enabled, so the factory is only invoked when the log listener or any other in-process
+     * listener (e.g. an optional observability integration) will consume the event.
      *
      * @param class-string $event Event class used to check for registered listeners
      * @param \Closure(): object $factory Deferred event factory
-     * @param string|null $flag Feature flag config key gating watch logging for this event
      */
-    public static function dispatch( string $event, \Closure $factory, ?string $flag = null ) : void
+    public static function dispatch( string $event, \Closure $factory ) : void
     {
-        if( !self::enabled( $flag ) && !Event::hasListeners( $event ) ) {
+        if( !Event::hasListeners( $event ) ) {
             return;
         }
 
@@ -180,7 +179,7 @@ class Watch
     {
         $request = request();
 
-        if( !$request->attributes->has( 'cms-request-id' ) )
+        if( !is_string( $id = $request->attributes->get( 'cms-request-id' ) ) )
         {
             $header = $request->header( 'X-Request-Id' );
             $id = is_string( $header ) && preg_match( '/\A[A-Za-z0-9._-]{1,128}\z/D', $header ) ? $header : (string) Str::uuid();
@@ -188,8 +187,7 @@ class Watch
             $request->attributes->set( 'cms-request-id', $id );
         }
 
-        $id = $request->attributes->get( 'cms-request-id' );
-        return is_string( $id ) ? $id : '';
+        return $id;
     }
 
 

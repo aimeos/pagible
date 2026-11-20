@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Commands;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\FileStorage;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Uploads;
 use Aimeos\Cms\Utils;
 use Aimeos\Cms\Models\File;
@@ -20,7 +21,6 @@ use Illuminate\Console\Command;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Database\Connection;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\LazyCollection;
@@ -269,7 +269,7 @@ class Restore extends Command
         $db = DB::connection();
         $current = [];
 
-        foreach( array_chunk( array_keys( $files ), 500 ) as $ids )
+        foreach( array_chunk( array_keys( $files ), DB::IN_SIZE ) as $ids )
         {
             $rows = $db->table( 'cms_files' )->where( 'tenant_id', $tenant )
                 ->whereIn( 'id', $ids )->select( 'id', 'disk' )->get();
@@ -373,7 +373,7 @@ class Restore extends Command
         Page::fixTree();
 
         $this->info( 'Rebuilding search index...' );
-        Artisan::call( 'cms:index' );
+        Scout::rebuild();
 
         $this->info( 'Clearing page cache...' );
         Cache::flush();

@@ -72,6 +72,18 @@ abstract class SearchTool extends Tool
 
 
     /**
+     * Creates the search builder for the search term.
+     *
+     * @param array<string, mixed> $filter Validated filter values incl. "term"
+     * @return Builder<Model> Scout search builder
+     */
+    protected function search( array $filter ) : Builder
+    {
+        return Filter::search( static::MODEL, $filter['term'] ?? '' );
+    }
+
+
+    /**
      * Returns the data of the found item.
      *
      * @param Model $item Found item
@@ -87,14 +99,18 @@ abstract class SearchTool extends Tool
     {
         $v = $request->validate( static::RULES );
 
-        $search = Filter::search( static::MODEL, $v['term'] ?? '' )
-            ->query( fn( $q ) => $q->select( static::COLUMNS )
-            ->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] ) )
-            ->take( 25 );
+        $search = $this->filter( $this->search( $v ), $v );
+        // Scout keeps only one query callback, so a callback set by the filters is called too
+        $callback = $search->queryCallback;
+
+        $search->query( function( $q ) use ( $callback ) {
+            $callback && $callback( $q );
+            $q->select( static::COLUMNS )->with( ['latest' => fn( $q ) => $q->select( Version::SELECT_COLUMNS )] );
+        } )->take( 25 );
 
         $result = [];
 
-        foreach( $this->filter( $search, $v )->get() as $item ) {
+        foreach( $search->get() as $item ) {
             $result[] = $this->present( $item );
         }
 

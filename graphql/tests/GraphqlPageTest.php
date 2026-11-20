@@ -737,7 +737,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = PageView::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -775,7 +775,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = PageView::where('tag', 'root')->firstOrFail();
         $ref = PageView::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -1003,9 +1003,14 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'data' => ['text' => 'body {}'],
                 'files' => [],
             ]],
-            'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
+            'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS'], 'group' => 'main']],
         ];
-        $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'] ?? null, true));
+        $latestAux = json_decode($savePage['latest']['aux'] ?? null, true);
+
+        // content elements without ID get a generated one
+        $this->assertNotEmpty($latestAux['content'][0]['id'] ?? null);
+        unset($latestAux['content'][0]['id']);
+        $this->assertEquals($expectedLatestAux, $latestAux);
     }
 
 

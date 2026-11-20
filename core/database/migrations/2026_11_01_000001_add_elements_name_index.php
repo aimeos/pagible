@@ -16,7 +16,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         if( $schema->hasIndex( 'cms_elements', self::INDEX ) ) {
             $schema->table( 'cms_elements', fn( Blueprint $table ) => $table->dropIndex( self::INDEX ) );
@@ -26,7 +26,7 @@ return new class extends Migration
 
     public function up(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         // shared elements are looked up by their name and language, e.g. to reuse them in repeated imports
         if( !$schema->hasIndex( 'cms_elements', self::INDEX ) ) {

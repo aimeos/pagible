@@ -12,6 +12,7 @@ use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Scout;
 
 
 class TestSeeder extends Seeder
@@ -30,17 +31,13 @@ class TestSeeder extends Seeder
         // Resolve the tenant configured by the caller, not a stale scoped instance.
         app()->forgetInstance( \Aimeos\Cms\Tenancy::class );
 
-        PageView::withoutSyncingToSearch( function() {
-            Element::withoutSyncingToSearch( function() {
-                File::withoutSyncingToSearch( function() {
-                    $home = $this->home();
+        Scout::mute( [PageView::class, Element::class, File::class], function() {
+            $home = $this->home();
 
-                    $this->addBlog( $home )
-                        ->addDev( $home )
-                        ->addHidden( $home )
-                        ->addDisabled( $home );
-                } );
-            } );
+            $this->addBlog( $home )
+                ->addDev( $home )
+                ->addHidden( $home )
+                ->addDisabled( $home );
         } );
 
         if( config('scout.driver') !== 'collection' ) {

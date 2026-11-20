@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Query;
 use Aimeos\Cms\Models\Page;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\PageStatus;
 use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Database\Query\Expression as ExpressionContract;
 use Illuminate\Database\Query\Builder;
@@ -349,7 +350,7 @@ class PageBuilder extends Builder
                 $join->on( $alias . '.page_id', '=', 'pv.id' )->on( $alias . '.tenant_id', '=', 'pv.tenant_id' );
                 $join->where( $alias . '.lang', '=', $this->literal( $code ) )
                     // for "visible" only published and enabled variants
-                    ->when( $visible, fn( $q ) => $q->where( $alias . '.status', '<>', new Expression( '0' ) ) )
+                    ->when( $visible, fn( $q ) => $q->where( $alias . '.status', '<>', new Expression( (string) PageStatus::Disabled->value ) ) )
                     ->when( !$trashed, fn( $q ) => $q->whereNull( $alias . '.deleted_at' ) );
             } );
         }

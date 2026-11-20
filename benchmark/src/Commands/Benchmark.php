@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Scout;
 use Database\Seeders\BenchmarkSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -23,7 +24,7 @@ class Benchmark extends Command
         {--pages=10000 : Total number of pages to create}
         {--tries=100 : Number of iterations per benchmark}
         {--chunk=50 : Rows per bulk insert batch}
-        {--seed : Seed benchmark data before running benchmarks}
+        {--seed : Seed benchmark data and exit}
         {--unseed : Remove all benchmark data and exit}
         {--force : Force the operation to run in production}';
 
@@ -73,6 +74,11 @@ class Benchmark extends Command
         {
             foreach( $commands as $command )
             {
+                // only the commands storing data can remove it
+                if( !Artisan::all()[$command]->getDefinition()->hasOption( 'unseed' ) ) {
+                    continue;
+                }
+
                 $this->call( $command, [
                     '--unseed' => true,
                     '--tenant' => $tenant,
@@ -131,6 +137,9 @@ class Benchmark extends Command
         } );
 
         BenchmarkCore::invalidate( $domain );
+
+        // the seeder doesn't index the data
+        Scout::rebuild();
 
         $bar->finish();
         $this->newLine();

@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\Events\Channel;
+use Aimeos\Cms\ContentType;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -48,5 +48,14 @@ trait Broadcasting
     public function broadcastWhen() : bool
     {
         return $this->broadcasting;
+    }
+
+
+    /**
+     * Returns the type of the changed content.
+     */
+    public function type() : ContentType
+    {
+        return ContentType::from( $this->contentType );
     }
 }

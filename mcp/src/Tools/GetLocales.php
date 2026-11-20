@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Tools;
 
+use Aimeos\Cms\Utils;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -29,6 +30,6 @@ class GetLocales extends Tool
      */
     protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
     {
-        return Response::structured( ['locales' => config( 'cms.locales', [] )] );
+        return Response::structured( ['locales' => Utils::locales()] );
     }
 }

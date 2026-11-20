@@ -354,6 +354,27 @@ class SyncTest extends CoreTestAbstract
     }
 
 
+    public function testTranslateKeepsConfigWithoutPermission()
+    {
+        $config = fn( string $title ) => ['website' => ['type' => 'website', 'data' => ['title' => $title], 'files' => []]];
+        $page = $this->page( null, ['config' => $config( 'My site' )] );
+        Variants::translate( $page->id, 'de', $this->user, $this->translator() );
+
+        $this->savePage( $page->id, ['name' => 'Renamed', 'config' => $config( 'New title' )] );
+
+        $user = new \App\Models\User( [
+            'name' => 'Translator',
+            'email' => 'translator@testbench',
+            'password' => 'secret',
+            'cmsperms' => array_values( array_diff( \Aimeos\Cms\Permission::all(), ['page:config'] ) ),
+        ] );
+        $de = Variants::translate( $page->id, 'de', $user, $this->translator() );
+
+        $this->assertEquals( '[de] Renamed', $de->latest->data->name );
+        $this->assertEquals( 'My site', $de->latest->aux->config->{'website'}->data->title );
+    }
+
+
     public function testTranslateKeepsPathAndDomain()
     {
         $page = $this->page();
@@ -520,18 +541,12 @@ class SyncTest extends CoreTestAbstract
     protected function page( ?array $content = null, array $input = [] ) : PageView
     {
         return Pages::add( $input + [
-            'lang' => 'en', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
+            'lang' => 'en', 'domain' => '', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
             'content' => $content ?? [
                 ['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']],
                 ['id' => 'el2', 'type' => 'heading', 'data' => ['title' => 'Heading', 'level' => 2]],
             ],
         ], $this->user, parent: $this->root()->id );
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 

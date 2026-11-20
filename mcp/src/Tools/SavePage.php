@@ -7,10 +7,8 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Utils;
 use Aimeos\Cms\Facades\Pages;
 use Aimeos\Cms\Facades\Variants;
-use Aimeos\Cms\Validation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Title;
@@ -49,10 +47,10 @@ class SavePage extends Tool
         'config.*.data' => 'present|array',
         'config.*.files' => 'present|array',
         'config.*.files.*' => 'string|max:36',
-        'to' => 'string|max:2048',
-        'tag' => 'string|max:50',
-        'theme' => 'string|max:50',
-        'type' => 'string|max:50',
+        'to' => 'string|max:255',
+        'tag' => 'string|max:30',
+        'theme' => 'string|max:30',
+        'type' => 'string|max:30',
         'domain' => 'string|max:255',
         'path' => 'string|max:255',
         'cache' => 'integer|min:0',
@@ -80,13 +78,9 @@ class SavePage extends Tool
         // Uses the raw request input, not the validated copy: validate() rebuilds wildcard arrays
         // via rule expansion, which materializes elements matched by content.*.id first and appends
         // id-less elements at the end, scrambling the author's order. The raw input preserves it;
-        // Validation::content() still whitelists each element's keys.
+        // Validation::page() still whitelists each element's keys.
         if( isset( $v['content'] ) ) {
-            $v['content'] = Validation::content( $request->get( 'content' ), $v['type'] ?? null );
-        }
-
-        if( isset( $v['title'] ) && !isset( $v['path'] ) ) {
-            $v['path'] = Utils::slugify( $v['title'] );
+            $v['content'] = $request->get( 'content' );
         }
 
         $input = array_diff_key( $v, array_flip( ['id', 'latest_id', 'lang'] ) );
@@ -112,7 +106,7 @@ class SavePage extends Tool
             'name' => $schema->string()
                 ->description( 'New short name for the page (max 50 characters).' ),
             'title' => $schema->string()
-                ->description( 'New page title (max 100 characters). Also updates the URL path slug unless path is explicitly set.' ),
+                ->description( 'New page title (max 100 characters). The URL path only changes if path is passed.' ),
             'lang' => $schema->string()
                 ->description( 'ISO language code of the language variant to save, e.g., "en" or "de". Omit to save the source language variant. Use the latest_id of that variant from get-page with the same lang.' ),
             'source' => $schema->string()

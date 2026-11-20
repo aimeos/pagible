@@ -153,10 +153,7 @@ final class Pages
      */
     private static function invalid( array $langs ) : array
     {
-        $locales = Utils::locales();
-        $invalid = $locales
-            ? array_diff( $langs, $locales )
-            : array_filter( $langs, fn( $lang ) => !Utils::isValidLang( $lang ) );
+        $invalid = array_filter( $langs, fn( $lang ) => !Utils::isLocale( $lang ) );
 
         if( !$invalid ) {
             return [];

@@ -550,6 +550,25 @@ class AccessTest extends CoreTestAbstract
     }
 
 
+    public function testExtendedAccessCombinesPackages(): void
+    {
+        Access::using(
+            list: fn() => ['frontend.a', 'frontend.b', 'member'],
+            grants: fn() => [],
+        );
+        Access::extend( fn() => ['frontend.a'] );
+        Access::extend( fn() => ['frontend.b'] );
+        $user = new \App\Models\User();
+
+        $this->assertSame( ['frontend.a', 'frontend.b'], app( Access::class )->allowed( $user ) );
+
+        Access::resetExtensions();
+        app()->forgetInstance( Access::class );
+
+        $this->assertSame( [], app( Access::class )->allowed( new \App\Models\User() ) );
+    }
+
+
     public function testExtendedAccessIsAddedToGateGrants(): void
     {
         Access::using( fn() => ['frontend.member', 'member'] );
@@ -789,7 +808,7 @@ class AccessTest extends CoreTestAbstract
                 'guard_name' => 'web',
             ], range( 1, 300 ) );
 
-            DB::connection( config( 'cms.db', 'sqlite' ) )
+            \Aimeos\Cms\DB::connection()
                 ->table( 'test_access_permissions' )
                 ->insert( $rows );
 
@@ -956,7 +975,7 @@ class AccessTest extends CoreTestAbstract
 
     private function createAccessTable(): void
     {
-        Schema::connection( config( 'cms.db', 'sqlite' ) )->create( 'test_access_permissions', function( $table ) {
+        Schema::connection( \Aimeos\Cms\DB::name() )->create( 'test_access_permissions', function( $table ) {
             $table->id();
             $table->string( 'name', 100 );
             $table->string( 'guard_name' )->nullable();
@@ -967,7 +986,7 @@ class AccessTest extends CoreTestAbstract
 
     private function dropAccessTable(): void
     {
-        Schema::connection( config( 'cms.db', 'sqlite' ) )->dropIfExists( 'test_access_permissions' );
+        Schema::connection( \Aimeos\Cms\DB::name() )->dropIfExists( 'test_access_permissions' );
     }
 }
 
@@ -980,7 +999,7 @@ class AccessPackageModel extends \Illuminate\Database\Eloquent\Model
 
     public function getConnectionName(): string
     {
-        return config( 'cms.db', 'sqlite' );
+        return \Aimeos\Cms\DB::name();
     }
 }
 
@@ -995,7 +1014,7 @@ class AccessWriteModel extends \Illuminate\Database\Eloquent\Model
 
     public function getConnectionName(): string
     {
-        return config( 'cms.db', 'sqlite' );
+        return \Aimeos\Cms\DB::name();
     }
 
 

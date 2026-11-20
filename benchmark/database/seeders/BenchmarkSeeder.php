@@ -8,7 +8,7 @@
 namespace Database\Seeders;
 
 use Aimeos\Cms\Translation\Hashes;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\DB;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -16,6 +16,7 @@ use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\Version;
 use Aimeos\Cms\Query\PageBuilder;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Utils;
 
 
@@ -51,15 +52,9 @@ class BenchmarkSeeder
         $this->domain = $domain;
         $this->chunk = max( 1, $chunk );
 
-        $conn = config( 'cms.db', 'sqlite' );
-
-        PageView::withoutSyncingToSearch( function() use ( $pages, $conn ) {
-            Element::withoutSyncingToSearch( function() use ( $pages, $conn ) {
-                File::withoutSyncingToSearch( function() use ( $pages, $conn ) {
-                    DB::connection( $conn )->transaction( function() use ( $pages ) {
-                        $this->seedAll( $pages );
-                    } );
-                } );
+        Scout::mute( [PageView::class, Element::class, File::class], function() use ( $pages ) {
+            DB::connection()->transaction( function() use ( $pages ) {
+                $this->seedAll( $pages );
             } );
         } );
 
@@ -76,7 +71,7 @@ class BenchmarkSeeder
      */
     protected function analyze(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection();
         $grammar = $db->getQueryGrammar();
 
         $tables = [
@@ -294,8 +289,6 @@ class BenchmarkSeeder
      */
     protected function insertRows( array $rows ): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
-
         // pages are split into the page structure and the source language variant
         if( !empty( $rows['pages'] ) )
         {
@@ -323,7 +316,7 @@ class BenchmarkSeeder
         {
             if( !empty( $data ) )
             {
-                DB::connection( $conn )->table( $table )->insert( $data );
+                DB::connection()->table( $table )->insert( $data );
 
                 if( $this->onProgress ) {
                     ( $this->onProgress )( count( $data ) );
@@ -422,7 +415,6 @@ class BenchmarkSeeder
      */
     protected function createFiles( int $count, string $now, string $nowMs ): array
     {
-        $conn = config( 'cms.db', 'sqlite' );
         $imagePath = realpath( __DIR__ . '/../../assets/image.png' );
         $fileRows = [];
         $versionRows = [];
@@ -475,7 +467,7 @@ class BenchmarkSeeder
 
         foreach( array_chunk( $fileRows, $this->chunk ) as $batch )
         {
-            DB::connection( $conn )->table( 'cms_files' )->insert( $batch );
+            DB::connection()->table( 'cms_files' )->insert( $batch );
 
             if( $this->onProgress ) {
                 ( $this->onProgress )( count( $batch ) );
@@ -484,7 +476,7 @@ class BenchmarkSeeder
 
         foreach( array_chunk( $versionRows, $this->chunk ) as $batch )
         {
-            DB::connection( $conn )->table( 'cms_versions' )->insert( $batch );
+            DB::connection()->table( 'cms_versions' )->insert( $batch );
 
             if( $this->onProgress ) {
                 ( $this->onProgress )( count( $batch ) );
@@ -502,7 +494,6 @@ class BenchmarkSeeder
      */
     protected function createElements( int $count, string $now, string $nowMs ): array
     {
-        $conn = config( 'cms.db', 'sqlite' );
         $elementRows = [];
         $versionRows = [];
         $ids = [];
@@ -551,7 +542,7 @@ class BenchmarkSeeder
 
         foreach( array_chunk( $elementRows, $this->chunk ) as $batch )
         {
-            DB::connection( $conn )->table( 'cms_elements' )->insert( $batch );
+            DB::connection()->table( 'cms_elements' )->insert( $batch );
 
             if( $this->onProgress ) {
                 ( $this->onProgress )( count( $batch ) );
@@ -560,7 +551,7 @@ class BenchmarkSeeder
 
         foreach( array_chunk( $versionRows, $this->chunk ) as $batch )
         {
-            DB::connection( $conn )->table( 'cms_versions' )->insert( $batch );
+            DB::connection()->table( 'cms_versions' )->insert( $batch );
 
             if( $this->onProgress ) {
                 ( $this->onProgress )( count( $batch ) );

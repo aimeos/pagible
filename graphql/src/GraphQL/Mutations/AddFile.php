@@ -30,10 +30,6 @@ final class AddFile
 
         $source = $args['file'] ?? $args['input']['path'];
 
-        if( is_string( $source ) && !str_starts_with( $source, 'http' ) ) {
-            throw new Error( sprintf( 'Invalid URL "%s"', $source ) );
-        }
-
         return Files::add( $source, $args['input'] ?? [], Auth::user(), $args['disk'] ?? null, $args['preview'] ?? null );
     }
 }

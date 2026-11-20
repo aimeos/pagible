@@ -58,18 +58,18 @@ class GraphqlMetricsTest extends MetricsTestAbstract
 
         Analytics::shouldReceive('driver->stats')
             ->once()
-            ->with('/test', 30)
+            ->with('/blog', 30)
             ->andReturn($expected);
 
         Analytics::shouldReceive('pagespeed')
             ->once()
-            ->with('/test')
+            ->with('/blog')
             ->andReturn($pagespeed);
 
 
         $response = $this->actingAs($this->user)->graphQL('
             mutation {
-                metrics(url: "/test", days: 30) {
+                metrics(url: "/blog", days: 30) {
                     errors
                     views { key value }
                     visits { key value }
@@ -105,7 +105,7 @@ class GraphqlMetricsTest extends MetricsTestAbstract
     {
         $this->actingAs($this->user)->graphQL('
             mutation {
-                metrics(url: "/test", days: 100) {
+                metrics(url: "/blog", days: 100) {
                     views { key value }
                 }
             }
@@ -124,10 +124,24 @@ class GraphqlMetricsTest extends MetricsTestAbstract
 
         $this->actingAs( $user )->graphQL( '
             mutation {
-                metrics(url: "/test", days: 30) {
+                metrics(url: "/blog", days: 30) {
                     views { key value }
                 }
             }
         ' )->assertGraphQLErrorMessage( 'Insufficient permissions' );
+    }
+
+
+    public function testMetricsForeignUrl()
+    {
+        Analytics::shouldReceive('driver->stats')->never();
+
+        $this->actingAs($this->user)->graphQL('
+            mutation {
+                metrics(url: "https://example.com/unknown", days: 30) {
+                    views { key value }
+                }
+            }
+        ')->assertGraphQLErrorMessage('URL "https://example.com/unknown" is not the URL of a page');
     }
 }

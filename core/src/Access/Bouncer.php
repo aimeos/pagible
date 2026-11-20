@@ -38,7 +38,7 @@ class Bouncer extends Provider
                 self::call( self::SERVICE, 'refresh' );
             },
             grants: $grants,
-            userAccess: fn( Authenticatable $user, ?array $values ) => self::userAccess( $user, $values ),
+            userAccess: self::userAccess( ... ),
         );
     }
 

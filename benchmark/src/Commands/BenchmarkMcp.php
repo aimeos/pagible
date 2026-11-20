@@ -25,7 +25,6 @@ class BenchmarkMcp extends Command
         {--tenant=benchmark : Tenant ID}
         {--domain= : Domain name}
         {--tries=100 : Number of iterations per benchmark}
-        {--unseed : Remove benchmark data and exit}
         {--force : Force the operation to run in production}';
 
     protected $description = 'Run MCP tool benchmarks';
@@ -33,10 +32,6 @@ class BenchmarkMcp extends Command
 
     public function handle(): int
     {
-        if( $this->option( 'unseed' ) ) {
-            return self::SUCCESS;
-        }
-
         if( !( $options = $this->settings() ) ) {
             return self::FAILURE;
         }

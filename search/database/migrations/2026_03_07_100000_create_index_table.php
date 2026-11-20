@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function up()
     {
-        $name = config('cms.db', 'sqlite');
+        $name = \Aimeos\Cms\DB::name();
         $schema = Schema::connection($name);
         $db = $schema->getConnection();
         $driver = $db->getDriverName();
@@ -89,7 +89,7 @@ return new class extends Migration
      */
     public function down()
     {
-        $name = config('cms.db', 'sqlite');
+        $name = \Aimeos\Cms\DB::name();
         $schema = Schema::connection($name);
         $db = $schema->getConnection();
         $driver = $db->getDriverName();

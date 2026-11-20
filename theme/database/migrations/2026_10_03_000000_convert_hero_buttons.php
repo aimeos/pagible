@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection( \Aimeos\Cms\DB::name() );
 
         $this->pages( $db );
         $this->elements( $db );

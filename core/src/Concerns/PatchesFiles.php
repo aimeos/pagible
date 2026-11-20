@@ -24,9 +24,7 @@ trait PatchesFiles
      */
     protected function append( string $filename, string $text ) : int
     {
-        return $this->patch( $filename, function( string $content ) use ( $text ) {
-            return str_contains( $content, $text ) ? $content : $content . "\n\n" . $text;
-        } );
+        return $this->patch( $filename, fn( string $content ) => str_contains( $content, $text ) ? $content : $content . "\n\n" . $text );
     }
 
 
@@ -43,7 +41,7 @@ trait PatchesFiles
      */
     protected function insert( string $filename, string $search, string $text, string $marker, string $message, bool $last = false ) : int
     {
-        return $this->patch( $filename, function( string $content ) use ( $filename, $search, $text, $marker, $message, $last ) {
+        return $this->patch( $filename, function( string $content ) use ( $search, $text, $marker, $last ) {
 
             if( str_contains( $content, $marker ) ) {
                 return $content;
@@ -53,9 +51,8 @@ trait PatchesFiles
                 return $content;
             }
 
-            $this->line( sprintf( $message, $filename ) );
             return substr_replace( $content, $text, $pos + strlen( $search ), 0 );
-        }, null );
+        }, $message );
     }
 
 
