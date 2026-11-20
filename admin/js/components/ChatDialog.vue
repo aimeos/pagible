@@ -22,6 +22,15 @@ import CmsDialog from './Dialog.vue'
 // GFM (tables, task lists, strikethrough) with single newlines as <br> to match chat expectations.
 // A dedicated instance avoids mutating marked's global options; DOMPurify sanitizes the output.
 const md = new Marked({ gfm: true, breaks: true })
+const esc = (text) => String(text).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+// images would load URLs chosen by the model without a click, e.g. to leak content injected
+// into its context, so they are shown as links and tags or attributes loading resources are removed
+md.use({ renderer: { image: ({ href, text }) => `<a href="${esc(href)}">${esc(text || href)}</a>` } })
+const PURIFY = {
+  USE_PROFILES: { html: true },
+  FORBID_TAGS: ['audio', 'img', 'input', 'picture', 'source', 'style', 'track', 'video'],
+  FORBID_ATTR: ['background', 'poster', 'srcset', 'style'],
+}
 // number of prior turns sent as history, the server keeps no more anyway
 const MAX_HISTORY = 20
 
@@ -177,7 +186,7 @@ export default {
     },
 
     render(text) {
-      return DOMPurify.sanitize(md.parse(text || ''))
+      return DOMPurify.sanitize(md.parse(text || ''), PURIFY)
     },
 
     scrollDown() {

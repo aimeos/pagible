@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Cache\LockTimeoutException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
@@ -220,14 +221,14 @@ class SitemapController extends Controller
         // the authenticated editor exception implemented by the Status scope.
         // every published variant has its own URL
         $query = Nav::allVariants()
-            ->whereIn( ( new Nav() )->qualifyColumn( 'status' ), [1, 2] )
+            ->active()
             ->where( function( $q ) {
                 $q->whereNull( 'to' )->orWhere( 'to', '' );
             } )
             ->wherePublic();
 
         // Pages are only served on their own domain and sitemaps must not list URLs of other hosts
-        if( config( 'cms.multidomain' ) ) {
+        if( Utils::multidomain() ) {
             $query->where( ( new Nav() )->qualifyColumn( 'domain' ), (string) request()->route( 'domain', '' ) );
         }
 
@@ -245,7 +246,7 @@ class SitemapController extends Controller
      */
     protected function stats() : array
     {
-        $domain = config( 'cms.multidomain' ) ? (string) request()->route( 'domain', '' ) : '';
+        $domain = Utils::multidomain() ? (string) request()->route( 'domain', '' ) : '';
         $key = 'cms-sitemap:' . Tenancy::value() . ':' . $domain . ':' . static::URLS_PER_SITEMAP;
 
         if( ( $stats = Cache::get( $key ) ) !== null ) {
@@ -323,7 +324,7 @@ class SitemapController extends Controller
      */
     protected function template() : string
     {
-        $params = config( 'cms.multidomain' ) ? ['domain' => '__CMS_DOMAIN__'] : [];
+        $params = Utils::multidomain() ? ['domain' => '__CMS_DOMAIN__'] : [];
 
         return route( 'cms.page', $params + ['path' => '__CMS_PATH__'] );
     }

@@ -7,363 +7,72 @@
 
 namespace Aimeos\Cms\Controllers;
 
-use Aimeos\Cms\Ai;
-use Aimeos\Cms\Mcp\CmsServer;
-use Aimeos\Cms\Permission;
-use Aimeos\Cms\Tenancy;
-use Aimeos\Cms\Tools as CmsTools;
-use Aimeos\Cms\Utils;
-use Aimeos\Prisma\Tools;
-use Aimeos\Prisma\Tools\Step;
-use Aimeos\Prisma\Exceptions\PrismaException;
+use Aimeos\Cms\Chat;
+use Aimeos\Cms\Exception;
+use Aimeos\Cms\Exceptions\ConflictException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 
 class ChatController extends Controller
 {
     /**
-     * Maximum number of chat streams running at the same time per user.
+     * Response headers of the chat stream.
      */
-    private const MAX = 3;
-
-    /**
-     * Marks the end of the answer; an optional error message follows (missing = stream was cut off).
-     */
-    private const END = "\x1E";
-
-    /**
-     * Message sent after the end marker when the answer was stopped by a time limit.
-     */
-    private const TIMEOUT = 'The response took too long and was stopped.';
-
-    /**
-     * MCP tools not offered in the chat or added separately with a call limit.
-     * The AI tools (Ai::TOOLS) aren't offered either because they would start further paid AI requests.
-     */
-    private const EXCLUDE = [
-        CmsTools\GetAccess::class,
-        CmsTools\GetLocales::class,
-        CmsTools\GetSchemas::class,
-        CmsTools\RelocateFile::class,
-        CmsTools\SetPageAccess::class,
+    private const HEADERS = [
+        'Content-Type' => 'text/plain; charset=utf-8',
+        'Cache-Control' => 'no-cache, no-transform',
+        'X-Content-Type-Options' => 'nosniff',
+        'X-Accel-Buffering' => 'no', // tell nginx not to buffer the stream
     ];
 
 
     /**
      * Streams a chat answer to the admin panel as a chunked text stream.
      *
-     * Runs the page-synthesis pipeline (tools + the cms::prompts.chat system prompt) and writes the
-     * assistant markdown token-by-token to a single HTTP response (no message broker required) so the
-     * editor sees the answer build up live. The body is the raw markdown - the client appends each
-     * chunk as it arrives. The answer ends with the END marker followed by an error message if it
-     * failed (empty on success); a stream without the marker was cut off before it could finish.
+     * The body is the raw markdown written by Chat\Stream.
      *
-     * @param Request $request Holds the current "prompt" and prior "messages" [{role, content}]
+     * @param Request $request With "prompt", prior "messages" [{role, content}] and "context"
      * @return StreamedResponse text/plain response that produces the answer chunk by chunk
      */
     public function stream( Request $request ) : StreamedResponse
     {
-        $user = $request->user();
+        $user = $request->user() ?? abort( 401 );
+        Chat\Agent::allowed( $user ) || abort( 403 );
 
-        if( !$user ) {
-            abort( 401 );
+        $input = $request->all();
+
+        // clients of older versions send the history as JSON string
+        if( is_string( $input['messages'] ?? null ) ) {
+            $input['messages'] = json_decode( $input['messages'], true ) ?? [];
         }
 
-        if( !Permission::can( 'page:chat', $user ) && !Permission::can( 'element:chat', $user )
-            && !Permission::can( 'file:chat', $user ) ) {
-            abort( 403 );
+        $validator = Validator::make( $input, [
+            'prompt' => 'required|string',
+            'context' => 'nullable|string',
+            'messages' => 'nullable|array',
+        ] );
+
+        // return a status instead of redirecting back
+        if( $validator->fails() ) {
+            abort( 422, $validator->errors()->first() );
         }
+
+        $prompt = $request->string( 'prompt' )->value();
+        $context = $request->string( 'context' )->value();
+        $messages = (array) ( $input['messages'] ?? [] );
 
         try {
-            Ai::checkInput( $request->all(), 'Chat input' );
-        } catch( \Aimeos\Cms\Exception $e ) {
+            // released when the response is gone, also if discarded unsent
+            $chat = Chat\Agent::chat( $user, $prompt, $context, $messages );
+        } catch( ConflictException $e ) {
+            abort( 409, $e->getMessage() ); // 429 is already used by the rate limiter
+        } catch( Exception $e ) {
             abort( 422, $e->getMessage() );
         }
 
-        $prompt = trim( (string) $request->input( 'prompt', '' ) );
-
-        if( $prompt === '' ) {
-            abort( 422, 'Prompt must not be empty' );
-        }
-
-        $config = config( 'cms.ai.write', [] );
-        $editor = Utils::editor( $user );
-        $history = $this->history( $request->input( 'messages' ) );
-        $system = view( 'cms::prompts.chat' )->render() . "\n" . view( 'cms::prompts.write' )->render() . "\n";
-
-        $prisma = Ai::text( 'write', $editor, 'chat' )
-            ->withSystemPrompt( $system . "\n" . (string) $request->input( 'context', '' ) )
-            ->withTools( [
-                Tools::laravel( CmsTools\GetLocales::class )->max( 1 ),
-                Tools::laravel( CmsTools\GetSchemas::class )->max( 1 ),
-                ...array_map( fn( $class ) => Tools::laravel( $class ), array_diff( CmsServer::tools(), self::EXCLUDE, Ai::TOOLS ) ),
-                Tools::provider( 'web_search' ),
-                Tools::provider( 'web_fetch' ),
-            ] )
-            ->withToolChoice( \Aimeos\Prisma\Providers\Base::AUTO )
-            ->withMaxSteps( config( 'cms.ai.maxsteps', 10 ) );
-
-        if( $history ) {
-            $prisma->withMessages( $history );
-        }
-
-        // One lock per slot caps the parallel streams of a user (each holds a PHP worker for minutes) while
-        // allowing several chats in different tabs. The 300s TTL is only a backstop for a hard worker kill
-        // (SIGKILL/OOM, where the finally never runs): every other path releases the lock explicitly.
-        $lock = null;
-        $blocked = true;
-
-        try {
-            for( $i = 0; $i < self::MAX; $i++ )
-            {
-                $slot = Cache::lock( 'cms_chat_' . Tenancy::value() . '_' . $user->getAuthIdentifier() . '_' . $i, 300 );
-
-                if( $slot->get() ) {
-                    $lock = $slot;
-                    $blocked = false;
-                    break;
-                }
-            }
-        } catch( \Throwable $e ) {
-            Log::warning( 'Chat concurrency lock unavailable, running without it', ['message' => $e->getMessage()] );
-            $blocked = false;
-        }
-
-        if( $blocked ) {
-            // 409 Conflict, not 429: the route's "throttle:cms-ai" middleware already owns 429 for rate
-            // limiting, so a distinct status lets the client tell "too many streams" from "slow down".
-            abort( 409, 'Too many responses are being generated' );
-        }
-
-        $response = new StreamedResponse( function() use ( $prisma, $prompt, $config, $lock ) {
-            // Don't let PHP kill the script mid-flush on disconnect; emit() detects it and stops
-            // cleanly so the lock is always released here (and token pulling/billing stops promptly).
-            $abort = (bool) ignore_user_abort( true );
-            $done = false;
-
-            // A fatal error (e.g. PHP's execution time limit) skips the finally below, so end the
-            // stream with the reason from the shutdown handler instead; it's a no-op otherwise.
-            register_shutdown_function( function() use ( &$done ) {
-                $error = error_get_last();
-
-                if( !$done && $error && $error['type'] === E_ERROR ) { // @phpstan-ignore booleanNot.alwaysTrue ($done is set by reference)
-                    $this->end( str_contains( $error['message'], 'Maximum execution time' ) ? self::TIMEOUT : 'An unexpected error occurred' );
-                }
-            } );
-
-            try {
-                $this->end( $this->emit( $prisma, $prompt, $config ) );
-            } finally {
-                $done = true;
-                ignore_user_abort( $abort );
-                $lock?->release();
-            }
-        }, 200, [
-            'Content-Type' => 'text/plain; charset=utf-8',
-            'Cache-Control' => 'no-cache, no-transform',
-            'X-Content-Type-Options' => 'nosniff', // don't let a browser MIME-sniff the stream as HTML
-            'X-Accel-Buffering' => 'no', // tell nginx not to buffer the stream
-            'Connection' => 'keep-alive',
-        ] );
-
-        return $response;
-    }
-
-
-    /**
-     * Runs the streaming request and writes each delta straight to the output buffer as raw text.
-     *
-     * Providers that support streaming push prose token-by-token; for the rest (and the test fake)
-     * the final text is written in one go. Stops promptly and quietly when the client disconnects.
-     *
-     * @param \Aimeos\Prisma\Contracts\Provider $prisma Configured Prisma text request
-     * @param string $prompt Current user message
-     * @param array<string, mixed> $config AI provider configuration
-     * @return string|null Error message if the answer failed, null on success or client disconnect
-     */
-    protected function emit( \Aimeos\Prisma\Contracts\Provider $prisma, string $prompt, array $config ) : ?string
-    {
-        $send = function( ?string $text ) {
-            // text() is null when the model ended on tool calls with no prose - nothing to send
-            if( $text === null ) {
-                return;
-            }
-
-            echo str_replace( self::END, '', $text ); // the end marker must only appear once, at the end
-
-            // Push the chunk downstream immediately without closing the buffer, so a wrapping
-            // output buffer (FPM ini, middleware) streams progressively instead of holding the
-            // whole response - and stays capturable by TestResponse::streamedContent() in tests.
-            if( ob_get_level() > 0 ) {
-                ob_flush();
-            }
-
-            flush();
-
-            // Client hit Stop / navigated away: unwind out of the provider's stream loop so we stop
-            // pulling tokens immediately; the caller's finally then releases the per-user lock.
-            if( connection_aborted() ) {
-                throw new \RuntimeException( 'client disconnected' );
-            }
-        };
-
-        // AI generation streams for minutes; PHP's default 30s max_execution_time otherwise kills the
-        // worker mid-read (fatal in fread()). Lift it for the whole stream - a genuinely stalled upstream
-        // still trips the provider's own read timeout first (a catchable PrismaException).
-        return Ai::lifted( function() use ( $prisma, $prompt, $config, $send ) : ?string {
-            $buffer = '';
-
-            try
-            {
-                if( $prisma->has( 'stream' ) )
-                {
-                    $prose = false;
-                    $response = $prisma->ensure( 'stream' )->stream( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
-
-                    // Coalesce deltas into ~40 char chunks (or one chunk per tool call) instead of flushing
-                    // per token, then send whatever is left once the stream ends.
-                    foreach( $response->stream() as $chunk )
-                    {
-                        if( $chunk instanceof Step )
-                        {
-                            $path = $chunk->arguments()['path'] ?? null;
-
-                            if( !$chunk->done() ) {
-                                // surface tool activity as a bold list item, with the page path in parentheses when known
-                                $send( "\n* **" . $chunk->name() . "**" . ( $path ? ' (/' . $path . ')' : '' ) . "\n" );
-                            }
-                            continue;
-                        }
-
-                        $buffer .= (string) $chunk;
-                        $prose = true; // a real prose token streamed (tool steps alone don't count)
-
-                        // byte length is a fine "buffered enough?" gate and avoids multibyte scanning per token
-                        if( strlen( $buffer ) >= 40 ) {
-                            $send( $buffer );
-                            $buffer = '';
-                        }
-                    }
-
-                    if( $buffer !== '' ) {
-                        $send( $buffer );
-                        $buffer = '';
-                    }
-
-                    // Provider that only streamed tool steps (or a non-stream-backed response, e.g. the test
-                    // fake): send the assembled answer text. text() drains any unconsumed stream first; it's
-                    // null when the model ended on tool calls with no prose, which send() skips.
-                    if( !$prose ) {
-                        $send( $response->text() );
-                    }
-                }
-                else
-                {
-                    $response = $prisma->ensure( 'write' )->write( $prompt, [], $config ); // @phpstan-ignore-line method.notFound
-                    $send( $response->text() );
-                }
-
-                return null;
-            }
-            catch( \Throwable $e )
-            {
-                if( connection_aborted() ) {
-                    return null; // client gone (or the disconnect we threw above) - just stop, nothing to report
-                }
-
-                Log::error( 'Chat stream error', ['controller' => 'Chat', 'message' => $e->getMessage()] );
-
-                // keep the text received before the error; end() flushes it together with the message
-                echo str_replace( self::END, '', $buffer );
-
-                // The response is already streaming (HTTP 200 sent), so the client shows the message after
-                // the end marker; timeouts of the provider request and Prisma errors are reported as such,
-                // anything else stays generic.
-                if( preg_match( '/timed? out|cURL error 28/i', $e->getMessage() ) ) {
-                    return self::TIMEOUT;
-                }
-
-                return $e instanceof PrismaException ? $e->getMessage() : 'An unexpected error occurred';
-            }
-        } );
-    }
-
-
-    /**
-     * Ends the answer with the end marker and the error message if there's one.
-     *
-     * @param string|null $error Error message to show or null if the answer is complete
-     */
-    protected function end( ?string $error ) : void
-    {
-        echo self::END . str_replace( self::END, '', (string) $error );
-
-        if( ob_get_level() > 0 ) {
-            ob_flush();
-        }
-
-        flush();
-    }
-
-
-    /**
-     * Sanitizes the client-supplied conversation history for a multi-turn chat.
-     *
-     * Keeps only well-formed user/assistant turns; everything else is dropped silently. The complete
-     * request is size-limited before this method is called.
-     *
-     * @param mixed $messages Raw messages value from the request
-     * @return list<array{role: string, content: string}> Validated conversation history
-     */
-    protected function history( mixed $messages ) : array
-    {
-        if( is_string( $messages ) ) {
-            $messages = json_decode( $messages, true );
-        }
-
-        if( !is_array( $messages ) ) {
-            return [];
-        }
-
-        $result = [];
-        $prev = null;
-
-        foreach( $messages as $msg )
-        {
-            $msg = (array) $msg;
-
-            if( !in_array( $role = $msg['role'] ?? null, ['user', 'assistant'], true )
-                || !is_string( $content = $msg['content'] ?? null ) || $content === '' ) {
-                continue;
-            }
-
-            // Enforce strict user/assistant alternation: dropping an errored assistant turn client-side
-            // can leave two consecutive user turns, which providers like Gemini reject (HTTP 400).
-            // Replace the previous same-role turn with this newer one.
-            if( $role === $prev ) {
-                array_pop( $result );
-            }
-
-            $result[] = ['role' => (string) $role, 'content' => $content];
-            $prev = $role;
-        }
-
-        // The current prompt is appended as the next user turn, so history must end on an assistant turn
-        // (or be empty) to keep alternating; drop a trailing user turn (e.g. an errored, dropped exchange).
-        if( $prev === 'user' ) {
-            array_pop( $result );
-        }
-
-        // Providers also require the first turn to be the user's: the -20 window of a long chat can start
-        // on an assistant turn, so drop a leading assistant turn to keep the user/assistant/... ordering.
-        if( ( $result[0]['role'] ?? null ) === 'assistant' ) {
-            array_shift( $result );
-        }
-
-        return $result;
+        return new StreamedResponse( $chat, 200, self::HEADERS );
     }
 }

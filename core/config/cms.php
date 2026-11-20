@@ -33,7 +33,7 @@ return [
         'admin' => ['*'],
         'viewer' => ['page:view', 'element:view', 'file:view'],
         'publisher' => ['page:*', 'element:*', 'file:*', 'audio:*', 'image:*', 'text:*', 'page:config', 'cache:clear'],
-        'editor' => ['publisher', '!*:publish', '!*:purge', '!page:access'],
+        'editor' => ['publisher', '!*:publish', '!*:purge', '!page:config', '!page:access'],
         'translator' => ['page:view', 'page:save', 'page:publish', 'variant:*', 'element:*', 'file:*', '!element:purge', '!file:purge'],
     ],
 

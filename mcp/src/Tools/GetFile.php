@@ -40,7 +40,7 @@ class GetFile extends Tool
 
         /** @var File $file */
         $file = File::withTrashed()->with( [
-            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux', 'publish_at', 'created_at'] )
+            'latest' => fn( $q ) => $q->select( Version::columns( 'aux', 'created_at' ) )
         ] )->findOrFail( $v['id'] );
 
         $data = Presenter::file( $file ) + [

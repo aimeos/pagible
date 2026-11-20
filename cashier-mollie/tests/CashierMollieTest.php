@@ -548,6 +548,17 @@ class CashierMollieTest extends CashierTestAbstract
     }
 
 
+    public function testRegistersWithoutApplicationKeyInConsole(): void
+    {
+        config()->set( 'app.key', '' );
+        $url = config( 'cashier.webhook_url' );
+
+        ( new \Aimeos\Cms\CashierMollieServiceProvider( $this->app ) )->register();
+
+        $this->assertSame( $url, config( 'cashier.webhook_url' ) );
+    }
+
+
     public function testWebhookRoutesUsePreviousApplicationKeys(): void
     {
         $key = config( 'app.previous_keys.0' );

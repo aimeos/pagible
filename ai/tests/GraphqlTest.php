@@ -63,7 +63,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testDescribe()
     {
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $expected = 'Description of the file content.';
         Prisma::fake( [TextResponse::fromText( $expected )] );
 
@@ -81,7 +81,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testImagine()
     {
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $image = base64_encode( $this->pngBinary() );
         $fake = Prisma::fake( [FileResponse::fromBase64( $image, 'image/png' )] );
 
@@ -96,6 +96,8 @@ class GraphqlTest extends AiTestAbstract
         ] );
 
         $fake->assertCalled( 'imagine', fn( $args ) => $args[0] === "Generate content\n\nThis is a test context." );
+        // configurations of older versions have no preferred sizes
+        $fake->assertCalled( 'imagine', fn( $args ) => ( $args[2]['size'][0] ?? null ) === '1536x1024' );
     }
 
 
@@ -153,7 +155,7 @@ class GraphqlTest extends AiTestAbstract
 
     public function testWrite()
     {
-        $file = File::firstOrFail();
+        $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
         $expected = 'Generated content based on the prompt.';
         Prisma::fake( [TextResponse::fromText( $expected )] );
 
@@ -178,7 +180,7 @@ class GraphqlTest extends AiTestAbstract
             mutation {
                 describe(file: "00000000-0000-0000-0000-000000000000", lang: "en")
             }
-        ' )->assertGraphQLErrorMessage( 'File not found' );
+        ' )->assertGraphQLErrorMessage( 'File not found or not supported, images must be JPEG, PNG or WebP' );
     }
 
 

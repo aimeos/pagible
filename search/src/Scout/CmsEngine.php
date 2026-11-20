@@ -2,7 +2,9 @@
 
 namespace Aimeos\Cms\Scout;
 
+use Aimeos\Cms\Contracts\SearchesFields;
 use Aimeos\Cms\DB;
+use Aimeos\Cms\Scout;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Query\PageBuilder;
@@ -14,7 +16,7 @@ use Laravel\Scout\Engines\Engine;
 use Laravel\Scout\Contracts\PaginatesEloquentModelsUsingDatabase;
 
 
-class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
+class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase, SearchesFields
 {
     /**
      * Character ranges for scripts without word boundaries: Thai, Hangul (Jamo + syllables),
@@ -171,6 +173,18 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
 
     /**
+     * Searches the draft content of the latest versions if the "draft" field is passed.
+     *
+     * @param Builder<\Illuminate\Database\Eloquent\Model> $builder Scout search builder
+     * @param array<string> $fields Searchable fields like "content" or "draft"
+     */
+    public function searchFields( Builder $builder, array $fields ) : void
+    {
+        $builder->where( 'latest', in_array( 'draft', $fields ) );
+    }
+
+
+    /**
      * Perform the given search on the engine.
      *
      * @param  \Laravel\Scout\Builder<\Illuminate\Database\Eloquent\Model>  $builder
@@ -283,8 +297,8 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         // Pre-pass: detect draft mode and apply trashed scope side effects
         foreach( $builder->wheres as $key => $where )
         {
-            $field = $where['field'] ?? $key;
-            $value = is_array( $where ) && array_key_exists( 'value', $where ) ? $where['value'] : $where;
+            $field = SearchQuery::field( $where, $key );
+            $value = SearchQuery::value( $where );
 
             if( $field === 'latest' && $value == true ) {
                 $isDraft = true;
@@ -303,12 +317,13 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
         }
 
         // withTrashed() removes the soft delete filter, like the collection engine, trashed items are included then
-        if( !$softDeleted && config( 'scout.soft_delete', false ) ) {
+        if( !$softDeleted && Scout::keepsTrashed() ) {
             $query->withoutGlobalScope( $scope );
         }
 
         // Pages are indexed per variant, a language filter selects the variants of that language
         SearchQuery::variants( $query, $builder );
+        SearchQuery::columns( $query, $builder );
 
         // Join cms_index for full-text search
         if( !empty( $builder->query ) ) {
@@ -397,7 +412,7 @@ class CmsEngine extends Engine implements PaginatesEloquentModelsUsingDatabase
 
         foreach( $builder->wheres as $key => $where )
         {
-            if( ( $where['field'] ?? $key ) == 'latest' ) {
+            if( SearchQuery::field( $where, $key ) == 'latest' ) {
                 $query->where( 'cms_index.latest', $where['operator'] ?? '=', $where['value'] ?? $where );
             }
         }

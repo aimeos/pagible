@@ -20,6 +20,6 @@ trait RoutesQueue
      */
     protected function routeQueue() : void
     {
-        $this->onConnection( Utils::queue() )->onQueue( config( 'cms.queue.name' ) ?: null );
+        $this->onConnection( Utils::queue() )->onQueue( Utils::queueName() );
     }
 }

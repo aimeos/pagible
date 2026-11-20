@@ -7,6 +7,8 @@
 
 namespace Tests;
 
+use Database\Seeders\TestSeeder;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nuwave\Lighthouse\Testing\MakesGraphQLRequests;
 use Nuwave\Lighthouse\Testing\RefreshesSchemaCache;
 
@@ -15,24 +17,48 @@ abstract class MetricsTestAbstract extends \Orchestra\Testbench\TestCase
 {
     use MakesGraphQLRequests;
     use RefreshesSchemaCache;
+    use RefreshDatabase;
 
+    private static bool $cmsPrepared = false;
 
+    protected $seeder = TestSeeder::class;
     protected ?\App\Models\User $user = null;
     // the isolated package install (CI) doesn't discover the dependency providers, so all are listed below
     protected $enablesPackageDiscoveries = false;
+
+
+    protected function defineDatabaseMigrations()
+    {
+        // Persistent databases share Laravel's migration state between package suites.
+        // Reset it once so the metrics tests get their seeded baseline in the root test suite.
+        if( !self::$cmsPrepared ) {
+            \Illuminate\Foundation\Testing\RefreshDatabaseState::$migrated = false;
+            self::$cmsPrepared = true;
+        }
+
+        \Orchestra\Testbench\after_resolving( $this->app, 'migrator', static function( $migrator ) {
+            $migrator->path( \Orchestra\Testbench\default_migration_path() );
+        } );
+    }
 
 
     protected function defineEnvironment( $app )
     {
         $app['config']->set( 'database.default', 'testing' );
         $app['config']->set( 'database.connections.testing', [
-            'driver' => 'sqlite',
-            'database' => ':memory:',
+            'driver' => env( 'DB_DRIVER', 'sqlite' ),
+            'host' => env( 'DB_HOST', '' ),
+            'port' => env( 'DB_PORT', '' ),
+            'database' => env( 'DB_DRIVER', 'sqlite' ) === 'sqlite' ? ':memory:' : env( 'DB_DATABASE', '' ),
+            'username' => env( 'DB_USERNAME', '' ),
+            'password' => env( 'DB_PASSWORD', '' ),
+            'foreign_key_constraints' => true,
         ] );
         $app['config']->set( 'auth.providers.users.model', 'App\\Models\\User' );
         $app['config']->set( 'cache.default', 'array' );
         $app['config']->set( 'cms.db', 'testing' );
         $app['config']->set( 'pulse.enabled', false );
+        $app['config']->set( 'scout.driver', null );
 
         $provider = new \ReflectionClass( \Aimeos\Cms\GraphqlServiceProvider::class );
         $schema = sys_get_temp_dir() . '/cms-metrics-' . getmypid() . '.graphql';

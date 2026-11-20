@@ -34,7 +34,7 @@ class Files
         $file = new File();
         $resource = $fetched['resource'] ?? null;
         // referenced files aren't stored by the import, so they must not be removed from the disk
-        $remove = fn() => $download ? $file->removePreviews()->removeFile() : $file->removePreviews();
+        $remove = fn() => $file->discard( $download );
 
         try
         {
@@ -48,7 +48,7 @@ class Files
                     // the MIME type of the downloaded file is detected from the content like by fetchUrl()
                     $file->mime = $fetched['mime'] ?? $mime;
                 } else {
-                    $resource = $file->fetchUrl( $path ) ?? throw new Exception( 'Unable to create temporary file' );
+                    $resource = $file->fetchUrl( $path );
                 }
 
                 if( $mime === 'image/svg+xml' ) {
@@ -105,7 +105,7 @@ class Files
     public static function fetch( string $url ) : array
     {
         $file = new File();
-        $resource = $file->fetchUrl( $url ) ?? throw new Exception( 'Unable to create temporary file' );
+        $resource = $file->fetchUrl( $url );
 
         return ['resource' => $resource, 'mime' => $file->mime];
     }

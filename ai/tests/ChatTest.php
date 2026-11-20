@@ -11,7 +11,6 @@ use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\TextResponse;
 use Aimeos\Prisma\Tools\Step;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 
 
@@ -139,8 +138,28 @@ class ChatTest extends AiTestAbstract
     }
 
 
+    public function testStreamJsonHistory()
+    {
+        Prisma::fake( [TextResponse::fromText( 'Done' )] );
+
+        // clients of older versions send the history as JSON string, which isn't rejected
+        $content = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), [
+                'prompt' => 'Create a page',
+                'messages' => json_encode( [['role' => 'user', 'content' => 'hello'], ['role' => 'assistant', 'content' => 'hi there']] ),
+            ] )
+            ->assertOk()
+            ->streamedContent();
+
+        $this->assertSame( "Done\x1E", $content );
+    }
+
+
     public function testStreamEndsWithPrismaErrorMessage()
     {
+        config( ['app.debug' => false] );
+
         $producer = function( TextResponse $response ) {
             yield 'Partial answer';
             throw new \Aimeos\Prisma\Exceptions\OverloadedException( 'Provider overloaded' );
@@ -153,15 +172,46 @@ class ChatTest extends AiTestAbstract
             ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
 
         $response->assertOk();
-        $this->assertSame( "Partial answer\x1EProvider overloaded", $response->streamedContent() );
+        $this->assertSame( "Partial answer\x1EThe AI service is busy, please try again later", $response->streamedContent() );
     }
 
 
-    public function testStreamEndsWithTimeoutMessage()
+    public function testStreamShowsPrismaErrorInDebugMode()
+    {
+        config( ['app.debug' => true] );
+
+        Prisma::fake( [new \Aimeos\Prisma\Exceptions\OverloadedException( 'Provider overloaded' )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "\x1EProvider overloaded", $response->streamedContent() );
+    }
+
+
+    public function testStreamRedactsPrismaErrorInDebugMode()
+    {
+        config( ['app.debug' => true] );
+
+        Prisma::fake( [new \Aimeos\Prisma\Exceptions\OverloadedException( 'Invalid key sk-abc123' )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "\x1EInvalid key [REDACTED]", $response->streamedContent() );
+    }
+
+
+    public function testStreamSanitizesToolPath()
     {
         $producer = function( TextResponse $response ) {
-            yield 'Partial answer';
-            throw new \RuntimeException( 'cURL error 28: Operation timed out after 300001 milliseconds' );
+            yield new \Aimeos\Prisma\Tools\Step( null, 'save-page', ['path' => "a**b\n`c`"] );
+            yield new \Aimeos\Prisma\Tools\Step( null, 'add-page', ['path' => ['x']] );
+            yield 'Done';
         };
 
         Prisma::fake( [TextResponse::fromStream( $producer )] );
@@ -171,7 +221,26 @@ class ChatTest extends AiTestAbstract
             ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
 
         $response->assertOk();
-        $this->assertSame( "Partial answer\x1EThe response took too long and was stopped.", $response->streamedContent() );
+        $this->assertSame( "\n* **save-page** (/a b c)\n\n* **add-page**\nDone\x1E", $response->streamedContent() );
+    }
+
+
+    public function testStreamEndsWithTimeoutMessage()
+    {
+        $producer = function( TextResponse $response ) {
+            yield 'Partial answer';
+            throw new \GuzzleHttp\Exception\ConnectException( 'cURL error 28: Operation timed out after 300001 milliseconds',
+                new \GuzzleHttp\Psr7\Request( 'POST', 'https://api.example.com' ), null, ['errno' => 28] );
+        };
+
+        Prisma::fake( [TextResponse::fromStream( $producer )] );
+
+        $response = $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+
+        $response->assertOk();
+        $this->assertSame( "Partial answer\x1EThe response took too long and was stopped", $response->streamedContent() );
     }
 
 
@@ -351,59 +420,46 @@ class ChatTest extends AiTestAbstract
 
     public function testStreamAllowsParallelStreamsForTheSameUser()
     {
-        Prisma::fake( [TextResponse::fromText( 'Created the page' )] );
+        Prisma::fake( [TextResponse::fromText( 'First page' ), TextResponse::fromText( 'Second page' )] );
 
-        $lock = Cache::lock( $this->slot( 0 ), 60 );
-        $this->assertTrue( $lock->get() ); // simulate a stream running in another tab
+        // the stream holds its slot until its content is sent
+        $first = $this->chat();
+        $second = $this->chat();
 
-        try {
-            $response = $this->actingAs( $this->user )
-                ->withoutMiddleware( VerifyCsrfToken::class )
-                ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
-
-            $response->assertOk();
-            $this->assertStringContainsString( 'Created the page', $response->streamedContent() );
-        } finally {
-            $lock->release();
-        }
+        $first->assertOk();
+        $second->assertOk();
+        $this->assertStringContainsString( 'First page', $first->streamedContent() );
+        $this->assertStringContainsString( 'Second page', $second->streamedContent() );
     }
 
 
     public function testStreamRejectsTooManyStreamsForTheSameUser()
     {
-        $locks = array_map( fn( $i ) => Cache::lock( $this->slot( $i ), 60 ), [0, 1, 2] );
+        Prisma::fake( array_map( fn() => TextResponse::fromText( 'Created the page' ), range( 1, 3 ) ) );
 
-        foreach( $locks as $lock ) {
-            $this->assertTrue( $lock->get() ); // simulate three running streams for this user
-        }
+        // three streams running for this user
+        $responses = array_map( fn() => $this->chat(), range( 1, 3 ) );
 
-        try {
-            $response = $this->actingAs( $this->user )
-                ->withoutMiddleware( VerifyCsrfToken::class )
-                ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
+        // 409 Conflict (all slots in use), distinct from the throttle middleware's 429
+        $this->chat()->assertStatus( 409 );
 
-            // 409 Conflict (all slots in use), distinct from the throttle middleware's 429
-            $response->assertStatus( 409 );
-        } finally {
-            array_map( fn( $lock ) => $lock->release(), $locks );
+        foreach( $responses as $response ) {
+            $response->streamedContent();
         }
     }
 
 
     public function testStreamReleasesTheLockWhenItEnds()
     {
-        Prisma::fake( [TextResponse::fromText( 'Created the page' )] );
+        Prisma::fake( array_map( fn() => TextResponse::fromText( 'Created the page' ), range( 1, 4 ) ) );
 
-        $response = $this->actingAs( $this->user )
-            ->withoutMiddleware( VerifyCsrfToken::class )
-            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
-
-        $response->assertOk();
-        $response->streamedContent(); // run the stream to completion -> the finally releases the lock
-
-        $lock = Cache::lock( $this->slot( 0 ), 60 );
-        $this->assertTrue( $lock->get(), 'the slot should be free once the stream ended' );
-        $lock->release();
+        // more streams than slots can run one after another if each one releases its slot at the end
+        foreach( range( 1, 4 ) as $num )
+        {
+            $response = $this->chat();
+            $response->assertOk();
+            $response->streamedContent();
+        }
     }
 
 
@@ -411,10 +467,7 @@ class ChatTest extends AiTestAbstract
     {
         // A client that drops an errored assistant turn can send two consecutive user turns; the
         // sanitizer must collapse them and not end on a user turn (providers 400 on that).
-        $method = new \ReflectionMethod( \Aimeos\Cms\Controllers\ChatController::class, 'history' );
-        $method->setAccessible( true );
-
-        $history = $method->invoke( new \Aimeos\Cms\Controllers\ChatController(), [
+        $history = \Aimeos\Cms\Chat\History::clean( [
             ['role' => 'user', 'content' => 'first question'],
             ['role' => 'assistant', 'content' => 'first answer'],
             ['role' => 'user', 'content' => 'failed prompt'],
@@ -432,10 +485,7 @@ class ChatTest extends AiTestAbstract
     {
         // The last-20 window of a long chat can begin on an assistant turn; providers require the
         // first turn to be the user's, so a leading assistant turn must be dropped.
-        $method = new \ReflectionMethod( \Aimeos\Cms\Controllers\ChatController::class, 'history' );
-        $method->setAccessible( true );
-
-        $history = $method->invoke( new \Aimeos\Cms\Controllers\ChatController(), [
+        $history = \Aimeos\Cms\Chat\History::clean( [
             ['role' => 'assistant', 'content' => 'earlier answer'],
             ['role' => 'user', 'content' => 'a question'],
             ['role' => 'assistant', 'content' => 'an answer'],
@@ -448,8 +498,52 @@ class ChatTest extends AiTestAbstract
     }
 
 
-    protected function slot( int $num ) : string
+    public function testDraftsRemoveConfigAndImages()
     {
-        return 'cms_chat_' . \Aimeos\Cms\Tenancy::value() . '_' . $this->user->getAuthIdentifier() . '_' . $num;
+        $args = null;
+        $schema = \Aimeos\Prisma\Schema\Schema::fromArray( 'args', ['type' => 'object', 'properties' => []] );
+        $tool = \Aimeos\Prisma\Tools::make( 'save', 'Saves', $schema, function( ...$params ) use ( &$args ) {
+            $args = $params;
+            return 'ok';
+        } );
+
+        $result = ( new \Aimeos\Cms\Chat\Drafts( $tool ) )( ['config' => ['javascript' => ['type' => 'javascript', 'data' => ['text' => 'alert(1)'], 'files' => []]], 'content' => [['data' => [
+            'text' => "A ![cat](https&#58;//evil.example/x) B ![a [b] c](https://evil.example/y) C ![dog] [link](https://example.com)\n\n[dog]: https://evil.example/z",
+            'html' => '<p>A<IMG src="&#104;ttps&#58;&#47;&#47;evil.example/a">B<span title="a>b"style="background-image:&#117;rl(https://evil.example/c)">x</span><i/STYLE=\'x\'>y</i></p>',
+        ]]]] );
+
+        $data = $args[0]['content'][0]['data'] ?? [];
+
+        $this->assertSame( 'ok', $result );
+        $this->assertArrayNotHasKey( 'config', $args[0] ?? [] );
+        $this->assertSame( "A [cat](https&#58;//evil.example/x) B [a [b] c](https://evil.example/y) C [dog] [link](https://example.com)\n\n[dog]: https://evil.example/z", $data['text'] ?? null );
+        $this->assertSame( '<p>AB<span title="a>b">x</span><i/>y</i></p>', $data['html'] ?? null );
+
+        $md = new \League\CommonMark\GithubFlavoredMarkdownConverter( ['html_input' => 'strip', 'allow_unsafe_links' => false] );
+        $this->assertStringNotContainsString( '<img', (string) $md->convert( $data['text'] ?? '' ) );
+        $this->assertStringNotContainsString( 'evil', \Aimeos\Cms\Utils::html( $data['html'] ?? '' ) );
+    }
+
+
+    public function testHistoryDropsTheOldestTurnsBeyondTheMaximumSize()
+    {
+        $long = str_repeat( 'x', 60000 );
+
+        $history = \Aimeos\Cms\Chat\History::clean( [
+            ['role' => 'user', 'content' => 'old question'],
+            ['role' => 'assistant', 'content' => $long],
+            ['role' => 'user', 'content' => 'new question'],
+            ['role' => 'assistant', 'content' => $long],
+        ] );
+
+        $this->assertSame( [['role' => 'user', 'content' => 'new question'], ['role' => 'assistant', 'content' => $long]], $history );
+    }
+
+
+    protected function chat() : \Illuminate\Testing\TestResponse
+    {
+        return $this->actingAs( $this->user )
+            ->withoutMiddleware( VerifyCsrfToken::class )
+            ->post( route( 'cms.chat' ), ['prompt' => 'Create a page about cats'] );
     }
 }

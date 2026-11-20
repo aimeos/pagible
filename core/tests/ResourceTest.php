@@ -7,6 +7,7 @@
 
 namespace Tests;
 
+use Aimeos\Cms\Action;
 use Aimeos\Cms\Permission;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -22,7 +23,6 @@ use Aimeos\Cms\Events\PageInvalidated;
 use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Jobs\IndexModels;
 use Aimeos\Cms\Jobs\InvalidatePages;
-use Aimeos\Cms\LifecycleAction;
 use Laravel\Scout\Jobs\RemoveFromSearch;
 use Database\Seeders\TestSeeder;
 use Aimeos\Cms\Exception;
@@ -193,6 +193,50 @@ class ResourceTest extends CoreTestAbstract
     }
 
 
+    public function testSavePageKeepsUnsentFieldsFromStaleVersion()
+    {
+        $page = $this->page( [] );
+        $base = $page->latest_id;
+        $data = (array) $page->latest->data;
+
+        // the other save leaves the data unchanged
+        Pages::save( $page->id, ['content' => []], $this->user );
+        $page = Pages::save( $page->id, ['title' => 'My change'], $this->user, $base );
+
+        $this->assertSame( 'My change', $page->latest->data->title );
+        $this->assertSame( $data['name'], $page->latest->data->name );
+        $this->assertSame( $data['path'], $page->latest->data->path );
+    }
+
+
+    public function testSaveElementKeepsUnsentFieldsFromStaleVersion()
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Stale', 'data' => ['text' => 'Kept']], $this->user );
+        $base = $element->latest_id;
+
+        // the other save leaves the data unchanged
+        Elements::save( $element->id, ['name' => 'Stale'], $this->user );
+        $element = Elements::save( $element->id, ['name' => 'My change'], $this->user, $base );
+
+        $this->assertSame( 'My change', $element->latest->data->name );
+        $this->assertSame( 'text', $element->latest->data->type );
+        $this->assertEquals( 'Kept', $element->latest->data->data->text ?? null );
+    }
+
+
+    public function testSaveElementClearsLanguage()
+    {
+        $element = Elements::add( ['lang' => 'en', 'type' => 'text', 'name' => 'Neutral', 'data' => ['text' => 'Text']], $this->user );
+        $element = Elements::save( $element->id, ['lang' => null], $this->user );
+
+        $this->assertNull( $element->latest->lang );
+
+        $element->publish( $element->latest );
+
+        $this->assertNull( Element::findOrFail( $element->id )->lang );
+    }
+
+
     public function testSavePageDetachesRemovedReference()
     {
         $file = File::where( 'mime', 'image/jpeg' )->firstOrFail();
@@ -229,6 +273,82 @@ class ResourceTest extends CoreTestAbstract
         $this->assertEquals( [$tiff->id], $page->latest->aux->meta->{'social-media'}->files );
         $this->assertObjectNotHasProperty( 'id', $page->latest->aux->meta->{'social-media'} );
         $this->assertObjectNotHasProperty( 'group', $page->latest->aux->meta->{'social-media'} );
+    }
+
+
+    public function testAddPageInheritsParentValues()
+    {
+        $root = $this->root();
+        Pages::save( $root->id, ['theme' => 'paper', 'type' => 'blog'], $this->user );
+
+        $page = Pages::add( ['name' => 'Child', 'title' => 'Child', 'path' => 'child-' . Utils::uid(), 'type' => 'docs'], $this->user, parent: $root->id );
+        $data = $page->latest->data;
+
+        $this->assertSame( 'mydomain.tld', $data->domain );
+        $this->assertSame( 'paper', $data->theme );
+        $this->assertSame( 'docs', $data->type );
+    }
+
+
+    public function testAddPageDefaults()
+    {
+        $parent = Pages::add( [
+            'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'parent-defaults',
+            'domain' => 'example.com', 'theme' => 'cms', 'type' => 'blog',
+        ], $this->user, parent: $this->root()->id );
+
+        $page = Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child Page Title'], $this->user, parent: $parent->id );
+        $sibling = Pages::add( ['lang' => 'en', 'name' => 'Sibling', 'title' => 'Sibling', 'path' => 'own', 'theme' => 'other'], $this->user, ref: $page->id );
+
+        $this->assertEquals( 'child-page-title', $page->latest->data->path );
+        $this->assertEquals( 'example.com', $page->latest->data->domain );
+        $this->assertEquals( 'cms', $page->latest->data->theme );
+        $this->assertEquals( 'blog', $page->latest->data->type );
+
+        $this->assertEquals( 'own', $sibling->latest->data->path );
+        $this->assertEquals( 'other', $sibling->latest->data->theme );
+        $this->assertEquals( 'blog', $sibling->latest->data->type );
+    }
+
+
+    public function testAddPageLoadsParentOnce()
+    {
+        $parent = Pages::add( [
+            'lang' => 'en', 'name' => 'Parent', 'title' => 'Parent', 'path' => 'parent-once',
+            'domain' => 'example.com', 'theme' => 'cms', 'type' => 'blog',
+        ], $this->user, parent: $this->root()->id );
+
+        $queries = [];
+        DB::listen( function( $query ) use ( &$queries ) {
+            $queries[] = $query->sql;
+        } );
+
+        Pages::add( ['lang' => 'en', 'name' => 'Child', 'title' => 'Child once'], $this->user, parent: $parent->id );
+        // identifiers are quoted differently and SQL Server uses "top 1" instead of "limit 1"
+        $versions = array_filter( $queries, fn( $sql ) => (bool) preg_match( '/^select (top 1 )?data from cms_versions/', (string) preg_replace( '/[`"\[\]]/', '', $sql ) ) );
+
+        $this->assertCount( 1, $versions );
+
+        $queries = [];
+        $user = new \App\Models\User( ['name' => 'No add', 'email' => 'noadd@testbench', 'cmsperms' => ['page:view']] );
+
+        $this->assertThrows( fn() => Pages::add( ['name' => 'Denied'], $user, parent: $parent->id ), PermissionException::class );
+        $this->assertSame( [], $queries );
+    }
+
+
+    public function testAddPageSections()
+    {
+        $page = Pages::add( [
+            'lang' => 'en', 'name' => 'Sections', 'title' => 'Sections', 'path' => 'sections',
+            'content' => [['type' => 'text', 'data' => ['text' => 'Test']]],
+        ], $this->user, parent: $this->root()->id, sections: true );
+
+        $content = $page->latest->aux->content;
+
+        $this->assertCount( 1, $content );
+        $this->assertEquals( 'main', $content[0]->group );
+        $this->assertNotEmpty( $content[0]->id );
     }
 
 
@@ -1685,20 +1805,20 @@ class ResourceTest extends CoreTestAbstract
 
     public function testSystemKeepsConfig()
     {
-        $config = fn( string $title ) => ['website-title' => ['type' => 'website-title', 'data' => ['title' => $title], 'files' => []]];
+        $config = fn( string $title ) => ['website' => ['type' => 'website', 'data' => ['title' => $title], 'files' => []]];
 
         $page = Permission::system( fn() => Pages::add( [
             'lang' => 'en', 'name' => 'Config', 'path' => 'res-config', 'config' => $config( 'Added' ),
         ], parent: $this->root()->id ) );
-        $this->assertEquals( 'Added', $page->latest->aux->config->{'website-title'}->data->title );
+        $this->assertEquals( 'Added', $page->latest->aux->config->{'website'}->data->title );
 
         Permission::system( fn() => Pages::publish( $page->id ) );
         $page = Permission::system( fn() => Pages::save( $page->id, ['config' => $config( 'Saved' )], latestId: $page->latest_id ) );
-        $this->assertEquals( 'Saved', $page->latest->aux->config->{'website-title'}->data->title );
+        $this->assertEquals( 'Saved', $page->latest->aux->config->{'website'}->data->title );
 
         $editor = new \App\Models\User( ['name' => 'Editor', 'cmsperms' => ['page:view', 'page:save']] );
         $page = Pages::save( $page->id, ['config' => $config( 'Editor' )], $editor, $page->latest_id );
-        $this->assertEquals( 'Saved', $page->latest->aux->config->{'website-title'}->data->title );
+        $this->assertEquals( 'Saved', $page->latest->aux->config->{'website'}->data->title );
     }
 
 
@@ -1972,12 +2092,12 @@ class ResourceTest extends CoreTestAbstract
             $this->assertSame( [$file->id], $page->fresh()->files()->pluck( 'cms_files.id' )->all() );
             Event::assertDispatched( PageInvalidated::class, fn( PageInvalidated $event ) =>
                 $event->domain === (string) $page->domain
-                && $event->paths === [(string) $page->path]
+                && in_array( (string) $page->path, $event->paths, true )
             );
         }
 
-        // The published file is also used by another page of the fixtures
-        Event::assertDispatchedTimes( PageInvalidated::class, count( $pages ) + 1 );
+        // The routes are invalidated once per domain and the published file is also used by another page of the fixtures
+        Event::assertDispatchedTimes( PageInvalidated::class, collect( $pages )->pluck( 'domain' )->unique()->count() + 1 );
     }
 
 
@@ -2131,6 +2251,7 @@ class ResourceTest extends CoreTestAbstract
     public function testPublicationKeepsIdsAsIs()
     {
         $publication = new Publication();
+        $track = new \ReflectionMethod( Publication::class, 'track' );
         $ids = [' Mixed,ID ', ' mixed,id '];
 
         foreach( $ids as $id )
@@ -2140,21 +2261,11 @@ class ResourceTest extends CoreTestAbstract
                 {
                     return $value;
                 }
-
-                public function save( array $options = [] )
-                {
-                    return true;
-                }
             };
-            $version = new class extends Version {
-                public function save( array $options = [] )
-                {
-                    return true;
-                }
-            };
+            $version = new Version();
             $version->id = Utils::uid();
             $model->id = $id;
-            $publication->apply( $model, $version );
+            $track->invoke( $publication, $model, $version );
         }
 
         $property = new \ReflectionProperty( Publication::class, 'models' );
@@ -2631,7 +2742,7 @@ class ResourceTest extends CoreTestAbstract
     protected function page( array $content ) : PageView
     {
         return Pages::add( [
-            'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
+            'lang' => 'en', 'domain' => '', 'name' => 'Test', 'title' => 'Test', 'path' => 'res-' . Utils::uid(),
             'content' => $content,
         ], $this->user, parent: $this->root()->id );
     }
@@ -2665,12 +2776,6 @@ class ResourceTest extends CoreTestAbstract
                 ],
             ] );
         }
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 

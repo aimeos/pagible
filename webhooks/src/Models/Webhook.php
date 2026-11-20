@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Models;
 
+use Aimeos\Cms\Concerns\Connection;
 use Aimeos\Cms\Concerns\HasUuids;
 use Aimeos\Cms\Concerns\Tenancy;
 use Aimeos\Cms\WebhookCircuit;
@@ -31,9 +32,11 @@ use Illuminate\Support\Carbon;
  * @property-read \Illuminate\Support\Carbon|null $paused_until
  * @property string $editor
  * @method static \Illuminate\Database\Eloquent\Builder<static> withoutTenancy()
+ * @method static \Illuminate\Database\Eloquent\Builder<static> active()
  */
 class Webhook extends Model
 {
+    use Connection;
     use HasUuids;
     use Tenancy;
 
@@ -51,6 +54,17 @@ class Webhook extends Model
             'status' => $status,
             'at' => now()->utc()->toIso8601String(),
         ], fn( mixed $value ) => $value !== null ), JSON_THROW_ON_ERROR );
+    }
+
+
+    /**
+     * Limits the query to the active subscriptions, the status is stored as small integer.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder<static> $query
+     */
+    public function scopeActive( \Illuminate\Database\Eloquent\Builder $query ) : void
+    {
+        $query->where( 'status', 1 );
     }
 
 
@@ -99,12 +113,6 @@ class Webhook extends Model
         $error['at'] = is_string( $error['at'] ?? null ) ? Carbon::parse( $error['at'] ) : null;
 
         return $error;
-    }
-
-
-    public function getConnectionName() : string
-    {
-        return config( 'cms.db', 'sqlite' );
     }
 
 

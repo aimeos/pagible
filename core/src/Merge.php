@@ -8,7 +8,6 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Models\Base;
-use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\Version;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -30,10 +29,10 @@ class Merge
     {
         $baseMap = self::indexBlocks( $base );
         $currentMap = self::indexBlocks( $current );
-        $incomingMap = self::indexBlocks( $incoming );
 
         $result = [];
         $diff = [];
+        $seen = [];
 
         // Process incoming blocks in incoming order
         foreach( $incoming as $block )
@@ -46,6 +45,7 @@ class Merge
                 continue;
             }
 
+            $seen[$key] = true;
             $b = $baseMap[$key] ?? null;
             $c = $currentMap[$key] ?? null;
             $i = $block;
@@ -77,7 +77,7 @@ class Merge
         // Append blocks only in current (added by other editor)
         foreach( $currentMap as $key => $block )
         {
-            if( !isset( $incomingMap[$key] ) )
+            if( !isset( $seen[$key] ) )
             {
                 if( isset( $baseMap[$key] ) ) {
                     continue; // removed by incoming
@@ -93,11 +93,11 @@ class Merge
 
 
     /**
-     * Three-way merges File data and auxiliary text against the version edited by the caller.
+     * Three-way merges model data and auxiliary data against the version edited by the caller.
      *
-     * @param File $file File with its current latest version loaded
-     * @param array<string, mixed> $data Incoming file data
-     * @param array<string, mixed> $aux Incoming file auxiliary data
+     * @param Base $model Page, element or file with its current latest version loaded
+     * @param array<string, mixed> $data Incoming data
+     * @param array<string, mixed> $aux Incoming auxiliary data
      * @param string|null $latestId Version ID the caller originally edited
      * @return array{
      *     0: array<string, mixed>,
@@ -108,12 +108,12 @@ class Merge
      *     }
      * }
      */
-    public static function file( File $file, array $data, array $aux, ?string $latestId ) : array
+    public static function model( Base $model, array $data, array $aux, ?string $latestId ) : array
     {
-        $latestData = (array) $file->latest?->data;
-        $latestAux = (array) $file->latest?->aux;
+        $latestData = (array) $model->latest?->data;
+        $latestAux = (array) $model->latest?->aux;
 
-        if( !$base = self::base( $file, $latestId ) ) {
+        if( !$base = self::base( $model, $latestId ) ) {
             return [array_replace( $latestData, $data ), array_replace( $latestAux, $aux ), []];
         }
 
@@ -127,64 +127,36 @@ class Merge
 
 
     /**
-     * Three-way merges model data when the editor started from an older version.
-     *
-     * @param array<string, mixed> $input Incoming data
-     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>|null}
-     */
-    public static function model( Base $model, array $input, ?string $latestId ) : array
-    {
-        $latest = $model->latest;
-
-        if( $base = self::base( $model, $latestId ) ) {
-            return self::structured( (array) $base->data, (array) $latest?->data, $input );
-        }
-
-        return [array_replace( (array) $latest?->data, $input ), null];
-    }
-
-
-    /**
      * Three-way merges page data and auxiliary content when the editor started from an older version.
      *
      * @param array<string, mixed> $data Incoming page data
      * @param array<string, mixed> $aux Incoming meta, config and content
-     * @return array{0: array<string, mixed>, 1: array<string, mixed>, 2: array<string, mixed>|null}
+     * @return array{0: array<string, mixed>, 1: array<string, mixed>, 2: array<string, mixed>}
      */
     public static function page( PageView $page, array $data, array $aux, ?string $latestId, ?Authenticatable $user = null ) : array
     {
-        $latest = $page->latest;
-        $latestData = (array) $latest?->data;
-        $latestAux = (array) $latest?->aux;
+        $latestData = (array) $page->latest?->data;
+        $latestAux = (array) $page->latest?->aux;
 
-        if( $base = self::base( $page, $latestId ) )
-        {
-            $latestMeta = (array) ( $latest?->aux->meta ?? [] );
-            $latestContent = (array) ( $latest?->aux->content ?? [] );
-            $latestConfig = (array) ( $latest?->aux->config ?? [] );
-
-            [$data, $dd] = self::structured( (array) $base->data, $latestData, $data );
-
-            $merged = array_replace( $latestAux, $aux );
-            [$merged['meta'], $md] = self::structured( (array) ( $base->aux->meta ?? [] ), $latestMeta, (array) ( $merged['meta'] ?? [] ) );
-            [$merged['content'], $xd] = self::content( (array) ( $base->aux->content ?? [] ), $latestContent, (array) ( $merged['content'] ?? [] ) );
-
-            $cd = null;
-            if( Permission::allowed( 'page:config', $user ) ) {
-                [$merged['config'], $cd] = self::structured( (array) ( $base->aux->config ?? [] ), $latestConfig, (array) ( $merged['config'] ?? [] ) );
-            } else {
-                $merged['config'] = $latestConfig;
-            }
-
-            $diffs = array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] );
-            return [$data, $merged, $diffs ?: null];
+        if( !$base = self::base( $page, $latestId ) ) {
+            return [array_replace( $latestData, $data ), array_replace( $latestAux, $aux ), []];
         }
 
-        return [
-            array_replace( $latestData, $data ),
-            array_replace( $latestAux, $aux ),
-            null,
-        ];
+        $baseData = (array) $base->data;
+        [$data, $dd] = self::structured( $baseData, $latestData, array_replace( $baseData, $data ) );
+
+        $merged = array_replace( $latestAux, $aux );
+        [$merged['meta'], $md] = self::structured( (array) ( $base->aux->meta ?? [] ), (array) ( $latestAux['meta'] ?? [] ), (array) ( $merged['meta'] ?? [] ) );
+        [$merged['content'], $xd] = self::content( (array) ( $base->aux->content ?? [] ), (array) ( $latestAux['content'] ?? [] ), (array) ( $merged['content'] ?? [] ) );
+
+        $cd = null;
+        if( Permission::allowed( 'page:config', $user ) ) {
+            [$merged['config'], $cd] = self::structured( (array) ( $base->aux->config ?? [] ), (array) ( $latestAux['config'] ?? [] ), (array) ( $merged['config'] ?? [] ) );
+        } else {
+            $merged['config'] = (array) ( $latestAux['config'] ?? [] );
+        }
+
+        return [$data, $merged, array_filter( ['data' => $dd, 'meta' => $md, 'config' => $cd, 'content' => $xd] )];
     }
 
 
@@ -280,18 +252,16 @@ class Merge
             $cv = $current[$k] ?? null;
             $iv = $incoming[$k] ?? null;
 
-            if( !self::eq( $cv, $bv ) && self::eq( $iv, $bv ) )
-            {
-                $result[$k] = $cv;
+            // keep incoming if current is unchanged or equal to incoming
+            if( self::eq( $cv, $bv ) || self::eq( $cv, $iv ) ) {
+                continue;
             }
-            elseif( !self::eq( $cv, $bv ) && !self::eq( $iv, $bv ) && !self::eq( $cv, $iv ) )
-            {
-                if( ( $sub = self::value( $bv, $cv, $iv ) ) === null ) {
-                    return null;
-                }
 
-                $result[$k] = $sub;
+            if( !self::eq( $iv, $bv ) && ( $cv = self::value( $bv, $cv, $iv ) ) === null ) {
+                return null;
             }
+
+            $result[$k] = $cv;
         }
 
         return $result;
@@ -467,7 +437,6 @@ class Merge
             }
         }
 
-        unset( $dir, $prev );
         return array_reverse( $result );
     }
 
@@ -475,12 +444,11 @@ class Merge
     /**
      * Returns the key for a content block (id or refid).
      *
-     * @param array<string, mixed>|object $block
+     * @param array<string, mixed> $block
      * @return string|null
      */
-    protected static function blockKey( array|object $block ) : ?string
+    protected static function blockKey( array $block ) : ?string
     {
-        $block = (array) $block;
         return $block['id'] ?? $block['refid'] ?? null;
     }
 

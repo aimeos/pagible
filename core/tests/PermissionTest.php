@@ -20,14 +20,6 @@ class PermissionTest extends CoreTestAbstract
     use CmsWithMigrations;
     use RefreshDatabase;
 
-    protected function tearDown(): void
-    {
-        Permission::canUsing( null );
-
-        parent::tearDown();
-    }
-
-
     public function testAll()
     {
         $actions = Permission::all();
@@ -235,37 +227,7 @@ class PermissionTest extends CoreTestAbstract
     }
 
 
-    public function testCanUsing()
-    {
-        Permission::register( 'custom:action' );
-        Permission::canUsing( fn( $action, $user ) => $action === 'custom:action' );
 
-        $user = new \App\Models\User();
-
-        $this->assertTrue( Permission::can( 'custom:action', $user ) );
-        $this->assertFalse( Permission::can( 'page:save', $user ) );
-    }
-
-
-    public function testCanUsingCannotBypassCurrentTenant()
-    {
-        Permission::canUsing( fn() => true );
-
-        $user = new \App\Models\User();
-        $user->tenant_id = 'other';
-
-        $this->assertFalse( Permission::can( 'page:view', $user ) );
-    }
-
-
-    public function testCanUsingCannotAuthorizeUnknownAction()
-    {
-        Permission::canUsing( fn() => true );
-
-        $user = new \App\Models\User();
-
-        $this->assertFalse( Permission::can( 'unknown:action', $user ) );
-    }
 
 
     public function testCanWithRole()
@@ -472,7 +434,7 @@ class PermissionTest extends CoreTestAbstract
             $this->fail( 'Oversized CMS permission assignments must be rejected.' );
         } catch( \Aimeos\Cms\Exception $e ) {
             $this->assertSame(
-                'No more than 250 CMS permissions may be assigned at once.',
+                'CMS permissions may not exceed 250 entries.',
                 $e->getMessage(),
             );
         } finally {

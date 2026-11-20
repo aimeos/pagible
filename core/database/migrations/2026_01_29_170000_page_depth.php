@@ -20,7 +20,7 @@ return new class extends Migration
      */
     public function up()
     {
-        $name = config('cms.db', 'sqlite');
+        $name = \Aimeos\Cms\DB::name();
         $schema = Schema::connection($name);
 
         if( $schema->hasColumn('cms_pages', 'depth') ) {

@@ -302,6 +302,46 @@ class ValidationTest extends CoreTestAbstract
     }
 
 
+    public function testDefaultsSanitizesHtmlFields()
+    {
+        $schemas = ['app::promo' => ['fields' => [
+            'body' => ['type' => 'html'],
+            'title' => ['type' => 'string'],
+            'items' => ['type' => 'items', 'item' => ['text' => ['type' => 'html']]],
+        ]]];
+
+        $data = Validation::defaults( 'app::promo', [
+            'body' => '<p>Body</p><script>alert(1)</script>',
+            'title' => '<script>kept</script>',
+            'items' => [['text' => '<a href="javascript:alert(1)" onclick="alert(1)">Link</a>']],
+        ], schemas: $schemas );
+
+        $this->assertSame( '<p>Body</p>', $data->body );
+        $this->assertSame( '<script>kept</script>', $data->title );
+        $this->assertStringNotContainsString( 'javascript', $data->items[0]->text );
+        $this->assertStringNotContainsString( 'onclick', $data->items[0]->text );
+    }
+
+
+    public function testElementSanitizesHtml()
+    {
+        $data = Validation::element( 'html', ['text' => '<p>Text</p><script>alert(1)</script>'] );
+
+        $this->assertSame( '<p>Text</p>', $data['text'] );
+    }
+
+
+    public function testPageSanitizesHtml()
+    {
+        $input = Validation::page( ['content' => [
+            ['id' => 'abc123', 'type' => 'html', 'group' => 'main', 'data' => ['text' => '<b>Bold</b><img src=x onerror="alert(1)">']],
+        ]] );
+
+        $this->assertStringNotContainsString( 'onerror', $input['content'][0]->data->text );
+        $this->assertStringContainsString( '<b>Bold</b>', $input['content'][0]->data->text );
+    }
+
+
     public function testElementValid()
     {
         Validation::element( 'heading' );
@@ -414,7 +454,33 @@ class ValidationTest extends CoreTestAbstract
             ],
         ], 'meta' );
 
-        $this->assertIsObject( $result );
+        $this->assertEquals( new \stdClass(), $result );
+    }
+
+
+    public function testStructuredUnknownTypeStrict()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Unknown meta type "html"' );
+
+        Validation::structured( [
+            'html' => [
+                'type' => 'html',
+                'data' => ['text' => '<script src="/x.txt"></script>'],
+                'files' => [],
+            ],
+        ], 'meta', true );
+    }
+
+
+    public function testPageRejectsUnknownMetaType()
+    {
+        $this->expectException( Exception::class );
+        $this->expectExceptionMessage( 'Unknown meta type "html"' );
+
+        Validation::page( ['meta' => [
+            'html' => ['type' => 'html', 'data' => ['text' => '<script></script>'], 'files' => []],
+        ]] );
     }
 
 

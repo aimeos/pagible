@@ -59,7 +59,7 @@ class BenchmarkTest extends CmsTestAbstract
     public function testBenchmark(): void
     {
         $output = new ConsoleOutput();
-        $chunk = DB::connection( config( 'cms.db', 'sqlite' ) )->getDriverName() === 'sqlsrv' ? 75 : 500;
+        $chunk = \Aimeos\Cms\DB::connection()->getDriverName() === 'sqlsrv' ? 75 : 500;
 
         $this->assertFalse( Permission::has( 'access:view' ) );
         $this->assertFalse( config( 'cms.multidomain' ) );

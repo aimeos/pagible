@@ -7,16 +7,15 @@
 
 namespace Aimeos\Cms\GraphQL;
 
-use Aimeos\Cms\DB;
 use Aimeos\Cms\Query\Filter;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Query\SearchQuery;
-use Aimeos\Cms\Scout;
 use Aimeos\Cms\Translation\Sync;
 use Aimeos\Cms\Tenancy;
+use Aimeos\Cms\Utils;
 use Aimeos\Nestedset\NestedSet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -102,15 +101,22 @@ final class Query
     public function page( $rootValue, array $args ) : ?PageView
     {
         $trashed = $args['trashed'] ?? null;
+        $lang = $args['lang'] ?? null;
 
         $query = match( $trashed ) {
             'with' => PageView::withTrashed(),
-            'only' => PageView::onlyTrashed(),
+            'only' => $lang !== null ? PageView::withTrashed() : PageView::onlyTrashed(),
             default => PageView::query(),
         };
 
-        if( isset( $args['lang'] ) ) {
-            $query->language( (string) $args['lang'], in_array( $trashed, ['with', 'only'], true ) );
+        if( $lang !== null )
+        {
+            $query->language( (string) $lang, in_array( $trashed, ['with', 'only'], true ) );
+
+            // like the page list, trashed pages and trashed variants of the language
+            if( $trashed === 'only' ) {
+                $query->where( fn( $q ) => $q->whereNotNull( 'deleted_at' )->orWhereNotNull( 'variant_deleted_at' ) );
+            }
         }
 
         return $query->whereKey( $args['id'] )->first();
@@ -126,7 +132,7 @@ final class Query
      */
     public function translationStates( $rootValue, array $args ) : array
     {
-        $langs = array_map( fn( $lang ) => trim( (string) $lang ), (array) ( $args['langs'] ?? config( 'cms.locales', [] ) ) );
+        $langs = array_map( fn( $lang ) => trim( (string) $lang ), (array) ( $args['langs'] ?? Utils::locales() ) );
         $langs = array_values( array_unique( array_filter( $langs ) ) );
 
         return $langs ? $this->states( $langs, !empty( $args['cached'] ) ) : [];
@@ -237,9 +243,7 @@ final class Query
         if( $resolveInfo )
         {
             $fields = array_keys( (array) ( $resolveInfo->getFieldSelection( 1 )['data'] ?? [] ) );
-            $columns = [...PageView::REQUIRED_COLUMNS, 'variant_deleted_at', ...array_intersect( PageView::RESPONSE_COLUMNS, $fields )];
-
-            SearchQuery::select( $search, array_values( array_unique( $columns ) ) );
+            SearchQuery::select( $search, PageView::columns( $fields ) );
         }
 
         $allowed = ['id', 'latest_id', 'name', 'title', 'editor', NestedSet::LFT];
@@ -256,62 +260,10 @@ final class Query
     private function search( array $args ) : \Laravel\Scout\Builder
     {
         $filter = $args['filter'] ?? [];
-        $route = array_key_exists( 'path', $filter )
-            ? array_intersect_key( $filter, array_flip( ['path', 'domain'] ) )
-            : [];
+        $term = $filter['any'] ?? '';
+        $filter = array_diff_key( $filter, ['any' => true] ) + array_intersect_key( $args, array_flip( ['publish', 'trashed'] ) );
 
-        // input starting with a slash matches the page paths from their start
-        $any = (string) ( $filter['any'] ?? '' );
-        $path = str_starts_with( $any, '/' );
-        $prefix = $path ? trim( $any, '/' ) : '';
-
-        $search = Filter::search( PageView::class, $path ? '' : $any );
-        $lang = (string) ( $args['lang'] ?? '' );
-        $trashed = $args['trashed'] ?? null;
-        $state = null;
-
-        if( isset( $args['lang'] ) )
-        {
-            // trashed variants of the language are selected by the fallback
-            $state = $filter['translation'] ?? null;
-            SearchQuery::prefer( $search, $lang, $trashed );
-            $args['trashed'] = $trashed === 'only' ? 'with' : $trashed;
-            unset( $filter['lang'], $args['lang'] );
-        }
-
-        unset( $filter['translation'] );
-
-        // external engines only apply query callbacks to the fetched results, so the indexed fields are used
-        if( $state && Scout::usesExternalSearch() )
-        {
-            match( $state ) {
-                'missing' => $search->whereNotIn( 'lang', [$lang] ),
-                'stale' => $search->where( 'lang', $lang )->where( 'stale', true ),
-                'ai' => $search->where( 'lang', $lang )->where( 'editor', Sync::EDITOR ),
-                default => throw new \InvalidArgumentException( sprintf( 'Invalid translation state "%1$s"', $state ) ),
-            };
-            $state = null;
-        }
-
-        Filter::pages( $search, array_diff_key( $filter, $route ) + $args );
-
-        if( $route || $state || $prefix !== '' ) {
-            $search->query( function( \Illuminate\Database\Eloquent\Builder $query ) use ( $route, $state, $lang, $prefix ) {
-                foreach( $route as $field => $value ) {
-                    $query->where( $query->qualifyColumn( $field ), (string) ( $value ?? '' ) );
-                }
-
-                if( $prefix !== '' ) {
-                    DB::wherePrefix( $query, 'cms_page_view.path', $prefix );
-                }
-
-                if( $state ) {
-                    Filter::translation( $query, $lang, $state );
-                }
-            } );
-        }
-
-        return $search;
+        return Filter::pageList( $term, $filter, $args['lang'] ?? null );
     }
 
 

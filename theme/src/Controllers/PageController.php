@@ -17,12 +17,12 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Cache;
 use Aimeos\Cms\Models\Nav;
+use Aimeos\Cms\Models\PageAccess;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Navigation;
 use Aimeos\Cms\PageCache;
-use Aimeos\Cms\Scopes\Status;
 use Aimeos\Cms\Tenancy;
 use Aimeos\Cms\Theme;
 
@@ -91,9 +91,7 @@ class PageController extends Controller
 
         $page = $this->published( $path, $domain, $user, $route );
 
-        if( $page->access_exists && !$page->access_allowed ) {
-            $this->deny( $user );
-        }
+        PageAccess::check( $page, $user );
 
         if( $to = $page->to ) {
             return redirect( $to, Response::HTTP_MOVED_PERMANENTLY );
@@ -113,9 +111,7 @@ class PageController extends Controller
             ->withAccess( $user )
             ->findOrFail( $page->id );
 
-        if( $access->access_exists && !$access->access_allowed ) {
-            $this->deny( $user );
-        }
+        PageAccess::check( $access, $user );
 
         $response = new Response( $html, 200, array_filter( ['Content-Type' => 'text/html', 'Content-Language' => $page->lang] ) );
 
@@ -210,8 +206,9 @@ class PageController extends Controller
      */
     protected function published( string $path, string $domain, ?Authenticatable $user, ?Nav $route ) : PageView
     {
+        // only reached for users without "page:view" permission
         $query = PageView::with( PageView::contentRelations() )
-            ->withGlobalScope( 'status', new Status() )
+            ->whereIn( 'cms_page_view.status', [1, 2] )
             ->withAccess( $user );
 
         $page = $route && $route->variant_id
@@ -243,21 +240,5 @@ class PageController extends Controller
         $nav = new Navigation( $page, $user );
 
         return view()->first( $views, compact( 'page', 'content', 'theme', 'nav' ) )->render();
-    }
-
-
-    /**
-     * Rejects a denied page request.
-     *
-     * @param Authenticatable|null $user Frontend user
-     * @throws AuthenticationException If no user is authenticated
-     */
-    private function deny( ?Authenticatable $user ) : never
-    {
-        if( !$user ) {
-            throw new AuthenticationException();
-        }
-
-        abort( 403 );
     }
 }

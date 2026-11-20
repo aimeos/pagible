@@ -16,6 +16,7 @@ use Aimeos\Cms\Events\Restored;
 use Aimeos\Cms\Jobs\DeliverEndpoint;
 use Aimeos\Cms\Jobs\DeliverWebhook;
 use Aimeos\Cms\Models\Base;
+use Aimeos\Cms\Models\Webhook;
 use Aimeos\Cms\WebhookClient;
 use Aimeos\Cms\WebhookConfig;
 use Aimeos\Cms\WebhookResponse;
@@ -62,6 +63,60 @@ class WebhookListenerTest extends WebhookTestAbstract
                 && !str_contains( serialize( $job ), self::secret( 'test' ) )
                 && !str_contains( serialize( $job ), 'example.com/hooks' );
         } );
+    }
+
+
+    public function testSubscriptionsAreReadOncePerScope() : void
+    {
+        $webhook = $this->webhook();
+        Queue::fake();
+
+        \Aimeos\Cms\DB::connection()->enableQueryLog();
+
+        try
+        {
+            event( new Published( 'page', 'page-1', 'v', '', [], true, tenant: 'test' ) );
+            event( new Published( 'page', 'page-2', 'v', '', [], true, tenant: 'test' ) );
+            $queries = count( \Aimeos\Cms\DB::connection()->getQueryLog() );
+        }
+        finally
+        {
+            \Aimeos\Cms\DB::connection()->disableQueryLog();
+            \Aimeos\Cms\DB::connection()->flushQueryLog();
+        }
+
+        $this->assertSame( 1, $queries );
+        Queue::assertPushed( DeliverWebhook::class, 2 );
+
+        // changed subscriptions discard the cached ones
+        $webhook->forceFill( ['status' => false] )->save();
+        Queue::fake();
+
+        event( new Published( 'page', 'page-3', 'v', '', [], true, tenant: 'test' ) );
+
+        Queue::assertNotPushed( DeliverWebhook::class );
+    }
+
+
+    public function testSubscriptionsChangedByOtherProcessesAreReadAfterExpiry() : void
+    {
+        $webhook = $this->webhook();
+        Queue::fake();
+
+        event( new Published( 'page', 'page-1', 'v', '', [], true, tenant: 'test' ) );
+
+        // changed by another process without model events in this one
+        Webhook::withoutTenancy()->whereKey( $webhook->id )->toBase()->update( ['status' => 0] );
+        Queue::fake();
+
+        event( new Published( 'page', 'page-2', 'v', '', [], true, tenant: 'test' ) );
+        Queue::assertPushed( DeliverWebhook::class, 1 );
+
+        $this->travel( 11 )->seconds();
+        Queue::fake();
+
+        event( new Published( 'page', 'page-3', 'v', '', [], true, tenant: 'test' ) );
+        Queue::assertNotPushed( DeliverWebhook::class );
     }
 
 
@@ -438,7 +493,7 @@ class WebhookListenerTest extends WebhookTestAbstract
     public static function droppedPayloads() : array
     {
         return [
-            'exceeding limit' => [str_repeat( 'x', \Aimeos\Cms\Listeners\WebhookListener::MAX_EXTRA )],
+            'exceeding limit' => [str_repeat( 'x', \Aimeos\Cms\WebhookPayload::MAX_EXTRA )],
             'invalid JSON' => ["\xB1\x31"],
         ];
     }

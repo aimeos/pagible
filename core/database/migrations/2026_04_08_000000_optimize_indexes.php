@@ -15,12 +15,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /** Name of the index for looking up page versions by domain and path */
+    private const DOMAIN_PATH_INDEX = 'cms_versions_tenantid_versionabletype_datadomain_datapath_index';
+
+    /** SQL types of the JSON fields stored in generated columns by MySQL and SQL Server */
+    private const GENERATED = [
+        'type'   => 'VARCHAR(50)',
+        'path'   => 'VARCHAR(255)',
+        'domain' => 'VARCHAR(255)',
+        'theme'  => 'VARCHAR(30)',
+        'status' => 'SMALLINT',
+        'cache'  => 'SMALLINT',
+        'name'   => 'VARCHAR(255)',
+        'tag'    => 'VARCHAR(30)',
+        'to'     => 'VARCHAR(255)',
+    ];
+
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        $name   = config('cms.db', 'sqlite');
+        $name   = \Aimeos\Cms\DB::name();
         $schema = Schema::connection($name);
         $db     = DB::connection($name);
         $driver = $db->getDriverName();
@@ -50,18 +66,7 @@ return new class extends Migration
     private function dropLegacyVersionIndexes(Builder $schema, Connection $db, string $driver): void
     {
         $names  = $this->indexNames($schema, 'cms_versions');
-        $legacy = [];
-
-        foreach (['type', 'path', 'domain', 'tag', 'theme', 'status', 'cache', 'mime', 'scheduled', 'name'] as $f) {
-            $legacy[] = "cms_versions_data_{$f}_id_index";
-            $legacy[] = "cms_versions_data_{$f}_tenant_id_id_index";
-        }
-
-        foreach (['type', 'path', 'domain', 'tag', 'theme', 'status', 'cache', 'mime', 'scheduled', 'name'] as $f) {
-            $legacy[] = "cms_versions_data_{$f}_index";
-        }
-
-        $legacy = array_merge($legacy, [
+        $legacy = [
             'cms_versions_editor_index',
             'cms_versions_lang_index',
             'cms_versions_editor_id_index',
@@ -69,22 +74,16 @@ return new class extends Migration
             'cms_versions_editor_tenant_id_id_index',
             'cms_versions_tenant_id_editor_id_index',
             'cms_versions_tenant_id_lang_id_index',
-            'cms_versions_tenantid_versionabletype_datadomain_datapath_index',
+            self::DOMAIN_PATH_INDEX,
             'cms_versions_id_covering_index',
-        ]);
+        ];
+
+        foreach (['type', 'path', 'domain', 'tag', 'theme', 'status', 'cache', 'mime', 'scheduled', 'name'] as $f) {
+            array_push($legacy, "cms_versions_data_{$f}_id_index", "cms_versions_data_{$f}_tenant_id_id_index", "cms_versions_data_{$f}_index");
+        }
 
         foreach ($legacy as $idx) {
-            if (in_array($idx, $names, true)) {
-                if (in_array($driver, ['pgsql', 'sqlite'], true)) {
-                    $db->statement("DROP INDEX IF EXISTS $idx");
-                } elseif ($driver === 'sqlsrv') {
-                    $db->statement("DROP INDEX IF EXISTS $idx ON cms_versions");
-                } else {
-                    $schema->table('cms_versions', function (Blueprint $table) use ($idx) {
-                        $table->dropIndex($idx);
-                    });
-                }
-            }
+            $this->dropVersionIndex($schema, $db, $driver, $names, $idx);
         }
     }
 
@@ -93,20 +92,26 @@ return new class extends Migration
     {
         $names = $this->indexNames($schema, 'cms_versions');
 
-        foreach (['domain'] as $f) {
-            foreach (["cms_versions_data_{$f}_index", "cms_versions_data_{$f}_tenant_id_id_index"] as $idx) {
-                if (in_array($idx, $names, true)) {
-                    if (in_array($driver, ['pgsql', 'sqlite'], true)) {
-                        $db->statement("DROP INDEX IF EXISTS $idx");
-                    } elseif ($driver === 'sqlsrv') {
-                        $db->statement("DROP INDEX IF EXISTS $idx ON cms_versions");
-                    } else {
-                        $schema->table('cms_versions', function (Blueprint $table) use ($idx) {
-                            $table->dropIndex($idx);
-                        });
-                    }
-                }
-            }
+        foreach (['cms_versions_data_domain_index', 'cms_versions_data_domain_tenant_id_id_index'] as $idx) {
+            $this->dropVersionIndex($schema, $db, $driver, $names, $idx);
+        }
+    }
+
+
+    private function dropVersionIndex(Builder $schema, Connection $db, string $driver, array $names, string $idx): void
+    {
+        if (!in_array($idx, $names, true)) {
+            return;
+        }
+
+        if (in_array($driver, ['pgsql', 'sqlite'], true)) {
+            $db->statement("DROP INDEX IF EXISTS $idx");
+        } elseif ($driver === 'sqlsrv') {
+            $db->statement("DROP INDEX IF EXISTS $idx ON cms_versions");
+        } else {
+            $schema->table('cms_versions', function (Blueprint $table) use ($idx) {
+                $table->dropIndex($idx);
+            });
         }
     }
 
@@ -302,150 +307,53 @@ return new class extends Migration
         $this->addIndex($schema, 'cms_versions', ['editor', 'tenant_id', 'id']);
         $this->addIndex($schema, 'cms_versions', ['lang', 'tenant_id', 'id']);
 
-        if (in_array($driver, ['mysql', 'mariadb'], true)) {
-            $this->versionsMysql($schema, $db);
-        } elseif ($driver === 'pgsql') {
-            $this->versionsPgsql($schema, $db);
-        } elseif ($driver === 'sqlsrv') {
-            $this->versionsSqlsrv($schema, $db);
-        } elseif ($driver === 'sqlite') {
-            $this->versionsSqlite($schema, $db);
+        $mysql = in_array($driver, ['mysql', 'mariadb'], true);
+
+        if (!$mysql && !in_array($driver, ['pgsql', 'sqlsrv', 'sqlite'], true)) {
+            return;
         }
-    }
 
-
-    private function versionsMysql(Builder $schema, Connection $db): void
-    {
-        $cols = [
-            'data_type'   => "VARCHAR(50) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.type'))) VIRTUAL",
-            'data_path'   => "VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.path'))) VIRTUAL",
-            'data_domain' => "VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.domain'))) VIRTUAL",
-            'data_theme'  => "VARCHAR(30) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.theme'))) VIRTUAL",
-            'data_status' => "SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.status')) VIRTUAL",
-            'data_cache'  => "SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.cache')) VIRTUAL",
-            'data_mime'   => "VARCHAR(100) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.mime'))) VIRTUAL",
-            'data_scheduled' => "SMALLINT GENERATED ALWAYS AS (JSON_EXTRACT(data, '$.scheduled')) VIRTUAL",
-            'data_name'   => "VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.name'))) VIRTUAL",
-            'data_tag'    => "VARCHAR(30) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.tag'))) VIRTUAL",
-            'data_to'     => "VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(data, '$.to'))) VIRTUAL",
-        ];
-
-        foreach ($cols as $col => $def) {
-            if (!$schema->hasColumn('cms_versions', $col)) {
-                $db->statement("ALTER TABLE cms_versions ADD COLUMN $col $def");
+        // MySQL and SQL Server index generated columns, PostgreSQL and SQLite index the JSON expressions
+        if ($mysql || $driver === 'sqlsrv') {
+            foreach (self::GENERATED as $field => $type) {
+                if (!$schema->hasColumn('cms_versions', "data_$field")) {
+                    $db->statement($mysql
+                        ? "ALTER TABLE cms_versions ADD COLUMN data_$field " . $this->mysqlColumn($field, $type)
+                        : "ALTER TABLE cms_versions ADD data_$field AS CAST(JSON_VALUE(data, '$.$field') AS $type)");
+                }
             }
         }
 
-        $this->dropLegacyVersionIndexes($schema, $db, 'mysql');
-
-        $indexed = ['data_type', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
-
-        foreach ($indexed as $col) {
-            $field = substr($col, 5);
-            $idx   = "cms_versions_data_{$field}_tenant_id_id_index";
-
-            if (!$this->hasIndex($schema, 'cms_versions', $idx)) {
-                $db->statement("CREATE INDEX $idx ON cms_versions ($col, tenant_id, id)");
-            }
+        if ($driver !== 'sqlite') {
+            $this->dropLegacyVersionIndexes($schema, $db, $mysql ? 'mysql' : $driver);
         }
 
-        if (!$this->hasIndex($schema, 'cms_versions', 'cms_versions_tenantid_versionabletype_datadomain_datapath_index')) {
-            $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (versionable_type, data_domain(200), data_path(255), tenant_id)');
-        }
-    }
+        $expr = fn(string $field) => match (true) {
+            $mysql, $driver === 'sqlsrv' => "data_$field",
+            $driver === 'pgsql' => self::GENERATED[$field] === 'SMALLINT' ? "((data->>'$field')::smallint)" : "(data->>'$field')",
+            default => "json_extract(data, '\$.\"$field\"')",
+        };
 
-
-    private function versionsPgsql(Builder $schema, Connection $db): void
-    {
-        $this->dropLegacyVersionIndexes($schema, $db, 'pgsql');
-
-        $exprs = [
-            'type'   => "(data->>'type')",
-            'theme'  => "(data->>'theme')",
-            'status' => "((data->>'status')::smallint)",
-            'cache'  => "((data->>'cache')::smallint)",
-            'mime'   => "(data->>'mime')",
-            'scheduled' => "((data->>'scheduled')::smallint)",
-            'name'   => "(data->>'name')",
-        ];
-
-        foreach ($exprs as $field => $expr) {
+        foreach (['type', 'theme', 'status', 'cache', 'name'] as $field) {
             $idx = "cms_versions_data_{$field}_tenant_id_id_index";
 
             if (!$this->hasIndex($schema, 'cms_versions', $idx)) {
-                $db->statement("CREATE INDEX $idx ON cms_versions ($expr, tenant_id, id)");
+                $db->statement("CREATE INDEX $idx ON cms_versions ({$expr($field)}, tenant_id, id)");
             }
         }
 
-        if (!$this->hasIndex($schema, 'cms_versions', 'cms_versions_tenantid_versionabletype_datadomain_datapath_index')) {
-            $db->statement("CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (versionable_type, (data->>'domain'), (data->>'path'), tenant_id)");
+        if (!$this->hasIndex($schema, 'cms_versions', self::DOMAIN_PATH_INDEX)) {
+            $cols = $mysql ? 'data_domain(200), data_path(255)' : $expr('domain') . ', ' . $expr('path');
+            $db->statement('CREATE INDEX ' . self::DOMAIN_PATH_INDEX . " ON cms_versions (versionable_type, $cols, tenant_id)");
         }
     }
 
 
-    private function versionsSqlite(Builder $schema, Connection $db): void
+    private function mysqlColumn(string $field, string $type): string
     {
-        $exprs = [
-            'type'   => "json_extract(data, '\$.\"type\"')",
-            'theme'  => "json_extract(data, '\$.\"theme\"')",
-            'status' => "json_extract(data, '\$.\"status\"')",
-            'cache'  => "json_extract(data, '\$.\"cache\"')",
-            'mime'   => "json_extract(data, '\$.\"mime\"')",
-            'scheduled' => "json_extract(data, '\$.\"scheduled\"')",
-            'name'   => "json_extract(data, '\$.\"name\"')",
-        ];
+        $value = "JSON_EXTRACT(data, '$.$field')";
+        $value = $type === 'SMALLINT' ? $value : "JSON_UNQUOTE($value)";
 
-        foreach ($exprs as $field => $expr) {
-            $idx = "cms_versions_data_{$field}_tenant_id_id_index";
-
-            if (!$this->hasIndex($schema, 'cms_versions', $idx)) {
-                $db->statement("CREATE INDEX $idx ON cms_versions ($expr, tenant_id, id)");
-            }
-        }
-
-        if (!$this->hasIndex($schema, 'cms_versions', 'cms_versions_tenantid_versionabletype_datadomain_datapath_index')) {
-            $db->statement("CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (versionable_type, json_extract(data, '\$.\"domain\"'), json_extract(data, '\$.\"path\"'), tenant_id)");
-        }
-    }
-
-
-    private function versionsSqlsrv(Builder $schema, Connection $db): void
-    {
-        $cols = [
-            'data_type'   => "AS CAST(JSON_VALUE(data, '$.type') AS VARCHAR(50))",
-            'data_path'   => "AS CAST(JSON_VALUE(data, '$.path') AS VARCHAR(255))",
-            'data_domain' => "AS CAST(JSON_VALUE(data, '$.domain') AS VARCHAR(255))",
-            'data_theme'  => "AS CAST(JSON_VALUE(data, '$.theme') AS VARCHAR(30))",
-            'data_status' => "AS CAST(JSON_VALUE(data, '$.status') AS SMALLINT)",
-            'data_cache'  => "AS CAST(JSON_VALUE(data, '$.cache') AS SMALLINT)",
-            'data_mime'   => "AS CAST(JSON_VALUE(data, '$.mime') AS VARCHAR(100))",
-            'data_scheduled' => "AS CAST(JSON_VALUE(data, '$.scheduled') AS SMALLINT)",
-            'data_name'   => "AS CAST(JSON_VALUE(data, '$.name') AS VARCHAR(255))",
-            'data_tag'    => "AS CAST(JSON_VALUE(data, '$.tag') AS VARCHAR(30))",
-            'data_to'     => "AS CAST(JSON_VALUE(data, '$.to') AS VARCHAR(255))",
-        ];
-
-        foreach ($cols as $col => $def) {
-            if (!$schema->hasColumn('cms_versions', $col)) {
-                $db->statement("ALTER TABLE cms_versions ADD $col $def");
-            }
-        }
-
-        $this->dropLegacyVersionIndexes($schema, $db, 'sqlsrv');
-
-        $indexed = ['data_type', 'data_theme', 'data_status', 'data_cache', 'data_mime', 'data_scheduled', 'data_name'];
-
-        foreach ($indexed as $col) {
-            $field = substr($col, 5);
-            $idx   = "cms_versions_data_{$field}_tenant_id_id_index";
-
-            if (!$this->hasIndex($schema, 'cms_versions', $idx)) {
-                $db->statement("CREATE INDEX $idx ON cms_versions ($col, tenant_id, id)");
-            }
-        }
-
-        if (!$this->hasIndex($schema, 'cms_versions', 'cms_versions_tenantid_versionabletype_datadomain_datapath_index')) {
-            $db->statement('CREATE INDEX cms_versions_tenantid_versionabletype_datadomain_datapath_index ON cms_versions (versionable_type, data_domain, data_path, tenant_id)');
-        }
+        return "$type GENERATED ALWAYS AS ($value) VIRTUAL";
     }
 };

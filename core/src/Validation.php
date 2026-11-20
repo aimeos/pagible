@@ -32,6 +32,44 @@ class Validation
 
 
     /**
+     * Returns the trimmed, deduplicated and sorted list of non-empty strings.
+     *
+     * @param iterable<mixed> $values Values to normalize
+     * @param string $label Name of the values used in error messages, e.g. "Access values"
+     * @param int $length Maximum number of characters of each value
+     * @param int|null $max Maximum number of unique values or NULL for no limit
+     * @return array<int, string> Normalized values
+     * @throws InvalidInputException If a value is invalid or the values exceed the limits
+     */
+    public static function stringList( iterable $values, string $label, int $length, ?int $max = null ) : array
+    {
+        $result = [];
+
+        foreach( $values as $value )
+        {
+            if( !is_string( $value ) || ( $value = trim( $value ) ) === '' ) {
+                throw new InvalidInputException( sprintf( '%1$s must be non-empty strings.', $label ) );
+            }
+
+            if( mb_strlen( $value ) > $length ) {
+                throw new InvalidInputException( sprintf( '%1$s may not be longer than %2$d characters.', $label, $length ) );
+            }
+
+            $result[$value] = true;
+
+            if( $max !== null && count( $result ) > $max ) {
+                throw new InvalidInputException( sprintf( '%1$s may not exceed %2$d entries.', $label, $max ) );
+            }
+        }
+
+        $result = array_map( 'strval', array_keys( $result ) );
+        sort( $result, SORT_STRING );
+
+        return $result;
+    }
+
+
+    /**
      * Validates the scalar fields of the input against the storage limits of the model.
      *
      * @param class-string<Element|File|PageView> $model Model class the input is stored in
@@ -115,43 +153,16 @@ class Validation
             $input['domain'] = mb_strtolower( $input['domain'] );
         }
 
-        if( isset( $input['content'] ) )
-        {
-            foreach( $input['content'] as &$item )
-            {
-                $item = (object) $item;
-
-                if( is_string( $item->type ?? null )
-                    && ( is_object( $item->data ?? null ) || is_array( $item->data ?? null ) )
-                ) {
-                    self::html( $item->type, $item->data );
-                    $item->data = self::defaults( $item->type, $item->data );
-                }
-
-                // Keep the per-element "files" list in sync with the file references in the
-                // element data, so readers resolving files from it (JSON:API, blog list) work
-                // regardless of how the content was saved.
-                if( ( $item->type ?? null ) !== 'reference' )
-                {
-                    if( $files = self::files( $item->data ?? null ) ) {
-                        $item->files = $files;
-                    } else {
-                        unset( $item->files );
-                    }
-                }
-            }
-
-            unset( $item );
-
-            self::validateContent( $input['content'] );
+        if( isset( $input['content'] ) ) {
+            $input['content'] = self::content( $input['content'], $input['type'] ?? null );
         }
 
         if( array_key_exists( 'meta', $input ) ) {
-            $input['meta'] = self::structured( $input['meta'], 'meta' );
+            $input['meta'] = self::structured( $input['meta'], 'meta', true );
         }
 
         if( array_key_exists( 'config', $input ) ) {
-            $input['config'] = self::structured( $input['config'], 'config' );
+            $input['config'] = self::structured( $input['config'], 'config', true );
         }
 
         return $input;
@@ -173,15 +184,21 @@ class Validation
     public static function content( array $items, ?string $type = null ) : array
     {
         $schemas = Schema::schemas( section: 'content' );
-
-        self::validateContent( $items, $schemas );
-
         $sections = Schema::sections( $type );
         $default = $sections[0] ?? 'main';
 
         return array_values( array_map( function( array|object $item ) use ( $schemas, $sections, $default ) {
             $item = (array) $item;
-            $type = $item['type'];
+            $type = $item['type'] ?? null;
+
+            if( $type === 'reference' ) {
+                if( !is_string( $item['refid'] ?? null ) || $item['refid'] === '' ) {
+                    throw new InvalidInputException( 'Invalid content reference ID' );
+                }
+            } elseif( !$type || !isset( $schemas[$type] ) ) {
+                throw new InvalidInputException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
+            }
+
             $group = $item['group'] ?? $default;
 
             if( $sections && !in_array( $group, $sections, true ) ) {
@@ -192,19 +209,24 @@ class Validation
                 'id' => $item['id'] ?? Utils::uid(),
                 'type' => $type,
                 'group' => $group,
-                'data' => self::defaults( $type, $item['data'] ?? [], 'content', $schemas ),
             ];
 
             if( !empty( $item['refid'] ) ) {
                 $entry['refid'] = $item['refid'];
             }
 
+            // the per-element "files" list is kept in sync with the file references in the
+            // element data, so readers resolving files from it (JSON:API, blog list) work
             if( $type === 'reference' ) {
                 if( !empty( $item['files'] ) ) {
                     $entry['files'] = array_values( (array) $item['files'] );
                 }
-            } elseif( $files = self::files( $entry['data'] ) ) {
-                $entry['files'] = $files;
+            } else {
+                $entry['data'] = self::defaults( $type, $item['data'] ?? [], 'content', $schemas );
+
+                if( $files = self::files( $entry['data'] ) ) {
+                    $entry['files'] = $files;
+                }
             }
 
             return (object) $entry;
@@ -242,11 +264,12 @@ class Validation
      * @param string $type Entry type
      * @param object|array<string, mixed> $data Entry field data
      * @param string $section Schema section ('meta' or 'config')
-     * @return object Canonical {type, data, files} entry
+     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
+     * @return object{type: string, data: object, files: array<int, string>} Canonical meta/config entry
      */
-    public static function entry( string $type, object|array $data, string $section ) : object
+    public static function entry( string $type, object|array $data, string $section, ?array $schemas = null ) : object
     {
-        $data = self::defaults( $type, $data, $section );
+        $data = self::defaults( $type, $data, $section, $schemas );
 
         return (object) [
             'type' => $type,
@@ -263,18 +286,21 @@ class Validation
      * {type, data, files}. The type key is the stable identity; structured
      * meta/config entries deliberately don't carry a separate ID. Legacy shapes
      * are handled exclusively by the data migration and are rejected at runtime.
+     * Entries of types missing in the schema section are never rendered unsanitized:
+     * new input is rejected while stored data drops them so publishing old versions works.
      *
      * @param array<mixed>|object|null $items Canonical meta/config entries
      * @param string $section Schema section ('meta' or 'config')
+     * @param bool $strict TRUE to reject unknown entry types, FALSE to drop them
      * @return object Structured meta/config object
      */
-    public static function structured( array|object|null $items, string $section ) : object
+    public static function structured( array|object|null $items, string $section, bool $strict = false ) : object
     {
-        $schemas = Schema::schemas( section: $section );
-
         if( is_null( $items ) ) {
             throw new InvalidInputException( sprintf( 'Invalid %s structure: expected an object keyed by type', $section ) );
         }
+
+        $schemas = Schema::schemas( section: $section );
 
         $result = new \stdClass();
         $items = (array) $items;
@@ -299,8 +325,17 @@ class Validation
 
             $entryType = $value['type'];
 
-            if( !is_string( $key ) || $key === '' || !is_string( $entryType ) || $entryType !== $key ) {
+            if( !is_string( $key ) || $key === '' || $entryType !== $key ) {
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": key and type must match', $section, $key ) );
+            }
+
+            if( !isset( $schemas[$entryType] ) )
+            {
+                if( $strict ) {
+                    throw new InvalidInputException( sprintf( 'Unknown %s type "%s"', $section, $entryType ) );
+                }
+
+                continue;
             }
 
             if( !is_array( $value['data'] ) && !is_object( $value['data'] ) ) {
@@ -313,41 +348,16 @@ class Validation
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": files must be a list of strings', $section, $key ) );
             }
 
-            $data = self::defaults( $entryType, $value['data'], $section, $schemas );
-            $files = self::files( $data );
+            $entry = self::entry( $entryType, $value['data'], $section, $schemas );
 
-            if( $files !== $value['files'] ) {
+            if( $entry->files !== $value['files'] ) {
                 throw new InvalidInputException( sprintf( 'Invalid %s entry "%s": files must match data references', $section, $key ) );
             }
 
-            $result->{$entryType} = (object) [
-                'type' => $entryType,
-                'data' => $data,
-                'files' => $files,
-            ];
+            $result->{$entryType} = $entry;
         }
 
         return $result;
-    }
-
-
-    /**
-     * Sanitizes HTML content in element data if type is 'html'.
-     *
-     * @param string $type Element type
-     * @param object|array<string, mixed> &$data Element data (modified in place)
-     */
-    private static function html( string $type, object|array &$data ) : void
-    {
-        if( $type !== 'html' ) {
-            return;
-        }
-
-        if( is_object( $data ) && isset( $data->text ) ) {
-            $data->text = Utils::html( (string) $data->text );
-        } elseif( is_array( $data ) && isset( $data['text'] ) ) {
-            $data['text'] = Utils::html( (string) $data['text'] );
-        }
     }
 
 
@@ -384,7 +394,7 @@ class Validation
 
 
     /**
-     * Applies field defaults and generated collection identities recursively.
+     * Applies field defaults and generated collection identities and sanitizes HTML fields recursively.
      *
      * @param object $data Field data
      * @param array<string, mixed> $fields Field schemas
@@ -398,11 +408,18 @@ class Validation
                 continue;
             }
 
-            if( ( $field['type'] ?? null ) === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
+            $type = $field['type'] ?? null;
+
+            if( $type === 'hidden' && isset( $field['value'] ) && !isset( $data->{$name} ) ) {
                 $data->{$name} = $field['value'];
             }
 
-            if( ( $field['type'] ?? null ) !== 'items' || !is_array( $data->{$name} ?? null ) ) {
+            // Views output HTML fields unescaped, so they are purified for all elements, not only "html"
+            if( $type === 'html' && is_string( $data->{$name} ?? null ) ) {
+                $data->{$name} = Utils::html( $data->{$name} );
+            }
+
+            if( $type !== 'items' || !is_array( $data->{$name} ?? null ) ) {
                 continue;
             }
 
@@ -429,37 +446,6 @@ class Validation
 
 
     /**
-     * Validates page/element content arrays against configured schemas
-     *
-     * @param iterable<array<string, mixed>|object> $items Content items to validate
-     * @param array<string, mixed>|null $schemas Pre-loaded schemas or null to load
-     * @throws Exception If content type is unknown
-     */
-    private static function validateContent( iterable $items, ?array $schemas = null ): void
-    {
-        $schemas ??= Schema::schemas( section: 'content' );
-
-        foreach( $items as $item )
-        {
-            $item = (object) $item;
-            $type = $item->type ?? null;
-
-            if( $type === 'reference' ) {
-                if( !is_string( $item->refid ?? null ) || $item->refid === '' ) {
-                    throw new InvalidInputException( 'Invalid content reference ID' );
-                }
-
-                continue;
-            }
-
-            if( !$type || !isset( $schemas[$type] ) ) {
-                throw new InvalidInputException( sprintf( 'Unknown content type "%s"', $type ?? '' ) );
-            }
-        }
-    }
-
-
-    /**
      * Validates an element type and sanitizes the element data if passed
      *
      * @param string $type Element type to validate
@@ -480,7 +466,6 @@ class Validation
             return null;
         }
 
-        self::html( $type, $data );
         return (array) self::defaults( $type, $data, 'content', $schemas );
     }
 

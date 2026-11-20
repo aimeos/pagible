@@ -22,13 +22,13 @@ php artisan cms:benchmark [options]
 php artisan cms:benchmark --unseed [options]
 ```
 
-The single benchmarks can be run separately using `cms:benchmark:core`, `cms:benchmark:graphql`, `cms:benchmark:jsonapi`, `cms:benchmark:mcp`, `cms:benchmark:search` and `cms:benchmark:theme` with the same options except `--seed`, `--pages` and `--chunk` (`cms:benchmark:search --seed` indexes the benchmark data first).
+The single benchmarks can be run separately using `cms:benchmark:core`, `cms:benchmark:graphql`, `cms:benchmark:jsonapi`, `cms:benchmark:mcp`, `cms:benchmark:search` and `cms:benchmark:theme` with the same options except `--seed`, `--pages` and `--chunk` (`cms:benchmark:search --seed` indexes the benchmark data first). Only `cms:benchmark:core` and `cms:benchmark:search` support `--unseed`.
 
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--tenant` | `benchmark` | Tenant ID |
 | `--domain` | | Domain name |
-| `--seed` | | Seed benchmark data first |
+| `--seed` | | Seed and index benchmark data, then exit |
 | `--pages` | `10000` | Number of pages to generate |
 | `--tries` | `100` | Iterations per benchmark |
 | `--chunk` | `50` | Rows per bulk insert batch |

@@ -568,14 +568,14 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $this->assertEquals($expectedData, json_decode($version['data'], true));
 
         $expectedAux = [
-            'meta' => ['meta' => [
-                'type' => 'meta',
-                'data' => ['text' => 'Laravel CMS is outstanding'],
+            'meta' => ['social-media' => [
+                'type' => 'social-media',
+                'data' => ['title' => 'Laravel CMS is outstanding'],
                 'files' => [],
             ]],
-            'config' => ['test' => [
-                'type' => 'test',
-                'data' => ['key' => 'value'],
+            'config' => ['styles' => [
+                'type' => 'styles',
+                'data' => ['text' => 'body {}'],
                 'files' => [],
             ]],
             'content' => [
@@ -737,7 +737,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
     {
         $root = PageView::where('tag', 'root')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 6 );
+        $this->expectsDatabaseQueryCount( 7 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -775,7 +775,7 @@ class GraphqlPageTest extends GraphqlTestAbstract
         $root = PageView::where('tag', 'root')->firstOrFail();
         $ref = PageView::where('tag', 'blog')->firstOrFail();
 
-        $this->expectsDatabaseQueryCount( 7 );
+        $this->expectsDatabaseQueryCount( 8 );
         $response = $this->actingAs( $this->user )->graphQL( '
             mutation {
                 addPage(input: {
@@ -1003,9 +1003,14 @@ class GraphqlPageTest extends GraphqlTestAbstract
                 'data' => ['text' => 'body {}'],
                 'files' => [],
             ]],
-            'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS']]],
+            'content' => [['type' => 'heading', 'data' => ['title' => 'Welcome to Laravel CMS'], 'group' => 'main']],
         ];
-        $this->assertEquals($expectedLatestAux, json_decode($savePage['latest']['aux'] ?? null, true));
+        $latestAux = json_decode($savePage['latest']['aux'] ?? null, true);
+
+        // content elements without ID get a generated one
+        $this->assertNotEmpty($latestAux['content'][0]['id'] ?? null);
+        unset($latestAux['content'][0]['id']);
+        $this->assertEquals($expectedLatestAux, $latestAux);
     }
 
 
@@ -1089,6 +1094,27 @@ class GraphqlPageTest extends GraphqlTestAbstract
 
         $response->assertJsonPath( 'data.bulkPage', null );
         $this->assertNotEmpty( $response->json( 'errors' ) );
+    }
+
+
+    public function testSavePageUnknownMetaType()
+    {
+        $this->user->cmsperms = ['page:save', 'page:view'];
+        $root = PageView::where( 'tag', 'root' )->firstOrFail();
+
+        $response = $this->actingAs( $this->user )->graphQL( '
+            mutation {
+                savePage(id: "' . $root->id . '", input: {
+                    meta: "{\\"html\\":{\\"type\\":\\"html\\",\\"data\\":{\\"text\\":\\"<script src=\\\\\\"/x.txt\\\\\\"></script>\\"},\\"files\\":[]}}"
+                }) {
+                    id
+                }
+            }
+        ' );
+
+        $response->assertJsonPath( 'data.savePage', null );
+        $this->assertStringContainsString( 'Unknown meta type "html"', $response->json( 'errors.0.message' ) );
+        $this->assertStringNotContainsString( '<script', json_encode( PageView::findOrFail( $root->id )->latest?->aux ) );
     }
 
 

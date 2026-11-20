@@ -45,13 +45,7 @@ abstract class Provider
             throw new Exception( 'Access provider returned an invalid assignment list.' );
         }
 
-        $result = [];
-
-        foreach( $items as $item ) {
-            $result[] = data_get( $item, 'name' );
-        }
-
-        return $result;
+        return collect( $items )->pluck( 'name' )->all();
     }
 
 

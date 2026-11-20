@@ -8,6 +8,7 @@ namespace Aimeos\Cms\Actions;
 
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\PageStatus;
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Schema;
 use Illuminate\Database\Eloquent\Builder;
@@ -26,7 +27,7 @@ class Properties
     {
         $this->propertyCache = [];
 
-        $editor = Permission::can( 'page:view', $request->user() );
+        $editor = Permission::previews( $request->user() );
         $enabled = (bool) ( $item->data->filters ?? true );
         $defaultSort = (string) ( $item->data->order ?? '-created_at' );
         $requestedSort = $enabled ? trim( (string) $request->query( 'sort', '' ) ) : '';
@@ -252,9 +253,9 @@ class Properties
             $builder->whereDescendantOf( $pid );
         }
         if( $editor ) {
-            $builder->whereLatest( ['status' => 1] );
+            $builder->whereLatest( ['status' => PageStatus::Enabled->value] );
         } else {
-            $builder->where( 'status', 1 );
+            $builder->where( 'status', PageStatus::Enabled->value );
         }
 
         return $builder;

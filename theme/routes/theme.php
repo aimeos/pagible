@@ -7,10 +7,10 @@
 use Aimeos\Cms\Controllers;
 use Aimeos\Cms\Http\Middleware\Origin;
 use Illuminate\Http\Middleware\SetCacheHeaders;
+use Aimeos\Cms\Utils;
 use Illuminate\Support\Facades\Route;
 
-$options = config('cms.multidomain') ? ['domain' => '{domain}', 'where' => ['domain' => '.+']] : [];
-$options['middleware'] = Origin::class;
+$options = Utils::routeGroup(['middleware' => Origin::class]);
 
 Route::group($options, function() {
     Route::post('cmsapi/contact', [Controllers\ContactController::class, 'send'])->middleware(['web', 'throttle:cms-contact'])->name('cms.api.contact');

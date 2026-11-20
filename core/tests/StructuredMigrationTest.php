@@ -23,7 +23,7 @@ class StructuredMigrationTest extends CoreTestAbstract
 
     public function testSkipsTablesWithPageVariants(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $page = PageView::where( 'tag', 'root' )->firstOrFail();
 
         $meta = ['meta-tags' => ['id' => 'legacy', 'type' => 'meta-tags', 'group' => 'main', 'data' => ['description' => 'Page']]];

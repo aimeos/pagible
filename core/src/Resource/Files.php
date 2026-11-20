@@ -7,7 +7,7 @@
 
 namespace Aimeos\Cms\Resource;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\DB;
 use Aimeos\Cms\Exception;
 use Aimeos\Cms\Exceptions\ConflictException;
@@ -16,7 +16,6 @@ use Aimeos\Cms\Exceptions\PermissionException;
 use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Invalidation;
 use Aimeos\Cms\Jobs\PruneVersions;
-use Aimeos\Cms\LifecycleAction;
 use Aimeos\Cms\Events\Purged;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Scout;
@@ -75,6 +74,11 @@ class Files
     {
         Permission::check( 'file:add', $user );
 
+        // local paths are only stored by the file storage itself
+        if( is_string( $source ) && !str_starts_with( $source, 'http' ) ) {
+            throw new InvalidInputException( sprintf( 'Invalid URL "%s"', $source ) );
+        }
+
         $file = new File();
         $file->disk = $disk ?? 'public';
         $file->fill( $input );
@@ -86,23 +90,6 @@ class Files
         // slow network, disk and image work off the database connection.
         $file->ingest( $source, $preview );
 
-        return $this->insert( $file, $user );
-    }
-
-
-    /**
-     * Persists a prepared file as a new media item with its first version.
-     *
-     * The caller fills the file's path, mime, previews, name, lang, description
-     * and transcription; this method stores it, creates the initial version,
-     * indexes it and broadcasts the change. The permission is checked by add().
-     *
-     * @param File $file Prepared file model (path/mime/previews/name set)
-     * @param Authenticatable|null $user Authenticated user for editor tracking
-     * @return File
-     */
-    protected function insert( File $file, ?Authenticatable $user = null ) : File
-    {
         $editor = Utils::editor( $user );
         $file->setUniqueIds();
         $file->checkPaths( [$file->path, ...(array) $file->previews] );
@@ -130,11 +117,11 @@ class Files
         }
         catch( \Throwable $t )
         {
-            $this->discardFile( $file );
+            $file->discard( true );
             throw $t;
         }
 
-        $result->announce( ContentAction::Added, $editor );
+        $result->announce( Action::Added, $editor );
         return $result;
     }
 
@@ -163,13 +150,10 @@ class Files
      * @return Collection<int, File>
      * @throws Exception If permissions, path ownership, remote paths, or storage verification prevent relocation
      */
-    public function relocateMany( array $ids, string $disk,
-        ?Authenticatable $user = null ) : Collection
+    public function relocateMany( array $ids, string $disk, ?Authenticatable $user = null ) : Collection
     {
         FileStorage::diskName( $disk );
-        $ids = array_values( array_unique( $ids ) );
-
-        if( count( $ids ) > self::MAX_RELOCATE ) {
+        if( count( array_unique( $ids ) ) > self::MAX_RELOCATE ) {
             throw new InvalidInputException( sprintf(
                 'No more than %d files may be relocated at once.',
                 self::MAX_RELOCATE,
@@ -182,68 +166,44 @@ class Files
             return ( new File() )->newCollection();
         }
 
+        Permission::check( 'file:relocate', $user );
+
         $editor = Utils::editor( $user );
         $changed = [];
-
-        $found = File::whereIn( 'id', $ids )->pluck( 'id' )->map( strval(...) )->flip();
-
-        foreach( $ids as $id ) {
-            if( !$found->has( $id ) ) {
-                File::findOrFail( $id );
-            }
-        }
-
-        Permission::check( 'file:relocate', $user );
 
         try
         {
             return File::locked( function() use ( &$changed, $disk, $editor, $ids, $user ) {
-                $result = [];
+                // fails for missing files before anything is relocated
+                $files = File::findOrFail( $ids );
+                Langs::authorize( $files, $user );
 
-                if( Permission::langs( $user ) !== null ) {
-                    Langs::authorize( File::whereIn( 'id', $ids )->get( ['id', 'lang', 'latest_id'] ), $user );
+                // relocate in the given order, databases like SQL Server sort UUIDs differently
+                $order = array_flip( array_map( strtolower(...), $ids ) );
+                $files = $files->sortBy( fn( File $file ) => $order[strtolower( (string) $file->id )] ?? PHP_INT_MAX )->values();
+
+                foreach( $files as $file )
+                {
+                    if( $file->getAttribute( 'disk' ) !== $disk )
+                    {
+                        $file->relocate( $disk, $editor );
+                        $changed[] = $file;
+                    }
                 }
 
-                foreach( $ids as $id ) {
-                    $result[] = $this->relocateFile( $id, $disk, $editor, $changed );
-                }
-
-                return ( new File() )->newCollection( $result );
+                return $files;
             } );
         }
         finally
         {
             if( $changed )
             {
-                $files = ( new File() )->newCollection( array_values( $changed ) );
+                $files = ( new File() )->newCollection( $changed );
 
                 Invalidation::refs( [], $files->modelKeys() );
-                File::announceMany( $files, ContentAction::Saved, $editor, ['disk' => $disk], bulk: true );
+                File::announceMany( $files, Action::Saved, $editor, ['disk' => $disk], bulk: true );
             }
         }
-    }
-
-
-    /**
-     * Moves the managed paths of one locked File to another logical disk.
-     *
-     * @param string $id File UUID
-     * @param string $disk Target logical disk, either "public" or "private"
-     * @param string $editor Name of the editor
-     * @param array<string, File> $changed Relocated files by ID, the file is added if it was moved
-     * @return File File on the target disk
-     */
-    protected function relocateFile( string $id, string $disk, string $editor, array &$changed ) : File
-    {
-        $file = File::findOrFail( $id );
-
-        if( $file->getAttribute( 'disk' ) !== $disk )
-        {
-            $file->relocate( $disk, $editor );
-            $changed[$id] = $file;
-        }
-
-        return $file;
     }
 
 
@@ -278,20 +238,37 @@ class Files
         {
             // Prepare storage and remote image work before opening the transaction.
             $this->prepareFile( $stored, $id, $input, $upload, $preview );
-            $file = $this->writeFile( $id, $input, $editor, $latestId, $preview, $stored, $user );
+
+            $file = File::locked( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $user ) {
+                $file = $this->file()->findOrFail( $id );
+                Langs::authorize( $file, $user, $input );
+
+                if( $stored['prepared'] && $file->getAttribute( 'disk' ) !== $stored['disk'] ) {
+                    throw new ConflictException( 'File disk changed while saving; retry the request' );
+                }
+
+                $file->checkStored( [$stored['path'], ...( $stored['previews'] ?? [] )] );
+
+                return DB::transaction( function() use ( $file, $input, $editor, $latestId, $preview, $stored ) {
+                    $this->apply( $file, $input, $editor, $latestId, $stored, $preview === false );
+                    PruneVersions::dispatchChunked( File::class, [$file->id] );
+
+                    return $file;
+                } );
+            } );
         }
         catch( \Throwable $t )
         {
-            $this->discardFile( ( new File() )->forceFill( [
+            ( new File() )->forceFill( [
                 'id' => $id,
                 'disk' => $stored['disk'],
                 'path' => $stored['path'],
                 'previews' => $stored['previews'] ?? [],
-            ] ) );
+            ] )->discard( true );
             throw $t;
         }
 
-        $file->announce( ContentAction::Saved, $editor );
+        $file->announce( Action::Saved, $editor );
         return $file;
     }
 
@@ -417,18 +394,14 @@ class Files
 
         $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->change( File::class, $ids, $fields, [], function( $items ) use ( $editor ) {
             // dispatched after commit
-            Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
+            Invalidation::refs( [], $this->ids( $items ) );
             File::trashMany( $items, $editor );
         }, $user ) ) );
 
-        File::announceMany( $items, LifecycleAction::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
+        File::announceMany( $items, Action::Dropped, $editor, ['deleted_at' => (string) $items->first()?->deleted_at] );
 
         // the CMS search ignores trashed items, other search engines keep them if soft deletes are enabled
-        if( Scout::keepsTrashed() ) {
-            Scout::index( File::class, $this->ids( $items ) );
-        } else {
-            Scout::unindex( File::class, $this->ids( $items ) );
-        }
+        Scout::trash( File::class, $this->ids( $items ) );
 
         return $items;
     }
@@ -454,7 +427,7 @@ class Files
 
         $purge = fn( array $ids ) => $this->change( File::class, $ids, $fields, ['path', 'previews'], function( $items ) use ( $states ) {
             // the references are removed with the files, pages using trashed files were invalidated when they were trashed
-            Invalidation::refs( [], array_map( strval( ... ), $items->reject( fn( File $item ) => $item->trashed() )->modelKeys() ) );
+            Invalidation::refs( [], $this->ids( $items->reject( fn( File $item ) => $item->trashed() ) ) );
 
             if( $states ) {
                 $items->load( ['latest' => fn( $query ) => $query->select( 'id', 'published', 'publish_at', 'created_at' )] );
@@ -489,7 +462,7 @@ class Files
         } ) );
 
         // many files are announced as one bulk event because they may be purged in several transactions
-        File::announceMany( $items, LifecycleAction::Purged, $editor, bulk: count( $ids ) !== 1 );
+        File::announceMany( $items, Action::Purged, $editor, bulk: count( $ids ) !== 1 );
         Scout::unindex( File::class, $this->ids( $items ) );
 
         if( $denied ) {
@@ -518,11 +491,11 @@ class Files
         // all columns are required to update the search index
         $items = File::locked( fn() => Scout::mute( [File::class], fn() => $this->change( File::class, $ids, $fields, File::SELECT_COLUMNS, function( $items ) use ( $editor ) {
             // dispatched after commit
-            Invalidation::refs( [], array_map( strval( ... ), $items->modelKeys() ) );
+            Invalidation::refs( [], $this->ids( $items ) );
             File::restoreMany( $items, $editor );
         }, $user ) ) );
 
-        File::announceMany( $items, LifecycleAction::Restored, $editor, ['deleted_at' => null] );
+        File::announceMany( $items, Action::Restored, $editor, ['deleted_at' => null] );
         Scout::index( File::class, $this->ids( $items ) );
 
         return $items;
@@ -543,7 +516,7 @@ class Files
     /**
      * Three-way merges input into an already loaded File and creates its new latest version.
      *
-     * Shared by saveFile() (single) and bulkFile() (bulk). Must run inside a transaction.
+     * Shared by save() (single) and bulk() (bulk). Must run inside a transaction.
      *
      * @param File $orig File model with the "latest" relation loaded
      * @param array<string, mixed> $input File fields to update (merged with latest version)
@@ -564,13 +537,13 @@ class Files
         $file = clone $orig;
 
         $input = File::snapshot( $input );
-        [$data, $aux, $diffs] = Merge::file( $orig, $input['data'], $input['aux'], $latestId );
+        [$data, $aux, $diffs] = Merge::model( $orig, $input['data'], $input['aux'], $latestId );
         $file->fill( $data + $aux );
 
         $paths = array_map( FileStorage::checkPath( ... ), array_values( (array) ( $input['data']['previews'] ?? [] ) ) );
         array_push( $paths, $storedPath, ...array_values( $storedPreviews ?? [] ) );
 
-        $file->previews = $input['data']['previews'] ?? $previews;
+        $file->previews = $storedPreviews ?? ( $clearPreviews ? [] : ( $input['data']['previews'] ?? $previews ) );
         $file->path = $storedPath ?? FileStorage::checkPath( $input['data']['path'] ?? null ) ?? $path;
 
         if( isset( $input['data']['path'] ) ) {
@@ -582,15 +555,9 @@ class Files
 
         if( $file->path !== $path )
         {
-            $file->mime = ( $stored['mime'] ?? null ) ?? Uploads::mimetype( $file->path, (string) $file->disk );
+            $file->mime = $stored['mime'] ?? Uploads::mimetype( $file->path, (string) $file->disk );
 
             Uploads::checkMimetype( (string) $file->mime );
-        }
-
-        if( $storedPreviews !== null ) {
-            $file->previews = $storedPreviews;
-        } elseif( $clearPreviews ) {
-            $file->previews = [];
         }
 
         $snapshot = File::snapshot( $file->toArray() );
@@ -603,23 +570,6 @@ class Files
         ], [], $diffs );
 
         return $orig;
-    }
-
-
-    /**
-     * Removes the data stored for a file whose save failed.
-     *
-     * Cleanup errors are reported instead of thrown so they don't hide the error of the failed save.
-     *
-     * @param File $file File with the stored path and previews
-     */
-    protected function discardFile( File $file ) : void
-    {
-        try {
-            $file->removePreviews()->removeFile();
-        } catch( \Throwable $cleanup ) {
-            report( $cleanup );
-        }
     }
 
 
@@ -673,53 +623,5 @@ class Files
             // previews of the previous image don't belong to the new path, they are created for supported images
             $stored['previews'] = $tmp->syncPreviews( [] ) ?? [];
         }
-    }
-
-
-    /**
-     * Saves the file with the prepared storage data while the file is locked.
-     *
-     * @param string $id File UUID
-     * @param array<string, mixed> $input File fields to update
-     * @param string $editor Name of the editing user
-     * @param string|null $latestId Version ID the editor was working on (for conflict detection)
-     * @param UploadedFile|false|null $preview Preview upload, false to clear, null for auto-detect
-     * @param StoredFile $stored Prepared storage data
-     * @param Authenticatable|null $user Authenticated user whose writable languages are checked
-     * @return File Saved file
-     */
-    protected function writeFile( string $id, array $input, string $editor, ?string $latestId,
-        UploadedFile|false|null $preview, array $stored, ?Authenticatable $user ) : File
-    {
-
-        return File::locked( function() use ( $id, $input, $editor, $latestId, $preview, $stored, $user ) {
-            $file = $this->file()->findOrFail( $id );
-            Langs::authorize( $file, $user, $input );
-
-            if( $stored['prepared'] && $file->getAttribute( 'disk' ) !== $stored['disk'] ) {
-                throw new ConflictException( 'File disk changed while saving; retry the request' );
-            }
-
-            $file->checkStored( [$stored['path'], ...( $stored['previews'] ?? [] )] );
-
-            return DB::transaction( function() use ( $file, $input, $editor, $latestId, $preview, $stored ) {
-                $this->apply( $file, $input, $editor, $latestId, $stored, $preview === false );
-                PruneVersions::dispatchChunked( File::class, [$file->id] );
-
-                return $file;
-            } );
-        } );
-    }
-
-
-    /**
-     * Returns the IDs of the changed items.
-     *
-     * @param Collection<int, covariant Base> $items Changed items
-     * @return array<string> Item IDs
-     */
-    protected function ids( Collection $items ) : array
-    {
-        return $items->pluck( 'id' )->map( strval( ... ) )->all();
     }
 }

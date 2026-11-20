@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -21,7 +22,7 @@ use Laravel\Mcp\Request;
 #[Description('Replaces the masked area of an image based on a text prompt using AI and stores the result as a new draft version of the source file. Both the image and the mask are referenced by file ID. Returns the updated file.')]
 class InpaintImage extends Tool
 {
-    use HandlesMedia;
+    use Concerns\HandlesMedia;
 
 
     protected const PERMISSIONS = ['image:inpaint', 'file:save', 'file:view'];
@@ -34,18 +35,11 @@ class InpaintImage extends Tool
      */
     public function schema( JsonSchema $schema ) : array
     {
-        return [
-            'file' => $schema->string()
-                ->description( 'The UUID of the image file to edit.' )
-                ->required(),
-            'mask' => $schema->string()
-                ->description( 'The UUID of the mask image file marking the area to replace.' )
-                ->required(),
+        return $this->media( $schema, [
             'prompt' => $schema->string()
                 ->description( 'Describe what to generate in the masked area.' )
                 ->required(),
-            'latest_id' => $this->latest( $schema ),
-        ];
+        ], mask: 'The UUID of the mask image file marking the area to replace.' );
     }
 
 
@@ -54,13 +48,10 @@ class InpaintImage extends Tool
      */
     protected function run( Request $request ) : ResponseFactory
     {
-        return $this->edit( $request, [
-            'mask' => 'required|string|max:36',
+        return $this->masked( $request, [
             'prompt' => 'required|string|max:2000',
         ], [
-            'file.required' => 'You must specify the UUID of the image file to edit.',
             'prompt.required' => 'You must provide a prompt describing the desired content.',
-            'mask.required' => 'You must specify the UUID of the mask image file.',
-        ], fn( $image, $v ) => Ai::inpaint( $image, $this->image( $v['mask'], $request->user(), 'Mask' ), $v['prompt'] ) );
+        ], fn( Image $image, Image $mask, array $v ) => Ai::inpaint( $image, $mask, $v['prompt'] ) );
     }
 }

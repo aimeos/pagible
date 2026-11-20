@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Cms\Media;
 use Aimeos\Prisma\Files\Audio;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Tools\Annotations\IsReadOnly;
@@ -15,6 +16,7 @@ use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Request;
 
 
@@ -28,24 +30,6 @@ class TranscribeAudio extends Tool
 
 
     /**
-     * Handle the tool request.
-     */
-    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
-    {
-        $v = $request->validate( [
-            'file' => 'required|string|max:36',
-        ], [
-            'file.required' => 'You must specify the UUID of the audio file to transcribe.',
-        ] );
-
-        $audio = Ai::files( [$v['file']], $request->user(), Audio::class )[0]
-            ?? throw new \Aimeos\Cms\Exception( 'Audio file not found or not an audio file.' );
-
-        return Response::structured( ['segments' => Ai::transcribe( $audio )] );
-    }
-
-
-    /**
      * Get the tool's input schema.
      *
      * @return array<string, \Illuminate\JsonSchema\Types\Type>
@@ -56,6 +40,26 @@ class TranscribeAudio extends Tool
             'file' => $schema->string()
                 ->description( 'The UUID of the audio file to transcribe.' )
                 ->required(),
+            'lang' => $schema->string()
+                ->description( 'ISO language code of the speech, e.g., "en" or "de". Detected automatically if omitted.' ),
         ];
+    }
+
+
+    /**
+     * Handle the tool request.
+     */
+    protected function run( Request $request ) : ResponseFactory
+    {
+        $v = $request->validate( [
+            'file' => 'required|string|max:36',
+            'lang' => 'nullable|string|max:10|cms_lang',
+        ], [
+            'file.required' => 'You must specify the UUID of the audio file to transcribe.',
+        ] );
+
+        $audio = Media::file( $v['file'], $request->user(), Audio::class );
+
+        return Response::structured( ['segments' => Ai::transcribe( $audio, $v['lang'] ?? null )] );
     }
 }

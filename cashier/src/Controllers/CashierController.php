@@ -8,6 +8,7 @@ namespace Aimeos\Cms\Controllers;
 
 use Aimeos\Cms\CashierProduct;
 use Aimeos\Cms\CashierProvider;
+use Aimeos\Cms\Utils;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -74,7 +75,7 @@ class CashierController extends Controller
             (string) ( $checkout['package'] ?? '' ),
             (string) ( $checkout['price'] ?? '' ),
             isset( $checkout['lang'] ) ? (string) $checkout['lang'] : null,
-            config( 'cms.multidomain' ) ? $request->getHost() : null,
+            Utils::multidomain() ? $request->getHost() : null,
         );
 
         return $provider->checkout( $user, $product );

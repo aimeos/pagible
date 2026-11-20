@@ -23,7 +23,7 @@ class VariantMigrationTest extends CoreTestAbstract
 
     public function testContinuesInterruptedMigration(): void
     {
-        $name = config( 'cms.db', 'sqlite' );
+        $name = \Aimeos\Cms\DB::name();
         $db = DB::connection( $name );
         $schema = Schema::connection( $name );
 

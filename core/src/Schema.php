@@ -24,7 +24,7 @@ class Schema
      */
     public static function action( string $type ) : callable|string|null
     {
-        $field = self::schemas( section: 'content' )[$type]['fields']['action'] ?? [];
+        $field = self::field( 'content', $type, 'action' ) ?? [];
         return ( $field['type'] ?? null ) === 'hidden' ? ( $field['value'] ?? null ) : null;
     }
 
@@ -37,6 +37,21 @@ class Schema
     public static function all() : array
     {
         return array_merge( self::loaded(), Hooks::get()->themes );
+    }
+
+
+    /**
+     * Returns the definition of a field of an entry type.
+     *
+     * @param string $section Schema section (content, meta, config)
+     * @param string $type Entry type, e.g. "meta-tags"
+     * @param string $name Field name, e.g. "description"
+     * @return array<string, mixed>|null Field definition or NULL if the type has no such field
+     */
+    public static function field( string $section, string $type, string $name ) : ?array
+    {
+        $field = self::schemas( $section )[$type]['fields'][$name] ?? null;
+        return is_array( $field ) ? $field : null;
     }
 
 
@@ -91,18 +106,6 @@ class Schema
         }
 
         return $result;
-    }
-
-
-    /**
-     * Returns the default (first) section defined for a page type, or "main".
-     *
-     * @param string|null $type Page type
-     * @return string Default section name
-     */
-    public static function section( ?string $type = null ) : string
-    {
-        return self::sections( $type )[0] ?? 'main';
     }
 
 
@@ -217,15 +220,8 @@ class Schema
     {
         foreach( ['content', 'meta', 'config'] as $section )
         {
-            if( !empty( $data[$section] ) )
-            {
-                $namespaced = [];
-
-                foreach( $data[$section] as $key => $value ) {
-                    $namespaced[$name . '::' . $key] = $value;
-                }
-
-                $data[$section] = $namespaced;
+            if( !empty( $data[$section] ) ) {
+                $data[$section] = array_combine( array_map( fn( $key ) => $name . '::' . $key, array_keys( $data[$section] ) ), $data[$section] );
             }
         }
 

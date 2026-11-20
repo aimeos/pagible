@@ -7,14 +7,11 @@
 
 namespace Aimeos\Cms\GraphQL\Mutations;
 
-use Aimeos\Cms\Ai;
+use Aimeos\Cms\Refiner;
 
 
 final class Refine
 {
-    use ValidatesInputs;
-
-
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
@@ -22,9 +19,10 @@ final class Refine
      */
     public function __invoke( $rootValue, array $args ) : array
     {
-        Ai::checkInput( $content = $args['content'] ?: [] );
+        $type = $args['type'] ?? 'content';
 
-        return $this->ai( fn() => Ai::refine( $args['prompt'], (array) $content, $args['type'] ?? 'content',
-            $args['pagetype'] ?? null, $args['context'] ?? null, $args['lang'] ?? null ) );
+        return $type === 'content'
+            ? Refiner::content( $args['prompt'], (array) $args['content'], $args['pagetype'] ?? null, $args['context'] ?? null, $args['lang'] ?? null )
+            : Refiner::data( $args['prompt'], (array) $args['content'], $type, $args['context'] ?? null, $args['lang'] ?? null );
     }
 }

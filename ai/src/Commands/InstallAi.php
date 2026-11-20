@@ -30,7 +30,7 @@ class InstallAi extends Command
     /**
      * Execute command
      */
-    public function handle(): int
+    public function handle() : int
     {
         $result = 0;
 
@@ -40,6 +40,6 @@ class InstallAi extends Command
         $this->comment( '  Adding AI GraphQL schema ...' );
         $result += $this->append( 'graphql/schema.graphql', '#import cms-ai.graphql' );
 
-        return $result ? 1 : 0;
+        return $result ? self::FAILURE : self::SUCCESS;
     }
 }

@@ -62,11 +62,26 @@ class Access
     /**
      * Adds grants from an optional package without replacing the configured access resolver.
      *
-     * @param (\Closure(Authenticatable): (iterable<mixed>|null))|null $grants
+     * Each call adds another callback, so several packages can add their grants.
+     *
+     * @param \Closure(Authenticatable): (iterable<mixed>|null) $grants Callback returning the additional grants of the user
      */
-    public static function extend( ?\Closure $grants ) : void
+    public static function extend( \Closure $grants ) : void
     {
-        Hooks::get()->extend = $grants;
+        $hooks = Hooks::get();
+        $hooks->extend = [...$hooks->extend, $grants];
+        app()->forgetInstance( self::class );
+    }
+
+
+    /**
+     * Removes the grant callbacks added by all packages using extend().
+     *
+     * @internal Only for resetting the state between tests
+     */
+    public static function resetExtensions() : void
+    {
+        Hooks::get()->extend = [];
         app()->forgetInstance( self::class );
     }
 
@@ -146,11 +161,7 @@ class Access
             throw new Exception( 'Adding access values is not available.' );
         }
 
-        $value = self::value( $value );
-
-        $catalog = $this->catalog();
-
-        if( isset( $catalog[$value] ) ) {
+        if( $this->has( $value = self::value( $value ) ) ) {
             throw new Exception( sprintf( 'Access value "%s" already exists.', $value ) );
         }
 
@@ -181,12 +192,11 @@ class Access
             throw new Exception( sprintf( 'No more than %d access values may be deleted at once.', self::MAX_CHANGE_VALUES ) );
         }
 
-        if( ( $values = $this->known( $values ) ) === [] ) {
-            return $this->list();
+        if( $values = $this->known( $values ) )
+        {
+            $callback( $values );
+            $this->refresh();
         }
-
-        $callback( $values );
-        $this->refresh();
 
         return $this->list();
     }
@@ -201,12 +211,28 @@ class Access
     public function set( Authenticatable $user, iterable $values ) : array
     {
         $tenant = Tenancy::value();
+        $error = 'Frontend access can only be changed for users in the current tenant.';
 
         if( !Tenancy::allows( $user, $tenant ) ) {
-            throw new Exception( 'Frontend access can only be changed for users in the current tenant.' );
+            throw new Exception( $error );
         }
 
-        return $this->replace( $user, $this->changes( $values ), $tenant );
+        $values = self::normalize( $values );
+
+        if( count( $values ) > self::MAX_CHANGE_VALUES ) {
+            throw new Exception( sprintf( 'No more than %d user access values may be changed at once.', self::MAX_CHANGE_VALUES ) );
+        }
+
+        if( $unknown = array_diff( $values, $this->known( $values ) ) ) {
+            throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
+        }
+
+        // persisted users are locked to serialize the changes
+        if( !$user instanceof Model || !$user->exists || $user->getKey() === null ) {
+            return $this->userAccess( $user, $values );
+        }
+
+        return Tenancy::lock( $user, $tenant, $error, fn( Authenticatable&Model $locked ) => $this->userAccess( $locked, $values ) );
     }
 
 
@@ -216,23 +242,9 @@ class Access
      * @param iterable<mixed> $values
      * @return array<int, string>
      */
-    public static function normalize( iterable $values ) : array
+    public static function normalize( iterable $values, ?int $max = null ) : array
     {
-        $result = [];
-
-        foreach( $values as $value )
-        {
-            if( !is_string( $value ) ) {
-                throw new Exception( 'Access values must be non-empty strings.' );
-            }
-
-            $result[self::value( $value )] = true;
-        }
-
-        $result = array_map( 'strval', array_keys( $result ) );
-        sort( $result, SORT_STRING );
-
-        return $result;
+        return Validation::stringList( $values, 'Access values', self::MAX_VALUE_LENGTH, $max );
     }
 
 
@@ -243,7 +255,6 @@ class Access
      */
     public function allowed( Authenticatable $user ) : array
     {
-        $this->context();
         $catalog = $this->catalog();
 
         if( isset( $this->allowed[$user] ) ) {
@@ -252,8 +263,13 @@ class Access
 
         $hooks = Hooks::get();
         $adapter = $hooks->access;
-        $extra = ( $extend = $hooks->extend ) ? $extend( $user ) : [];
-        $granted = array_intersect_key( array_fill_keys( self::normalize( $extra ?? [] ), true ), $catalog );
+        $extra = [];
+
+        foreach( $hooks->extend as $extend ) {
+            $extra = [...$extra, ...( $extend( $user ) ?? [] )];
+        }
+
+        $granted = array_intersect_key( array_fill_keys( self::normalize( $extra ), true ), $catalog );
 
         if( $adapter->prepare ) {
             ( $adapter->prepare )( $user );
@@ -264,7 +280,7 @@ class Access
         if( $resolved !== null )
         {
             // the grants callback returns the complete set of granted values
-            $granted = array_intersect_key( $granted + array_fill_keys( self::normalize( $resolved ), true ), $catalog );
+            $granted += array_fill_keys( self::normalize( $resolved ), true );
         }
         else
         {
@@ -339,28 +355,6 @@ class Access
 
 
     /**
-     * Returns validated catalog values for an assignment change.
-     *
-     * @param iterable<mixed> $values
-     * @return array<int, string>
-     */
-    private function changes( iterable $values ) : array
-    {
-        $values = self::normalize( $values );
-
-        if( count( $values ) > self::MAX_CHANGE_VALUES ) {
-            throw new Exception( sprintf( 'No more than %d user access values may be changed at once.', self::MAX_CHANGE_VALUES ) );
-        }
-
-        if( $unknown = array_diff( $values, $this->list() ) ) {
-            throw new Exception( sprintf( 'Unknown frontend access value "%s".', reset( $unknown ) ) );
-        }
-
-        return $values;
-    }
-
-
-    /**
      * Activates the current tenant and clears request-local state when it changes.
      */
     private function context() : void
@@ -382,40 +376,24 @@ class Access
 
 
     /**
-     * Synchronizes CMS permissions with the configured catalog capabilities.
-     */
-    private static function syncPermissions() : void
-    {
-        Permission::unregister( self::PERMISSIONS );
-
-        $adapter = Hooks::get()->access;
-
-        if( $adapter->list )
-        {
-            Permission::register( 'access:view' );
-
-            if( $adapter->add ) {
-                Permission::register( 'access:add' );
-            }
-
-            if( $adapter->delete ) {
-                Permission::register( 'access:delete' );
-            }
-
-            if( $adapter->userAccess ) {
-                Permission::register( 'user:access' );
-            }
-        }
-    }
-
-
-    /**
      * Stores the access adapter and resets the resolved service.
      */
     private static function configure( Adapter $adapter ) : void
     {
         Hooks::get()->access = $adapter;
-        self::syncPermissions();
+
+        // synchronizes the CMS permissions with the catalog capabilities
+        Permission::unregister( self::PERMISSIONS );
+
+        if( $adapter->list )
+        {
+            Permission::register( array_keys( array_filter( [
+                'access:view' => true,
+                'access:add' => $adapter->add,
+                'access:delete' => $adapter->delete,
+                'user:access' => $adapter->userAccess,
+            ] ) ) );
+        }
 
         app()->forgetInstance( self::class );
     }
@@ -427,33 +405,6 @@ class Access
     private function refresh() : void
     {
         $this->catalog = null;
-        $this->reset();
-    }
-
-
-    /**
-     * Replaces direct assignments while serializing persisted-user changes.
-     *
-     * @param array<int, string> $values
-     * @return array<int, string>
-     */
-    private function replace( Authenticatable $user, array $values, string $tenant ) : array
-    {
-        if( !$user instanceof Model || !$user->exists || $user->getKey() === null ) {
-            return $this->userAccess( $user, $values );
-        }
-
-        return Tenancy::lock( $user, $tenant, 'Frontend access can only be changed for users in the current tenant.',
-            fn( Authenticatable&Model $locked ) => $this->userAccess( $locked, $values )
-        );
-    }
-
-
-    /**
-     * Clears the request-local access cache of all users.
-     */
-    private function reset() : void
-    {
         $this->allowed = new \WeakMap();
     }
 
@@ -474,7 +425,7 @@ class Access
         $result = $callback( $user, $values );
 
         if( $values !== null ) {
-            $this->reset();
+            $this->allowed = new \WeakMap(); // clears the access cache of all users
         }
 
         return $this->known( $result );
@@ -486,14 +437,6 @@ class Access
      */
     private static function value( string $value ) : string
     {
-        if( ( $value = trim( $value ) ) === '' ) {
-            throw new Exception( 'Access values must be non-empty strings.' );
-        }
-
-        if( mb_strlen( $value ) > self::MAX_VALUE_LENGTH ) {
-            throw new Exception( sprintf( 'Access values may not be longer than %d characters.', self::MAX_VALUE_LENGTH ) );
-        }
-
-        return $value;
+        return self::normalize( [$value] )[0];
     }
 }

@@ -25,7 +25,7 @@
             <meta property="og:image" content="{{ cmsasset($page, $socialFile, $socialImage) }}">
             <meta property="og:image:url" content="{{ cmsasset($page, $socialFile, $socialImage) }}">
             <meta name="twitter:image" content="{{ cmsasset($page, $socialFile, $socialImage) }}">
-            @if($socialImageAlt = cms($socialFile, 'description')?->{cms($page, 'lang')} ?: cms($socialFile, 'name'))
+            @if($socialImageAlt = cmstext($page, $socialFile, 'description') ?: cms($socialFile, 'name'))
                 <meta property="og:image:alt" content="{{ $socialImageAlt }}">
                 <meta name="twitter:image:alt" content="{{ $socialImageAlt }}">
             @endif
@@ -68,7 +68,7 @@
                     @if($galleryFile = cms($files, $item->id))
                         <figure>
                             <x-cms::image :page="$page" :file="$galleryFile" sizes="(max-width: 767px) 100vw, 50vw" />
-                            @if($caption = cms($galleryFile, 'description')?->{cms($page, 'lang')})
+                            @if($caption = cmstext($page, $galleryFile, 'description'))
                                 <figcaption>{{ $caption }}</figcaption>
                             @endif
                         </figure>

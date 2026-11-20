@@ -197,9 +197,10 @@ class CdnListenerTest extends CdnTestCase
 
     public function testPagesSync() : void
     {
-        config( ['queue.default' => 'sync', 'cms.cdn.delay' => 10, 'cms.cdn.timeout' => 1, 'cms.cdn.clients' => [
-            'varnish' => ['driver' => 'varnish', 'servers' => ['127.0.0.1:1']],
+        config( ['queue.default' => 'sync', 'cms.cdn.delay' => 10, 'cms.cdn.clients' => [
+            'varnish' => ['driver' => 'varnish', 'servers' => ['10.0.0.1']],
         ]] );
+        $this->http( new \GuzzleHttp\Psr7\Response( 500 ) );
         $this->route();
         Exceptions::fake();
 
@@ -208,9 +209,14 @@ class CdnListenerTest extends CdnTestCase
 
         Exceptions::assertNothingReported();
 
-        // Reported by the exception handler of the application after the response is sent
-        $this->expectException( ExceptionCollection::class );
-        $this->app->terminate();
+        // Reported after the response is sent, Laravel before 13.42 throws the exception instead
+        try {
+            $this->app->terminate();
+        } catch( ExceptionCollection $e ) {
+            report( $e );
+        }
+
+        Exceptions::assertReported( ExceptionCollection::class );
     }
 
 

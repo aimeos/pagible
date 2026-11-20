@@ -81,8 +81,7 @@ class PulseServiceProvider extends Provider
     protected function gate() : void
     {
         if( !Gate::has( 'viewPulse' ) || $this->defaultPulseGate() ) {
-            Gate::define( 'viewPulse', fn( $user ) => Permission::can( self::VIEW_PERMISSION, $user )
-                && ( Tenancy::value() !== '' || !Tenancy::configured() ) );
+            Gate::define( 'viewPulse', fn( $user ) => Permission::can( self::VIEW_PERMISSION, $user ) );
         }
     }
 }

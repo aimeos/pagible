@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Tools;
 
 use Aimeos\Cms\Ai;
+use Aimeos\Prisma\Files\Image;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
@@ -21,7 +22,7 @@ use Laravel\Mcp\Request;
 #[Description('Extends an existing image outwards by the given number of pixels on each side using AI (outpainting) and stores the result as a new draft version of the same file. Returns the updated file.')]
 class UncropImage extends Tool
 {
-    use HandlesMedia;
+    use Concerns\HandlesMedia;
 
 
     protected const PERMISSIONS = ['image:uncrop', 'file:save', 'file:view'];
@@ -34,10 +35,7 @@ class UncropImage extends Tool
      */
     public function schema( JsonSchema $schema ) : array
     {
-        return [
-            'file' => $schema->string()
-                ->description( 'The UUID of the image file to extend.' )
-                ->required(),
+        return $this->media( $schema, [
             'top' => $schema->integer()
                 ->description( 'Pixels to add at the top.' ),
             'right' => $schema->integer()
@@ -46,8 +44,7 @@ class UncropImage extends Tool
                 ->description( 'Pixels to add at the bottom.' ),
             'left' => $schema->integer()
                 ->description( 'Pixels to add on the left.' ),
-            'latest_id' => $this->latest( $schema ),
-        ];
+        ], 'The UUID of the image file to extend.' );
     }
 
 
@@ -61,8 +58,6 @@ class UncropImage extends Tool
             'right' => 'integer|min:0|max:4096',
             'bottom' => 'integer|min:0|max:4096',
             'left' => 'integer|min:0|max:4096',
-        ], [
-            'file.required' => 'You must specify the UUID of the image file to extend.',
-        ], fn( $image, $v ) => Ai::uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) );
+        ], [], fn( Image $image, array $v ) => Ai::uncrop( $image, $v['top'] ?? 0, $v['right'] ?? 0, $v['bottom'] ?? 0, $v['left'] ?? 0 ) );
     }
 }

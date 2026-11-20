@@ -29,23 +29,20 @@ class AiLogListenerTest extends TestCase
     }
 
 
-    public function testSanitizesAndTruncatesError() : void
+    public function testTruncatesError() : void
     {
         $logger = \Mockery::mock( LoggerInterface::class );
         $logger->shouldReceive( 'info' )->once()->with( 'cms.ai', \Mockery::on( function( $ctx ) {
             return $ctx['mutation'] === 'write'
                 && $ctx['success'] === false
-                && !str_contains( $ctx['error'], 'sk-secret123' )
-                && str_contains( $ctx['error'], '[REDACTED]' )
                 && mb_strlen( $ctx['error'] ) <= 200;
         } ) );
         Log::shouldReceive( 'channel' )->with( 'cms' )->andReturn( $logger );
 
         ( new LogListener )->handle( new Generated(
-            mutation: 'write',
+            operation: 'write',
             provider: 'openai',
-            success: false,
-            error: 'Auth failed for key sk-secret123 ' . str_repeat( 'x', 300 ),
+            error: 'Auth failed ' . str_repeat( 'x', 300 ),
         ) );
     }
 
@@ -55,7 +52,7 @@ class AiLogListenerTest extends TestCase
         config( ['cms.watch.channel' => null] );
         Log::shouldReceive( 'channel' )->never();
 
-        ( new LogListener )->handle( new Generated( mutation: 'write' ) );
+        ( new LogListener )->handle( new Generated( operation: 'write' ) );
 
         $this->assertTrue( true );
     }

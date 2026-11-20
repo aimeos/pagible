@@ -66,4 +66,13 @@ class PageMetricsToolTest extends MetricsTestAbstract
 
         $response->assertOk()->assertSee( ['views', 'pagespeed'] )->assertDontSee( 'conversions' );
     }
+
+
+    public function testGetPageMetricsForeignUrl()
+    {
+        Analytics::shouldReceive('driver->stats')->never();
+
+        CmsServer::actingAs($this->user)->tool( GetPageMetrics::class, ['url' => 'https://example.com/unknown'] )
+            ->assertOk()->assertStructuredContent( ['error' => 'URL "https://example.com/unknown" is not the URL of a page'] );
+    }
 }

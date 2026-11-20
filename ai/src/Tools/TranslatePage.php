@@ -7,14 +7,13 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Jobs\TranslatePage as Job;
-use Aimeos\Cms\Models\PageView;
-use Aimeos\Cms\Permission;
+use Aimeos\Cms\Translation;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Request;
 
 
@@ -30,30 +29,6 @@ class TranslatePage extends Tool
 
 
     /**
-     * Handle the tool request.
-     */
-    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
-    {
-        $v = $request->validate([
-            'id' => 'required|string|max:36',
-            'lang' => 'required|array|min:1|max:100',
-            'lang.*' => 'string|max:10',
-        ], [
-            'id.required' => 'You must specify the ID of the page to translate.',
-            'lang.required' => 'You must specify an array of language codes to translate the page into, e.g., ["de", "fr"].',
-        ] );
-
-        $page = PageView::findOrFail( (string) $v['id'] );
-        $langs = array_values( array_unique( $v['lang'] ) );
-        $user = $request->user();
-        Job::authorize( $user, $langs );
-        $batch = Job::dispatchPending( [(string) $page->id], $langs, $user?->getAuthIdentifier(), Permission::can( 'variant:add', $user ) );
-
-        return Response::structured( ['id' => $page->id, 'lang' => $langs] + ( Job::progress( $batch['id'] ) ?? [] ) );
-    }
-
-
-    /**
      * Get the tool's input schema.
      *
      * @return array<string, \Illuminate\JsonSchema\Types\Type>
@@ -62,12 +37,30 @@ class TranslatePage extends Tool
     {
         return [
             'id' => $schema->string()
-                ->description('UUID of the page to translate.')
+                ->description( 'UUID of the page to translate.' )
                 ->required(),
             'lang' => $schema->array()
                 ->items( $schema->string() )
-                ->description('ISO language codes to translate the page into, e.g., ["de", "fr"]. Use get-locales to see available languages.')
+                ->description( 'ISO language codes to translate the page into, e.g., ["de", "fr"]. Use get-locales to see available languages.' )
                 ->required(),
         ];
+    }
+
+
+    /**
+     * Handle the tool request.
+     */
+    protected function run( Request $request ) : ResponseFactory
+    {
+        $v = $request->validate( [
+            'id' => 'required|string|max:36',
+            'lang' => 'required|array|min:1|max:100',
+            'lang.*' => 'string|max:10|cms_lang',
+        ], [
+            'id.required' => 'You must specify the ID of the page to translate.',
+            'lang.required' => 'You must specify an array of language codes to translate the page into, e.g., ["de", "fr"].',
+        ] );
+
+        return Response::structured( Translation\Pages::dispatch( [(string) $v['id']], $v['lang'], $request->user() ) );
     }
 }

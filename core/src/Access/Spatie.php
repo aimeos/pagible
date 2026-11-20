@@ -30,7 +30,7 @@ class Spatie extends Provider
         return new Adapter(
             list: fn() => self::modelNames( $model, ['guard_name' => $guard] ),
             activate: fn( string $tenant ) => self::call( $registrar, 'setPermissionsTeamId', $tenant ),
-            prepare: fn( Authenticatable $user ) => self::prepare( $user ),
+            prepare: self::prepare( ... ),
             add: fn( string $value ) => self::call( self::model( $model ), 'findOrCreate', $value, $guard ),
             delete: fn( array $values ) => self::modelDelete( $model, $values, ['guard_name' => $guard] ),
             grants: $grants,

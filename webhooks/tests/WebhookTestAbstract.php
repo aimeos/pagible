@@ -105,13 +105,6 @@ abstract class WebhookTestAbstract extends \Orchestra\Testbench\TestCase
     }
 
 
-    protected function tearDown() : void
-    {
-        \Aimeos\Cms\Permission::canUsing( null );
-        parent::tearDown();
-    }
-
-
     /**
      * Returns a valid secret in the Standard Webhooks format whose key starts with the name.
      */

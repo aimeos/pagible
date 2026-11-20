@@ -31,12 +31,30 @@ abstract class Tool extends \Laravel\Mcp\Server\Tool
      */
     protected const PERMISSIONS = [];
 
+    /**
+     * Error converters by name.
+     *
+     * @var array<string, \Closure(\Throwable, Tool): ?ResponseFactory>
+     */
+    private static array $handlers = [];
+
+
+    /**
+     * Registers an error converter for all tools.
+     *
+     * @param string $name Converter name, replaces an existing one
+     * @param \Closure(\Throwable, Tool): ?ResponseFactory $handler Returns the error response or NULL if unhandled
+     */
+    public static function failing( string $name, \Closure $handler ) : void
+    {
+        self::$handlers[$name] = $handler;
+    }
+
 
     /**
      * Checks the permissions and handles the tool request.
      *
-     * CMS errors are returned as structured error so the client sees the reason
-     * instead of the generic error laravel/mcp returns if debug mode is off.
+     * Returns structured errors, laravel/mcp hides the reason without debug mode.
      *
      * @param Request $request The incoming tool request
      * @return ResponseFactory Tool response
@@ -54,6 +72,8 @@ abstract class Tool extends \Laravel\Mcp\Server\Tool
             return Response::structured( ['error' => $name . ' not found.'] );
         } catch( \Aimeos\Cms\Exception $e ) {
             return Response::structured( ['error' => $e->getMessage()] );
+        } catch( \Throwable $e ) {
+            return $this->failed( $e ) ?? throw $e;
         }
     }
 
@@ -86,6 +106,25 @@ abstract class Tool extends \Laravel\Mcp\Server\Tool
         }
 
         return static::PERMISSIONS !== [];
+    }
+
+
+    /**
+     * Converts other errors using the registered handlers.
+     *
+     * @param \Throwable $e Error
+     * @return ResponseFactory|null Error response or NULL to rethrow the error
+     */
+    protected function failed( \Throwable $e ) : ?ResponseFactory
+    {
+        foreach( self::$handlers as $handler )
+        {
+            if( $response = $handler( $e, $this ) ) {
+                return $response;
+            }
+        }
+
+        return null;
     }
 
 

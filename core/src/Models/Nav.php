@@ -26,23 +26,6 @@ class Nav extends PageView
 
 
     /**
-     * The model's default values for attributes.
-     *
-     * @var array<string, mixed>
-     */
-    protected $attributes = [
-        'lang' => '',
-        'path' => '',
-        'domain' => '',
-        'to' => '',
-        'name' => '',
-        'title' => '',
-        'status' => 0,
-        'config' => '{}',
-    ];
-
-
-    /**
      * Finds the lightweight published page projection for a frontend route.
      *
      * The returned model is partial and must be treated as read-only.
@@ -61,7 +44,9 @@ class Nav extends PageView
 
 
     /**
-     * Returns the first non-null config value of the published root pages, in tree order.
+     * Returns the first non-null config value of the published public root pages, in tree order.
+     *
+     * Used for publicly cacheable files, so restricted root pages are skipped for all users.
      *
      * @param string $domain Requested domain, empty to match all domains
      * @param \Closure(self): mixed $fn Receives each partial, read-only root page and returns its value or NULL
@@ -70,23 +55,17 @@ class Nav extends PageView
      */
     public static function rootConfig( string $domain, \Closure $fn, ?string $lang = null ) : mixed
     {
-        $pages = self::query()
-            ->when( $lang !== null && $lang !== '', fn( $q ) => $q->visible( (string) $lang ) )
+        return self::query()
+            ->when( (string) $lang !== '', fn( $q ) => $q->visible( (string) $lang ) )
             ->select( 'config' )
             ->whereNull( 'parent_id' )
             ->whereIn( 'status', [1, 2] )
             ->when( $domain !== '', fn( $q ) => $q->where( 'domain', $domain ) )
+            ->wherePublic()
             ->orderBy( NestedSet::LFT )
-            ->cursor();
-
-        foreach( $pages as $page )
-        {
-            if( ( $value = $fn( $page ) ) !== null ) {
-                return $value;
-            }
-        }
-
-        return null;
+            ->cursor()
+            ->map( $fn )
+            ->first( fn( $value ) => $value !== null );
     }
 
 

@@ -166,7 +166,7 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( date( 'Y-m-d H:i:s', 1600000000 ), $page->created_at?->format( 'Y-m-d H:i:s' ) );
 
         $de = PageView::language( 'de' )->findOrFail( $page->id );
-        $hashes = Hashes::page( $page->only( PageVariant::SYNC_FIELDS ), $page->content, $page->meta, $page->config );
+        $hashes = Hashes::published( $page );
 
         $this->assertSame( 'Über uns', $de->title );
         $this->assertSame( 'ueber-uns', $de->path );

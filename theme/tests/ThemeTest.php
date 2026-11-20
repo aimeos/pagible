@@ -1291,6 +1291,33 @@ class ThemeTest extends ThemeTestAbstract
 	}
 
 
+	public function testViewsSwitchesTenantThemes()
+	{
+		config( ['cms.theme.disk' => 'themes'] );
+		$disk = Storage::fake( 'themes' );
+		$disk->put( 'tenanttheme/schema.json', '{}' );
+		$disk->put( 'tenanttheme/views/hello.blade.php', 'tenant one' );
+
+		try
+		{
+			\Aimeos\Cms\Tenancy::run( 'one', fn() => $this->assertEquals( 'tenant one', view( Theme::views( 'tenanttheme' ) . '::hello' )->render() ) );
+
+			$disk->put( 'tenanttheme/views/hello.blade.php', 'tenant two' );
+			\Aimeos\Cms\Tenancy::run( 'two', fn() => $this->assertEquals( 'tenant two', view( Theme::views( 'tenanttheme' ) . '::hello' )->render() ) );
+
+			$disk->deleteDirectory( 'tenanttheme' );
+			\Aimeos\Cms\Tenancy::run( 'three', function() {
+				Theme::views( 'tenanttheme' );
+				$this->assertFalse( view()->exists( 'tenanttheme::hello' ) );
+			} );
+		}
+		finally
+		{
+			\Illuminate\Support\Facades\File::deleteDirectory( storage_path( 'app/cms-themes' ) );
+		}
+	}
+
+
 	public function testViewsRejectsPathTraversal()
 	{
 		// A page theme is user-controlled and flows into a storage path that is

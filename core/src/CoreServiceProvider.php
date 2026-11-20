@@ -3,14 +3,7 @@
 namespace Aimeos\Cms;
 
 use Aimeos\Cms\Events\Channel;
-use Aimeos\Cms\Events\Added;
 use Aimeos\Cms\Events\Bulk;
-use Aimeos\Cms\Events\Dropped;
-use Aimeos\Cms\Events\Moved;
-use Aimeos\Cms\Events\Published;
-use Aimeos\Cms\Events\Purged;
-use Aimeos\Cms\Events\Restored;
-use Aimeos\Cms\Events\Saved;
 use Aimeos\Cms\Events\PermissionChanged;
 use Aimeos\Cms\Listeners\LogListener;
 use Aimeos\Cms\Models\Element;
@@ -25,6 +18,7 @@ use Aimeos\Cms\Commands\InstallCore;
 use Aimeos\Cms\Commands\Previews;
 use Aimeos\Cms\Commands\Publish;
 use Aimeos\Cms\Commands\User;
+use Aimeos\Cms\Contracts\SearchesFields;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -54,6 +48,8 @@ class CoreServiceProvider extends Provider
         $this->watch();
         Utils::limit( 'cms-asset', 300 );
         Utils::limit( 'cms-broadcast', 120 );
+        // copies of whole subtrees are expensive, shared by the GraphQL API and MCP
+        Utils::limit( 'cms-copy', 10 );
         $this->userCasts();
         $this->schedule();
         $this->console();
@@ -66,21 +62,7 @@ class CoreServiceProvider extends Provider
         $cfgdir = dirname( __DIR__ ) . '/config';
         $this->mergeConfigFrom( $cfgdir . '/cms.php', 'cms' );
 
-        // deprecated 0.13 class names, removed in 1.0
-        // registered eagerly because catch blocks don't trigger the autoloader
-        foreach( [
-            'Aimeos\Cms\Channel' => Events\Channel::class,
-            'Aimeos\Cms\Filter' => Query\Filter::class,
-            'Aimeos\Cms\InvalidException' => Exceptions\InvalidInputException::class,
-            'Aimeos\Cms\SearchBuilder' => Query\SearchBuilder::class,
-        ] as $alias => $class )
-        {
-            if( !class_exists( $alias, false ) ) {
-                class_alias( $class, $alias );
-            }
-        }
-
-        $this->app->scoped( Tenancy::class, fn() => new Tenancy( Tenancy::resolve() ) );
+        $this->app->scoped( Tenancy::class, fn() => new Tenancy( ( $tenant = Hooks::get()->tenant ) ? $tenant() : '' ) );
 
         $this->app->scoped( Access::class );
 
@@ -97,7 +79,7 @@ class CoreServiceProvider extends Provider
             return;
         }
 
-        Broadcast::routes( ['middleware' => config( 'cms.broadcast-middleware', ['web', 'auth'] )] );
+        Broadcast::routes( ['middleware' => config( 'cms.broadcast-middleware' )] );
 
         foreach( ['page', 'element', 'file'] as $type )
         {
@@ -127,16 +109,8 @@ class CoreServiceProvider extends Provider
      */
     protected function watch() : void
     {
-        Watch::listen( [
-            Added::class,
-            Saved::class,
-            Published::class,
-            Dropped::class,
-            Restored::class,
-            Purged::class,
-            Moved::class,
-            Bulk::class,
-        ] );
+        $actions = array_filter( Action::cases(), fn( Action $action ) => $action->single() );
+        Watch::listen( [...array_map( fn( Action $action ) => $action->event(), $actions ), Bulk::class] );
 
         // Permission grants are security-relevant and must always be audited, so this
         // listener is registered unconditionally — NOT through the watch-channel-gated
@@ -178,8 +152,7 @@ class CoreServiceProvider extends Provider
                     'algolia' => $this->options( ['restrictSearchableAttributes' => $fields] ),
                     'typesense' => $this->options( ['query_by' => implode( ',', $fields )] ),
                     'meilisearch' => $this->options( ['attributesToSearchOn' => $fields] ),
-                    'cms' => $this->where( 'latest', in_array( 'draft', $fields ) ),
-                    default => null,
+                    default => ( $engine = $this->engine() ) instanceof SearchesFields ? $engine->searchFields( $this, $fields ) : null,
                 };
                 return $this;
             } );

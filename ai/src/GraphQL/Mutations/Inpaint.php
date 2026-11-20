@@ -8,23 +8,17 @@
 namespace Aimeos\Cms\GraphQL\Mutations;
 
 use Aimeos\Cms\Ai;
-use Aimeos\Prisma\Files\Image;
+use Aimeos\Cms\Media;
 
 
 final class Inpaint
 {
-    use ValidatesInputs;
-
-
     /**
      * @param  null  $rootValue
      * @param  array<string, mixed>  $args
      */
     public function __invoke( $rootValue, array $args ) : string
     {
-        $image = $this->upload( $args['file'], Image::class );
-        $mask = $this->upload( $args['mask'], Image::class, 'mask' );
-
-        return $this->ai( fn() => Ai::inpaint( $image, $mask, $args['prompt'] ) );
+        return Ai::inpaint( Media::uploaded( $args['file'] ), Media::uploaded( $args['mask'], label: 'mask' ), $args['prompt'] );
     }
 }

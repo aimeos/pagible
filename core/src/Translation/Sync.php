@@ -68,7 +68,7 @@ class Sync
 
         // translated slug of the path for new variants and untranslated copies, empty if untranslated
         $base = basename( (string) ( $sdata['path'] ?? '' ) );
-        $slug = ['slug' => self::copied( $base, $vdata, $vhashes, $lang, $variant ) ? str_replace( '-', ' ', $base ) : ''];
+        $slug = ['slug' => !$variant || self::copied( $base, $vdata, $vhashes, $lang ) ? str_replace( '-', ' ', $base ) : ''];
 
         // the empty hash of untranslated slugs marks copied paths for the next translation
         $texts->add( 'page:slug', $slug, 'slug' );
@@ -117,6 +117,7 @@ class Sync
     protected static function content( array $source, array $variant, array $hashes, \Closure $changed, Texts $texts ) : array
     {
         $mine = $sids = $result = [];
+        $schemas = Schema::schemas( section: 'content' );
 
         foreach( $variant as $el ) {
             $mine[(string) ( $el->id ?? '' )] = $el;
@@ -133,7 +134,9 @@ class Sync
                 continue; // deleted in the translation
             }
 
-            if( $own && ( !$changed( $key ) || self::localized( $own, $hashes[$key] ?? null ) ) )
+            // reference elements localized by editors point to another shared element than last synced
+            if( $own && ( !$changed( $key ) || ( $own->type ?? null ) === 'reference' && !empty( $hashes[$key] )
+                && Hashes::element( (array) $own ) !== $hashes[$key] ) )
             {
                 if( property_exists( $el, 'group' ) ) {
                     $own->group = $el->group;
@@ -148,7 +151,7 @@ class Sync
             $result[] = $copy = self::copy( $el );
 
             if( ( $copy->type ?? null ) !== 'reference' ) {
-                $texts->walk( $key, $copy->data ?? null, Schema::schemas( section: 'content' )[$copy->type ?? ''] ?? [] );
+                $texts->walk( $key, $copy->data ?? null, $schemas[$copy->type ?? ''] ?? [] );
             }
         }
 
@@ -344,15 +347,10 @@ class Sync
      * @param array<string, mixed> $data Version data of the target variant
      * @param array<string, string> $hashes Hashes the target variant was last synced with
      * @param string $lang Language code of the target variant
-     * @param PageView|null $variant Page with the target variant or NULL if it's new
      * @return bool TRUE if the path needs a translated slug
      */
-    protected static function copied( string $slug, array $data, array $hashes, string $lang, ?PageView $variant ) : bool
+    protected static function copied( string $slug, array $data, array $hashes, string $lang ) : bool
     {
-        if( !$variant ) {
-            return true;
-        }
-
         if( $slug === '' || ( $hashes['page:slug'] ?? null ) !== '' ) {
             return false;
         }
@@ -389,6 +387,7 @@ class Sync
         \Closure $changed, ?Texts $texts = null ) : array
     {
         $result = $variant;
+        $schemas = $texts ? Schema::schemas( section: $kind ) : [];
 
         foreach( $source as $name => $entry )
         {
@@ -399,7 +398,7 @@ class Sync
             }
 
             $result[$name] = $copy = self::copy( $entry );
-            $texts?->walk( $key, $copy->data ?? null, Schema::schemas( section: $kind )[$copy->type ?? $name] ?? [] );
+            $texts?->walk( $key, $copy->data ?? null, $schemas[$copy->type ?? $name] ?? [] );
         }
 
         // entries removed in the source
@@ -412,27 +411,6 @@ class Sync
 
         return $result;
     }
-
-
-    /**
-     * Tests if a reference element was localized by an editor.
-     *
-     * @param object $el Content element of the target variant
-     * @param string|null $hash Hash of the element when it was last synced
-     * @return bool TRUE if the reference element points to another shared element than last synced
-     */
-    protected static function localized( object $el, ?string $hash ) : bool
-    {
-        if( ( $el->type ?? null ) !== 'reference' || !$hash ) {
-            return false;
-        }
-
-        $item = (array) $el;
-        unset( $item['id'], $item['group'] );
-
-        return Hashes::hash( $item ) !== $hash;
-    }
-
 
     /**
      * Returns the data and auxiliary data of the latest version of the page variant.
@@ -563,7 +541,7 @@ class Sync
             }
         }
 
-        foreach( array_chunk( array_keys( $sources ), 100 ) as $chunk )
+        foreach( array_chunk( array_keys( $sources ), Base::CHUNK ) as $chunk )
         {
             $ids = [];
             $variants = PageVariant::whereIn( 'page_id', $chunk )->where( 'stale', false )
@@ -599,7 +577,7 @@ class Sync
     protected static function reindex( array $ids ) : void
     {
         if( Scout::usesExternalSearch() ) {
-            Scout::reindex( PageView::class, array_map( strval( ... ), $ids ), keys: true );
+            Scout::index( PageView::class, array_map( strval( ... ), $ids ), keys: true );
         }
     }
 }

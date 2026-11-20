@@ -60,36 +60,24 @@ class DeleteFilePaths implements ShouldQueue
      */
     private function delete( string $owner, array $paths ): void
     {
-        $files = File::withoutTenancy()->withTrashed()->select( 'id', 'path', 'previews' )
+        $file = File::withoutTenancy()->withTrashed()->select( 'id', 'path', 'previews' )
             ->where( 'tenant_id', $this->tenant )
-            ->where( 'id', $owner )->get();
+            ->where( 'id', $owner )->first();
 
-        foreach( $files as $file )
-        {
-            $this->forget( $paths, $file->path );
+        // versions are purged before their file, so a missing file has no versions
+        $versions = $file ? Version::withoutTenancy()->select( 'id', 'data' )
+            ->where( 'tenant_id', $this->tenant )
+            ->where( 'versionable_type', File::class )
+            ->where( 'versionable_id', $file->id )
+            ->lazyById() : [];
 
-            foreach( (array) $file->previews as $path ) {
-                $this->forget( $paths, $path );
-            }
-        }
-
-        if( !$paths ) {
+        if( $this->forget( $paths, $file ) ) {
             return;
         }
 
-        foreach( Version::withoutTenancy()->select( 'id', 'data' )
-            ->where( 'tenant_id', $this->tenant )
-            ->where( 'versionable_type', File::class )
-            ->whereIn( 'versionable_id', $files->modelKeys() )
-            ->lazyById() as $version )
+        foreach( $versions as $version )
         {
-            $this->forget( $paths, $version->data->path ?? null );
-
-            foreach( (array) ( $version->data->previews ?? [] ) as $path ) {
-                $this->forget( $paths, $path );
-            }
-
-            if( !$paths ) {
+            if( $this->forget( $paths, $version->data ?? null ) ) {
                 return;
             }
         }
@@ -103,15 +91,21 @@ class DeleteFilePaths implements ShouldQueue
 
 
     /**
-     * Keeps referenced paths out of the deletion set.
+     * Keeps the referenced file and preview paths out of the deletion set.
      *
      * @param array<string, bool> $paths Candidate deletion paths
-     * @param mixed $path Referenced storage path
+     * @param object|null $item File or version data referencing the paths
+     * @return bool TRUE if no candidate paths are left
      */
-    private function forget( array &$paths, mixed $path ): void
+    private function forget( array &$paths, ?object $item ): bool
     {
-        if( ( $path = FileStorage::normalizePath( $path, $this->tenant ) ) !== null ) {
-            unset( $paths[$path] );
+        foreach( [$item->path ?? null, ...array_values( (array) ( $item->previews ?? [] ) )] as $path )
+        {
+            if( ( $path = FileStorage::normalizePath( $path, $this->tenant ) ) !== null ) {
+                unset( $paths[$path] );
+            }
         }
+
+        return !$paths;
     }
 }

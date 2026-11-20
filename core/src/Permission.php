@@ -100,15 +100,34 @@ class Permission
     /**
      * Returns the raw CMS roles and permissions assigned to the user.
      *
+     * @param bool $roles TRUE for the named roles only, denied roles ("!role") are no roles of the user
      * @return array<int, string>
      */
-    public static function assigned( Authenticatable $user ) : array
+    public static function assigned( Authenticatable $user, bool $roles = false ) : array
     {
         $entries = data_get( $user, 'cmsperms', [] );
+        $entries = is_array( $entries ) ? array_filter( $entries, 'is_string' ) : [];
 
-        return is_array( $entries )
-            ? array_values( array_filter( $entries, 'is_string' ) )
-            : [];
+        if( $roles ) {
+            $entries = array_filter( $entries, fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ) );
+        }
+
+        return array_values( $entries );
+    }
+
+
+    /**
+     * Returns the roles assigned to the user, denied roles ("!role") aren't included.
+     *
+     * @param Authenticatable $user Laravel user object
+     * @return array<int, string> Role names
+     */
+    public static function assignedRoles( Authenticatable $user ) : array
+    {
+        return array_values( array_filter(
+            self::assigned( $user ),
+            fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ) && $entry !== '*',
+        ) );
     }
 
 
@@ -118,6 +137,19 @@ class Permission
     public static function has( string $action ) : bool
     {
         return in_array( $action, Hooks::get()->actions, true );
+    }
+
+
+    /**
+     * Checks if the user can preview the latest, unpublished content of the pages.
+     *
+     * @param Authenticatable|null $user Laravel user object, the authenticated user if no argument is passed
+     * @return bool TRUE if the user can view the latest versions, FALSE if only published content is shown
+     */
+    public static function previews( ?Authenticatable $user = null ) : bool
+    {
+        // an explicit NULL is a guest even if another user is authenticated
+        return self::can( 'page:view', func_num_args() ? $user : Auth::user() );
     }
 
 
@@ -239,10 +271,6 @@ class Permission
             return false;
         }
 
-        if( $closure = Hooks::get()->can ) {
-            return $closure( $action, $user );
-        }
-
         if( $action === '*' ) {
             return self::assigned( $user ) !== [];
         }
@@ -267,17 +295,6 @@ class Permission
 
 
     /**
-     * Sets the callback for checking permissions.
-     *
-     * @param \Closure|null $callback Anonymous function or NULL to reset
-     */
-    public static function canUsing( ?\Closure $callback ) : void
-    {
-        Hooks::get()->can = $callback;
-    }
-
-
-    /**
      * Throws an exception if the user isn't allowed to perform the action.
      *
      * A NULL user is anonymous and only allowed inside system().
@@ -289,7 +306,7 @@ class Permission
      */
     public static function check( string $action, ?Authenticatable $user, bool $needed = true ) : void
     {
-        if( $user ? $needed && !self::can( $action, $user ) : !Hooks::get()->system ) {
+        if( ( $needed || !$user ) && !self::allowed( $action, $user ) ) {
             throw new PermissionException( 'Insufficient permissions' );
         }
     }
@@ -394,7 +411,13 @@ class Permission
 
             $existing = self::assigned( $locked );
 
-            self::validate( $entries, $existing );
+            // unsupported new values are rejected while existing legacy assignments can be retained
+            foreach( $entries as $entry )
+            {
+                if( !self::valid( $entry ) && !in_array( $entry, $existing, true ) ) {
+                    throw new InvalidInputException( sprintf( 'Unknown CMS role or permission "%s".', $entry ) );
+                }
+            }
 
             // no cast for "cmslangs" because it would decode database NULL and JSON null to the same value
             $raw = $langs === false ? $locked->getAttributes()['cmslangs'] ?? null : ( $langs === null ? null : json_encode( $langs ) );
@@ -461,18 +484,6 @@ class Permission
 
 
     /**
-     * Clears resolved-permission caches.
-     *
-     * Entries are fingerprinted and released with their user objects, so this is only
-     * needed to free memory before long-running loops that touch many users.
-     */
-    public static function flush() : void
-    {
-        Hooks::get()->resolved = new \WeakMap();
-    }
-
-
-    /**
      * Returns raw assignments deduplicated, normalized, and sorted.
      *
      * @param iterable<mixed> $entries
@@ -480,30 +491,7 @@ class Permission
      */
     private static function normalize( iterable $entries ) : array
     {
-        $result = [];
-
-        foreach( $entries as $entry )
-        {
-            if( !is_string( $entry ) || ( $entry = trim( $entry ) ) === '' ) {
-                throw new InvalidInputException( 'CMS permissions must be non-empty strings.' );
-            }
-
-            if( mb_strlen( $entry ) > self::MAX_LENGTH ) {
-                throw new InvalidInputException( sprintf( 'CMS permissions may not be longer than %d characters.', self::MAX_LENGTH ) );
-            }
-
-            if( !in_array( $entry, $result, true ) ) {
-                $result[] = $entry;
-            }
-
-            if( count( $result ) > self::MAX_ASSIGNMENTS ) {
-                throw new InvalidInputException( sprintf( 'No more than %d CMS permissions may be assigned at once.', self::MAX_ASSIGNMENTS ) );
-            }
-        }
-
-        sort( $result, SORT_STRING );
-
-        return $result;
+        return Validation::stringList( $entries, 'CMS permissions', self::MAX_LENGTH, self::MAX_ASSIGNMENTS );
     }
 
 
@@ -628,22 +616,5 @@ class Permission
         return $prefix && $suffix
             && ( $prefix === '*' || $suffix === '*' )
             && self::resolve( [$entry] ) !== [];
-    }
-
-
-    /**
-     * Rejects unsupported new values while allowing existing legacy assignments to be retained.
-     *
-     * @param array<int, string> $entries
-     * @param array<int, string> $existing
-     */
-    private static function validate( array $entries, array $existing ) : void
-    {
-        foreach( $entries as $entry )
-        {
-            if( !self::valid( $entry ) && !in_array( $entry, $existing, true ) ) {
-                throw new InvalidInputException( sprintf( 'Unknown CMS role or permission "%s".', $entry ) );
-            }
-        }
     }
 }

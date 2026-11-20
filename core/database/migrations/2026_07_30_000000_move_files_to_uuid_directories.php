@@ -33,7 +33,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = DB::connection( \Aimeos\Cms\DB::name() );
 
         // only for the table structure before the page variants were introduced
         if( $db->getSchemaBuilder()->hasTable( 'cms_page_variants' ) ) {

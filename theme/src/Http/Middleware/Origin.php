@@ -7,6 +7,7 @@
 namespace Aimeos\Cms\Http\Middleware;
 
 use Closure;
+use Aimeos\Cms\Utils;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -55,7 +56,7 @@ final class Origin
             && $host !== ''
             && $scheme === strtolower( $request->getScheme() )
             && $port === $request->getPort()
-            && ( config( 'cms.multidomain' ) || strcasecmp( $host, $requestHost ) === 0 );
+            && ( Utils::multidomain() || strcasecmp( $host, $requestHost ) === 0 );
 
         $request->attributes->set( self::ATTRIBUTE, $canonical );
 

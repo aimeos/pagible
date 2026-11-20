@@ -7,11 +7,9 @@
 
 namespace Aimeos\Cms\Events;
 
-use Aimeos\Cms\ContentAction;
+use Aimeos\Cms\Action;
 use Aimeos\Cms\ContentType;
 use Aimeos\Cms\Jobs\HandleChanges;
-use Aimeos\Cms\LifecycleAction;
-use Aimeos\Cms\VariantAction;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Event as Events;
 
@@ -26,7 +24,7 @@ use Illuminate\Support\Facades\Event as Events;
  * $stop = Change::listen( 'published', fn( Change $change ) => ... );
  * $stop(); // removes the listener again
  *
- * Use '*' to listen for all actions, including the page variant actions of VariantAction.
+ * Use '*' to listen for all actions, including the page variant actions announced by bulk events only.
  *
  * Listener classes with a handle(Change $change) method are resolved from the container. If they
  * implement ShouldQueue, the changed items of each event are passed to them in one queued job.
@@ -73,26 +71,26 @@ final readonly class Change
     /**
      * Registers a listener called once for each item changed by the given actions.
      *
-     * @param ContentAction|LifecycleAction|VariantAction|string|array<ContentAction|LifecycleAction|VariantAction|string> $actions Actions to listen for or '*' for all
+     * @param Action|string|array<Action|string> $actions Actions to listen for or '*' for all
      * @param callable(Change): mixed|class-string $listener Listener or listener class receiving each changed item
      * @return \Closure(): void Function removing the listener again
      * @throws \InvalidArgumentException If an action name is unknown
      */
-    public static function listen( ContentAction|LifecycleAction|VariantAction|string|array $actions, callable|string $listener ) : \Closure
+    public static function listen( Action|string|array $actions, callable|string $listener ) : \Closure
     {
         $names = array_map( fn( $action ) => is_string( $action ) ? $action : $action->value, is_array( $actions ) ? $actions : [$actions] );
         $all = in_array( '*', $names, true );
         $classes = [Bulk::class];
         $state = (object) ['active' => true];
 
-        foreach( $all ? [...ContentAction::cases(), ...LifecycleAction::cases()] : $names as $name )
+        foreach( $all ? Action::cases() : $names as $name )
         {
-            $name = is_string( $name ) ? $name : $name->value;
-
-            if( $action = ContentAction::tryFrom( $name ) ?? LifecycleAction::tryFrom( $name ) ) {
-                $classes[] = $action->event();
-            } elseif( !VariantAction::tryFrom( $name ) ) {
+            if( !( $action = $name instanceof Action ? $name : Action::tryFrom( $name ) ) ) {
                 throw new \InvalidArgumentException( sprintf( 'Unknown change action "%1$s"', $name ) );
+            }
+
+            if( $action->single() ) {
+                $classes[] = $action->event();
             }
         }
 

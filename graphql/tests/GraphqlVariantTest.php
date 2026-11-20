@@ -68,6 +68,22 @@ class GraphqlVariantTest extends GraphqlTestAbstract
     }
 
 
+    public function testPageLanguageOnlyTrashed()
+    {
+        $page = $this->page();
+        Variants::add( $page->id, 'de', $this->user );
+        Variants::drop( $page->id, 'de', $this->user );
+
+        $this->actingAs( $this->user )->graphQL( '{
+            page(id: "' . $page->id . '", lang: "de", trashed: ONLY) { id lang }
+        }' )->assertJson( ['data' => ['page' => ['id' => $page->id, 'lang' => 'de']]] );
+
+        $this->actingAs( $this->user )->graphQL( '{
+            page(id: "' . $page->id . '", lang: "de") { id }
+        }' )->assertJson( ['data' => ['page' => null]] );
+    }
+
+
     public function testPageVariants()
     {
         $page = $this->page();

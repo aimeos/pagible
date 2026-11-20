@@ -7,7 +7,6 @@
 
 namespace Tests;
 
-use Aimeos\Cms\Ai;
 use Aimeos\Cms\Events\Generated;
 use Aimeos\Prisma\Prisma;
 use Aimeos\Prisma\Responses\FileResponse;
@@ -75,7 +74,7 @@ class AiWatchTest extends AiTestAbstract
         ' );
 
         Event::assertDispatched( Generated::class, fn( Generated $e ) =>
-            $e->mutation === 'write'
+            $e->operation === 'write'
             && $e->success === true
             && $e->provider === 'gemini'
             && $e->editor === 'editor@testbench'
@@ -95,7 +94,7 @@ class AiWatchTest extends AiTestAbstract
         ' );
 
         Event::assertDispatched( Generated::class, fn( Generated $e ) =>
-            $e->mutation === 'imagine' && $e->success === true
+            $e->operation === 'imagine' && $e->success === true
         );
     }
 
@@ -111,11 +110,24 @@ class AiWatchTest extends AiTestAbstract
         );
 
         Event::assertDispatched( Generated::class, fn( Generated $e ) =>
-            $e->mutation === 'write'
+            $e->operation === 'write'
             && $e->success === false
             && $e->error === 'provider exploded'
             && $e->editor === 'editor@testbench'
         );
+    }
+
+
+    public function testObserverRedactsError() : void
+    {
+        Event::fake( [Generated::class] );
+
+        $this->observe(
+            new Observation( 'write', 'text', 'gemini', 'model-x', 12.0, new \RuntimeException( 'Auth failed for key sk-secret123' ) ),
+            'editor@testbench'
+        );
+
+        Event::assertDispatched( Generated::class, fn( Generated $e ) => $e->error === 'Auth failed for key [REDACTED]' );
     }
 
 
@@ -156,6 +168,10 @@ class AiWatchTest extends AiTestAbstract
      */
     private function observe( Observation $observation, ?string $editor = null ) : void
     {
-        ( Ai::observer( $editor ) )( $observation );
+        if( $editor ) {
+            $this->actingAs( ( new \Illuminate\Foundation\Auth\User() )->forceFill( ['email' => $editor] ) );
+        }
+
+        ( Generated::observer() )( $observation );
     }
 }

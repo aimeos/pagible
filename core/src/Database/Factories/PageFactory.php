@@ -8,6 +8,7 @@
 namespace Aimeos\Cms\Database\Factories;
 
 use Aimeos\Cms\Facades\Pages;
+use Aimeos\Cms\PageStatus;
 use Aimeos\Cms\Models\PageView;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -42,7 +43,7 @@ class PageFactory extends Factory
             'name' => Str::ucfirst( $name ),
             'title' => Str::ucfirst( $name ),
             'path' => $name,
-            'status' => 1,
+            'status' => PageStatus::Enabled->value,
             'content' => [],
         ];
     }
@@ -55,7 +56,7 @@ class PageFactory extends Factory
      */
     public function hidden() : static
     {
-        return $this->state( ['status' => 2] );
+        return $this->state( ['status' => PageStatus::Hidden->value] );
     }
 
 
@@ -66,7 +67,7 @@ class PageFactory extends Factory
      */
     public function inactive() : static
     {
-        return $this->state( ['status' => 0] );
+        return $this->state( ['status' => PageStatus::Disabled->value] );
     }
 
 

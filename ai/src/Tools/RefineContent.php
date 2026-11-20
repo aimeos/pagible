@@ -7,13 +7,13 @@
 
 namespace Aimeos\Cms\Tools;
 
-use Aimeos\Cms\Ai;
-use Aimeos\Cms\Models\PageView;
+use Aimeos\Cms\Refiner;
 use Illuminate\Contracts\JsonSchema\JsonSchema;
 use Laravel\Mcp\Server\Attributes\Description;
 use Laravel\Mcp\Server\Attributes\Name;
 use Laravel\Mcp\Server\Attributes\Title;
 use Laravel\Mcp\Response;
+use Laravel\Mcp\ResponseFactory;
 use Laravel\Mcp\Request;
 
 
@@ -26,38 +26,6 @@ class RefineContent extends Tool
 
 
     /**
-     * Handle the tool request.
-     */
-    protected function run( Request $request ) : \Laravel\Mcp\ResponseFactory
-    {
-        $validated = $request->validate([
-            'id' => 'required|string|max:36',
-            'prompt' => 'required|string|max:2000',
-            'context' => 'string|max:30000',
-            'lang' => 'string|max:10',
-        ], [
-            'id.required' => 'You must specify the ID of the page to refine.',
-            'prompt.required' => 'You must provide a prompt describing how to refine the content.',
-        ] );
-
-        /** @var PageView $page */
-        $page = PageView::withTrashed()->select( 'id', 'tenant_id', 'type', 'latest_id' )
-            ->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'versionable_id', 'aux', 'data->type as type' )] )
-            ->findOrFail( $validated['id'] );
-
-        // the published content is only loaded if there's no draft content
-        $content = (array) ( $page->latest->aux->content
-            ?? PageView::withTrashed()->select( 'id', 'content' )->find( $page->id )->content ?? [] );
-
-        $type = $page->latest->type ?? $page->type;
-        $result = Ai::refine( $validated['prompt'], $content, 'content', $type, $validated['context'] ?? null,
-            $validated['lang'] ?? null );
-
-        return Response::structured( ['content' => $result] );
-    }
-
-
-    /**
      * Get the tool's input schema.
      *
      * @return array<string, \Illuminate\JsonSchema\Types\Type>
@@ -66,15 +34,36 @@ class RefineContent extends Tool
     {
         return [
             'id' => $schema->string()
-                ->description('The UUID of the page whose content to refine.')
+                ->description( 'The UUID of the page whose content to refine.' )
                 ->required(),
             'prompt' => $schema->string()
-                ->description('Describe how to improve the content, e.g., "Make the text more engaging and add subheadings" or "Rewrite for a technical audience".')
+                ->description( 'Describe how to improve the content, e.g., "Make the text more engaging and add subheadings" or "Rewrite for a technical audience".' )
                 ->required(),
             'context' => $schema->string()
-                ->description('Additional context such as target audience, tone, or brand guidelines.'),
+                ->description( 'Additional context such as target audience, tone, or brand guidelines.' ),
             'lang' => $schema->string()
-                ->description('Language code the refined content should be written in, e.g. "en" or "de".'),
+                ->description( 'Language code of the page variant to refine and of the refined content, e.g. "en" or "de". The source content is refined if the page has no variant in this language.' ),
         ];
+    }
+
+
+    /**
+     * Handle the tool request.
+     */
+    protected function run( Request $request ) : ResponseFactory
+    {
+        $v = $request->validate( [
+            'id' => 'required|string|max:36',
+            'prompt' => 'required|string|max:2000',
+            'context' => 'nullable|string|max:30000',
+            'lang' => 'nullable|string|max:10|cms_locale',
+        ], [
+            'id.required' => 'You must specify the ID of the page to refine.',
+            'prompt.required' => 'You must provide a prompt describing how to refine the content.',
+        ] );
+
+        $result = Refiner::page( (string) $v['id'], $v['prompt'], $v['context'] ?? null, $v['lang'] ?? null );
+
+        return Response::structured( ['content' => $result] );
     }
 }

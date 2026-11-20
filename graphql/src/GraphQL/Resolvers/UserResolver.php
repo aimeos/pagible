@@ -168,10 +168,7 @@ class UserResolver
      */
     public function roles( Authenticatable $user ) : array
     {
-        return array_values( array_filter(
-            Permission::assigned( $user ),
-            fn( $entry ) => !str_contains( $entry, ':' ) && !str_starts_with( $entry, '!' ),
-        ) );
+        return Permission::assigned( $user, true );
     }
 
 

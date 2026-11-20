@@ -192,17 +192,6 @@ abstract class Base extends Model
 
 
     /**
-     * Returns the type stored in the versions referencing the model.
-     *
-     * @return string Versionable type
-     */
-    protected static function versionType() : string
-    {
-        return static::class;
-    }
-
-
-    /**
      * Returns the attribute name of the key the versions are referencing.
      *
      * @return string Attribute name
@@ -221,6 +210,32 @@ abstract class Base extends Model
     public function latest() : BelongsTo
     {
         return $this->belongsTo( Version::class, 'latest_id' );
+    }
+
+
+    /**
+     * Returns the latest auxiliary value or the stored one.
+     *
+     * @param string $name Property name, e.g. "content", "meta" or "description"
+     * @param bool $loaded TRUE to use the latest version only if it's already loaded
+     * @return mixed Latest or stored value
+     */
+    public function latestAux( string $name, bool $loaded = false ) : mixed
+    {
+        return $this->latestOf( 'aux', $name, $loaded );
+    }
+
+
+    /**
+     * Returns the latest value or the stored one.
+     *
+     * @param string $name Property name, e.g. "title" or "path"
+     * @param bool $loaded TRUE to use the latest version only if it's already loaded
+     * @return mixed Latest or stored value
+     */
+    public function latestValue( string $name, bool $loaded = false ) : mixed
+    {
+        return $this->latestOf( 'data', $name, $loaded );
     }
 
 
@@ -254,12 +269,8 @@ abstract class Base extends Model
 
         foreach( $arms as $arm )
         {
-            $sub = $this->getConnection()->query();
-            $this->latestVersions( $sub, $arm, lookup: true );
-
-            foreach( $sub->pluck( 'cms_versions.id' ) as $id ) {
-                $ids[] = $id;
-            }
+            $this->latestVersions( $sub = $this->getConnection()->query(), $arm, lookup: true );
+            array_push( $ids, ...$sub->pluck( 'cms_versions.id' )->all() );
         }
 
         $query->whereIn( "{$table}.latest_id", array_values( array_unique( $ids ) ) );
@@ -320,7 +331,7 @@ abstract class Base extends Model
 
         $sub->select( 'cms_versions.id' )
             ->from( 'cms_versions' )
-            ->where( 'cms_versions.versionable_type', static::versionType() )
+            ->where( 'cms_versions.versionable_type', $this->getMorphClass() )
             ->where( 'cms_versions.tenant_id', Tenancy::value() );
 
         foreach( $wheres as $field => $list )
@@ -669,5 +680,20 @@ abstract class Base extends Model
     protected function values( Version $version ) : array
     {
         return [];
+    }
+
+
+    /**
+     * Returns the property of the latest version or the stored value.
+     *
+     * @param string $prop Version property, "data" or "aux"
+     * @param string $name Property name
+     * @param bool $loaded TRUE to use the latest version only if it's already loaded
+     * @return mixed Latest or stored value
+     */
+    private function latestOf( string $prop, string $name, bool $loaded ) : mixed
+    {
+        $version = !$loaded || $this->relationLoaded( 'latest' ) ? $this->latest : null;
+        return $version?->{$prop}->{$name} ?? $this->getAttribute( $name );
     }
 }

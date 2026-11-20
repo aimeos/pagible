@@ -315,9 +315,9 @@ jobs:
           DB_DRIVER: sqlite
     working_directory: ~/project/webhooks
     steps:
-      - skip-without-webhooks
       - checkout:
           path: ~/project
+      - skip-without-webhooks
       - restore_cache:
           keys:
             - webhooks-php85-{{ checksum "composer.json" }}
@@ -343,9 +343,9 @@ jobs:
           DB_DRIVER: sqlite
     working_directory: ~/project/metrics
     steps:
-      - skip-without-metrics
       - checkout:
           path: ~/project
+      - skip-without-metrics
       - restore_cache:
           keys:
             - metrics-php85-{{ checksum "composer.json" }}
@@ -374,9 +374,9 @@ jobs:
       - image: aimeos/ci-php:<< parameters.php >>
     working_directory: ~/project/<< parameters.package >>
     steps:
-      - skip-without-cashier
       - checkout:
           path: ~/project
+      - skip-without-cashier
       - run:
           name: Install isolated provider
           command: |

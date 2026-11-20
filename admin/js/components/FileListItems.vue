@@ -88,7 +88,7 @@ const SORT_OPTIONS = Object.freeze([
 // the server accepts at most 100 files and 10 languages per translation request,
 // smaller file chunks keep the requests short and show the progress more often
 const TRANSLATE_FILES_CHUNK = 10
-const TRANSLATE_LANGS_CHUNK = 10
+const TRANSLATE_LANGS_CHUNK = 5
 
 export default {
   extends: listBase,

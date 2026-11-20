@@ -318,7 +318,7 @@ class SyncTest extends CoreTestAbstract
                 'meta-tags' => ['type' => 'meta-tags', 'data' => ['description' => 'About us', 'keywords' => 'cms'], 'files' => []],
                 'canonical' => ['type' => 'canonical', 'data' => ['url' => 'https://example.com/about'], 'files' => []],
             ],
-            'config' => ['website-title' => ['type' => 'website-title', 'data' => ['title' => 'My site'], 'files' => []]],
+            'config' => ['website' => ['type' => 'website', 'data' => ['title' => 'My site'], 'files' => []]],
             'theme' => 'cms',
         ] );
 
@@ -326,12 +326,12 @@ class SyncTest extends CoreTestAbstract
 
         $this->assertEquals( '[de] About us', $de->latest->aux->meta->{'meta-tags'}->data->description );
         $this->assertObjectNotHasProperty( 'canonical', $de->latest->aux->meta );
-        $this->assertEquals( 'My site', $de->latest->aux->config->{'website-title'}->data->title );
+        $this->assertEquals( 'My site', $de->latest->aux->config->{'website'}->data->title );
 
         // the translation uses another theme and keeps it with "Ignore changes"
         $this->savePage( $page->id, ['theme' => 'other'], 'de' );
         $this->savePage( $page->id, ['theme' => 'new', 'config' => [
-            'website-title' => ['type' => 'website-title', 'data' => ['title' => 'New title'], 'files' => []],
+            'website' => ['type' => 'website', 'data' => ['title' => 'New title'], 'files' => []],
         ]] );
         Pages::publishMany( [$page->id], $this->user );
 
@@ -351,6 +351,27 @@ class SyncTest extends CoreTestAbstract
         $this->assertEquals( 'other', $de->latest->data->theme );
         $this->assertEquals( '[de] Renamed', $de->latest->data->name );
         $this->assertEquals( [['Renamed']], $this->sent );
+    }
+
+
+    public function testTranslateKeepsConfigWithoutPermission()
+    {
+        $config = fn( string $title ) => ['website' => ['type' => 'website', 'data' => ['title' => $title], 'files' => []]];
+        $page = $this->page( null, ['config' => $config( 'My site' )] );
+        Variants::translate( $page->id, 'de', $this->user, $this->translator() );
+
+        $this->savePage( $page->id, ['name' => 'Renamed', 'config' => $config( 'New title' )] );
+
+        $user = new \App\Models\User( [
+            'name' => 'Translator',
+            'email' => 'translator@testbench',
+            'password' => 'secret',
+            'cmsperms' => array_values( array_diff( \Aimeos\Cms\Permission::all(), ['page:config'] ) ),
+        ] );
+        $de = Variants::translate( $page->id, 'de', $user, $this->translator() );
+
+        $this->assertEquals( '[de] Renamed', $de->latest->data->name );
+        $this->assertEquals( 'My site', $de->latest->aux->config->{'website'}->data->title );
     }
 
 
@@ -520,18 +541,12 @@ class SyncTest extends CoreTestAbstract
     protected function page( ?array $content = null, array $input = [] ) : PageView
     {
         return Pages::add( $input + [
-            'lang' => 'en', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
+            'lang' => 'en', 'domain' => '', 'name' => 'Name', 'title' => 'Title', 'path' => 'var-' . substr( md5( uniqid() ), 0, 8 ),
             'content' => $content ?? [
                 ['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']],
                 ['id' => 'el2', 'type' => 'heading', 'data' => ['title' => 'Heading', 'level' => 2]],
             ],
         ], $this->user, parent: $this->root()->id );
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 
 

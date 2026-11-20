@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Concerns\Tenants;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Aimeos\Cms\DB;
@@ -19,25 +20,46 @@ use Aimeos\Cms\Models\Version;
 
 class Publish extends Command
 {
+    use Tenants;
+
     /**
      * Command name
      */
-    protected $signature = 'cms:publish';
+    protected $signature = 'cms:publish
+        {--tenant= : Only publish the versions of this tenant, use --tenant= for the default (empty) tenant}';
 
     /**
      * Command description
      */
     protected $description = 'Publish scheduled CMS versions';
 
+    /**
+     * Number of scheduled versions loaded at once
+     */
+    private const BATCH = 100;
+
 
     /**
      * Execute command
      */
-    public function handle(): void
+    public function handle(): int
+    {
+        $at = now();
+        $tables = ['cms_pages', 'cms_elements', 'cms_files'];
+
+        return $this->eachTenant( $tables, fn() => $this->tenant( $at ) ) ? self::SUCCESS : self::FAILURE;
+    }
+
+
+    /**
+     * Publishes the scheduled versions of the current tenant.
+     *
+     * @return bool TRUE if all due versions were published, FALSE if at least one failed
+     */
+    protected function tenant( \DateTimeInterface $at ) : bool
     {
         $last = null;
         $failed = [];
-        $at = now();
 
         do
         {
@@ -50,14 +72,17 @@ class Publish extends Command
             $candidates = $query->orderByDesc( 'publish_at' )
                 ->orderByDesc( 'created_at' )
                 ->orderByDesc( 'id' )
-                ->limit( 100 )
+                ->limit( self::BATCH )
                 ->get();
 
             if( !$candidates->isEmpty() ) {
                 $this->publish( $this->versions( $candidates, $at, $failed ), $at, $failed );
             }
         }
-        while( $last = $candidates->last() );
+        // a smaller batch is the last one, publishing never adds older due versions
+        while( $candidates->count() === self::BATCH && $last = $candidates->last() );
+
+        return $failed === [];
     }
 
 
@@ -121,7 +146,6 @@ class Publish extends Command
         {
             // no retries: apply() marks the version as published in memory
             DB::connection()->transaction( function() use ( $at, $id, $model, $publication, $type, $version ) {
-                $publication->prepare( collect( [$version] ) );
                 $publication->apply( $model, $version );
 
                 Version::due( $at )->older( $version )

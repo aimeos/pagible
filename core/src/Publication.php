@@ -21,7 +21,6 @@ use Aimeos\Cms\Resource\Support\Langs;
 use Aimeos\Cms\Resource\Support\PageRows;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Query\Builder;
 
 
 /**
@@ -75,7 +74,7 @@ final class Publication
 
 
     /**
-     * Applies a prepared version and records its publication effects.
+     * Prepares and applies a version and records its publication effects.
      */
     public function apply( Base $model, Version $version ) : void
     {
@@ -83,19 +82,9 @@ final class Publication
             return;
         }
 
-        $moved = self::moved( $model );
-
-        $model->stage( $version );
-        $model instanceof PageView ? PageRows::save( $model ) : $model->save();
-
-        $version->published = true;
-        $version->save();
-
-        $this->track( $model, $version );
-
-        if( $moved ) {
-            $moved();
-        }
+        $this->prepare( collect( [$version] ) );
+        $this->applyAll( [[$model, $version]] );
+        $this->publishVersions();
     }
 
 
@@ -113,13 +102,13 @@ final class Publication
         // translations whose source changed need an update
         Sync::markStale( PageRows::views( $this->models[PageView::class] ?? [] ) );
 
-        foreach( $this->models as $model => $items ) {
-            // only the published variants of pages change
-            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->getScoutKey(), array_values( $items ) ), keys: true );
-        }
+        foreach( $this->models as $model => $items )
+        {
+            $list = array_values( $items );
 
-        foreach( $this->models as $model => $items ) {
-            Base::announceMany( collect( array_values( $items ) ), ContentAction::Published, $editor ?? '', [
+            // only the published variants of pages change
+            Scout::index( $model, array_map( fn( Base $item ) => (string) $item->getScoutKey(), $list ), keys: true );
+            Base::announceMany( collect( $list ), Action::Published, $editor ?? '', [
                 'published' => true,
                 'publish_at' => null,
             ], projected: $this->projected[$model] ?? [] );
@@ -164,7 +153,6 @@ final class Publication
 
         File::locked( fn() =>
             Scout::mute( Version::TYPES, function() use ( $model, $version ) {
-                $this->prepare( collect( [$version] ) );
                 $this->apply( $model, $version );
             } ),
         );
@@ -242,7 +230,7 @@ final class Publication
         if( !$at ) {
             $publication->flush( $editor );
         } else {
-            Base::announceMany( $pending, ContentAction::Published, $editor, [
+            Base::announceMany( $pending, Action::Published, $editor, [
                 'published' => false,
                 'publish_at' => $at,
             ] );
@@ -261,20 +249,30 @@ final class Publication
     private function applyAll( array $items ) : void
     {
         $groups = [];
+        $langs = [];
+        $paths = [];
         $sources = [];
 
         foreach( $items as [$model, $version] )
         {
-            $moved = self::moved( $model );
+            // the previous URL of a page is invalidated if it changed
+            if( $model instanceof PageView ) {
+                $paths[(string) $model->domain][] = (string) $model->path;
+            }
 
             $model->stage( $version );
             $columns = array_keys( $model->getDirty() );
 
-            // the source language follows the language of the source variant
-            if( $model instanceof PageView && in_array( 'lang', $columns, true )
-                && $model->getRawOriginal( 'lang' ) === $model->getRawOriginal( 'source' )
-            ) {
-                $sources[] = $model;
+            if( $model instanceof PageView && in_array( 'lang', $columns, true ) )
+            {
+                // the source language follows the language of the source variant
+                if( $model->getRawOriginal( 'lang' ) === $model->getRawOriginal( 'source' ) ) {
+                    $sources[] = $model;
+                }
+
+                // the other variants are listed for the languages of the old and new fallback chains
+                $langs[(string) $model->id][] = (string) $model->getRawOriginal( 'lang' );
+                $langs[(string) $model->id][] = (string) $model->lang;
             }
 
             if( $update = self::dirtyRow( $model, $columns ) )
@@ -292,10 +290,13 @@ final class Publication
 
             $this->track( $model, $version );
 
-            if( $moved ) {
-                $moved();
+            // current route of the page
+            if( $model instanceof PageView ) {
+                $paths[(string) $model->domain][] = (string) $model->path;
             }
         }
+
+        Invalidation::routes( $paths );
 
         foreach( $groups as $group ) {
             DB::updateRows( $group['table'], $group['rows'], $group['columns'] );
@@ -307,27 +308,13 @@ final class Publication
             $page->setAttribute( 'source', $page->lang );
         }
 
+        if( $langs ) {
+            Scout::variants( array_map( strval( ... ), array_keys( $langs ) ), array_unique( array_merge( ...array_values( $langs ) ) ) );
+        }
+
         foreach( $items as [$model, $_] ) {
             $model->syncChanges()->syncOriginal();
         }
-    }
-
-
-    /**
-     * Returns the invalidation of the previous URL used after the model has been published.
-     *
-     * @return \Closure|null Invalidates the URL of the page if it changed or NULL for other models
-     */
-    private static function moved( Base $model ) : ?\Closure
-    {
-        if( !$model instanceof PageView ) {
-            return null;
-        }
-
-        $domain = (string) $model->domain;
-        $path = (string) $model->path;
-
-        return fn() => Invalidation::moved( $model, $domain, $path );
     }
 
 
@@ -339,20 +326,18 @@ final class Publication
      */
     private static function dirtyRow( Base $model, array $columns ) : ?array
     {
-        $updated = $model->getUpdatedAtColumn();
+        if( !$columns ) {
+            return null;
+        }
 
-        if( $columns && $model->usesTimestamps() && $updated !== null )
+        if( $model->usesTimestamps() && ( $updated = $model->getUpdatedAtColumn() ) !== null )
         {
             $model->setUpdatedAt( $model->freshTimestamp() );
             $columns[] = $updated;
         }
 
-        $columns = array_values( array_unique( $columns ) );
+        $columns = array_unique( $columns );
         sort( $columns, SORT_STRING );
-
-        if( !$columns ) {
-            return null;
-        }
 
         $attributes = $model->getAttributes();
         $row = ['id' => (string) $model->id];
@@ -440,7 +425,14 @@ final class Publication
             $query->language( $lang );
         }
 
-        $query->select( $compact ? ["{$table}.id", "{$table}.latest_id", "{$table}.lang"] : ["{$table}.*"] )
+        $columns = ["{$table}.id", "{$table}.latest_id", "{$table}.lang"];
+
+        // scheduled page variants are reindexed by their search key
+        if( $instance instanceof PageView ) {
+            $columns[] = "{$table}.variant_id";
+        }
+
+        $query->select( $compact ? $columns : ["{$table}.*"] )
             ->leftJoin( 'cms_versions AS cms_latest', function( $join ) use ( $table ) {
                 $join->on( "{$table}.latest_id", '=', 'cms_latest.id' )
                     ->where( 'cms_latest.tenant_id', Tenancy::value() );
@@ -451,7 +443,15 @@ final class Publication
             $query->addSelect( "cms_latest.{$column} AS pub_{$column}" );
         }
 
-        $query->addSelect( self::flags( $instance, $compact ) );
+        if( !$compact && $instance instanceof PageView )
+        {
+            $query->addSelect( ['access_count' => DB::connection()->table( 'cms_page_access' )
+                ->selectRaw( 'count(*)' )
+                ->whereColumn( 'page_id', "{$table}.id" )
+                ->where( 'tenant_id', Tenancy::value() )] );
+        }
+
+        $query->addSelect( PublishReferences::projections( $instance, $compact, 'cms_latest.id' ) );
 
         $items = $query->get();
 
@@ -460,27 +460,6 @@ final class Publication
         }
 
         return $items;
-    }
-
-
-    /**
-     * Returns the subqueries projecting the presence of active and target pivot rows.
-     *
-     * @return array<string, Builder> Subqueries by alias
-     */
-    private static function flags( Base $instance, bool $compact ) : array
-    {
-        $selects = [];
-
-        if( !$compact && $instance instanceof PageView )
-        {
-            $selects['access_count'] = DB::connection()->table( 'cms_page_access' )
-                ->selectRaw( 'count(*)' )
-                ->whereColumn( 'page_id', "{$instance->getTable()}.id" )
-                ->where( 'tenant_id', Tenancy::value() );
-        }
-
-        return $selects + PublishReferences::projections( $instance, $compact, 'cms_latest.id' );
     }
 
 
@@ -678,14 +657,14 @@ final class Publication
     private function schedule( Collection $items, string $at, string $editor ) : void
     {
         $rows = [];
+        $keys = [];
         $versions = [];
 
+        // only unpublished latest versions are passed by publishItems()
         foreach( $items as $item )
         {
-            if( !( $version = $item->latest ) || $version->published ) {
-                continue;
-            }
-
+            /** @var Version $version */
+            $version = $item->latest;
             $data = $version->data;
             $data->scheduled = 1;
             $version->data = $data;
@@ -700,12 +679,18 @@ final class Publication
                 'publish_at' => $attributes['publish_at'],
             ];
             $versions[] = $version;
+            $keys[$item::class][] = (string) $item->getScoutKey();
         }
 
         DB::updateRows( ( new Version() )->getTable(), $rows, ['data', 'editor', 'publish_at'] );
 
         foreach( $versions as $version ) {
             $version->syncChanges()->syncOriginal();
+        }
+
+        // the search index contains the scheduled state of the drafts
+        foreach( $keys as $model => $list ) {
+            Scout::index( $model, $list, keys: true );
         }
     }
 
@@ -724,15 +709,8 @@ final class Publication
         {
             $projection += $model->route( $version ) + ['lang' => (string) ( $version->data->lang ?? $model->lang )];
 
-            $elements = [];
-
-            foreach( $this->references->elements( $versionId ) as $elementId ) {
-                if( isset( $this->elements[$elementId] ) ) {
-                    $elements[] = $this->elements[$elementId];
-                }
-            }
-
-            $items = ( new Element() )->newCollection( $elements );
+            $elements = array_map( fn( $elementId ) => $this->elements[$elementId] ?? null, $this->references->elements( $versionId ) );
+            $items = ( new Element() )->newCollection( array_values( array_filter( $elements ) ) );
             $model->setRelation( 'elements', $items );
             $version->setRelation( 'elements', $items );
         }

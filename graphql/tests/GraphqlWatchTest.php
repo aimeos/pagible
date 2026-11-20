@@ -19,6 +19,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class GraphqlWatchTest extends GraphqlTestAbstract
 {
+    use FakesWatched;
     use CmsWithMigrations;
     use RefreshDatabase;
 
@@ -49,7 +50,7 @@ class GraphqlWatchTest extends GraphqlTestAbstract
 
     public function testQueryDispatchesObserved() : void
     {
-        Event::fake( [Observed::class] );
+        $this->fakeWatched( Observed::class );
 
         $this->graphQL( '
             query { users { data { id } } }
@@ -66,7 +67,7 @@ class GraphqlWatchTest extends GraphqlTestAbstract
 
     public function testAuthMutationDispatchesObserved() : void
     {
-        Event::fake( [Observed::class] );
+        $this->fakeWatched( Observed::class );
 
         $this->graphQL( '
             mutation { cmsLogin(email: "editor@testbench", password: "secret") { id } }
@@ -82,6 +83,7 @@ class GraphqlWatchTest extends GraphqlTestAbstract
 
     public function testFailedGraphqlDispatchesUnsuccessfulObserved() : void
     {
+        Event::listen( Observed::class, fn() => null );
         Event::fake( [Authed::class, Observed::class] );
 
         $this->graphQL( '

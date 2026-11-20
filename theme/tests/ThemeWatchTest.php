@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class ThemeWatchTest extends ThemeTestAbstract
 {
+    use FakesWatched;
     use CmsWithMigrations;
     use DatabaseTruncation;
 
@@ -55,7 +56,6 @@ class ThemeWatchTest extends ThemeTestAbstract
         config( [
             'app.url' => 'http://localhost',
             'cms.multidomain' => false,
-            'cms.theme.watch' => false,
             'cms.watch.sample' => 1.0,
             'cms.watch.channel' => 'cms',
             'cms.theme.cache' => 'array',
@@ -84,8 +84,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testSearchDispatchesSearchedWhenWatchOn() : void
     {
-        config( ['cms.theme.watch' => true] );
-        Event::fake( [CmsSearch::class] );
+        $this->fakeWatched( CmsSearch::class );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
         ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );
@@ -102,7 +101,6 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testSearchDoesNotDispatchWhenWatchOff() : void
     {
-        config( ['cms.theme.watch' => false] );
         Event::fake( [CmsSearch::class] );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
@@ -114,7 +112,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testSearchDispatchesWithDurationForObserverWhenWatchOff() : void
     {
-        config( ['cms.watch.channel' => null, 'cms.theme.watch' => false] );
+        config( ['cms.watch.channel' => null] );
         Event::fake( [Observed::class] );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
@@ -132,9 +130,8 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testContactDispatchesContactedWhenWatchOn() : void
     {
-        config( ['cms.theme.watch' => true] );
         Mail::fake();
-        Event::fake( [CmsContact::class] );
+        $this->fakeWatched( CmsContact::class );
         RateLimiter::clear( 'cms-contact' );
 
         $this->post( route( 'cms.api.contact' ), [
@@ -149,7 +146,6 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testContactDoesNotDispatchWhenWatchOff() : void
     {
-        config( ['cms.theme.watch' => false] );
         Mail::fake();
         Event::fake( [CmsContact::class] );
         RateLimiter::clear( 'cms-contact' );
@@ -166,7 +162,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testContactDispatchesObservedWhenWatchOff() : void
     {
-        config( ['cms.theme.watch' => false, 'cms.watch.channel' => null] );
+        config( ['cms.watch.channel' => null] );
         Mail::fake();
         Event::fake( [Observed::class] );
         RateLimiter::clear( 'cms-contact' );
@@ -187,7 +183,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testPageRequestDispatchesForObserverWhenWatchOff() : void
     {
-        config( ['cms.theme.watch' => false, 'cms.watch.channel' => null, 'cms.watch.sample' => 0.0] );
+        config( ['cms.watch.channel' => null, 'cms.watch.sample' => 0.0] );
         Event::fake( [Observed::class] );
 
         $request = Request::create( '/blog', 'GET' );
@@ -206,7 +202,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testPageRequestDispatchesViewedOnCacheHit() : void
     {
-        config( ['cms.theme.watch' => true, 'cms.theme.cache' => 'array'] );
+        config( ['cms.theme.cache' => 'array'] );
         Event::fake( [Observed::class] );
 
         $page = PageView::where( 'path', 'blog' )->firstOrFail();
@@ -236,7 +232,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testAuthorizationHeaderBypassesPublicPageCache() : void
     {
-        config( ['cms.theme.watch' => false, 'cms.theme.cache' => 'array'] );
+        config( ['cms.theme.cache' => 'array'] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
             ->setExpires( now()->addMinutes( 5 ) ),
@@ -258,7 +254,6 @@ class ThemeWatchTest extends ThemeTestAbstract
             'app.url' => 'https://shop.example',
             'cms.multidomain' => false,
             'cms.theme.cache' => 'array',
-            'cms.theme.watch' => false,
         ] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
@@ -281,7 +276,6 @@ class ThemeWatchTest extends ThemeTestAbstract
             'app.url' => 'https://shop.example',
             'cms.multidomain' => false,
             'cms.theme.cache' => 'array',
-            'cms.theme.watch' => false,
         ] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
@@ -306,7 +300,6 @@ class ThemeWatchTest extends ThemeTestAbstract
             'app.url' => 'https://shop.example',
             'cms.multidomain' => false,
             'cms.theme.cache' => 'array',
-            'cms.theme.watch' => false,
         ] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
@@ -331,7 +324,6 @@ class ThemeWatchTest extends ThemeTestAbstract
             'app.url' => 'https://shop.example',
             'cms.multidomain' => false,
             'cms.theme.cache' => 'array',
-            'cms.theme.watch' => false,
         ] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
@@ -361,7 +353,6 @@ class ThemeWatchTest extends ThemeTestAbstract
             'app.url' => 'https://app.example:8443',
             'cms.multidomain' => true,
             'cms.theme.cache' => 'array',
-            'cms.theme.watch' => false,
         ] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
@@ -393,7 +384,6 @@ class ThemeWatchTest extends ThemeTestAbstract
             'app.url' => '',
             'cms.multidomain' => false,
             'cms.theme.cache' => 'array',
-            'cms.theme.watch' => false,
         ] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
@@ -414,7 +404,7 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testCustomIndicatorBypassesPublicPageCache() : void
     {
-        config( ['cms.theme.watch' => false, 'cms.theme.cache' => 'array'] );
+        config( ['cms.theme.cache' => 'array'] );
         PageCache::remember( fn() => ( new Response( 'cached-html', 200 ) )
             ->header( 'Cache-Control', 'public' )
             ->setExpires( now()->addMinutes( 5 ) ),
@@ -440,7 +430,6 @@ class ThemeWatchTest extends ThemeTestAbstract
 
     public function testPageRequestDispatchesViewedForNonSuccessStatus() : void
     {
-        config( ['cms.theme.watch' => true] );
         Event::fake( [Observed::class] );
 
         $request = Request::create( '/missing', 'GET' );
@@ -458,8 +447,8 @@ class ThemeWatchTest extends ThemeTestAbstract
     public function testSearchDispatchIsNotGatedBySampling() : void
     {
         // Consumers apply sampling, so the event fires regardless of the sample rate.
-        config( ['cms.theme.watch' => true, 'cms.watch.sample' => 0.0] );
-        Event::fake( [CmsSearch::class] );
+        config( ['cms.watch.sample' => 0.0] );
+        $this->fakeWatched( CmsSearch::class );
 
         $request = Request::create( '/cmsapi/search', 'GET', ['q' => 'welcome', 'locale' => 'en', 'size' => 10] );
         ( new \Aimeos\Cms\Controllers\SearchController() )->index( $request, 'mydomain.tld' );

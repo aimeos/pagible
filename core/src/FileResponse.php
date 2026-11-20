@@ -75,8 +75,9 @@ final class FileResponse
      */
     private static function headers( string $name, string $mime ) : array
     {
-        $inline = self::inline( $mime );
-        $filename = self::filename( $name );
+        $inline = str_starts_with( $mime, 'image/' ) || str_starts_with( $mime, 'audio/' ) || str_starts_with( $mime, 'video/' );
+        // safe basename without control characters
+        $filename = trim( (string) preg_replace( '/[\x00-\x1F\x7F]/', '', basename( str_replace( '\\', '/', $name ) ) ) ) ?: 'download';
         $fallback = preg_match( '/^[\x20-\x7E]+$/', $filename ) && !str_contains( $filename, '%' )
             ? $filename : 'download';
 
@@ -107,9 +108,16 @@ final class FileResponse
      */
     private static function send( FilesystemAdapter $storage, string $path, array $headers, ?int $expires ) : Response
     {
-        $adapter = $storage->getAdapter();
+        if( $storage->getAdapter() instanceof LocalFilesystemAdapter )
+        {
+            if( !is_file( $local = $storage->path( $path ) ) ) {
+                abort( 404 );
+            }
 
-        if( !( $adapter instanceof LocalFilesystemAdapter ) && $storage->providesTemporaryUrls() )
+            return response()->file( $local, $headers )->setPrivate();
+        }
+
+        if( $storage->providesTemporaryUrls() )
         {
             return redirect()->away( $storage->temporaryUrl(
                 $path,
@@ -120,14 +128,6 @@ final class FileResponse
                     'ResponseContentType' => $headers['Content-Type'],
                 ],
             ) )->withHeaders( $headers )->setPrivate();
-        }
-
-        if( $adapter instanceof LocalFilesystemAdapter ) {
-            if( !is_file( $local = $storage->path( $path ) ) ) {
-                abort( 404 );
-            }
-
-            return response()->file( $local, $headers )->setPrivate();
         }
 
         if( !$storage->exists( $path ) ) {
@@ -156,7 +156,7 @@ final class FileResponse
             $params['variant'] = (int) $variant;
         }
 
-        if( config( 'cms.multidomain' ) ) {
+        if( Utils::multidomain() ) {
             $params['domain'] = (string) $page->domain;
         }
 
@@ -187,32 +187,6 @@ final class FileResponse
         return $expires === null
             ? $expiration
             : $expiration->setTimestamp( min( $expiration->getTimestamp(), $expires ) );
-    }
-
-
-    /**
-     * Returns a safe basename for a Content-Disposition header.
-     *
-     * @param string $name Stored original name or preview path
-     * @return string Sanitized filename, or "download" when no usable name remains
-     */
-    private static function filename( string $name ) : string
-    {
-        $name = basename( str_replace( '\\', '/', $name ) );
-        $name = trim( (string) preg_replace( '/[\x00-\x1F\x7F]/', '', $name ) );
-
-        return $name ?: 'download';
-    }
-
-
-    /**
-     * Whether the MIME type is safe to render in the browser.
-     */
-    private static function inline( string $mime ) : bool
-    {
-        return str_starts_with( $mime, 'image/' )
-            || str_starts_with( $mime, 'audio/' )
-            || str_starts_with( $mime, 'video/' );
     }
 
 

@@ -31,7 +31,7 @@ class PageInvalidatedTest extends CoreTestAbstract
 
     public function testDispatchesSynchronouslyAfterCommit(): void
     {
-        $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $connection = \Aimeos\Cms\DB::connection();
         $received = null;
 
         Event::listen( PageInvalidated::class, function( PageInvalidated $event ) use ( &$received ) {
@@ -57,7 +57,7 @@ class PageInvalidatedTest extends CoreTestAbstract
 
     public function testSkipsRolledBackTransactions(): void
     {
-        $connection = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $connection = \Aimeos\Cms\DB::connection();
         $received = false;
 
         Event::listen( PageInvalidated::class, function() use ( &$received ) {

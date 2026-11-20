@@ -10,6 +10,7 @@ namespace Aimeos\Cms\Tools;
 use Aimeos\Cms\Models\Base;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
+use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Utils;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -138,7 +139,7 @@ class Presenter
             'type' => $data['type'] ?? '',
             'theme' => $data['theme'] ?? '',
             'status' => $data['status'] ?? 0,
-            'cache' => $data['cache'] ?? 0,
+            'cache' => $data['cache'] ?? PageVariant::DEFAULTS['cache'],
         ];
 
         if( $full )

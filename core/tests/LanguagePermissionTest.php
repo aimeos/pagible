@@ -271,6 +271,19 @@ class LanguagePermissionTest extends CoreTestAbstract
     }
 
 
+    public function testAddPageChangedParentDomain()
+    {
+        $root = $this->root();
+        $root->latest->forceFill( ['data' => ['domain' => 'draft.example.com'] + (array) $root->latest->data] )->saveQuietly();
+
+        $page = Pages::add( [
+            'lang' => 'de', 'name' => 'Seite', 'title' => 'Seite', 'path' => 'seite-test',
+        ], $this->actor( ['de'] ), parent: $root->id );
+
+        $this->assertEquals( (string) $root->domain, (string) $page->domain );
+    }
+
+
     public function testAddPageDomain()
     {
         $this->expectException( PermissionException::class );
@@ -465,11 +478,5 @@ class LanguagePermissionTest extends CoreTestAbstract
             'lang' => 'en', 'name' => 'Test', 'title' => 'Test', 'path' => 'lang-' . \Illuminate\Support\Str::random( 12 ),
             'content' => [['id' => 'el1', 'type' => 'text', 'data' => ['text' => 'Hello']]],
         ], $this->user, parent: $this->root()->id );
-    }
-
-
-    protected function root() : PageView
-    {
-        return PageView::where( 'tag', 'root' )->firstOrFail();
     }
 }

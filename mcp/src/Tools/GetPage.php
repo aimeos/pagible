@@ -45,7 +45,7 @@ class GetPage extends Tool
 
         $canAccess = Permission::can( 'page:access', $request->user() );
         $with = [
-            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux', 'publish_at', 'created_at'] ),
+            'latest' => fn( $q ) => $q->select( Version::columns( 'aux', 'created_at' ) ),
         ];
 
         if( $canAccess ) {
@@ -74,7 +74,8 @@ class GetPage extends Tool
             $data['access'] = $page->accessValues();
         }
 
-        $data['variants'] = $page->variantList();
+        $id = (string) $page->id;
+        $data['variants'] = PageView::variantLists( [$id => (string) $page->source] )[$id];
 
         return Response::structured( $data );
     }

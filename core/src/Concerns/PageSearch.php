@@ -100,29 +100,16 @@ trait PageSearch
             return [];
         }
 
-        $draft = '';
         $version = $this->latest;
         $data = $version?->data;
 
-        if( $version )
-        {
-            $draft = mb_strtolower( trim(
-                ( $data->path ?? '' ) . "\n"
-                . ( $data->to ?? '' ) . "\n"
-                . (string) $version
-            ) );
-        }
+        $draft = $version
+            ? mb_strtolower( trim( ( $data->path ?? '' ) . "\n" . ( $data->to ?? '' ) . "\n" . (string) $version ) )
+            : '';
 
-        $content = '';
-
-        if( !$this->trashed() && $this->getAttribute( 'variant_deleted_at' ) === null )
-        {
-            $content = mb_strtolower( trim(
-                $this->path . "\n"
-                . $this->to . "\n"
-                . (string) $this
-            ) );
-        }
+        $content = !$this->trashed() && $this->getAttribute( 'variant_deleted_at' ) === null
+            ? mb_strtolower( trim( $this->path . "\n" . $this->to . "\n" . (string) $this ) )
+            : '';
 
         return [
             'draft' => $draft,
@@ -144,7 +131,7 @@ trait PageSearch
             'theme' => $data->theme ?? '',
             'type' => $data->type ?? '',
             'published' => (bool) ( $version->published ?? false ),
-            'scheduled' => (int) ( $data->scheduled ?? 0 ),
+            'scheduled' => (int) ( $version?->publish_at !== null ),
 
             // frontend access hint for fast filtering
             'restricted' => $this->restricted(),
@@ -207,7 +194,7 @@ trait PageSearch
 
         return $query->select( [...self::SELECT_COLUMNS, 'variant_deleted_at', 'stale'] )->withCount( 'access' )->with( [
             'elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
-            'latest' => fn( $q ) => $q->select( [...Version::SELECT_COLUMNS, 'aux'] ),
+            'latest' => fn( $q ) => $q->select( Version::columns( 'aux' ) ),
             'latest.elements' => fn( $q ) => $q->select( Element::SELECT_COLUMNS ),
         ] )->when( Scout::usesExternalSearch(), fn( $q ) => $q->with( 'languages' ) );
     }

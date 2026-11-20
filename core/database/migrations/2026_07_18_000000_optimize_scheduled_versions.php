@@ -13,7 +13,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $schema = Schema::connection( config( 'cms.db', 'sqlite' ) );
+        $schema = Schema::connection( \Aimeos\Cms\DB::name() );
 
         if( !$schema->hasIndex( 'cms_versions', 'cms_versions_scheduled_index' ) ) {
             $schema->table( 'cms_versions', function( Blueprint $table ) {

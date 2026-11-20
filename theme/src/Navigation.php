@@ -9,6 +9,8 @@ namespace Aimeos\Cms;
 use Aimeos\Cms\Models\Nav;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
+use Aimeos\Cms\Query\NavState;
+use Aimeos\Cms\Query\NavTree;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Collection;
 
@@ -43,7 +45,10 @@ final class Navigation
      */
     public function ancestors() : Collection
     {
-        return $this->ancestors ??= $this->visible( $this->loaded() ?? $this->query()->whereAncestorOf( $this->page )->defaultOrder()->get() );
+        return $this->ancestors ??= collect( $this->loaded() ?? $this->query()->whereAncestorOf( $this->page )->defaultOrder()->get() )
+            ->whereInstanceOf( PageView::class )
+            ->filter( fn( PageView $page ) => $this->state( $page ) === NavState::Show )
+            ->values();
     }
 
 
@@ -74,10 +79,14 @@ final class Navigation
                 ( $start->getDepth() ?? 0 ) + config( 'cms.navdepth', 2 ),
             ) )
             ->orderBy( $lft )
-            ->get()
-            ->toTree( $start );
+            ->get();
 
-        return $this->items[$level] = $this->visible( $items, true );
+        // the nested set collection isn't generic, so the pages are narrowed to PageView for pruning and the result
+        $pages = collect( $items->all() )->whereInstanceOf( PageView::class );
+        $shown = NavTree::prune( $pages, fn( PageView $page ) => $this->state( $page ), [$start->getKey() => $start->getKey()] );
+        $tree = $items->make( $shown )->toTree( $start );
+
+        return $this->items[$level] = collect( $tree->all() )->whereInstanceOf( PageView::class )->values();
     }
 
 
@@ -113,7 +122,7 @@ final class Navigation
         $query = Nav::select( Nav::SELECT_COLUMNS )->access( $this->user );
         $lang = (string) $this->page->lang;
 
-        $editor = Permission::can( 'page:view', $this->user );
+        $editor = Permission::previews( $this->user );
 
         $editor && $query->with( ['latest' => fn( $q ) => $q->select( 'id', 'tenant_id', 'data' )] );
 
@@ -121,7 +130,7 @@ final class Navigation
         {
             // translations without visible variant are pruned in "hide" mode, so only the variants of the language are fetched (indexable)
             $query->language( $lang );
-            $editor || $query->where( fn( $q ) => $q->where( $q->qualifyColumn( 'status' ), '<>', 0 )
+            $editor || $query->where( fn( $q ) => $q->whereIn( $q->qualifyColumn( 'status' ), PageStatus::reachable() )
                 ->orWhereColumn( $q->qualifyColumn( 'lang' ), $q->qualifyColumn( 'source' ) ) );
         }
         elseif( $lang !== '' )
@@ -137,13 +146,13 @@ final class Navigation
      * Returns the accessible ancestors already loaded with their access decisions for visitors.
      *
      * The ancestors of the page are localized like the navigation for visitors, so pages without
-     * visible variant in the current language are left out by visible() in the same way.
+     * visible variant in the current language are left out by state() in the same way.
      *
      * @return Collection<int, PageView>|null Accessible ancestors or NULL if not loaded with access decisions
      */
     private function loaded() : ?Collection
     {
-        if( !$this->page->relationLoaded( 'ancestors' ) || Permission::can( 'page:view', $this->user ) ) {
+        if( !$this->page->relationLoaded( 'ancestors' ) || Permission::previews( $this->user ) ) {
             return null;
         }
 
@@ -158,77 +167,35 @@ final class Navigation
 
 
     /**
-     * Tests if the page must be left out because it has no visible variant in the current language.
+     * Returns if the page is shown in the navigation.
      *
-     * Pages in their source language are shown instead if the "source" fallback is configured
-     * and the source variant is visible. Otherwise, the page is hidden with its sub-pages.
+     * Editors see the status of the latest version. Disabled pages are skipped and their
+     * sub-pages take their place, hidden pages are left out including their sub-pages. Pages
+     * in their source language are shown instead of a missing variant in the current language
+     * only if the "source" fallback is configured, otherwise they are left out with their sub-pages.
      *
      * @param PageView $page Navigation item in the current or its source language
-     * @param int $status Status of the navigation item
-     * @return bool TRUE if the page and its sub-pages are hidden, FALSE if not
+     * @return NavState Navigation state of the page
      */
-    private function fallback( PageView $page, int $status ) : bool
+    private function state( PageView $page ) : NavState
     {
+        $status = $page->status;
+
+        if( $page->relationLoaded( 'latest' ) ) {
+            $status = $page->getRelation( 'latest' )?->data->status ?? $status;
+        }
+
         $lang = (string) $this->page->lang;
 
-        if( $lang === '' || $page->lang === $lang ) {
-            return false;
+        // source variant of a page without visible variant in the current language
+        if( $lang !== '' && $page->lang !== $lang && ( !PageView::fallbackToSource() || (int) $status !== PageStatus::Enabled->value ) ) {
+            return NavState::Hide;
         }
 
-        return !PageView::fallbackToSource() || $status !== 1;
-    }
-
-
-    /**
-     * Filters unpublished nodes and recursively prunes hidden branches.
-     *
-     * @param iterable<int, mixed> $items
-     * @return Collection<int, PageView>
-     */
-    private function visible( iterable $items, bool $nested = false ) : Collection
-    {
-        $result = [];
-
-        foreach( $items as $page )
-        {
-            if( !$page instanceof PageView ) {
-                continue;
-            }
-
-            $status = $page->status;
-
-            if( $page->relationLoaded( 'latest' ) ) {
-                $status = $page->getRelation( 'latest' )?->data->status ?? $status;
-            }
-
-            if( (int) $status === 2 ) {
-                continue;
-            }
-
-            // source variant of a page without visible variant in the current language
-            if( $this->fallback( $page, (int) $status ) ) {
-                continue;
-            }
-
-            $children = collect();
-
-            if( $nested && $page->relationLoaded( 'children' ) ) {
-                $children = $this->visible( $page->getRelation( 'children' ), true );
-                $page->setRelation( 'children', $children );
-            }
-
-            if( (int) $status !== 1 )
-            {
-                foreach( $children as $child ) {
-                    $result[] = $child;
-                }
-
-                continue;
-            }
-
-            $result[] = $page;
-        }
-
-        return collect( $result );
+        return match( PageStatus::tryFrom( (int) $status ) ) {
+            PageStatus::Enabled => NavState::Show,
+            PageStatus::Hidden => NavState::Hide,
+            default => NavState::Skip,
+        };
     }
 }

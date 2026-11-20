@@ -8,7 +8,7 @@
 namespace Aimeos\Cms\Concerns;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Aimeos\Cms\DB;
 use Illuminate\Support\Str;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
@@ -33,11 +33,9 @@ trait Benchmarks
      */
     protected function benchmark( string $name, Closure $fn, bool $readOnly = false, int $tries = 100, bool $searchSync = false ): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
+        DB::connection()->disableQueryLog();
 
-        DB::connection( $conn )->disableQueryLog();
-
-        $run = function() use ( $fn, $readOnly, $conn ) {
+        $run = function() use ( $fn, $readOnly ) {
 
             if( $readOnly )
             {
@@ -47,14 +45,14 @@ trait Benchmarks
             }
             else
             {
-                DB::connection( $conn )->beginTransaction();
+                DB::connection()->beginTransaction();
 
                 try {
                     $start = hrtime( true );
                     $fn();
                     $elapsed = hrtime( true ) - $start;
                 } finally {
-                    DB::connection( $conn )->rollBack();
+                    DB::connection()->rollBack();
                 }
             }
 
@@ -72,7 +70,7 @@ trait Benchmarks
         $peaks = [];
 
         if( $verbose ) {
-            DB::connection( $conn )->enableQueryLog();
+            DB::connection()->enableQueryLog();
         }
 
         gc_disable();
@@ -88,8 +86,8 @@ trait Benchmarks
 
             if( $verbose )
             {
-                $log = DB::connection( $conn )->getQueryLog();
-                DB::connection( $conn )->flushQueryLog();
+                $log = DB::connection()->getQueryLog();
+                DB::connection()->flushQueryLog();
 
                 foreach( $log as $q ) {
                     $queryTimes[$q['query']]['times'][] = $q['time'] * 1_000_000;
@@ -101,7 +99,7 @@ trait Benchmarks
         gc_enable();
 
         if( $verbose ) {
-            DB::connection( $conn )->disableQueryLog();
+            DB::connection()->disableQueryLog();
         }
 
         $stats = $this->stats( $durations, $peaks );
@@ -139,7 +137,7 @@ trait Benchmarks
 
                 if( $this->output->isDebug() )
                 {
-                    foreach( $this->explain( $sql, $entry['bindings'], $conn ) as $line ) {
+                    foreach( $this->explain( $sql, $entry['bindings'] ) as $line ) {
                         $this->line( '       ' . $line );
                     }
                 }
@@ -176,12 +174,11 @@ trait Benchmarks
      *
      * @param string $sql SQL query
      * @param array<mixed> $bindings Query bindings
-     * @param string $conn Connection name
      * @return array<int, string> Plan lines
      */
-    protected function explain( string $sql, array $bindings, string $conn ): array
+    protected function explain( string $sql, array $bindings ): array
     {
-        $driver = DB::connection( $conn )->getDriverName();
+        $driver = DB::connection()->getDriverName();
 
         try
         {
@@ -190,7 +187,7 @@ trait Benchmarks
             }
 
             $prefix = $driver === 'sqlite' ? 'EXPLAIN QUERY PLAN ' : 'EXPLAIN ';
-            $rows = DB::connection( $conn )->select( $prefix . $sql, $bindings );
+            $rows = DB::connection()->select( $prefix . $sql, $bindings );
 
             // SQLite returns the plan step in the "detail" column, other drivers in multiple columns
             return array_map( fn( $row ) => ( (array) $row )['detail'] ?? implode( ' | ', (array) $row ), $rows );
@@ -326,9 +323,7 @@ trait Benchmarks
      */
     protected function sandbox( Closure $fn ): void
     {
-        $conn = config( 'cms.db', 'sqlite' );
-
-        DB::connection( $conn )->beginTransaction();
+        DB::connection()->beginTransaction();
 
         try
         {
@@ -341,7 +336,7 @@ trait Benchmarks
         {
             Auth::logout();
             Auth::guard()->forgetUser();
-            DB::connection( $conn )->rollBack();
+            DB::connection()->rollBack();
         }
     }
 
@@ -372,7 +367,7 @@ trait Benchmarks
         $domain = (string) ( $this->option( 'domain' ) ?: '' );
         $tenant = (string) $this->option( 'tenant' );
         $tries = (int) $this->option( 'tries' );
-        $unseed = (bool) $this->option( 'unseed' );
+        $unseed = (bool) ( $this->input->getOptions()['unseed'] ?? false ); // not all commands have the option
 
         if( empty( $tenant ) )
         {
