@@ -733,7 +733,7 @@ class ImporterVersionTest extends ImportTestAbstract
 
         $file = Files::reference( 'image/png', 'Old a', 'https://pre.example/a.png', 'importer' );
         $first = Files::reference( 'image/png', 'First c', 'https://pre.example/c.png', 'importer' );
-        Files::reference( 'image/png', 'Second c', 'https://pre.example/c.png', 'importer' );
+        $second = Files::reference( 'image/png', 'Second c', 'https://pre.example/c.png', 'importer' );
         Files::reference( 'image/png', 'Other b', 'https://map.example/b.png', 'importer' );
 
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
@@ -753,7 +753,9 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertNotContains( $command->ids[1], [(string) $file->id, ''] );
         $this->assertSame( [(string) $file->id, 'created'], array_slice( $command->ids, 2 ) );
         $this->assertSame( 'New a', $file->fresh()?->name );
-        $this->assertSame( [(string) $first->id, null], $command->once );
+        // which of the files with the same path is used depends on the row order of the database
+        $this->assertContains( $command->once[0], [(string) $first->id, (string) $second->id] );
+        $this->assertNull( $command->once[1] );
     }
 
 
@@ -905,7 +907,7 @@ class ImporterVersionTest extends ImportTestAbstract
                 $this->editor = 'importer';
                 $count = 0;
                 DB::listen( function( $query ) use ( &$count ) {
-                    $count += (int) preg_match( '/"cms_page_view"."id" = \? and .* limit 1$/', strtr( $query->sql, ['`' => '"'] ) );
+                    $count += (int) preg_match( '/^select (top 1 )?.*"cms_page_view"."id" = \? and .*(?(1)|limit 1)$/s', strtr( $query->sql, ['`' => '"', '[' => '"', ']' => '"'] ) );
                 } );
 
                 foreach( ['fr' => 'a-propos', 'it' => 'chi-siamo'] as $lang => $slug ) {
@@ -1282,7 +1284,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertCount( 2, array_filter( $queries, fn( $sql ) => stripos( $sql, 'update "cms_files"' ) === 0 ) );
         $this->assertCount( 1, array_filter( $queries, fn( $sql ) => stripos( $sql, 'update "cms_elements"' ) === 0 ) );
         $this->assertSame( 'Renamed', $file->name );
-        $this->assertSame( $file->versions()->latest( 'id' )->value( 'id' ), $file->latest_id );
+        $this->assertSame( $file->versions()->value( 'id' ), $file->latest_id );
         $this->assertSame( 2, $file->versions()->where( 'published', true )->count() );
         $this->assertSame( $element->versions()->value( 'id' ), $element->latest_id );
         $this->assertSame( 'Footer', $element->data->text ?? null );
@@ -1326,6 +1328,15 @@ class ImporterVersionTest extends ImportTestAbstract
             'Joomla' => [JoomlaImport::class],
             'Statamic' => [StatamicImport::class],
         ], fn( $class ) => class_exists( $class[0] ) );
+    }
+
+
+    /**
+     * Returns a valid UUID which doesn't exist in the database.
+     */
+    protected function uuid( int $num ): string
+    {
+        return sprintf( '00000000-0000-7000-8000-%012d', $num );
     }
 
 
@@ -2306,9 +2317,9 @@ class ImporterVersionTest extends ImportTestAbstract
 
             return [$result, count( $db->getQueryLog() )];
         };
-        $missing = ( new PageView() )->newFromBuilder( ['id' => 'missing-0'] );
+        $missing = ( new PageView() )->newFromBuilder( ['id' => $this->uuid( 0 )] );
         $id = $page->id ?? '';
-        $ids = [$id, ...array_map( fn( $num ) => "missing-{$num}", range( 0, \Aimeos\Cms\DB::IN_SIZE ) )];
+        $ids = [$id, ...array_map( fn( $num ) => $this->uuid( $num ), range( 0, \Aimeos\Cms\DB::IN_SIZE ) )];
 
         // one query per chunk of page IDs
         $this->assertSame( [null, 2], $count( fn() => $command->prefetch( [...$ids, $id] ) ) );
