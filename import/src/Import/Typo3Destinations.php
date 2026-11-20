@@ -40,7 +40,7 @@ class Typo3Destinations
     public function find( object $t3Page, string $domain ): ?PageView
     {
         if( (int) ( $t3Page->pid ?? 0 ) === 0 || !empty( $t3Page->is_siteroot ) ) {
-            return Pages::find( ['tag' => 'root', 'domain' => $domain] );
+            return Pages::find( ['tag' => Pages::TAG_ROOT, 'domain' => $domain] );
         }
 
         $path = Typo3Urls::slug( $t3Page->slug ?? null );
@@ -59,7 +59,7 @@ class Typo3Destinations
     public function peek( object $t3Page, string $domain ): ?PageView
     {
         if( (int) ( $t3Page->pid ?? 0 ) === 0 || !empty( $t3Page->is_siteroot ) ) {
-            return PageView::withTrashed()->where( ['tag' => 'root', 'domain' => $domain] )->first();
+            return PageView::withTrashed()->where( ['tag' => Pages::TAG_ROOT, 'domain' => $domain] )->first();
         }
 
         $path = Typo3Urls::slug( $t3Page->slug ?? null );

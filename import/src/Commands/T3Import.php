@@ -7,9 +7,9 @@
 
 namespace Aimeos\Cms\Commands;
 
+use Aimeos\Cms\Commands;
 use Aimeos\Cms\Import\Database;
-use Aimeos\Cms\Import\Elements;
-use Aimeos\Cms\Import\Files;
+use Aimeos\Cms\Import\SharedElements;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Status;
 use Aimeos\Cms\Import\Typo3;
@@ -30,7 +30,7 @@ use Aimeos\Cms\DB as CmsDB;
 use Illuminate\Support\Facades\DB;
 
 
-class T3Import extends BaseImport
+class T3Import extends Commands
 {
     /**
      * Command name
@@ -200,7 +200,8 @@ class T3Import extends BaseImport
     {
         $this->shared = $this->failedFiles = [];
         $this->langUids = $this->languages->imported( $this->lang );
-        $this->files = new Typo3Files( $this->reader->filesByIdentifier( ... ), $this->fileBase, $this->importFile( ... ),
+        $this->files = new Typo3Files( $this->reader->filesByIdentifier( ... ), $this->fileBase,
+            fn( string $mime, string $name, string $path ) => $this->importFile( $mime, $name, $path, str_starts_with( $path, 'http' ) ),
             fn( string $path ) => $this->createdFileUrls->get( $path ), $this->knownFile( ... ) );
         $this->urls = new Typo3Urls( $pagesById, $this->translated );
         $this->typo3 = new Typo3(
@@ -399,7 +400,7 @@ class T3Import extends BaseImport
 
         // the shared elements of the record are stored together or not at all
         $elementIds = CmsDB::connection()->transaction( fn() => array_map(
-            fn( $position, $element ) => Elements::shared( $this->sharedElementName( $record, $position ), $lang, $element, $result['fileIds'] ?? [], $this->editor ),
+            fn( $position, $element ) => SharedElements::save( $this->sharedElementName( $record, $position ), $lang, $element, $result['fileIds'] ?? [], $this->editor ),
             array_keys( $result['elements'] ), $result['elements']
         ) );
         $references = array_map( fn( $id ) => ['type' => 'reference', 'refid' => $id, 'group' => 'main'], $elementIds );
@@ -454,43 +455,27 @@ class T3Import extends BaseImport
             'name' => ( $t3Page->nav_title ?? null ) ?: ( $t3Page->title ?? null ),
             'title' => ( $t3Page->seo_title ?? null ) ?: ( $t3Page->title ?? null ),
             'path' => $slug,
-            'tag' => !empty( $t3Page->is_siteroot ) ? 'root' : 'page',
+            'tag' => !empty( $t3Page->is_siteroot ) ? Pages::TAG_ROOT : Pages::TAG_PAGE,
             'domain' => $domain,
             'lang' => $this->lang,
             'to' => $to,
             'theme' => $this->theme,
-            'status' => !empty( $t3Page->hidden ) || $reason !== null ? 0 : ( !empty( $t3Page->nav_hide ) ? 2 : 1 ),
+            'status' => !empty( $t3Page->hidden ) || $reason !== null ? Pages::STATUS_DISABLED : ( !empty( $t3Page->nav_hide ) ? Pages::STATUS_HIDDEN : Pages::STATUS_PUBLISHED ),
             'editor' => $this->editor,
         ];
     }
 
 
     /**
-     * Creates a File record with a published version or returns the one created before by this import.
+     * Remembers the URL of the file created by importFile(), URLs of rolled back files are overwritten when the file is created again.
      *
-     * Unlike createFile(), existing files aren't looked up by path because downloaded files get a new one.
-     *
-     * @param bool $unknown TRUE if knownFile() has just returned no file for the path, so it isn't looked up again
+     * @param string $path Source URL or path of the file
+     * @param File $file Created file
      */
-    protected function importFile( string $mime, string $name, string $path, bool $unknown = false ): string
+    #[\Override]
+    protected function importedFile( string $path, File $file ): void
     {
-        if( !$unknown && ( $existing = $this->knownFile( $path ) ) ) {
-            return $existing;
-        }
-
-        // files used several times are only downloaded once if the download fails
-        $download = str_starts_with( $path, 'http' );
-        $file = $this->downloadOnce( $path, $download, fn() => CmsDB::connection()->transaction(
-            fn() => Files::create( $mime, $name, $path, $this->editor, $download, $download ? $this->downloaded( $path ) : null )
-        ) );
-
-        $id = $file->id ?? '';
-
-        // URLs of rolled back files are overwritten when the file is created again
-        $this->createdFiles->put( $path, $id );
         $this->createdFileUrls->put( $path, Typo3Files::stored( $file ) );
-
-        return $id;
     }
 
 
@@ -501,7 +486,7 @@ class T3Import extends BaseImport
      */
     protected function getRootPage( object $t3Root, string $domain ): PageView
     {
-        $page = Pages::find( ['tag' => 'root', 'domain' => $domain] );
+        $page = Pages::find( ['tag' => Pages::TAG_ROOT, 'domain' => $domain] );
 
         if( $page && !$this->isImported( $page ) )
         {
@@ -510,7 +495,7 @@ class T3Import extends BaseImport
         else
         {
             $slug = Typo3Urls::slug( $t3Root->slug ?? null );
-            ['page' => $page, 'status' => $status] = $this->save( $t3Root, ['tag' => 'root'] + $this->buildPageData( $t3Root, $slug, $domain ), $page );
+            ['page' => $page, 'status' => $status] = $this->save( $t3Root, ['tag' => Pages::TAG_ROOT] + $this->buildPageData( $t3Root, $slug, $domain ), $page );
             $this->info( ( $status === Status::Imported ? 'Created' : $status->label() ) . ' root page: ' . ( $t3Root->title ?? '' ) . " ({$domain})" );
         }
 
@@ -585,7 +570,7 @@ class T3Import extends BaseImport
         $path = Typo3Urls::slug( $t3Page->slug ?? null );
         $pageData = $this->buildPageData( $t3Page, $path, $domain, $this->redirect( $t3Page ) );
         $isRoot = (int) ( $t3Page->pid ?? 0 ) === 0 || !empty( $t3Page->is_siteroot );
-        $pageData['tag'] = $isRoot ? 'root' : $pageData['tag'];
+        $pageData['tag'] = $isRoot ? Pages::TAG_ROOT : $pageData['tag'];
         $page = $destinations->find( $t3Page, $domain );
         $parent = null;
 
@@ -776,7 +761,7 @@ class T3Import extends BaseImport
 
             $content = $this->buildContent( $contentRecords, $typo3, $language['lang'] );
             $data = array_replace( $this->buildPageData( $record, '', '', (string) ( $pageData['to'] ?? '' ) ), [
-                'tag' => $pageData['tag'] ?? 'page',
+                'tag' => $pageData['tag'] ?? Pages::TAG_PAGE,
             ] );
 
             $this->saveVariant( $page, $language, Typo3Urls::slug( $record->slug ?? '' ), $data, $content, $variants[$language['lang']] ?? null );

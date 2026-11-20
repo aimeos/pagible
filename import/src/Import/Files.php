@@ -19,31 +19,23 @@ use Symfony\Component\Mime\MimeTypes;
 class Files
 {
     /**
-     * Creates a File record with a published version.
+     * Downloads the file, stores it and creates a File record with a published version.
      *
      * @param string $mime MIME type of the file
      * @param string $name Descriptive file name
-     * @param string $path Remote URL or path of the file
+     * @param string $path Remote URL of the file
      * @param string $editor Editor name for the file and its version
-     * @param bool $download TRUE to download and store the file, FALSE to reference the path
      * @param array{resource: resource, mime: string}|null $fetched File downloaded before by fetch(), closed afterwards
      * @return File Published file
      */
-    public static function create( string $mime, string $name, string $path, string $editor, bool $download, ?array $fetched = null ) : File
+    public static function download( string $mime, string $name, string $path, string $editor, ?array $fetched = null ) : File
     {
-        $file = new File();
+        $file = self::init( $mime, $name, $editor );
         $resource = $fetched['resource'] ?? null;
-        // referenced files aren't stored by the import, so they must not be removed from the disk
-        $remove = fn() => $file->discard( $download );
 
         try
         {
-            $file->mime = $mime;
-            $file->name = $name;
-            $file->editor = $editor;
-
-            if( $download )
-            {
+            return self::save( $file, $editor, function() use ( $file, $mime, $name, $path, $fetched, &$resource ) {
                 if( $resource ) {
                     // the MIME type of the downloaded file is detected from the content like by fetchUrl()
                     $file->mime = $fetched['mime'] ?? $mime;
@@ -63,29 +55,7 @@ class Files
                 }
 
                 $file->ingest( new UploadedFile( $tmp, $filename, $mime, null, true ) );
-            }
-            else
-            {
-                $file->path = $path;
-                $file->previews = [];
-            }
-
-            $file->save();
-
-            self::publish( $file, $editor );
-
-            // stored files must not remain if the import transaction fails later, remote URLs are kept
-            // Laravel 11 doesn't support rollback callbacks, so the files remain there
-            if( method_exists( $conn = $file->getConnection(), 'afterRollBack' ) ) {
-                $conn->afterRollBack( $remove );
-            }
-
-            return $file;
-        }
-        catch( \Throwable $e )
-        {
-            $remove();
-            throw $e;
+            }, fn() => $file->discard( true ) );
         }
         finally
         {
@@ -97,7 +67,28 @@ class Files
 
 
     /**
-     * Downloads the file into a temporary file, so it can be created later by create() without waiting for the download.
+     * Creates a File record with a published version which references the file by its path.
+     *
+     * @param string $mime MIME type of the file
+     * @param string $name Descriptive file name
+     * @param string $path Remote URL or path of the file
+     * @param string $editor Editor name for the file and its version
+     * @return File Published file
+     */
+    public static function reference( string $mime, string $name, string $path, string $editor ) : File
+    {
+        $file = self::init( $mime, $name, $editor );
+
+        // referenced files aren't stored by the import, so they must not be removed from the disk
+        return self::save( $file, $editor, function() use ( $file, $path ) {
+            $file->path = $path;
+            $file->previews = [];
+        }, fn() => $file->discard( false ) );
+    }
+
+
+    /**
+     * Downloads the file into a temporary file, so it can be created later by download() without waiting for the download.
      *
      * @param string $url URL of the file
      * @return array{resource: resource, mime: string} Temporary file, which is removed when it's closed, and the MIME type detected from its content
@@ -154,16 +145,78 @@ class Files
 
 
     /**
+     * Returns a new file with the given values.
+     *
+     * @param string $mime MIME type of the file
+     * @param string $name Descriptive file name
+     * @param string $editor Editor name for the file
+     * @return File New file which isn't saved yet
+     */
+    protected static function init( string $mime, string $name, string $editor ) : File
+    {
+        $file = new File();
+        $file->mime = $mime;
+        $file->name = $name;
+        $file->editor = $editor;
+
+        return $file;
+    }
+
+
+    /**
+     * Stores the file content, saves and publishes the file and removes its content again if that or the import transaction fails.
+     *
+     * @param File $file New file
+     * @param string $editor Editor name of the version
+     * @param \Closure(): void $store Adds the content or the path of the file
+     * @param \Closure(): mixed $remove Removes what was stored for the file
+     * @return File Published file
+     */
+    protected static function save( File $file, string $editor, \Closure $store, \Closure $remove ) : File
+    {
+        try
+        {
+            $store();
+            $file->save();
+
+            self::publish( $file, $editor );
+
+            // stored files must not remain if the import transaction fails later, remote URLs are kept
+            // Laravel 11 doesn't support rollback callbacks, so the files remain there
+            if( method_exists( $conn = $file->getConnection(), 'afterRollBack' ) ) {
+                $conn->afterRollBack( $remove );
+            }
+
+            return $file;
+        }
+        catch( \Throwable $e )
+        {
+            $remove();
+            throw $e;
+        }
+    }
+
+
+    /**
      * Returns the URL of a file path relative to the base URL.
      *
-     * @param string $path Absolute URL or file path
+     * Absolute URLs are recognized by their scheme, so URLs with spaces or non-ASCII characters are absolute too.
+     * URIs without authority like "mailto:", "tel:" or "data:" are returned unchanged as well, so are values
+     * whose first path segment contains a colon, which isn't allowed in relative URLs by RFC 3986.
+     * Scheme-relative URLs like "//cdn.example.com/a.jpg" use the scheme of the base URL or HTTPS.
+     *
+     * @param string $path Absolute URL, URI with scheme, scheme-relative URL or file path
      * @param string $base Base URL without trailing slash or empty string to return the path only
      * @return string Absolute URL or path without leading slash
      */
     public static function url( string $path, string $base ) : string
     {
-        if( filter_var( $path, FILTER_VALIDATE_URL ) ) {
+        if( preg_match( '#^[a-z][a-z0-9+.\-]*:#i', $path ) ) {
             return $path;
+        }
+
+        if( str_starts_with( $path, '//' ) ) {
+            return ( parse_url( $base, PHP_URL_SCHEME ) ?: 'https' ) . ':' . $path;
         }
 
         $path = ltrim( $path, '/' );

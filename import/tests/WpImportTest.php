@@ -651,10 +651,10 @@ class WpImportTest extends ImportTestAbstract
     public function testMediaPreview(): void
     {
         $media = new WpMedia( [], fn() => null );
-        $pdf = Files::create( 'application/pdf', 'Doc', 'https://cdn.example/doc.pdf', 'test', false )->id ?? '';
-        $image = Files::create( 'image/png', 'Image', 'https://cdn.example/image.png', 'test', false )->id ?? '';
+        $pdf = Files::reference( 'application/pdf', 'Doc', 'https://cdn.example/doc.pdf', 'test' )->id ?? '';
+        $image = Files::reference( 'image/png', 'Image', 'https://cdn.example/image.png', 'test' )->id ?? '';
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $db->enableQueryLog();
         $this->assertSame( $image, $media->preview( [$pdf, 'missing', $image, $pdf] ) );
         $this->assertNull( $media->preview( [$pdf] ) );
@@ -663,7 +663,7 @@ class WpImportTest extends ImportTestAbstract
         $this->assertSame( 1, count( $db->getQueryLog() ) );
         $this->assertSame( [$pdf, $image, 'test'], $db->getQueryLog()[0]['bindings'] );
 
-        $other = Files::create( 'image/png', 'Other', 'https://cdn.example/other.png', 'test', false )->id ?? '';
+        $other = Files::reference( 'image/png', 'Other', 'https://cdn.example/other.png', 'test' )->id ?? '';
         $db->flushQueryLog();
         $this->assertSame( 'remembered', $media->remember( 'remembered', 'image/webp' )->preview( [$pdf, 'remembered', $other] ) );
         $this->assertSame( $other, $media->remember( 'remembered', 'text/plain' )->preview( [$pdf, 'remembered', $other] ) );
@@ -737,7 +737,7 @@ class WpImportTest extends ImportTestAbstract
         };
         $command->setLaravel( app() );
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $level = $db->transactionLevel();
         $commits = 0;
         Event::listen( TransactionCommitted::class, function( $event ) use ( $level, &$commits ) {
@@ -777,7 +777,7 @@ class WpImportTest extends ImportTestAbstract
         $db->table( 'wp_posts' )->where( 'ID', 3 )->update( ['post_content' => $image( 'inline' )] );
         $db->table( 'wp_posts' )->where( 'ID', 101 )->update( ['post_content' => $image( 'later' )] );
 
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $cms->enableQueryLog();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', ['--connection' => 'wordpress', '--domain' => 'new.example'] ) );
@@ -830,7 +830,7 @@ class WpImportTest extends ImportTestAbstract
             PageView::where( 'domain', 'new.example' )->where( 'path', $path )->firstOrFail()->page->appendToNode( Page::findOrFail( $root->id ) )->save();
         }
 
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:wp-import', $args ) );
         $parents = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => preg_match( '/^select \* from "cms_pages" where "cms_pages"."id" = \?/', $this->sql( $query['query'] ) ) === 1
@@ -873,7 +873,7 @@ class WpImportTest extends ImportTestAbstract
         }
 
         $updates = [];
-        DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$updates ) {
+        \Aimeos\Cms\DB::connection()->listen( function( $query ) use ( &$updates ) {
             $updates[] = str_contains( $this->sql( $query->sql ), 'set "created_at"' ) ? $query->sql : null;
         } );
 
@@ -886,7 +886,7 @@ class WpImportTest extends ImportTestAbstract
         DB::connection( 'wordpress' )->table( 'wp_posts' )->where( 'ID', 51 )->update( ['post_title' => 'Second changed'] );
 
         $queries = [];
-        DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
+        \Aimeos\Cms\DB::connection()->listen( function( $query ) use ( &$queries ) {
             $queries[] = [$this->sql( $query->sql ), $query->bindings];
         } );
 
@@ -1342,7 +1342,7 @@ class WpImportTest extends ImportTestAbstract
         DB::connection( 'wordpress' )->table( 'wp_posts' )->where( 'ID', 54 )->update( ['post_title' => 'Second changed', 'post_modified_gmt' => '2026-09-02 12:00:00'] );
 
         $queries = [];
-        DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$queries ) {
+        \Aimeos\Cms\DB::connection()->listen( function( $query ) use ( &$queries ) {
             $queries[] = [$this->sql( $query->sql ), $query->bindings];
         } );
 
@@ -1436,7 +1436,7 @@ class WpImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $level = $db->transactionLevel();
         $requests = [];
 
@@ -1512,7 +1512,7 @@ class WpImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $level = $db->transactionLevel();
         $requests = [];
 
@@ -1568,7 +1568,7 @@ class WpImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $level = $db->transactionLevel();
         $requests = [];
 
@@ -1713,7 +1713,7 @@ class WpImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $cms = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $cms = \Aimeos\Cms\DB::connection();
         $level = $cms->transactionLevel();
         $requests = [];
 
@@ -1772,7 +1772,7 @@ class WpImportTest extends ImportTestAbstract
         Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
 
         $png = (string) base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' );
-        $db = DB::connection( config( 'cms.db', 'sqlite' ) );
+        $db = \Aimeos\Cms\DB::connection();
         $commits = 0;
         $requests = [];
 
@@ -1845,7 +1845,7 @@ class WpImportTest extends ImportTestAbstract
         $this->assertTrue( is_resource( $fetched['resource'] ?? null ) );
 
         // the downloaded file is stored without downloading it again
-        $file = Files::create( 'image/jpeg', 'Photo', 'http://127.0.0.1/media/a.png', 'test', true, $fetched );
+        $file = Files::download( 'image/jpeg', 'Photo', 'http://127.0.0.1/media/a.png', 'test', $fetched );
 
         $this->assertCount( 3, $requests );
         $this->assertSame( 'image/png', $file->mime );

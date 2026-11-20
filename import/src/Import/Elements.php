@@ -7,15 +7,39 @@
 
 namespace Aimeos\Cms\Import;
 
-use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Utils;
+use Illuminate\Support\Str;
 
 
 /**
- * Builds Pagible content and shared elements for the importers.
+ * Builds Pagible content elements for the importers.
+ *
+ * ContentElements: content elements and IDs of the files they use
+ *
+ * @phpstan-type ContentElements array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}
  */
 class Elements
 {
+    /** Maximum length of page titles and meta keywords */
+    public const TITLE_SIZE = 254;
+    /** Maximum length of meta descriptions, shown completely by search engines */
+    public const DESCRIPTION_SIZE = 159;
+    /** Maximum length of social media titles, shown completely by social networks */
+    public const SOCIAL_TITLE_SIZE = 59;
+
+
+    /**
+     * Returns the content consisting of the elements, which use no files.
+     *
+     * @param array<string, mixed> ...$elements Content elements
+     * @return ContentElements Content elements without file IDs
+     */
+    public static function content( array ...$elements ): array
+    {
+        return ['elements' => array_values( $elements ), 'fileIds' => []];
+    }
+
+
     /**
      * Returns a content element of the main group.
      *
@@ -59,11 +83,24 @@ class Elements
 
 
     /**
+     * Returns the content of a single element of the type referencing the file, e.g. an audio, file or video element.
+     *
+     * @param string $type Element type
+     * @param string $fileId File ID
+     * @return ContentElements Content with the element and the file ID
+     */
+    public static function fileContent( string $type, string $fileId ): array
+    {
+        return ['elements' => [self::create( $type, ['file' => self::file( $fileId )] )], 'fileIds' => [$fileId]];
+    }
+
+
+    /**
      * Returns the content of an image or image-text element for the file.
      *
      * @param string|null $fileId File ID or NULL if the image couldn't be imported
      * @param string $text Text next to the image or empty for an image element
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>}|null Content or NULL without file
+     * @return ContentElements|null Content or NULL without file
      */
     public static function imageContent( ?string $fileId, string $text = '' ): ?array
     {
@@ -80,10 +117,51 @@ class Elements
 
 
     /**
+     * Returns the meta tags of the page with the description and the keywords.
+     *
+     * @param string $description Meta description, the whitespace is collapsed and long descriptions are shortened
+     * @param string $keywords Comma separated meta keywords, long ones are shortened
+     * @return array{type: string, data: array<string, string>, files: array<int, string>}|null Meta tags or NULL without description
+     */
+    public static function metaTags( string $description, string $keywords = '' ): ?array
+    {
+        $description = trim( (string) preg_replace( '/\s+/', ' ', $description ) );
+
+        // the description is required by the meta tags
+        if( $description === '' ) {
+            return null;
+        }
+
+        return ['type' => 'meta-tags', 'data' => array_filter( [
+            'description' => Str::limit( $description, self::DESCRIPTION_SIZE, '…', true ),
+            'keywords' => Str::limit( trim( $keywords ), self::TITLE_SIZE, '…', true ),
+        ] ), 'files' => []];
+    }
+
+
+    /**
+     * Returns the robots settings of the page.
+     *
+     * @param string $robots Comma separated robots values like "noindex, follow"
+     * @return array{type: string, data: array<string, string>, files: array<int, string>}|null Robots settings or NULL if neither indexing nor following is set
+     */
+    public static function robots( string $robots ): ?array
+    {
+        $robots = array_map( 'trim', explode( ',', strtolower( $robots ) ) );
+        $data = array_filter( [
+            'index' => in_array( 'noindex', $robots, true ) ? 'noindex' : ( in_array( 'index', $robots, true ) ? 'index' : null ),
+            'follow' => in_array( 'nofollow', $robots, true ) ? 'nofollow' : ( in_array( 'follow', $robots, true ) ? 'follow' : null ),
+        ] );
+
+        return $data ? ['type' => 'robots', 'data' => $data, 'files' => []] : null;
+    }
+
+
+    /**
      * Merges content parts into one content in their order.
      *
      * @param array{elements?: array<int, array<string, mixed>>, fileIds?: array<int, string>}|null ...$contents Content parts, NULL parts are skipped
-     * @return array{elements: array<int, array<string, mixed>>, fileIds: array<int, string>} Merged content with unique file IDs
+     * @return ContentElements Merged content with unique file IDs
      */
     public static function merge( ?array ...$contents ): array
     {
@@ -92,57 +170,5 @@ class Elements
         $fileIds = array_merge( ...array_map( fn( $content ) => $content['fileIds'] ?? [], $contents ) );
 
         return ['elements' => $elements, 'fileIds' => array_values( array_unique( $fileIds ) )];
-    }
-
-
-    /**
-     * Creates the shared element or publishes a new version of the one imported before if it changed.
-     *
-     * Elements changed by other editors since are kept as they are.
-     *
-     * @param string $name Unique name of the shared element in the language
-     * @param string $lang Pagible language code
-     * @param array<string, mixed> $element Content element
-     * @param array<int, string> $fileIds IDs of the files which may be used by the element
-     * @param string $editor Editor name of the importer
-     * @return string ID of the shared element
-     */
-    public static function shared( string $name, string $lang, array $element, array $fileIds, string $editor ): string
-    {
-        $type = (string) ( $element['type'] ?? '' );
-        $data = (array) ( $element['data'] ?? [] );
-        $shared = Element::withTrashed()->where( 'lang', $lang )->where( 'name', $name )->first();
-
-        if( $shared?->trashed() ) {
-            $shared->restore();
-        }
-
-        if( $shared && ( $shared->editor !== $editor
-            || $shared->type === $type && Pages::normalize( $shared->data ) === Pages::normalize( $data ) )
-        ) {
-            return (string) $shared->id;
-        }
-
-        $shared ??= Element::forceCreate( ['lang' => $lang, 'type' => $type, 'name' => $name, 'data' => $data, 'editor' => $editor] );
-
-        $version = $shared->versions()->forceCreate( [
-            'lang' => $lang,
-            'data' => ['lang' => $lang, 'type' => $type, 'name' => $name, 'data' => $data],
-            'editor' => $editor,
-        ] );
-
-        // only the files referenced by the element are attached
-        $json = (string) json_encode( $data );
-        $ids = array_values( array_unique( array_filter( $fileIds, fn( $id ) => str_contains( $json, '"' . $id . '"' ) ) ) );
-
-        if( $ids ) {
-            $version->files()->attach( $ids );
-        }
-
-        // publishing saves the latest version ID together with the published values
-        $shared->forceFill( ['latest_id' => $version->id] );
-        $shared->publish( $version );
-
-        return (string) $shared->id;
     }
 }
