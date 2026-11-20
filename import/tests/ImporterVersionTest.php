@@ -739,7 +739,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->enableQueryLog();
         $this->assertSame( 0, $command->run( new ArrayInput( [] ), new BufferedOutput() ) );
-        $queries = Collection::make( $db->getQueryLog() );
+        $queries = $this->queries( $db );
         $db->disableQueryLog();
 
         $byPath = $queries->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_files" where "path"' ) );
@@ -788,7 +788,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->enableQueryLog();
         $this->assertSame( 0, $command->run( new ArrayInput( [] ), new BufferedOutput() ) );
-        $queries = Collection::make( $db->getQueryLog() )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_files" where "path"' ) );
+        $queries = $this->queries( $db )->filter( fn( $query ) => str_starts_with( $query['query'], 'select * from "cms_files" where "path"' ) );
         $db->disableQueryLog();
 
         $this->assertSame( [['a', 'b', 'c', 'd', 'e'], ['b', 'f', 'g']], $command->keys );
@@ -842,7 +842,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $translation = ['name' => 'Über', 'title' => 'Über'] + $data;
         $checks = 0;
         DB::listen( function( $query ) use ( &$checks ) {
-            $checks += (int) str_contains( $query->sql, 'from "cms_page_variants" where "domain" = ? and "path" = ?' );
+            $checks += (int) str_contains( $this->sql( $query->sql ), 'from "cms_page_variants" where "domain" = ? and "path" = ?' );
         } );
 
         $this->assertInstanceOf( PageView::class, Variants::save( $other, ['lang' => 'de', 'domain' => ''], 'team-de', $translation, $elements, 'importer' ) );
@@ -905,7 +905,7 @@ class ImporterVersionTest extends ImportTestAbstract
                 $this->editor = 'importer';
                 $count = 0;
                 DB::listen( function( $query ) use ( &$count ) {
-                    $count += (int) preg_match( '/"cms_page_view"."id" = \? and .* limit 1$/', $query->sql );
+                    $count += (int) preg_match( '/"cms_page_view"."id" = \? and .* limit 1$/', strtr( $query->sql, ['`' => '"'] ) );
                 } );
 
                 foreach( ['fr' => 'a-propos', 'it' => 'chi-siamo'] as $lang => $slug ) {
@@ -1209,7 +1209,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $parents = 0;
 
         DB::connection( config( 'cms.db', 'sqlite' ) )->listen( function( $query ) use ( &$parents ) {
-            $parents += (int) str_starts_with( $query->sql, 'select * from "cms_pages"' );
+            $parents += (int) str_starts_with( $this->sql( $query->sql ), 'select * from "cms_pages"' );
         } );
 
         $first = Pages::create( ['name' => 'First', 'path' => 'first', 'domain' => 'example.com'], [], $parent );
@@ -1320,11 +1320,12 @@ class ImporterVersionTest extends ImportTestAbstract
      */
     public static function importerClasses(): array
     {
-        return [
+        // importers which are still work in progress are only tested if available
+        return array_filter( [
             'Drupal' => [DrupalImport::class],
             'Joomla' => [JoomlaImport::class],
             'Statamic' => [StatamicImport::class],
-        ];
+        ], fn( $class ) => class_exists( $class[0] ) );
     }
 
 
@@ -1339,7 +1340,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->listen( function( $query ) use ( &$queries ) {
             if( !str_starts_with( $query->sql, 'select' ) ) {
-                $queries[] = $query->sql;
+                $queries[] = $this->sql( $query->sql );
             }
         } );
 
