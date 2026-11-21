@@ -107,6 +107,7 @@ class SafeHttpTest extends CoreTestAbstract
         $this->assertEquals( '127.0.0.1', SafeHttp::resolve( '127.0.0.1' ) );
         $this->assertEquals( '10.0.0.1', SafeHttp::resolve( '10.0.0.1' ) );
         $this->assertEquals( '8.8.8.8', SafeHttp::resolve( '8.8.8.8' ) );
+        $this->assertEquals( '64:ff9b::a9fe:a9fe', SafeHttp::resolve( '64:ff9b::a9fe:a9fe' ) );
 
         config( ['cms.allow-internal' => false] );
     }
@@ -116,6 +117,23 @@ class SafeHttpTest extends CoreTestAbstract
     {
         $this->assertNull( SafeHttp::resolve( '127.0.0.1' ) );
         $this->assertNull( SafeHttp::resolve( '10.0.0.1' ) );
+
+        // Non-global ranges used by cloud metadata services
+        $this->assertNull( SafeHttp::resolve( '100.100.100.200' ) );
+        $this->assertNull( SafeHttp::resolve( '100.64.0.1' ) );
+        $this->assertNull( SafeHttp::resolve( '192.0.0.192' ) );
+        $this->assertNull( SafeHttp::resolve( '198.18.0.1' ) );
+
+        // IPv6 addresses wrapping internal IPv4 addresses
+        $this->assertNull( SafeHttp::resolve( '::ffff:169.254.169.254' ) );
+        $this->assertNull( SafeHttp::resolve( '::a9fe:a9fe' ) );
+        $this->assertNull( SafeHttp::resolve( '::ffff:0:a9fe:a9fe' ) );
+        $this->assertNull( SafeHttp::resolve( '2002:a9fe:a9fe::' ) );
+        $this->assertNull( SafeHttp::resolve( '64:ff9b::a9fe:a9fe' ) );
+        $this->assertNull( SafeHttp::resolve( '64:ff9b:1::a9fe:a9fe' ) );
+
+        // NAT64 addresses wrapping public IPv4 addresses
+        $this->assertEquals( '64:ff9b::808:808', SafeHttp::resolve( '64:ff9b::808:808' ) );
 
         // Public IPs remain allowed
         $this->assertEquals( '8.8.8.8', SafeHttp::resolve( '8.8.8.8' ) );

@@ -19,6 +19,18 @@ use Illuminate\Support\Facades\Http;
  */
 class SafeHttp
 {
+    /** @var array<int, array{string, int}> IPv6 prefixes and bit lengths not caught by FILTER_FLAG_GLOBAL_RANGE */
+    private const LOCAL_RANGES = [
+        ["\x00\x64\xff\x9b\x00\x01", 48], // local-use NAT64 (64:ff9b:1::/48)
+        ["\x20\x02", 16], // 6to4 wrapping arbitrary IPv4 addresses (2002::/16)
+        ["\xfe\xc0", 10], // deprecated site-local (fec0::/10)
+        ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00", 96], // IPv4-compatible (::/96)
+        ["\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff", 96], // IPv4-mapped (::ffff:0:0/96)
+        ["\x00\x00\x00\x00\x00\x00\x00\x00\xff\xff\x00\x00", 96], // SIIT translated IPv4 (::ffff:0:0:0/96)
+        ["\xff", 8], // multicast (ff00::/8)
+    ];
+
+
     /**
      * Sends a request while resolving and pinning every redirect target.
      *
@@ -60,27 +72,24 @@ class SafeHttp
     /**
      * Resolves a hostname to an allowed IP address.
      *
-     * Private and reserved ranges are accepted unless "cms.allow-internal" is
-     * disabled. Literal IP hosts are validated directly without a DNS lookup.
+     * Only globally reachable addresses are accepted unless "cms.allow-internal"
+     * is enabled. Literal IP hosts are validated directly without a DNS lookup.
      *
      * @param string $host The hostname or IP address to resolve
      * @return string|null The first allowed IP address, or null if none found
      */
     public static function resolve( string $host ) : ?string
     {
-        $flags = config( 'cms.allow-internal', false )
-            ? 0 : FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
-
         // Literal IP host: validate directly, a DNS lookup would never resolve it
         if( filter_var( $host, FILTER_VALIDATE_IP ) ) {
-            return filter_var( $host, FILTER_VALIDATE_IP, $flags ) ? $host : null;
+            return self::allowed( $host ) ? $host : null;
         }
 
         foreach( @dns_get_record( $host, DNS_A + DNS_AAAA ) ?: [] as $r )
         {
             $ip = $r['ip'] ?? $r['ipv6'] ?? null;
 
-            if( $ip && filter_var( $ip, FILTER_VALIDATE_IP, $flags ) ) {
+            if( $ip && self::allowed( $ip ) ) {
                 return $ip;
             }
         }
@@ -89,12 +98,52 @@ class SafeHttp
         // resolvers; fall back to the system resolver to avoid rejecting them.
         foreach( @gethostbynamel( $host ) ?: [] as $ip )
         {
-            if( filter_var( $ip, FILTER_VALIDATE_IP, $flags ) ) {
+            if( self::allowed( $ip ) ) {
                 return $ip;
             }
         }
 
         return null;
+    }
+
+
+    /**
+     * Tests if an IP address is valid and allowed as request target.
+     *
+     * @param string $ip IPv4 or IPv6 address to validate
+     * @return bool TRUE if the address is allowed, FALSE if not
+     */
+    protected static function allowed( string $ip ) : bool
+    {
+        if( !filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+            return false;
+        }
+
+        if( config( 'cms.allow-internal', false ) ) {
+            return true;
+        }
+
+        $bin = (string) inet_pton( $ip );
+
+        if( strlen( $bin ) === 16 )
+        {
+            foreach( self::LOCAL_RANGES as [$prefix, $bits] )
+            {
+                $mask = str_repeat( "\xff", intdiv( $bits, 8 ) ) . ( $bits % 8 ? chr( ( 0xff << ( 8 - $bits % 8 ) ) & 0xff ) : '' );
+
+                if( ( $bin & str_pad( $mask, 16, "\x00" ) ) === str_pad( $prefix, 16, "\x00" ) ) {
+                    return false;
+                }
+            }
+
+            // NAT64 addresses (64:ff9b::/96) are global but embed the IPv4 address the gateway connects to
+            if( str_starts_with( $bin, "\x00\x64\xff\x9b" . str_repeat( "\x00", 8 ) ) ) {
+                $ip = (string) inet_ntop( substr( $bin, 12 ) );
+            }
+        }
+
+        // Rejects carrier-grade NAT like the 100.100.100.200 metadata service of Alibaba Cloud too
+        return (bool) filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE | FILTER_FLAG_GLOBAL_RANGE );
     }
 
 

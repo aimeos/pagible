@@ -115,7 +115,7 @@ class AdminHeadersTest extends AdminTestAbstract
 
         Http::fake( ['localhost/*' => Http::response( str_repeat( 'x', 1000 ), $status, $headers )] );
 
-        $user = new \App\Models\User( ['name' => 'Admin', 'email' => 'admin@testbench', 'password' => 'secret'] );
+        $user = new \App\Models\User( ['name' => 'Admin', 'email' => 'admin@testbench', 'password' => 'secret', 'cmsperms' => ['file:view']] );
         $token = app( \Aimeos\Cms\ProxyToken::class )->make( $user );
 
         return $this->actingAs( $user )->withHeaders( ['Range' => $range] )

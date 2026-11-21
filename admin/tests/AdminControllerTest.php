@@ -244,6 +244,17 @@ class AdminControllerTest extends AdminTestAbstract
     }
 
 
+    public function testProxyNoPermission()
+    {
+        // A token issued before the file:view permission was revoked
+        $this->user->cmsperms = [];
+
+        $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['token' => $this->proxyToken, 'url' => 'https://example.com/video.mp4'] ) );
+
+        $response->assertStatus( 403 );
+    }
+
+
     public function testProxyMissingToken()
     {
         $response = $this->actingAs( $this->user )->get( route( 'cms.proxy', ['url' => 'https://example.com/video.mp4'] ) );

@@ -7,6 +7,7 @@
 
 namespace Aimeos\Cms\GraphQL\Resolvers;
 
+use Aimeos\Cms\Permission;
 use Aimeos\Cms\ProxyToken;
 use Illuminate\Foundation\Auth\User;
 
@@ -19,11 +20,13 @@ final class ProxyTokenResolver
 
 
     /**
+     * Returns a proxy token only to CMS editors allowed to view files.
+     *
      * @param array<string, mixed> $args
      * @param mixed $context
      */
-    public function __invoke( User $user, array $args, mixed $context ) : string
+    public function __invoke( User $user, array $args, mixed $context ) : ?string
     {
-        return $this->token->make( $user );
+        return Permission::can( 'file:view', $user ) ? $this->token->make( $user ) : null;
     }
 }

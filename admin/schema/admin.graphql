@@ -1,4 +1,4 @@
 extend type CmsUser {
-    "Time-limited proxy authentication token"
-    token: String! @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\ProxyTokenResolver")
+    "Time-limited proxy authentication token, null without file:view permission"
+    token: String @field(resolver: "\\Aimeos\\Cms\\GraphQL\\Resolvers\\ProxyTokenResolver")
 }

@@ -41,6 +41,18 @@ class ProxyTokenTest extends AdminTestAbstract
     }
 
 
+    public function testGraphqlNoPermission()
+    {
+        $user = $this->user( 1 );
+        $user->cmsperms = [];
+
+        $response = $this->actingAs( $user )->graphQL( '{ me { token } }' );
+
+        $this->assertNull( $response->json( 'errors' ) );
+        $this->assertNull( $response->json( 'data.me.token' ) );
+    }
+
+
     public function testInvalid()
     {
         $this->assertFalse( app( ProxyToken::class )->valid( 'invalid', $this->user( 1 ) ) );

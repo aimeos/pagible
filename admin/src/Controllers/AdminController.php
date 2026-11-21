@@ -78,7 +78,9 @@ class AdminController extends Controller
 
         $user = $request->user();
 
-        if( !$user instanceof Authenticatable || !$token->valid( (string) $request->query( 'token', '' ), $user ) ) {
+        if( !$user instanceof Authenticatable || !Permission::can( 'file:view', $user )
+            || !$token->valid( (string) $request->query( 'token', '' ), $user )
+        ) {
             abort( 403, 'Unauthorized' );
         }
 
