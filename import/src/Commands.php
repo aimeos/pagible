@@ -628,6 +628,23 @@ abstract class Commands extends Command
 
 
     /**
+     * Shows what was done with a page, menu item or redirect and why, like the messages of the base importer.
+     *
+     * The message has the format "  {what}: {subject} ({reason})", e.g. "  Disabled: About (/about) (it expired on ...)".
+     *
+     * @param string $what What was done, e.g. "Disabled" or "Skipped menu item"
+     * @param string $subject Title, label or URL path of the page, menu item or redirect
+     * @param string|null $reason Why it was done or NULL if nothing is shown
+     */
+    protected function notice( string $what, string $subject, ?string $reason ): void
+    {
+        if( $reason !== null ) {
+            $this->warn( "  {$what}: {$subject} ({$reason})" );
+        }
+    }
+
+
+    /**
      * Creates the link page below the parent or updates the one of a previous import with the same URL.
      *
      * Only link pages saved by an import with the same editor and language which weren't saved by this
