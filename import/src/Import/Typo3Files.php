@@ -8,10 +8,8 @@
 namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\DB;
-use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 
 
 /**
@@ -48,14 +46,7 @@ class Typo3Files
      */
     public static function stored( File $file ): string
     {
-        $disk = FileStorage::diskName( (string) $file->disk );
-        $url = Storage::disk( $disk )->url( (string) $file->path );
-
-        if( config( 'filesystems.disks.' . $disk . '.driver' ) === 'local' ) {
-            $url = parse_url( $url, PHP_URL_PATH ) ?: $url;
-        }
-
-        return $url;
+        return Files::stored( $file );
     }
 
 

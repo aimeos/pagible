@@ -86,7 +86,7 @@ class Embeds
      */
     public static function player( string $url ): string
     {
-        if( preg_match( '#^https?://(?:www\.|m\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|shorts/|live/)|youtu\.be/)([\w-]{6,})#i', $url, $m ) ) {
+        if( preg_match( '#^https?://(?:www\.|m\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|v/|shorts/|live/)|youtu\.be/)([\w-]{6,})#i', $url, $m ) ) {
             return 'https://www.youtube-nocookie.com/embed/' . $m[1];
         }
 

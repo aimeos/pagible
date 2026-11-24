@@ -5,8 +5,10 @@
  */
 
 
-namespace Aimeos\Cms\Import;
+namespace Aimeos\Cms\Import\WordPress;
 
+use Aimeos\Cms\Import\Database;
+use Aimeos\Cms\Import\Files;
 use Aimeos\Cms\Models\File;
 use Illuminate\Support\Str;
 
@@ -14,15 +16,22 @@ use Illuminate\Support\Str;
 /**
  * Resolves WordPress media attachments and URLs to Pagible files.
  */
-class WpMedia
+class Media
 {
     /** @var int Maximum number of remembered MIME types of the files and attachment IDs of the image URLs */
     protected const CACHE_SIZE = 10000;
     /** Number of last characters by which the attachment basenames are indexed */
     protected const SUFFIX_SIZE = 4;
+    /**
+     * Suffixes of the resized (e.g. "-300x200"), scaled ("-scaled"), rotated ("-rotated") and edited ("-e" and 13 digits)
+     * copies of the uploaded images before the file extension
+     */
+    protected const SIZE_PATTERN = '/(?:-\d+x\d+|-scaled|-rotated|-e\d{13})+(\.[a-z0-9]+)(?=[?#]|$)/i';
 
     /** @var array<string> */
     protected array $bases = [];
+    /** @var array<string> Base URLs of the WordPress uploads like from the "upload_url_path" option, see uploads() */
+    protected array $uploads = [];
     /** @var array<int, int> Position of the attachment basenames by their hash, the first matching one is used */
     protected array $basenames = [];
     /** @var array<int, int|string> Attachment IDs by position of their basename */
@@ -33,7 +42,7 @@ class WpMedia
     protected array $suffixLengths = [];
     /** @var array<string, int|string|null> Attachment IDs of the image URLs of the current posts, NULL if not found */
     protected array $found = [];
-    /** @var array<int|string, array{guid: string, title: string, mime: string}|null> Attachments of the current posts by ID, NULL if not available */
+    /** @var array<int|string, array{guid: string, title: string, mime: string, url?: string, alt?: string}|null> Attachments of the current posts by ID, NULL if not available */
     protected array $attachments = [];
     /** @var array<int|string, int|string> Attachment IDs of the featured images by post ID */
     protected array $thumbnailIds = [];
@@ -45,7 +54,7 @@ class WpMedia
     protected array $downloads = [];
     /** @var array<string, string> MIME types of the files by ID */
     protected array $mimes = [];
-    /** @var \Closure(array<int|string>): array<int|string, array{guid: string, title: string, mime: string}> */
+    /** @var \Closure(array<int|string>): array<int|string, array{guid: string, title: string, mime: string, url?: string, alt?: string}> */
     protected \Closure $fetch;
     /** @var iterable<int|string, int|string>|null Attachment IDs by basename until the basenames are indexed */
     protected ?iterable $attachmentIds;
@@ -55,7 +64,7 @@ class WpMedia
      * @param array<mixed> $bases Media base URLs, the first one replaces wp-content/uploads paths
      * @param \Closure(string, string, string, bool): ?string $create Creates a file from MIME type, name, URL and download flag
      * @param iterable<int|string, int|string> $attachmentIds IDs of the WordPress image attachments by basename of their URL, later ones with the same basename replace the ID
-     * @param (\Closure(array<int|string>): array<int|string, array{guid: string, title: string, mime: string}>)|null $fetch Fetches the image attachments by ID
+     * @param (\Closure(array<int|string>): array<int|string, array{guid: string, title: string, mime: string, url?: string, alt?: string}>)|null $fetch Fetches the image attachments by ID
      */
     public function __construct( array $bases, protected \Closure $create, iterable $attachmentIds = [], ?\Closure $fetch = null )
     {
@@ -90,10 +99,21 @@ class WpMedia
 
         foreach( $contents as $postId => $content )
         {
+            // images with the attachment ID in their class and the images of gallery shortcodes are fetched by ID
+            preg_match_all( '/<img\b[^>]*>/i', $content, $tags );
+
+            foreach( [...array_filter( array_map( fn( $tag ) => $this->classId( $tag ), $tags[0] ) ), ...Shortcode::galleryIds( $content )] as $id ) {
+                $ids[] = $id;
+                $postIds[$id][] = $postId;
+            }
+
             // all sources are used because the converter passes blocks and tags containing the images
             preg_match_all( '/src=["\']([^"\']+)["\']/i', $content, $matches );
 
-            foreach( array_filter( $matches[1], fn( $src ) => !$this->inline( $src ) ) as $src )
+            // the sources are decoded like by image() and the converter, the URLs of file blocks are JSON values without HTML entities
+            $sources = [...array_map( fn( $src ) => Html::decode( $src ), $matches[1] ), ...$this->fileUrls( $content )];
+
+            foreach( array_filter( $sources, fn( $src ) => !$this->inline( $src ) ) as $src )
             {
                 if( ( $id = $this->find( $src ) ) !== null ) {
                     $ids[] = $id;
@@ -110,8 +130,23 @@ class WpMedia
         foreach( $this->attachments as $id => $attachment )
         {
             if( $attachment ) {
-                $this->add( $attachment['guid'], $postIds[$id] ?? [] );
+                $this->add( $attachment['url'] ?? $attachment['guid'], $postIds[$id] ?? [] );
             }
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * Adds the base URL of the WordPress uploads, the files below are downloaded like the ones below "wp-content/uploads".
+     *
+     * @param string|null $url Base URL of the uploads from the WordPress options or NULL if not available
+     */
+    public function uploads( ?string $url ): static
+    {
+        if( ( $url = rtrim( trim( (string) $url ), '/' ) ) !== '' && !in_array( $url, $this->uploads, true ) ) {
+            $this->uploads[] = $url;
         }
 
         return $this;
@@ -162,6 +197,8 @@ class WpMedia
 
     /**
      * Imports the featured image (post thumbnail) for a WordPress post.
+     *
+     * WordPress shows the alternative text of the attachment for featured images, the title is used if there's none.
      */
     public function featured( int $postId ): ?string
     {
@@ -171,31 +208,35 @@ class WpMedia
             return null;
         }
 
-        return $this->url( $attachment['guid'], $attachment['title'], $attachment['mime'] );
+        return $this->url( $attachment['url'] ?? $attachment['guid'], ( $attachment['alt'] ?? '' ) ?: $attachment['title'], $attachment['mime'] );
     }
 
 
     /**
      * Imports an image from an HTML img tag.
+     *
+     * The original image of the attachment is imported instead of the resized copy used in the content. The
+     * attachment is found by the ID in the "wp-image-<ID>" class of the image or by the file name in the source.
+     * Tags without source like the ones created for gallery shortcodes are imported by their attachment ID only.
      */
     public function image( string $html ): ?string
     {
-        if( !( $image = Html::source( $html ) ) ) {
-            return null;
-        }
-
-        ['src' => $src, 'alt' => $alt] = $image;
+        // the HTML entities like "&amp;" in the source and the alternative text are decoded like by the browser
+        ['src' => $src, 'alt' => $alt] = Html::decodedSource( $html ) ?? ['src' => '', 'alt' => ''];
 
         // inline images aren't files and aren't looked up as attachments because they can be very large
         if( $this->inline( $src ) ) {
             return null;
         }
 
-        if( ( $id = $this->find( $src ) ) !== null && ( $attachment = $this->attachment( $id ) ) ) {
-            return $this->url( $attachment['guid'], $alt ?: $attachment['title'], $attachment['mime'] );
+        $id = $this->attachmentId( $html, $src ) ?? ( $src !== '' ? $this->find( $src ) : null );
+
+        if( $id !== null && ( $attachment = $this->attachment( $id ) ) ) {
+            // images without alternative text like the ones of gallery shortcodes use the one of the attachment like WordPress
+            return $this->url( $attachment['url'] ?? $attachment['guid'], $alt ?: ( $attachment['alt'] ?? '' ) ?: $attachment['title'], $attachment['mime'] );
         }
 
-        return $this->url( $src, $alt );
+        return $src !== '' ? $this->url( $src, $alt ) : null;
     }
 
 
@@ -211,7 +252,7 @@ class WpMedia
             return true;
         }
 
-        foreach( $this->bases as $base )
+        foreach( [...$this->bases, ...$this->uploads] as $base )
         {
             if( $this->matches( $url, $base ) ) {
                 return true;
@@ -269,6 +310,16 @@ class WpMedia
             return $base . '/' . $m[1];
         }
 
+        // uploads at other locations like the "files" URL of old multisite networks are replaced too
+        foreach( $this->uploads as $upload )
+        {
+            $prefix = rtrim( (string) parse_url( $upload, PHP_URL_PATH ), '/' );
+
+            if( is_string( $path ) && str_starts_with( $path, $prefix . '/' ) && $this->matches( $url, $upload ) ) {
+                return $base . '/' . substr( $path, strlen( $prefix ) + 1 );
+            }
+        }
+
         return $url;
     }
 
@@ -312,7 +363,7 @@ class WpMedia
      *
      * Attachments which weren't fetched for the current posts are fetched one by one.
      *
-     * @return array{guid: string, title: string, mime: string}|null
+     * @return array{guid: string, title: string, mime: string, url?: string, alt?: string}|null
      */
     protected function attachment( int|string $id ): ?array
     {
@@ -321,6 +372,74 @@ class WpMedia
         }
 
         return $this->attachments[$id];
+    }
+
+
+    /**
+     * Returns the ID of the attachment from the "wp-image-<ID>" class of the image if it's the attachment of the source.
+     *
+     * The class of copied content can contain the ID of another attachment, so the file name of the source
+     * without size suffix must be the one of the attachment.
+     *
+     * @param string $html HTML image tag, optionally with link or figure around it
+     * @param string $src Source of the image or empty if the tag has no source
+     */
+    protected function attachmentId( string $html, string $src ): int|string|null
+    {
+        $tag = preg_match( '/<img\b[^>]*>/i', $html, $match ) ? $match[0] : $html;
+
+        if( ( $id = $this->classId( $tag ) ) === null || !( $attachment = $this->attachment( $id ) ) ) {
+            return null;
+        }
+
+        $basename = $this->basename( $src );
+        return $src === '' || $basename === $this->basename( $attachment['guid'] ) || isset( $attachment['url'] ) && $basename === $this->basename( $attachment['url'] ) ? $id : null;
+    }
+
+
+    /**
+     * Returns the file name of the URL without the size suffix of resized and scaled images.
+     */
+    protected function basename( string $url ): string
+    {
+        $path = parse_url( html_entity_decode( $url, ENT_QUOTES | ENT_HTML5, 'UTF-8' ), PHP_URL_PATH );
+        return basename( $this->original( is_string( $path ) ? $path : $url ) );
+    }
+
+
+    /**
+     * Returns the attachment ID from the "wp-image-<ID>" class WordPress adds to the inserted images.
+     *
+     * @param string $tag HTML image tag
+     */
+    protected function classId( string $tag ): ?int
+    {
+        return preg_match( '/(?:^|\s)wp-image-(\d+)(?:\s|$)/', Html::attribute( $tag, 'class' ), $match ) && (int) $match[1] > 0 ? (int) $match[1] : null;
+    }
+
+
+    /**
+     * Returns the URLs of the files of the file blocks in the post content.
+     *
+     * @return array<int, string> URLs from the "href" attribute of the file blocks
+     */
+    protected function fileUrls( string $content ): array
+    {
+        if( !str_contains( $content, 'wp:file' ) || !preg_match_all( '/<!--\s*wp:(?:core\/)?file\s+(\{(?:(?!-->).)*?\})\s*\/?-->/s', $content, $matches ) ) {
+            return [];
+        }
+
+        $urls = array_map( fn( $json ) => ( (array) json_decode( $json, true ) )['href'] ?? null, $matches[1] );
+        return array_values( array_filter( array_map( fn( $url ) => is_string( $url ) ? trim( $url ) : '', $urls ) ) );
+    }
+
+
+    /**
+     * Returns the URL of the original image of a resized or scaled copy, e.g. "photo.jpg" for "photo-300x200.jpg".
+     */
+    protected function original( string $url ): string
+    {
+        return (string) preg_replace( static::SIZE_PATTERN, '$1', $url );
     }
 
 
@@ -335,8 +454,21 @@ class WpMedia
 
     /**
      * Finds the ID of the WordPress attachment matching the given image URL.
+     *
+     * Sources of resized and scaled copies like "photo-300x200.jpg" are the attachment of the original image
+     * if there's no attachment with the name of the copy.
      */
     protected function find( string $src ): int|string|null
+    {
+        $id = $this->basenameId( $src );
+        return $id === null && ( $original = $this->original( $src ) ) !== $src ? $this->basenameId( $original ) : $id;
+    }
+
+
+    /**
+     * Finds the ID of the WordPress attachment whose basename is part of the given image URL.
+     */
+    protected function basenameId( string $src ): int|string|null
     {
         if( array_key_exists( $src, $this->found ) ) {
             return $this->found[$src];

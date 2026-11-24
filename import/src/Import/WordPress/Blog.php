@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Import;
+namespace Aimeos\Cms\Import\WordPress;
 
 use Aimeos\Cms\Models\PageView;
 
@@ -13,7 +13,7 @@ use Aimeos\Cms\Models\PageView;
 /**
  * Reads the content the WordPress posts inherit from their parent blog page.
  */
-class WpBlog
+class Blog
 {
     /**
      * Returns the shared footer references of the blog page.

@@ -28,8 +28,6 @@ use Aimeos\Cms\Import\Typo3Tree;
 use Aimeos\Cms\Import\Typo3Urls;
 use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Import\WordPress;
-use Aimeos\Cms\Import\WpArticle;
-use Aimeos\Cms\Import\WpMedia;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Aimeos\Cms\Models\Page;
@@ -383,7 +381,7 @@ class ImporterVersionTest extends ImportTestAbstract
     public function testWordPressConverterMapsBlocks(): void
     {
         $files = [];
-        $wp = new WordPress(
+        $wp = new WordPress\Html(
             fn( string $tag ) => preg_match( '/src="([^"]+)"/', $tag, $m ) && $m[1] !== 'none.png' ? 'img:' . $m[1] : null,
             function( string $url ) use ( &$files ) {
                 $files[] = $url;
@@ -406,12 +404,13 @@ class ImporterVersionTest extends ImportTestAbstract
             ['heading', ['level' => 2, 'title' => 'Title x']],
             ['text', ['text' => "Para **bold**\n\nSecond"]],
             ['code', ['language' => 'php', 'text' => '<?php']],
-            ['table', ['title' => 'Cap', 'header' => 'row', 'table' => [['A'], ['1']]]],
+            ['text', ['text' => '---']],
+            ['table', ['title' => 'Cap', 'header' => 'row', 'table' => [['A'], ['*1*']]]],
             ['slideshow', ['title' => '', 'files' => [Elements::file( 'img:a.png' ), Elements::file( 'img:b.png' )]]],
             ['image-text', ['text' => "Next\n\n- one", 'file' => Elements::file( 'img:c.png' ), 'position' => 'start']],
             ['video', ['file' => Elements::file( 'file:v.mp4' )]],
             ['audio', ['file' => Elements::file( 'file:a.mp3' )]],
-            ['text', ['text' => '**Note:** Note text']],
+            ['text', ['text' => '**Note:** Note **text**']],
             ['html', ['text' => '<div>html</div>']],
         ], $data( $result ) );
         $this->assertSame( ['img:a.png', 'img:b.png', 'img:c.png', 'file:v.mp4', 'file:a.mp3'], $result['fileIds'] );
@@ -442,22 +441,25 @@ class ImporterVersionTest extends ImportTestAbstract
             ['text', ['text' => 'Inline']],
             ['image', ['file' => Elements::file( 'img:f.png' )]],
             ['text', ['text' => 'text']],
-            ['html', ['text' => '<table><tr><td>t</td></tr></table>']],
+            ['table', ['title' => '', 'header' => '', 'table' => [['t']]]],
         ], $data( $result ) );
 
         $this->assertNull( $wp->text( ' ' ) );
 
-        $this->assertSame( 'Intro & more', WpArticle::intro( "<p>Intro &amp;\n <b>more</b></p><!--more--><p>Rest</p>" ) );
-        $this->assertSame( str_repeat( 'a', 297 ) . '...', WpArticle::intro( str_repeat( 'a', 301 ) ) );
-        $this->assertSame( str_repeat( 'a', 300 ), WpArticle::intro( str_repeat( 'a', 300 ) ) );
+        $this->assertSame( 'Intro & more', WordPress\Article::intro( "<p>Intro &amp;\n <b>more</b></p><!--more--><p>Rest</p>" ) );
+        $this->assertSame( str_repeat( 'a', 299 ) . '…', WordPress\Article::intro( str_repeat( 'a', 301 ) ) );
+        // longer texts end after the last complete word like the excerpts of WordPress
+        $this->assertSame( str_repeat( 'a', 290 ) . ' bb…', WordPress\Article::intro( str_repeat( 'a', 290 ) . ' bb cccccccccccc' ) );
+        $this->assertSame( str_repeat( 'a', 290 ) . ' bbbbbbbb…', WordPress\Article::intro( str_repeat( 'a', 290 ) . ' bbbbbbbb ccc' ) );
+        $this->assertSame( str_repeat( 'a', 300 ), WordPress\Article::intro( str_repeat( 'a', 300 ) ) );
 
-        $article = WpArticle::element( 'Intro', 'cover', 'preview' );
+        $article = WordPress\Article::element( 'Intro', 'cover', 'preview' );
         $this->assertSame( ['type' => 'article', 'group' => 'main', 'files' => ['cover'], 'data' => ['text' => 'Intro', 'file' => ['id' => 'cover', 'type' => 'file']]],
             array_diff_key( $article, ['id' => 1] ) );
         $this->assertNotEmpty( $article['id'] );
-        $this->assertSame( ['preview'], WpArticle::element( 'Intro', null, 'preview' )['files'] );
-        $this->assertSame( ['text' => 'Intro'], WpArticle::element( 'Intro', null, 'preview' )['data'] );
-        $this->assertSame( [], WpArticle::element( 'Intro', null )['files'] );
+        $this->assertSame( ['preview'], WordPress\Article::element( 'Intro', null, 'preview' )['files'] );
+        $this->assertSame( ['text' => 'Intro'], WordPress\Article::element( 'Intro', null, 'preview' )['data'] );
+        $this->assertSame( [], WordPress\Article::element( 'Intro', null )['files'] );
         $this->assertSame( ['elements' => [], 'fileIds' => []], $wp->elements( '' ) );
     }
 
@@ -1520,20 +1522,20 @@ class ImporterVersionTest extends ImportTestAbstract
         $attachment = fn( string $name, string $title ) => ['guid' => "https://wp.org/wp-content/uploads/{$name}", 'title' => $title, 'mime' => 'image/png'];
         $attachments = [1 => $attachment( 'b.png', 'B' ), 2 => $attachment( 'ab.png', 'AB' ), 3 => $attachment( '2024', 'Year' )];
         $fetch = fn( array $ids ) => array_intersect_key( $attachments, array_flip( $ids ) );
-        $media = new WpMedia( [], $create, ['b.png' => 1, 'ab.png' => 2, '2024' => 3], $fetch );
+        $media = new WordPress\Media( [], $create, ['b.png' => 1, 'ab.png' => 2, '2024' => 3], $fetch );
 
         // the first attachment whose basename is part of the URL is used
         $this->assertSame( 'B|https://wp.org/wp-content/uploads/b.png', $media->image( '<img src="https://x.org/ab.png">' ) );
         $this->assertSame( 'Year|https://wp.org/wp-content/uploads/2024', $media->image( '<img src="https://x.org/2024/c.png">' ) );
         $this->assertSame( 'c-300x200.png|https://x.org/c-300x200.png', $media->image( '<img src="https://x.org/c-300x200.png">' ) );
 
-        $media = new WpMedia( [], $create, ['ab.png' => 2, 'b.png' => 1], $fetch );
+        $media = new WordPress\Media( [], $create, ['ab.png' => 2, 'b.png' => 1], $fetch );
         $this->assertSame( 'AB|https://wp.org/wp-content/uploads/ab.png', $media->image( '<img src="https://x.org/ab.png">' ) );
         $this->assertSame( 'B|https://wp.org/wp-content/uploads/b.png', $media->image( '<img src="https://x.org/b.png">' ) );
 
         // attachments which weren't prefetched are fetched once, also if they don't exist any more
         $fetched = [];
-        $media = new WpMedia( [], $create, ['b.png' => 1, 'gone.png' => 4], function( array $ids ) use ( $fetch, &$fetched ) {
+        $media = new WordPress\Media( [], $create, ['b.png' => 1, 'gone.png' => 4], function( array $ids ) use ( $fetch, &$fetched ) {
             $fetched[] = $ids;
             return $fetch( $ids );
         } );
@@ -1555,7 +1557,7 @@ class ImporterVersionTest extends ImportTestAbstract
             yield 'c.png' => 2;
             yield 'b.png' => 1;
         } )();
-        $media = new WpMedia( ['https://cdn.org'], fn( string $mime, string $name, string $path ) => "{$name}|{$path}", $basenames, fn( array $ids ) => array_intersect_key( $attachments, array_flip( $ids ) ) );
+        $media = new WordPress\Media( ['https://cdn.org'], fn( string $mime, string $name, string $path ) => "{$name}|{$path}", $basenames, fn( array $ids ) => array_intersect_key( $attachments, array_flip( $ids ) ) );
 
         $media->prefetch( [5 => 1, 6 => 9], ['<img src="https://wp.org/wp-content/uploads/x.png"><img src="https://x.org/y.png">', '<img src="https://x.org/y.png">'] );
 
@@ -1570,7 +1572,7 @@ class ImporterVersionTest extends ImportTestAbstract
 
     public function testWpMediaRemembersAttachmentsOfImageUrls(): void
     {
-        $media = new class( [], fn() => null, ['b.png' => 1] ) extends WpMedia {
+        $media = new class( [], fn() => null, ['b.png' => 1] ) extends WordPress\Media {
             protected const CACHE_SIZE = 4;
 
             /** @return array<string, int|string|null> */
@@ -1606,7 +1608,7 @@ class ImporterVersionTest extends ImportTestAbstract
             return 'file-' . count( $calls );
         };
         $bases = [' https://cdn.org/media/ ', '', 'https://cdn.org/media', 'http://other.org:8080/up', 1];
-        $media = new WpMedia( $bases, $create );
+        $media = new WordPress\Media( $bases, $create );
 
         $this->assertSame( 'https://cdn.org/media/2020/a.jpg', $media->rewrite( 'https://wp.org/wp-content/uploads/2020/a.jpg' ) );
         $this->assertSame( 'https://wp.org/x.jpg', $media->rewrite( 'https://wp.org/x.jpg' ) );
@@ -1631,7 +1633,7 @@ class ImporterVersionTest extends ImportTestAbstract
         ], $calls );
 
         $attachments = [7 => ['guid' => 'https://wp.org/wp-content/uploads/d.png', 'title' => 'D', 'mime' => 'image/webp']];
-        $media = new WpMedia( $bases, $create, ['d.png' => 7], fn( array $ids ) => array_intersect_key( $attachments, array_flip( $ids ) ) );
+        $media = new WordPress\Media( $bases, $create, ['d.png' => 7], fn( array $ids ) => array_intersect_key( $attachments, array_flip( $ids ) ) );
         $media->prefetch( [5 => 7, 6 => 0, 8 => 9] );
 
         $this->assertSame( 'file-4', $media->featured( 5 ) );

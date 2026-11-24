@@ -8,8 +8,10 @@
 namespace Aimeos\Cms\Import;
 
 use Aimeos\Cms\Exception;
+use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Mime\MimeTypes;
 
 
@@ -222,6 +224,31 @@ class Files
         $path = ltrim( $path, '/' );
 
         return $base ? $base . '/' . $path : $path;
+    }
+
+
+    /**
+     * Returns the URL of the stored file used in HTML content.
+     *
+     * Files referenced by their remote URL keep it. Local managed files must remain portable across hosts and
+     * preview ports, so only the path of their URL is used, remote disks keep their absolute URL.
+     */
+    public static function stored( File $file ) : string
+    {
+        $path = (string) $file->path;
+
+        if( preg_match( '#^https?://#i', $path ) ) {
+            return $path;
+        }
+
+        $disk = FileStorage::diskName( (string) $file->disk );
+        $url = Storage::disk( $disk )->url( $path );
+
+        if( config( 'filesystems.disks.' . $disk . '.driver' ) === 'local' ) {
+            $url = parse_url( $url, PHP_URL_PATH ) ?: $url;
+        }
+
+        return $url;
     }
 
 
