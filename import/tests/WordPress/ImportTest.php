@@ -2292,7 +2292,7 @@ class ImportTest extends ImportTestAbstract
             ['image', ['file' => Elements::file( 'img:https://wp.example/b.jpg' )]],
             ['text', ['text' => '[Hat](https://shop.example/q)']],
             ['image', ['file' => Elements::file( 'img:https://wp.example/c.jpg' )]],
-            ['table', ['title' => '', 'header' => 'row', 'table' => [['Name & Co'], ['A <b>'], ['Total']]]],
+            ['table', ['title' => '', 'header' => 'row', 'table' => [['Name & Co'], ['A \\<b>'], ['Total']]]],
             ['html', ['text' => '<ol><li value="2">A</li><li value="1">B</li></ol>']],
         ], $data( $result ) );
 

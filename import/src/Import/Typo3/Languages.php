@@ -5,16 +5,21 @@
  */
 
 
-namespace Aimeos\Cms\Import;
+namespace Aimeos\Cms\Import\Typo3;
+
+use Aimeos\Cms\Import\Variants;
 
 
 /**
  * Maps the TYPO3 language UIDs to the languages of the pages and collects the URL paths of the page translations.
  */
-class Typo3Languages
+class Languages
 {
     /** @var array<int, array{lang: string, domain: string}> Languages by TYPO3 language UID */
     protected array $languages;
+
+    /** @var array<int, array{lang: string, domain: string}> Languages of the --language options by TYPO3 language UID */
+    protected array $options = [];
 
 
     /**
@@ -25,12 +30,13 @@ class Typo3Languages
      *
      * @param array<int, array{lang: string, domain: string}> $languages Languages of the sys_language table by UID
      * @param array<mixed> $options Values of the --language option like "1:de[:url]"
+     * @param array<int, array<int, array{lang: string, domain: string}>> $sites Languages of the site configurations by root page UID and language UID
      * @throws \InvalidArgumentException If an option value is invalid
      */
-    public function __construct( array $languages, array $options )
+    public function __construct( array $languages, array $options, protected array $sites = [] )
     {
         foreach( Variants::options( $options, 'TYPO3', '/^0*[1-9][0-9]*$/D' ) as $uid => $language ) {
-            $languages[(int) $uid] = $language;
+            $languages[(int) $uid] = $this->options[(int) $uid] = $language;
         }
 
         $this->languages = $languages;
@@ -40,11 +46,14 @@ class Typo3Languages
     /**
      * Returns the language of the TYPO3 language UID.
      *
+     * The language UIDs of the site configurations are per site, the --language options apply to all sites.
+     *
+     * @param int|null $root UID of the root page of the site configuration of the page or NULL if there's none
      * @return array{lang: string, domain: string}|null Language or NULL if unknown
      */
-    public function get( int $uid ): ?array
+    public function get( int $uid, ?int $root = null ): ?array
     {
-        return $this->languages[$uid] ?? null;
+        return $this->options[$uid] ?? ( $root !== null && isset( $this->sites[$root] ) ? $this->sites[$root][$uid] ?? null : $this->languages[$uid] ?? null );
     }
 
 
@@ -56,7 +65,25 @@ class Typo3Languages
      */
     public function imported( string $lang ): array
     {
-        return array_keys( array_filter( $this->languages, fn( $language ) => $language['lang'] !== $lang ) );
+        $languages = $this->languages;
+
+        foreach( $this->sites as $site ) {
+            $languages += $site;
+        }
+
+        $uids = [];
+
+        foreach( [$languages, ...$this->sites] as $list )
+        {
+            foreach( $list as $uid => $language )
+            {
+                if( $language['lang'] !== $lang ) {
+                    $uids[$uid] = $uid;
+                }
+            }
+        }
+
+        return array_values( $uids );
     }
 
 

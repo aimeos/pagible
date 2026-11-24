@@ -62,6 +62,8 @@ class Markdown
         ], $text );
         $text = strip_tags( $text );
         $text = html_entity_decode( $text, ENT_QUOTES, 'UTF-8' );
+        // encoded tags like "&lt;b&gt;" are text and would be removed as HTML when the Markdown is rendered
+        $text = (string) preg_replace( '#<(?=[a-z/!?])#i', '\\\\<', $text );
 
         // Indentation between list items is formatting whitespace, not list nesting
         $text = (string) preg_replace( '/^[\t ]+(?=(-|\d+\.)\s)/m', '', $text );

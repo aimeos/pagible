@@ -16,16 +16,6 @@ use Aimeos\Cms\Import\Html;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\SharedElements;
 use Aimeos\Cms\Import\Status;
-use Aimeos\Cms\Import\Typo3;
-use Aimeos\Cms\Import\Typo3Destinations;
-use Aimeos\Cms\Import\Typo3Files;
-use Aimeos\Cms\Import\Typo3Html;
-use Aimeos\Cms\Import\Typo3Languages;
-use Aimeos\Cms\Import\Typo3Layouts;
-use Aimeos\Cms\Import\Typo3Records;
-use Aimeos\Cms\Import\Typo3Site;
-use Aimeos\Cms\Import\Typo3Tree;
-use Aimeos\Cms\Import\Typo3Urls;
 use Aimeos\Cms\Import\Variants;
 use Aimeos\Cms\Import\WordPress;
 use Aimeos\Cms\Models\Element;
@@ -35,21 +25,17 @@ use Aimeos\Cms\Commands;
 use Aimeos\Cms\Commands\DrupalImport;
 use Aimeos\Cms\Commands\JoomlaImport;
 use Aimeos\Cms\Commands\StatamicImport;
-use Aimeos\Cms\Commands\T3Import;
 use Aimeos\Cms\Models\PageView;
 use Aimeos\Cms\Models\PageVariant;
 use Aimeos\Cms\Translation\Hashes;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Database\Events\TransactionCommitted;
-use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
-use League\Flysystem\Filesystem;
-use League\Flysystem\Local\LocalFilesystemAdapter;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -92,6 +78,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertNull( $html->text( '<p> </p>' ) );
         $this->assertSame( '<p>Text</p>', $html->text( ' <p>Text</p> ' )['elements'][0]['data']['text'] ?? null );
     }
+
 
 
     public function testSharedHtmlParserImportsImagesInFiguresAndKeepsFailedOnes(): void
@@ -141,6 +128,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $result = $html->elements( '<figure><figcaption><script>alert(1)</script><i>Cap</i></figcaption><img src="x.jpg"></figure>' );
         $this->assertStringNotContainsString( '<', $result['elements'][0]['data']['text'] );
     }
+
 
 
     public function testSharedHtmlParserKeepsContentOfFigures(): void
@@ -209,6 +197,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSharedHtmlParserImportsAllImagesOfFigures(): void
     {
         $tags = [];
@@ -241,6 +230,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSharedHtmlParserKeepsListsAndTablesWithImages(): void
     {
         $tags = [];
@@ -271,6 +261,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSharedHtmlParserRemovesNestedEmptyTagsAtStartAndEnd(): void
     {
         $html = new Html( fn( string $tag ) => 'file-1' );
@@ -293,6 +284,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSharedHtmlParserUnwrapsFiguresWithoutImagesAndNestedFigures(): void
     {
         $html = new Html( fn( string $tag ) => 'file-1' );
@@ -313,6 +305,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( [['video', 'video-1'], ['html', '<p>In</p>'], ['html', '<p>Out</p>']],
             $data( $drupal->elements( '<figure class="outer"><figure><video src="/a.mp4"></video><figcaption>In</figcaption></figure><figcaption>Out</figcaption></figure>' ) ) );
     }
+
 
 
     public function testDrupalHtmlParserUsesHandlers(): void
@@ -376,6 +369,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( '<iframe src="https://example.com/map?a=1&amp;amp;b=2" title="A &amp;amp; B" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>',
             $iframe['elements'][0]['data']['text'] ?? null );
     }
+
 
 
     public function testWordPressConverterMapsBlocks(): void
@@ -464,6 +458,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSharedElementOnlyUpdatesChangedOwnElements(): void
     {
         $used = Files::reference( 'image/png', 'Used', 'https://old.example/used.png', 'importer' )->id ?? '';
@@ -499,6 +494,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testTransactionForgetsFilesOfFailedImports(): void
     {
         $command = new class extends Commands {
@@ -525,6 +521,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertNotNull( File::find( $id ) );
         $this->assertStringContainsString( 'Failed to import failed: failed', $output->fetch() );
     }
+
 
 
     public function testTransactionKeepsEntriesOfEarlierImports(): void
@@ -560,6 +557,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( ['a.png' => '1', 'c.png' => '3'], $files );
         $this->assertSame( ['p1' => true, 'p3' => true], $used );
     }
+
 
 
     public function testPrefetchedPagesAreUsedOnce(): void
@@ -601,6 +599,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( 'created', $created );
         $this->assertSame( ['c'], $kept );
     }
+
 
 
     public function testImportedKeepsPagesWithoutContent(): void
@@ -654,6 +653,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testBatchesAreCommittedAfterSomeTime(): void
     {
         $run = function( int $seconds ): array {
@@ -699,6 +699,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( [1, 2, 3, 3], $run( 0 ) );
         $this->assertSame( [3], $run( 10 ) );
     }
+
 
 
     public function testPrefetchedFilesAreUsedOnce(): void
@@ -761,6 +762,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testPrefetchedFilesOfUpcomingRecordsAreKept(): void
     {
         $command = new class extends Commands {
@@ -803,6 +805,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSaveVariantReusesLoadedVariant(): void
     {
         $data = ['name' => 'About', 'title' => 'About', 'path' => 'about', 'lang' => 'en', 'domain' => '', 'status' => 1, 'editor' => 'importer'];
@@ -832,6 +835,7 @@ class ImporterVersionTest extends ImportTestAbstract
         // the variant isn't loaded again
         $this->assertSame( $lookup - 1, $count );
     }
+
 
 
     public function testSaveVariantChecksOnlyChangedUrls(): void
@@ -864,6 +868,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testSaveVariantLoadsSourceOfTranslation(): void
     {
         $data = ['name' => 'About', 'title' => 'About', 'path' => 'about', 'lang' => 'en', 'domain' => '', 'status' => 1, 'editor' => 'importer'];
@@ -883,6 +888,8 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( 'content-1', $fr->content[0]->id ?? null );
         $this->assertEquals( Hashes::published( PageView::findOrFail( $page->id ) ), $fr->hashes );
     }
+
+
 
     public function testSaveVariantLoadsSourceOncePerPage(): void
     {
@@ -929,6 +936,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( 2, $command->check( $de, $elements ) );
         $this->assertSame( ['de', 'en', 'es', 'fr', 'it', 'nl'], PageVariant::where( 'page_id', $page->id )->orderBy( 'lang' )->pluck( 'lang' )->all() );
     }
+
 
 
     public function testLinkPagesAreOnlySavedOverOwnLinkPages(): void
@@ -994,6 +1002,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testImportsAreCommittedInBatches(): void
     {
         $command = new class extends Commands {
@@ -1048,6 +1057,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( $level, $db->transactionLevel() );
         $this->assertSame( 4, Element::where( 'name', 'like', 'Batch %' )->count() );
     }
+
 
 
     public function testCreatedFilesAreRemovedOnRollback(): void
@@ -1116,6 +1126,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testFindRestoresTrashedPage(): void
     {
         $page = \Aimeos\Cms\Import\Pages::create( ['name' => 'Old', 'path' => 'old', 'domain' => 'example.com'], [] );
@@ -1127,6 +1138,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertFalse( $found->trashed() );
         $this->assertNotNull( PageView::find( $page->id ) );
     }
+
 
 
     public function testFindAllReturnsPagesByColumnValue(): void
@@ -1152,6 +1164,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testRootReturnsRootPageOfDomain(): void
     {
         Pages::create( ['name' => 'Page', 'path' => 'page', 'tag' => 'page', 'domain' => 'example.com'], [] );
@@ -1164,27 +1177,6 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertNull( Pages::root( 'example.net' ) );
     }
 
-
-    public function testTypo3HtmlRewritesFilesAndLinks(): void
-    {
-        $html = new Typo3Html(
-            fn( string $url ) => str_contains( $url, 'missing' ) ? null : ['id' => 'u:' . basename( $url ), 'url' => '/files/' . basename( $url )],
-            fn( int $uid, string $fragment ) => $uid === 5 ? '/page-5' . ( $fragment !== '' ? '#' . $fragment : '' ) : null
-        );
-
-        $result = $html->rewrite( '<p><link 5#c1 _blank btn "A title">Legacy</link> <link 7>Gone</link> <link https://example.org>Ext</link>'
-            . ' <a href="t3://page?uid=5&amp;fragment=x">New</a> <a href="t3://page?uid=9">Missing</a>'
-            . ' <img data-src="fileadmin/lazy.png"> <img src="fileadmin/a.png" data-src="fileadmin/b.png">'
-            . ' <img srcset="fileadmin/s1.png 1x, fileadmin/missing.png 2x"> <img src="/fileadmin/missing.png">'
-            . ' <a href=fileadmin/doc.pdf>Doc</a> <a href="https://other.org/x.png">Other</a></p>' );
-
-        // unknown pages keep their text or URL, rejected files are removed
-        $this->assertSame( '<p><a href="/page-5#c1" target="_blank" class="btn" title="A title">Legacy</a> Gone <a href="https://example.org">Ext</a>'
-            . ' <a href="/page-5#x">New</a> <a href="t3://page?uid=9">Missing</a>'
-            . ' <img src="/files/lazy.png"> <img src="/files/a.png">'
-            . ' <img srcset="/files/s1.png 1x">  <a href=/files/doc.pdf>Doc</a> <a href="https://other.org/x.png">Other</a></p>', $result['html'] );
-        $this->assertSame( ['u:s1.png', 'u:lazy.png', 'u:a.png', 'u:doc.pdf'], $result['fileIds'] );
-    }
 
 
     public function testPublishWritesLatestVersionWithPublishedValues(): void
@@ -1205,6 +1197,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( $version->id, $variant->latest_id );
         $this->assertTrue( (bool) $version->published );
     }
+
 
 
     public function testCreateLoadsParentNodeOnce(): void
@@ -1236,6 +1229,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testCreateRefusesTrashedParent(): void
     {
         $parent = Pages::create( ['name' => 'Blog', 'path' => 'blog', 'domain' => 'example.com'], [] );
@@ -1246,6 +1240,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testCreateUsesCurrentDateWithoutCreationDate(): void
     {
         $page = Pages::create( ['name' => 'New', 'path' => 'new', 'domain' => 'example.com'], [] );
@@ -1253,6 +1248,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertNotNull( $page->created_at );
         $this->assertLessThan( 60, abs( now()->diffInSeconds( $page->created_at ) ) );
     }
+
 
 
     public function testScheduledVersionSavesLatestVersion(): void
@@ -1269,6 +1265,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( 'Page', $variant->name );
         $this->assertFalse( (bool) $version->published );
     }
+
 
 
     public function testFilesAndElementsWriteLatestVersionWithPublishedValues(): void
@@ -1291,6 +1288,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( $element->versions()->value( 'id' ), $element->latest_id );
         $this->assertSame( 'Footer', $element->data->text ?? null );
     }
+
 
 
     /** @param class-string $class */
@@ -1319,6 +1317,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     /**
      * @return array<string, array{class-string}>
      */
@@ -1333,6 +1332,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     /**
      * Returns a valid UUID which doesn't exist in the database.
      */
@@ -1340,6 +1340,7 @@ class ImporterVersionTest extends ImportTestAbstract
     {
         return sprintf( '00000000-0000-7000-8000-%012d', $num );
     }
+
 
 
     /**
@@ -1361,76 +1362,8 @@ class ImporterVersionTest extends ImportTestAbstract
 
         return $queries;
     }
-    public function testTypo3ConverterMapsRecords(): void
-    {
-        $refs = fn( array $map ) => Collection::make( $map )->map( fn( $list ) => Collection::make( array_map( fn( $v ) => (object) $v, $list ) ) );
-        $typo3 = new Typo3(
-            fn( object $ref ) => ( $name = $ref->name ?? 'none' ) !== 'none' ? 'f:' . $name : null,
-            new Typo3Html(
-                fn( string $url ) => str_contains( $url, 'missing' ) ? null : ['id' => 'u:' . basename( $url ), 'url' => '/files/' . basename( $url )],
-                fn( int $uid, string $fragment ) => $uid === 5 ? '/page-5' . ( $fragment !== '' ? '#' . $fragment : '' ) : null
-            ),
-            fn() => $refs( [1 => [['name' => 'a.png'], ['name' => 'b.png']], 2 => [['name' => 'none']], 3 => [['name' => 'c.png']]] ),
-            fn() => $refs( [10 => [['header' => 'Q1', 'bodytext' => '<p>A1 <img src="fileadmin/q.png"> <a href="t3://page?uid=5">Go</a></p>'], ['header' => '', 'bodytext' => 'skip']]] ),
-            fn() => $refs( [20 => [['uid' => 201], ['uid' => 202]], 21 => [['uid' => 211]]] ),
-            fn() => $refs( [201 => [['name' => 's1.png'], ['name' => 'none']], 202 => [['name' => 's2.png']], 211 => [['name' => 's3.png']]] )
-        );
-        $typo3->prefetch( array_map( fn( $uid ) => (object) ['uid' => $uid, 'CType' => $uid >= 20 ? 'carousel' : ( $uid >= 10 ? 'accordion' : 'text' )], [1, 2, 3, 10, 11, 20, 21, 22] ) );
-        $convert = fn( array $record ) => $typo3->convert( (object) $record );
-        $data = fn( ?array $result ) => $result === null ? null : [array_map( fn( $el ) => [$el['type'], $el['data']], $result['elements'] ), $result['fileIds'] ?? null];
 
-        $file = fn( string $id ) => Elements::file( $id );
 
-        $this->assertSame( [[['heading', ['level' => 3, 'title' => 'H3']]], null], $data( $convert( ['CType' => 'header', 'header' => 'H3', 'header_layout' => '3'] ) ) );
-        $this->assertSame( [[['heading', ['level' => 2, 'title' => 'H']]], null], $data( $convert( ['CType' => 'header', 'header' => 'H', 'header_layout' => 7] ) ) );
-        $this->assertSame( [[['heading', ['level' => 4, 'title' => 'H']]], null], $data( $convert( ['CType' => 'header', 'header' => 'H', 'header_layout' => 4] ) ) );
-        $this->assertNull( $convert( ['CType' => 'header', 'header' => ''] ) );
-
-        $this->assertSame( [[
-            ['heading', ['level' => 1, 'title' => 'T']],
-            ['image-text', ['text' => '<p>Text</p>', 'file' => $file( 'f:a.png' ), 'position' => 'start']],
-        ], ['f:a.png']], $data( $convert( ['CType' => 'textpic', 'uid' => 1, 'header' => 'T', 'header_layout' => '1', 'bodytext' => '<p>Text</p>', 'imageorient' => 17] ) ) );
-        $this->assertSame( [[['image-text', ['text' => '<p>Text</p>', 'file' => $file( 'f:c.png' ), 'position' => 'end']]], ['f:c.png']],
-            $data( $convert( ['CType' => 'textmedia', 'uid' => 3, 'header' => 'T', 'header_layout' => '100', 'bodytext' => '<p>Text</p>', 'imageorient' => 25] ) ) );
-        $this->assertSame( [[['image-text', ['text' => '<p>Text</p>', 'file' => $file( 'f:c.png' ), 'position' => 'auto']]], ['f:c.png']],
-            $data( $convert( ['CType' => 'textmedia', 'uid' => 3, 'bodytext' => '<p>Text</p>', 'imageorient' => 0] ) ) );
-        $this->assertSame( [[['image-text', ['text' => '<p>T <img srcset="/files/s.png 1x, other.png 3x"></p>', 'file' => $file( 'f:c.png' ), 'position' => 'auto']]], ['u:s.png', 'f:c.png']],
-            $data( $convert( ['CType' => 'textpic', 'uid' => 3, 'bodytext' => '<p>T <img srcset="fileadmin/s.png 1x, fileadmin/missing.png 2x, other.png 3x"><img src="fileadmin/missing.png"><img data-src="fileadmin/missing.png"></p>'] ) ) );
-        $this->assertSame( [[['html', ['text' => '<p>Only</p>']]], []], $data( $convert( ['CType' => 'textpic', 'uid' => 2, 'bodytext' => '<p>Only</p>'] ) ) );
-        $this->assertSame( [[['image', ['file' => $file( 'f:c.png' )]]], ['f:c.png']], $data( $convert( ['CType' => 'textpic', 'uid' => 3, 'bodytext' => ' '] ) ) );
-        $this->assertNull( $convert( ['CType' => 'textpic', 'uid' => 2] ) );
-
-        $this->assertSame( [[['heading', ['level' => 2, 'title' => 'I']], ['image', ['file' => $file( 'f:a.png' )]]], ['f:a.png']],
-            $data( $convert( ['CType' => 'image', 'uid' => 1, 'header' => 'I'] ) ) );
-        $this->assertNull( $convert( ['CType' => 'image', 'uid' => 2, 'header' => 'I'] ) );
-
-        $this->assertSame( [[['html', ['text' => '<p><a href="/page-5#c1" target="_blank" class="cls" title="My title" rel="noreferrer noopener">a</a> b <a href="https://x.org">c</a>'
-            . ' <a href="/page-5#f">d</a> <a>e</a></p><img src="/files/l.png" class="lazy" alt="l.png" /><img src="x.png" alt="x.png" />'
-            . '<img src="/files/u.png" alt="u.png" /><a href="/files/doc.pdf">doc</a>']]], ['u:s1.png', 'u:l.png', 'u:doc.pdf', 'u:u.png']],
-            $data( $convert( ['CType' => 'html', 'bodytext' => '<p><link 5#c1 _blank cls "My title">a</link> <link 9>b</link> <link https://x.org - - ->c</link>'
-                . ' <a href="t3://page?uid=5&amp;fragment=f">d</a> <a href="t3://page?uid=9">e</a></p>'
-                . '<img data-src="fileadmin/l.png" class="lazy"><img src="x.png" data-src="fileadmin/m.png"><img src="/fileadmin/missing.png">'
-                . '<img srcset="fileadmin/s1.png 1x, fileadmin/missing.png 2x, other.png 3x"><img src=fileadmin/u.png><a href="fileadmin/doc.pdf">doc</a>'] ) ) );
-        $this->assertNull( $convert( ['CType' => 'html', 'bodytext' => ''] ) );
-
-        $this->assertSame( [[['questions', ['title' => 'Acc', 'items' => [['title' => 'Q1', 'text' => 'A1  [Go](/page-5)']]]]], ['u:q.png']],
-            $data( $convert( ['CType' => 'accordion', 'uid' => 10, 'header' => 'Acc'] ) ) );
-        $this->assertSame( [[['questions', ['title' => '', 'items' => [['title' => 'Item', 'text' => 'Body']]]]], []],
-            $data( $convert( ['CType' => 'accordion', 'uid' => 11, 'bodytext' => '<p>Body</p>'] ) ) );
-        $this->assertNull( $convert( ['CType' => 'accordion', 'uid' => 11] ) );
-
-        $this->assertSame( [[['slideshow', ['title' => 'Car', 'files' => [$file( 'f:s1.png' ), $file( 'f:s2.png' )]]]], ['f:s1.png', 'f:s2.png']],
-            $data( $convert( ['CType' => 'carousel', 'uid' => 20, 'header' => 'Car'] ) ) );
-        $this->assertSame( [[['image', ['file' => $file( 'f:s3.png' )]]], ['f:s3.png']], $data( $convert( ['CType' => 'carousel', 'uid' => 21] ) ) );
-        $this->assertSame( [[['html', ['text' => '<p>X</p>']]], []],
-            $data( $convert( ['CType' => 'carousel', 'uid' => 22, 'header' => 'Fallback', 'header_layout' => '100', 'bodytext' => '<p>X</p>'] ) ) );
-
-        $this->assertSame( [[['heading', ['level' => 2, 'title' => 'Txt']], ['html', ['text' => '<p>Body <img src="/files/t.png" alt="t.png" /></p>']]], ['u:t.png']],
-            $data( $convert( ['CType' => 'text', 'header' => 'Txt', 'bodytext' => '<p>Body <img src="fileadmin/t.png"></p>'] ) ) );
-        $this->assertSame( [[['heading', ['level' => 2, 'title' => 'Zero']]], []], $data( $convert( ['CType' => 'text', 'header' => 'Zero', 'bodytext' => '0'] ) ) );
-        $this->assertNull( $convert( ['CType' => 'text'] ) );
-        $this->assertSame( ['main'], array_values( array_unique( array_column( $convert( ['CType' => 'image', 'uid' => 1, 'header' => 'I'] )['elements'] ?? [], 'group' ) ) ) );
-    }
 
     public function testHtmlSourceReturnsSourceAndAlt(): void
     {
@@ -1458,6 +1391,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testDatabaseFirstDateReturnsFirstNonEmptyDate(): void
     {
         $this->assertSame( '2020-01-02 03:04:05', Date::first( [null, '', 1, '0000-00-00 00:00:00.000', '2020-01-02 03:04:05', '2021-01-01 00:00:00'] ) );
@@ -1471,6 +1405,7 @@ class ImporterVersionTest extends ImportTestAbstract
         // the empty dates of Joomla 3 on PostgreSQL and SQL Server are only empty for Joomla
         $this->assertSame( '1970-01-01 00:00:00', Date::first( ['1970-01-01 00:00:00'] ) );
     }
+
 
 
     public function testCommandsDateSkipsEmptyDates(): void
@@ -1489,6 +1424,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( '1970-01-01 00:00:00', $command->check( '1970-01-01 00:00:00', '2020-01-02 03:04:05' ) );
         $this->assertNull( $command->check( '0000-00-00', null ) );
     }
+
 
 
     public function testFilesUrlPrefixesRelativePaths(): void
@@ -1514,6 +1450,7 @@ class ImporterVersionTest extends ImportTestAbstract
         // colons after the first character which isn't a scheme are part of relative paths
         $this->assertSame( 'https://cdn.org/1:a.png', Files::url( '1:a.png', 'https://cdn.org' ) );
     }
+
 
 
     public function testWpMediaFindsFirstAttachmentInUrl(): void
@@ -1549,6 +1486,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testWpMediaReturnsPathsOfPrefetchedFiles(): void
     {
         $attachments = [1 => ['guid' => 'https://wp.org/wp-content/uploads/b.png', 'title' => 'B', 'mime' => 'image/png']];
@@ -1568,6 +1506,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( 'B|https://cdn.org/b.png', $media->image( '<img src="https://x.org/c.png/b.png">' ) );
         $this->assertSame( [], $media->prefetch( [] )->paths() );
     }
+
 
 
     public function testWpMediaRemembersAttachmentsOfImageUrls(): void
@@ -1598,6 +1537,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( ['https://x.org/b.png' => 1, 'https://x.org/c.png' => null], $media->found() );
         $this->assertSame( 1, $media->lookup( 'https://x.org/b.png' ) );
     }
+
 
 
     public function testWpMediaRewritesAndCreatesFiles(): void
@@ -1650,539 +1590,29 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
-    public function testTypo3LayoutsSortByBackendLayoutColumns(): void
+
+    public function testFilesContentsReadsStoredTextFiles(): void
     {
-        $child = (object) ['uid' => 2, 'pid' => 1];
-        $pagets = (object) ['uid' => 4, 'pid' => 0, 'backend_layout' => 'pagets__x',
-            'TSconfig' => "mod.web_layout.BackendLayouts.x {\n config { colPos = 7\n colPos = 0 }\n}"];
-        $plain = (object) ['uid' => 5, 'pid' => 0];
-        $pages = Collection::make( [1 => (object) ['uid' => 1, 'pid' => 0, 'backend_layout_next_level' => 'db__3'], 2 => $child, 4 => $pagets, 5 => $plain] );
-        $records = Collection::make( [
-            (object) ['uid' => 10, 'colPos' => 0, 'sorting' => 1],
-            (object) ['uid' => 11, 'colPos' => 2, 'sorting' => 5],
-            (object) ['uid' => 9, 'colPos' => 2, 'sorting' => 5],
-            (object) ['uid' => 12, 'colPos' => 7, 'sorting' => 0],
-        ] );
-        $layout = new Typo3Layouts( $pages, $this->layouts( [3 => (object) ['config' => 'rows { 1 { columns { 1 { colPos = 2 } 2 { colPos = 0 } } } }']] ) );
+        Storage::fake( 'public' );
+        $files = [];
 
-        $this->assertSame( [9, 11, 10, 12], $layout->sort( $records, $child )->pluck( 'uid' )->all() );
-        $this->assertSame( [12, 10, 9, 11], $layout->sort( $records, $pagets )->pluck( 'uid' )->all() );
-        $this->assertSame( [10, 11, 9, 12], $layout->sort( $records, $plain )->pluck( 'uid' )->all() );
-    }
-
-
-    public function testTypo3LayoutsResolveColumnsOncePerLayout(): void
-    {
-        $page = (object) ['uid' => 1, 'pid' => 0, 'backend_layout' => 'db__3'];
-        $other = (object) ['uid' => 2, 'pid' => 0, 'backend_layout' => 'db__3'];
-        $layout = new class( Collection::make( [1 => $page, 2 => $other] ), $this->layouts( [3 => (object) ['config' => 'colPos = 1']] ) ) extends Typo3Layouts {
-            /** @var list<object> */
-            public array $resolved = [];
-
-            protected function resolve( object $t3Page ): array
-            {
-                $this->resolved[] = $t3Page;
-                return parent::resolve( $t3Page );
-            }
-        };
-        $records = Collection::make( [(object) ['uid' => 10, 'colPos' => 0], (object) ['uid' => 11, 'colPos' => 1]] );
-
-        foreach( [$page, $page, $other, $page] as $t3Page ) {
-            $this->assertSame( [11, 10], $layout->sort( $records, $t3Page )->pluck( 'uid' )->all() );
-        }
-
-        // pages using the same database layout share its columns
-        $this->assertSame( [$page], $layout->resolved );
-    }
-
-
-    public function testTypo3RecordsSelectsAndExpandsPageContent(): void
-    {
-        $root = (object) ['uid' => 1, 'pid' => 0];
-        $clone = (object) ['uid' => 2, 'pid' => 1, 'content_from_pid' => 3];
-        $source = (object) ['uid' => 3, 'pid' => 1];
-        $pages = $this->pages( [1 => $root, 2 => $clone, 3 => $source] );
-        $content = $this->records( [
-            10 => (object) ['uid' => 10, 'pid' => 1, 'CType' => 'text', 'colPos' => 0, 'sorting' => 1, 'sys_language_uid' => 0],
-            11 => (object) ['uid' => 11, 'pid' => 1, 'CType' => 'shortcut', 'records' => 'tt_content_30', 'colPos' => 2, 'sorting' => 2, 'sys_language_uid' => 0],
-            12 => (object) ['uid' => 12, 'pid' => 1, 'CType' => 'text', 'colPos' => 0, 'sorting' => 4, 'sys_language_uid' => -1],
-            30 => (object) ['uid' => 30, 'pid' => 3, 'CType' => 'text', 'colPos' => 0, 'sorting' => 5, 'sys_language_uid' => 0],
-            31 => (object) ['uid' => 31, 'pid' => 3, 'CType' => 'text', 'colPos' => 0, 'sorting' => 6, 'sys_language_uid' => 0],
-        ] );
-        $translated = $this->records( [1 => Collection::make( [
-            (object) ['uid' => 20, 'pid' => 1, 'CType' => 'text', 'colPos' => 0, 'sorting' => 3, 'sys_language_uid' => 1],
-            (object) ['uid' => 21, 'pid' => 1, 'CType' => 'text', 'colPos' => 0, 'sorting' => 5, 'sys_language_uid' => 3],
-        ] )] );
-        $fetched = $translations = [];
-        $records = new Typo3Records( $pages,
-            fn( array $pids ) => $content->whereIn( 'pid', $pids )->values(),
-            function( array $pids ) use ( $translated, &$translations ) {
-                $translations[] = $pids[0];
-                return $translated->get( $pids[0] ) ?? Collection::make();
-            },
-            function( array $uids ) use ( $content, &$fetched ) {
-                $fetched[] = $uids;
-                return Collection::make( $uids )->mapWithKeys( fn( int $uid ) => [$uid => $content->get( $uid )] )->filter();
-            },
-            $content->where( 'CType', 'shortcut' )->values(),
-            new Typo3Layouts( $pages, $this->layouts( [] ) )
-        );
-
-        // the targets of the shortcuts are fetched once for all records of the page
-        $page = $records->page( $root );
-        $this->assertSame( [[30]], $fetched );
-        $this->assertSame( [10, 30, 12], $page->pluck( 'uid' )->all() );
-        $this->assertSame( [null, 'reference', null], $page->pluck( '_pagible_shared' )->all() );
-        $this->assertSame( [null, 3, null], $page->pluck( '_pagible_shared_page' )->all() );
-        $this->assertSame( [null, 30, null], $page->pluck( '_pagible_shared_uid' )->all() );
-        $this->assertSame( [0, 2, 0], $page->pluck( 'colPos' )->all() );
-        $this->assertSame( [1, 2, 4], $page->pluck( 'sorting' )->all() );
-
-        $this->assertSame( [20, 12], $records->page( $root, 1 )->pluck( 'uid' )->all() );
-        $this->assertSame( [12], $records->page( $root, 2 )->pluck( 'uid' )->all() );
-        $this->assertSame( [12, 21], $records->page( $root, 3 )->pluck( 'uid' )->all() );
-
-        // the translated records of all languages are fetched once per page
-        $this->assertSame( [1], $translations );
-
-        foreach( [$records->page( $clone ), $records->page( $source )] as $shared )
+        foreach( ['utf8.csv' => "\xEF\xBB\xBFa,b\nc,d", 'latin.csv' => "\xE4,b", 'big.csv' => 'abcdef'] as $name => $content )
         {
-            $this->assertSame( [30, 31], $shared->pluck( 'uid' )->all() );
-            $this->assertSame( ['reference', 'reference'], $shared->pluck( '_pagible_shared' )->all() );
-            $this->assertSame( [3, 3], $shared->pluck( '_pagible_shared_page' )->all() );
-        }
-    }
-
-
-    public function testTypo3RecordsCachesContentAndTargets(): void
-    {
-        $root = (object) ['uid' => 1, 'pid' => 0];
-        $other = (object) ['uid' => 4, 'pid' => 1];
-        $nested = (object) ['uid' => 5, 'pid' => 1];
-        $pages = $this->pages( [1 => $root, 4 => $other, 5 => $nested] );
-        $content = $this->records( [
-            10 => (object) ['uid' => 10, 'pid' => 1, 'CType' => 'shortcut', 'records' => '30,31', 'sorting' => 1, 'sys_language_uid' => 0],
-            11 => (object) ['uid' => 11, 'pid' => 1, 'CType' => 'shortcut', 'records' => '32', 'sorting' => 2, 'sys_language_uid' => 0],
-            12 => (object) ['uid' => 12, 'pid' => 4, 'CType' => 'shortcut', 'records' => '33', 'sorting' => 1, 'sys_language_uid' => 0],
-            30 => (object) ['uid' => 30, 'pid' => 9, 'CType' => 'text', 'sorting' => 1, 'sys_language_uid' => 0],
-            31 => (object) ['uid' => 31, 'pid' => 9, 'CType' => 'text', 'sorting' => 2, 'sys_language_uid' => 0],
-            32 => (object) ['uid' => 32, 'pid' => 9, 'CType' => 'text', 'sorting' => 3, 'sys_language_uid' => 0],
-            33 => (object) ['uid' => 33, 'pid' => 9, 'CType' => 'text', 'sorting' => 4, 'sys_language_uid' => 0],
-            13 => (object) ['uid' => 13, 'pid' => 5, 'CType' => 'shortcut', 'records' => '34', 'sorting' => 1, 'sys_language_uid' => 0],
-            34 => (object) ['uid' => 34, 'pid' => 9, 'CType' => 'shortcut', 'records' => '35,36', 'sorting' => 5, 'sys_language_uid' => 0],
-            35 => (object) ['uid' => 35, 'pid' => 9, 'CType' => 'text', 'sorting' => 6, 'sys_language_uid' => 0],
-            36 => (object) ['uid' => 36, 'pid' => 9, 'CType' => 'text', 'sorting' => 7, 'sys_language_uid' => 0],
-        ] );
-        $fetchedPids = $fetched = $translations = [];
-        $records = new class( $pages,
-            function( array $pids ) use ( $content, &$fetchedPids ) {
-                array_push( $fetchedPids, ...$pids );
-                return $content->whereIn( 'pid', $pids )->values();
-            },
-            function( array $pids ) use ( &$translations ) {
-                array_push( $translations, ...$pids );
-                return Collection::make();
-            },
-            function( array $uids ) use ( $content, &$fetched ) {
-                $fetched[] = $uids;
-                return Collection::make( $uids )->mapWithKeys( fn( int $uid ) => [$uid => $content->get( $uid )] )->filter();
-            },
-            $content->where( 'CType', 'shortcut' )->values(),
-            new Typo3Layouts( $pages, $this->layouts( [] ) )
-        ) extends Typo3Records {
-            protected const CACHE_SIZE = 2;
-        };
-
-        // the content of a page is fetched once for the page and its translations
-        $this->assertSame( [30, 31, 32], $records->page( $root )->pluck( 'uid' )->all() );
-        $this->assertSame( [], $records->page( $root, 1 )->pluck( 'uid' )->all() );
-        $this->assertSame( [33], $records->page( $other )->pluck( 'uid' )->all() );
-        $this->assertSame( [30, 31, 32], $records->page( $root )->pluck( 'uid' )->all() );
-        $this->assertSame( [1, 4, 1], $fetchedPids );
-
-        // the translated records are fetched again after the page changed
-        $this->assertSame( [], $records->page( $root, 1 )->pluck( 'uid' )->all() );
-        $this->assertSame( [1, 1], $translations );
-
-        // targets removed from the cache are fetched again
-        $this->assertSame( [[30, 31, 32], [33], [30, 31, 32]], $fetched );
-
-        // nested targets evict the shortcuts referencing them which are fetched again one by one within the cache size
-        $fetched = [];
-        $this->assertSame( [35, 36], $records->page( $nested )->pluck( 'uid' )->all() );
-        $this->assertSame( [[34], [35, 36], [34], [35], [36]], $fetched );
-    }
-
-
-    public function testTypo3PrefetchesFileReferencesOfMissingRecords(): void
-    {
-        $fetched = ['refs' => [], 'accordions' => [], 'carousels' => [], 'carouselRefs' => []];
-        $fetch = function( string $type, \Closure $fn ) use ( &$fetched ) {
-            return function( array $uids ) use ( $type, $fn, &$fetched ) {
-                $fetched[$type][] = $uids;
-                return Collection::make( array_combine( $uids, array_map( $fn, $uids ) ) );
-            };
-        };
-        $typo3 = new class( fn() => null, new Typo3Html( fn() => null, fn() => null ),
-            $fetch( 'refs', fn( int $uid ) => Collection::make( [(object) ['uid_local' => $uid]] ) ),
-            $fetch( 'accordions', fn( int $uid ) => Collection::make( [(object) ['uid' => $uid * 10]] ) ),
-            $fetch( 'carousels', fn( int $uid ) => Collection::make( [(object) ['uid' => $uid * 10], (object) ['uid' => $uid * 10 + 1]] ) ),
-            $fetch( 'carouselRefs', fn( int $uid ) => Collection::make( [(object) ['uid_local' => $uid]] ) )
-        ) extends Typo3 {
-            /** @return array<string, array<int|string>> */
-            public function keys(): array
-            {
-                return [
-                    'refs' => $this->refs->keys()->all(),
-                    'accordions' => $this->accordionItems->keys()->all(),
-                    'carousels' => $this->carouselItems->keys()->all(),
-                    'carouselRefs' => $this->carouselFileRefs->keys()->all(),
-                ];
-            }
-        };
-        $records = fn( string $type, int ...$uids ) => array_map( fn( int $uid ) => (object) ['uid' => $uid, 'CType' => $type], $uids );
-
-        // only the data of the records which weren't prefetched before is fetched and the one of other records is kept
-        $typo3->prefetch( [...$records( 'text', 1 ), ...$records( 'accordion', 2 ), ...$records( 'carousel', 3 )] );
-        $typo3->prefetch( [...$records( 'carousel', 3 ), ...$records( 'accordion', 4 ), ...$records( 'carousel', 5 )] );
-        $this->assertSame( ['refs' => [1, 2, 3, 4, 5], 'accordions' => [2, 4], 'carousels' => [3, 5], 'carouselRefs' => [30, 31, 50, 51]], $typo3->keys() );
-        $this->assertSame( [3, 4, 5, 30, 31, 50, 51], $typo3->references()->pluck( 'uid_local' )->all() );
-
-        // records prefetched before aren't fetched again
-        $typo3->prefetch( $records( 'text', 1 ) );
-        $this->assertSame( ['refs' => [1, 2, 3, 4, 5], 'accordions' => [2, 4], 'carousels' => [3, 5], 'carouselRefs' => [30, 31, 50, 51]], $typo3->keys() );
-        $this->assertSame( [1], $typo3->references()->pluck( 'uid_local' )->all() );
-
-        // only the data of the current and the upcoming records is kept when the ones of the upcoming pages are fetched
-        $this->assertSame( [6], $typo3->ahead( $records( 'text', 6 ) )->pluck( 'uid_local' )->all() );
-        $this->assertSame( ['refs' => [1, 6], 'accordions' => [], 'carousels' => [], 'carouselRefs' => []], $typo3->keys() );
-
-        // dropped records are fetched again
-        $typo3->prefetch( $records( 'accordion', 2 ) );
-        $this->assertSame( [
-            'refs' => [[1, 2, 3], [4, 5], [6], [2]],
-            'accordions' => [[2], [4], [2]],
-            'carousels' => [[3], [5]],
-            'carouselRefs' => [[30, 31], [50, 51]],
-        ], $fetched );
-    }
-
-
-    public function testTypo3UrlsResolvesPagesAndRedirects(): void
-    {
-        $page = (object) ['uid' => 1, 'doktype' => 1, 'slug' => '/about/'];
-        $shortcut = (object) ['uid' => 2, 'doktype' => 4, 'shortcut' => 3, 'shortcut_mode' => 0];
-        $external = (object) ['uid' => 4, 'doktype' => 3, 'url' => ' https://x.org '];
-        $pages = $this->pages( [
-            1 => $page,
-            2 => $shortcut,
-            3 => (object) ['uid' => 3, 'doktype' => 4, 'shortcut' => 1],
-            4 => $external,
-            5 => (object) ['uid' => 5, 'doktype' => 4, 'shortcut' => 1, 'shortcut_mode' => 1],
-            6 => (object) ['uid' => 6, 'doktype' => 4, 'shortcut' => 7],
-            7 => (object) ['uid' => 7, 'doktype' => 4, 'shortcut' => 6],
-        ] );
-        $urls = new Typo3Urls( $pages, [1 => [1 => '/ueber']] );
-
-        $this->assertSame( '/about', $urls->page( 1 ) );
-        $this->assertSame( '/about#top', $urls->page( 1, '#top' ) );
-        $this->assertSame( '/about#top', $urls->page( 1, 'top' ) );
-        $this->assertSame( '/about', $urls->page( 2 ) );
-        $this->assertSame( 'https://x.org', $urls->page( 4 ) );
-        $this->assertNull( $urls->page( 5 ) );
-        $this->assertNull( $urls->page( 6 ) );
-        $this->assertNull( $urls->page( 99 ) );
-
-        $this->assertSame( '/ueber', $urls->page( 1, '', ['uid' => 1, 'source' => 'example.com'] ) );
-        $this->assertSame( '/ueber', $urls->page( 2, '', ['uid' => 1, 'source' => ''] ) );
-        $this->assertSame( 'https://example.com/about', $urls->page( 1, '', ['uid' => 2, 'source' => 'example.com'] ) );
-        $this->assertSame( '/about', $urls->page( 1, '', ['uid' => 2, 'source' => ''] ) );
-
-        $this->assertSame( '', $urls->redirect( $page ) );
-        $this->assertSame( '/about', $urls->redirect( $shortcut ) );
-        $this->assertSame( 'https://x.org', $urls->redirect( $external ) );
-        $this->assertSame( 'a/b', Typo3Urls::slug( '/a/b/' ) );
-        $this->assertSame( '', Typo3Urls::slug( null ) );
-    }
-
-
-    public function testTypo3TreeSelectsPagesAndFindsParents(): void
-    {
-        $root = (object) ['uid' => 1, 'pid' => 0, 'is_siteroot' => 0];
-        $site = (object) ['uid' => 2, 'pid' => 1, 'is_siteroot' => 1];
-        $page = (object) ['uid' => 3, 'pid' => 2, 'is_siteroot' => 0];
-        $orphan = (object) ['uid' => 4, 'pid' => 9];
-        $tree = new Typo3Tree( $this->pages( [1 => $root, 2 => $site, 3 => $page, 4 => $orphan,
-            5 => (object) ['uid' => 5, 'pid' => 6], 6 => (object) ['uid' => 6, 'pid' => 5]] ) );
-
-        $this->assertSame( [$page, $root], $tree->select( [3, 1] )->all() );
-        $this->assertSame( '0000000000', $tree->order( $root ) );
-        $this->assertSame( '000000000000000000010000000002', $tree->order( $page ) );
-        $this->assertSame( $site, $tree->root( $page ) );
-        $this->assertSame( $site, $tree->root( $site ) );
-        $this->assertSame( $root, $tree->root( $root ) );
-        $this->assertSame( $site, $tree->parent( $page ) );
-        $this->assertNull( $tree->parent( $root ) );
-        $this->assertNull( $tree->parent( $orphan ) );
-
-        try {
-            $tree->select( [3, 7, 8] );
-            $this->fail( 'Missing pages must be rejected' );
-        } catch( \InvalidArgumentException $e ) {
-            $this->assertSame( 'TYPO3 page UID not found: 7, 8', $e->getMessage() );
+            Storage::disk( 'public' )->put( 'cms/' . $name, $content );
+            $files[$name] = File::forceCreate( ['name' => $name, 'mime' => 'text/csv', 'path' => 'cms/' . $name, 'disk' => 'public', 'editor' => 'importer'] );
         }
 
-        try {
-            $tree->order( $orphan );
-            $this->fail( 'Missing parents must be rejected' );
-        } catch( \RuntimeException $e ) {
-            $this->assertSame( 'TYPO3 parent page [9] is missing from the source tree.', $e->getMessage() );
-        }
+        $remote = File::forceCreate( ['name' => 'remote.csv', 'mime' => 'text/csv', 'path' => 'https://example.com/remote.csv', 'editor' => 'importer'] );
 
-        $this->expectExceptionMessage( 'Cycle detected in TYPO3 page tree at page [5].' );
-        $tree->root( $tree->select( [5] )->first() );
+        // the BOM is removed and non-UTF-8 content is converted
+        $this->assertSame( "a,b\nc,d", Files::contents( $files['utf8.csv']->id ) );
+        $this->assertSame( 'ä,b', Files::contents( $files['latin.csv']->id ) );
+        // too large, remote and unknown files aren't read
+        $this->assertNull( Files::contents( $files['big.csv']->id, 5 ) );
+        $this->assertNull( Files::contents( $remote->id ) );
+        $this->assertNull( Files::contents( 'unknown' ) );
     }
 
-
-    public function testTypo3FilesResolvesReferencesAndUrls(): void
-    {
-        $calls = [];
-        $calls = $lookups = [];
-        $logo = (object) ['uid' => 1, 'identifier' => '/user_upload/Ä b.svg', 'name' => 'Logo.svg', 'extension' => 'svg', 'mime_type' => 'text/plain'];
-        $pdf = (object) ['uid' => 2, 'identifier' => 'docs/a.pdf', 'name' => 'a.pdf', 'extension' => 'pdf', 'mime_type' => 'application/pdf'];
-        $files = new Typo3Files( function( array $identifiers ) use ( $logo, &$lookups ) {
-            $lookups[] = $identifiers;
-            return $this->sysFiles( ['/user_upload/Ä b.svg' => $logo] )->only( $identifiers );
-        }, 'https://t3.org', function( string $mime, string $name, string $path ) use ( &$calls ) {
-            $calls[] = [$mime, $name, $path];
-            return 'file-' . count( $calls );
-        }, fn( string $path ) => 'url:' . $path );
-
-        $this->assertSame( ['id' => 'file-1', 'url' => 'url:https://t3.org/user_upload/%C3%84%20b.svg'], $files->html( 'https://old.org/fileadmin/user_upload/%C3%84%20b.svg' ) );
-        $this->assertSame( 'file-2', $files->reference( (object) ['uid_local' => 2, 'title' => 'Title', 'alternative' => 'Alt', 'sys_file' => $pdf] ) );
-        $this->assertSame( 'file-3', $files->reference( (object) ['uid_local' => 2, 'title' => '', 'alternative' => 'Alt', 'sys_file' => $pdf] ) );
-        $this->assertNull( $files->reference( (object) ['uid_local' => 3, 'sys_file' => null] ) );
-
-        // the files of the identifiers are only looked up once
-        $this->assertSame( ['id' => 'file-4', 'url' => 'url:https://t3.org/user_upload/%C3%84%20b.svg'], $files->html( 'https://old.org/fileadmin/user_upload/%C3%84%20b.svg' ) );
-        $this->assertSame( [['/user_upload/%C3%84%20b.svg', '/user_upload/Ä b.svg']], $lookups );
-        $this->assertNull( $files->html( 'javascript:fileadmin/a.pdf' ) );
-        $this->assertNull( $files->html( 'https://old.org/uploads/a.pdf' ) );
-
-        $this->assertSame( [
-            ['image/svg+xml', 'Logo.svg', 'https://t3.org/user_upload/%C3%84%20b.svg'],
-            ['application/pdf', 'Title', 'https://t3.org/docs/a.pdf'],
-            ['application/pdf', 'Alt', 'https://t3.org/docs/a.pdf'],
-            ['image/svg+xml', 'Logo.svg', 'https://t3.org/user_upload/%C3%84%20b.svg'],
-        ], $calls );
-    }
-
-
-    public function testTypo3FilesLimitsCachedIdentifiers(): void
-    {
-        $lookups = [];
-        $files = new class( function( array $identifiers ) use ( &$lookups ) {
-            $lookups[] = $identifiers;
-            return Collection::make();
-        }, 'https://t3.org', fn() => 'id', fn( string $path ) => 'url:' . $path ) extends Typo3Files {
-            protected const CACHE_SIZE = 2;
-        };
-
-        foreach( ['a', 'b', 'c', 'c', 'b', 'a', 'a%20b', 'b'] as $name ) {
-            $files->html( "/fileadmin/{$name}.png" );
-        }
-
-        // only the last identifiers are kept but the ones just looked up are always kept
-        $this->assertSame( [['/a.png'], ['/b.png'], ['/c.png'], ['/b.png'], ['/a.png'], ['/a%20b.png', '/a b.png'], ['/b.png']], $lookups );
-    }
-
-
-    public function testTypo3FilesUsesKnownFilesAndReturnsPaths(): void
-    {
-        $lookups = $calls = [];
-        $known = ['https://t3.org/a.png' => 'known-a', 'https://t3.org/b.png' => 'known-b'];
-        $files = new Typo3Files( function( array $identifiers ) use ( &$lookups ) {
-            $lookups[] = $identifiers;
-            return Collection::make();
-        }, 'https://t3.org', function( string $mime, string $name, string $path ) use ( &$calls ) {
-            $calls[] = $path;
-            return 'new';
-        }, fn( string $path ) => $path === 'https://t3.org/b.png' ? null : 'url:' . $path, fn( string $path ) => $known[$path] ?? null );
-
-        // known files are neither looked up nor created again if their URL is available
-        $this->assertSame( ['id' => 'known-a', 'url' => 'url:https://t3.org/a.png'], $files->html( '/fileadmin/a.png' ) );
-        $this->assertNull( $files->html( '/fileadmin/b.png' ) );
-        $this->assertSame( ['id' => 'new', 'url' => 'url:https://t3.org/c.png'], $files->html( '/fileadmin/c.png' ) );
-        $this->assertSame( [['/b.png'], ['/c.png']], $lookups );
-        $this->assertSame( ['https://t3.org/b.png', 'https://t3.org/c.png'], $calls );
-
-        $refs = [
-            (object) ['sys_file' => (object) ['identifier' => '/user_upload/a.png']],
-            (object) ['sys_file' => null],
-            (object) ['sys_file' => (object) ['identifier' => '/user_upload/a.png']],
-        ];
-        $texts = [
-            '<img src="/fileadmin/x.png" srcset="/fileadmin/y.png 2x, /fileadmin/z.png 3x"><a href=https://old.org/fileadmin/doc.pdf?v=1>Doc</a>',
-            null,
-            '<a href="/other/x.png">Other</a><a href="javascript:fileadmin/a.pdf">Script</a>',
-            '<img srcset="/fileadmin/v.png,/fileadmin/w.png 2x">',
-        ];
-
-        $this->assertSame( [
-            'https://t3.org/user_upload/a.png', 'https://t3.org/x.png', 'https://t3.org/y.png', 'https://t3.org/z.png', 'https://t3.org/doc.pdf',
-            'https://t3.org/v.png', 'https://t3.org/w.png',
-        ], $files->paths( $refs, $texts ) );
-
-        // without base URL, the URLs of other hosts are used without query string
-        $files = new Typo3Files( fn() => Collection::make(), '', fn() => '', fn() => null );
-        $this->assertSame( ['user_upload/a.png', 'x.png', 'y.png', 'z.png', 'https://old.org/fileadmin/doc.pdf'], $files->paths( $refs, [$texts[0], '<img src="fileadmin/x.png">'] ) );
-    }
-
-
-    public function testTypo3FilesStoredReturnsPortableUrls(): void
-    {
-        $name = config( 'cms.disks.public.name' );
-        $file = ( new File )->forceFill( ['disk' => 'public', 'path' => 'cms/a.pdf'] );
-
-        config( ['filesystems.disks.cms-test' => ['driver' => 'local', 'root' => sys_get_temp_dir(), 'url' => 'http://localhost:8000/storage']] );
-        config( ['filesystems.disks.cms-remote' => ['driver' => 'cms-remote', 'url' => 'https://cdn.example.com']] );
-        Storage::extend( 'cms-remote', fn( $app, array $config ) => new FilesystemAdapter(
-            new Filesystem( $adapter = new LocalFilesystemAdapter( sys_get_temp_dir() ) ), $adapter, $config
-        ) );
-
-        try
-        {
-            config( ['cms.disks.public.name' => 'cms-test'] );
-            $this->assertSame( '/storage/cms/a.pdf', Typo3Files::stored( $file ) );
-
-            config( ['cms.disks.public.name' => 'cms-remote'] );
-            $this->assertSame( 'https://cdn.example.com/cms/a.pdf', Typo3Files::stored( $file ) );
-        }
-        finally
-        {
-            config( ['cms.disks.public.name' => $name, 'filesystems.disks.cms-test' => null, 'filesystems.disks.cms-remote' => null] );
-        }
-    }
-
-
-    public function testTypo3TreeUidsValidatesPageOptions(): void
-    {
-        $this->assertNull( Typo3Tree::uids( [] ) );
-        $this->assertSame( [3, 1], Typo3Tree::uids( ['3', 1, '03', 3] ) );
-
-        foreach( ['0', 'a', '-1', '1.5', ''] as $value )
-        {
-            try {
-                Typo3Tree::uids( ['2', $value] );
-                $this->fail( "Invalid page UID \"{$value}\" must be rejected" );
-            } catch( \InvalidArgumentException $e ) {
-                $this->assertSame( "Invalid TYPO3 page UID: {$value}", $e->getMessage() );
-            }
-        }
-    }
-
-
-    public function testTypo3LanguagesMapsUidsAndGroupsTranslations(): void
-    {
-        $languages = new Typo3Languages( [1 => ['lang' => 'de', 'domain' => ''], 2 => ['lang' => 'fr', 'domain' => '']], ['3:es', '01:da:https://example.dk/'] );
-
-        $this->assertSame( ['lang' => 'da', 'domain' => 'example.dk'], $languages->get( 1 ) );
-        $this->assertSame( ['lang' => 'fr', 'domain' => ''], $languages->get( 2 ) );
-        $this->assertSame( ['lang' => 'es', 'domain' => ''], $languages->get( 3 ) );
-        $this->assertNull( $languages->get( 4 ) );
-
-        $result = $languages->translations( $this->rows( [
-            (object) ['uid' => 10, 'l10n_parent' => 5, 'sys_language_uid' => '1', 'slug' => '/ueber'],
-            (object) ['uid' => 11, 'l10n_parent' => 5, 'sys_language_uid' => 3, 'slug' => '/sobre'],
-            (object) ['uid' => 12, 'l10n_parent' => 6, 'sys_language_uid' => 2, 'slug' => '/contact'],
-            (object) ['uid' => 13, 'l10n_parent' => 6, 'sys_language_uid' => 4, 'slug' => '/x'],
-            (object) ['uid' => 14, 'l10n_parent' => 7, 'sys_language_uid' => '7', 'slug' => '/y'],
-            (object) ['uid' => 15, 'l10n_parent' => 7, 'sys_language_uid' => 4, 'slug' => '/z'],
-            (object) ['uid' => 16, 'l10n_parent' => 6, 'sys_language_uid' => 2, 'slug' => '/contact-2'],
-            (object) ['uid' => 17, 'l10n_parent' => 8, 'sys_language_uid' => 1],
-        ] ) );
-
-        // the first translation of a page in each language is used
-        $this->assertSame( [4, 7], $result['unknown'] );
-        $this->assertSame( 5, $result['count'] );
-        $this->assertSame( [5 => [1 => '/ueber', 3 => '/sobre'], 6 => [2 => '/contact'], 8 => [1 => '']], $result['slugs'] );
-
-        $this->expectExceptionMessage( 'Invalid TYPO3 language: 0:de' );
-        new Typo3Languages( [], ['0:de'] );
-    }
-
-
-    public function testTypo3SiteMapsRootsToDomains(): void
-    {
-        $site = new Typo3Site( ['example.com:1', 'example.de:2'], fn() => [3 => 't3.org', 1 => 'other.org'] );
-
-        $this->assertSame( '', $site->domain() );
-        $this->assertSame( 'example.com', $site->domain( (object) ['uid' => '1'] ) );
-        $this->assertSame( 'example.de', $site->domain( (object) ['uid' => 2] ) );
-        $this->assertSame( 't3.org', $site->domain( (object) ['uid' => 3] ) );
-        $this->assertSame( '', $site->domain( (object) ['uid' => 4] ) );
-        $this->assertSame( 'https://example.com/fileadmin', $site->fileBase( '' ) );
-        $this->assertSame( 'https://files.org', $site->fileBase( 'https://files.org' ) );
-
-        // the domain records aren't used if there's a default domain
-        $site = new Typo3Site( ['example.org', 'example.de:2'], fn() => throw new \LogicException( 'Domains must not be read' ) );
-
-        $this->assertSame( 'example.org', $site->domain() );
-        $this->assertSame( 'example.org', $site->domain( (object) ['uid' => 3] ) );
-        $this->assertSame( 'example.de', $site->domain( (object) ['uid' => 2] ) );
-        $this->assertSame( 'https://example.org/fileadmin', $site->fileBase( '' ) );
-        $this->assertSame( 'http://t3.org/fileadmin', ( new Typo3Site( [], fn() => [5 => 'http://t3.org/'] ) )->fileBase( '' ) );
-
-        $site = new Typo3Site( ['example.de:0'], fn() => [] );
-
-        $this->assertSame( 'example.de', $site->domain() );
-        $this->assertSame( 'example.de', ( new Typo3Site( ['example.de:'], fn() => throw new \LogicException( 'Domains must not be read' ) ) )->domain() );
-        $this->assertSame( '', ( new Typo3Site( [], fn() => [] ) )->fileBase( '' ) );
-    }
-
-
-    public function testTypo3DestinationsFindsExistingPages(): void
-    {
-        $root = Pages::create( ['name' => 'Home', 'path' => '', 'tag' => 'root', 'domain' => 'example.com'], [] );
-        $about = Pages::create( ['name' => 'About', 'path' => 'about', 'domain' => 'example.com'], [] );
-        $other = Pages::create( ['name' => 'About', 'path' => 'about', 'domain' => 'example.de'], [] );
-        $trashed = Pages::create( ['name' => 'Old', 'path' => 'old', 'domain' => 'example.com'], [] );
-        $trashed->page->delete();
-
-        $t3Root = (object) ['uid' => 1, 'pid' => 0, 'slug' => '/'];
-        $t3About = (object) ['uid' => 2, 'pid' => 1, 'slug' => '/about'];
-        $t3Old = (object) ['uid' => 3, 'pid' => 1, 'slug' => '/old'];
-        $t3Site = (object) ['uid' => 4, 'pid' => 1, 'is_siteroot' => 1, 'slug' => '/site'];
-        $t3New = (object) ['uid' => 5, 'pid' => 1, 'slug' => '/new'];
-        $domains = [];
-
-        $destinations = new Typo3Destinations( $this->pages( [$t3Root, $t3About, $t3Old, $t3Site, $t3New] ), function( $page ) use ( &$domains ) {
-            $domains[] = $page->uid;
-            return 'example.com';
-        } );
-
-        $this->assertSame( [1, 2, 3, 4, 5], $domains );
-        $this->assertSame( $root->id, $destinations->find( $t3Root, 'example.com' )?->id );
-        $this->assertSame( $root->id, $destinations->find( $t3Site, 'example.com' )?->id );
-        $this->assertSame( $about->id, $destinations->find( $t3About, 'example.com' )?->id );
-        $this->assertSame( $other->id, $destinations->find( $t3About, 'example.de' )?->id );
-        $this->assertNull( $destinations->find( $t3New, 'example.com' ) );
-
-        // trashed pages are restored by the lookup
-        $this->assertSame( $trashed->id, $destinations->find( $t3Old, 'example.com' )?->id );
-        $this->assertFalse( PageView::withTrashed()->findOrFail( $trashed->id )->trashed() );
-
-        // remembered pages are used without lookup
-        $destinations->put( 'example.com', 'new', $about );
-        $this->assertSame( $about->id, $destinations->find( $t3New, 'example.com' )?->id );
-
-        $destinations->forget( $t3New );
-        $this->assertNull( $destinations->find( $t3New, 'example.com' ) );
-
-        $about->page->delete();
-        $destinations->forget( $t3About );
-        $this->assertSame( $about->id, $destinations->find( $t3About, 'example.com' )?->id );
-    }
 
 
     public function testVariantsKnownSplitsRowsByLanguage(): void
@@ -2200,6 +1630,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( [], $empty['unknown'] );
         $this->assertTrue( $empty['rows']->isEmpty() );
     }
+
 
 
     /*
@@ -2278,6 +1709,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testPrefetchedVariantsAreUsedOnce(): void
     {
         $data = ['name' => 'About', 'title' => 'About', 'path' => 'about', 'lang' => 'en', 'domain' => '', 'status' => 1, 'editor' => 'importer'];
@@ -2338,6 +1770,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testFilesAreForgottenAfterCommit(): void
     {
         $run = function( bool $keep ): array {
@@ -2391,6 +1824,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testMetaTagsNeedDescriptionAndAreShortened(): void
     {
         $this->assertNull( Elements::metaTags( " \n\t ", 'keyword' ) );
@@ -2402,6 +1836,7 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
+
     public function testRobotsAreReadFromCommaSeparatedValues(): void
     {
         $this->assertNull( Elements::robots( '' ) );
@@ -2411,6 +1846,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( ['index' => 'noindex'], Elements::robots( 'noindex, index' )['data'] ?? null );
         $this->assertSame( ['follow' => 'nofollow'], Elements::robots( 'follow, nofollow' )['data'] ?? null );
     }
+
 
 
     public function testDoesNotDownloadReusedFiles(): void
@@ -2442,6 +1878,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertSame( 0, $command->run( new ArrayInput( [] ), new BufferedOutput() ) );
         $this->assertSame( ['http://127.0.0.1/reused/b.png'], $sent );
     }
+
 
 
     public function testKeepsDownloadsOfNeededFiles(): void
@@ -2477,6 +1914,7 @@ class ImporterVersionTest extends ImportTestAbstract
         $this->assertTrue( $command->kept );
         $this->assertSame( ['http://127.0.0.1/needed/a.png', 'http://127.0.0.1/needed/b.png'], $sent );
     }
+
 
 
     public function testRenamesFilesUsedAgainOnlyOncePerImport(): void
@@ -2530,41 +1968,6 @@ class ImporterVersionTest extends ImportTestAbstract
     }
 
 
-    /**
-     * Returns the TYPO3 sys_file records in the type returned by the TYPO3 reader.
-     *
-     * @param array<string, mixed> $files
-     * @return Collection<string, mixed>
-     */
-    protected function sysFiles( array $files ): Collection
-    {
-        return Collection::make( $files );
-    }
-
-
-    /**
-     * Returns TYPO3 pages keyed by UID in the type used by the TYPO3 importer.
-     *
-     * @param array<int, mixed> $pages
-     * @return Collection<int, mixed>
-     */
-    protected function pages( array $pages ): Collection
-    {
-        return Collection::make( $pages );
-    }
-
-
-    /**
-     * Returns TYPO3 records in the type returned by the TYPO3 reader.
-     *
-     * @param array<int|string, mixed> $records
-     * @return Collection<int|string, mixed>
-     */
-    protected function records( array $records ): Collection
-    {
-        return Collection::make( $records );
-    }
-
 
     /**
      * Returns the database rows in the type returned by the readers.
@@ -2575,17 +1978,5 @@ class ImporterVersionTest extends ImportTestAbstract
     protected function rows( array $rows ): Collection
     {
         return Collection::make( $rows );
-    }
-
-
-    /**
-     * Returns the backend layouts in the type returned by the TYPO3 reader.
-     *
-     * @param array<int|string, mixed> $layouts
-     * @return Collection<int|string, mixed>
-     */
-    protected function layouts( array $layouts ): Collection
-    {
-        return Collection::make( $layouts );
     }
 }
