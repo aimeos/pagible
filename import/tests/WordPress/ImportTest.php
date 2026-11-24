@@ -3167,7 +3167,8 @@ class ImportTest extends ImportTestAbstract
 
         $this->assertSame( 0, $later->status );
         $this->assertCount( 1, $pending );
-        $this->assertSame( '2030-01-01 10:00:00', (string) $pending->first()?->publish_at );
+        // SQL Server returns the date with milliseconds
+        $this->assertSame( '2030-01-01 10:00:00', substr( (string) $pending->first()?->publish_at, 0, 19 ) );
         $this->assertSame( 1, $pending->first()->data->status ?? null );
 
         // the pending version is kept if nothing changed
