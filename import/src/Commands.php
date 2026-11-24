@@ -536,7 +536,7 @@ abstract class Commands extends Command
         $file = $this->downloadOnce( $path, $download, fn() => DB::connection()->transaction(
             fn() => $download
                 ? Files::download( $mime, $name, $path, $this->editor, $this->downloaded( $path ), $options )
-                : Files::reference( $mime, $name, $path, $this->editor, array_diff_key( $options, ['crop' => true] ) )
+                : Files::reference( $mime, $name, $path, $this->editor, isset( $options['description'] ) ? ['description' => $options['description']] : [] )
         ) );
 
         $id = (string) $file->id;

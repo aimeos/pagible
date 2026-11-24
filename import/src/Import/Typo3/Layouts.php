@@ -301,7 +301,7 @@ class Layouts
                 continue;
             }
 
-            $path = implode( '.', array_filter( [...array_filter( $stack, fn( $key ) => $key !== '{' ), $trimmed], 'strlen' ) );
+            $path = implode( '.', array_filter( [...array_filter( $stack, fn( $key ) => $key !== '{' ), $trimmed], fn( $value ) => $value !== '' ) );
 
             if( str_starts_with( $path, $target . '.' ) ) {
                 $assigned[] = $path;
@@ -323,14 +323,14 @@ class Layouts
      */
     protected function includes( string $source, int $depth = 0 ): string
     {
-        if( !$this->include || $depth > 10 ) {
+        if( !( $include = $this->include ) || $depth > 10 ) {
             return $source;
         }
 
         $pattern = '/^[ \t]*(?:@import\s+[\'"]([^\'"]+)[\'"]|<INCLUDE_TYPOSCRIPT:\s*source\s*=\s*"(?:FILE:)?([^"]+)"[^>]*>)[^\r\n]*$/mi';
 
-        return (string) preg_replace_callback( $pattern, function( $match ) use ( $depth ) {
-            $content = ( $this->include )( trim( ( $match[1] ?? '' ) ?: ( $match[2] ?? '' ) ) );
+        return (string) preg_replace_callback( $pattern, function( $match ) use ( $depth, $include ) {
+            $content = $include( trim( $match[1] ?: ( $match[2] ?? '' ) ) );
             return $content !== null ? $this->includes( (string) $content, $depth + 1 ) : '';
         }, $source );
     }

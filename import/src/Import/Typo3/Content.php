@@ -245,7 +245,7 @@ class Content
             }
 
             $items = ( $this->items )( $config['table'], $types[$type], $config['columns'] );
-            $refs = $this->itemRefs && $config['fields'] && ( $new = $this->itemUids( $items ) ) ? ( $this->itemRefs )( $config['table'], $new, $config['fields'] ) : [];
+            $refs = $this->itemRefs && ( $new = $this->itemUids( $items ) ) ? ( $this->itemRefs )( $config['table'], $new, $config['fields'] ) : [];
 
             $this->groupItems[$type] = $this->groupItems[$type]->union( $items );
             $this->groupRefs[$type] = $this->groupRefs[$type]->union( $refs );
@@ -365,7 +365,7 @@ class Content
                 continue;
             }
 
-            $result = $this->rte( $media . (string) $child->bodytext );
+            $result = $this->rte( $media . (string) ( $child->bodytext ?? '' ) );
             $items[] = ['title' => $child->header, 'text' => Markdown::fromHtml( $result['html'] )];
             $fileIds = array_merge( $fileIds, $result['fileIds'] );
         }
@@ -392,7 +392,7 @@ class Content
      */
     protected function bullets( object $record ): ?array
     {
-        $lines = array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) ( $record->bodytext ?? '' ) ) ?: [] ), 'strlen' ) );
+        $lines = array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) ( $record->bodytext ?? '' ) ) ?: [] ), fn( $value ) => $value !== '' ) );
         $elements = $this->heading( $record );
         $fileIds = [];
 
@@ -508,11 +508,11 @@ class Content
      */
     protected function carousel( object $record ): ?array
     {
-        $items = $this->carouselItems->get( (int) ( $record->uid ?? 0 ), Collection::make() );
+        $items = self::listOf( $this->carouselItems->get( (int) ( $record->uid ?? 0 ) ) );
         $refsOf = fn( $child ) => $this->carouselFileRefs->get( (int) ( $child->uid ?? 0 ), Collection::make() )
             ->sortBy( fn( $ref ) => ( $ref->fieldname ?? 'background_image' ) === 'image' ? 0 : 1 )->values();
 
-        if( collect( $items )->contains( fn( $child ) => trim( strip_tags( (string) ( $child->bodytext ?? '' ) ) ) !== '' ) )
+        if( $items->contains( fn( $child ) => trim( strip_tags( (string) ( $child->bodytext ?? '' ) ) ) !== '' ) )
         {
             $cards = $fileIds = [];
 
@@ -572,10 +572,10 @@ class Content
         }
 
         // the Bootstrap Package renders the CSV file as table
-        foreach( $this->contents ? $this->refsOf( $record ) : [] as $ref )
+        foreach( ( $contents = $this->contents ) ? $this->refsOf( $record ) : [] as $ref )
         {
             // the CSV file stays attached to the page like in TYPO3
-            if( $this->kind( $ref ) === 'file' && ( $id = ( $this->file )( $ref ) ) && trim( $data = (string) ( $this->contents )( $id ) ) !== ''
+            if( $this->kind( $ref ) === 'file' && ( $id = ( $this->file )( $ref ) ) && $contents && trim( $data = (string) $contents( $id ) ) !== ''
                 && ( $table = $this->table( (object) ( ['bodytext' => $data] + get_object_vars( $record ) ) ) )
             ) {
                 return ['elements' => $table['elements'], 'fileIds' => array_values( array_unique( [...$table['fileIds'], $id] ) )];
@@ -622,7 +622,7 @@ class Content
      */
     protected function listgroup( object $record ): ?array
     {
-        $lines = array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) ( $record->bodytext ?? '' ) ) ?: [] ), 'strlen' ) );
+        $lines = array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) ( $record->bodytext ?? '' ) ) ?: [] ), fn( $value ) => $value !== '' ) );
         $elements = $this->heading( $record );
         $fileIds = [];
 
@@ -744,7 +744,19 @@ class Content
     {
         $items = ( $this->groupItems[(string) ( $record->CType ?? '' )] ?? Collection::make() )->get( (int) ( $record->uid ?? 0 ) );
 
-        return $items instanceof Collection ? $items->values() : Collection::make( $items ?? [] );
+        return self::listOf( $items );
+    }
+
+
+    /**
+     * Returns the grouped records as list.
+     *
+     * @param mixed $records Collection or array of records or NULL if there are none
+     * @return Collection<int, mixed> Records
+     */
+    protected static function listOf( mixed $records ): Collection
+    {
+        return $records instanceof Collection ? $records->values() : Collection::make( is_array( $records ) ? array_values( $records ) : [] );
     }
 
 
@@ -817,7 +829,7 @@ class Content
     {
         $uid = (int) ( $record->uid ?? 0 );
         $refs = isset( $this->prefetched[$uid] ) ? $this->refs->get( $uid ) : ( $this->fileRefs )( [$uid] )->get( $uid );
-        $refs = $refs instanceof Collection ? $refs->values() : Collection::make( $refs ?? [] );
+        $refs = self::listOf( $refs );
 
         $field = match( (string) ( $record->CType ?? '' ) ) {
             'textpic', 'image', 'gallery' => 'image',
@@ -878,7 +890,8 @@ class Content
     {
         $elements = $fileIds = $images = [];
 
-        $flush = function() use ( &$elements, &$images, $title ) {
+        /** @param array<int, string> $images */
+        $flush = function( array &$images ) use ( &$elements, $title ) {
             if( count( $images ) > 1 ) {
                 $elements[] = Elements::create( 'slideshow', ['title' => $title, 'files' => array_map( fn( $id ) => Elements::file( $id ), $images )] );
             } elseif( $images ) {
@@ -898,7 +911,7 @@ class Content
 
             if( $kind === 'online' )
             {
-                $flush();
+                $flush( $images );
                 $url = $this->online ? ( $this->online )( $ref ) : null;
 
                 if( $url && ( $content = Embeds::iframeContent( $url, (string) ( $ref->title ?? '' ) ) ) ) {
@@ -911,7 +924,7 @@ class Content
             // linked images become html elements because image elements can't contain links
             if( $kind === 'image' && ( $linked = $this->linkedImage( $ref ) ) )
             {
-                $flush();
+                $flush( $images );
                 $elements[] = Elements::create( 'html', ['text' => Utils::html( $linked['html'] )] );
                 array_push( $fileIds, ...$linked['fileIds'] );
                 continue;
@@ -926,12 +939,12 @@ class Content
             if( $kind === 'image' ) {
                 $images[] = $id;
             } else {
-                $flush();
+                $flush( $images );
                 $elements[] = Elements::create( $kind, ['file' => Elements::file( $id )] );
             }
         }
 
-        $flush();
+        $flush( $images );
 
         return ['elements' => $elements, 'fileIds' => array_values( array_unique( $fileIds ) )];
     }
@@ -1010,19 +1023,19 @@ class Content
         $elements = [];
 
         // TYPO3 shows the subheader and the date even if there's no header
-        if( trim( (string) ( $record->header ?? '' ) ) !== '' )
+        if( trim( $header = (string) ( $record->header ?? '' ) ) !== '' )
         {
             $level = $this->headerLevel( $record->header_layout ?? null );
             $link = (string) ( $record->header_link ?? '' );
 
             if( ( $url = $this->link( $link ) ) !== '' )
             {
-                $html = $this->anchor( $url, e( (string) $record->header ), $this->target( $link ) );
+                $html = $this->anchor( $url, e( $header ), $this->target( $link ) );
                 $elements[] = Elements::create( 'html', ['text' => Utils::html( "<h{$level}>{$html}</h{$level}>" )] );
             }
             else
             {
-                $elements[] = Elements::create( 'heading', ['level' => $level, 'title' => $record->header] );
+                $elements[] = Elements::create( 'heading', ['level' => $level, 'title' => $header] );
             }
         }
 
@@ -1127,8 +1140,9 @@ class Content
      */
     protected function table( object $record ): ?array
     {
-        $delimiter = chr( (int) ( $record->table_delimiter ?? 124 ) ?: 124 );
-        $enclosure = (int) ( $record->table_enclosure ?? 0 ) ? chr( (int) $record->table_enclosure ) : "\0";
+        // chr() uses the lowest byte of the character codes too
+        $delimiter = chr( ( (int) ( $record->table_delimiter ?? 124 ) ?: 124 ) & 255 );
+        $enclosure = ( $code = (int) ( $record->table_enclosure ?? 0 ) ) ? chr( $code & 255 ) : "\0";
         $rows = $fileIds = [];
 
         if( ( $fh = fopen( 'php://temp', 'w+' ) ) === false ) {
@@ -1153,7 +1167,7 @@ class Content
         }
 
         // all rows have the same number of cells, TYPO3 limits them to the configured number of columns
-        $count = (int) ( $record->cols ?? 0 ) > 0 ? (int) $record->cols : max( array_map( 'count', $rows ) );
+        $count = ( $cols = (int) ( $record->cols ?? 0 ) ) > 0 ? $cols : max( 1, ...array_map( 'count', $rows ) );
         $rows = array_map( fn( $row ) => array_slice( array_pad( $row, $count, '' ), 0, $count ), $rows );
 
         $element = Elements::create( 'table', [

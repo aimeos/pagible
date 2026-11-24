@@ -212,7 +212,7 @@ class T3Import extends Commands
     /**
      * Returns the selected TYPO3 pages which are imported and warns about the ones which aren't.
      *
-     * @param array<int, int> $uids UIDs of the selected TYPO3 pages
+     * @param list<int> $uids UIDs of the selected TYPO3 pages
      * @return Collection<int, mixed> Selected TYPO3 pages
      */
     protected function selectPages( array $uids ): Collection
@@ -379,7 +379,7 @@ class T3Import extends Commands
         {
             $uid = (int) ( $t3Page->uid ?? 0 );
             $refs = array_key_exists( $uid, $this->ogImages ) ? $this->ogImages[$uid] : $this->reader->pageFileReferences( [$uid] )->get( $uid );
-            $ref = $refs ? Collection::make( $refs )->first() : null;
+            $ref = $refs?->first();
             $fileId = $ref ? $this->attempt( $this->refLabel( $ref ), fn() => $this->files->reference( $ref ) ) : null;
         }
 

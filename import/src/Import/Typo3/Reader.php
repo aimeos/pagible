@@ -436,7 +436,7 @@ class Reader
      * The sys_file record of each reference is added as "sys_file" property.
      *
      * @param array<int, int> $uids UIDs of the pages in default language or of their translations
-     * @return Collection<int|string, mixed>
+     * @return Collection<int|string, Collection<int, mixed>>
      */
     public function pageFileReferences( array $uids ): Collection
     {
@@ -538,19 +538,19 @@ class Reader
         }
 
         $wanted = array_flip( $identifiers );
-        $result = Collection::make();
+        $result = [];
 
         // files with the same identifier in several storages are also available by "<storage>:<identifier>", the first one by identifier only
         foreach( $query->orderBy( 'uid' )->get( $this->columns( 'sys_file', self::FILE_COLUMNS ) ) as $file )
         {
             if( isset( $wanted[$id = '/' . ltrim( (string) $file->identifier, '/' )] ) )
             {
-                $result->put( (int) ( $file->storage ?? 0 ) . ':' . $id, $file );
-                $result->has( $id ) ?: $result->put( $id, $file );
+                $result[(int) ( $file->storage ?? 0 ) . ':' . $id] = $file;
+                $result[$id] ??= $file;
             }
         }
 
-        return $result;
+        return Collection::make( $result );
     }
 
 
@@ -731,11 +731,11 @@ class Reader
             if( in_array( 'uid_local', $this->listing( 'sys_file_reference' ), true ) && count( array_intersect( [$key, 'tstamp'], $this->listing( $table ) ) ) === 2 )
             {
                 $queries[] = fn( $chunk ) => $this->db->table( 'sys_file_reference' )
-                    ->join( $table, $table . '.' . $key, '=', 'sys_file_reference.uid_local' )
+                    ->join( $table . ' as f', 'f.' . $key, '=', 'sys_file_reference.uid_local' )
                     ->whereIn( 'sys_file_reference.pid', $chunk )
                     ->groupBy( 'sys_file_reference.pid' )
                     ->select( 'sys_file_reference.pid as uid' )
-                    ->selectRaw( 'MAX(' . $this->db->getQueryGrammar()->wrap( $table . '.tstamp' ) . ') AS tstamp' )
+                    ->selectRaw( 'MAX(f.tstamp) AS tstamp' )
                     ->get();
             }
         }
@@ -773,7 +773,7 @@ class Reader
      * @param string $table TYPO3 table name
      * @param string $column Column with the page UID
      * @param array<int, int> $uids Page UIDs
-     * @param string $time Column with the time
+     * @param 'tstamp'|'starttime'|'endtime' $time Column with the time
      * @param (\Closure(\Illuminate\Database\Query\Builder): mixed)|null $where Adds conditions to the query
      * @return Collection<int, \stdClass> Records with "uid" and "tstamp" properties
      */
@@ -787,7 +787,11 @@ class Reader
 
         return $query->groupBy( $column )
             ->select( $column . ' as uid' )
-            ->selectRaw( 'MAX(' . $this->db->getQueryGrammar()->wrap( $time ) . ') AS tstamp' )
+            ->selectRaw( match( $time ) {
+                'starttime' => 'MAX(starttime) AS tstamp',
+                'endtime' => 'MAX(endtime) AS tstamp',
+                default => 'MAX(tstamp) AS tstamp',
+            } )
             ->get();
     }
 

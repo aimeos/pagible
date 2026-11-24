@@ -120,10 +120,10 @@ trait Translations
      */
     protected function translatedRedirect( object $t3Page, object $record, array $translation ): string
     {
-        $page = clone $t3Page;
+        $page = $t3Page;
 
-        if( (int) ( $t3Page->doktype ?? 1 ) === 3 && trim( (string) ( $record->url ?? '' ) ) !== '' ) {
-            $page->url = $record->url;
+        if( (int) ( $t3Page->doktype ?? 1 ) === 3 && trim( $url = (string) ( $record->url ?? '' ) ) !== '' ) {
+            $page = (object) ( ['url' => $url] + get_object_vars( $t3Page ) );
         }
 
         return $this->urls->redirect( $page, $translation );

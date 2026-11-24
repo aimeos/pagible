@@ -9,6 +9,7 @@ namespace Aimeos\Cms\Concerns\Typo3;
 
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Models\PageView;
+use Illuminate\Support\Collection;
 
 
 /**
@@ -25,7 +26,7 @@ trait Prefetch
     /** @var array{0: int, 1: int} First and next position in $sequence of the pages whose content was prefetched last */
     protected array $window = [0, 0];
 
-    /** @var array<int, mixed> Social media image references of the upcoming pages and their translations by page UID */
+    /** @var array<int, Collection<int, mixed>|null> Social media image references of the upcoming pages and their translations by page UID */
     protected array $ogImages = [];
 
 

@@ -128,7 +128,7 @@ trait Content
 
         $result = [];
         $seen = [];
-        $add = function( object $record ) use ( &$add, &$result, &$seen, $children ) {
+        $add = function( \stdClass $record ) use ( &$add, &$result, &$seen, $children ) {
             if( isset( $seen[$uid = (int) ( $record->uid ?? 0 )] ) ) {
                 return;
             }

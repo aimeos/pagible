@@ -158,8 +158,8 @@ class Urls
         {
             $target = match( (int) ( $t3Page->shortcut_mode ?? 0 ) ) {
                 0 => $this->pages->get( (int) ( $t3Page->shortcut ?? 0 ) ),
-                1 => $this->children( (int) ( $t3Page->shortcut ?: $uid ) )->first(),
-                2 => $this->children( (int) ( $t3Page->shortcut ?: $uid ) )->first(), // random subpages can't be imported, the first one is used
+                1 => $this->children( (int) ( ( $t3Page->shortcut ?? 0 ) ?: $uid ) )->first(),
+                2 => $this->children( (int) ( ( $t3Page->shortcut ?? 0 ) ?: $uid ) )->first(), // random subpages can't be imported, the first one is used
                 3 => $this->pages->get( (int) ( $t3Page->pid ?? 0 ) ),
                 default => null,
             };
@@ -197,6 +197,7 @@ class Urls
      * Links to pages (t3://page) are resolved and URLs without scheme like "www.example.com" are
      * prefixed by "https://" like TYPO3 does. Only http(s) URLs and paths are allowed.
      *
+     * @param array{uid: int, source: string, chain?: array<int, int>}|null $translation TYPO3 language of the translation
      * @param array<int, bool> $seen UIDs of the pages already visited
      */
     protected function external( string $url, ?array $translation, array $seen ): string
