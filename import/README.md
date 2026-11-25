@@ -1,7 +1,7 @@
 # Pagible Import
 
 CMS importers for [Pagible CMS](https://pagible.com). Import content from
-WordPress and TYPO3 installations.
+WordPress, TYPO3 and Statamic installations.
 
 For installation, use:
 
@@ -299,6 +299,176 @@ Media below `wp-content/uploads`, the uploads URL of the options or any configur
 published File version. The first media base also replaces the URLs below
 `wp-content/uploads` and the uploads URL of the options. Media outside
 those locations remains an external URL reference.
+
+## cms:statamic-import
+
+Imports the entries of Statamic collections into Pagible CMS pages. The
+importer reads the database of the [Statamic Eloquent driver](https://github.com/statamic/eloquent-driver)
+(`entries`, `collections`, `trees`, `assets_meta`, `asset_containers`, `sites`, `blueprints` and
+`addon_settings` tables); sites storing their content in flat files must be migrated to the
+Eloquent driver first, e.g. with `php please eloquent:import-entries`. Only the
+entries are required; without the collections, trees, sites and blueprints in
+the database, routes, trees, mounts, date behaviors, protection, site languages
+and the field settings of blueprints are unknown, the importer warns about missing
+collection settings, trees and blueprints. The Eloquent driver stores blueprints and
+fieldsets in files by default, move them to the database with
+`php please eloquent:import-blueprints` to use their field settings. Navigations, taxonomies and terms, globals,
+forms and revisions (unpublished working copies of entries) aren't imported.
+Fields stored in their own columns of the `entries` table by the
+`map_data_to_columns` setting of the Eloquent driver are read too. Entry dates
+are expected in UTC like Statamic 5 stores them; sites saved by Statamic 4 in
+another application timezone get their scheduled and expiry dates shifted by
+that offset.
+
+Entries are imported as pages with the URLs Statamic generated for them
+(`uri` column), structured collections keep the order and hierarchy of their
+tree. If the tree of a structured collection isn't in the database, the entries
+are nested by the parents stored in their data and the importer warns that
+their order may differ. Entries of other collections are ordered by the
+`sort_field` and `sort_dir` settings of their collection like Statamic sorts
+them, by default dated collections by date in descending order and the others
+by title. Entries of collections without a route for the site have no URLs in
+Statamic and are skipped with a warning. The entry used as home page by a
+collection whose structure has `root: true` (`expect_root` in the YAML file of
+the collection, "Expect a root page" in the control panel) becomes the root
+page of the domain. Collections mounted on an entry are imported below the page of that
+entry. Re-importing the same domain updates and republishes the
+pages of the entries instead of creating new ones. Use `--since` to only update
+the entries changed since the last import, entries of collections whose settings
+changed are imported again. Changes of the SEO Pro site defaults aren't
+noticed by `--since` because the `addon_settings` table has no modification
+times, run the import without `--since` after changing them.
+
+Draft entries aren't imported. Values injected by the collection (`inject`)
+are used for entries without own values like in Statamic. Entries protected by a protection scheme and
+entries of dated collections hidden by the date behavior of their collection
+(`private`) are imported as disabled pages and reported, `unlisted` ones are
+hidden from the navigation. Entries with a future date whose visibility changes
+at that date get a scheduled version which is published then by
+`php artisan cms:publish`, like Statamic shows scheduled entries and hides
+expired ones, e.g. events whose collection hides past entries. The default
+protection scheme of `config/statamic/protect.php` (`default`) isn't stored in
+the database, so entries only protected by it are imported as visible pages.
+Entries with a `redirect` field become redirect pages to the URL, the referenced
+entry (`entry::<id>`) or the first child entry (`@child`, the next top level
+entry for the home page like in Statamic); the HTTP status of redirects isn't
+imported. Entries redirecting to `404` or to targets which don't exist (`@child`
+without children, deleted entries) are imported as disabled pages like Statamic
+shows the not found page for them, also entries outside of page trees redirecting
+to `@child` because Statamic can't resolve their redirects. Translations inherit
+the redirects of their origin entries or redirect on their own, `@child` points to
+the localized first child of their origin entry. Links and redirects to localized
+entries point to their translations, absolute if their site has an own domain.
+Like in Statamic, links and redirects to entries of other sites point to the
+entries with the same origin in the site of the converted entry if they exist,
+unless the Bard field or the Link field in a set has the `select_across_sites`
+option (the option isn't checked for the `redirect` field). Links in translations
+with an own domain to pages of the default site are absolute URLs of the
+`--domain` domain.
+Translations of collections without route for their site have no URLs in
+Statamic and are skipped with a warning. Redirects to taxonomy terms or entries which
+aren't imported are imported as pages with a notice. Pages of entries from
+previous imports which aren't imported any more, e.g. because they were deleted,
+unpublished or their collection isn't imported, are disabled.
+
+**Caution:** The pages of previous imports are disabled if their entries aren't
+part of the current run. Use a different `--editor` value for each run if you
+import collections in separate runs.
+
+### Command
+
+```bash
+php artisan cms:statamic-import [options]
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `--connection` | `statamic` | Database connection name for the Statamic database |
+| `--domain` | | Domain name for the imported pages |
+| `--lang` | | Language code for the imported pages, the language of the site from the `sites` table or `en` by default |
+| `--tenant` | | Tenant ID for multi-tenant setups |
+| `--editor` | `statamic-import` | Editor name for imported records |
+| `--file-base` | | Base URL of the assets for all containers (e.g. `https://example.com/assets`) or per container (e.g. `images=https://cdn.example.com/images`); repeatable |
+| `--container` | | Handle of the asset container used for asset values without container, the only container of the `asset_containers` table like in Statamic or `assets` by default |
+| `--collections` | `pages` | Comma-separated list of Statamic collections to import |
+| `--fields` | `body,content,article,text,page_builder,page_sections,blocks` | Comma-separated list of the entry fields containing the content |
+| `--site` | | Statamic site handle to import, the first site of the `sites` table or `default` by default |
+| `--language` | | Statamic site imported as page translation (e.g. `de`), with its language code and optional URL of a separate domain or URL path of the site if the sites aren't in the database (e.g. `de:de`, `de:de:/de/` or `fr:fr:https://example.fr/`); repeatable |
+| `--since` | | Only import entries changed since the date (e.g. `2026-01-31`), the pages of the others are kept |
+| `--dry-run` | | Show what would be imported without making changes |
+
+### Statamic Database Connection
+
+Add the database connection of the Statamic site to `config/database.php`:
+
+```php
+'statamic' => [
+    'driver' => 'mysql',
+    'host' => env('STATAMIC_DB_HOST', '127.0.0.1'),
+    'database' => env('STATAMIC_DB_DATABASE', 'statamic'),
+    'username' => env('STATAMIC_DB_USERNAME', 'root'),
+    'password' => env('STATAMIC_DB_PASSWORD', ''),
+    // must match STATAMIC_ELOQUENT_PREFIX of the Statamic site if its tables are prefixed
+    'prefix' => env('STATAMIC_ELOQUENT_PREFIX', ''),
+],
+```
+
+Without `--file-base`, the URLs of the assets are unknown and they aren't
+imported; the importer warns once per asset container.
+
+### Supported Content
+
+The importer converts the content fields given by `--fields` to Pagible content elements:
+
+- Bard fields with paragraphs, headings, lists, quotes, code blocks, tables, images, horizontal rules and sets, also with the `inline` and `save_html` options; tables keep their header row and header column, the formatting and links of their cells, and cells spanning several columns or rows are followed by empty cells; images in paragraphs split the text, images in lists, quotes and tables are skipped with a warning; horizontal rules and tables in quotes and lists stay in the text as Markdown; text with underline, small, superscript or subscript marks or links opening a new window or with link types (`rel`) like `nofollow` or `sponsored` becomes an HTML element like text whose marks overlap so their Markdown syntax can't be separated; spaces at the start and end of marked text are moved outside the marks; text alignment isn't imported
+- Replicator fields and Bard sets for text, headings, images, galleries, videos, quotes, code and callouts; disabled sets are skipped like Statamic hides them; other sets are imported from all of their fields in order: Bard, Replicator, Table, Group, Markdown, Textarea and Code fields and Text fields named `text`, `body`, `content`, `intro`, `description`, `subtitle`, `subheading`, `summary`, `lead` or `teaser` (other Text fields like button labels, anchors or CSS classes are skipped); fields named `title`, `heading` or `headline` become headings using the `level` or `heading_level` field (`2` or `h2`), images of asset fields become image elements with the `alt` field of the set or its `caption` (also shown next to the image), videos (`mp4`, `m4v`, `webm`, `ogv`, `mov`) and audio files (`mp3`, `m4a`, `aac`, `oga`, `ogg`, `wav`, `flac`) become video and audio elements and other files become file elements; video sets and Video fields in any set embed YouTube (with start time), Vimeo (with start time and `dnt=1` like Statamic) and Cloudflare Stream players, import video files and video assets as video elements and link other URLs; Link fields become links to URLs, entries (`entry::<id>`), assets and the first child entry (`@child`) with the text of their label field: the field named like the Link field or without its `_link` or `_url` suffix followed by `_label` or `_text` (e.g. `primary_label` for `primary_link`) and, if the set has a single Link field, the `label`, `link_text`, `link_label`, `button_text`, `button_label`, `cta_text` or `cta_label` field (or the URL if there's none); without the blueprint in the database, fields containing only an entry or asset reference or `@child` are Link fields too, because only Link fields store them; links whose targets can't be resolved are skipped with a warning; List fields become bullet lists (sanitized HTML lists if their items contain HTML tags, which Statamic templates output as they are) and Array fields tables with the keys (or their labels from the blueprint) in the first column, also with the `expand` option, and the `key_header` and `value_header` of the dynamic mode as header row; sets without content which can be imported are reported once per set type
+- Markdown, Text, Textarea and HTML fields, HTML is sanitized; single line breaks in Markdown fields become line breaks and URLs and e-mail addresses aren't linked unless the `automatic_line_breaks` or `automatic_links` options of the field in the blueprint say otherwise, HTML is shown as text with `escape_markup`; Markdown with footnotes, attributes like `{.class}` or description lists and fields with `smartypants` are converted to HTML elements like Statamic renders them because Pagible doesn't support them; images in Markdown are imported as files and become image elements; the text of Text and Textarea fields isn't Markdown and is escaped; URLs in Bard text aren't linked like in Statamic
+- The field settings are read from the blueprints of the collection including imported fieldsets (`import` with `prefix`) and fields referencing fieldset fields (`field: fieldset.field` with `config`); fields in Replicator and Bard sets use the settings of their set if fields of different sets have the same handle
+- Table fields become tables whose cells are inline Markdown like Statamic renders them with the `markdown` modifier, the first row is the header if a `first_row_headers` field next to the table is set; Code fields become code elements with their selected language or the `mode` of the field (`htmlmixed` like Statamic if there's none), Statamic modes are mapped to the Pagible languages like `htmlmixed` to `html`, `text/x-java` to `java`, `gfm` to `markdown` and `jsx` to `javascript`; the fields of Group fields are imported in their order, groups without content which can be imported are reported
+- Grid fields aren't imported and Antlers tags in fields with the `antlers` option aren't evaluated, the importer warns once for each of them
+- Asset fields, the assets are downloaded into Pagible file storage using the title, alternative text and MIME type of the asset meta data, the alternative text becomes the description of new files; the first of `featured_image`, `hero_image`, `image` and `cover` or else the first image of an asset field with `max_files: 1` in the blueprint becomes the featured image. The containers of asset fields are taken from the blueprints of the collection, `--container` or the only asset container is used for the others
+- Links to entries (`statamic://entry::<id>`) point to the imported pages, also in HTML and Markdown fields; links to unknown entries are replaced by their text
+
+The SEO title and description, the Open Graph title and image (falling back to
+the SEO title without site name like SEO Pro, the Twitter values aren't
+imported), the canonical URL and the `noindex` and
+`nofollow` robots settings of the `seo` field (SEO Pro) or the `meta_title`,
+`meta_description`, `og_title`, `og_description` and `og_image` fields are
+imported as meta data; values containing Antlers templates are skipped. SEO
+Pro values are merged from its site defaults (`addon_settings` table), the
+section defaults of the collection and the entry like SEO Pro does, inherited
+values of the entry use the defaults, and the site name is added to the SEO
+title, or used as title if the entry has no SEO title. Values disabled in SEO
+Pro stay empty and don't fall back to the `meta_*` fields. If SEO Pro robots
+checkboxes are set, the older robots toggles are ignored like in SEO Pro.
+Collections disabling SEO (`seo: false` in `inject`) only disable it for
+entries without own SEO values. Paths of SEO Pro images without container are
+taken from the `--container` asset container because the container of SEO Pro
+(`statamic.seo-pro.assets.container`) is only configured in the Statamic config
+files. Values referencing other fields (`@seo:<field>`) use the plain text of
+the field, also of Bard fields like the `content` field SEO Pro uses for the
+description by default; if the field is empty, the section and then the site
+defaults are used like in SEO Pro. Older SEO Pro versions store their site
+defaults in the `content/seo.yaml` file, they aren't imported and the importer
+warns about it. Entries with SEO disabled get no meta
+data. Other robots directives like `noarchive` and JSON-LD schemas aren't
+supported and reported.
+
+Translations of the entries in the sites given by `--language` become page
+translations, inheriting the values of their origin entries like Statamic does.
+Localizations of localized entries are translations too, also if their origins
+are in sites which aren't imported (e.g. French entries localized from German
+ones when only `--language=fr` is imported).
+Entries of these sites which aren't localizations of an imported entry are
+skipped and reported. Like in Statamic, the URL path of the site (e.g. `/de/` of
+`https://example.com/de/` or `{{ config:app:url }}/de/`) prefixes the URLs of its
+translations, e.g. `/de/team` and `/de` for the home page; the pages of the
+imported site keep their URLs without its path. Site URLs whose host is an Antlers
+tag like `https://{{ env:DE_HOST }}/` can't be resolved, so their translations are
+imported for the domain of the imported site with a warning; pass the domain like
+`--language=de:de:https://example.de/` instead. Translations whose URL is already
+used by another page are skipped with a warning and links converted afterwards
+point to the pages of their origin entries.
 
 ## License
 

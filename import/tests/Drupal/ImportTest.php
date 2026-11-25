@@ -560,9 +560,9 @@ class ImportTest extends ImportTestAbstract
         $this->assertCount( 4, $content );
         $this->assertSame( 'file', $content[0]->type );
         $this->assertSame( 'https://example.com/sites/default/files/doc.pdf', File::where( 'id', $content[0]->data->file->id )->firstOrFail()->path );
-        $this->assertStringContainsString( '<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ"', $content[1]->data->text );
+        $this->assertStringContainsString( '<iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?start=10"', $content[1]->data->text );
         // remote videos are embedded
-        $this->assertStringContainsString( '<iframe src="https://player.vimeo.com/video/123"', $content[2]->data->text );
+        $this->assertStringContainsString( '<iframe src="https://player.vimeo.com/video/123?dnt=1"', $content[2]->data->text );
         // other remote videos are linked
         $this->assertSame( '<p><a href="https://video.example.org/watch/5">https://video.example.org/watch/5</a></p>', $content[3]->data->text );
     }
@@ -4404,7 +4404,7 @@ class ImportTest extends ImportTestAbstract
         $this->assertSame( ['html', 'html', 'html', 'video', 'audio'], array_map( fn( $el ) => $el->type ?? null, $content ) );
         $this->assertSame( '<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Video" width="560" height="315" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>', $content[1]->data->text ?? null );
         // video pages can't be embedded and are replaced by their player URLs
-        $this->assertStringStartsWith( '<iframe src="https://player.vimeo.com/video/123" ', $content[2]->data->text ?? '' );
+        $this->assertStringStartsWith( '<iframe src="https://player.vimeo.com/video/123?dnt=1" ', $content[2]->data->text ?? '' );
         $this->assertSame( 'https://example.com/sites/default/files/clip.mp4', $path( 3 ) );
         $this->assertSame( 'https://cdn.example.org/talk.mp3', $path( 4 ) );
         $this->assertSame( ['video/mp4', 'audio/mpeg'], [File::where( 'path', $path( 3 ) )->value( 'mime' ), File::where( 'path', $path( 4 ) )->value( 'mime' )] );

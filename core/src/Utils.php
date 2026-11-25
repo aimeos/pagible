@@ -45,6 +45,7 @@ class Utils
         {
             $config = \HTMLPurifier_Config::createDefault();
             $config->set( 'Attr.AllowedFrameTargets', ['_blank', '_self'] );
+            $config->set( 'Attr.AllowedRel', ['nofollow', 'noopener', 'noreferrer', 'sponsored', 'ugc'] );
             $config->set( 'Cache.SerializerPath', sys_get_temp_dir() );
 
             self::$purifier = new \HTMLPurifier( $config );

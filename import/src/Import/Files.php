@@ -75,11 +75,16 @@ class Files
      * @param string $name Descriptive file name
      * @param string $path Remote URL or path of the file
      * @param string $editor Editor name for the file and its version
+     * @param array<string, string> $description Descriptions of the file like the alt text of images by language code
      * @return File Published file
      */
-    public static function reference( string $mime, string $name, string $path, string $editor ) : File
+    public static function reference( string $mime, string $name, string $path, string $editor, array $description = [] ) : File
     {
         $file = self::init( $mime, $name, $editor );
+
+        if( $description !== [] ) {
+            $file->description = (object) $description;
+        }
 
         // referenced files aren't stored by the import, so they must not be removed from the disk
         return self::save( $file, $editor, function() use ( $file, $path ) {

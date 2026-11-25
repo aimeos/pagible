@@ -484,8 +484,9 @@ abstract class Commands extends Command
      * get a new version on every import.
      *
      * @param bool $rename FALSE to use the name only for new files
+     * @param array<string, string> $description Descriptions of new files like the alt text of images by language code
      */
-    protected function createFile( string $mime, string $name, string $path, bool $rename = true ): string
+    protected function createFile( string $mime, string $name, string $path, bool $rename = true, array $description = [] ): string
     {
         if( $existing = $this->knownFile( $path ) ) {
             return $existing;
@@ -502,7 +503,7 @@ abstract class Commands extends Command
         }
         else
         {
-            $id = Files::reference( $mime, $name, $path, $this->editor )->id ?? '';
+            $id = Files::reference( $mime, $name, $path, $this->editor, $description )->id ?? '';
         }
 
         $this->namedFiles[$id] = true;
