@@ -13,6 +13,9 @@
     "require-dev": {
         "orchestra/testbench": "^10.0||^11.0"
     },
+    "conflict": {
+        "laravel/framework": ">=13.44"
+    },
     "autoload": {
         "psr-4": {
             "Aimeos\\Cms\\": "src/"
