@@ -842,9 +842,9 @@ class MenuImportTest extends TestAbstract
         $text = implode( '', array_map( fn( $element ) => (string) ( $element->data->text ?? '' ), (array) PageView::where( 'name', 'About' )->firstOrFail()->content ) );
 
         // the links use their own texts and targets of the article or the default targets of the articles component, popups open in a new window
-        $this->assertStringContainsString( '<a href="https://example.org/a" target="_blank" rel="noreferrer noopener">Link A</a>', $text );
+        $this->assertStringContainsString( '<a href="https://example.org/a" rel="noopener noreferrer" target="_blank">Link A</a>', $text );
         $this->assertStringContainsString( '<a href="https://example.org/b">Link B</a>', $text );
-        $this->assertStringContainsString( '<a href="https://example.org/c" target="_blank" rel="noreferrer noopener">https://example.org/c</a>', $text );
+        $this->assertStringContainsString( '<a href="https://example.org/c" rel="noopener noreferrer" target="_blank">https://example.org/c</a>', $text );
     }
 
 

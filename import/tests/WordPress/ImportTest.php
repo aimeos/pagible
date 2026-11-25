@@ -2012,7 +2012,7 @@ class ImportTest extends ImportTestAbstract
             ['text', ['text' => "[https://example.com/post?a=1&b=2](https://example.com/post?a=1&b=2)"]],
             ['video', ['file' => Elements::file( 'file:v.mp4' )]],
             ['audio', ['file' => Elements::file( 'file:a.mp3' )]],
-            ['html', ['text' => '<iframe src="https://player.vimeo.com/video/42" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>']],
+            ['html', ['text' => '<iframe src="https://player.vimeo.com/video/42?dnt=1" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>']],
             // shortcodes of plugins are kept as text
             ['text', ['text' => '[unknown x="1"]']],
         ], $data( $result ) );
@@ -2137,7 +2137,7 @@ class ImportTest extends ImportTestAbstract
             . '<!-- wp:embed {"url":"https://vimeo.com/123"} --><figure class="wp-block-embed"><div class="wp-block-embed__wrapper">' . "\n"
             . 'https://vimeo.com/123' . "\n" . '</div></figure><!-- /wp:embed --><!-- wp:latest-posts /--></details><!-- /wp:details -->' );
         $this->assertSame( ['text', 'image', 'html'], array_column( $result['elements'], 'type' ) );
-        $this->assertStringContainsString( 'src="https://player.vimeo.com/video/123"', $result['elements'][2]['data']['text'] );
+        $this->assertStringContainsString( 'src="https://player.vimeo.com/video/123?dnt=1"', $result['elements'][2]['data']['text'] );
         $this->assertSame( "**Sum**\n\nHidden", $result['elements'][0]['data']['text'] );
         $this->assertSame( ['  Dynamic block latest-posts skipped'], $warnings );
         $result = $wp->elements( "<details><summary>Classic</summary>\nHidden text\nline 2\n\nMore</details>\n\nAfter" );
@@ -3027,7 +3027,7 @@ class ImportTest extends ImportTestAbstract
             ['audio', ['file' => Elements::file( 'file:https://x.org/song.mp3' )]],
             ['text', ['text' => '[https://x.org/a.mp3?x=1](https://x.org/a.mp3?x=1)']],
             ['video', ['file' => Elements::file( 'file:https://x.org/clip.MP4' )]],
-            ['html', ['text' => '<iframe src="https://player.vimeo.com/video/42" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>'
+            ['html', ['text' => '<iframe src="https://player.vimeo.com/video/42?dnt=1" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>'
                 . '<iframe src="https://www.youtube-nocookie.com/embed/abcdefghijk" loading="lazy" allow="fullscreen; picture-in-picture" allowfullscreen></iframe>']],
             ['audio', ['file' => Elements::file( 'file:https://x.org/c.ogg' )]],
         ], $data( $result ) );

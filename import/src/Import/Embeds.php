@@ -79,7 +79,7 @@ class Embeds
 
 
     /**
-     * Returns the URL of the embeddable player for YouTube and Vimeo videos.
+     * Returns the URL of the embeddable player for YouTube, Vimeo and Cloudflare Stream videos.
      *
      * @param string $url URL of the video page, e.g. "https://www.youtube.com/watch?v=abc"
      * @return string Player URL or empty string for other URLs
@@ -87,14 +87,48 @@ class Embeds
     public static function player( string $url ): string
     {
         if( preg_match( '#^https?://(?:www\.|m\.)?(?:youtube\.com/(?:watch\?(?:.*&)?v=|embed/|v/|shorts/|live/)|youtu\.be/)([\w-]{6,})#i', $url, $m ) ) {
-            return 'https://www.youtube-nocookie.com/embed/' . $m[1];
+            return 'https://www.youtube-nocookie.com/embed/' . $m[1] . ( ( $start = self::start( $url ) ) ? '?start=' . $start : '' );
         }
 
+        // Vimeo doesn't track the viewers with "dnt=1" like Statamic embeds the videos
         if( preg_match( '#^https?://(?:www\.|player\.)?vimeo\.com/(?:video/)?(\d+)(?:/([0-9a-f]+))?#i', $url, $m ) ) {
-            return 'https://player.vimeo.com/video/' . $m[1] . ( !empty( $m[2] ) ? '?h=' . $m[2] : '' );
+            return 'https://player.vimeo.com/video/' . $m[1] . ( !empty( $m[2] ) ? '?h=' . $m[2] . '&' : '?' ) . 'dnt=1'
+                . ( ( $start = self::start( $url ) ) ? '#t=' . $start . 's' : '' );
+        }
+
+        if( preg_match( '#^https?://(customer-[a-z0-9]+\.cloudflarestream\.com)/([0-9a-f]{32})(?:[/?\#]|$)#i', $url, $m ) ) {
+            return 'https://' . strtolower( $m[1] ) . '/' . $m[2] . '/iframe';
+        }
+
+        if( preg_match( '#^https?://(?:iframe\.|watch\.)?videodelivery\.net/([0-9a-f]{32})(?:[/?\#]|$)#i', $url, $m ) ) {
+            return 'https://iframe.videodelivery.net/' . $m[1];
         }
 
         return '';
+    }
+
+
+    /**
+     * Returns the start time of the video from the "t" or "start" parameter of the URL or its fragment.
+     *
+     * @param string $url URL of the video page like "https://youtu.be/abc?t=1m30s"
+     * @return int Start time in seconds or 0 if the video starts at the beginning
+     */
+    protected static function start( string $url ): int
+    {
+        $params = [];
+        parse_str( (string) parse_url( $url, PHP_URL_QUERY ), $params );
+        $fragment = [];
+        parse_str( (string) parse_url( $url, PHP_URL_FRAGMENT ), $fragment );
+
+        $value = $params['t'] ?? $params['start'] ?? $fragment['t'] ?? $fragment['start'] ?? '';
+
+        // times are given in seconds like "90" or "90s" or like "1h2m30s"
+        if( !is_string( $value ) || !preg_match( '/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/i', trim( $value ), $m ) ) {
+            return 0;
+        }
+
+        return (int) ( $m[1] ?? 0 ) * 3600 + (int) ( $m[2] ?? 0 ) * 60 + (int) ( $m[3] ?? 0 );
     }
 
 

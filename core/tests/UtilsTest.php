@@ -185,6 +185,14 @@ class UtilsTest extends CoreTestAbstract
     }
 
 
+    public function testHtmlKeepsLinkTypes()
+    {
+        $result = Utils::html( '<a href="https://example.com" rel="nofollow sponsored me">Link</a>' );
+
+        $this->assertStringContainsString( 'rel="nofollow sponsored"', $result );
+    }
+
+
     public function testHtmlAllowsTargetBlank()
     {
         $result = Utils::html( '<a href="https://example.com" target="_blank">Link</a>' );

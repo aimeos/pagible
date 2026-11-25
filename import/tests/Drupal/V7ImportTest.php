@@ -613,7 +613,7 @@ class V7ImportTest extends ImportTestAbstract
         // remote videos of the Media module are embedded
         $this->assertStringContainsString( '<iframe src=\\"https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ\\" title=\\"Talk\\"', $content );
         $this->assertStringContainsString( '<iframe src=\\"https://www.youtube-nocookie.com/embed/abcdefgh\\" title=\\"Clip\\"', $content );
-        $this->assertStringContainsString( '<iframe src=\\"https://player.vimeo.com/video/123\\"', $content );
+        $this->assertStringContainsString( '<iframe src=\\"https://player.vimeo.com/video/123?dnt=1\\"', $content );
         $this->assertSame( 0, File::where( 'path', 'like', '%youtube%' )->orWhere( 'path', 'like', '%vimeo%' )->count() );
     }
 
@@ -655,7 +655,7 @@ class V7ImportTest extends ImportTestAbstract
         // YouTube and Vimeo videos of the Video Filter module are embedded, other videos are linked
         $this->assertSame( ['html', 'html', 'html', 'image-text', 'image-text', 'image', 'html', 'image', 'heading'], $types );
         $this->assertStringStartsWith( '<iframe src="https://www.youtube-nocookie.com/embed/abcdefgh" width="640" height="360" ', $content[0]['data']['text'] );
-        $this->assertStringStartsWith( '<iframe src="https://player.vimeo.com/video/123" ', $content[1]['data']['text'] );
+        $this->assertStringStartsWith( '<iframe src="https://player.vimeo.com/video/123?dnt=1" ', $content[1]['data']['text'] );
         $this->assertStringContainsString( '<a href="https://example.com/clip.mp4">https://example.com/clip.mp4</a>', $content[2]['data']['text'] );
         $this->assertStringContainsString( '[video:javascript:alert(1)]', $content[2]['data']['text'] );
 
