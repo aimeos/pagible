@@ -5,7 +5,7 @@
  */
 
 
-namespace Tests;
+namespace Tests\Typo3;
 
 use Aimeos\Cms\Permission;
 use Aimeos\Cms\Translation\Hashes;
@@ -15,7 +15,6 @@ use Aimeos\Cms\Facades\Variants;
 use Aimeos\Cms\Models\Element;
 use Aimeos\Cms\Models\File;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Console\OutputStyle;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Artisan;
@@ -23,24 +22,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
-
 use Aimeos\Cms\Commands\T3Import;
 use Aimeos\Cms\Import\Pages;
 use Aimeos\Cms\Import\Typo3;
-use Aimeos\Cms\Import\Typo3Html;
-use Aimeos\Cms\Import\Typo3Layouts;
 use Illuminate\Database\Events\TransactionBeginning;
 use Illuminate\Database\Events\TransactionCommitted;
 use Illuminate\Support\Facades\Event;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 
-class T3ImportTest extends ImportTestAbstract
+
+/**
+ * Tests the import of the TYPO3 pages, content elements, files, translations and redirects.
+ */
+class ImportTest extends TestAbstract
 {
-    use CmsWithMigrations;
-    use RefreshDatabase;
-
-
     protected function defineEnvironment( $app )
     {
         parent::defineEnvironment( $app );
@@ -424,7 +420,7 @@ class T3ImportTest extends ImportTestAbstract
                 $this->editor = 'importer';
                 $this->connection = 'typo3';
                 $this->createdFiles = Collection::make();
-                $typo3 = new Typo3( fn() => null, new Typo3Html( fn() => null, fn() => null ), fn() => Collection::make(), fn() => Collection::make(), fn() => Collection::make(), fn() => Collection::make() );
+                $typo3 = new Typo3\Content( fn() => null, new Typo3\Html( fn() => null, fn() => null ), fn() => Collection::make(), fn() => Collection::make(), fn() => Collection::make(), fn() => Collection::make() );
                 $record = (object) ['uid' => 41, 'pid' => 2, 'CType' => 'text', 'header' => '', 'bodytext' => '<p>Shared</p>', '_pagible_shared' => 'reference'];
 
                 $failed = $this->attempt( 'page in test', function() use ( $record, $typo3 ) {
@@ -473,7 +469,7 @@ class T3ImportTest extends ImportTestAbstract
             4 => (object) ['uid' => 4, 'pid' => 1, 'backend_layout' => 'pagets__two', 'TSconfig' => "mod.web_layout.BackendLayouts.two {\n config { colPos = 0\n colPos = 1 }\n}"],
             5 => (object) ['uid' => 5, 'pid' => 4, 'backend_layout' => 'pagets__two', 'TSconfig' => ''],
         ];
-        $layouts = new class( Collection::make( $pages ), Collection::make() ) extends Typo3Layouts {
+        $layouts = new class( Collection::make( $pages ), Collection::make() ) extends Typo3\Layouts {
             public int $parsed = 0;
 
             protected function pageTs( object $t3Page, string $name ): string
@@ -758,7 +754,7 @@ class T3ImportTest extends ImportTestAbstract
 
         // the targets of the shortcuts of all upcoming pages are fetched together and only once at all
         $queries = $log->filter( fn( $query ) => preg_match( '/from "tt_content" .*"uid" in/', $query['query'] ) === 1 );
-        $this->assertSame( [[41, 43, 48]], $queries->map( fn( $query ) => array_slice( $query['bindings'], 2, -2 ) )->values()->all() );
+        $this->assertSame( [[41, 43, 48]], $queries->map( fn( $query ) => array_slice( $query['bindings'], 3, -2 ) )->values()->all() );
 
         // the file references of the targets are fetched together with the ones of the upcoming pages
         $refs = $log->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file_reference"' ) && in_array( 41, $query['bindings'], true ) );
@@ -965,7 +961,7 @@ class T3ImportTest extends ImportTestAbstract
         $selects = $queries->filter( fn( $query ) => preg_match( '/^select .* from "(pages|tt_content|sys_file_reference|sys_file)"/', $query ) === 1 );
         $tables = $selects->map( fn( $query ) => preg_replace( '/^select .* from "([a-z_]+)".*$/s', '$1', $query ) );
         $this->assertEqualsCanonicalizing( ['pages', 'tt_content', 'sys_file_reference', 'sys_file'], $tables->unique()->values()->all() );
-        $this->assertFalse( $selects->contains( fn( $query ) => preg_match( '/\*|diffsource|sha1|pi_flexform|l18n_parent|fieldname|sorting_foreign|deleted/', explode( ' from ', $query )[0] ) === 1 ) );
+        $this->assertFalse( $selects->contains( fn( $query ) => preg_match( '/\*|diffsource|sha1|pi_flexform|sorting_foreign|deleted/', explode( ' from ', $query )[0] ) === 1 ) );
 
         // the columns of each table are listed once
         $listings = $queries->filter( fn( $query ) => str_contains( $query, 'pragma_table_xinfo' ) );
@@ -1047,7 +1043,7 @@ class T3ImportTest extends ImportTestAbstract
     public function testKeepsReferencesOfCurrentAndNextContent(): void
     {
         $grouped = fn( \Closure $uid ) => fn( array $uids ) => Collection::make( $uids )->mapWithKeys( fn( $id ) => [$id => Collection::make( [(object) ['uid' => $uid( $id )]] )] );
-        $typo3 = new Typo3( fn() => null, new Typo3Html( fn() => null, fn() => null ),
+        $typo3 = new Typo3\Content( fn() => null, new Typo3\Html( fn() => null, fn() => null ),
             $grouped( fn( $id ) => $id * 10 ), fn() => Collection::make(), $grouped( fn( $id ) => $id + 100 ), $grouped( fn( $id ) => $id * 1000 ) );
         $uids = fn( Collection $refs ) => $refs->map( fn( $ref ) => $ref->uid )->sort()->values()->all();
 
@@ -1107,7 +1103,7 @@ class T3ImportTest extends ImportTestAbstract
         $items = $queries->filter( fn( $query ) => str_contains( $query['query'], 'from "tx_bootstrappackage_carousel_item"' ) );
         $refs = $queries->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file_reference"' ) && in_array( 'tx_bootstrappackage_carousel_item', $query['bindings'], true ) );
         $this->assertSame( [[0, 0, 51]], $items->pluck( 'bindings' )->values()->all() );
-        $this->assertSame( [[0, 0, 'tx_bootstrappackage_carousel_item', 'background_image', 2, 1]], $refs->pluck( 'bindings' )->values()->all() );
+        $this->assertSame( [[0, 0, 'tx_bootstrappackage_carousel_item', 'image', 'background_image', 2, 1]], $refs->pluck( 'bindings' )->values()->all() );
 
         $content = (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content;
         $slides = array_values( array_filter( $content, fn( $element ) => ( $element->type ?? null ) === 'slideshow' ) );
@@ -1621,6 +1617,118 @@ class T3ImportTest extends ImportTestAbstract
     }
 
 
+    public function testSinceChangesPagesWithScheduledContentAndReplacedFiles(): void
+    {
+        foreach( ['pages', 'tt_content', 'sys_file_reference', 'sys_file'] as $name ) {
+            Schema::connection( 'typo3' )->table( $name, fn( Blueprint $table ) => $table->unsignedInteger( 'tstamp' )->default( 1000 ) );
+        }
+        Schema::connection( 'typo3' )->table( 'sys_file_reference', fn( Blueprint $table ) => $table->unsignedInteger( 'pid' )->default( 0 ) );
+        Schema::connection( 'typo3' )->table( 'tt_content', function( Blueprint $table ) {
+            $table->unsignedInteger( 'starttime' )->default( 0 );
+            $table->unsignedInteger( 'endtime' )->default( 0 );
+        } );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'sys_file' )->insert( ['uid' => 1, 'identifier' => '/user_upload/photo.png', 'name' => 'photo.png', 'mime_type' => 'image/png', 'extension' => 'png'] );
+        $db->table( 'sys_file_reference' )->insert( ['uid' => 1, 'uid_local' => 1, 'uid_foreign' => 40, 'tablenames' => 'tt_content', 'fieldname' => 'image', 'pid' => 6] );
+        $db->table( 'tt_content' )->insert( ['uid' => 40, 'pid' => 6, 'CType' => 'image', 'sorting' => 1] );
+        $db->table( 'tt_content' )->insert( ['uid' => 41, 'pid' => 2, 'CType' => 'text', 'bodytext' => '<p>Scheduled</p>', 'starttime' => time() + 3600, 'sorting' => 3] );
+
+        Http::fake( ['*' => Http::response( base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAwS2OUAAAAABJRU5ErkJggg==' ), 200, ['Content-Type' => 'image/png'] )] );
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
+
+        $rendered = function() use ( $db ) {
+            $db->enableQueryLog();
+            $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin', '--since' => '@2000'] ) );
+            $pids = $this->queries( $db )->flatMap( fn( $query ) => $this->contentPids( $query ) )->unique()->sort()->values()->all();
+            $db->disableQueryLog();
+            $db->flushQueryLog();
+
+            return $pids;
+        };
+
+        $this->assertSame( [], $rendered() );
+
+        // content which became visible or expired since the last import changes the page
+        $db->table( 'tt_content' )->where( 'uid', 41 )->update( ['starttime' => 3000] );
+        $this->assertSame( [2], $rendered() );
+        $db->table( 'tt_content' )->where( 'uid', 41 )->update( ['starttime' => 0, 'endtime' => 3000] );
+        $this->assertSame( [2], $rendered() );
+        // content which will be shown or expire in the future doesn't
+        $db->table( 'tt_content' )->where( 'uid', 41 )->update( ['starttime' => time() + 3600, 'endtime' => 0] );
+        $this->assertSame( [], $rendered() );
+
+        // replaced files change the pages using them
+        $db->table( 'sys_file' )->where( 'uid', 1 )->update( ['tstamp' => 3000] );
+        $this->assertSame( [6], $rendered() );
+    }
+
+
+    public function testSinceChangesPagesWithContentOfShortcutSources(): void
+    {
+        foreach( ['pages', 'tt_content', 'sys_file_reference'] as $name ) {
+            Schema::connection( 'typo3' )->table( $name, fn( Blueprint $table ) => $table->unsignedInteger( 'tstamp' )->default( 1000 ) );
+        }
+        Schema::connection( 'typo3' )->table( 'sys_file_reference', fn( Blueprint $table ) => $table->unsignedInteger( 'pid' )->default( 0 ) );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'pages' )->insert( ['uid' => 7, 'pid' => 1, 'title' => 'Team', 'slug' => '/team', 'sorting' => 4, 'content_from_pid' => 8] );
+        $db->table( 'pages' )->insert( ['uid' => 8, 'pid' => 1, 'title' => 'Link', 'slug' => '/link', 'doktype' => 4, 'shortcut' => 9, 'sorting' => 5] );
+        $db->table( 'pages' )->insert( ['uid' => 9, 'pid' => 1, 'title' => 'Storage', 'slug' => '/storage', 'doktype' => 254, 'sorting' => 6] );
+        $db->table( 'tt_content' )->insert( ['uid' => 40, 'pid' => 9, 'CType' => 'text', 'bodytext' => '<p>Stored text</p>', 'sorting' => 1] );
+
+        $content = fn() => (string) json_encode( Element::get()->map( fn( $element ) => $element->data ) );
+        $since = function() use ( $db ) {
+            $db->enableQueryLog();
+            $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--since' => '@2000'] ) );
+            $pids = $this->queries( $db )->flatMap( fn( $query ) => $this->contentPids( $query ) )->unique()->sort()->values()->all();
+            $db->flushQueryLog();
+            $db->disableQueryLog();
+
+            return $pids;
+        };
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $this->assertStringContainsString( 'Stored text', $content() );
+        $this->assertSame( [], $since(), Artisan::output() );
+
+        // the content of the target of the shortcut is shown, so its changes change the page
+        $db->table( 'tt_content' )->where( 'uid', 40 )->update( ['bodytext' => '<p>Changed text</p>', 'tstamp' => 3000] );
+        $this->assertSame( [9], $since(), Artisan::output() );
+        $this->assertStringContainsString( 'Changed text', $content() );
+    }
+
+
+    public function testContentElementsKeepTheirTypo3Anchors(): void
+    {
+        $db = DB::connection( 'typo3' );
+        $db->table( 'tt_content' )->insert( ['uid' => 40, 'pid' => 6, 'CType' => 'text', 'sorting' => 1,
+            'bodytext' => '<p><a href="t3://page?uid=2#c11">a</a> <a href="#c41">b</a> <a href="t3://page?uid=current#c41">c</a></p>'] );
+        $db->table( 'tt_content' )->insert( ['uid' => 41, 'pid' => 6, 'CType' => 'text', 'header' => 'Target', 'bodytext' => '<p>Text</p>', 'sorting' => 2] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+
+        $about = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $contact = PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail();
+        $ids = fn( $page ) => array_column( (array) $page->content, 'id' );
+
+        // the first element of each content element uses the anchor of the content element
+        $this->assertSame( [Typo3\Urls::anchor( 10 ), Typo3\Urls::anchor( 11 )], $ids( $about ) );
+        // the other elements of a content element get new IDs
+        $this->assertSame( [Typo3\Urls::anchor( 40 ), Typo3\Urls::anchor( 41 )], array_slice( $ids( $contact ), 0, 2 ) );
+        $this->assertSame( ['html', 'heading', 'html'], array_column( (array) $contact->content, 'type' ) );
+        // translations use the anchors of their content elements in the default language
+        $this->assertSame( $ids( $about ), $ids( PageView::language( 'de' )->findOrFail( $about->id ) ) );
+        $this->assertSame( Typo3\Urls::anchor( 30 ), $ids( PageView::language( 'fr' )->findOrFail( $about->id ) )[0] );
+
+        // links to the anchors point to the elements
+        $html = (string) ( $contact->content[0]->data->text ?? '' );
+        $this->assertStringContainsString( 'href="/about#' . Typo3\Urls::anchor( 11 ) . '"', $html );
+        $this->assertStringContainsString( 'href="#' . Typo3\Urls::anchor( 41 ) . '"', $html );
+        $this->assertStringContainsString( 'href="/contact#' . Typo3\Urls::anchor( 41 ) . '"', $html );
+    }
+
+
     public function testSinceChangesPagesWithShortcutsToRecordsWithoutModificationTime(): void
     {
         Schema::connection( 'typo3' )->table( 'pages', fn( Blueprint $table ) => $table->unsignedInteger( 'tstamp' )->default( 1000 ) );
@@ -1977,6 +2085,136 @@ class T3ImportTest extends ImportTestAbstract
     }
 
 
+    public function testImportsRedirects(): void
+    {
+        Schema::connection( 'typo3' )->create( 'sys_redirect', function( Blueprint $table ) {
+            $table->id( 'uid' );
+            $table->boolean( 'deleted' )->default( false );
+            $table->boolean( 'disabled' )->default( false );
+            $table->unsignedInteger( 'starttime' )->default( 0 );
+            $table->unsignedInteger( 'endtime' )->default( 0 );
+            $table->string( 'source_host' )->default( '*' );
+            $table->string( 'source_path' );
+            $table->boolean( 'is_regexp' )->default( false );
+            $table->string( 'target' );
+            $table->unsignedSmallInteger( 'target_statuscode' )->default( 301 );
+        } );
+
+        foreach( [
+            ['uid' => 1, 'source_path' => '/old-about', 'target' => 't3://page?uid=2'],
+            ['uid' => 2, 'source_path' => '/partner/', 'source_host' => 'example.com', 'target' => 'https://example.org/'],
+            ['uid' => 3, 'source_path' => '#^/news/(.*)#', 'is_regexp' => 1, 'target' => '/blog/$1'],
+            ['uid' => 4, 'source_path' => '/other', 'source_host' => 'example.net', 'target' => 't3://page?uid=2'],
+            ['uid' => 5, 'source_path' => '/disabled', 'disabled' => 1, 'target' => 't3://page?uid=2'],
+            ['uid' => 6, 'source_path' => '/expired', 'endtime' => 1000, 'target' => 't3://page?uid=2'],
+            ['uid' => 7, 'source_path' => '/contact', 'target' => 't3://page?uid=2'],
+            ['uid' => 8, 'source_path' => '/missing', 'target' => 't3://page?uid=999'],
+            ['uid' => 9, 'source_path' => '/old-about', 'target' => 't3://page?uid=6'],
+            ['uid' => 10, 'source_path' => '/legacy', 'target' => '6'],
+            ['uid' => 11, 'source_path' => '/%C3%BCber', 'target' => 't3://page?uid=2'],
+            ['uid' => 12, 'source_path' => '/shared', 'target' => 'https://example.org/all'],
+            ['uid' => 13, 'source_path' => '/shared/', 'source_host' => 'example.com', 'target' => 'https://example.org/host'],
+        ] as $row ) { DB::connection( 'typo3' )->table( 'sys_redirect' )->insert( $row ); }
+
+        // the dry run lists the redirects without resolving their targets
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--dry-run' => true] ) );
+        $output = Artisan::output();
+        $this->assertStringContainsString( 'Redirect [1] /old-about to t3://page?uid=2 (example.com)', $output );
+        $this->assertStringContainsString( "Skipped redirect [4]: example.net/other (host isn't imported)", $output );
+        $this->assertStringNotContainsString( 'Redirect [9]', $output );
+        $this->assertStringContainsString( 'Redirect [13] /shared to https://example.org/host (example.com)', $output );
+        $this->assertStringNotContainsString( 'Redirect [12]', $output );
+        $this->assertNull( PageView::where( 'path', 'old-about' )->first() );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $output = Artisan::output();
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', 'example.com' )->firstOrFail();
+
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'old-about' )->firstOrFail();
+        $this->assertSame( '/about', $page->to );
+        $this->assertSame( $root->id, $page->parent_id );
+        $this->assertSame( Pages::STATUS_HIDDEN, (int) $page->status );
+        $this->assertSame( 'https://example.org/', PageView::where( 'domain', 'example.com' )->where( 'path', 'partner' )->firstOrFail()->to );
+
+        foreach( ['other', 'disabled', 'expired', 'missing'] as $path ) {
+            $this->assertNull( PageView::where( 'path', $path )->first(), $path );
+        }
+
+        // the imported page isn't replaced by the redirect
+        $this->assertSame( '', (string) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->to );
+
+        $this->assertStringContainsString( "Skipped redirect [3]: #^/news/(.*)# (regular expressions can't be imported)", $output );
+        $this->assertStringContainsString( "Skipped redirect [4]: example.net/other (host isn't imported)", $output );
+        $this->assertStringContainsString( 'Skipped redirect: /contact (example.com, URL is used by another page)', $output );
+        $this->assertStringContainsString( 'Skipped redirect [8]: /missing (target "t3://page?uid=999" can\'t be resolved)', $output );
+        $this->assertStringContainsString( 'Redirects: 5 imported', $output );
+
+        // redirects of the host are used before the ones of all hosts like in TYPO3
+        $this->assertSame( 'https://example.org/host', PageView::where( 'domain', 'example.com' )->where( 'path', 'shared' )->firstOrFail()->to );
+
+        // legacy targets and encoded paths are resolved
+        $this->assertSame( '/contact', PageView::where( 'domain', 'example.com' )->where( 'path', 'legacy' )->firstOrFail()->to );
+        $this->assertSame( '/about', PageView::where( 'domain', 'example.com' )->where( 'path', 'über' )->firstOrFail()->to );
+
+        // redirects of previous imports are updated
+        DB::connection( 'typo3' )->table( 'sys_redirect' )->where( 'uid', 1 )->update( ['target' => 't3://page?uid=6'] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( '/contact', PageView::where( 'domain', 'example.com' )->where( 'path', 'old-about' )->firstOrFail()->to );
+        $this->assertSame( 1, PageView::where( 'domain', 'example.com' )->where( 'path', 'old-about' )->count() );
+
+        // redirects removed or disabled in TYPO3 are disabled and enabled again if they are back
+        $status = fn( string $path ) => (int) PageView::where( 'domain', 'example.com' )->where( 'path', $path )->firstOrFail()->status;
+        DB::connection( 'typo3' )->table( 'sys_redirect' )->where( 'uid', 2 )->update( ['disabled' => 1] );
+        DB::connection( 'typo3' )->table( 'sys_redirect' )->where( 'uid', 10 )->delete();
+
+        // the dry run lists the redirects which would be disabled
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--dry-run' => true] ) );
+        $output = Artisan::output();
+        $this->assertStringContainsString( 'Disable /partner [en] (the TYPO3 redirect isn\'t imported any more', $output );
+        $this->assertStringContainsString( 'Disable /legacy [en]', $output );
+        $this->assertStringNotContainsString( 'Disable /old-about', $output );
+        $this->assertSame( Pages::STATUS_HIDDEN, $status( 'partner' ) );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $this->assertStringContainsString( "Disabled 2 redirects of previous imports which aren't in TYPO3 any more.", Artisan::output() );
+        $this->assertSame( [Pages::STATUS_DISABLED, Pages::STATUS_DISABLED, Pages::STATUS_HIDDEN, 1], [$status( 'partner' ), $status( 'legacy' ), $status( 'old-about' ), $status( 'contact' )] );
+
+        DB::connection( 'typo3' )->table( 'sys_redirect' )->where( 'uid', 2 )->update( ['disabled' => 0] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $this->assertSame( Pages::STATUS_HIDDEN, $status( 'partner' ) );
+    }
+
+
+    public function testImportsRedirectsOfTranslationDomains(): void
+    {
+        Schema::connection( 'typo3' )->create( 'sys_redirect', function( Blueprint $table ) {
+            $table->id( 'uid' );
+            $table->boolean( 'deleted' )->default( false );
+            $table->boolean( 'disabled' )->default( false );
+            $table->string( 'source_host' )->default( '*' );
+            $table->string( 'source_path' );
+            $table->boolean( 'is_regexp' )->default( false );
+            $table->string( 'target' );
+        } );
+
+        DB::connection( 'typo3' )->table( 'sys_redirect' )->insert( ['uid' => 1, 'source_host' => 'example.de', 'source_path' => '/alt', 'target' => 'https://example.org/de'] );
+        DB::connection( 'typo3' )->table( 'sys_redirect' )->insert( ['uid' => 2, 'source_path' => '/everywhere', 'target' => 'https://example.org/'] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--language' => ['1:de:https://example.de/']] ) );
+        $root = PageView::where( 'tag', 'root' )->where( 'domain', 'example.com' )->firstOrFail();
+
+        $page = PageView::language( 'de' )->where( 'domain', 'example.de' )->where( 'path', 'alt' )->firstOrFail();
+        $this->assertSame( 'https://example.org/de', $page->to );
+        $this->assertSame( $root->id, $page->parent_id );
+
+        // redirects of all hosts are imported for the translation domains too
+        $this->assertSame( 'https://example.org/', PageView::where( 'domain', 'example.com' )->where( 'path', 'everywhere' )->firstOrFail()->to );
+        $this->assertSame( 'https://example.org/', PageView::language( 'de' )->where( 'domain', 'example.de' )->where( 'path', 'everywhere' )->firstOrFail()->to );
+    }
+
+
     public function testRestrictedPagesAreDisabled(): void
     {
         Schema::connection( 'typo3' )->table( 'pages', function( Blueprint $table ) {
@@ -2113,6 +2351,482 @@ class T3ImportTest extends ImportTestAbstract
         $this->assertSame( 'a-propos', PageView::language( 'fr' )->findOrFail( $page->id )->path );
     }
 
+    public function testSkipsSpacersFoldersAndRecyclers(): void
+    {
+        $db = DB::connection( 'typo3' );
+        foreach( [
+            ['uid' => 7, 'pid' => 1, 'title' => 'Folder', 'slug' => '/folder', 'doktype' => 254, 'sorting' => 4],
+            ['uid' => 8, 'pid' => 7, 'title' => 'In folder', 'slug' => '/in-folder', 'sorting' => 1],
+            ['uid' => 9, 'pid' => 1, 'title' => 'Spacer', 'slug' => '/spacer', 'doktype' => 199, 'sorting' => 5],
+            ['uid' => 10, 'pid' => 1, 'title' => 'Trash', 'slug' => '/trash', 'doktype' => 255, 'sorting' => 6],
+            ['uid' => 11, 'pid' => 10, 'title' => 'Trashed', 'slug' => '/trashed', 'sorting' => 1],
+        ] as $row ) { $db->table( 'pages' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+
+        $paths = PageView::where( 'domain', 'example.com' )->pluck( 'path' )->all();
+
+        // pages inside folders are imported below the parent of the folder
+        $this->assertContains( 'in-folder', $paths );
+        $this->assertSame( PageView::where( 'domain', 'example.com' )->where( 'path', '' )->firstOrFail()->id,
+            PageView::where( 'domain', 'example.com' )->where( 'path', 'in-folder' )->firstOrFail()->parent_id );
+
+        foreach( ['folder', 'spacer', 'trash', 'trashed'] as $path ) {
+            $this->assertNotContains( $path, $paths );
+        }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--page' => [11]] ) );
+        $this->assertStringContainsString( 'Skipped [11] Trashed because spacers, folders, recyclers and their subpages are not imported', Artisan::output() );
+    }
+
+
+    public function testDisablesHiddenSubpagesSectionsAndUntranslatedPages(): void
+    {
+        Schema::connection( 'typo3' )->table( 'pages', function( Blueprint $table ) {
+            $table->boolean( 'extendToSubpages' )->default( false );
+            $table->unsignedInteger( 'l18n_cfg' )->default( 0 );
+        } );
+
+        $db = DB::connection( 'typo3' );
+        foreach( [
+            ['uid' => 7, 'pid' => 1, 'title' => 'Hidden', 'slug' => '/hidden', 'hidden' => 1, 'extendToSubpages' => 1, 'sorting' => 4],
+            ['uid' => 8, 'pid' => 7, 'title' => 'Below', 'slug' => '/hidden/below', 'sorting' => 1],
+            ['uid' => 9, 'pid' => 1, 'title' => 'Section', 'slug' => '/section', 'doktype' => 6, 'sorting' => 5],
+            ['uid' => 10, 'pid' => 1, 'title' => 'German only', 'slug' => '/german', 'l18n_cfg' => 1, 'sorting' => 6],
+        ] as $row ) { $db->table( 'pages' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $output = Artisan::output();
+        $status = fn( string $path ) => PageView::where( 'domain', 'example.com' )->where( 'path', $path )->firstOrFail()->status;
+
+        $this->assertStringContainsString( 'Disabled [8] Below because its parent page [7] is hidden including its subpages', $output );
+        $this->assertStringContainsString( 'Disabled [9] Section because it is a backend user section', $output );
+        $this->assertStringContainsString( 'Disabled [10] German only because it is hidden in the default language', $output );
+
+        foreach( ['hidden/below', 'section', 'german'] as $path ) {
+            $this->assertSame( Pages::STATUS_DISABLED, $status( $path ) );
+        }
+    }
+
+
+    public function testShortcutModesAndMountPoints(): void
+    {
+        Schema::connection( 'typo3' )->table( 'pages', function( Blueprint $table ) {
+            $table->unsignedInteger( 'mount_pid' )->default( 0 );
+            $table->boolean( 'mount_pid_ol' )->default( false );
+        } );
+
+        $db = DB::connection( 'typo3' );
+        foreach( [
+            ['uid' => 7, 'pid' => 1, 'title' => 'First', 'slug' => '/first', 'doktype' => 4, 'shortcut_mode' => 1, 'sorting' => 4],
+            ['uid' => 8, 'pid' => 7, 'title' => 'Hidden child', 'slug' => '/first/hidden', 'hidden' => 1, 'sorting' => 1],
+            ['uid' => 9, 'pid' => 7, 'title' => 'Child', 'slug' => '/first/child', 'sorting' => 2],
+            ['uid' => 10, 'pid' => 6, 'title' => 'Parent', 'slug' => '/contact/parent', 'doktype' => 4, 'shortcut_mode' => 3, 'sorting' => 1],
+            ['uid' => 11, 'pid' => 1, 'title' => 'Mount', 'slug' => '/mount', 'doktype' => 7, 'mount_pid' => 2, 'mount_pid_ol' => 1, 'sorting' => 5],
+            ['uid' => 14, 'pid' => 1, 'title' => 'Own mount', 'slug' => '/own-mount', 'doktype' => 7, 'mount_pid' => 2, 'sorting' => 8],
+            ['uid' => 12, 'pid' => 1, 'title' => 'Bare', 'slug' => '/bare', 'doktype' => 3, 'url' => 'www.example.org/x', 'sorting' => 6],
+            ['uid' => 13, 'pid' => 1, 'title' => 'Internal', 'slug' => '/internal', 'doktype' => 3, 'url' => 't3://page?uid=6#top', 'sorting' => 7],
+        ] as $row ) { $db->table( 'pages' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+        $to = fn( string $path ) => (string) PageView::where( 'domain', 'example.com' )->where( 'path', $path )->firstOrFail()->to;
+
+        $this->assertSame( '/first/child', $to( 'first' ) );
+        $this->assertSame( '/contact', $to( 'contact/parent' ) );
+        $this->assertSame( '/about', $to( 'mount' ) );
+        // mount points without "mount_pid_ol" show their own content in TYPO3
+        $this->assertSame( '', $to( 'own-mount' ) );
+        $this->assertSame( 'https://www.example.org/x', $to( 'bare' ) );
+        $this->assertSame( '/contact#top', $to( 'internal' ) );
+    }
+
+
+    public function testUsesDatabaseBackendLayoutsByUid(): void
+    {
+        Schema::connection( 'typo3' )->create( 'backend_layout', function( Blueprint $table ) {
+            $table->id( 'uid' );
+            $table->text( 'config' );
+            $table->boolean( 'hidden' )->default( false );
+            $table->boolean( 'deleted' )->default( false );
+        } );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'backend_layout' )->insert( ['uid' => 3, 'config' => "backend_layout {\n rows { 1 { columns { 1 { colPos = 2 }\n 2 { colPos = 0 } } } }\n}"] );
+        $db->table( 'pages' )->where( 'uid', 6 )->update( ['backend_layout' => '3'] );
+        $db->table( 'tt_content' )->insert( [
+            ['uid' => 50, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Main</p>', 'colPos' => 0, 'sorting' => 1],
+            ['uid' => 51, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Side</p>', 'colPos' => 2, 'sorting' => 2],
+        ] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--group' => ['2:sidebar']] ) );
+
+        $content = (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content;
+
+        $this->assertSame( ['<p>Side</p>', '<p>Main</p>'], array_values( array_filter( array_map( fn( $item ) => $item->data->text ?? null, $content ) ) ) );
+        $this->assertSame( ['sidebar', 'main'], array_values( array_map( fn( $item ) => $item->group ?? null, $content ) ) );
+    }
+
+
+    public function testRejectsInvalidGroupOption(): void
+    {
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--group' => ['side']] ) );
+        $this->assertStringContainsString( 'Invalid --group value "side"', Artisan::output() );
+        $this->assertSame( 0, PageView::count() );
+    }
+
+
+    public function testContainerChildrenFollowTheirContainer(): void
+    {
+        Schema::connection( 'typo3' )->table( 'tt_content', fn( Blueprint $table ) => $table->unsignedInteger( 'tx_container_parent' )->default( 0 ) );
+
+        foreach( [
+            ['uid' => 50, 'pid' => 6, 'CType' => 'b13-2cols', 'header' => 'Grid', 'colPos' => 1, 'sorting' => 1],
+            ['uid' => 51, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>After</p>', 'colPos' => 1, 'sorting' => 2],
+            ['uid' => 52, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Inside</p>', 'colPos' => 201, 'tx_container_parent' => 50, 'sorting' => 3],
+        ] as $row ) { DB::connection( 'typo3' )->table( 'tt_content' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--group' => ['1:aside']] ) );
+
+        $content = (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content;
+
+        $this->assertSame( ['<p>Inside</p>', '<p>After</p>'], array_values( array_filter( array_map( fn( $item ) => $item->data->text ?? null, $content ) ) ) );
+        $this->assertSame( ['aside'], array_values( array_unique( array_map( fn( $item ) => $item->group ?? null, $content ) ) ) );
+    }
+
+
+    public function testConvertsBulletsTablesAndUploads(): void
+    {
+        $config = ['cms.allow-internal' => config( 'cms.allow-internal' ), 'cms.image.preview-sizes' => config( 'cms.image.preview-sizes' )];
+        $this->beforeApplicationDestroyed( fn() => config( $config ) );
+        config( ['cms.allow-internal' => true, 'cms.image.preview-sizes' => []] );
+        Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
+
+        Schema::connection( 'typo3' )->table( 'tt_content', function( Blueprint $table ) {
+            $table->unsignedSmallInteger( 'bullets_type' )->default( 0 );
+            $table->string( 'table_caption' )->default( '' );
+            $table->unsignedSmallInteger( 'table_delimiter' )->default( 124 );
+            $table->unsignedSmallInteger( 'table_enclosure' )->default( 0 );
+            $table->unsignedSmallInteger( 'table_header_position' )->default( 0 );
+            $table->string( 'subheader' )->default( '' );
+        } );
+
+        $png = base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' );
+        Http::fake( fn() => Http::response( $png, 200, ['Content-Type' => 'image/png'] ) );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'sys_file' )->insert( ['uid' => 1, 'identifier' => '/img/a.png', 'name' => 'a.png', 'mime_type' => 'image/png', 'extension' => 'png'] );
+        $db->table( 'sys_file_reference' )->insert( ['uid' => 1, 'uid_local' => 1, 'uid_foreign' => 53, 'tablenames' => 'tt_content', 'fieldname' => 'media'] );
+        foreach( [
+            ['uid' => 50, 'pid' => 6, 'CType' => 'bullets', 'header' => 'List', 'header_layout' => '6', 'subheader' => 'Sub', 'bodytext' => "One\nTwo", 'bullets_type' => 1, 'sorting' => 1],
+            ['uid' => 51, 'pid' => 6, 'CType' => 'bullets', 'bodytext' => "Term|Definition", 'bullets_type' => 2, 'sorting' => 2],
+            ['uid' => 52, 'pid' => 6, 'CType' => 'table', 'bodytext' => "A;B\n1;2;3", 'table_delimiter' => 59, 'table_caption' => 'Cap', 'table_header_position' => 1, 'sorting' => 3],
+            ['uid' => 53, 'pid' => 6, 'CType' => 'uploads', 'header' => 'Hidden header', 'header_layout' => '100', 'sorting' => 4],
+        ] as $row ) { $db->table( 'tt_content' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
+
+        $content = array_values( (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content );
+
+        $this->assertSame( ['heading', 'heading', 'text', 'html', 'table', 'file'], array_map( fn( $item ) => $item->type, $content ) );
+        $this->assertSame( ['List', 6], [$content[0]->data->title ?? null, (int) ( $content[0]->data->level ?? 0 )] );
+        // the subheader is one level below the header, at most h6
+        $this->assertSame( ['Sub', 6], [$content[1]->data->title ?? null, (int) ( $content[1]->data->level ?? 0 )] );
+        $this->assertStringContainsString( '1. One', $content[2]->data->text ?? '' );
+        $this->assertStringContainsString( '<dt>Term</dt>', $content[3]->data->text ?? '' );
+        $this->assertSame( 'Cap', $content[4]->data->title ?? null );
+        $this->assertSame( 'row', $content[4]->data->header ?? null );
+        $this->assertEquals( [['A', 'B', ''], ['1', '2', '3']], $content[4]->data->table ?? null );
+        $this->assertSame( 'a.png', File::findOrFail( $content[5]->data->file->id ?? '' )->name );
+    }
+
+
+    public function testImportsPageMetaData(): void
+    {
+        Schema::connection( 'typo3' )->table( 'pages', function( Blueprint $table ) {
+            $table->text( 'description' )->nullable();
+            $table->text( 'keywords' )->nullable();
+            $table->string( 'og_title' )->default( '' );
+            $table->text( 'og_description' )->nullable();
+            $table->boolean( 'no_index' )->default( false );
+            $table->boolean( 'no_follow' )->default( false );
+            $table->string( 'canonical_link' )->default( '' );
+        } );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'pages' )->where( 'uid', 2 )->update( ['description' => 'About us', 'keywords' => 'team, history', 'og_title' => 'OG',
+            'no_index' => 1, 'no_follow' => 1, 'canonical_link' => 't3://page?uid=6'] );
+        $db->table( 'pages' )->where( 'uid', 4 )->update( ['description' => 'Über uns'] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail();
+        $meta = $page->meta;
+
+        $this->assertSame( 'About us', $meta->{'meta-tags'}->data->description ?? null );
+        $this->assertSame( 'team, history', $meta->{'meta-tags'}->data->keywords ?? null );
+        $this->assertSame( ['OG', 'About us'], [$meta->{'social-media'}->data->title ?? null, $meta->{'social-media'}->data->description ?? null] );
+        $this->assertSame( ['noindex', 'nofollow'], [$meta->robots->data->index ?? null, $meta->robots->data->follow ?? null] );
+        $this->assertSame( '/contact', $meta->canonical->data->url ?? null );
+        $this->assertSame( 'Über uns', PageView::language( 'de' )->findOrFail( $page->id )->meta->{'meta-tags'}->data->description ?? null );
+    }
+
+
+    public function testUsesFileMetadataAndLinksFilesByUid(): void
+    {
+        $config = ['cms.allow-internal' => config( 'cms.allow-internal' ), 'cms.image.preview-sizes' => config( 'cms.image.preview-sizes' )];
+        $this->beforeApplicationDestroyed( fn() => config( $config ) );
+        config( ['cms.allow-internal' => true, 'cms.image.preview-sizes' => []] );
+        Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
+
+        // like in TYPO3, references without own texts store NULL and use the texts of the file metadata
+        Schema::connection( 'typo3' )->table( 'sys_file_reference', function( Blueprint $table ) {
+            $table->string( 'title' )->nullable();
+            $table->string( 'alternative' )->nullable();
+        } );
+        Schema::connection( 'typo3' )->create( 'sys_file_metadata', function( Blueprint $table ) {
+            $table->id( 'uid' );
+            $table->unsignedInteger( 'file' );
+            $table->string( 'title' )->default( '' );
+            $table->string( 'alternative' )->default( '' );
+            $table->integer( 'sys_language_uid' )->default( 0 );
+        } );
+
+        $png = base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' );
+        Http::fake( fn() => Http::response( $png, 200, ['Content-Type' => 'image/png'] ) );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'sys_file' )->insert( [
+            ['uid' => 1, 'identifier' => '/img/a.png', 'name' => 'a.png', 'mime_type' => 'image/png', 'extension' => 'png'],
+            ['uid' => 2, 'identifier' => '/docs/b.pdf', 'name' => 'b.pdf', 'mime_type' => 'application/pdf', 'extension' => 'pdf'],
+        ] );
+        $db->table( 'sys_file_metadata' )->insert( ['uid' => 1, 'file' => 1, 'title' => 'Meta title'] );
+        $db->table( 'sys_file_reference' )->insert( ['uid' => 1, 'uid_local' => 1, 'uid_foreign' => 50, 'tablenames' => 'tt_content', 'fieldname' => 'image'] );
+        foreach( [
+            ['uid' => 50, 'pid' => 6, 'CType' => 'image', 'sorting' => 1],
+            ['uid' => 51, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p><a href="t3://file?uid=2">PDF</a> <a href="t3://url?url=https://example.org/">Ext</a></p>', 'sorting' => 2],
+        ] as $row ) { $db->table( 'tt_content' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
+
+        $content = array_values( (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content );
+
+        $this->assertSame( 'Meta title', File::findOrFail( $content[0]->data->file->id ?? '' )->name );
+        $this->assertStringContainsString( 'href="https://example.org/"', $content[1]->data->text ?? '' );
+        $this->assertStringNotContainsString( 't3://file', $content[1]->data->text ?? '' );
+        $this->assertTrue( File::where( 'name', 'b.pdf' )->exists() );
+    }
+
+
+    public function testReadsSiteConfigurations(): void
+    {
+        if( !class_exists( \Symfony\Component\Yaml\Yaml::class ) ) {
+            $this->markTestSkipped( 'symfony/yaml is not installed' );
+        }
+
+        $path = sys_get_temp_dir() . '/t3site-' . uniqid();
+        mkdir( $path . '/config/sites/main', 0777, true );
+        file_put_contents( $path . '/config/sites/main/config.yaml', "rootPageId: 1\nbase: 'https://site.example/'\nlanguages:\n"
+            . "  - languageId: 0\n    locale: en_US.UTF-8\n    base: /\n"
+            . "  - languageId: 1\n    locale: de_DE.UTF-8\n    base: /de/\n    fallbackType: fallback\n"
+            . "  - languageId: 2\n    iso-639-1: fr\n    base: 'https://site.fr/'\n" );
+
+        // only the German translation of the header exists
+        DB::connection( 'typo3' )->table( 'tt_content' )->where( 'uid', 21 )->delete();
+
+        try {
+            $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--path' => $path] ) );
+        } finally {
+            unlink( $path . '/config/sites/main/config.yaml' );
+            rmdir( $path . '/config/sites/main' );
+            rmdir( $path . '/config/sites' );
+            rmdir( $path . '/config' );
+            rmdir( $path );
+        }
+
+        $this->assertStringContainsString( 'Found 1 TYPO3 site configurations.', Artisan::output() );
+
+        $page = PageView::where( 'domain', 'site.example' )->where( 'path', 'about' )->firstOrFail();
+        $de = PageView::language( 'de' )->findOrFail( $page->id );
+
+        // untranslated content is shown in the default language for the "fallback" type
+        $this->assertSame( ['Willkommen', '<p>Hello</p>'], array_values( array_map( fn( $item ) => $item->data->title ?? $item->data->text ?? null, (array) $de->content ) ) );
+        $this->assertSame( 'site.fr', PageView::language( 'fr' )->findOrFail( $page->id )->domain );
+    }
+
+
+    public function testRequiresTypo3NineOrNewer(): void
+    {
+        Schema::connection( 'typo3' )->table( 'pages', fn( Blueprint $table ) => $table->dropColumn( 'slug' ) );
+
+        Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] );
+
+        $this->assertStringContainsString( 'TYPO3 9 or newer is required', Artisan::output() );
+        $this->assertFalse( PageView::where( 'domain', 'example.com' )->exists() );
+    }
+
+
+    public function testUsesRootPagesAndDefaultLanguagesOfSiteConfigurations(): void
+    {
+        if( !class_exists( \Symfony\Component\Yaml\Yaml::class ) ) {
+            $this->markTestSkipped( 'symfony/yaml is not installed' );
+        }
+
+        $path = $this->typo3Dir( ['config/sites/contact/config.yaml' => "rootPageId: 6\nbase: 'https://contact.example/'\nlanguages:\n"
+            . "  - languageId: 0\n    locale: de_DE.UTF-8\n    base: /\n"] );
+
+        try {
+            $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--path' => $path, '--domain' => ['example.com:1']] ) );
+        } finally {
+            $this->removeDir( $path );
+        }
+
+        // pages with site configuration are root pages even without "is_siteroot" and use the default language of the site
+        $contact = PageView::where( 'domain', 'contact.example' )->firstOrFail();
+        $this->assertSame( ['de', 'contact'], [$contact->lang, (string) $contact->path] );
+        $this->assertFalse( PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->exists() );
+        $this->assertSame( 'en', PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail()->lang );
+    }
+
+
+    public function testContainerChildrenAreOrderedByColumnAndOrphansSkipped(): void
+    {
+        Schema::connection( 'typo3' )->table( 'tt_content', fn( Blueprint $table ) => $table->unsignedInteger( 'tx_container_parent' )->default( 0 ) );
+
+        foreach( [
+            ['uid' => 50, 'pid' => 6, 'CType' => 'b13-2cols', 'header' => 'Grid', 'sorting' => 1],
+            ['uid' => 51, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>After</p>', 'sorting' => 2],
+            ['uid' => 52, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Right</p>', 'colPos' => 202, 'tx_container_parent' => 50, 'sorting' => 3],
+            ['uid' => 53, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Left</p>', 'colPos' => 201, 'tx_container_parent' => 50, 'sorting' => 4],
+            // the container of the element was deleted, so TYPO3 doesn't show it
+            ['uid' => 54, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Orphan</p>', 'colPos' => 201, 'tx_container_parent' => 99, 'sorting' => 5],
+        ] as $row ) { DB::connection( 'typo3' )->table( 'tt_content' )->insert( $row ); }
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+
+        $content = (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content;
+
+        $this->assertSame( ['<p>Left</p>', '<p>Right</p>', '<p>After</p>'], array_values( array_filter( array_map( fn( $item ) => $item->data->text ?? null, $content ) ) ) );
+    }
+
+
+    public function testUsesGlobalPageTsconfigAndReportsUnusedColumns(): void
+    {
+        $path = $this->typo3Dir( ['typo3conf/ext/site/Configuration/page.tsconfig' => "mod.web_layout.BackendLayouts.two {\n config { colPos = 1\n colPos = 0 }\n}"] );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'pages' )->where( 'uid', 6 )->update( ['backend_layout' => 'pagets__two'] );
+        $db->table( 'tt_content' )->insert( [
+            ['uid' => 50, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Main</p>', 'colPos' => 0, 'sorting' => 1],
+            ['uid' => 51, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Side</p>', 'colPos' => 1, 'sorting' => 2],
+            ['uid' => 52, 'pid' => 6, 'CType' => 'text', 'bodytext' => '<p>Unused</p>', 'colPos' => 3, 'sorting' => 3],
+        ] );
+
+        try {
+            $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--path' => $path, '--domain' => 'example.com'] ) );
+        } finally {
+            $this->removeDir( $path );
+        }
+
+        $content = (array) PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->content;
+
+        $this->assertSame( ['<p>Side</p>', '<p>Main</p>'], array_values( array_filter( array_map( fn( $item ) => $item->data->text ?? null, $content ) ) ) );
+        $this->assertStringContainsString( 'Skipped content element [52] in column 3 not part of the backend layout', Artisan::output() );
+    }
+
+
+    public function testTranslatedExternalUrlPagesUseTheirOwnUrl(): void
+    {
+        $db = DB::connection( 'typo3' );
+        $db->table( 'pages' )->insert( ['uid' => 7, 'pid' => 1, 'title' => 'Shop', 'slug' => '/shop', 'doktype' => 3, 'url' => 'https://shop.example/en', 'sorting' => 4] );
+        $db->table( 'pages' )->insert( [
+            ['uid' => 8, 'pid' => 1, 'title' => 'Laden', 'slug' => '/laden', 'doktype' => 3, 'url' => 'https://shop.example/de', 'sys_language_uid' => 1, 'l10n_parent' => 7, 'sorting' => 4],
+        ] );
+
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com'] ) );
+
+        $page = PageView::where( 'domain', 'example.com' )->where( 'path', 'shop' )->firstOrFail();
+
+        $this->assertSame( 'https://shop.example/en', (string) $page->to );
+        $this->assertSame( 'https://shop.example/de', (string) PageView::language( 'de' )->findOrFail( $page->id )->to );
+    }
+
+
+    public function testImportsSocialMediaImagesAndTwitterTexts(): void
+    {
+        $config = ['cms.allow-internal' => config( 'cms.allow-internal' ), 'cms.image.preview-sizes' => config( 'cms.image.preview-sizes' )];
+        $this->beforeApplicationDestroyed( fn() => config( $config ) );
+        config( ['cms.allow-internal' => true, 'cms.image.preview-sizes' => []] );
+        Storage::fake( (string) config( 'cms.disks.public.name', 'public' ) );
+
+        Schema::connection( 'typo3' )->table( 'pages', function( Blueprint $table ) {
+            $table->string( 'og_title' )->default( '' );
+            $table->unsignedInteger( 'og_image' )->default( 0 );
+            $table->string( 'twitter_title' )->default( '' );
+            $table->text( 'twitter_description' )->nullable();
+        } );
+
+        $png = base64_decode( 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' );
+        Http::fake( fn() => Http::response( $png, 200, ['Content-Type' => 'image/png'] ) );
+
+        $db = DB::connection( 'typo3' );
+        $db->table( 'pages' )->where( 'uid', 2 )->update( ['og_image' => 1, 'twitter_title' => 'Tweet', 'twitter_description' => 'Tweet text'] );
+        $db->table( 'sys_file' )->insert( ['uid' => 1, 'identifier' => '/img/og.png', 'name' => 'og.png', 'mime_type' => 'image/png', 'extension' => 'png'] );
+        $db->table( 'sys_file_reference' )->insert( [
+            ['uid' => 1, 'uid_local' => 1, 'uid_foreign' => 2, 'tablenames' => 'pages', 'fieldname' => 'og_image'],
+            ['uid' => 2, 'uid_local' => 1, 'uid_foreign' => 6, 'tablenames' => 'pages', 'fieldname' => 'og_image'],
+        ] );
+
+        $db->enableQueryLog();
+        $this->assertSame( 0, Artisan::call( 'cms:t3-import', ['--domain' => 'example.com', '--file-base' => 'http://127.0.0.1/fileadmin'] ) );
+        $queries = $this->queries( $db )->filter( fn( $query ) => str_contains( $query['query'], 'from "sys_file_reference"' ) && in_array( 'og_image', $query['bindings'], true ) );
+        $db->disableQueryLog();
+
+        // the social media images of the upcoming pages and their translations are fetched at once
+        $this->assertCount( 1, $queries->filter( fn( $query ) => !array_diff( [2, 4, 5, 6], $query['bindings'] ) ) );
+        $this->assertCount( 0, $queries->filter( fn( $query ) => in_array( 6, $query['bindings'], true ) && !in_array( 2, $query['bindings'], true ) ) );
+
+        // the Twitter texts are used if there are no Open Graph texts
+        $social = PageView::where( 'domain', 'example.com' )->where( 'path', 'about' )->firstOrFail()->meta->{'social-media'}->data ?? null;
+        $this->assertSame( ['Tweet', 'Tweet text'], [$social->title ?? null, $social->description ?? null] );
+        $this->assertSame( 'og.png', File::findOrFail( $social->file->id ?? '' )->name );
+        $this->assertSame( 'og.png', File::findOrFail( PageView::where( 'domain', 'example.com' )->where( 'path', 'contact' )->firstOrFail()->meta->{'social-media'}->data->file->id ?? '' )->name );
+    }
+
+
+    /**
+     * Creates a temporary TYPO3 installation directory with the given files.
+     *
+     * @param array<string, string> $files File contents by path relative to the directory
+     */
+    protected function typo3Dir( array $files ): string
+    {
+        $path = sys_get_temp_dir() . '/t3dir-' . uniqid();
+
+        foreach( $files as $file => $content )
+        {
+            @mkdir( dirname( $path . '/' . $file ), 0777, true );
+            file_put_contents( $path . '/' . $file, $content );
+        }
+
+        return $path;
+    }
+
+
+    /**
+     * Removes the temporary directory and its files.
+     */
+    protected function removeDir( string $path ): void
+    {
+        $items = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $path, \FilesystemIterator::SKIP_DOTS ), \RecursiveIteratorIterator::CHILD_FIRST );
+
+        foreach( $items as $item ) {
+            $item->isDir() ? rmdir( $item->getPathname() ) : unlink( $item->getPathname() );
+        }
+
+        rmdir( $path );
+    }
+
+
     /**
      * Returns the page UIDs of a query fetching the tt_content records of pages.
      *
@@ -2121,12 +2835,12 @@ class T3ImportTest extends ImportTestAbstract
      */
     protected function contentPids( array $query ): array
     {
-        if( !preg_match( '/from "tt_content" where .*"pid" in \(([?, ]+)\) and "sys_language_uid"/', $query['query'], $match ) ) {
+        if( !preg_match( '/from "tt_content" where .*"pid" in \(([?, ]+)\) and "sys_language_uid"/', $query['query'], $match, PREG_OFFSET_CAPTURE ) ) {
             return [];
         }
 
-        // the bindings of the "deleted" and "hidden" conditions are first
-        return array_slice( $query['bindings'], 2, substr_count( $match[1], '?' ) );
+        // the bindings of the conditions before, e.g. "deleted" and "hidden", are first
+        return array_slice( $query['bindings'], substr_count( substr( $query['query'], 0, $match[1][1] ), '?' ), substr_count( $match[1][0], '?' ) );
     }
 
 
