@@ -11,6 +11,7 @@ use Aimeos\Cms\Exception;
 use Aimeos\Cms\FileStorage;
 use Aimeos\Cms\Models\File;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\ImageManager;
 use Symfony\Component\Mime\MimeTypes;
@@ -309,7 +310,7 @@ class Files
      */
     public static function contents( string $id, int $max = 1048576 ) : ?string
     {
-        if( !( $file = File::find( $id ) ) || preg_match( '#^https?://#i', $path = (string) $file->path ) ) {
+        if( !Str::isUuid( $id ) || !( $file = File::find( $id ) ) || preg_match( '#^https?://#i', $path = (string) $file->path ) ) {
             return null;
         }
 
