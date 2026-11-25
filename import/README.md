@@ -17,7 +17,9 @@ at your own risk!
 ## cms:t3-import
 
 Imports a TYPO3 page tree and its content into Pagible CMS. The importer
-supports stock TYPO3 content and Bootstrap Package accordions and carousels.
+supports stock TYPO3 content and the content elements of the Bootstrap Package.
+TYPO3 9 or newer is required because older versions don't store the URLs of
+the pages.
 
 ### Command
 
@@ -33,12 +35,15 @@ php artisan cms:t3-import \
 |--------|---------|-------------|
 | `--connection` | `typo3` | Database connection name for the TYPO3 database |
 | `--domain` | Auto-detected | Domain name, optionally followed by its root page UID; repeatable |
-| `--lang` | `en` | Language code for imported content |
+| `--lang` | `en` | Language code for imported content, otherwise the default language of the site configuration is used |
 | `--tenant` | | Tenant ID for multi-tenant setups |
 | `--editor` | `t3-import` | Editor name for imported records |
 | `--theme` | | Pagible theme assigned to imported pages |
 | `--file-base` | Domain `/fileadmin` URL | Base URL or local path for TYPO3 files |
+| `--path` | | Path to the TYPO3 installation for the site configurations and TSconfig files, e.g. `/var/www/typo3` |
+| `--group` | `main` | Element group of the content in a TYPO3 column, e.g. `1:sidebar`; repeatable |
 | `--page` | | Import or update only this TYPO3 page UID; repeatable |
+| `--since` | | Only import the pages changed since the date, e.g. `2026-01-31` |
 | `--language` | From `sys_language` | TYPO3 language UID imported as translation, e.g. `1:de` or `2:fr:https://example.fr/`; repeatable |
 | `--dry-run` | | Show selected pages without making changes |
 
@@ -50,6 +55,12 @@ php artisan cms:t3-import \
     --domain=example.org:1 \
     --page=106
 ```
+
+With `--since`, pages are changed by their own modifications, those of their
+content, items and file references, of the pages their content is taken from
+(including the targets of shortcut pages used as content source), of the
+files and file metadata they use and by content and pages becoming visible
+or expiring due to their start and end times.
 
 ### TYPO3 Database Connection
 
@@ -65,17 +76,115 @@ Add a TYPO3 database connection to `config/database.php`:
 ],
 ```
 
+### Site Configurations
+
+With `--path`, the site configurations in `config/sites/*/config.yaml` (or
+`typo3conf/sites/` in older versions) are read, which requires the Symfony YAML
+component:
+
+```bash
+composer require symfony/yaml
+```
+
+Pages with a site configuration become root pages using the domain of the site
+`base` or of the `baseVariants` entry for the production context. Bases using
+environment variables like `%env(BASE)%` can't be resolved, use `--domain` for
+them. The languages of the sites are used per site with their default
+language (`languageId: 0`) as language of the pages unless `--lang` is given.
+The `fallbackType` and `fallbacks` settings of the languages are used for the
+translated content and links like in TYPO3. Languages with the same code on the
+same domain, like `de_DE` and `de_CH`, use the regional code (`de-CH`) from
+`hreflang` or `locale` for all but the first one.
+
+The global PageTSconfig of the extensions (`Configuration/page.tsconfig` and
+the `page.tsconfig` files of site sets) and of the sites is also read for the
+backend layouts. Without `--path`, only the PageTSconfig of the pages is used.
+
 ### Supported TYPO3 Content
 
 The importer preserves page hierarchy, redirects, backend-layout ordering,
-shared content references and referenced files. It converts:
+shared content references and referenced files. Content in columns which
+aren't part of the backend layout isn't shown by TYPO3 and is skipped with a
+warning. Content of EXT:container and gridelements containers follows its
+container in the order of the container columns. It converts:
 
-- Stock header, text, text-with-image, image, HTML and shortcut elements
-- Bootstrap Package accordions to Pagible questions
-- Bootstrap Package carousels to Pagible slideshows
+- Stock header, text, text-with-image, text-and-media, image, HTML and shortcut elements
+- Bullet lists to text (or HTML for definition lists)
+- Tables to Pagible tables, links in cells are kept as Markdown links
+- Uploads to file elements including the files of folder and static file
+  collections in the configured sort order
+- Linked images to HTML elements, because image elements can't contain links
+- Bootstrap Package accordions and tabs to Pagible questions
+- Bootstrap Package carousels (including small and fullscreen) to Pagible slideshows,
+  or cards if the slides contain text
+- Bootstrap Package galleries to Pagible slideshows, media elements to text with images
+  and external media to embedded videos
+- Bootstrap Package list groups to lists and quotes to quotes with their linked source
+- Bootstrap Package CSV tables to Pagible tables, also from attached CSV files which stay attached to the page
+- Bootstrap Package card groups and icon groups to Pagible cards including their icons and button links
+- Bootstrap Package timelines to Pagible timelines
 
-Unknown content types are imported only when they contain a regular heading or
-body text. Extension-specific plugin behavior is not migrated.
+Headers are imported like fluid_styled_content renders them: hidden headers
+(layout "Hidden") are skipped including subheader and date, subheaders become
+headings one level below the header and dates become text. Elements with items
+like questions, cards, slideshows and timelines use plain headers as their
+title, while headers with another level, link, subheader or date are shown in
+front of them.
+
+The first element of each content element gets an ID derived from the UID of
+the TYPO3 content element (or of the one in the default language for
+translations), so links to TYPO3 content anchors like `#c123`,
+`t3://page?uid=5#c123` and `t3://page?uid=current#c123` point to the imported
+element. Pages unchanged since a previous import keep their element IDs.
+
+Like TYPO3's `lib.parseFunc_RTE`, lines of rich text which aren't inside a
+block element like `<p>`, `<ul>` or `<table>` become paragraphs, e.g. text
+saved by older editors or without rich text editor. Empty lines are dropped
+instead of becoming empty paragraphs. Links of headers and linked images keep
+the `_blank` target of their link field (popup windows too), while card and
+quote links can't have a target in Markdown. Link fields in the legacy
+notation TYPO3 still resolves, like `5`, `5#c3`, `5,3`, `file:12`,
+`info@example.com` or `www.example.com`, are converted like `t3://` links, and
+links with other schemes than `http`, `https`, `mailto` and `tel`, e.g.
+`javascript:`, are dropped. The language of the additional parameters, like
+`&L=1` in `t3://page?uid=5 - - - &L=1`, is used for page links, other
+additional parameters are ignored.
+
+Image crop areas are applied to images downloaded via `--file-base` URLs, and
+the alternative texts or captions become the file descriptions in the language
+of the reference. Dividers are skipped. Plugins, forms, login forms and menus,
+including the old `mailform`, `login`, `search`, `menu` and `script` types,
+can't be imported and only their header is kept, which is reported. Icons of
+Bootstrap Package icon sets in text-and-icon elements and icon groups aren't
+files and are reported, uploaded icons are imported. Unknown
+content types like plugins registered as own content type are imported with
+their heading, body text and files only, which is reported. Extension-specific
+plugin behavior is not migrated. Files marked as missing in TYPO3 are skipped.
+
+Not imported are the sitemap priority and change frequency of the pages, the
+link targets of cards and quote sources, the header position, the table footer
+setting, the layout and description settings of uploads and file collections
+by category.
+
+### Redirects
+
+When the whole page tree is imported, the redirects of the TYPO3 redirects
+module (`sys_redirect`), including the ones TYPO3 10+ creates when the slug of
+a page changes, become hidden pages below the root page redirecting to their
+target. Only enabled redirects which are active now are imported, the first
+one of each URL is used, the redirects of a host before the ones for all hosts
+like in TYPO3. Redirects of the domain of a translation are saved
+in its language, redirects for all hosts (`*`) are imported for each domain
+including the ones of translations, and the ones for other hosts are skipped.
+Encoded URLs like `/%C3%BCber` are decoded. Targets like `t3://page?uid=5`,
+`t3://file?uid=1` and legacy ones like `5` are resolved, external URLs and
+paths are kept. Regular expressions, redirects with query parameters,
+redirects of the home page, unresolvable targets and redirects whose URL is
+used by another page are skipped and reported. Redirects of previous imports
+which were deleted, disabled or expired in TYPO3 since are disabled and
+enabled again if they are back. The dry run lists the redirects with their
+unresolved targets and the redirects of previous imports it would disable. The status code of the redirects isn't imported, and
+imports of selected pages with `--page` don't import redirects.
 
 ### Translations
 
@@ -104,8 +213,15 @@ date. Otherwise, the translation is imported as it is and marked as
 "Needs update", so it can be translated again from the source.
 
 Links to other pages in translated content point to their translations. If a
-linked page isn't translated, the link points to the page in the default
+linked page isn't translated, the link points to the translation in the first
+fallback language of the site configuration or to the page in the default
 language, using an absolute URL when the translation is on another domain.
+Links with `_language` or `L` parameters point to the translation in that
+language. With site configurations, the language UIDs are mapped per site.
+Like in TYPO3, pages hidden in the default language (`l18n_cfg`) are only
+linked from their translations and pages hidden if not translated aren't
+linked from languages without translation. Translations of pages hidden in the
+default language aren't imported.
 
 ## cms:wp-import
 

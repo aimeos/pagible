@@ -484,9 +484,9 @@ abstract class Commands extends Command
      * get a new version on every import.
      *
      * @param bool $rename FALSE to use the name only for new files
-     * @param array<string, string> $description Descriptions of new files like the alt text of images by language code
+     * @param array{description?: array<string, string>} $options Descriptions of new files by language code
      */
-    protected function createFile( string $mime, string $name, string $path, bool $rename = true, array $description = [] ): string
+    protected function createFile( string $mime, string $name, string $path, bool $rename = true, array $options = [] ): string
     {
         if( $existing = $this->knownFile( $path ) ) {
             return $existing;
@@ -503,7 +503,7 @@ abstract class Commands extends Command
         }
         else
         {
-            $id = Files::reference( $mime, $name, $path, $this->editor, $description )->id ?? '';
+            $id = Files::reference( $mime, $name, $path, $this->editor, $options )->id ?? '';
         }
 
         $this->namedFiles[$id] = true;
@@ -522,9 +522,11 @@ abstract class Commands extends Command
      * @param string $name Name of the file
      * @param string $path Source URL or path of the file
      * @param bool $download TRUE to download the file and store it locally, FALSE to reference the path
+     * @param array{description?: array<string, string>, crop?: array{x: float, y: float, width: float, height: float}} $options
+     *  Descriptions by language code and the area of downloaded raster images which is stored relative to the image size
      * @return string File ID
      */
-    protected function importFile( string $mime, string $name, string $path, bool $download ): string
+    protected function importFile( string $mime, string $name, string $path, bool $download, array $options = [] ): string
     {
         if( $existing = $this->knownFile( $path ) ) {
             return $existing;
@@ -533,8 +535,8 @@ abstract class Commands extends Command
         // files used several times are only downloaded once if the download fails
         $file = $this->downloadOnce( $path, $download, fn() => DB::connection()->transaction(
             fn() => $download
-                ? Files::download( $mime, $name, $path, $this->editor, $this->downloaded( $path ) )
-                : Files::reference( $mime, $name, $path, $this->editor )
+                ? Files::download( $mime, $name, $path, $this->editor, $this->downloaded( $path ), $options )
+                : Files::reference( $mime, $name, $path, $this->editor, isset( $options['description'] ) ? ['description' => $options['description']] : [] )
         ) );
 
         $id = (string) $file->id;

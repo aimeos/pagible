@@ -76,7 +76,7 @@ trait Assets
         $mime = $mime === 'application/octet-stream' && ( $info['mime'] ?? '' ) !== '' ? $info['mime'] : $mime;
 
         // the alt text of the asset is the description of new files
-        return $this->createFile( $mime, $name, $url, description: ( $info['alt'] ?? '' ) !== '' ? [$this->lang => $info['alt']] : [] );
+        return $this->createFile( $mime, $name, $url, options: ( $info['alt'] ?? '' ) !== '' ? ['description' => [$this->lang => $info['alt']]] : [] );
     }
 
 

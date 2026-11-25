@@ -5,7 +5,7 @@
  */
 
 
-namespace Aimeos\Cms\Import;
+namespace Aimeos\Cms\Import\Typo3;
 
 use Illuminate\Support\Collection;
 
@@ -13,10 +13,22 @@ use Illuminate\Support\Collection;
 /**
  * Navigates the TYPO3 page tree to select pages and find their parents and site roots.
  */
-class Typo3Tree
+class Tree
 {
+    /** Page types which aren't imported but whose subpages are imported below their parent: spacers (199) and folders (254) */
+    public const TRANSPARENT = [199, 254];
+
+    /** Page type of the recyclers whose subpages aren't imported */
+    public const RECYCLER = 255;
+
+    /** Page type of the backend user sections which aren't visible in the frontend */
+    public const BE_SECTION = 6;
+
     /** @var array<int, int>|null Positions of the TYPO3 pages by UID */
     protected ?array $positions = null;
+
+    /** @var array<int, int|null> UIDs of the imported parent pages by page UID */
+    protected array $pids = [];
 
 
     /**
@@ -58,6 +70,63 @@ class Typo3Tree
 
 
     /**
+     * Returns the TYPO3 pages which are imported in their order.
+     *
+     * Spacers, folders and recyclers aren't imported, the subpages of spacers and folders are
+     * imported below the next imported ancestor and the subpages of recyclers aren't imported.
+     *
+     * @return Collection<int, mixed> TYPO3 pages
+     */
+    public function importable(): Collection
+    {
+        return $this->pages->filter( fn( $page ) => $this->imported( $page ) )->values();
+    }
+
+
+    /**
+     * Tests if the TYPO3 page is imported.
+     */
+    public function imported( object $t3Page ): bool
+    {
+        $type = (int) ( $t3Page->doktype ?? 1 );
+        return !in_array( $type, [...self::TRANSPARENT, self::RECYCLER], true ) && $this->pid( $t3Page ) !== null;
+    }
+
+
+    /**
+     * Returns the UID of the imported parent page, 0 on the top level or NULL if the page isn't part of the imported tree.
+     *
+     * Spacers and folders are skipped, pages in recyclers or below missing pages aren't part of the tree.
+     */
+    public function pid( object $t3Page ): ?int
+    {
+        $uid = (int) ( $t3Page->uid ?? 0 );
+
+        if( array_key_exists( $uid, $this->pids ) ) {
+            return $this->pids[$uid];
+        }
+
+        $page = $t3Page;
+        $seen = [$uid => true];
+
+        while( ( $pid = (int) ( $page->pid ?? 0 ) ) > 0 )
+        {
+            if( isset( $seen[$pid] ) || !( $page = $this->pages->get( $pid ) ) || (int) ( $page->doktype ?? 1 ) === self::RECYCLER ) {
+                return $this->pids[$uid] = null;
+            }
+
+            if( !in_array( (int) ( $page->doktype ?? 1 ), self::TRANSPARENT, true ) ) {
+                return $this->pids[$uid] = $pid;
+            }
+
+            $seen[$pid] = true;
+        }
+
+        return $this->pids[$uid] = 0;
+    }
+
+
+    /**
      * Returns a key which sorts the TYPO3 pages in tree order, parents before their children and siblings in their order.
      *
      * The keys must be compared as strings.
@@ -83,7 +152,7 @@ class Typo3Tree
     /**
      * Returns why the TYPO3 page or translation isn't visible for all visitors now or NULL if it is.
      *
-     * Translations are restricted like their page in default language and the restrictions of
+     * Translations are restricted like their page in default language, aren't shown if it's hidden and the restrictions of
      * the parent pages with "Extend to subpages" apply to their subpages too.
      */
     public function restriction( object $t3Page ): ?string
@@ -98,14 +167,33 @@ class Typo3Tree
             }
 
             $page = $this->pages->get( (int) ( $t3Page->l10n_parent ?? 0 ) );
+
+            // TYPO3 doesn't show the translations of hidden pages
+            if( $page && !empty( $page->hidden ) ) {
+                return 'its page in the default language is hidden';
+            }
+        }
+        elseif( (int) ( $t3Page->l18n_cfg ?? 0 ) & 1 )
+        {
+            // TYPO3 shows the page only in the translated languages
+            return 'it is hidden in the default language';
         }
 
-        for( $own = true; $page && !isset( $seen[$uid = (int) ( $page->uid ?? 0 )] ); $own = false, $page = $this->parent( $page ) )
+        if( $page && (int) ( $page->doktype ?? 1 ) === self::BE_SECTION ) {
+            return 'it is a backend user section';
+        }
+
+        // the restrictions of folders and spacers apply to their subpages too
+        for( $own = true; $page && !isset( $seen[$uid = (int) ( $page->uid ?? 0 )] ); $own = false, $page = $this->pages->get( (int) ( $page->pid ?? 0 ) ) )
         {
             $seen[$uid] = true;
 
             if( ( $own || !empty( $page->extendToSubpages ) ) && ( $reason = self::restricted( $page ) ) !== null ) {
                 return $reason;
+            }
+
+            if( !$own && !empty( $page->extendToSubpages ) && !empty( $page->hidden ) ) {
+                return 'its parent page [' . $uid . '] is hidden including its subpages';
             }
         }
 
@@ -144,7 +232,7 @@ class Typo3Tree
      */
     public function parent( object $t3Page ): ?\stdClass
     {
-        return $this->pages->get( (int) ( $t3Page->pid ?? 0 ) );
+        return $this->pages->get( (int) $this->pid( $t3Page ) );
     }
 
 
@@ -156,11 +244,16 @@ class Typo3Tree
         $page = $t3Page;
         $seen = [];
 
-        while( (int) ( $page->pid ?? 0 ) > 0 && empty( $page->is_siteroot ) ) {
+        $last = $page;
+
+        while( (int) ( $page->pid ?? 0 ) > 0 && empty( $page->is_siteroot ) )
+        {
             $page = $this->next( $page, $seen );
+            $last = in_array( (int) ( $page->doktype ?? 1 ), self::TRANSPARENT, true ) ? $last : $page;
         }
 
-        return $page;
+        // folders on the top level aren't imported, their subpages are the roots of the page trees
+        return !empty( $page->is_siteroot ) || !in_array( (int) ( $page->doktype ?? 1 ), self::TRANSPARENT, true ) ? $page : $last;
     }
 
 
