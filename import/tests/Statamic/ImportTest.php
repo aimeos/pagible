@@ -835,7 +835,7 @@ class ImportTest extends TestAbstract
         $db = DB::connection( config( 'cms.db', 'sqlite' ) );
         $db->enableQueryLog();
         $this->assertSame( 0, Artisan::call( 'cms:statamic-import', ['--domain' => 'example.com'] ) );
-        $queries = Collection::make( $db->getQueryLog() )->pluck( 'query' );
+        $queries = $this->queries( $db )->pluck( 'query' );
         $db->disableQueryLog();
 
         // the pages using the URLs of the entries are fetched at once, entries without slug use the slug of their title
